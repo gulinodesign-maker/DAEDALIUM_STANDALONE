@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.003
+ * Build: 1.004
  */
-const BUILD_VERSION = "1.003";
+const BUILD_VERSION = "1.004";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -797,6 +797,33 @@ async function __localApi__(action, { method="GET", params={}, body=null } = {})
 
 // Import/Export DB (JSON unico) — Admin vs Operatore
 /* Legacy localStorage DB Import/Export removed (LOCAL build uses IndexedDB) */
+
+
+// Dialog a due azioni (riusa il modal Sì/No esistente con label dinamiche)
+// Ritorna "yes" o "no".
+async function __confirmTwoActions__(message, yesLabel, noLabel){
+  try{
+    const yesBtn = document.getElementById("confirmYesNoYes");
+    const noBtn  = document.getElementById("confirmYesNoNo");
+    const prevYes = yesBtn ? yesBtn.textContent : null;
+    const prevNo  = noBtn  ? noBtn.textContent  : null;
+
+    if (yesBtn) yesBtn.textContent = String(yesLabel || "Sì");
+    if (noBtn)  noBtn.textContent  = String(noLabel  || "No");
+
+    const ok = await confirmYesNo(String(message || "Confermare?"));
+
+    // restore
+    if (yesBtn && prevYes !== null) yesBtn.textContent = prevYes;
+    if (noBtn  && prevNo  !== null) noBtn.textContent  = prevNo;
+
+    return ok ? "yes" : "no";
+  }catch(_){
+    // fallback
+    try{ return (confirm(String(message || "Confermare?")) ? "yes" : "no"); }catch(__){ return "no"; }
+  }
+}
+
 
 async function __openDbPopup__(kind){
   const label = (kind==="admin") ? "DB Amministratore" : "DB Operatore";
