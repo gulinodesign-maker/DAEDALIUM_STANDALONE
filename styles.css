@@ -7554,3 +7554,110 @@ color: var(--mcol,#ff3b30);
   stroke: #fff;
 }
 .btn.db-btn span{ font-weight: 700; }
+
+
+
+/* ===== Settings: Accordion (Dati Operatore) ===== */
+.accordion-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.85);
+  font-weight:700;
+  letter-spacing:.2px;
+  margin-top:10px;
+}
+.accordion-toggle .chevron{
+  width:22px;
+  height:22px;
+  transition:transform .15s ease;
+}
+.accordion-toggle[aria-expanded="true"] .chevron{
+  transform:rotate(180deg);
+}
+.accordion-panel{
+  margin-top:10px;
+}
+
+/* ===== Settings: DB icon button ===== */
+.settings-btn-db{
+  background:rgba(40, 190, 70, .80) !important;
+  border:1px solid rgba(0,0,0,.08) !important;
+}
+.settings-btn-db .ui-ico{
+  color:#fff !important;
+  stroke:#fff !important;
+  fill:none;
+}
+
+/* ===== DB Menu Modal ===== */
+.db-menu-card{
+  width:min(420px, 92vw);
+  border-radius:22px;
+}
+.db-menu-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px 6px 16px;
+}
+.db-menu-title{
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.db-menu-body{
+  padding:10px 16px 16px 16px;
+}
+.db-option{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.10);
+  background:rgba(255,255,255,.9);
+  margin-top:10px;
+}
+.db-option.selected{
+  border-color:rgba(0,0,0,.18);
+  background:rgba(255,255,255,.95);
+}
+.db-dot{
+  width:16px; height:16px;
+  border-radius:999px;
+  border:2px solid rgba(0,0,0,.25);
+  flex:0 0 auto;
+}
+.db-dot-admin{ background:rgba(40,190,70,.95); }
+.db-dot-operator{ background:rgba(245,195,0,.95); }
+.db-option-label{
+  font-weight:800;
+}
+.db-menu-actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:16px;
+}
+.btn.db-act{
+  min-width:140px;
+  border-radius:16px;
+  font-weight:900;
+  letter-spacing:.4px;
+  opacity:.92;
+}
+.btn.db-import{
+  background:rgba(40,190,70,.80);
+  color:#0b1b0f;
+  border:1px solid rgba(0,0,0,.10);
+}
+.btn.db-export{
+  background:rgba(245,195,0,.80);
+  color:#201a00;
+  border:1px solid rgba(0,0,0,.10);
+}

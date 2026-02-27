@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.010
+ * Build: 1.011
  */
-const BUILD_VERSION = "1.010";
+const BUILD_VERSION = "1.011";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -834,6 +834,73 @@ async function __openDbPopup__(kind){
   if (choice === "yes") return __dbImport__(kind);
   return __dbExport__(kind);
 }
+
+
+// Nuovo menu DB: un solo popup con selezione Admin/Operatore + Import/Export
+function __setDbMenuSelected__(kind){
+  const a = document.getElementById("dbMenuOptAdmin");
+  const o = document.getElementById("dbMenuOptOperator");
+  if (!a || !o) return;
+  const k = String(kind||"admin").toLowerCase().startsWith("op") ? "operator" : "admin";
+  if (k === "admin"){
+    a.classList.add("selected"); o.classList.remove("selected");
+    try{ a.setAttribute("aria-pressed","true"); o.setAttribute("aria-pressed","false"); }catch(_){}
+  }else{
+    o.classList.add("selected"); a.classList.remove("selected");
+    try{ o.setAttribute("aria-pressed","true"); a.setAttribute("aria-pressed","false"); }catch(_){}
+  }
+  try{ window.__dbMenuKind = k; }catch(_){}
+}
+
+function __closeDbMenuModal__(){
+  try{
+    const modal = document.getElementById("dbMenuModal");
+    if (modal){ modal.hidden = true; try{ modal.setAttribute("aria-hidden","true"); }catch(_){ } }
+  }catch(_){}
+}
+
+function __openDbMenuModal__(){
+  try{
+    const modal = document.getElementById("dbMenuModal");
+    const closeBtn = document.getElementById("dbMenuClose");
+    const optA = document.getElementById("dbMenuOptAdmin");
+    const optO = document.getElementById("dbMenuOptOperator");
+    const importBtn = document.getElementById("dbMenuImportBtn");
+    const exportBtn = document.getElementById("dbMenuExportBtn");
+    if (!modal || !optA || !optO || !importBtn || !exportBtn){
+      // fallback: vecchio comportamento
+      return __openDbPopup__("admin");
+    }
+
+    // default: admin
+    __setDbMenuSelected__(window.__dbMenuKind || "admin");
+
+    // bind once
+    if (!modal.__bound){
+      modal.__bound = true;
+
+      const bind = (el, fn) => { try{ if (el) bindFastTap(el, fn); }catch(_){ try{ el.addEventListener("click", fn); }catch(__){} } };
+
+      bind(closeBtn, ()=>{ __closeDbMenuModal__(); });
+      bind(optA, ()=>{ __setDbMenuSelected__("admin"); });
+      bind(optO, ()=>{ __setDbMenuSelected__("operator"); });
+
+      bind(importBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbImport__(k); });
+      bind(exportBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbExport__(k); });
+
+      // click outside to close
+      try{
+        modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeDbMenuModal__(); });
+      }catch(_){}
+    }
+
+    modal.hidden = false;
+    try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
+  }catch(e){
+    try{ toast(e.message || String(e)); }catch(_){}
+  }
+}
+
 
 // ===== DB Import/Export (LOCAL) =====
 const __DB_EXPORT_KIND__ = "dDAE_export";
@@ -2832,14 +2899,37 @@ function setupImpostazioni() {
 
 
 
-  // DB Import/Export (LOCAL) - bind once when opening Impostazioni
+  // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
+    const dbBtn = document.getElementById("settingsDbBtn");
+    if (dbBtn) bindFastTap(dbBtn, () => { __openDbMenuModal__(); });
+
+    // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
     if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
-  const del = document.getElementById("settingsDeleteBtn");
+
+  // Accordion Dati Operatore
+  try{
+    const tog = document.getElementById("opSettingsToggle");
+    const panel = document.getElementById("opSettingsPanel");
+    if (tog && panel){
+      const setState = (open)=>{
+        const isOpen = !!open;
+        try{ tog.setAttribute("aria-expanded", isOpen ? "true" : "false"); }catch(_){}
+        panel.hidden = !isOpen;
+        try{ localStorage.setItem("ddae_op_settings_open", isOpen ? "1" : "0"); }catch(_){}
+      };
+      // restore state
+      let open = false;
+      try{ open = (localStorage.getItem("ddae_op_settings_open") === "1"); }catch(_){}
+      setState(open);
+      bindFastTap(tog, ()=>{ const cur = (tog.getAttribute("aria-expanded")==="true"); setState(!cur); });
+    }
+  }catch(_){ }
+const del = document.getElementById("settingsDeleteBtn");
   if (del) bindFastTap(del, async () => {
     try{
       const s = state.session || loadSession();
