@@ -1,4 +1,4 @@
-/* dDAE Config - 2.213 (LOCAL) */
+/* dDAE Config - 1.014 (LOCAL) */
 const API_BASE_URL = ""; // LOCAL build: nessuna dipendenza Google
 const API_KEY = "daedalium2026";
 // Tassa di soggiorno: € per persona (>10 anni) per notte
