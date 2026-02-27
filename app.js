@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.002
+ * Build: 1.003
  */
-const BUILD_VERSION = "1.002";
+const BUILD_VERSION = "1.003";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -260,7 +260,7 @@ async function __localApiUtenti__(method, body){
     const u = findUser(username);
     if (!u) throw new Error("Credenziali non valide");
     if (String(u?.password || "").trim() !== password) throw new Error("Credenziali non valide");
-    return okLogin(u);
+    return { user: okLogin(u) };
   }
 
   if (method === "POST" && op === "create"){
@@ -281,7 +281,7 @@ async function __localApiUtenti__(method, body){
     };
     rows.push(u);
     await saveAll();
-    return okLogin(u);
+    return { user: okLogin(u) };
   }
 
   if (method === "POST" && op === "update"){
@@ -297,7 +297,7 @@ async function __localApiUtenti__(method, body){
     u.email = String(body?.email || u.email || "").trim();
     u.updatedAt = __nowIso__();
     await saveAll();
-    return okLogin(u);
+    return { user: okLogin(u) };
   }
 
   if (method === "POST" && op === "delete"){
