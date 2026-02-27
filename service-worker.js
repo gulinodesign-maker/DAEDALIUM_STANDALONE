@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "1.009";
+const BUILD = "1.010";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)

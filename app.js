@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.009
+ * Build: 1.010
  */
-const BUILD_VERSION = "1.009";
+const BUILD_VERSION = "1.010";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4746,6 +4746,18 @@ async function load({ showLoader=true } = {}){
 }
 
 async function loadOspiti({ from="", to="", force=false } = {}){
+  // In app LOCALE vogliamo vedere (di default) TUTTE le prenotazioni dell'anno esercizio,
+  // non solo il mese corrente (che spesso è vuoto se le prenotazioni sono più avanti).
+  // Se non viene passato un range, usa 01/01-31/12 dell'anno selezionato.
+  if (!from && !to){
+    try{
+      const y = Number(state?.exerciseYear || new Date().getFullYear());
+      const yy = String(isFinite(y) ? y : new Date().getFullYear());
+      from = `${yy}-01-01`;
+      to   = `${yy}-12-31`;
+    }catch(_){}
+  }
+
   // Prefill rapido da cache locale (poi refresh in background)
   const lsKey = `ospiti|${from}|${to}`;
   const hit = __lsGet(lsKey);
