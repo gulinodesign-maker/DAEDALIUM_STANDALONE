@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.005
+ * Build: 1.006
  */
-const BUILD_VERSION = "1.005";
+const BUILD_VERSION = "1.006";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2810,17 +2810,18 @@ function setupImpostazioni() {
 
   const reload = document.getElementById("settingsReloadBtn");
   if (reload) reload.addEventListener("click", async () => {
-    try { await loadImpostazioniPage({ force: true }); 
-  // DB Import/Export (LOCAL)
+    try { await loadImpostazioniPage({ force: true }); toast("Impostazioni ricaricate"); } catch (e) { toast(e.message); }
+  });
+
+
+
+  // DB Import/Export (LOCAL) - bind once when opening Impostazioni
   try{
     const dbA = document.getElementById("dbAdminBtn");
     if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
-toast("Impostazioni ricaricate"); } catch (e) { toast(e.message); }
-  });
-
   const del = document.getElementById("settingsDeleteBtn");
   if (del) bindFastTap(del, async () => {
     try{
