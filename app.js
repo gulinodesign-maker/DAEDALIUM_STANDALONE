@@ -45,16 +45,16 @@ function applyIconPalette(){
 }
 
 
-// dDAE_2.212 — iOS BFCache: rebind tappable Home icons
+// dDAE_2.213 — iOS BFCache: rebind tappable Home icons
 try{
   window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } }, { passive:true });
 }catch(_){ }
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.013
+ * Build: 2.213
  */
-const BUILD_VERSION = "1.013";
+const BUILD_VERSION = "2.213";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -167,7 +167,7 @@ async function __kvDel__(k){
   }catch(_){ return false; }
 }
 
-function __tblKey__(name){ return `tbl:${name}`; }
+function __tblKey__(name){ return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`; }
 
 async function __tblGet__(name, fallback){
   const v = await __kvGet__(__tblKey__(name));
@@ -1333,7 +1333,7 @@ function __isRemoteNewer(remote, local){
 }
 
 // =========================
-// AUTH + SESSION (dDAE_2.212)
+// AUTH + SESSION (dDAE_2.213)
 // =========================
 
 const __SESSION_KEY = "dDAE_session_v2";
@@ -1368,6 +1368,91 @@ function loadExerciseYear(){
 
 function saveExerciseYear(year){
   try{ localStorage.setItem(__YEAR_KEY, String(year || "")); } catch(_){ }
+}
+
+// =========================
+// Context change (account / anno) — reset cache + state
+// =========================
+function __resetInMemoryData__(){
+  try{
+    for (const k of Object.keys(state || {})){
+      const v = state[k];
+      if (!v || typeof v !== "object") continue;
+      if (Array.isArray(v.items)) v.items.length = 0;
+      if (Array.isArray(v.rows)) v.rows.length = 0;
+      if ("loadedAt" in v) try{ v.loadedAt = 0; }catch(_){}
+      if ("loaded" in v) try{ v.loaded = false; }catch(_){}
+      if ("byId" in v && v.byId && typeof v.byId === "object" && !Array.isArray(v.byId)) try{ v.byId = {}; }catch(_){}
+      if ("map" in v && v.map && typeof v.map === "object" && !Array.isArray(v.map)) try{ v.map = {}; }catch(_){}
+      if ("cache" in v && v.cache && typeof v.cache === "object") try{ v.cache = {}; }catch(_){}
+    }
+  }catch(_){}
+}
+
+function __applyContext__({ force } = {}){
+  try{
+    const sig = __ctxSig__();
+    if (force || state.__ctxSig !== sig){
+      state.__ctxSig = sig;
+      try{ __resetInMemoryData__(); }catch(_){}
+      try{ invalidateApiCache(); }catch(_){}
+    }
+  }catch(_){}
+}
+
+// Cancella COMPLETAMENTE i dati locali del browser (tutti account/anni)
+async function __wipeBrowserDb__(){
+  try{ invalidateApiCache(); }catch(_){}
+  try{ __lsClearAll(); }catch(_){}
+
+  try{
+    const toDel = [];
+    for (let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (k.startsWith(__lsPrefixBase) || k.startsWith("ddae_") || k.startsWith("dDAE_")) toDel.push(k);
+    }
+    toDel.forEach(k => { try{ localStorage.removeItem(k); }catch(_){ }});
+  }catch(_){}
+
+  try{ localStorage.removeItem(__SESSION_KEY); }catch(_){}
+  try{ localStorage.removeItem(__YEAR_KEY); }catch(_){}
+
+  try{
+    await new Promise((resolve)=> {
+      try{
+        const rq = indexedDB.deleteDatabase(__IDB_NAME__);
+        rq.onsuccess = () => resolve(true);
+        rq.onerror = () => resolve(false);
+        rq.onblocked = () => resolve(false);
+      }catch(_){ resolve(false); }
+    });
+  }catch(_){}
+
+  try{
+    if (window.caches && caches.keys){
+      const ks = await caches.keys();
+      await Promise.all(ks.map(k => {
+        if (k && (String(k).toLowerCase().includes("ddae") || String(k).toLowerCase().includes("daed"))) {
+          return caches.delete(k);
+        }
+        return Promise.resolve(false);
+      }));
+    }
+  }catch(_){}
+
+  try{
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => {
+        try{
+          const url = String(r && r.active && r.active.scriptURL ? r.active.scriptURL : "");
+          if (!url || url.includes("service-worker")) return r.unregister();
+        }catch(_){}
+        return Promise.resolve(false);
+      }));
+    }
+  }catch(_){}
 }
 
 function updateYearPill(){
@@ -1787,7 +1872,7 @@ function truthy(v){
   return (s === "1" || s === "true" || s === "yes" || s === "si" || s === "on");
 }
 
-// dDAE_2.212 — error overlay: evita blocchi silenziosi su iPhone PWA
+// dDAE_2.213 — error overlay: evita blocchi silenziosi su iPhone PWA
 window.addEventListener("error", (e) => {
   try {
     const msg = (e?.message || "Errore JS") + (e?.filename ? ` @ ${e.filename.split("/").pop()}:${e.lineno||0}` : "");
@@ -2968,34 +3053,27 @@ function setupImpostazioni() {
 const del = document.getElementById("settingsDeleteBtn");
   if (del) bindFastTap(del, async () => {
     try{
-      const s = state.session || loadSession();
-      if (!s || !s.username){ toast("Nessun account"); return; }
-
-      const ok = confirm("Eliminare definitivamente questo account e tutti i suoi dati?");
+      const ok = confirm("Cancellare TUTTI i dati locali dal browser? (tutti account/anni su questo dispositivo)");
       if (!ok) return;
 
-      const pwd = prompt("Password dell'account da eliminare:");
-      if (pwd === null) return;
-      const password = String(pwd || "");
-      if (!password) { toast("Password mancante"); return; }
+      try{ await __wipeBrowserDb__(); }catch(_){}
 
-      await api("utenti", { method:"POST", body:{ op:"delete", username: String(s.username||"").trim(), password } , showLoader:true });
-
-      try{ clearSession(); }catch(_){ }
-      try{ state.session = null; }catch(_){ }
-      try{ applyRoleMode(); }catch(_){ }
-      try{ invalidateApiCache(); }catch(_){ }
-      try{ __lsClearAll(); }catch(_){ }
-      toast("Account eliminato");
-      try{ showPage("auth"); }catch(_){ }
+      try{ clearSession(); }catch(_){}
+      try{ state.session = null; }catch(_){}
+      try{ applyRoleMode(); }catch(_){}
+      try{ __resetInMemoryData__(); }catch(_){}
+      toast("Database locale cancellato");
+      try{ showPage("auth"); }catch(_){}
     }catch(e){ toast(e.message || "Errore"); }
   });
+
 
   const logout = document.getElementById("settingsLogoutBtn");
   if (logout) logout.addEventListener("click", () => {
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
+    try{ __resetInMemoryData__(); }catch(_){ }
     try{ invalidateApiCache(); }catch(_){ }
     try{ showPage("auth"); }catch(_){ }
   });
@@ -3013,6 +3091,7 @@ const del = document.getElementById("settingsDeleteBtn");
       state.exerciseYear = String(selAnno.value || "");
       saveExerciseYear(state.exerciseYear);
       updateYearPill();
+      try{ __applyContext__({ force:true }); }catch(_){ }
       try{
         const y = String(state.exerciseYear || "").trim();
         if (y){
@@ -3344,9 +3423,9 @@ if (menu) menu.hidden = false;
   };
 
   const goAfterLogin = ()=>{
-    try{ invalidateApiCache(); }catch(_ ){}
-    state.exerciseYear = loadExerciseYear();
-    updateYearPill();
+    try{ state.exerciseYear = loadExerciseYear(); }catch(_ ){}
+    try{ updateYearPill(); }catch(_ ){}
+    try{ __applyContext__({ force:true }); }catch(_ ){}
     try{ applyRoleMode(); }catch(_ ){}
     showPage(isOperatoreSession(state.session) ? "pulizie" : "home");
   };
@@ -3530,7 +3609,7 @@ function invalidateApiCache(prefix){
       if (!prefix || k.startsWith(prefix)) __apiCache.delete(k);
     }
   } catch (_) {}
-  try{ __lsClearAll(); }catch(_){ }
+  try{ __lsClearCtx(); }catch(_){ }
 }
 
 
@@ -3581,28 +3660,67 @@ function refreshAllDataInBackground(){
 }
 
 // ===== LocalStorage cache (perceived speed on iOS) =====
-const __lsPrefix = "ddae_local_cache_v1:";
+const __lsPrefixBase = "ddae_local_cache_v2:";
+
+// Context (account + anno esercizio) — serve per isolare cache e DB per anno/account
+function __ctxUid__(){
+  try{
+    const s = (state && state.session) ? state.session : loadSession();
+    const uid = s && (s.user_id !== undefined ? s.user_id : s.id);
+    if (uid !== undefined && uid !== null && String(uid).trim() !== "") return String(uid);
+  }catch(_ ){}
+  return "anon";
+}
+
+function __ctxYear__(){
+  try{
+    const y = String((state && state.exerciseYear) ? state.exerciseYear : loadExerciseYear()).trim();
+    if (y) return y;
+  }catch(_ ){}
+  return String(new Date().getFullYear());
+}
+
+function __ctxSig__(){ return `${__ctxUid__()}|${__ctxYear__()}`; }
+
+function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
+
 function __lsClearAll(){
+  // cancella TUTTE le cache dell'app (tutti account/anni)
   try{
     const keys = [];
-    for (let i=0; i<localStorage.length; i++){
+    for (let i=0; i<localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.startsWith(__lsPrefix)) keys.push(k);
+      if (k && k.startsWith(__lsPrefixBase)) keys.push(k);
     }
-    keys.forEach(k => { try{ localStorage.removeItem(k); }catch(_){ } });
-  } catch(_){ }
+    keys.forEach(k => { try{ localStorage.removeItem(k); }catch(_ ){} });
+  } catch(_ ){ }
 }
+
+function __lsClearCtx(){
+  // cancella solo la cache del contesto corrente (account+anno)
+  try{
+    const p = __lsPrefixNow__();
+    const keys = [];
+    for (let i=0; i<localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(p)) keys.push(k);
+    }
+    keys.forEach(k => { try{ localStorage.removeItem(k); }catch(_ ){} });
+  } catch(_ ){ }
+}
+
 function __lsGet(key){
   try{
-    const raw = localStorage.getItem(__lsPrefix + key);
+    const raw = localStorage.getItem(__lsPrefixNow__() + key);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch(_){ return null; }
+  } catch(_ ){ return null; }
 }
+
 function __lsSet(key, data){
   try{
-    localStorage.setItem(__lsPrefix + key, JSON.stringify({ t: Date.now(), data }));
-  } catch(_){}
+    localStorage.setItem(__lsPrefixNow__() + key, JSON.stringify({ t: Date.now(), data }));
+  } catch(_ ){}
 }
 
 
@@ -3682,7 +3800,7 @@ function bindFastTap(el, fn){
 }
 
 
-/* dDAE_2.212 — iOS hardening: Home icons always tappable (fallback binding) */
+/* dDAE_2.213 — iOS hardening: Home icons always tappable (fallback binding) */
 function bindHomeStrongTap(){
   // evita doppio binding
   try{
@@ -3722,7 +3840,7 @@ function bindHomeStrongTap(){
 }
 
 
-/* dDAE_2.212 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
+/* dDAE_2.213 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
 function bindGuestTapCounters(){
   const ids = ["guestAdults","guestKidsU10"];
   const fireRecalc = ()=>{ try{ updateGuestRemaining(); }catch(_){ } try{ updateGuestTaxTotalPill(); }catch(_){ } };
@@ -3906,7 +4024,7 @@ function setSpeseView(view, { render=false } = {}){
 /* NAV pages (5 pagine interne: home + 4 funzioni) */
 
 
-// dDAE_2.212 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
+// dDAE_2.213 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
 // Applichiamo una classe .is-light ai pulsanti con background chiaro, così CSS forza icone scure.
 function __parseRGBA__(s){
   try{
@@ -4280,7 +4398,7 @@ state.page = page;
 if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 
-  // dDAE_2.212: fallback visualizzazione Pulizie
+  // dDAE_2.213: fallback visualizzazione Pulizie
   try{
     if (page === "pulizie"){
       const el = document.getElementById("page-pulizie");
@@ -4331,6 +4449,7 @@ function setupHeader(){
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
+    try{ __resetInMemoryData__(); }catch(_){ }
     try{ invalidateApiCache(); }catch(_){ }
     try{ showPage("auth"); }catch(_){ }
   });
@@ -5544,7 +5663,7 @@ function escapeHtml(s){
 }
 
 // =========================
-// STATISTICHE (dDAE_2.212)
+// STATISTICHE (dDAE_2.213)
 // =========================
 
 function computeStatGen(){
@@ -5642,7 +5761,7 @@ function computeStatGen(){
   }
 
 
-  // dDAE_2.212+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
+  // dDAE_2.213+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
   try{
     giacenza = (money(conRicevuta) + money(senzaRicevuta)) - money(speseTot);
   }catch(_){ }
@@ -7498,7 +7617,7 @@ function renderRoomsReadOnly(ospite){
 }
 
 
-// ===== dDAE_2.212 — Multi prenotazioni per stesso nome =====
+// ===== dDAE_2.213 — Multi prenotazioni per stesso nome =====
 function normalizeGuestNameKey(name){
   try{ return collapseSpaces(String(name || "").trim()).toLowerCase(); }catch(_){ return String(name||"").trim().toLowerCase(); }
 }
@@ -8537,7 +8656,7 @@ function setupOspite(){
           : "Eliminare definitivamente questo ospite?";
         if (!confirm(msg)) return;
 
-        // ✅ dDAE_2.212: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
+        // ✅ dDAE_2.213: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
         // 1) Navigazione istantanea + rimozione ottimistica dalla lista
         try{
           const idsSet = new Set((idsToDelete || []).map(x => String(x)));
@@ -10232,7 +10351,7 @@ function refreshFloatingLabels(){
 
 
 /* =========================
-   Piscina (dDAE_2.212)
+   Piscina (dDAE_2.213)
 ========================= */
 const PISCINA_ACTION = "piscina";
 
@@ -10952,7 +11071,7 @@ try{
   let __laundryRefreshT = null;
   let __savingHours = false;
   let __pendingHours = false;
-  // dDAE_2.212: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
+  // dDAE_2.213: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
   // Mantiene UI fluida: nessun "blink" dei numeri durante autosave / refresh.
   let __dirtyLaundryRooms = new Set();   // stanze modificate (solo queste vengono salvate)
   let __dirtyLaundryCells = new Set();   // celle modificate (solo queste ricevono bordo rosso post-save)
@@ -11822,7 +11941,7 @@ if (typeof btnOrePuliziaFromPulizie !== "undefined" && btnOrePuliziaFromPulizie)
 }
 
 
-// ===== CALENDARIO (dDAE_2.212) =====
+// ===== CALENDARIO (dDAE_2.213) =====
 function setupCalendario(){
   const pickBtn = document.getElementById("calPickBtn");
   const todayBtn = document.getElementById("calTodayBtn");
@@ -12057,7 +12176,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_2.212 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
+/* dDAE_2.213 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
 function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
@@ -12288,7 +12407,7 @@ function __fitCalendarioMonthLandscape(){
 
     const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
 
-    // dDAE_2.212: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
+    // dDAE_2.213: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
     try{ document.body.classList.toggle("cal-month-landscape", !!isLandscape); }catch(_){}
 
     const grid = document.getElementById("calGridMonth");
@@ -12796,7 +12915,7 @@ function toRoman(n){
 
 
 /* =========================
-   Lavanderia (dDAE_2.212)
+   Lavanderia (dDAE_2.213)
 ========================= */
 const LAUNDRY_COLS = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 const LAUNDRY_LABELS = {
@@ -13197,7 +13316,7 @@ document.getElementById('rc_cancel')?.addEventListener('click', ()=>{
 // --- end room beds config ---
 
 
-// --- FIX dDAE_2.212: renderSpese allineato al backend ---
+// --- FIX dDAE_2.213: renderSpese allineato al backend ---
 // --- dDAE: Spese riga singola (senza IVA in visualizzazione) ---
 function renderSpese(){
   const list = document.getElementById("speseList");
@@ -13293,7 +13412,7 @@ function renderSpese(){
 
 
 
-// --- FIX dDAE_2.212: delete reale ospiti ---
+// --- FIX dDAE_2.213: delete reale ospiti ---
 function attachDeleteOspite(card, ospite){
   const btn = document.createElement("button");
   btn.className = "delbtn";
@@ -13329,7 +13448,7 @@ function attachDeleteOspite(card, ospite){
 })();
 
 
-// --- FIX dDAE_2.212: mostra nome ospite ---
+// --- FIX dDAE_2.213: mostra nome ospite ---
 (function(){
   const orig = window.renderOspiti;
   if (!orig) return;
@@ -13640,7 +13759,7 @@ function initTassaPage(){
 
 /* =========================
    Ore pulizia (Calendario ore operatori)
-   Build: dDAE_2.212
+   Build: dDAE_2.213
 ========================= */
 
 state.orepulizia = state.orepulizia || {
