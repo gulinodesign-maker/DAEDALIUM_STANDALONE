@@ -186,48 +186,21 @@ async function __tblDel__(name){
 function __nowIso__(){ return new Date().toISOString(); }
 
 function __normIsoDate__(s){
-  const v0 = String(s || "").trim();
-  if (!v0) return "";
-
+  const v = String(s || "").trim();
+  if (!v) return "";
   // accetta YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(v0)) return v0;
-
-  // accetta DD/MM/YYYY o DD-MM-YYYY
-  let m = v0.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if (m){
-    const dd = String(m[1]).padStart(2,"0");
-    const mm = String(m[2]).padStart(2,"0");
-    const yy = String(m[3]);
-    return `${yy}-${mm}-${dd}`;
-  }
-
-  // seriale Excel (giorni) -> YYYY-MM-DD (soglia: > 20000 ~ 1954)
-  if (/^\d+(\.\d+)?$/.test(v0)){
-    const n = Number(v0);
-    if (isFinite(n) && n > 20000 && n < 90000){
-      try{
-        // Excel day 0: 1899-12-30 (compatibile con Sheets)
-        const base = new Date(Date.UTC(1899, 11, 30));
-        const d = new Date(base.getTime() + Math.round(n)*24*3600*1000);
-        const y = d.getUTCFullYear();
-        const mo = String(d.getUTCMonth()+1).padStart(2,"0");
-        const da = String(d.getUTCDate()).padStart(2,"0");
-        return `${y}-${mo}-${da}`;
-      }catch(_){}
-    }
-  }
-
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
   // fallback: prova parse
   try{
-    const d = new Date(v0);
+    const d = new Date(v);
     if (!isNaN(d.getTime())){
       const y = d.getFullYear();
-      const m2 = String(d.getMonth()+1).padStart(2,"0");
+      const m = String(d.getMonth()+1).padStart(2,"0");
       const da = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m2}-${da}`;
+      return `${y}-${m}-${da}`;
     }
   }catch(_){}
-  return v0;
+  return v;
 }
 
 function __dateInRange__(d, from, to){
@@ -1382,14 +1355,19 @@ function updateYearPill(){
 
 function updateSettingsTabs(){
   try{
-    const el = document.getElementById("settingsAccountYearTab");
-    const s = state.session || {};
-    const raw = (s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
-    const userLabel = raw ? raw : "—";
-    const y = String(state.exerciseYear || "").trim();
-    const yLabel = y ? y : "—";
-    if (el){
-      el.textContent = `${userLabel} - ${yLabel}`;
+    const yEl = document.getElementById("settingsYearTab");
+    const aEl = document.getElementById("settingsAccountTab");
+
+    if (yEl){
+      const y = String(state.exerciseYear || "").trim();
+      yEl.textContent = y ? `${y}` : "—";
+    }
+
+    if (aEl){
+      const s = state.session || {};
+      const raw = (s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
+      const label = raw ? raw : "—";
+      aEl.textContent = `${label}`;
     }
   }catch(_){ }
 }
@@ -2511,37 +2489,23 @@ function setPresetValue(value){
 
 function presetToRange(value){
   const today = todayISO();
-  const ySel = Number(state.exerciseYear || new Date().getFullYear());
-  const y = (isFinite(ySel) && ySel >= 2000 && ySel <= 2100) ? ySel : new Date().getFullYear();
-
-  // Helpers: month range for selected exercise year
-  const monthRangeForExerciseYear = (dateObj)=>{
-    const d = new Date(dateObj);
-    try{ d.setFullYear(y); }catch(_){}
-    return monthRangeISO(d);
-  };
-
-  if (value === "this_month") return monthRangeForExerciseYear(new Date());
-
+  if (value === "this_month") return monthRangeISO(new Date());
   if (value === "last_month"){
     const d = new Date();
     d.setMonth(d.getMonth()-1);
-    return monthRangeForExerciseYear(d);
+    return monthRangeISO(d);
   }
-
   if (value === "last_7") return [addDaysISO(today, -6), today];
   if (value === "last_30") return [addDaysISO(today, -29), today];
-
-  // "Anno corrente" = anno di esercizio selezionato (tutto l'anno)
-  if (value === "ytd" || value === "all"){
-    return [`${y}-01-01`, `${y}-12-31`];
+  if (value === "ytd"){
+    const y = new Date().getFullYear();
+    return [`${y}-01-01`, today];
   }
-
+  if (value === "all") return ["2000-01-01", today];
   if (value && value.startsWith("month:")){
-    const ym = value.split(":")[1]; // YYYY-MM
+    const ym = value.split(":")[1];
     return monthRangeFromYM(ym);
   }
-
   return null;
 }
 
@@ -3013,17 +2977,7 @@ const del = document.getElementById("settingsDeleteBtn");
       state.exerciseYear = String(selAnno.value || "");
       saveExerciseYear(state.exerciseYear);
       updateYearPill();
-      try{
-        const y = String(state.exerciseYear || "").trim();
-        if (y){
-          setPresetValue("ytd");
-          setPeriod(`${y}-01-01`, `${y}-12-31`);
-        }
-      }catch(_){ }
       invalidateApiCache();
-      try{ refreshHome(); }catch(_){ }
-      try{ if (state.page==="spese") ensurePeriodData({showLoader:true,force:true}).then(()=>{ try{ renderSpese(); }catch(_){ } }); }catch(_){ }
-      try{ if (state.page==="ospiti") ensureGuestsForPeriod(true); }catch(_){ }
     });
   }
 
