@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.008
+ * Build: 1.009
  */
-const BUILD_VERSION = "1.008";
+const BUILD_VERSION = "1.009";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -87,6 +87,9 @@ const __ALL_TABLES__ = [
   "colazione",
   "ospiti_eliminati"
 ];
+
+// Dataset Amministratore (completo)
+const __ADMIN_TABLES__ = __ALL_TABLES__.slice();
 
 // Dataset Operatore (subset)
 const __OP_TABLES__ = [
@@ -908,7 +911,21 @@ async function __dbImport__(kind){
       }
     }
 
-    // Mark last import
+    
+    // IMPORT_SESSION_RECONCILE: se il backup contiene "utenti", la sessione corrente potrebbe non esistere più.
+    try{
+      const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : null;
+      if (importedUsers){
+        const sess = loadSession();
+        if (sess && sess.user_id){
+          const stillExists = importedUsers.some(u => String(u?.id||"") === String(sess.user_id));
+          if (!stillExists){
+            clearSession();
+          }
+        }
+      }
+    }catch(_){}
+// Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
     try{ toast(`${label}: import completato`, "blue"); }catch(_){}
