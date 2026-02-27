@@ -4746,18 +4746,6 @@ async function load({ showLoader=true } = {}){
 }
 
 async function loadOspiti({ from="", to="", force=false } = {}){
-  // In app LOCALE vogliamo vedere (di default) TUTTE le prenotazioni dell'anno esercizio,
-  // non solo il mese corrente (che spesso è vuoto se le prenotazioni sono più avanti).
-  // Se non viene passato un range, usa 01/01-31/12 dell'anno selezionato.
-  if (!from && !to){
-    try{
-      const y = Number(state?.exerciseYear || new Date().getFullYear());
-      const yy = String(isFinite(y) ? y : new Date().getFullYear());
-      from = `${yy}-01-01`;
-      to   = `${yy}-12-31`;
-    }catch(_){}
-  }
-
   // Prefill rapido da cache locale (poi refresh in background)
   const lsKey = `ospiti|${from}|${to}`;
   const hit = __lsGet(lsKey);
@@ -4788,8 +4776,12 @@ async function loadOspiti({ from="", to="", force=false } = {}){
       .then(([ , data ]) => {
         // aggiorna solo se l'utente è ancora nella lista ospiti
         if (state.page !== "ospiti") return;
-        state.guests = Array.isArray(data) ? data : [];
-        __lsSet(lsKey, state.guests);
+        const next = Array.isArray(data) ? data : [];
+        // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
+        if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
+          state.guests = next;
+          __lsSet(lsKey, state.guests);
+        }
         try{ requestAnimationFrame(renderGuestCards); }catch(_){ renderGuestCards(); }
       })
       .catch((err) => {
@@ -4804,8 +4796,12 @@ async function loadOspiti({ from="", to="", force=false } = {}){
   }
 
   const [ , data ] = await Promise.all([p, refresh()]);
-  state.guests = Array.isArray(data) ? data : [];
-  __lsSet(lsKey, state.guests);
+  const next = Array.isArray(data) ? data : [];
+  // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
+  if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
+    state.guests = next;
+    __lsSet(lsKey, state.guests);
+  }
   renderGuestCards();
 }
 
@@ -10716,8 +10712,16 @@ try{
   if (__restore && __restore.period && __restore.period.from && __restore.period.to) {
     setPeriod(__restore.period.from, __restore.period.to);
   } else {
-    const [from,to] = monthRangeISO(new Date());
-    setPeriod(from,to);
+    // LOCAL mode: default periodo = anno esercizio (evita liste vuote e totali a zero su iOS)
+    if (typeof __LOCAL_MODE__ !== "undefined" && __LOCAL_MODE__) {
+      const y = (state && state.exerciseYear) ? String(state.exerciseYear) : String(new Date().getFullYear());
+      const from = `${y}-01-01`;
+      const to   = `${y}-12-31`;
+      setPeriod(from,to);
+    } else {
+      const [from,to] = monthRangeISO(new Date());
+      setPeriod(from,to);
+    }
   }
 
   // Preset periodo (scroll iOS)
