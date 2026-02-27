@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.006
+ * Build: 1.007
  */
-const BUILD_VERSION = "1.006";
+const BUILD_VERSION = "1.007";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12879,7 +12879,12 @@ async function registerSW(){
     });
 
     const checkUpdate = () => {
-      try { reg?.update?.(); } catch (_) {}
+      try {
+        const p = reg?.update?.();
+        // Safari/iOS può rigettare la Promise con "Cannot update a null/nonexistent service worker registration"
+        // se la registration è stata invalidata: evitiamo un unhandled rejection.
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch (_) {}
     };
 
     // check immediato + quando torna in primo piano
