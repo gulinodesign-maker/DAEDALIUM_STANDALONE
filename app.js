@@ -45,16 +45,16 @@ function applyIconPalette(){
 }
 
 
-// dDAE_1.018 — iOS BFCache: rebind tappable Home icons
+// dDAE_1.019 — iOS BFCache: rebind tappable Home icons
 try{
   window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } }, { passive:true });
 }catch(_){ }
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.018
+ * Build: 1.019
  */
-const BUILD_VERSION = "1.018";
+const BUILD_VERSION = "1.019";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1333,7 +1333,7 @@ function __isRemoteNewer(remote, local){
 }
 
 // =========================
-// AUTH + SESSION (dDAE_1.018)
+// AUTH + SESSION (dDAE_1.019)
 // =========================
 
 const __SESSION_KEY = "dDAE_session_v2";
@@ -1872,7 +1872,7 @@ function truthy(v){
   return (s === "1" || s === "true" || s === "yes" || s === "si" || s === "on");
 }
 
-// dDAE_1.018 — error overlay: evita blocchi silenziosi su iPhone PWA
+// dDAE_1.019 — error overlay: evita blocchi silenziosi su iPhone PWA
 window.addEventListener("error", (e) => {
   try {
     const msg = (e?.message || "Errore JS") + (e?.filename ? ` @ ${e.filename.split("/").pop()}:${e.lineno||0}` : "");
@@ -3313,9 +3313,23 @@ function setupAuth(){
   const np = document.getElementById("authNewPassword");
   const np2 = document.getElementById("authNewPassword2");
   const npWrap = document.getElementById("authNewPasswordWrap");
+  const npLabel = document.querySelector('label[for="authNewPassword"]');
+  const np2Label = document.querySelector('label[for="authNewPassword2"]');
+  const np2Field = np2;
+
 
   const hint = document.getElementById("authHint");
   const setHint = (msg)=>{ try{ if (hint) hint.textContent = msg || ""; }catch(_ ){} };
+
+  const setBtnLabel = (btn, text)=>{
+    try{
+      if (!btn) return;
+      const sp = btn.querySelector && btn.querySelector(".auth-btn-text");
+      if (sp) sp.textContent = text;
+      else btn.textContent = text;
+    }catch(_ ){}
+  };
+
 
   const LS_TENANT_KEY = "dDAE_lastTenant";
 
@@ -3337,7 +3351,7 @@ function setupAuth(){
     return `${t}__${o}`;
   };
 
-  let mode = "menu"; // menu | create | edit | login_admin | op_tenant | login_operator
+  let mode = "menu"; // menu | create | create_operator
   let opTenant = "";
 
   const showMenu = ()=>{
@@ -3360,7 +3374,7 @@ if (menu) menu.hidden = false;
     if (menu) menu.hidden = true;
     if (form) form.hidden = false;
 
-        try{ if (form) form.classList.toggle("auth-login-big", (m === "login_admin" || m === "op_tenant" || m === "login_operator")); }catch(_ ){}
+        try{ if (form) form.classList.toggle("auth-login-big", (m === "create_operator" || m === "login_admin" || m === "op_tenant" || m === "login_operator")); }catch(_ ){}
 
 // defaults
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
@@ -3368,32 +3382,62 @@ if (menu) menu.hidden = false;
     try{ if (extra) extra.hidden = true; }catch(_ ){}
     try{ if (p2Wrap) p2Wrap.hidden = true; }catch(_ ){}
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
-    try{ if (btnSubmit) btnSubmit.textContent = "continua"; }catch(_ ){}
+        setBtnLabel(btnSubmit, "continua");
     try{ if (uLabel) uLabel.textContent = "Username"; }catch(_ ){}
     try{ if (pLabel) pLabel.textContent = "Password"; }catch(_ ){}
+    try{ if (npLabel) npLabel.textContent = "Nuova password"; }catch(_ ){}
+    try{ if (np2Field && np2Field.parentElement) np2Field.parentElement.hidden = false; }catch(_ ){}
+    try{ if (np2Label && np2Label.parentElement) np2Label.parentElement.hidden = false; }catch(_ ){}
     setHint("");
 
     if (m === "create"){
       try{ if (extra) extra.hidden = false; }catch(_ ){}
       try{ if (p2Wrap) p2Wrap.hidden = false; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "crea account"; }catch(_ ){}
+          setBtnLabel(btnSubmit, "crea account");
       try{ if (uLabel) uLabel.textContent = "Struttura"; }catch(_ ){}
       try{ if (u) u.autocapitalize = "none"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
 
+
+    if (m === "create_operator"){
+      // crea account operatore (locale): richiede struttura + password admin + credenziali operatore
+      try{ if (tenantWrap) tenantWrap.hidden = false; }catch(_ ){}
+      try{ if (extra) extra.hidden = true; }catch(_ ){}
+      try{ if (p2Wrap) p2Wrap.hidden = false; }catch(_ ){}
+      try{ if (npWrap) npWrap.hidden = false; }catch(_ ){}
+          setBtnLabel(btnSubmit, "crea account");
+      try{ if (uLabel) uLabel.textContent = "Username operatore"; }catch(_ ){}
+      try{ if (pLabel) pLabel.textContent = "Password operatore"; }catch(_ ){}
+      // label password admin
+      try{ if (npLabel) npLabel.textContent = "Password amministratore"; }catch(_ ){}
+      // nascondi il secondo campo nuova password (non serve qui)
+      try{
+        if (np2Field && np2Field.parentElement) np2Field.parentElement.hidden = true;
+        if (np2Label) np2Label.parentElement && (np2Label.parentElement.hidden = true);
+      }catch(_ ){}
+      // prefill struttura ricordata
+      try{
+        const last = localStorage.getItem(LS_TENANT_KEY);
+        if (tenantIn) tenantIn.value = String(last || "");
+        if (tenantRemember) tenantRemember.checked = !!(last);
+      }catch(_ ){}
+      try{ tenantIn && tenantIn.focus(); }catch(_ ){}
+      return;
+    }
+
     if (m === "edit"){
       try{ if (extra) extra.hidden = false; }catch(_ ){}
       try{ if (npWrap) npWrap.hidden = false; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "modifica account"; }catch(_ ){}
+          setBtnLabel(btnSubmit, "modifica account");
       try{ if (uLabel) uLabel.textContent = "Struttura"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
 
     if (m === "login_admin"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
+          setBtnLabel(btnSubmit, "accedi");
       try{ if (uLabel) uLabel.textContent = "Username"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
@@ -3402,7 +3446,7 @@ if (menu) menu.hidden = false;
     if (m === "op_tenant"){
       try{ if (tenantWrap) tenantWrap.hidden = false; }catch(_ ){}
       try{ if (credsWrap) credsWrap.hidden = true; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "continua"; }catch(_ ){}
+          setBtnLabel(btnSubmit, "continua");
       // prefill
       try{
         const last = localStorage.getItem(LS_TENANT_KEY);
@@ -3414,7 +3458,7 @@ if (menu) menu.hidden = false;
     }
 
     if (m === "login_operator"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
+          setBtnLabel(btnSubmit, "accedi");
       try{ if (uLabel) uLabel.textContent = "Username operatore"; }catch(_ ){}
       try{ if (pLabel) pLabel.textContent = "Password operatore"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
@@ -3436,13 +3480,14 @@ if (menu) menu.hidden = false;
     if (mode === "create" && low.includes("username già esistente")) {
       return "Nome struttura già in uso. Scegli un nome diverso.";
     }
+    if (mode === "create_operator" && low.includes("operatore già esistente")) {
+      return "Operatore già esistente. Scegli un username diverso.";
+    }
     return m || "Errore";
   };
 
   if (btnMenuCreate) bindFastTap(btnMenuCreate, ()=>setMode("create"));
-  if (btnMenuEdit) bindFastTap(btnMenuEdit, ()=>setMode("edit"));
-  if (btnMenuAdmin) bindFastTap(btnMenuAdmin, ()=>setMode("login_admin"));
-  if (btnMenuOperator) bindFastTap(btnMenuOperator, ()=>setMode("op_tenant"));
+  if (btnMenuOperator) bindFastTap(btnMenuOperator, ()=>setMode("create_operator"));
 
   if (btnBack) bindFastTap(btnBack, showMenu);
 
@@ -3532,6 +3577,45 @@ if (menu) menu.hidden = false;
         });
         if (!data || !data.user) throw new Error("Errore creazione account");
         state.session = data.user;
+        saveSession(state.session);
+        setHint("");
+        goAfterLogin();
+        return;
+      }
+
+
+      if (mode === "create_operator"){
+        const tenant = normalizeTenant(tenantIn ? tenantIn.value : "");
+        const ownerPassword = String(np ? np.value : "");
+        const opUserLocal = String(u ? u.value : "").trim();
+        const opPass = String(p ? p.value : "");
+        const opPass2 = String(p2 ? p2.value : "");
+        if (!tenant) { setHint("Inserisci il nome struttura"); return; }
+        if (!ownerPassword) { setHint("Inserisci la password amministratore"); return; }
+        if (!opUserLocal || !opPass) { setHint("Inserisci username e password operatore"); return; }
+        if (opPass !== opPass2) { setHint("Le password non coincidono"); return; }
+
+        setHint("...");
+
+        const composed = composeOperatorUsername(tenant, opUserLocal);
+
+        await api("utenti", {
+          method:"POST",
+          body:{
+            op:"create_operator",
+            username: tenant,
+            password: ownerPassword,
+            operator_username: composed,
+            operator_password: opPass,
+          }
+        });
+
+        // auto-login operatore (locale)
+        const data = await api("utenti", { method:"POST", body:{ op:"login", username: composed, password: opPass } });
+        if (!data || !data.user) throw new Error("Credenziali non valide");
+        if (!isOperatoreSession(data.user)) throw new Error("Errore login operatore");
+        state.session = data.user;
+        try{ state.session._tenant = tenant; state.session._op_local = opUserLocal; }catch(_ ){}
         saveSession(state.session);
         setHint("");
         goAfterLogin();
@@ -3843,7 +3927,7 @@ function bindFastTap(el, fn){
 }
 
 
-/* dDAE_1.018 — iOS hardening: Home icons always tappable (fallback binding) */
+/* dDAE_1.019 — iOS hardening: Home icons always tappable (fallback binding) */
 function bindHomeStrongTap(){
   // evita doppio binding
   try{
@@ -3883,7 +3967,7 @@ function bindHomeStrongTap(){
 }
 
 
-/* dDAE_1.018 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
+/* dDAE_1.019 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
 function bindGuestTapCounters(){
   const ids = ["guestAdults","guestKidsU10"];
   const fireRecalc = ()=>{ try{ updateGuestRemaining(); }catch(_){ } try{ updateGuestTaxTotalPill(); }catch(_){ } };
@@ -4067,7 +4151,7 @@ function setSpeseView(view, { render=false } = {}){
 /* NAV pages (5 pagine interne: home + 4 funzioni) */
 
 
-// dDAE_1.018 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
+// dDAE_1.019 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
 // Applichiamo una classe .is-light ai pulsanti con background chiaro, così CSS forza icone scure.
 function __parseRGBA__(s){
   try{
@@ -4441,7 +4525,7 @@ state.page = page;
 if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 
-  // dDAE_1.018: fallback visualizzazione Pulizie
+  // dDAE_1.019: fallback visualizzazione Pulizie
   try{
     if (page === "pulizie"){
       const el = document.getElementById("page-pulizie");
@@ -5738,7 +5822,7 @@ function escapeHtml(s){
 }
 
 // =========================
-// STATISTICHE (dDAE_1.018)
+// STATISTICHE (dDAE_1.019)
 // =========================
 
 function computeStatGen(){
@@ -5836,7 +5920,7 @@ function computeStatGen(){
   }
 
 
-  // dDAE_1.018+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
+  // dDAE_1.019+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
   try{
     giacenza = (money(conRicevuta) + money(senzaRicevuta)) - money(speseTot);
   }catch(_){ }
@@ -7692,7 +7776,7 @@ function renderRoomsReadOnly(ospite){
 }
 
 
-// ===== dDAE_1.018 — Multi prenotazioni per stesso nome =====
+// ===== dDAE_1.019 — Multi prenotazioni per stesso nome =====
 function normalizeGuestNameKey(name){
   try{ return collapseSpaces(String(name || "").trim()).toLowerCase(); }catch(_){ return String(name||"").trim().toLowerCase(); }
 }
@@ -8731,7 +8815,7 @@ function setupOspite(){
           : "Eliminare definitivamente questo ospite?";
         if (!confirm(msg)) return;
 
-        // ✅ dDAE_1.018: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
+        // ✅ dDAE_1.019: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
         // 1) Navigazione istantanea + rimozione ottimistica dalla lista
         try{
           const idsSet = new Set((idsToDelete || []).map(x => String(x)));
@@ -10435,7 +10519,7 @@ function refreshFloatingLabels(){
 
 
 /* =========================
-   Piscina (dDAE_1.018)
+   Piscina (dDAE_1.019)
 ========================= */
 const PISCINA_ACTION = "piscina";
 
@@ -11155,7 +11239,7 @@ try{
   let __laundryRefreshT = null;
   let __savingHours = false;
   let __pendingHours = false;
-  // dDAE_1.018: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
+  // dDAE_1.019: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
   // Mantiene UI fluida: nessun "blink" dei numeri durante autosave / refresh.
   let __dirtyLaundryRooms = new Set();   // stanze modificate (solo queste vengono salvate)
   let __dirtyLaundryCells = new Set();   // celle modificate (solo queste ricevono bordo rosso post-save)
@@ -12027,7 +12111,7 @@ if (typeof btnOrePuliziaFromPulizie !== "undefined" && btnOrePuliziaFromPulizie)
 }
 
 
-// ===== CALENDARIO (dDAE_1.018) =====
+// ===== CALENDARIO (dDAE_1.019) =====
 function setupCalendario(){
   const pickBtn = document.getElementById("calPickBtn");
   const todayBtn = document.getElementById("calTodayBtn");
@@ -12262,7 +12346,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_1.018 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
+/* dDAE_1.019 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
 function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
@@ -12493,7 +12577,7 @@ function __fitCalendarioMonthLandscape(){
 
     const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
 
-    // dDAE_1.018: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
+    // dDAE_1.019: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
     try{ document.body.classList.toggle("cal-month-landscape", !!isLandscape); }catch(_){}
 
     const grid = document.getElementById("calGridMonth");
@@ -13001,7 +13085,7 @@ function toRoman(n){
 
 
 /* =========================
-   Lavanderia (dDAE_1.018)
+   Lavanderia (dDAE_1.019)
 ========================= */
 const LAUNDRY_COLS = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 const LAUNDRY_LABELS = {
@@ -13404,7 +13488,7 @@ document.getElementById('rc_cancel')?.addEventListener('click', ()=>{
 // --- end room beds config ---
 
 
-// --- FIX dDAE_1.018: renderSpese allineato al backend ---
+// --- FIX dDAE_1.019: renderSpese allineato al backend ---
 // --- dDAE: Spese riga singola (senza IVA in visualizzazione) ---
 function renderSpese(){
   const list = document.getElementById("speseList");
@@ -13500,7 +13584,7 @@ function renderSpese(){
 
 
 
-// --- FIX dDAE_1.018: delete reale ospiti ---
+// --- FIX dDAE_1.019: delete reale ospiti ---
 function attachDeleteOspite(card, ospite){
   const btn = document.createElement("button");
   btn.className = "delbtn";
@@ -13536,7 +13620,7 @@ function attachDeleteOspite(card, ospite){
 })();
 
 
-// --- FIX dDAE_1.018: mostra nome ospite ---
+// --- FIX dDAE_1.019: mostra nome ospite ---
 (function(){
   const orig = window.renderOspiti;
   if (!orig) return;
@@ -13847,7 +13931,7 @@ function initTassaPage(){
 
 /* =========================
    Ore pulizia (Calendario ore operatori)
-   Build: dDAE_1.018
+   Build: dDAE_1.019
 ========================= */
 
 state.orepulizia = state.orepulizia || {
