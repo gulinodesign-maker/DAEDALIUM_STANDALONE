@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.004
+ * Build: 1.005
  */
-const BUILD_VERSION = "1.004";
+const BUILD_VERSION = "1.005";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -831,6 +831,134 @@ async function __openDbPopup__(kind){
   if (choice === "yes") return __dbImport__(kind);
   return __dbExport__(kind);
 }
+
+// ===== DB Import/Export (LOCAL) =====
+const __DB_EXPORT_KIND__ = "dDAE_export";
+const __DB_SCHEMA_VERSION__ = 1;
+
+function __dbTablesForKind__(kind){
+  const k = String(kind || "").toLowerCase();
+  return (k.startsWith("admin") ? __ADMIN_TABLES__ : __OP_TABLES__);
+}
+
+function __safeFileName__(base){
+  return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
+}
+
+async function __dbImport__(kind){
+  try{
+    const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.style.position = "fixed";
+    input.style.left = "-9999px";
+    document.body.appendChild(input);
+
+    const file = await new Promise((resolve)=>{
+      input.onchange = () => resolve((input.files && input.files[0]) ? input.files[0] : null);
+      input.click();
+    });
+
+    try{ document.body.removeChild(input); }catch(_){}
+
+    if (!file){
+      try{ toast("Import annullato"); }catch(_){}
+      return;
+    }
+
+    const text = await file.text();
+    let data = null;
+    try{ data = JSON.parse(text); }catch(e){
+      try{ toast("JSON non valido", "orange"); }catch(_){}
+      return;
+    }
+
+    const kindOk = String(data?.kind || "").trim() === __DB_EXPORT_KIND__;
+    const sv = data?.schemaVersion;
+    const svNum = (typeof sv === "number") ? sv : parseInt(String(sv||"").trim(), 10);
+    const hasDatasets = data && typeof data === "object" && data.datasets && typeof data.datasets === "object";
+
+    if (!kindOk || !hasDatasets || !(svNum >= 1)){
+      try{ toast("File non compatibile", "orange"); }catch(_){}
+      return;
+    }
+
+    const allowedTables = new Set(__dbTablesForKind__(kind));
+    const ds = data.datasets || {};
+    const tablesToWrite = Object.keys(ds).filter(t => allowedTables.has(t));
+
+    if (!tablesToWrite.length){
+      try{ toast("Nessun dataset da importare", "orange"); }catch(_){}
+      return;
+    }
+
+    // Write datasets (only allowed tables)
+    for (const t of tablesToWrite){
+      const v = ds[t];
+      await __tblSet__(t, v);
+    }
+
+    // Ensure missing tables exist as empty (prevents UI from seeing old leftovers)
+    for (const t of allowedTables){
+      if (!(t in ds)){
+        // non cancellare utenti/impostazioni se non presenti? per sicurezza admin/operator:
+        if (t === "utenti" || t === "impostazioni") continue;
+        await __tblSet__(t, []);
+      }
+    }
+
+    // Mark last import
+    await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
+
+    try{ toast(`${label}: import completato`, "blue"); }catch(_){}
+    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 400);
+
+  }catch(e){
+    try{ toast("Errore import", "orange"); }catch(_){}
+  }
+}
+
+async function __dbExport__(kind){
+  try{
+    const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
+    const tables = __dbTablesForKind__(kind);
+    const datasets = {};
+    for (const t of tables){
+      datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
+    }
+
+    const payload = {
+      kind: __DB_EXPORT_KIND__,
+      schemaVersion: __DB_SCHEMA_VERSION__,
+      exportedAt: __nowIso__(),
+      datasets
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const ts = new Date();
+    const y = ts.getFullYear();
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const d = String(ts.getDate()).padStart(2,"0");
+    const base = (String(kind||"").toLowerCase().startsWith("admin")) ? "dDAE_DB_Admin" : "dDAE_DB_Operatore";
+    a.href = url;
+    a.download = __safeFileName__(`${base}_${y}${m}${d}_${BUILD_VERSION}.json`);
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
+      try{ document.body.removeChild(a); }catch(_){}
+    }, 0);
+
+    try{ toast(`${label}: export pronto`, "blue"); }catch(_){}
+
+  }catch(e){
+    try{ toast("Errore export", "orange"); }catch(_){}
+  }
+}
+// ===== /DB Import/Export (LOCAL) =====
+
 
 // Utility: parse importi (usato anche in guest list)
 function money(v){
