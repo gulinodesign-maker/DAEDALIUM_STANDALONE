@@ -7627,14 +7627,16 @@ color: var(--mcol,#ff3b30);
   border-color:rgba(0,0,0,.18);
   background:rgba(255,255,255,.95);
 }
+.db-option.selected .db-dot-admin{ background:rgba(40,190,70,.95); }
+.db-option.selected .db-dot-operator{ background:rgba(245,195,0,.95); }
 .db-dot{
   width:16px; height:16px;
   border-radius:999px;
   border:2px solid rgba(0,0,0,.25);
   flex:0 0 auto;
 }
-.db-dot-admin{ background:rgba(40,190,70,.95); }
-.db-dot-operator{ background:rgba(245,195,0,.95); }
+.db-dot-admin{ background:transparent; }
+.db-dot-operator{ background:transparent; }
 .db-option-label{
   font-weight:800;
 }
@@ -7651,13 +7653,13 @@ color: var(--mcol,#ff3b30);
   letter-spacing:.4px;
   opacity:.92;
 }
-.btn.db-import{
-  background:rgba(40,190,70,.80);
-  color:#0b1b0f;
+ .btn.db-import{
+  background:rgba(67,181,255,.80);
+  color:#fff;
   border:1px solid rgba(0,0,0,.10);
 }
-.btn.db-export{
-  background:rgba(245,195,0,.80);
-  color:#201a00;
+ .btn.db-export{
+  background:rgba(255,122,26,.80);
+  color:#fff;
   border:1px solid rgba(0,0,0,.10);
 }
