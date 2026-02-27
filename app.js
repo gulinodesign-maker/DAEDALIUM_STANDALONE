@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.001
+ * Build: 1.002
  */
-const BUILD_VERSION = "1.001";
+const BUILD_VERSION = "1.002";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -62,91 +62,741 @@ const __DB_KEYS__ = {
   operator: "dDAE_local_operator_db"
 };
 
-function __downloadTextFile__(filename, text){
-  try{
-    const blob = new Blob([text], { type:"application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){ } }, 1500);
-  }catch(_){}
-}
 
-function __pickJsonFile__(){
-  return new Promise((resolve)=>{
-    const input = document.getElementById("dbFileInput");
-    if (!input){ resolve(null); return; }
-    input.value = "";
-    const onChange = () => {
-      input.removeEventListener("change", onChange);
-      const f = input.files && input.files[0] ? input.files[0] : null;
-      resolve(f || null);
-    };
-    input.addEventListener("change", onChange, { once:true });
-    input.click();
+// ===== Modalità LOCALE (IndexedDB) — build offline =====
+const __LOCAL_MODE__ = true;
+// Versione schema export/import (incrementare solo se cambia il formato datasets)
+const __LOCAL_SCHEMA_VERSION__ = 1;
+
+// IndexedDB: un unico store key-value con snapshot per tabella
+const __IDB_NAME__ = "dDAE_LOCAL_DB_v1";
+const __IDB_VER__ = 1;
+const __IDB_STORE__ = "kv";
+
+const __ALL_TABLES__ = [
+  "utenti",
+  "impostazioni",
+  "ospiti",
+  "stanze",
+  "servizi",
+  "spese",
+  "pulizie",
+  "lavanderia",
+  "operatori",
+  "motivazioni",
+  "colazione",
+  "ospiti_eliminati"
+];
+
+// Dataset Operatore (subset)
+const __OP_TABLES__ = [
+  "utenti",
+  "impostazioni",
+  "ospiti",
+  "stanze",
+  "servizi",
+  "pulizie",
+  "lavanderia",
+  "operatori",
+  "colazione"
+];
+
+const __idbState = { p: null };
+
+function __idbOpen__(){
+  if (__idbState.p) return __idbState.p;
+  __idbState.p = new Promise((resolve, reject) => {
+    try{
+      const req = indexedDB.open(__IDB_NAME__, __IDB_VER__);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(__IDB_STORE__)){
+          db.createObjectStore(__IDB_STORE__, { keyPath: "k" });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error("IndexedDB error"));
+    }catch(e){ reject(e); }
   });
+  return __idbState.p;
 }
 
-async function __confirmTwoActions__(message, yesLabel, noLabel){
-  // Re-uses confirmYesNoModal but custom labels
+async function __kvGet__(k){
   try{
-    const modal = document.getElementById("confirmYesNoModal");
-    const textEl = document.getElementById("confirmYesNoText");
-    const yesBtn = document.getElementById("confirmYesNoYes");
-    const noBtn  = document.getElementById("confirmYesNoNo");
-    if (!modal || !textEl || !yesBtn || !noBtn){
-      const ok = !!confirm(String(message || "Scegliere?"));
-      return ok ? "yes" : "no";
+    const db = await __idbOpen__();
+    return await new Promise((resolve) => {
+      try{
+        const tx = db.transaction(__IDB_STORE__, "readonly");
+        const st = tx.objectStore(__IDB_STORE__);
+        const rq = st.get(k);
+        rq.onsuccess = () => resolve(rq.result ? rq.result.v : null);
+        rq.onerror = () => resolve(null);
+      }catch(_){ resolve(null); }
+    });
+  }catch(_){ return null; }
+}
+
+async function __kvSet__(k, v){
+  try{
+    const db = await __idbOpen__();
+    return await new Promise((resolve) => {
+      try{
+        const tx = db.transaction(__IDB_STORE__, "readwrite");
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+        tx.objectStore(__IDB_STORE__).put({ k, v });
+      }catch(_){ resolve(false); }
+    });
+  }catch(_){ return false; }
+}
+
+async function __kvDel__(k){
+  try{
+    const db = await __idbOpen__();
+    return await new Promise((resolve) => {
+      try{
+        const tx = db.transaction(__IDB_STORE__, "readwrite");
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+        tx.objectStore(__IDB_STORE__).delete(k);
+      }catch(_){ resolve(false); }
+    });
+  }catch(_){ return false; }
+}
+
+function __tblKey__(name){ return `tbl:${name}`; }
+
+async function __tblGet__(name, fallback){
+  const v = await __kvGet__(__tblKey__(name));
+  if (v === null || v === undefined) return fallback;
+  return v;
+}
+
+async function __tblSet__(name, data){
+  return __kvSet__(__tblKey__(name), data);
+}
+
+async function __tblDel__(name){
+  return __kvDel__(__tblKey__(name));
+}
+
+function __nowIso__(){ return new Date().toISOString(); }
+
+function __normIsoDate__(s){
+  const v = String(s || "").trim();
+  if (!v) return "";
+  // accetta YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  // fallback: prova parse
+  try{
+    const d = new Date(v);
+    if (!isNaN(d.getTime())){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const da = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${da}`;
     }
-    const oldYes = yesBtn.textContent;
-    const oldNo  = noBtn.textContent;
-    yesBtn.textContent = String(yesLabel || "Sì");
-    noBtn.textContent  = String(noLabel  || "No");
-
-    const res = await confirmYesNo(String(message || "Scegliere?"));
-    yesBtn.textContent = oldYes;
-    noBtn.textContent  = oldNo;
-    return res ? "yes" : "no";
-  }catch(_){
-    const ok = !!confirm(String(message || "Scegliere?"));
-    return ok ? "yes" : "no";
-  }
+  }catch(_){}
+  return v;
 }
 
-async function __dbImport__(kind){
-  const key = __DB_KEYS__[kind];
-  if (!key) return;
-  const file = await __pickJsonFile__();
-  if (!file) return;
-  try{
-    const text = await file.text();
-    const data = JSON.parse(text);
-    if (!data || typeof data !== "object") throw new Error("JSON non valido");
-    localStorage.setItem(key, JSON.stringify(data));
-    toast("Import completato");
-    try{ location.reload(); }catch(_){}
-  }catch(_){
-    toast("Import fallito");
-  }
+function __dateInRange__(d, from, to){
+  if (!d) return true;
+  const x = __normIsoDate__(d);
+  const a = from ? __normIsoDate__(from) : "";
+  const b = to ? __normIsoDate__(to) : "";
+  if (a && x < a) return false;
+  if (b && x > b) return false;
+  return true;
 }
 
-function __dbExport__(kind){
-  const key = __DB_KEYS__[kind];
-  if (!key) return;
-  try{
-    const raw = localStorage.getItem(key);
-    if (!raw){ toast("Nessun DB salvato"); return; }
-    const filename = `dDAE_${kind}_db_${BUILD_VERSION}.json`;
-    __downloadTextFile__(filename, raw);
-    toast("Export pronto");
-  }catch(_){
-    toast("Export fallito");
-  }
+function __overlapRange__(start, end, from, to){
+  const s = __normIsoDate__(start);
+  const e = __normIsoDate__(end);
+  const a = from ? __normIsoDate__(from) : "";
+  const b = to ? __normIsoDate__(to) : "";
+  if (!a && !b) return true;
+  // overlap: e >= a && s <= b (se mancano, considera aperti)
+  if (a && e && e < a) return false;
+  if (b && s && s > b) return false;
+  return true;
 }
+
+function __normBool01(v){
+  if (v === true) return true;
+  if (v === false) return false;
+  const s = String(v ?? "").trim().toLowerCase();
+  return (s === "1" || s === "true" || s === "yes" || s === "y");
+}
+
+async function __localApiUtenti__(method, body){
+  const op = String(body?.op || "").trim();
+  const rows0 = await __tblGet__("utenti", []);
+  const rows = Array.isArray(rows0) ? rows0 : [];
+
+  const findUser = (username) => {
+    const u = String(username || "").trim();
+    return rows.find(r => String(r?.username || r?.user || "").trim() === u) || null;
+  };
+
+  const saveAll = async () => { await __tblSet__("utenti", rows); return true; };
+
+  const okLogin = (u) => {
+    const user_id = String(u?.id || u?.user_id || u?.userId || "").trim() || String(u?.username || "").trim();
+    const ruolo = String(u?.ruolo || u?.role || "").trim() || (String(u?.isOperatore||"")==="1" ? "operatore" : "amministratore");
+    return {
+      user_id,
+      username: String(u?.username || "").trim(),
+      ruolo,
+      nome: String(u?.nome || u?.name || "").trim(),
+      email: String(u?.email || "").trim(),
+      telefono: String(u?.telefono || "").trim()
+    };
+  };
+
+  if (method === "POST" && op === "login"){
+    const username = String(body?.username || "").trim();
+    const password = String(body?.password || "").trim();
+    const u = findUser(username);
+    if (!u) throw new Error("Credenziali non valide");
+    if (String(u?.password || "").trim() !== password) throw new Error("Credenziali non valide");
+    return okLogin(u);
+  }
+
+  if (method === "POST" && op === "create"){
+    const username = String(body?.username || "").trim();
+    const password = String(body?.password || "").trim();
+    if (!username || !password) throw new Error("Username e password obbligatori");
+    if (findUser(username)) throw new Error("Username già esistente");
+    const u = {
+      id: String(body?.id || "") || (typeof genId === "function" ? genId("u") : ("u-"+Date.now())),
+      username,
+      password,
+      ruolo: "amministratore",
+      nome: String(body?.nome || "").trim(),
+      telefono: String(body?.telefono || "").trim(),
+      email: String(body?.email || "").trim(),
+      createdAt: __nowIso__(),
+      updatedAt: __nowIso__(),
+    };
+    rows.push(u);
+    await saveAll();
+    return okLogin(u);
+  }
+
+  if (method === "POST" && op === "update"){
+    const username = String(body?.username || "").trim();
+    const password = String(body?.password || "").trim();
+    const u = findUser(username);
+    if (!u) throw new Error("Account non trovato");
+    if (String(u?.password || "").trim() !== password) throw new Error("Credenziali non valide");
+    const newPassword = String(body?.newPassword || "").trim();
+    if (newPassword) u.password = newPassword;
+    u.nome = String(body?.nome || u.nome || "").trim();
+    u.telefono = String(body?.telefono || u.telefono || "").trim();
+    u.email = String(body?.email || u.email || "").trim();
+    u.updatedAt = __nowIso__();
+    await saveAll();
+    return okLogin(u);
+  }
+
+  if (method === "POST" && op === "delete"){
+    const username = String(body?.username || "").trim();
+    const password = String(body?.password || "").trim();
+    const u = findUser(username);
+    if (!u) throw new Error("Account non trovato");
+    if (String(u?.password || "").trim() !== password) throw new Error("Credenziali non valide");
+    // elimina anche operatori legati (tenant__*) se l'utente è owner/admin? qui: elimina solo quell'account
+    const idx = rows.indexOf(u);
+    if (idx >= 0) rows.splice(idx, 1);
+    await saveAll();
+    return { ok: true };
+  }
+
+  if (method === "POST" && op === "create_operator"){
+    const ownerUsername = String(body?.username || "").trim();
+    const ownerPassword = String(body?.password || "").trim();
+    const owner = findUser(ownerUsername);
+    if (!owner) throw new Error("Owner non trovato");
+    if (String(owner?.password || "").trim() !== ownerPassword) throw new Error("Credenziali non valide");
+    if (String(owner?.ruolo || "").toLowerCase().includes("oper")) throw new Error("Owner non valido");
+
+    const operator_username = String(body?.operator_username || "").trim();
+    const operator_password = String(body?.operator_password || "").trim();
+    if (!operator_username || !operator_password) throw new Error("Credenziali operatore mancanti");
+    if (findUser(operator_username)) throw new Error("Operatore già esistente");
+
+    const u = {
+      id: (typeof genId === "function" ? genId("op") : ("op-"+Date.now())),
+      username: operator_username,
+      password: operator_password,
+      ruolo: "operatore",
+      createdAt: __nowIso__(),
+      updatedAt: __nowIso__(),
+    };
+    rows.push(u);
+    await saveAll();
+    return { ok: true };
+  }
+
+  if (method === "POST" && op === "update_operator"){
+    const ownerUsername = String(body?.username || "").trim();
+    const ownerPassword = String(body?.password || "").trim();
+    const owner = findUser(ownerUsername);
+    if (!owner) throw new Error("Owner non trovato");
+    if (String(owner?.password || "").trim() !== ownerPassword) throw new Error("Credenziali non valide");
+
+    const operator_username = String(body?.operator_username || "").trim();
+    const newPassword = String(body?.newPassword || "").trim();
+    const u = findUser(operator_username);
+    if (!u) throw new Error("Operatore non trovato");
+    if (!String(u?.ruolo || "").toLowerCase().includes("oper")) throw new Error("Account non è operatore");
+    if (!newPassword) throw new Error("Nuova password mancante");
+    u.password = newPassword;
+    u.updatedAt = __nowIso__();
+    await saveAll();
+    return { ok: true };
+  }
+
+  if (method === "POST" && op === "delete_operator"){
+    const ownerUsername = String(body?.username || "").trim();
+    const ownerPassword = String(body?.password || "").trim();
+    const owner = findUser(ownerUsername);
+    if (!owner) throw new Error("Owner non trovato");
+    if (String(owner?.password || "").trim() !== ownerPassword) throw new Error("Credenziali non valide");
+
+    const operator_username = String(body?.operator_username || "").trim();
+    const u = findUser(operator_username);
+    if (!u) throw new Error("Operatore non trovato");
+    if (!String(u?.ruolo || "").toLowerCase().includes("oper")) throw new Error("Account non è operatore");
+    const idx = rows.indexOf(u);
+    if (idx >= 0) rows.splice(idx, 1);
+    await saveAll();
+    return { ok: true };
+  }
+
+  // fallback: restituisce lista utenti (usata in alcune viste)
+  return rows;
+}
+
+async function __localApiImpostazioni__(method, body){
+  const rows0 = await __tblGet__("impostazioni", []);
+  let rows = Array.isArray(rows0) ? rows0 : [];
+
+  if (method === "GET"){
+    return { rows };
+  }
+
+  if (method === "POST"){
+    const out = [];
+
+    // operatori: row speciale
+    try{
+      const ops = Array.isArray(body?.operatori) ? body.operatori : [];
+      out.push({
+        key: "operatori",
+        operatore_1: String(ops[0] || "").trim(),
+        operatore_2: String(ops[1] || "").trim(),
+        operatore_3: String(ops[2] || "").trim(),
+        updatedAt: __nowIso__(),
+        createdAt: __nowIso__(),
+      });
+    }catch(_){}
+
+    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
+    numKeys.forEach((k)=>{
+      const v = (body && body[k] !== undefined) ? body[k] : "";
+      out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
+    });
+
+    rows = out;
+    await __tblSet__("impostazioni", rows);
+    return { rows };
+  }
+
+  return { rows };
+}
+
+async function __localApiColazione__(method, body){
+  const rows0 = await __tblGet__("colazione", []);
+  const rows = Array.isArray(rows0) ? rows0 : [];
+
+  const save = async ()=>{ await __tblSet__("colazione", rows); };
+
+  if (method === "GET"){
+    return rows;
+  }
+
+  if (method === "PUT"){
+    const id = String(body?.id || "").trim();
+    const it = rows.find(r => String(r?.id||"").trim() === id);
+    if (!it) return { ok:true };
+    Object.keys(body||{}).forEach((k)=>{
+      if (k === "id") return;
+      it[k] = body[k];
+    });
+    it.updatedAt = __nowIso__();
+    await save();
+    return { ok:true };
+  }
+
+  if (method === "POST"){
+    const op = String(body?.op || "").trim();
+    if (op === "create"){
+      const prodotto = String(body?.prodotto || "").trim().toUpperCase();
+      if (!prodotto) throw new Error("Prodotto mancante");
+      const exist = rows.find(r => String(r?.prodotto||"").trim().toUpperCase() === prodotto && !__normBool01(r?.isDeleted));
+      if (exist) return { ok:true };
+      rows.push({
+        id: (typeof genId === "function" ? genId("c") : ("c-"+Date.now())),
+        prodotto,
+        qty: 0,
+        saved: 0,
+        isDeleted: 0,
+        createdAt: __nowIso__(),
+        updatedAt: __nowIso__(),
+      });
+      await save();
+      return { ok:true };
+    }
+    if (op === "resetQty"){
+      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { r.qty = 0; r.saved = 0; r.updatedAt = __nowIso__(); } });
+      await save();
+      return { ok:true };
+    }
+    if (op === "save"){
+      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { const q = parseInt(String(r.qty||0),10); r.saved = (isNaN(q)?0:(q>0?1:0)); r.updatedAt = __nowIso__(); } });
+      await save();
+      return { ok:true };
+    }
+    return { ok:true };
+  }
+
+  return { ok:true };
+}
+
+async function __localApiLavanderia__(method, params, body){
+  const list0 = await __tblGet__("lavanderia", []);
+  const list = Array.isArray(list0) ? list0 : [];
+
+  const save = async ()=>{ await __tblSet__("lavanderia", list); };
+
+  if (method === "GET"){
+    return list;
+  }
+
+  if (method === "DELETE"){
+    const id = String((body && body.id) || (params && params.id) || "").trim();
+    if (!id) return { ok:true };
+    const idx = list.findIndex(it => String(it?.id||"").trim() === id);
+    if (idx >= 0) list.splice(idx, 1);
+    await save();
+    return { ok:true };
+  }
+
+  if (method === "POST"){
+    const startDate = __normIsoDate__(body?.startDate || body?.start_date || body?.from);
+    const endDate = __normIsoDate__(body?.endDate || body?.end_date || body?.to);
+
+    if (!startDate || !endDate) throw new Error("Date mancanti");
+    if (startDate > endDate) throw new Error("Intervallo non valido");
+
+    // Aggrega da pulizie
+    const pul0 = await __tblGet__("pulizie", []);
+    const pul = Array.isArray(pul0) ? pul0 : [];
+    const cols = (typeof LAUNDRY_COLS !== "undefined" && Array.isArray(LAUNDRY_COLS)) ? LAUNDRY_COLS : ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+
+    const sums = {};
+    cols.forEach(k => { sums[k] = 0; });
+
+    pul.forEach(r => {
+      const d = __normIsoDate__(r?.data || r?.date || "");
+      if (!d) return;
+      if (d < startDate || d > endDate) return;
+      cols.forEach(k => {
+        const n = Number(r?.[k] ?? 0);
+        sums[k] += (isNaN(n) ? 0 : Math.max(0, Math.floor(n)));
+      });
+    });
+
+    const item = {
+      id: (typeof genId === "function" ? genId("l") : ("l-"+Date.now())),
+      startDate,
+      endDate,
+      createdAt: __nowIso__(),
+      updatedAt: __nowIso__(),
+    };
+    cols.forEach(k => { item[k] = sums[k] || 0; });
+
+    list.push(item);
+    await save();
+    return item;
+  }
+
+  return { ok:true };
+}
+
+async function __localApiTable__(action, method, params, body){
+  const rows0 = await __tblGet__(action, []);
+  let rows = Array.isArray(rows0) ? rows0 : [];
+
+  const save = async ()=>{ await __tblSet__(action, rows); };
+
+  const delById = async (id)=>{
+    const x = String(id || "").trim();
+    if (!x) return;
+    const idx = rows.findIndex(r => String(r?.id || "").trim() === x);
+    if (idx >= 0) rows.splice(idx, 1);
+    await save();
+  };
+
+  if (method === "GET"){
+    // filtri comuni
+    if (action === "servizi"){
+      const gid = String(params?.ospite_id || params?.ospiteId || "").trim();
+      if (!gid) return [];
+      return rows.filter(r => String(r?.ospite_id ?? r?.ospiteId ?? "").trim() === gid);
+    }
+
+    if (action === "ospiti"){
+      const from = params?.from || params?.da || "";
+      const to = params?.to || params?.a || "";
+      return rows.filter(r => __overlapRange__(r?.check_in, r?.check_out, from, to));
+    }
+
+    if (action === "ospiti_eliminati"){
+      const from = params?.from || params?.da || "";
+      const to = params?.to || params?.a || "";
+      return rows.filter(r => __dateInRange__(r?.deletedAt || r?.deleted_at || r?.data || "", from, to));
+    }
+
+    if (action === "spese"){
+      const from = params?.from || "";
+      const to = params?.to || "";
+      return rows.filter(r => __dateInRange__(r?.dataSpesa || r?.data_spesa || r?.data || "", from, to));
+    }
+
+    if (action === "pulizie"){
+      const d = __normIsoDate__(params?.data || "");
+      if (!d) return rows;
+      return rows.filter(r => __normIsoDate__(r?.data || "") === d);
+    }
+
+    if (action === "operatori"){
+      const d = __normIsoDate__(params?.data || "");
+      if (!d) return { rows };
+      const dayRows = rows.filter(r => __normIsoDate__(r?.data || "") === d);
+      return dayRows;
+    }
+
+    return rows;
+  }
+
+  // scritture specifiche
+  if (action === "motivazioni" && method === "POST"){
+    const motivazione = String(body?.motivazione || "").trim();
+    if (!motivazione) return { ok:true };
+    const key = motivazione.toLowerCase();
+    const exist = rows.find(r => String(r?.motivazione||"").trim().toLowerCase() === key);
+    if (!exist){
+      rows.push({ id: (typeof genId==="function"?genId("m"):("m-"+Date.now())), motivazione, attiva: 1, createdAt: __nowIso__(), updatedAt: __nowIso__() });
+      await save();
+    }
+    return { ok:true };
+  }
+
+  if (action === "stanze" && method === "POST"){
+    const gid = String(body?.ospite_id || "").trim();
+    const list = Array.isArray(body?.stanze) ? body.stanze : [];
+    if (!gid) return { ok:true };
+    rows = rows.filter(r => String(r?.ospite_id || "").trim() !== gid);
+    list.forEach(r => {
+      const it = Object.assign({}, r);
+      it.id = it.id || (typeof genId==="function"?genId("st"):("st-"+Date.now()+Math.random()));
+      it.ospite_id = gid;
+      it.createdAt = it.createdAt || __nowIso__();
+      it.updatedAt = __nowIso__();
+      rows.push(it);
+    });
+    await __tblSet__("stanze", rows);
+    return { ok:true };
+  }
+
+  if (action === "servizi" && method === "POST"){
+    const gid = String(body?.ospite_id || "").trim();
+    const list = Array.isArray(body?.servizi) ? body.servizi : [];
+    if (!gid) return { ok:true };
+    rows = rows.filter(r => String(r?.ospite_id || "").trim() !== gid);
+    list.forEach(r => {
+      const it = Object.assign({}, r);
+      it.id = it.id || (typeof genId==="function"?genId("sv"):("sv-"+Date.now()+Math.random()));
+      it.ospite_id = gid;
+      it.createdAt = it.createdAt || __nowIso__();
+      it.updatedAt = __nowIso__();
+      rows.push(it);
+    });
+    await __tblSet__("servizi", rows);
+    return { ok:true };
+  }
+
+  if (action === "pulizie" && method === "POST"){
+    const data = __normIsoDate__(body?.data || "");
+    const list = Array.isArray(body?.rows) ? body.rows : [];
+    if (!data) return { ok:true };
+    // upsert per stanza
+    const byKey = new Map();
+    rows.forEach(r => {
+      const k = `${__normIsoDate__(r?.data||"")}|${String(r?.stanza||"").trim()}`;
+      byKey.set(k, r);
+    });
+    list.forEach(r => {
+      const stanza = String(r?.stanza || "").trim();
+      if (!stanza) return;
+      const k = `${data}|${stanza}`;
+      const ex = byKey.get(k);
+      const it = ex ? ex : {};
+      it.id = it.id || (typeof genId==="function"?genId("p"):("p-"+Date.now()+Math.random()));
+      it.data = data;
+      it.stanza = stanza;
+      // copia colonne
+      Object.keys(r||{}).forEach((kk)=>{
+        if (kk === "id") return;
+        it[kk] = r[kk];
+      });
+      it.updatedAt = __nowIso__();
+      if (!it.createdAt) it.createdAt = __nowIso__();
+      if (!ex) rows.push(it);
+      byKey.set(k, it);
+    });
+    await __tblSet__("pulizie", rows);
+    return { ok:true };
+  }
+
+  if (action === "operatori" && method === "POST"){
+    const data = __normIsoDate__(body?.data || "");
+    const list = Array.isArray(body?.operatori) ? body.operatori : [];
+    if (!data) return { ok:true };
+    const replaceDay = !!body?.replaceDay;
+    if (replaceDay){
+      rows = rows.filter(r => __normIsoDate__(r?.data||"") !== data);
+    }
+    list.forEach(r => {
+      const it = Object.assign({}, r);
+      it.id = it.id || (typeof genId==="function"?genId("opd"):("opd-"+Date.now()+Math.random()));
+      it.data = data;
+      it.createdAt = it.createdAt || __nowIso__();
+      it.updatedAt = __nowIso__();
+      rows.push(it);
+    });
+    await __tblSet__("operatori", rows);
+    return { ok:true };
+  }
+
+  if (action === "spese" && method === "POST"){
+    const it = Object.assign({}, body || {});
+    it.id = it.id || (typeof genId==="function"?genId("s"):("s-"+Date.now()));
+    it.createdAt = it.createdAt || __nowIso__();
+    it.updatedAt = __nowIso__();
+    rows.unshift(it);
+    await save();
+    return { id: it.id };
+  }
+
+  if (action === "spese" && method === "DELETE"){
+    await delById(params?.id);
+    return { ok:true };
+  }
+
+  if (action === "ospiti" && (method === "POST" || method === "PUT")){
+    const it = Object.assign({}, body || {});
+    it.id = String(it.id || "").trim() || (typeof genId==="function"?genId("o"):("o-"+Date.now()));
+    // preserve createdAt if provided
+    it.createdAt = it.createdAt || it.created_at || __nowIso__();
+    it.created_at = it.createdAt;
+    it.updatedAt = __nowIso__();
+    it.updated_at = it.updatedAt;
+
+    const idx = rows.findIndex(r => String(r?.id||"").trim() === it.id);
+    if (idx >= 0) rows[idx] = Object.assign({}, rows[idx], it);
+    else rows.unshift(it);
+    await save();
+    return { id: it.id };
+  }
+
+  if (action === "ospiti" && method === "DELETE"){
+    const id = String(params?.id || "").trim();
+    if (!id) return { ok:true };
+    const idx = rows.findIndex(r => String(r?.id||"").trim() === id);
+    if (idx >= 0){
+      const removed = rows[idx];
+      rows.splice(idx, 1);
+      await save();
+
+      // sposta in eliminati
+      try{
+        const del0 = await __tblGet__("ospiti_eliminati", []);
+        const delRows = Array.isArray(del0) ? del0 : [];
+        delRows.unshift(Object.assign({}, removed, { deletedAt: __nowIso__(), isDeleted: 1 }));
+        await __tblSet__("ospiti_eliminati", delRows);
+      }catch(_){}
+
+      // pulisci relazioni
+      try{
+        const st0 = await __tblGet__("stanze", []);
+        const st = Array.isArray(st0) ? st0 : [];
+        await __tblSet__("stanze", st.filter(r => String(r?.ospite_id||"").trim() !== id));
+      }catch(_){}
+      try{
+        const sv0 = await __tblGet__("servizi", []);
+        const sv = Array.isArray(sv0) ? sv0 : [];
+        await __tblSet__("servizi", sv.filter(r => String(r?.ospite_id||"").trim() !== id));
+      }catch(_){}
+    }
+    return { ok:true };
+  }
+
+  // fallback generico PUT/DELETE per id
+  if (method === "PUT"){
+    const id = String(body?.id || "").trim();
+    if (!id) return { ok:true };
+    const idx = rows.findIndex(r => String(r?.id||"").trim() === id);
+    if (idx < 0) return { ok:true };
+    rows[idx] = Object.assign({}, rows[idx], body, { updatedAt: __nowIso__() });
+    await save();
+    return { ok:true };
+  }
+
+  if (method === "DELETE"){
+    await delById((params && params.id) || (body && body.id));
+    return { ok:true };
+  }
+
+  if (method === "POST"){
+    // append generico
+    const it = Object.assign({}, body || {});
+    it.id = it.id || (typeof genId==="function"?genId("r"):("r-"+Date.now()+Math.random()));
+    it.createdAt = it.createdAt || __nowIso__();
+    it.updatedAt = __nowIso__();
+    rows.push(it);
+    await save();
+    return { id: it.id };
+  }
+
+  return { ok:true };
+}
+
+async function __localApi__(action, { method="GET", params={}, body=null } = {}){
+  const m = String(method || "GET").toUpperCase();
+  const a = String(action || "").trim();
+  if (a === "utenti") return __localApiUtenti__(m, body || {});
+  if (a === "impostazioni") return __localApiImpostazioni__(m, body || {});
+  if (a === "colazione") return __localApiColazione__(m, body || {});
+  if (a === "lavanderia") return __localApiLavanderia__(m, params || {}, body || {});
+  return __localApiTable__(a, m, params || {}, body || {});
+}
+
+// Import/Export DB (JSON unico) — Admin vs Operatore
+/* Legacy localStorage DB Import/Export removed (LOCAL build uses IndexedDB) */
 
 async function __openDbPopup__(kind){
   const label = (kind==="admin") ? "DB Amministratore" : "DB Operatore";
@@ -362,7 +1012,16 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
+  
+  // Home operatore: DB import/export visibile solo per operatori
+  try{
+    const box = document.getElementById("homeOperatorDbBox");
+    if (box){
+      box.hidden = !isOp;
+      if (isOp){ try{ box.style.display = "flex"; }catch(_){ } }
+    }
+  }catch(_){ }
+// HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){
     const hideIds = [
       "goOspite",
@@ -1661,6 +2320,11 @@ async function api(action, { method="GET", params={}, body=null, showLoader=true
   if (showLoader) beginRequest();
   let realMethod = method; // definito subito per evitare ReferenceError nel finally
   try {
+  // LOCAL: nessuna chiamata a Google/Apps Script
+  if (typeof __LOCAL_MODE__ !== "undefined" && __LOCAL_MODE__) {
+    try{ __syncLedBegin(realMethod); }catch(_){ }
+    return await __localApi__(action, { method: realMethod, params: (params||{}), body });
+  }
   if (!API_BASE_URL || API_BASE_URL.includes("INCOLLA_QUI")) {
     throw new Error("Config mancante: imposta API_BASE_URL in config.js");
   }
@@ -1991,7 +2655,15 @@ function setupImpostazioni() {
 
   const reload = document.getElementById("settingsReloadBtn");
   if (reload) reload.addEventListener("click", async () => {
-    try { await loadImpostazioniPage({ force: true }); toast("Impostazioni ricaricate"); } catch (e) { toast(e.message); }
+    try { await loadImpostazioniPage({ force: true }); 
+  // DB Import/Export (LOCAL)
+  try{
+    const dbA = document.getElementById("dbAdminBtn");
+    if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
+    const dbO = document.getElementById("dbOperatorBtn");
+    if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
+  }catch(_){ }
+toast("Impostazioni ricaricate"); } catch (e) { toast(e.message); }
   });
 
   const del = document.getElementById("settingsDeleteBtn");
@@ -2600,7 +3272,7 @@ function refreshAllDataInBackground(){
 }
 
 // ===== LocalStorage cache (perceived speed on iOS) =====
-const __lsPrefix = "ddae_cache_v1:";
+const __lsPrefix = "ddae_local_cache_v1:";
 function __lsClearAll(){
   try{
     const keys = [];
@@ -3375,7 +4047,15 @@ function setupHome(){
   const build = $("#buildText");
   if (build) build.textContent = `${BUILD_VERSION}`;
 
-  // SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
+  
+  // Operatore: Import/Export DB (LOCAL)
+  try{
+    const imp = document.getElementById("homeOpDbImportBtn");
+    if (imp) bindFastTap(imp, () => { __dbImport__("operator"); });
+    const exp = document.getElementById("homeOpDbExportBtn");
+    if (exp) bindFastTap(exp, () => { __dbExport__("operator"); });
+  }catch(_){ }
+// SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
   const btnAdd = $("#btnAddSpesa");
   if (btnAdd){
     bindFastTap(btnAdd, () => { hideLauncher(); showPage("inserisci"); });
