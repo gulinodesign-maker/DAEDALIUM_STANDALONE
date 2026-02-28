@@ -7715,20 +7715,3 @@ color: var(--mcol,#ff3b30);
   border: 1px solid rgba(0,0,0,.10);
 }
 
-
-
-
-/* Roster operatori (import/export) */
-.settings-roster-row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-  flex-wrap:nowrap;
-}
-.settings-roster-row .btn{
-  flex:1 1 0;
-  opacity:0.8;
-}
-@media (max-width:420px){
-  .settings-roster-row{ flex-direction:column; }
-}
