@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.025";
+const BUILD_VERSION = "1.026";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1111,6 +1111,45 @@ async function __importRosterOperators__(){
   }catch(e){
     try{ toast("Errore import roster", "orange"); }catch(_){}
   }
+
+
+async function __exportRosterOperators__(){
+  try{
+    await ensureSettingsLoaded({ force:false, showLoader:true });
+    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
+    if (!names.length){
+      try{ toast("Nessun operatore impostato", "orange"); }catch(_){}
+      return;
+    }
+
+    const payload = {
+      kind: "DDAE_ROSTER_OPERATORS",
+      schemaVersion: 1,
+      exportedAt: __nowIso__(),
+      operatori: names
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const ts = new Date();
+    const y = ts.getFullYear();
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const d = String(ts.getDate()).padStart(2,"0");
+    a.href = url;
+    a.download = __safeFileName__(`dDAE_Roster_Operatori_${y}${m}${d}_${BUILD_VERSION}.json`);
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
+      try{ document.body.removeChild(a); }catch(_){}
+    }, 0);
+
+    try{ toast("Roster operatori: export pronto", "blue"); }catch(_){}
+  }catch(e){
+    try{ toast("Errore export roster", "orange"); }catch(_){}
+  }
+}
+
 }
 
 
@@ -1578,7 +1617,7 @@ function updateSettingsTabs(){
 (function syncBuildLabel(){
   try{
     const el = document.getElementById("buildText");
-    if (el) el.textContent = BUILD_VERSION;
+    if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
     try{
       const box = document.getElementById("homeOperatorDbBox");
       if (box){
@@ -3118,6 +3157,8 @@ function setupImpostazioni() {
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
     if (dbBtn) bindFastTap(dbBtn, () => { __openDbMenuModal__(); });
+    const rosterBtn = document.getElementById("settingsExportRosterBtn");
+    if (rosterBtn) bindFastTap(rosterBtn, async () => { try{ await __exportRosterOperators__(); }catch(e){ try{ toast("Errore export roster", "orange"); }catch(_){ } } });
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -4474,7 +4515,7 @@ function setupHome(){
   try{ bindHomeStrongTap(); }catch(_){ }
   // stampa build
   const build = $("#buildText");
-  if (build) build.textContent = `${BUILD_VERSION}`;
+  if (build) build.textContent = `dDAE_${BUILD_VERSION}`;
 
   
   // Operatore: Import/Export DB come tile in Home
