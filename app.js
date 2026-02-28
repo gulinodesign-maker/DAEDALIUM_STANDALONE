@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.027
+ * Build: 1.025
  */
-const BUILD_VERSION = "1.027";
+const BUILD_VERSION = "1.026";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1111,7 +1111,6 @@ async function __importRosterOperators__(){
   }catch(e){
     try{ toast("Errore import roster", "orange"); }catch(_){}
   }
-}
 
 
 async function __exportRosterOperators__(){
