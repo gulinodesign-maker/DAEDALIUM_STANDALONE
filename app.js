@@ -1275,29 +1275,11 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home operatore: Import/Export DB in basso, affiancati (stesso stile delle icone Home)
+  // Home operatore: Import/Export DB come icone nella griglia
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
-    const row = document.getElementById("homeDbRow");
-    if (row){
-      row.hidden = !isOp;
-      if (isOp){
-        // sposta i due tile nella riga bottom dedicata
-        if (impTile){ impTile.hidden = false; impTile.style.display = "flex"; row.appendChild(impTile); }
-        if (expTile){ expTile.hidden = false; expTile.style.display = "flex"; row.appendChild(expTile); }
-      }else{
-        // per admin nascondi e lascia nella griglia principale (fallback: se già spostati, non importa)
-        if (impTile){ impTile.hidden = true; }
-        if (expTile){ expTile.hidden = true; }
-      }
-    }else{
-      // fallback: mostra nella griglia
-      if (impTile) { impTile.hidden = !isOp; if (isOp) { try{ impTile.style.display = "flex"; }catch(_){ } } }
-      if (expTile) { expTile.hidden = !isOp; if (isOp) { try{ expTile.style.display = "flex"; }catch(_){ } } }
-    }
-  }catch(_){ }
-} }
+    if (impTile) { impTile.hidden = !isOp; if (isOp) { try{ impTile.style.display = "flex"; }catch(_){ } } }
     if (expTile) { expTile.hidden = !isOp; if (isOp) { try{ expTile.style.display = "flex"; }catch(_){ } } }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
