@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.030";
+const BUILD_VERSION = "1.032";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1241,24 +1241,38 @@ async function __dbExport__(kind, preopenWin){
       datasets
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    // Se possibile, usa una finestra aperta nel gesto utente (iOS) per permettere il download anche dopo operazioni async
-    if (preopenWin && typeof preopenWin === "object"){
-      try{ preopenWin.document.title = "Download"; preopenWin.document.body.innerHTML = "Download in corso…"; }catch(_){ }
-      try{ preopenWin.location.href = url; }catch(_){ }
-    }
-    const a = document.createElement("a");
+    const jsonStr = JSON.stringify(payload, null, 2);
     const acct = __dbAccountNameForKind__(kind);
     const dt = __dbFmtDateDdMmYy__();
-    const suf = (String(kind||"").toLowerCase().startsWith("admin")) ? "EXP" : "EXP";
-    a.href = url;
-    a.download = __safeFileName__(`${acct}_EXP_${dt}.json`);
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
-      try{ document.body.removeChild(a); }catch(_){}
-    }, 0);
+    const filename = __safeFileName__(`${acct}_EXP_${dt}.json`);
+
+    // iOS/Safari: spesso apre un tab con il testo (about:blank).
+    // Se disponibile Web Share (files), condividiamo un vero File (.json) che l'utente può salvare.
+    let shared = false;
+    try{
+      const file = new File([jsonStr], filename, { type: "application/json" });
+      if (navigator && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share){
+        await navigator.share({ files: [file], title: filename });
+        shared = true;
+      }
+    }catch(_){ shared = false; }
+
+    // Fallback: tentativo download classico con Blob "octet-stream".
+    if (!shared){
+      const blob = new Blob([jsonStr], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      try{ a.click(); }
+      catch(_){ a.dispatchEvent(new MouseEvent("click", { bubbles:true, cancelable:true, view:window })); }
+      setTimeout(()=>{
+        try{ URL.revokeObjectURL(url); }catch(_){}
+        try{ document.body.removeChild(a); }catch(_){}
+      }, 2000);
+    }
 
     try{ toast(`${label}: export pronto`, "blue"); }catch(_){}
 
