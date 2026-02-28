@@ -7726,3 +7726,62 @@ color: var(--mcol,#ff3b30);
   border: 1px solid rgba(0,0,0,.10);
 }
 
+
+
+/* ===== Build 1.028 UI overrides ===== */
+
+/* DB popup: unified tile sizing */
+.db-menu-grid .db-tile{
+  width:100% !important;
+  height:56px !important;
+  min-height:56px !important;
+  border-radius:16px !important;
+}
+
+/* DB popup: remove legacy dots (HTML already removed, keep safe) */
+.db-menu-grid .db-dot{ display:none !important; }
+
+/* DB popup: Admin/Operatore buttons */
+.db-menu-grid .db-option{
+  padding:0 14px !important;
+  gap:10px !important;
+}
+.db-menu-grid .db-option .db-option-label{
+  color: rgba(27,127,214,0.98) !important;
+}
+.db-menu-grid .db-option[data-role="admin"]{
+  background: hsla(32, 90%, 55%, .35) !important;
+  border: 1px solid rgba(15,23,42,0.14) !important;
+}
+.db-menu-grid .db-option[data-role="operator"]{
+  background: hsla(135, 70%, 40%, .35) !important;
+  border: 1px solid rgba(15,23,42,0.14) !important;
+}
+
+/* DB popup: Import/Export buttons (white bg + azzurre icons) */
+.btn.db-act.db-import,
+.btn.db-act.db-export{
+  background: rgba(255,255,255,0.90) !important;
+  border: 1px solid rgba(15,23,42,0.14) !important;
+  color: rgba(111,183,214,0.98) !important;
+  -webkit-text-fill-color: rgba(111,183,214,0.98) !important;
+}
+.btn.db-act.db-import .ui-ico,
+.btn.db-act.db-export .ui-ico{
+  stroke: rgba(111,183,214,0.98) !important;
+  color: rgba(111,183,214,0.98) !important;
+}
+.btn.db-act.db-import span,
+.btn.db-act.db-export span{
+  color: rgba(111,183,214,0.98) !important;
+}
+
+/* Settings: roster export button -> indaco bg + white icon */
+.settings-btn-roster{
+  background: rgba(99,102,241,0.80) !important;
+  border: 1px solid rgba(15,23,42,0.10) !important;
+}
+.settings-btn-roster .ui-ico{
+  stroke: rgba(255,255,255,0.96) !important;
+  fill: none !important;
+}

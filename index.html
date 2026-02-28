@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=1.027" rel="stylesheet"/>
-<link href="./manifest.json?v=1.027" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=1.027" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=1.027" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=1.027" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=1.027" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=1.028" rel="stylesheet"/>
+<link href="./manifest.json?v=1.028" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=1.028" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=1.028" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=1.028" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=1.028" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium PMS" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=1.027"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=1.028"/>
 <div class="top-led-grid" id="topLedGrid" aria-label="Stato" role="status">
   <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
   <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -230,7 +230,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=1.027"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=1.028"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -726,9 +726,6 @@
 </button>
 <button aria-label="Ricarica" class="settings-btn settings-btn-reload" id="settingsReloadBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg>
-</button>
-<button aria-label="Operatore" class="settings-btn settings-btn-operator" id="settingsCreateOperatorBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
 </button>
 <button aria-label="Database" class="settings-btn settings-btn-db" id="settingsDbBtn" type="button">
   <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
@@ -1420,8 +1417,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=1.027"></script>
-<script defer="" src="./app.js?v=1.027"></script>
+<script defer="" src="./config.js?v=1.028"></script>
+<script defer="" src="./app.js?v=1.028"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1537,7 +1534,7 @@
 </div>
 </div>
 </div>
-<!-- AMMINISTRATORE: popup dati (compenso + TFM) -->
+<!-- ADMIN: popup dati (compenso + TFM) -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="adminInputsModal">
 <div aria-modal="true" class="modal-card receipt-modal-card" role="dialog">
 <button aria-label="Chiudi" class="stat-modal-close" id="adminInputsClose" type="button">✕</button>
@@ -1580,17 +1577,13 @@
 
     <div class="db-menu-body">
       <div class="db-menu-grid">
-        <button class="db-option selected" id="dbMenuOptAdmin" type="button" aria-pressed="true">
-          <span class="db-dot db-dot-admin"></span>
-          <span class="db-option-label">AMMINISTRATORE</span>
+        <button class="db-option db-tile selected" id="dbMenuOptAdmin" data-role="admin" type="button" aria-pressed="true"><span class="db-option-label">ADMIN</span>
         </button>
 
-        <button class="db-option" id="dbMenuOptOperator" type="button" aria-pressed="false">
-          <span class="db-dot db-dot-operator"></span>
-          <span class="db-option-label">OPERATORE</span>
+        <button class="db-option db-tile" id="dbMenuOptOperator" data-role="operator" type="button" aria-pressed="false"><span class="db-option-label">OPERATORE</span>
         </button>
 
-        <button class="btn db-act db-import" id="dbMenuImportBtn" type="button" aria-label="Importa database">
+        <button class="btn db-act db-tile db-import" id="dbMenuImportBtn" type="button" aria-label="Importa database">
           <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
             <path d="M12 3v12"></path>
             <path d="M7 10l5 5 5-5"></path>
@@ -1599,7 +1592,7 @@
           <span>IMPORTA</span>
         </button>
 
-        <button class="btn db-act db-export" id="dbMenuExportBtn" type="button" aria-label="Esporta database">
+        <button class="btn db-act db-tile db-export" id="dbMenuExportBtn" type="button" aria-label="Esporta database">
           <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
             <path d="M12 21V9"></path>
             <path d="M17 14l-5-5-5 5"></path>
