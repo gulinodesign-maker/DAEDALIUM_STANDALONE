@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.029";
+const BUILD_VERSION = "1.030";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -910,7 +910,12 @@ function __openDbMenuModal__(){
       bind(optO, ()=>{ __setDbMenuSelected__("operator"); });
 
       bind(importBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbImport__(k); });
-      bind(exportBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbExport__(k); });
+      bind(exportBtn, async ()=>{ const k = window.__dbMenuKind || "admin";
+        // iOS: preserva il gesto utente aprendo una finestra subito, poi reindirizza al blob
+        let w = null;
+        try{ w = window.open("", "_blank"); }catch(_){ w = null; }
+        try{ await __dbExport__(k, w); }finally{ try{ __closeDbMenuModal__(); }catch(_){ } }
+      });
 
       // click outside to close
       try{
@@ -1220,7 +1225,7 @@ async function __exportRosterOperators__(){
 }
 
 
-async function __dbExport__(kind){
+async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const tables = __dbTablesForKind__(kind);
@@ -1238,6 +1243,11 @@ async function __dbExport__(kind){
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
+    // Se possibile, usa una finestra aperta nel gesto utente (iOS) per permettere il download anche dopo operazioni async
+    if (preopenWin && typeof preopenWin === "object"){
+      try{ preopenWin.document.title = "Download"; preopenWin.document.body.innerHTML = "Download in corso…"; }catch(_){ }
+      try{ preopenWin.location.href = url; }catch(_){ }
+    }
     const a = document.createElement("a");
     const acct = __dbAccountNameForKind__(kind);
     const dt = __dbFmtDateDdMmYy__();
