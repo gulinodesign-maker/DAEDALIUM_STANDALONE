@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.031";
+const BUILD_VERSION = "1.030";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1246,7 +1246,7 @@ async function __dbExport__(kind, preopenWin){
     // Se possibile, usa una finestra aperta nel gesto utente (iOS) per permettere il download anche dopo operazioni async
     if (preopenWin && typeof preopenWin === "object"){
       try{ preopenWin.document.title = "Download"; preopenWin.document.body.innerHTML = "Download in corso…"; }catch(_){ }
-      /* try{ preopenWin.location.href = url; }catch(_){ } */
+      try{ preopenWin.location.href = url; }catch(_){ }
     }
     const a = document.createElement("a");
     const acct = __dbAccountNameForKind__(kind);
@@ -1254,30 +1254,11 @@ async function __dbExport__(kind, preopenWin){
     const suf = (String(kind||"").toLowerCase().startsWith("admin")) ? "EXP" : "EXP";
     a.href = url;
     a.download = __safeFileName__(`${acct}_EXP_${dt}.json`);
-    // iOS/Safari: il download di Blob può aprirsi come testo se la finestra viene navigata.
-    // Se abbiamo una finestra pre-aperta nel gesto utente, iniettiamo lì il link e facciamo click.
-    let __usedPreopen__ = false;
-    if (preopenWin && typeof preopenWin === "object" && preopenWin.document){
-      try{
-        preopenWin.document.title = "Download";
-        preopenWin.document.body.innerHTML = "";
-        const a2 = preopenWin.document.createElement("a");
-        a2.href = url;
-        a2.download = a.download;
-        a2.style.display = "none";
-        preopenWin.document.body.appendChild(a2);
-        a2.click();
-        __usedPreopen__ = true;
-        setTimeout(()=>{ try{ preopenWin.close(); }catch(_){} }, 500);
-      }catch(_){}
-    }
-    if (!__usedPreopen__){
-      document.body.appendChild(a);
-      a.click();
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
       try{ document.body.removeChild(a); }catch(_){}
-    }
-    // Ritarda la revoke: su iOS serve tempo perché il download parta
-    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} }, 2000);
+    }, 0);
 
     try{ toast(`${label}: export pronto`, "blue"); }catch(_){}
 
