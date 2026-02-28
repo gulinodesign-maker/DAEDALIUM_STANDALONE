@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.023
+ * Build: 1.024
  */
-const BUILD_VERSION = "1.023";
+const BUILD_VERSION = "1.024";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11277,6 +11277,31 @@ try{
   const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
   const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
+  // dDAE_1.024 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
+  const __getLoggedOperatorName = () => {
+    try{
+      if (!(state && state.session)) return "";
+      if (!isOperatoreSession(state.session)) return "";
+      return String(
+        state.session._op_local ||
+        state.session.username ||
+        state.session.user ||
+        state.session.nome ||
+        state.session.name ||
+        state.session.email ||
+        ""
+      ).trim();
+    }catch(_){ return ""; }
+  };
+
+  const __getPulizieOperatorNames = () => {
+    try{
+      const u = __getLoggedOperatorName();
+      if (u) return [u, "", ""]; // in operatore mostriamo solo 1 riga
+    }catch(_){ }
+    return getOperatorNamesFromSettings();
+  };
+
     const opEls = [
     { name: document.getElementById("op1Name"), hours: document.getElementById("op1Hours") },
     { name: document.getElementById("op2Name"), hours: document.getElementById("op2Hours") },
@@ -11342,7 +11367,7 @@ try{
   };
 
   const syncCleanOperators = () => {
-  const names = getOperatorNamesFromSettings(); // [op1, op2, op3]
+  const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
 
   opEls.forEach((r, idx) => {
     const n = String(names[idx] || "").trim();
@@ -11385,21 +11410,28 @@ try{
     } catch (_) {}
   });
 
-  // Sessione OPERATORE: mostra solo il proprio nome
+  // Sessione OPERATORE: garantisci sempre 1 riga visibile con username (anche se Impostazioni non è configurato)
   try{
     if (state && state.session && isOperatoreSession(state.session)){
-      const rawU = String(state.session._op_local || state.session.username || state.session.user || state.session.nome || state.session.name || state.session.email || "").trim();
-      const normU = rawU.toLowerCase();
-      if (normU){
-        const active = (names||[]).find(n => String(n||"").trim().toLowerCase() === normU) || rawU;
+      const u = __getLoggedOperatorName();
+      if (u){
         opEls.forEach((r, idx)=>{
-          const nm = String(names[idx] || "").trim();
-          if (!nm) return;
           const rowEl = (r.hours && r.hours.closest) ? r.hours.closest('.clean-op-row') : null;
           if (!rowEl) return;
-          const show = nm.toLowerCase() === String(active||"").trim().toLowerCase();
+          const show = (idx === 0);
           rowEl.style.display = show ? '' : 'none';
-          if (!show){
+          if (show){
+            if (String(r.name.tagName || "").toUpperCase() === "INPUT"){
+              r.name.readOnly = true;
+              r.name.setAttribute("readonly", "");
+              r.name.value = u;
+            } else {
+              r.name.textContent = u;
+              r.name.classList.remove("is-placeholder");
+            }
+            try{ r.name.setAttribute("aria-label", u); r.hours.setAttribute("aria-label", "Ore " + u); }catch(_){ }
+            if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
+          } else {
             try{ writeHourDot(r.hours, 0); }catch(_){ }
             try{ r.hours.classList.remove('is-saved'); }catch(_){ }
           }
@@ -11416,11 +11448,11 @@ try{
   const buildOperatoriPayload = () => {
     const date = getCleanDate();
     const rows = [];
-    const names = getOperatorNamesFromSettings(); // [op1, op2, op3]
+    const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
 
     const hasAnyName = names.some(n => String(n || "").trim());
     if (!hasAnyName){
-      throw new Error("Imposta i nomi operatori in Impostazioni");
+      return { touched: false, payload: { data: date, operatori: [], replaceDay: true } };
     }
 
     // IMPORTANTE: inviamo ANCHE le ore a 0.
@@ -11491,7 +11523,7 @@ try{
       if (op) map.set(op, isNaN(ore) ? 0 : Math.max(0, ore));
     });
 
-    const names = getOperatorNamesFromSettings(); // [op1, op2, op3]
+    const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
     opEls.forEach((r, idx) => {
       const name = String(names[idx] || "").trim();
       if (!name) return; // non configurato (riga nascosta)
@@ -11504,7 +11536,7 @@ try{
   const loadOperatoriForDay = async ({ clearFirst = true } = {}) => {
     if (clearFirst){
       // azzera dots visivamente (se poi arrivano dati li ripopola)
-      const names = getOperatorNamesFromSettings();
+      const names = __getPulizieOperatorNames();
       opEls.forEach((r, idx) => {
         const name = String(names[idx] || "").trim();
         if (!name) return;
