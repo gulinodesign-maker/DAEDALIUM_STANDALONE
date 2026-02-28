@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.031";
+const BUILD_VERSION = "1.032";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1244,9 +1244,11 @@ async function __dbExport__(kind, preopenWin){
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
-    const acct = __dbAccountNameForKind__(kind);
+    // Nome file export: distinguere chiaramente ADMIN vs OPER
+    const k = String(kind||"").toLowerCase();
+    const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    const filename = __safeFileName__(`${acct}_EXP_${dt}.json`);
+    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
