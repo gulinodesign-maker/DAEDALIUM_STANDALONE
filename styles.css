@@ -5844,6 +5844,17 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 .settings-btn-delete{ background: rgba(220,38,38,0.80); }
 .settings-btn-logout{ background: rgba(201,119,43,0.80); }
 
+/* ===== Settings: Roster operatori (export) ===== */
+.settings-btn-roster{
+  background: rgba(255,255,255,0.80) !important;
+  border: 1px solid rgba(15,23,42,0.14) !important;
+}
+.settings-btn-roster .ui-ico{
+  stroke: rgba(111,183,214,0.98) !important;
+  fill: none !important;
+}
+
+
 /* OPERATORE MODAL (crea / modifica) */
 .operator-card{
   width: calc(100% - 28px);
