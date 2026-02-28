@@ -5905,6 +5905,14 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   margin: 6px 6px 14px;
 }
 
+.stats-subtitle{
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  font-size: 14px;
+  color: var(--ico-blue-night);
+  margin: 6px 10px 10px;
+}
+
 .stats-divider{
   height: 1px;
   background: var(--border);

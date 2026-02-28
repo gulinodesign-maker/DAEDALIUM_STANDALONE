@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.025
+ * Build: 1.033
  */
-const BUILD_VERSION = "1.032";
+const BUILD_VERSION = "1.033";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5328,6 +5328,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
 
   const fetchAll = () => Promise.all([
     cachedGet("spese", { from, to }, { showLoader: showLoader && !hasLocal, ttlMs: 2*60*1000, swrMs: 10*60*1000, force }),
+    cachedGet("ospiti", { from, to }, { showLoader: false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force }),
   ]);
 
   if (hasLocal && !force) {
@@ -5361,7 +5362,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
     return;
   }
 
-  const [spese] = await fetchAll();
+  const [spese, ospiti] = await fetchAll();
   state.speseAll = Array.isArray(spese) ? spese : [];
   state.reportAll = buildReportFromSpese(state.speseAll);
   state._statsDataKey = key;
@@ -7154,6 +7155,63 @@ function renderStatSpese(){
   set("ssIva22", s.iva22);
   set("ssIva10", s.iva10);
   set("ssIva4", s.iva4);
+
+  // Dettaglio elenco spese (visibile in Statistiche → Spese)
+  const list = document.getElementById("statSpeseList");
+  if (list){
+    list.innerHTML = "";
+    let items = Array.isArray(state.speseAll) ? [...state.speseAll] : [];
+
+    const toTime = (v) => {
+      if (!v) return null;
+      const s = String(v);
+      const iso = s.slice(0, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso)){
+        const t = Date.parse(iso + "T00:00:00Z");
+        return isNaN(t) ? null : t;
+      }
+      const t = Date.parse(s);
+      return isNaN(t) ? null : t;
+    };
+
+    items.sort((a,b) => {
+      const da = toTime(a.dataSpesa || a.data || a.data_spesa);
+      const db = toTime(b.dataSpesa || b.data || b.data_spesa);
+      if (da == null && db == null) return 0;
+      if (da == null) return 1;
+      if (db == null) return -1;
+      return db - da;
+    });
+
+    if (!items.length){
+      list.innerHTML = '<div style="font-size:13px; opacity:.75; padding:8px 2px;">Nessuna spesa nel periodo.</div>';
+    } else {
+      items.forEach((sp) => {
+        const el = document.createElement("div");
+        el.className = "item spesa-bg";
+        const cls = spesaCategoryClass(sp);
+        if (cls) el.classList.add(cls);
+
+        const importo = Number(sp.importoLordo || 0);
+        const data = formatShortDateIT(sp.dataSpesa || sp.data || sp.data_spesa || "");
+        const motivoTxt = (sp.motivazione || sp.motivo || "").toString();
+        const motivo = escapeHtml(motivoTxt);
+
+        el.innerHTML = `
+          <div class="item-top" style="align-items:center;">
+            <div class="spesa-line" title="${motivo}">
+              <span class="spesa-imp">${euro(importo)}</span>
+              <span class="spesa-sep">·</span>
+              <span class="spesa-date">${data}</span>
+              <span class="spesa-sep">·</span>
+              <span class="spesa-motivo">${motivo}</span>
+            </div>
+          </div>
+        `;
+        list.appendChild(el);
+      });
+    }
+  }
 }
 
 function openStatSpesePieModal(){
