@@ -1,1 +1,2 @@
-Apps Script: NON aggiornato (nessuna modifica in questa build).
+APPS_SCRIPT_UPDATE_REQUIRED: NO
+BUILD: 1.025

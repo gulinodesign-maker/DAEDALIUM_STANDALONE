@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.024
+ * Build: 1.025
  */
-const BUILD_VERSION = "1.024";
+const BUILD_VERSION = "1.025";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2921,22 +2921,47 @@ ids.forEach((id, idx) => {
 
 
 
-// Se sessione OPERATORE: in Pulizie mostra solo il nome dell'operatore loggato
+// Se sessione OPERATORE: in Pulizie mostra SEMPRE il nome dell'operatore loggato (anche se Impostazioni non ha i 3 nomi)
 try{
   if (state && state.session && isOperatoreSession(state.session)){
-    const rawU = String(state.session._op_local || state.session.username || state.session.user || state.session.nome || state.session.name || state.session.email || "").trim();
-    const normU = rawU.toLowerCase();
-    if (normU){
-      const names2 = names;
-      const active = (names2||[]).find(n => String(n||"").trim().toLowerCase() === normU) || rawU;
-      (names2||[]).forEach((nm, idx)=>{
-        const nm2 = String(nm||"").trim();
-        if (!nm2) return;
-        const rowEl = document.getElementById(ids[idx])?.closest?.('.clean-op-row');
-        if (!rowEl) return;
-        const show = nm2.toLowerCase() === String(active||"").trim().toLowerCase();
-        rowEl.style.display = show ? '' : 'none';
-      });
+    const rawU = String(
+      state.session._op_local ||
+      state.session.username ||
+      state.session.user ||
+      state.session.nome ||
+      state.session.name ||
+      state.session.email ||
+      ""
+    ).trim();
+
+    if (rawU){
+      const idsOp = ["op1Name","op2Name","op3Name"];
+
+      // Imposta il nome sul primo operatore e mostra solo la sua riga
+      const el1 = document.getElementById(idsOp[0]);
+      const row1 = el1?.closest ? el1.closest(".clean-op-row") : null;
+      if (row1) row1.style.display = "";
+      if (el1){
+        if (String(el1.tagName || "").toUpperCase() === "INPUT"){
+          el1.readOnly = true;
+          el1.setAttribute("readonly", "");
+          el1.value = rawU;
+        }else{
+          el1.textContent = rawU;
+        }
+        el1.classList.remove("is-placeholder");
+      }
+
+      // Nascondi sempre gli altri 2 operatori in modalità operatore
+      for (let i = 1; i < idsOp.length; i++){
+        const el = document.getElementById(idsOp[i]);
+        const row = el?.closest ? el.closest(".clean-op-row") : null;
+        if (row) row.style.display = "none";
+        if (el){
+          if (String(el.tagName || "").toUpperCase() === "INPUT") el.value = "";
+          else el.textContent = "";
+        }
+      }
     }
   }
 }catch(_){}
@@ -3406,6 +3431,12 @@ function setupAuth(){
         const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
         state.session = data.user;
+        try{
+          if (state.session && isOperatoreSession(state.session)){
+            const uLocal = String(username || "").trim();
+            if (uLocal) state.session._op_local = uLocal;
+          }
+        }catch(_){}
         saveSession(state.session);
         setHint("");
         goAfterLogin();
@@ -3419,6 +3450,12 @@ function setupAuth(){
         if (mode === "login_admin" && isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi come operatore."); return; }
         if (mode === "login_operator" && !isOperatoreSession(data.user)) { setHint("Questo account è un admin. Accedi come admin."); return; }
         state.session = data.user;
+        try{
+          if (state.session && isOperatoreSession(state.session)){
+            const uLocal = String(username || "").trim();
+            if (uLocal) state.session._op_local = uLocal;
+          }
+        }catch(_){}
         saveSession(state.session);
         setHint("");
         goAfterLogin();
@@ -11277,7 +11314,7 @@ try{
   const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
   const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
-  // dDAE_1.024 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
+  // dDAE_1.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
   const __getLoggedOperatorName = () => {
     try{
       if (!(state && state.session)) return "";
