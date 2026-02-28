@@ -1287,6 +1287,9 @@ body::before{
 #page-home #goLavanderia .home-main-glyph{ color: var(--ico-orange-soft) !important; }
 #page-home #goStatistiche .home-main-glyph{ color: var(--ico-taupe) !important; }
 #page-home #goProdotti .home-main-glyph{ color: var(--ico-taupe-light) !important; }
+/* Operatore: Import/Export DB (stesso stile Home, sfondo bianco/glass e icona colorata) */
+#page-home #goDbImport .home-main-glyph{ color: var(--ico-sky) !important; }
+#page-home #goDbExport .home-main-glyph{ color: var(--ico-sky) !important; }
 
 #page-statistiche #goStatGen .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-sky) !important; }
@@ -7676,13 +7679,19 @@ color: var(--mcol,#ff3b30);
   border-radius:16px;
   font-weight:900;
   letter-spacing:.4px;
-  opacity:.80;
+  /* su iOS l'opacità + backdrop-filter può "sbiancare" il colore: usiamo alpha sul background */
+  opacity:1;
   border:0;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
   padding:0 14px;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  box-shadow:none !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
 }
 .btn.db-act .ui-ico{
   width:20px;
@@ -7694,10 +7703,10 @@ color: var(--mcol,#ff3b30);
 .btn.db-act span{ color:#fff; }
 
 .btn.db-import{
-  background: rgba(255,59,48,.80); /* rosso */
+  background-color: rgba(255,59,48,.80) !important; /* rosso */
   border: 1px solid rgba(0,0,0,.10);
 }
 .btn.db-export{
-  background: rgba(52,199,89,.80); /* verde */
+  background-color: rgba(52,199,89,.80) !important; /* verde */
   border: 1px solid rgba(0,0,0,.10);
 }

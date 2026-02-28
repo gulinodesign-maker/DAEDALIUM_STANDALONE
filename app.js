@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.020
  */
-const BUILD_VERSION = "1.020";
+const BUILD_VERSION = "1.021";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1275,14 +1275,12 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  
-  // Home operatore: DB import/export visibile solo per operatori
+  // Home operatore: Import/Export DB come icone nella griglia
   try{
-    const box = document.getElementById("homeOperatorDbBox");
-    if (box){
-      box.hidden = !isOp;
-      if (isOp){ try{ box.style.display = "flex"; }catch(_){ } }
-    }
+    const impTile = document.getElementById("goDbImport");
+    const expTile = document.getElementById("goDbExport");
+    if (impTile) { impTile.hidden = !isOp; if (isOp) { try{ impTile.style.display = "flex"; }catch(_){ } } }
+    if (expTile) { expTile.hidden = !isOp; if (isOp) { try{ expTile.style.display = "flex"; }catch(_){ } } }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){
@@ -4364,11 +4362,11 @@ function setupHome(){
   if (build) build.textContent = `${BUILD_VERSION}`;
 
   
-  // Operatore: Import/Export DB (LOCAL)
+  // Operatore: Import/Export DB come tile in Home
   try{
-    const imp = document.getElementById("homeOpDbImportBtn");
+    const imp = document.getElementById("goDbImport");
     if (imp) bindFastTap(imp, () => { __dbImport__("operator"); });
-    const exp = document.getElementById("homeOpDbExportBtn");
+    const exp = document.getElementById("goDbExport");
     if (exp) bindFastTap(exp, () => { __dbExport__("operator"); });
   }catch(_){ }
 // SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
