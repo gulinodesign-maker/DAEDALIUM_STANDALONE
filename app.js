@@ -52,7 +52,7 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.025
+ * Build: 1.027
  */
 const BUILD_VERSION = "1.027";
 
@@ -1111,8 +1111,8 @@ async function __importRosterOperators__(){
   }catch(e){
     try{ toast("Errore import roster", "orange"); }catch(_){}
   }
-
 }
+
 
 async function __exportRosterOperators__(){
   try{
