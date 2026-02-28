@@ -7715,3 +7715,20 @@ color: var(--mcol,#ff3b30);
   border: 1px solid rgba(0,0,0,.10);
 }
 
+
+
+/* Roster operatori button (flat, white 80%, icona azzurra) */
+.roster-btn{
+  background: rgba(255,255,255,0.80) !important;
+  border: 1px solid rgba(15,23,42,0.12) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  border-radius: 16px;
+  padding: 12px 14px;
+  min-height: 48px;
+  color: var(--ico-blue-night);
+}
+.roster-btn .ui-ico, .roster-btn .ui-ico *{
+  stroke: var(--ico-sky) !important;
+}
