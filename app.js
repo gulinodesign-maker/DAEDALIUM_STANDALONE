@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.026";
+const BUILD_VERSION = "1.027";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1111,7 +1111,7 @@ async function __importRosterOperators__(){
   }catch(e){
     try{ toast("Errore import roster", "orange"); }catch(_){}
   }
-
+}
 
 async function __exportRosterOperators__(){
   try{
@@ -1148,8 +1148,6 @@ async function __exportRosterOperators__(){
   }catch(e){
     try{ toast("Errore export roster", "orange"); }catch(_){}
   }
-}
-
 }
 
 
