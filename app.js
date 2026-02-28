@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.024
  */
-const BUILD_VERSION = "1.026";
+const BUILD_VERSION = "1.027";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11441,6 +11441,9 @@ try{
 
         const idxActive = (names||[]).findIndex(n => String(n||'').trim().toLowerCase() === String(activeName||'').trim().toLowerCase());
 
+        const __selfProfile = await __ensureOperatorProfile__({ interactive:false });
+        const __selfId = String(__selfProfile && (__selfProfile.id || __selfProfile.operatorId) || "");
+
         const rows = [];
         (names||[]).forEach((nm, idx)=>{
           const name = String(nm||'').trim();
@@ -11455,7 +11458,7 @@ try{
           }
 
           if (hours > 0){
-            rows.push({ data: date, operatore_id: (__getOperatorIdByName__(name) || (await __ensureOperatorProfile__({interactive:false})).id || ""), operatore: name, ore: hours, benzina_euro: OP_BENZINA_EUR });
+            rows.push({ data: date, operatore_id: (__getOperatorIdByName__(name) || __selfId || ""), operatore: name, ore: hours, benzina_euro: OP_BENZINA_EUR });
           }
         });
 
