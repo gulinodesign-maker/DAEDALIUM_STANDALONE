@@ -7649,7 +7649,7 @@ color: var(--mcol,#ff3b30);
   border-radius:16px;
   border:1px solid rgba(0,0,0,.10);
   background:rgba(255,255,255,.90);
-  min-height:52px;
+  min-height:56px;
   margin-top:0;
 }
 .db-option.selected{
@@ -7675,12 +7675,16 @@ color: var(--mcol,#ff3b30);
 /* Tasti Import/Export: uguali, 80% opacità, icona bianca */
 .btn.db-act{
   width:100%;
-  min-height:52px;
+  min-height:56px;
   border-radius:16px;
   font-weight:900;
   letter-spacing:.4px;
   /* su iOS l'opacità + backdrop-filter può "sbiancare" il colore: usiamo alpha sul background */
   opacity:1;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  background-image:none !important;
+  background-clip: padding-box !important;
   border:0;
   display:flex;
   align-items:center;
@@ -7703,10 +7707,11 @@ color: var(--mcol,#ff3b30);
 .btn.db-act span{ color:#fff; }
 
 .btn.db-import{
-  background-color: rgba(255,59,48,.80) !important; /* rosso */
+  background: hsla(0,70%,52%,.80) !important; /* rosso sat 70% */
   border: 1px solid rgba(0,0,0,.10);
 }
 .btn.db-export{
-  background-color: rgba(52,199,89,.80) !important; /* verde */
+  background: hsla(135,70%,40%,.80) !important; /* verde sat 70% */
   border: 1px solid rgba(0,0,0,.10);
 }
+

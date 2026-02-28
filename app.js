@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.020
+ * Build: 1.022
  */
-const BUILD_VERSION = "1.021";
+const BUILD_VERSION = "1.022";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1275,12 +1275,43 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home operatore: Import/Export DB come icone nella griglia
+  // Home operatore: Import/Export DB come tile in basso (accanto)
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
-    if (impTile) { impTile.hidden = !isOp; if (isOp) { try{ impTile.style.display = "flex"; }catch(_){ } } }
-    if (expTile) { expTile.hidden = !isOp; if (isOp) { try{ expTile.style.display = "flex"; }catch(_){ } } }
+    const row = document.getElementById("operatorDbRow");
+
+    // salva posizione originale (per tornare indietro se cambia ruolo)
+    if (!window.__opDbTileOrig && impTile && expTile){
+      window.__opDbTileOrig = {
+        impParent: impTile.parentNode,
+        impNext: impTile.nextSibling,
+        expParent: expTile.parentNode,
+        expNext: expTile.nextSibling
+      };
+    }
+
+    if (impTile && expTile){
+      if (isOp && row){
+        row.hidden = false;
+        // sposta dentro la row in basso
+        if (impTile.parentNode !== row) row.appendChild(impTile);
+        if (expTile.parentNode !== row) row.appendChild(expTile);
+        impTile.hidden = false;
+        expTile.hidden = false;
+        try{ impTile.style.display = "flex"; expTile.style.display = "flex"; }catch(_){ }
+      }else{
+        // non operatore: nascondi e rimetti nella griglia originale
+        if (row) row.hidden = true;
+        const o = window.__opDbTileOrig;
+        try{
+          if (o && o.impParent && impTile.parentNode !== o.impParent) o.impParent.insertBefore(impTile, o.impNext);
+          if (o && o.expParent && expTile.parentNode !== o.expParent) o.expParent.insertBefore(expTile, o.expNext);
+        }catch(_){}
+        impTile.hidden = true;
+        expTile.hidden = true;
+      }
+    }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){
