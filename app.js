@@ -45,16 +45,16 @@ function applyIconPalette(){
 }
 
 
-// dDAE_1.018 — iOS BFCache: rebind tappable Home icons
+// dDAE_1.019 — iOS BFCache: rebind tappable Home icons
 try{
   window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } }, { passive:true });
 }catch(_){ }
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.018
+ * Build: 1.019
  */
-const BUILD_VERSION = "1.018";
+const BUILD_VERSION = "1.019";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -167,7 +167,11 @@ async function __kvDel__(k){
   }catch(_){ return false; }
 }
 
-function __tblKey__(name){ return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`; }
+function __tblKey__(name){
+  // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
+  try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
+  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
+}
 
 async function __tblGet__(name, fallback){
   const v = await __kvGet__(__tblKey__(name));
@@ -277,10 +281,7 @@ async function __localApiUtenti__(method, body){
     return {
       user_id,
       username: String(u?.username || "").trim(),
-      ruolo,
-      nome: String(u?.nome || u?.name || "").trim(),
-      email: String(u?.email || "").trim(),
-      telefono: String(u?.telefono || "").trim()
+      ruolo
     };
   };
 
@@ -296,16 +297,15 @@ async function __localApiUtenti__(method, body){
   if (method === "POST" && op === "create"){
     const username = String(body?.username || "").trim();
     const password = String(body?.password || "").trim();
+    const roleIn = String(body?.role || body?.ruolo || "").trim().toLowerCase();
+    const ruolo = (roleIn.startsWith("op")) ? "operatore" : "admin";
     if (!username || !password) throw new Error("Username e password obbligatori");
     if (findUser(username)) throw new Error("Username già esistente");
     const u = {
       id: String(body?.id || "") || (typeof genId === "function" ? genId("u") : ("u-"+Date.now())),
       username,
       password,
-      ruolo: "amministratore",
-      nome: String(body?.nome || "").trim(),
-      telefono: String(body?.telefono || "").trim(),
-      email: String(body?.email || "").trim(),
+      ruolo,
       createdAt: __nowIso__(),
       updatedAt: __nowIso__(),
     };
@@ -322,9 +322,6 @@ async function __localApiUtenti__(method, body){
     if (String(u?.password || "").trim() !== password) throw new Error("Credenziali non valide");
     const newPassword = String(body?.newPassword || "").trim();
     if (newPassword) u.password = newPassword;
-    u.nome = String(body?.nome || u.nome || "").trim();
-    u.telefono = String(body?.telefono || u.telefono || "").trim();
-    u.email = String(body?.email || u.email || "").trim();
     u.updatedAt = __nowIso__();
     await saveAll();
     return { user: okLogin(u) };
@@ -1333,7 +1330,7 @@ function __isRemoteNewer(remote, local){
 }
 
 // =========================
-// AUTH + SESSION (dDAE_1.018)
+// AUTH + SESSION (dDAE_1.019)
 // =========================
 
 const __SESSION_KEY = "dDAE_session_v2";
@@ -1872,7 +1869,7 @@ function truthy(v){
   return (s === "1" || s === "true" || s === "yes" || s === "si" || s === "on");
 }
 
-// dDAE_1.018 — error overlay: evita blocchi silenziosi su iPhone PWA
+// dDAE_1.019 — error overlay: evita blocchi silenziosi su iPhone PWA
 window.addEventListener("error", (e) => {
   try {
     const msg = (e?.message || "Errore JS") + (e?.filename ? ` @ ${e.filename.split("/").pop()}:${e.lineno||0}` : "");
@@ -3286,18 +3283,13 @@ function setupAuth(){
   const menu = document.getElementById("authMenu");
   const form = document.getElementById("authForm");
 
-  const btnMenuCreate = document.getElementById("btnMenuCreate");
-  const btnMenuEdit = document.getElementById("btnMenuEdit");
-  const btnMenuAdmin = document.getElementById("btnMenuAdmin");
-  const btnMenuOperator = document.getElementById("btnMenuOperator");
+  const btnAdmin = document.getElementById("btnMenuAdmin");
+  const btnOperator = document.getElementById("btnMenuOperator");
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");
 
   const tenantWrap = document.getElementById("authOperatorTenant");
-  const tenantIn = document.getElementById("authTenant");
-  const tenantRemember = document.getElementById("authTenantRemember");
-
   const credsWrap = document.getElementById("authCredsWrap");
   const u = document.getElementById("authUsername");
   const p = document.getElementById("authPassword");
@@ -3305,118 +3297,60 @@ function setupAuth(){
   const pLabel = document.getElementById("authPasswordLabel");
 
   const extra = document.getElementById("authExtra");
-  const nome = document.getElementById("authNome");
-  const tel = document.getElementById("authTelefono");
-  const email = document.getElementById("authEmail");
-  const p2 = document.getElementById("authPassword2");
   const p2Wrap = document.getElementById("authConfirmPasswordWrap");
-  const np = document.getElementById("authNewPassword");
-  const np2 = document.getElementById("authNewPassword2");
   const npWrap = document.getElementById("authNewPasswordWrap");
 
   const hint = document.getElementById("authHint");
   const setHint = (msg)=>{ try{ if (hint) hint.textContent = msg || ""; }catch(_ ){} };
 
-  const LS_TENANT_KEY = "dDAE_lastTenant";
-
-  const normalizeTenant = (s)=>{
-    let v = String(s || "").trim().toLowerCase();
-    // rimuovi spazi
-    v = v.replace(/\s+/g, "");
-    // consenti solo [a-z0-9_-]
-    v = v.replace(/[^a-z0-9_-]/g, "");
-    return v;
-  };
-
-  const composeOperatorUsername = (tenant, opUser)=>{
-    const t = normalizeTenant(tenant);
-    const o = String(opUser || "").trim();
-    if (!t || !o) return o;
-    // se già contiene separatore, lascia com'è (compat / avanzato)
-    if (o.includes("__")) return o;
-    return `${t}__${o}`;
-  };
-
-  let mode = "menu"; // menu | create | edit | login_admin | op_tenant | login_operator
-  let opTenant = "";
+  let mode = "menu"; // menu | create_admin | create_operator | login_admin | login_operator
 
   const showMenu = ()=>{
     mode = "menu";
-        try{ if (form) form.classList.remove("auth-login-big"); }catch(_ ){}
-if (menu) menu.hidden = false;
-    if (form) form.hidden = true;
+    try{ if (menu) menu.hidden = false; }catch(_){}
+    try{ if (form) form.hidden = true; }catch(_){}
     setHint("");
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
     try{ if (extra) extra.hidden = true; }catch(_ ){}
     try{ if (p2Wrap) p2Wrap.hidden = true; }catch(_ ){}
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
+    try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
     try{ if (u) u.value = ""; if (p) p.value = ""; }catch(_ ){}
-    try{ if (tenantIn) tenantIn.value = ""; if (tenantRemember) tenantRemember.checked = false; }catch(_ ){}
     try{ refreshFloatingLabels(); }catch(_ ){}
   };
 
   const setMode = (m)=>{
     mode = m;
-    if (menu) menu.hidden = true;
-    if (form) form.hidden = false;
+    try{ if (menu) menu.hidden = true; }catch(_){}
+    try{ if (form) form.hidden = false; }catch(_){}
+    setHint("");
 
-        try{ if (form) form.classList.toggle("auth-login-big", (m === "login_admin" || m === "op_tenant" || m === "login_operator")); }catch(_ ){}
-
-// defaults
+    // ensure only username/password
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
-    try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
     try{ if (extra) extra.hidden = true; }catch(_ ){}
     try{ if (p2Wrap) p2Wrap.hidden = true; }catch(_ ){}
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
-    try{ if (btnSubmit) btnSubmit.textContent = "continua"; }catch(_ ){}
+    try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
     try{ if (uLabel) uLabel.textContent = "Username"; }catch(_ ){}
     try{ if (pLabel) pLabel.textContent = "Password"; }catch(_ ){}
-    setHint("");
 
-    if (m === "create"){
-      try{ if (extra) extra.hidden = false; }catch(_ ){}
-      try{ if (p2Wrap) p2Wrap.hidden = false; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "crea account"; }catch(_ ){}
-      try{ if (uLabel) uLabel.textContent = "Struttura"; }catch(_ ){}
-      try{ if (u) u.autocapitalize = "none"; }catch(_ ){}
+    if (m === "create_admin"){
+      try{ if (btnSubmit) btnSubmit.textContent = "crea admin"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
-
-    if (m === "edit"){
-      try{ if (extra) extra.hidden = false; }catch(_ ){}
-      try{ if (npWrap) npWrap.hidden = false; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "modifica account"; }catch(_ ){}
-      try{ if (uLabel) uLabel.textContent = "Struttura"; }catch(_ ){}
+    if (m === "create_operator"){
+      try{ if (btnSubmit) btnSubmit.textContent = "crea operatore"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
-
     if (m === "login_admin"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
-      try{ if (uLabel) uLabel.textContent = "Username"; }catch(_ ){}
+      try{ if (btnSubmit) btnSubmit.textContent = "accedi admin"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
-
-    if (m === "op_tenant"){
-      try{ if (tenantWrap) tenantWrap.hidden = false; }catch(_ ){}
-      try{ if (credsWrap) credsWrap.hidden = true; }catch(_ ){}
-      try{ if (btnSubmit) btnSubmit.textContent = "continua"; }catch(_ ){}
-      // prefill
-      try{
-        const last = localStorage.getItem(LS_TENANT_KEY);
-        if (tenantIn) tenantIn.value = String(last || "");
-        if (tenantRemember) tenantRemember.checked = !!(last);
-      }catch(_ ){}
-      try{ tenantIn && tenantIn.focus(); }catch(_ ){}
-      return;
-    }
-
     if (m === "login_operator"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
-      try{ if (uLabel) uLabel.textContent = "Username operatore"; }catch(_ ){}
-      try{ if (pLabel) pLabel.textContent = "Password operatore"; }catch(_ ){}
+      try{ if (btnSubmit) btnSubmit.textContent = "accedi operatore"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
@@ -3432,104 +3366,34 @@ if (menu) menu.hidden = false;
 
   const mapAuthError = (msg)=>{
     const m = String(msg || "").trim();
-    const low = m.toLowerCase();
-    if (mode === "create" && low.includes("username già esistente")) {
-      return "Nome struttura già in uso. Scegli un nome diverso.";
-    }
     return m || "Errore";
   };
 
-  if (btnMenuCreate) bindFastTap(btnMenuCreate, ()=>setMode("create"));
-  if (btnMenuEdit) bindFastTap(btnMenuEdit, ()=>setMode("edit"));
-  if (btnMenuAdmin) bindFastTap(btnMenuAdmin, ()=>setMode("login_admin"));
-  if (btnMenuOperator) bindFastTap(btnMenuOperator, ()=>setMode("op_tenant"));
+  const openChoice = async (role)=>{
+    const isAdmin = String(role||"").toLowerCase().startsWith("admin");
+    const label = isAdmin ? "Admin" : "Operatore";
+    const choice = await __confirmTwoActions__(label + ": scegli operazione", "Crea", "Accedi");
+    if (choice === "yes"){
+      setMode(isAdmin ? "create_admin" : "create_operator");
+    }else{
+      setMode(isAdmin ? "login_admin" : "login_operator");
+    }
+  };
 
+  if (btnAdmin) bindFastTap(btnAdmin, ()=>openChoice("admin"));
+  if (btnOperator) bindFastTap(btnOperator, ()=>openChoice("operatore"));
   if (btnBack) bindFastTap(btnBack, showMenu);
 
   if (btnSubmit) bindFastTap(btnSubmit, async ()=>{
     try{
-      if (mode === "op_tenant"){
-        const t = normalizeTenant(tenantIn ? tenantIn.value : "");
-        if (!t) { setHint("Inserisci il nome struttura"); return; }
-        opTenant = t;
-        try{
-          if (tenantRemember && tenantRemember.checked) localStorage.setItem(LS_TENANT_KEY, opTenant);
-          if (tenantRemember && !tenantRemember.checked) localStorage.removeItem(LS_TENANT_KEY);
-        }catch(_ ){}
-        setMode("login_operator");
-        try{ if (u) u.value = ""; if (p) p.value = ""; }catch(_ ){}
-        try{ refreshFloatingLabels(); }catch(_ ){}
-        return;
-      }
+      const username = String(u ? u.value : "").trim();
+      const password = String(p ? p.value : "");
+      if (!username || !password){ setHint("Inserisci username e password"); return; }
 
-      if (mode === "login_operator"){
-        const opUserLocal = String(u ? u.value : "").trim();
-        const opPass = String(p ? p.value : "");
-        if (!opTenant) { setMode("op_tenant"); return; }
-        if (!opUserLocal || !opPass) { setHint("Inserisci username e password"); return; }
-
+      if (mode === "create_admin" || mode === "create_operator"){
         setHint("...");
-        let data = null;
-        const composed = composeOperatorUsername(opTenant, opUserLocal);
-
-        try{
-          data = await api("utenti", { method:"POST", body:{ op:"login", username: composed, password: opPass } });
-        }catch(e1){
-          const em = String(e1 && e1.message ? e1.message : "");
-          // fallback legacy: username operatore globale
-          const low = em.toLowerCase();
-          if (low.includes("credenziali") || low.includes("non valide")){
-            data = await api("utenti", { method:"POST", body:{ op:"login", username: opUserLocal, password: opPass } });
-          } else {
-            throw e1;
-          }
-        }
-
-        if (!data || !data.user) throw new Error("Credenziali non valide");
-        // in modalità "Operatore" accetta solo account operatore
-        if (!isOperatoreSession(data.user)) { setHint("Questo account è un amministratore. Accedi dal tasto Amministratore."); return; }
-        state.session = data.user;
-        try{ state.session._tenant = opTenant; state.session._op_local = opUserLocal; }catch(_ ){}
-        saveSession(state.session);
-        setHint("");
-        goAfterLogin();
-        return;
-      }
-
-      if (mode === "login_admin"){
-        const username = String(u ? u.value : "").trim();
-        const password = String(p ? p.value : "");
-        if (!username || !password) { setHint("Inserisci username e password"); return; }
-        setHint("...");
-        const data = await api("utenti", { method:"POST", body:{ op:"login", username, password } });
-        if (!data || !data.user) throw new Error("Credenziali non valide");
-        // in modalità "Amministratore" blocca l'accesso agli operatori
-        if (isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi dal tasto Operatore."); return; }
-        state.session = data.user;
-        saveSession(state.session);
-        setHint("");
-        goAfterLogin();
-        return;
-      }
-
-      if (mode === "create"){
-        const username = normalizeTenant(u ? u.value : "");
-        const password = String(p ? p.value : "");
-        const password2 = String(p2 ? p2.value : "");
-        if (!username || !password) { setHint("Inserisci struttura e password"); return; }
-        if (password !== password2) { setHint("Le password non coincidono"); return; }
-        setHint("...");
-        const data = await api("utenti", {
-          method:"POST",
-          body:{
-            op:"create",
-            username,
-            password,
-            nome: String(nome ? nome.value : "").trim(),
-            telefono: String(tel ? tel.value : "").trim(),
-            email: String(email ? email.value : "").trim(),
-          }
-        });
+        const role = (mode === "create_operator") ? "operatore" : "admin";
+        const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
         state.session = data.user;
         saveSession(state.session);
@@ -3538,27 +3402,12 @@ if (menu) menu.hidden = false;
         return;
       }
 
-      if (mode === "edit"){
-        const username = normalizeTenant(u ? u.value : "");
-        const password = String(p ? p.value : "");
-        const newPassword = String(np ? np.value : "");
-        const newPassword2 = String(np2 ? np2.value : "");
-        if (!username || !password) { setHint("Inserisci struttura e password"); return; }
-        if ((newPassword || newPassword2) && newPassword !== newPassword2) { setHint("Le nuove password non coincidono"); return; }
+      if (mode === "login_admin" || mode === "login_operator"){
         setHint("...");
-        const data = await api("utenti", {
-          method:"POST",
-          body:{
-            op:"update",
-            username,
-            password,
-            newPassword: newPassword,
-            nome: String(nome ? nome.value : "").trim(),
-            telefono: String(tel ? tel.value : "").trim(),
-            email: String(email ? email.value : "").trim(),
-          }
-        });
-        if (!data || !data.user) throw new Error("Errore modifica account");
+        const data = await api("utenti", { method:"POST", body:{ op:"login", username, password } });
+        if (!data || !data.user) throw new Error("Credenziali non valide");
+        if (mode === "login_admin" && isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi come operatore."); return; }
+        if (mode === "login_operator" && !isOperatoreSession(data.user)) { setHint("Questo account è un admin. Accedi come admin."); return; }
         state.session = data.user;
         saveSession(state.session);
         setHint("");
@@ -3566,18 +3415,14 @@ if (menu) menu.hidden = false;
         return;
       }
 
-      // fallback
       showMenu();
     }catch(e){
       setHint(mapAuthError(e && e.message ? e.message : e));
     }
   });
 
-  // init
   showMenu();
 }
-
-
 
 // ===== API Cache (speed + dedupe richieste) =====
 const __apiCache = new Map();      // key -> { t:number, data:any }
@@ -3843,7 +3688,7 @@ function bindFastTap(el, fn){
 }
 
 
-/* dDAE_1.018 — iOS hardening: Home icons always tappable (fallback binding) */
+/* dDAE_1.019 — iOS hardening: Home icons always tappable (fallback binding) */
 function bindHomeStrongTap(){
   // evita doppio binding
   try{
@@ -3883,7 +3728,7 @@ function bindHomeStrongTap(){
 }
 
 
-/* dDAE_1.018 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
+/* dDAE_1.019 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
 function bindGuestTapCounters(){
   const ids = ["guestAdults","guestKidsU10"];
   const fireRecalc = ()=>{ try{ updateGuestRemaining(); }catch(_){ } try{ updateGuestTaxTotalPill(); }catch(_){ } };
@@ -4067,7 +3912,7 @@ function setSpeseView(view, { render=false } = {}){
 /* NAV pages (5 pagine interne: home + 4 funzioni) */
 
 
-// dDAE_1.018 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
+// dDAE_1.019 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
 // Applichiamo una classe .is-light ai pulsanti con background chiaro, così CSS forza icone scure.
 function __parseRGBA__(s){
   try{
@@ -4441,7 +4286,7 @@ state.page = page;
 if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 
-  // dDAE_1.018: fallback visualizzazione Pulizie
+  // dDAE_1.019: fallback visualizzazione Pulizie
   try{
     if (page === "pulizie"){
       const el = document.getElementById("page-pulizie");
@@ -5738,7 +5583,7 @@ function escapeHtml(s){
 }
 
 // =========================
-// STATISTICHE (dDAE_1.018)
+// STATISTICHE (dDAE_1.019)
 // =========================
 
 function computeStatGen(){
@@ -5836,7 +5681,7 @@ function computeStatGen(){
   }
 
 
-  // dDAE_1.018+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
+  // dDAE_1.019+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
   try{
     giacenza = (money(conRicevuta) + money(senzaRicevuta)) - money(speseTot);
   }catch(_){ }
@@ -7692,7 +7537,7 @@ function renderRoomsReadOnly(ospite){
 }
 
 
-// ===== dDAE_1.018 — Multi prenotazioni per stesso nome =====
+// ===== dDAE_1.019 — Multi prenotazioni per stesso nome =====
 function normalizeGuestNameKey(name){
   try{ return collapseSpaces(String(name || "").trim()).toLowerCase(); }catch(_){ return String(name||"").trim().toLowerCase(); }
 }
@@ -8731,7 +8576,7 @@ function setupOspite(){
           : "Eliminare definitivamente questo ospite?";
         if (!confirm(msg)) return;
 
-        // ✅ dDAE_1.018: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
+        // ✅ dDAE_1.019: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
         // 1) Navigazione istantanea + rimozione ottimistica dalla lista
         try{
           const idsSet = new Set((idsToDelete || []).map(x => String(x)));
@@ -10435,7 +10280,7 @@ function refreshFloatingLabels(){
 
 
 /* =========================
-   Piscina (dDAE_1.018)
+   Piscina (dDAE_1.019)
 ========================= */
 const PISCINA_ACTION = "piscina";
 
@@ -11155,7 +11000,7 @@ try{
   let __laundryRefreshT = null;
   let __savingHours = false;
   let __pendingHours = false;
-  // dDAE_1.018: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
+  // dDAE_1.019: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
   // Mantiene UI fluida: nessun "blink" dei numeri durante autosave / refresh.
   let __dirtyLaundryRooms = new Set();   // stanze modificate (solo queste vengono salvate)
   let __dirtyLaundryCells = new Set();   // celle modificate (solo queste ricevono bordo rosso post-save)
@@ -12027,7 +11872,7 @@ if (typeof btnOrePuliziaFromPulizie !== "undefined" && btnOrePuliziaFromPulizie)
 }
 
 
-// ===== CALENDARIO (dDAE_1.018) =====
+// ===== CALENDARIO (dDAE_1.019) =====
 function setupCalendario(){
   const pickBtn = document.getElementById("calPickBtn");
   const todayBtn = document.getElementById("calTodayBtn");
@@ -12262,7 +12107,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_1.018 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
+/* dDAE_1.019 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
 function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
@@ -12493,7 +12338,7 @@ function __fitCalendarioMonthLandscape(){
 
     const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
 
-    // dDAE_1.018: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
+    // dDAE_1.019: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
     try{ document.body.classList.toggle("cal-month-landscape", !!isLandscape); }catch(_){}
 
     const grid = document.getElementById("calGridMonth");
@@ -13001,7 +12846,7 @@ function toRoman(n){
 
 
 /* =========================
-   Lavanderia (dDAE_1.018)
+   Lavanderia (dDAE_1.019)
 ========================= */
 const LAUNDRY_COLS = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 const LAUNDRY_LABELS = {
@@ -13404,7 +13249,7 @@ document.getElementById('rc_cancel')?.addEventListener('click', ()=>{
 // --- end room beds config ---
 
 
-// --- FIX dDAE_1.018: renderSpese allineato al backend ---
+// --- FIX dDAE_1.019: renderSpese allineato al backend ---
 // --- dDAE: Spese riga singola (senza IVA in visualizzazione) ---
 function renderSpese(){
   const list = document.getElementById("speseList");
@@ -13500,7 +13345,7 @@ function renderSpese(){
 
 
 
-// --- FIX dDAE_1.018: delete reale ospiti ---
+// --- FIX dDAE_1.019: delete reale ospiti ---
 function attachDeleteOspite(card, ospite){
   const btn = document.createElement("button");
   btn.className = "delbtn";
@@ -13536,7 +13381,7 @@ function attachDeleteOspite(card, ospite){
 })();
 
 
-// --- FIX dDAE_1.018: mostra nome ospite ---
+// --- FIX dDAE_1.019: mostra nome ospite ---
 (function(){
   const orig = window.renderOspiti;
   if (!orig) return;
@@ -13847,7 +13692,7 @@ function initTassaPage(){
 
 /* =========================
    Ore pulizia (Calendario ore operatori)
-   Build: dDAE_1.018
+   Build: dDAE_1.019
 ========================= */
 
 state.orepulizia = state.orepulizia || {
