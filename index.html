@@ -393,7 +393,7 @@
 
 </div>
 <div class="operator-db-row" id="operatorDbRow" hidden></div>
-<div class="build" id="buildText">dDAE_2.026</div></div></section>
+<div class="build" id="buildText">dDAE_1.025</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -699,6 +699,23 @@
 <div class="field float" style="margin-top:10px;">
 <input autocomplete="off" id="setOp3" placeholder=" "/>
 <label for="setOp3">Operatore 3 (nome)</label>
+</div>
+<div class="row settings-actions" style="margin-top:12px;">
+  <button aria-label="Esporta roster operatori" class="settings-btn settings-btn-roster-export" id="rosterExportBtn" type="button">
+    <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
+      <path d="M12 3v10"></path>
+      <path d="M8 9l4 4 4-4"></path>
+      <path d="M5 21h14"></path>
+    </svg>
+  </button>
+  <button aria-label="Importa roster operatori" class="settings-btn settings-btn-roster-import" id="rosterImportBtn" type="button">
+    <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
+      <path d="M12 21V11"></path>
+      <path d="M8 15l4-4 4 4"></path>
+      <path d="M5 3h14"></path>
+    </svg>
+  </button>
+</div>
 </div>
 <div class="field float" style="margin-top:16px;">
 <input id="setTariffa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
@@ -1591,24 +1608,6 @@
             <path d="M5 3h14"></path>
           </svg>
           <span>ESPORTA</span>
-        </button>
-
-        <button class="btn db-act db-roster-import" id="dbMenuRosterImportBtn" type="button" aria-label="Importa roster operatori">
-          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
-            <path d="M12 3v12"></path>
-            <path d="M7 10l5 5 5-5"></path>
-            <path d="M5 21h14"></path>
-          </svg>
-          <span>IMPORTA ROSTER OPERATORI</span>
-        </button>
-
-        <button class="btn db-act db-roster-export" id="dbMenuRosterExportBtn" type="button" aria-label="Esporta roster operatori">
-          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
-            <path d="M12 21V9"></path>
-            <path d="M17 14l-5-5-5 5"></path>
-            <path d="M5 3h14"></path>
-          </svg>
-          <span>ESPORTA ROSTER OPERATORI</span>
         </button>
       </div>
     </div></div>

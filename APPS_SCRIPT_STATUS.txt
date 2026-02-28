@@ -1,1 +1,1 @@
-APPS SCRIPT: NO UPDATE REQUIRED (standalone/offline roster sync is local)
+APPS SCRIPT UPDATE: NO
