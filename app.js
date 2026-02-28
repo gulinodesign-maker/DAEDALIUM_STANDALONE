@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.028";
+const BUILD_VERSION = "1.029";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -937,6 +937,50 @@ function __dbTablesForKind__(kind){
 
 function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
+
+function __dbFmtDateDdMmYy__(){
+  try{
+    const ts = new Date();
+    const d = String(ts.getDate()).padStart(2,"0");
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const y = String(ts.getFullYear()).slice(-2);
+    return `${d}-${m}-${y}`;
+  }catch(_){ return "00-00-00"; }
+}
+
+function __dbAccountNameForKind__(kind){
+  // admin/operator name for filenames. Prefer current session username; fallback to app label.
+  try{
+    const k = String(kind||"").toLowerCase();
+    const sess = (typeof loadSession === "function") ? loadSession() : null;
+    const uname = String(sess?.username || "").trim();
+    if (uname) return uname.toUpperCase();
+    if (k.startsWith("admin")) return "DAEDALIUM";
+    return "OPERATORE";
+  }catch(_){
+    return "DAEDALIUM";
+  }
+}
+
+}
+
+
+function __mergeUsers__(existing, incoming){
+  const out = [];
+  const seen = new Set();
+  const add = (u) => {
+    if (!u || typeof u !== "object") return;
+    const id = String(u.id || u.user_id || u.userId || "").trim();
+    const un = String(u.username || "").trim().toLowerCase();
+    const key = (id ? `id:${id}` : "") + "|" + (un ? `u:${un}` : "");
+    if (key === "|" ) return;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(u);
+  };
+  try{ (Array.isArray(existing)?existing:[]).forEach(add); }catch(_){}
+  try{ (Array.isArray(incoming)?incoming:[]).forEach(add); }catch(_){}
+  return out;
 }
 
 async function __dbImport__(kind){
@@ -987,6 +1031,15 @@ async function __dbImport__(kind){
       return;
     }
 
+    // Pre-merge "utenti" for operator import to avoid losing existing accounts
+    const __isAdminImport__ = String(kind||"").toLowerCase().startsWith("admin");
+    try{
+      if (!__isAdminImport__ && Array.isArray(ds?.utenti)){
+        const existingUsers = await __tblGet__("utenti", []);
+        ds.utenti = __mergeUsers__(existingUsers, ds.utenti);
+      }
+    }catch(_){}
+
     // Write datasets (only allowed tables)
     for (const t of tablesToWrite){
       const v = ds[t];
@@ -1003,15 +1056,18 @@ async function __dbImport__(kind){
     }
 
     
-    // IMPORT_SESSION_RECONCILE: se il backup contiene "utenti", la sessione corrente potrebbe non esistere più.
+    // IMPORT_SESSION_RECONCILE: solo per import ADMIN (l'import operatore non deve forzare logout)
     try{
-      const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : null;
-      if (importedUsers){
-        const sess = loadSession();
-        if (sess && sess.user_id){
-          const stillExists = importedUsers.some(u => String(u?.id||"") === String(sess.user_id));
-          if (!stillExists){
-            clearSession();
+      const __isAdminImport__ = String(kind||"").toLowerCase().startsWith("admin");
+      if (__isAdminImport__){
+        const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : null;
+        if (importedUsers){
+          const sess = loadSession();
+          if (sess && sess.user_id){
+            const stillExists = importedUsers.some(u => String(u?.id||"") === String(sess.user_id)) || importedUsers.some(u => String(u?.username||"").trim() === String(sess?.username||"").trim());
+            if (!stillExists){
+              clearSession();
+            }
           }
         }
       }
@@ -1020,6 +1076,19 @@ async function __dbImport__(kind){
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
     try{ toast(`${label}: import completato`, "blue"); }catch(_){}
+    try{
+      // Salva una copia del file importato con naming standardizzato
+      const acct = __dbAccountNameForKind__(kind);
+      const dt = __dbFmtDateDdMmYy__();
+      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url2 = URL.createObjectURL(blob2);
+      const a2 = document.createElement("a");
+      a2.href = url2;
+      a2.download = __safeFileName__(`${acct}_IMP_${dt}.json`);
+      document.body.appendChild(a2);
+      a2.click();
+      setTimeout(()=>{ try{ URL.revokeObjectURL(url2); }catch(_){} try{ document.body.removeChild(a2); }catch(_){} }, 0);
+    }catch(_){}
     setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
@@ -1170,13 +1239,11 @@ async function __dbExport__(kind){
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const ts = new Date();
-    const y = ts.getFullYear();
-    const m = String(ts.getMonth()+1).padStart(2,"0");
-    const d = String(ts.getDate()).padStart(2,"0");
-    const base = (String(kind||"").toLowerCase().startsWith("admin")) ? "dDAE_DB_Admin" : "dDAE_DB_Operatore";
+    const acct = __dbAccountNameForKind__(kind);
+    const dt = __dbFmtDateDdMmYy__();
+    const suf = (String(kind||"").toLowerCase().startsWith("admin")) ? "EXP" : "EXP";
     a.href = url;
-    a.download = __safeFileName__(`${base}_${y}${m}${d}_${BUILD_VERSION}.json`);
+    a.download = __safeFileName__(`${acct}_EXP_${dt}.json`);
     document.body.appendChild(a);
     a.click();
     setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
