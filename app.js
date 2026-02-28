@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.025
  */
-const BUILD_VERSION = "1.032";
+const BUILD_VERSION = "1.031";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -942,6 +942,7 @@ function __dbTablesForKind__(kind){
 
 function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
+}
 
 function __dbFmtDateDdMmYy__(){
   try{
@@ -967,7 +968,6 @@ function __dbAccountNameForKind__(kind){
   }
 }
 
-}
 
 
 function __mergeUsers__(existing, incoming){
@@ -1241,38 +1241,43 @@ async function __dbExport__(kind, preopenWin){
       datasets
     };
 
-    const jsonStr = JSON.stringify(payload, null, 2);
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
     const acct = __dbAccountNameForKind__(kind);
     const dt = __dbFmtDateDdMmYy__();
     const filename = __safeFileName__(`${acct}_EXP_${dt}.json`);
 
-    // iOS/Safari: spesso apre un tab con il testo (about:blank).
-    // Se disponibile Web Share (files), condividiamo un vero File (.json) che l'utente può salvare.
-    let shared = false;
-    try{
-      const file = new File([jsonStr], filename, { type: "application/json" });
-      if (navigator && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share){
-        await navigator.share({ files: [file], title: filename });
-        shared = true;
-      }
-    }catch(_){ shared = false; }
-
-    // Fallback: tentativo download classico con Blob "octet-stream".
-    if (!shared){
-      const blob = new Blob([jsonStr], { type: "application/octet-stream" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      try{ a.click(); }
-      catch(_){ a.dispatchEvent(new MouseEvent("click", { bubbles:true, cancelable:true, view:window })); }
-      setTimeout(()=>{
-        try{ URL.revokeObjectURL(url); }catch(_){}
-        try{ document.body.removeChild(a); }catch(_){}
-      }, 2000);
+    // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
+    if (preopenWin && typeof preopenWin === "object"){
+      try{
+        const doc = preopenWin.document;
+        doc.open();
+        doc.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:-apple-system,system-ui;padding:16px">
+          <a id="dl" download="${filename}" href="${url}" style="display:inline-block;padding:12px 14px;border:1px solid #ccc;border-radius:10px;text-decoration:none">Download</a>
+          <script>
+            (function(){
+              var a=document.getElementById('dl');
+              try{ a.click(); }catch(e){}
+              setTimeout(function(){ try{ window.close(); }catch(e){} }, 600);
+            })();
+          </script>
+        </body></html>`);
+        doc.close();
+      }catch(_){ }
     }
+
+    // fallback standard: anchor download nella finestra corrente
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+
+    setTimeout(()=>{ 
+      try{ URL.revokeObjectURL(url); }catch(_){}
+      try{ document.body.removeChild(a); }catch(_){}
+    }, 500);
 
     try{ toast(`${label}: export pronto`, "blue"); }catch(_){}
 
@@ -4612,7 +4617,7 @@ function setupHome(){
     const imp = document.getElementById("goDbImport");
     if (imp) bindFastTap(imp, () => { __dbImport__("operator"); });
     const exp = document.getElementById("goDbExport");
-    if (exp) bindFastTap(exp, () => { __dbExport__("operator"); });
+    if (exp) bindFastTap(exp, () => { let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; } __dbExport__("operator", w); });
   }catch(_){ }
 // SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
   const btnAdd = $("#btnAddSpesa");
