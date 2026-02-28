@@ -779,6 +779,15 @@ input[type="date"]{
   grid-template-columns: minmax(0,1fr) minmax(0,1fr);
   gap: 14px;
 }
+
+.home-db-row{
+  width: min(420px, 92vw);
+  display:grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 14px;
+  margin-top: 14px;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom));
+}
 .home-icon{
   border: 1px solid rgba(15,23,42,0.10);
   border-radius: 22px;
@@ -7638,6 +7647,11 @@ color: var(--mcol,#ff3b30);
   align-items:stretch;
 }
 
+.db-menu-grid > *{
+  min-height: 56px;
+  height: 56px;
+}
+
 /* Le "card" (Admin/Operatore) devono essere alte come i tasti Import/Export */
 .db-option{
   width:100%;
@@ -7674,6 +7688,9 @@ color: var(--mcol,#ff3b30);
 
 /* Tasti Import/Export: uguali, 80% opacità, icona bianca */
 .btn.db-act{
+  -webkit-appearance:none;
+  appearance:none;
+  background-image:none !important;
   width:100%;
   min-height:52px;
   border-radius:16px;
@@ -7703,10 +7720,12 @@ color: var(--mcol,#ff3b30);
 .btn.db-act span{ color:#fff; }
 
 .btn.db-import{
-  background-color: rgba(255,59,48,.80) !important; /* rosso */
+  background: rgba(255,59,48,0.80) !important; /* rosso */
+  background-color: rgba(255,59,48,0.80) !important; /* rosso */
   border: 1px solid rgba(0,0,0,.10);
 }
 .btn.db-export{
-  background-color: rgba(52,199,89,.80) !important; /* verde */
+  background: rgba(52,199,89,0.80) !important; /* verde */
+  background-color: rgba(52,199,89,0.80) !important; /* verde */
   border: 1px solid rgba(0,0,0,.10);
 }
