@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.024
  */
-const BUILD_VERSION = "1.025";
+const BUILD_VERSION = "1.026";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11575,7 +11575,7 @@ try{
   const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
   const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
-  // dDAE_1.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
+  // dDAE_1.026 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
   const __getLoggedOperatorName = () => {
     try{
       if (!(state && state.session)) return "";
