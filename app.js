@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.025
+ * Build: 2.025
  */
-const BUILD_VERSION = "1.025";
+const BUILD_VERSION = "2.025";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -410,31 +410,82 @@ async function __localApiImpostazioni__(method, body){
   const rows0 = await __tblGet__("impostazioni", []);
   let rows = Array.isArray(rows0) ? rows0 : [];
 
+  // helper map by key
+  const byKey = {};
+  rows.forEach(r=>{
+    const k = String(r?.key||"").trim().toLowerCase();
+    if (k) byKey[k] = r;
+  });
+
   if (method === "GET"){
     return { rows };
   }
 
   if (method === "POST"){
-    const out = [];
+    // merge update: aggiorna solo le chiavi presenti nel body, preserva le altre
+    const nowIso = __nowIso__();
 
-    // operatori: row speciale
-    try{
+    // 1) operatori (nomi + ids opzionali)
+    if (body && (body.operatori !== undefined || body.operatori_ids !== undefined)){
       const ops = Array.isArray(body?.operatori) ? body.operatori : [];
-      out.push({
-        key: "operatori",
-        operatore_1: String(ops[0] || "").trim(),
-        operatore_2: String(ops[1] || "").trim(),
-        operatore_3: String(ops[2] || "").trim(),
-        updatedAt: __nowIso__(),
-        createdAt: __nowIso__(),
-      });
-    }catch(_){}
+      const ids = Array.isArray(body?.operatori_ids) ? body.operatori_ids : [];
 
+      const prev = byKey["operatori"] || {};
+      const prevNames = [
+        String(prev?.operatore_1||"").trim(),
+        String(prev?.operatore_2||"").trim(),
+        String(prev?.operatore_3||"").trim(),
+      ];
+      const prevIds = [
+        String(prev?.operatore_1_id||"").trim(),
+        String(prev?.operatore_2_id||"").trim(),
+        String(prev?.operatore_3_id||"").trim(),
+      ];
+
+      const nextNames = [
+        String(ops[0]||"").trim(),
+        String(ops[1]||"").trim(),
+        String(ops[2]||"").trim(),
+      ];
+
+      const nextIds = [0,1,2].map((i)=>{
+        const fromBody = String(ids[i]||"").trim();
+        if (fromBody) return fromBody;
+        // se nome uguale, conserva id precedente
+        if (String(nextNames[i]||"").trim() && String(nextNames[i]||"").trim() === String(prevNames[i]||"").trim() && prevIds[i]) return prevIds[i];
+        // se nome presente ma id mancante, genera
+        if (String(nextNames[i]||"").trim()) return (typeof genId === "function" ? genId("op") : ("op_"+Date.now()+"_"+Math.floor(Math.random()*1e6)));
+        return "";
+      });
+
+      byKey["operatori"] = Object.assign({}, prev, {
+        key: "operatori",
+        operatore_1: nextNames[0],
+        operatore_2: nextNames[1],
+        operatore_3: nextNames[2],
+        operatore_1_id: nextIds[0],
+        operatore_2_id: nextIds[1],
+        operatore_3_id: nextIds[2],
+        updatedAt: nowIso,
+        createdAt: prev?.createdAt || nowIso,
+      });
+    }
+
+    // 2) numerici: aggiorna solo se presenti nel body
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
     numKeys.forEach((k)=>{
+      if (!body || body[k] === undefined) return;
+      const prev = byKey[k] || {};
       const v = (body && body[k] !== undefined) ? body[k] : "";
-      out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
+      byKey[k] = Object.assign({}, prev, { key:k, value: String(v ?? "").trim(), updatedAt: nowIso, createdAt: prev?.createdAt || nowIso });
     });
+
+    // rebuild rows (stable order)
+    const order = ["operatori","tariffa_oraria","costo_benzina","tassa_soggiorno"];
+    const out = [];
+    order.forEach((k)=>{ if (byKey[k]) out.push(byKey[k]); });
+    // include any other keys that might exist
+    Object.keys(byKey).forEach((k)=>{ if (!order.includes(k)) out.push(byKey[k]); });
 
     rows = out;
     await __tblSet__("impostazioni", rows);
@@ -1065,6 +1116,133 @@ async function __dbExport__(kind){
     try{ toast("Errore export", "orange"); }catch(_){}
   }
 }
+
+// ===== Operator Roster Import/Export (LOCAL) =====
+const __OP_ROSTER_KIND__ = "dDAE_operator_roster";
+const __OP_ROSTER_SCHEMA_VERSION__ = 1;
+
+function __isAdminSession__(){
+  try{
+    return !!(state && state.session && !isOperatoreSession(state.session));
+  }catch(_){ return true; }
+}
+
+function __buildRosterFromSettings__(){
+  const names = getOperatorNamesFromSettings();
+  const ids = (typeof getOperatorIdsFromSettings === "function") ? getOperatorIdsFromSettings() : ["","",""];
+  const ops = [];
+  for (let i=0;i<3;i++){
+    const name = String(names[i]||"").trim();
+    const id = String(ids[i]||"").trim();
+    if (!name) continue;
+    ops.push({ operatorId: id || (typeof genId==="function"?genId("op"):("op_"+Date.now())), displayName: name, slot: i+1 });
+  }
+  return ops;
+}
+
+async function __exportOperatorRoster__(){
+  try{
+    await ensureSettingsLoaded({ force:false, showLoader:true });
+    const ops = __buildRosterFromSettings__();
+    if (!ops.length){
+      try{ toast("Nessun operatore configurato", "orange"); }catch(_){}
+      return;
+    }
+    const payload = {
+      kind: __OP_ROSTER_KIND__,
+      schemaVersion: __OP_ROSTER_SCHEMA_VERSION__,
+      exportedAt: __nowIso__(),
+      build: BUILD_VERSION,
+      operators: ops
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const ts = new Date();
+    const y = ts.getFullYear();
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const d = String(ts.getDate()).padStart(2,"0");
+    a.href = url;
+    a.download = __safeFileName__(`dDAE_RosterOperatori_${y}${m}${d}_${BUILD_VERSION}.json`);
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
+      try{ document.body.removeChild(a); }catch(_){}
+    }, 0);
+    try{ toast("Roster operatori: export pronto", "blue"); }catch(_){}
+  }catch(e){
+    try{ toast("Errore export roster", "orange"); }catch(_){}
+  }
+}
+
+async function __importOperatorRoster__(){
+  try{
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.style.position = "fixed";
+    input.style.left = "-9999px";
+    document.body.appendChild(input);
+
+    const file = await new Promise((resolve)=>{
+      input.onchange = () => resolve((input.files && input.files[0]) ? input.files[0] : null);
+      input.click();
+    });
+
+    try{ document.body.removeChild(input); }catch(_){}
+
+    if (!file){
+      try{ toast("Import annullato"); }catch(_){}
+      return;
+    }
+
+    const text = await file.text();
+    let data = null;
+    try{ data = JSON.parse(text); }catch(e){
+      try{ toast("JSON non valido", "orange"); }catch(_){}
+      return;
+    }
+
+    const kindOk = String(data?.kind || "").trim() === __OP_ROSTER_KIND__;
+    const sv = data?.schemaVersion;
+    const svNum = (typeof sv === "number") ? sv : parseInt(String(sv||"").trim(), 10);
+    const list = Array.isArray(data?.operators) ? data.operators : [];
+
+    if (!kindOk || !(svNum >= 1) || !list.length){
+      try{ toast("File roster non compatibile", "orange"); }catch(_){}
+      return;
+    }
+
+    // prendi max 3 operatori (slot 1..3 se presenti)
+    const bySlot = {};
+    list.forEach(o=>{
+      const slot = parseInt(String(o?.slot||0),10);
+      if (slot>=1 && slot<=3) bySlot[slot]=o;
+    });
+
+    const opsOrdered = [1,2,3].map(s => bySlot[s]).filter(Boolean);
+    const fallback = list.slice(0,3);
+    const finalOps = opsOrdered.length ? opsOrdered : fallback;
+
+    const names = finalOps.map(o=>String(o?.displayName||"").trim());
+    while (names.length<3) names.push("");
+    const ids = finalOps.map(o=>String(o?.operatorId||"").trim());
+    while (ids.length<3) ids.push("");
+
+    // Aggiorna SOLO la parte operatori in impostazioni (merge lato localApi)
+    await api("impostazioni", { method:"POST", body: { operatori: names, operatori_ids: ids }, showLoader:true });
+    await ensureSettingsLoaded({ force:true, showLoader:false });
+
+    try{ toast("Roster operatori: import completato", "blue"); }catch(_){}
+    try{ refreshFloatingLabels(); }catch(_){}
+  }catch(e){
+    try{ toast("Errore import roster", "orange"); }catch(_){}
+  }
+}
+// ===== /Operator Roster Import/Export (LOCAL) =====
+
+
 // ===== /DB Import/Export (LOCAL) =====
 
 
@@ -2876,6 +3054,15 @@ function getOperatorNamesFromSettings() {
   return [op1, op2, op3];
 }
 
+function getOperatorIdsFromSettings(){
+  const row = getSettingRow("operatori");
+  const id1 = String(row?.operatore_1_id ?? row?.Operatore_1_id ?? row?.operatore1_id ?? "").trim();
+  const id2 = String(row?.operatore_2_id ?? row?.Operatore_2_id ?? row?.operatore2_id ?? "").trim();
+  const id3 = String(row?.operatore_3_id ?? row?.Operatore_3_id ?? row?.operatore3_id ?? "").trim();
+  return [id1, id2, id3];
+}
+
+
 async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) {
   try {
     if (!force && state.settings?.loaded) return state.settings;
@@ -2921,47 +3108,22 @@ ids.forEach((id, idx) => {
 
 
 
-// Se sessione OPERATORE: in Pulizie mostra SEMPRE il nome dell'operatore loggato (anche se Impostazioni non ha i 3 nomi)
+// Se sessione OPERATORE: in Pulizie mostra solo il nome dell'operatore loggato
 try{
   if (state && state.session && isOperatoreSession(state.session)){
-    const rawU = String(
-      state.session._op_local ||
-      state.session.username ||
-      state.session.user ||
-      state.session.nome ||
-      state.session.name ||
-      state.session.email ||
-      ""
-    ).trim();
-
-    if (rawU){
-      const idsOp = ["op1Name","op2Name","op3Name"];
-
-      // Imposta il nome sul primo operatore e mostra solo la sua riga
-      const el1 = document.getElementById(idsOp[0]);
-      const row1 = el1?.closest ? el1.closest(".clean-op-row") : null;
-      if (row1) row1.style.display = "";
-      if (el1){
-        if (String(el1.tagName || "").toUpperCase() === "INPUT"){
-          el1.readOnly = true;
-          el1.setAttribute("readonly", "");
-          el1.value = rawU;
-        }else{
-          el1.textContent = rawU;
-        }
-        el1.classList.remove("is-placeholder");
-      }
-
-      // Nascondi sempre gli altri 2 operatori in modalità operatore
-      for (let i = 1; i < idsOp.length; i++){
-        const el = document.getElementById(idsOp[i]);
-        const row = el?.closest ? el.closest(".clean-op-row") : null;
-        if (row) row.style.display = "none";
-        if (el){
-          if (String(el.tagName || "").toUpperCase() === "INPUT") el.value = "";
-          else el.textContent = "";
-        }
-      }
+    const rawU = String(state.session._op_local || state.session.username || state.session.user || state.session.nome || state.session.name || state.session.email || "").trim();
+    const normU = rawU.toLowerCase();
+    if (normU){
+      const names2 = names;
+      const active = (names2||[]).find(n => String(n||"").trim().toLowerCase() === normU) || rawU;
+      (names2||[]).forEach((nm, idx)=>{
+        const nm2 = String(nm||"").trim();
+        if (!nm2) return;
+        const rowEl = document.getElementById(ids[idx])?.closest?.('.clean-op-row');
+        if (!rowEl) return;
+        const show = nm2.toLowerCase() === String(active||"").trim().toLowerCase();
+        rowEl.style.display = show ? '' : 'none';
+      });
     }
   }
 }catch(_){}
@@ -3023,8 +3185,34 @@ async function saveImpostazioniPage() {
   const benzina = __readNumInput("setBenzina");
   const tassa = __readNumInput("setTassa");
 
+  // Mantieni/genera ID stabili per operatori
+  let prevNames = ["","",""];
+  let prevIds = ["","",""];
+  try{
+    const row = getSettingRow("operatori") || {};
+    prevNames = [
+      String(row?.operatore_1||"").trim(),
+      String(row?.operatore_2||"").trim(),
+      String(row?.operatore_3||"").trim(),
+    ];
+    prevIds = [
+      String(row?.operatore_1_id||"").trim(),
+      String(row?.operatore_2_id||"").trim(),
+      String(row?.operatore_3_id||"").trim(),
+    ];
+  }catch(_){}
+
+  const nextNames = [op1, op2, op3];
+  const nextIds = [0,1,2].map(i=>{
+    const nm = String(nextNames[i]||"").trim();
+    if (!nm) return "";
+    if (nm && nm === String(prevNames[i]||"").trim() && prevIds[i]) return prevIds[i];
+    return (typeof genId === "function" ? genId("op") : ("op_"+Date.now()+"_"+Math.floor(Math.random()*1e6)));
+  });
+
   const payload = {
-    operatori: [op1, op2, op3],
+    operatori: nextNames,
+    operatori_ids: nextIds,
     tariffa_oraria: tariffa,
     costo_benzina: benzina,
     tassa_soggiorno: tassa,
@@ -3062,6 +3250,25 @@ function setupImpostazioni() {
     if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
+
+  // Roster Operatori Import/Export (LOCAL)
+  try{
+    const expR = document.getElementById("settingsRosterExportBtn");
+    const impR = document.getElementById("settingsRosterImportBtn");
+
+    // Export solo Admin
+    if (expR){
+      expR.hidden = !__isAdminSession__();
+      if (!expR.hidden) bindFastTap(expR, () => { __exportOperatorRoster__(); });
+    }
+    // Import disponibile anche su Operatore (serve per ricevere roster da Admin)
+    if (impR){
+      impR.hidden = false;
+      bindFastTap(impR, () => { __importOperatorRoster__(); });
+    }
+  }catch(_){ }
+
+
   }catch(_){ }
 
   // Accordion Dati Operatore
@@ -3431,12 +3638,6 @@ function setupAuth(){
         const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
         state.session = data.user;
-        try{
-          if (state.session && isOperatoreSession(state.session)){
-            const uLocal = String(username || "").trim();
-            if (uLocal) state.session._op_local = uLocal;
-          }
-        }catch(_){}
         saveSession(state.session);
         setHint("");
         goAfterLogin();
@@ -3450,12 +3651,6 @@ function setupAuth(){
         if (mode === "login_admin" && isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi come operatore."); return; }
         if (mode === "login_operator" && !isOperatoreSession(data.user)) { setHint("Questo account è un admin. Accedi come admin."); return; }
         state.session = data.user;
-        try{
-          if (state.session && isOperatoreSession(state.session)){
-            const uLocal = String(username || "").trim();
-            if (uLocal) state.session._op_local = uLocal;
-          }
-        }catch(_){}
         saveSession(state.session);
         setHint("");
         goAfterLogin();
@@ -11314,7 +11509,7 @@ try{
   const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
   const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
-  // dDAE_1.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
+  // dDAE_2.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
   const __getLoggedOperatorName = () => {
     try{
       if (!(state && state.session)) return "";
@@ -11331,10 +11526,48 @@ try{
     }catch(_){ return ""; }
   };
 
-  const __getPulizieOperatorNames = () => {
+  // Profilo Operatore locale (fallback): ID stabile + nome
+  const __getLoggedOperatorProfile = () => {
     try{
-      const u = __getLoggedOperatorName();
-      if (u) return [u, "", ""]; // in operatore mostriamo solo 1 riga
+      if (!(state && state.session) || !isOperatoreSession(state.session)) return { id:"", name:"" };
+      const name = String(
+        state.session._op_local ||
+        state.session.username ||
+        state.session.user ||
+        state.session.nome ||
+        state.session.name ||
+        state.session.email ||
+        ""
+      ).trim();
+
+      let prof = null;
+      try{ prof = JSON.parse(localStorage.getItem("ddae_op_profile") || "null"); }catch(_){ prof = null; }
+      if (!prof || typeof prof !== "object") prof = {};
+
+      let id = String(prof.id || "").trim();
+      if (!id) id = (typeof genId === "function" ? genId("op") : ("op_"+Date.now()+"_"+Math.floor(Math.random()*1e6)));
+
+      // salva/aggiorna
+      const out = { id, name };
+      try{ localStorage.setItem("ddae_op_profile", JSON.stringify(out)); }catch(_){}
+
+      return out;
+    }catch(_){ return { id:"", name:"" }; }
+  };
+
+
+
+  const __getPulizieOperatorNames = () => {
+    // In sessione OPERATORE: se esiste un roster/import (Impostazioni), usa quello.
+    // Altrimenti fallback: mostra solo lo username loggato.
+    try{
+      if (state && state.session && isOperatoreSession(state.session)){
+        const fromSet = getOperatorNamesFromSettings().map(x=>String(x||"").trim());
+        const hasSet = fromSet.some(Boolean);
+        if (hasSet) return fromSet;
+        const u = __getLoggedOperatorName();
+        if (u) return [u, "", ""];
+      }
     }catch(_){ }
     return getOperatorNamesFromSettings();
   };
@@ -11503,6 +11736,20 @@ try{
       rows.push({
         data: date,
         operatore: name,
+        operatore_id: (()=>{ 
+          try{
+            const ids = (typeof getOperatorIdsFromSettings === "function") ? getOperatorIdsFromSettings() : ["","",""];
+            const idFromSet = String(ids[idx]||"").trim();
+            if (idFromSet) return idFromSet;
+            // fallback: profilo locale operatore
+            if (state && state.session && isOperatoreSession(state.session)){
+              const p = __getLoggedOperatorProfile();
+              const pid = String(p?.id||"").trim();
+              if (pid) return pid;
+            }
+          }catch(_){}
+          return "";
+        })(),
         ore: hours,
         benzina_euro: OP_BENZINA_EUR
       });
