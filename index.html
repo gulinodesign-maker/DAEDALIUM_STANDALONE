@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=1.037" rel="stylesheet"/>
-<link href="./manifest.json?v=1.037" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=1.037" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=1.037" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=1.037" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=1.037" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=1.038" rel="stylesheet"/>
+<link href="./manifest.json?v=1.038" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=1.038" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=1.038" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=1.038" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=1.038" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -298,14 +298,14 @@
 <!-- HOME (launcher) -->
 <section class="page" id="page-home">
 <div class="home-page"><div class="home-spacer"></div><div class="year-pill" hidden="" id="yearPill"></div><div aria-label="Sezioni" class="home-grid" role="navigation">
-<button aria-label="Ospiti" class="home-main" id="goOspite" type="button">
+<button aria-label="Ospiti" class="home-main" id="goOspite" type="button" onclick="try{hideLauncher();showPage('ospiti');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"></path>
 <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
 </svg></div>
 <div class="home-main-label">Ospiti</div>
 </button>
-<button aria-label="Calendario" class="home-main" data-go="calendario" id="goCalendario" type="button">
+<button aria-label="Calendario" class="home-main" data-go="calendario" id="goCalendario" type="button" onclick="try{hideLauncher();showPage('calendario');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 3v3"></path>
 <path d="M17 3v3"></path>
@@ -320,7 +320,7 @@
 </svg></div>
 <div class="home-main-label">Calendario</div>
 </button>
-<button aria-label="Apri Spese" class="home-main" id="openLauncher" type="button">
+<button aria-label="Apri Spese" class="home-main" id="openLauncher" type="button" onclick="try{setSpeseView('list');hideLauncher();showPage('spese');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M9 6.5h6"></path>
 <path d="M9 6.5V5.5A2.5 2.5 0 0 1 11.5 3h1A2.5 2.5 0 0 1 15 5.5v1"></path>
@@ -329,7 +329,7 @@
 </svg></div>
 <div class="home-main-label">Spese</div>
 </button>
-<button aria-label="Tassa" class="home-main" id="goTassaSoggiorno" type="button">
+<button aria-label="Tassa" class="home-main" id="goTassaSoggiorno" type="button" onclick="try{hideLauncher();showPage('tassa');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 10V8.5A4.5 4.5 0 0 1 11.5 4h1A4.5 4.5 0 0 1 17 8.5V10"></path>
 <path d="M5.5 10h13a2 2 0 0 1 2 2v6a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3v-6a2 2 0 0 1 2-2Z"></path>
@@ -338,7 +338,7 @@
 </svg></div>
 <div class="home-main-label small">Tassa</div>
 </button>
-<button aria-label="Pulizie" class="home-main" id="goPulizie" type="button">
+<button aria-label="Pulizie" class="home-main" id="goPulizie" type="button" onclick="try{hideLauncher();showPage('pulizie');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 3v11"></path>
 <path d="M8 14h8"></path>
@@ -347,7 +347,7 @@
 </svg></div>
 <div class="home-main-label">Pulizie</div>
 </button>
-<button aria-label="Lavanderia" class="home-main" id="goLavanderia" type="button">
+<button aria-label="Lavanderia" class="home-main" id="goLavanderia" type="button" onclick="try{hideLauncher();showPage('lavanderia');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M8 2h8"></path>
 <path d="M7 6h10"></path>
@@ -357,7 +357,7 @@
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
+<button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button" onclick="try{hideLauncher();showPage('statistiche');}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 9V7.5A2.5 2.5 0 0 1 9.5 5h5A2.5 2.5 0 0 1 17 7.5V9"></path>
 <path d="M6 9h12a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z"></path>
@@ -366,7 +366,7 @@
 </svg></div>
 <div class="home-main-label">Statistiche</div>
 </button>
-<button aria-label="Spesa" class="home-main" id="goProdotti" type="button"><div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<button aria-label="Spesa" class="home-main" id="goProdotti" type="button" onclick="try{hideLauncher();showPage('prodotti');}catch(e){}"><div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M9 6h12"></path>
 <path d="M9 12h12"></path>
 <path d="M9 18h12"></path>
@@ -374,13 +374,13 @@
 <path d="M4 12h.01"></path>
 <path d="M4 18h.01"></path>
 </svg></div><div class="home-main-label">Spesa</div></button>
-<button aria-label="Importa DB" class="home-main" hidden="" id="goDbImport" type="button">
+<button aria-label="Importa DB" class="home-main" hidden="" id="goDbImport" type="button" onclick="try{__syncImportHome__();}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M5 21h14"></path>
 </svg></div>
 <div class="home-main-label">Importa DB</div>
 </button>
-<button aria-label="Esporta DB" class="home-main" hidden="" id="goDbExport" type="button">
+<button aria-label="Esporta DB" class="home-main" hidden="" id="goDbExport" type="button" onclick="try{__syncExportHome__();}catch(e){}">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 21V9"></path><path d="M17 14l-5-5-5 5"></path><path d="M5 3h14"></path>
 </svg></div>
@@ -388,7 +388,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_1.037</div></div></section>
+<div class="build" id="buildText">dDAE_1.038</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1378,7 +1378,7 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=1.037"></script>
+<script defer="" src="./config.js?v=1.038"></script>
 
 
 
@@ -1407,7 +1407,7 @@
     // silent: app continues offline/local mode
   }
 })();
-</script><script defer="" src="./app.js?v=1.037"></script>
+</script><script defer="" src="./app.js?v=1.038"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
