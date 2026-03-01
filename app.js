@@ -20,718 +20,6 @@ function _hashStr(str){
   return (h >>> 0);
 }
 
-
-// --- Firebase Sync Bridge (Firestore only) + QR roster (dDAE) ---
-const __FB_SYNC__ = {
-  inited: false,
-  app: null,
-  db: null,
-  auth: null,
-  user: null
-};
-
-function __randToken__(len){
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghijkmnopqrstuvwxyz";
-  let out = "";
-  for (let i=0;i<(len||24);i++){
-    out += chars.charAt(Math.floor(Math.random()*chars.length));
-  }
-  return out;
-}
-
-function __lsGet__(k, def=null){
-  try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(_){ return def; }
-}
-function __lsSet__(k, v){
-  try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){}
-}
-
-async function __fbEnsure__(){
-  try{
-    if (typeof firebase === "undefined" || !firebase || !firebase.initializeApp) return false;
-
-    if (!window.FIREBASE_SYNC_ENABLED) return false;
-    if (!window.FIREBASE_CONFIG) return false;
-    if (!window.firebase) return false;
-    if (!firebase.apps || !firebase.apps.length){
-      firebase.initializeApp(FIREBASE_CONFIG);
-    }
-    __FB_SYNC__.app = firebase.app();
-    __FB_SYNC__.auth = firebase.auth();
-    __FB_SYNC__.db = firebase.firestore();
-    __FB_SYNC__.inited = true;
-
-    // Anonymous auth (one-time per install; silent)
-    const u = __FB_SYNC__.auth.currentUser;
-    if (!u){
-      try{ await __FB_SYNC__.auth.signInAnonymously(); }catch(_){ }
-    }
-    __FB_SYNC__.user = __FB_SYNC__.auth.currentUser || null;
-    return true;
-  }catch(_){
-    return false;
-  }
-}
-
-function __teamKey__(){
-  return "fbTeamLink_v1";
-}
-
-function __getTeamLink__(){
-  return __lsGet__(__teamKey__(), null);
-}
-function __setTeamLink__(obj){
-  __lsSet__(__teamKey__(), obj);
-}
-
-function __normalizeOpName__(name){
-  return String(name||"").trim().toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"").slice(0,32) || "operatore";
-}
-
-async function __ensureAdminTeam__(){
-  const link = __getTeamLink__();
-  if (link && link.teamId && link.secret) return link;
-  const teamId = __randToken__(10);
-  const secret = __randToken__(40);
-  const obj = { teamId, secret, createdAt: __nowIso__() };
-  __setTeamLink__(obj);
-  return obj;
-}
-
-function __qrPayload__(teamId, secret){
-  // compact, easy to parse
-  return `DDAEFB|${teamId}|${secret}`;
-}
-function __parseQrPayload__(txt){
-  try{
-    const s = String(txt||"").trim();
-    if (!s.startsWith("DDAEFB|")) return null;
-    const parts = s.split("|");
-    if (parts.length < 3) return null;
-    const teamId = String(parts[1]||"").trim();
-    const secret = String(parts[2]||"").trim();
-    if (!teamId || !secret) return null;
-    return { teamId, secret };
-  }catch(_){ return null; }
-}
-
-function __showOverlayModal__(title, htmlBody, actions){
-  try{
-    const old = document.getElementById("ddaeOverlayModal");
-    if (old) old.remove();
-  }catch(_){}
-  const wrap = document.createElement("div");
-  wrap.id = "ddaeOverlayModal";
-  wrap.style.position = "fixed";
-  wrap.style.inset = "0";
-  wrap.style.zIndex = "99999";
-  wrap.style.background = "rgba(0,0,0,0.45)";
-  wrap.style.display = "flex";
-  wrap.style.alignItems = "center";
-  wrap.style.justifyContent = "center";
-  wrap.innerHTML = `
-    <div style="width:min(92vw,420px);background:#fff;border-radius:16px;padding:14px 14px 12px 14px;box-shadow:0 16px 50px rgba(0,0,0,.25)">
-      <div style="font-weight:700;font-size:16px;margin-bottom:10px">${title||""}</div>
-      <div style="font-size:13px;line-height:1.35;margin-bottom:12px">${htmlBody||""}</div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap" id="ddaeOverlayActions"></div>
-    </div>
-  `;
-  document.body.appendChild(wrap);
-  const act = wrap.querySelector("#ddaeOverlayActions");
-  (actions||[]).forEach(a=>{
-    const b = document.createElement("button");
-    b.type="button";
-    b.textContent = a.label || "OK";
-    b.className = a.className || "btn";
-    b.style.opacity = "0.8";
-    b.style.borderRadius = "12px";
-    b.style.padding = "10px 12px";
-    b.style.border = "1px solid rgba(0,0,0,0.15)";
-    b.style.background = a.bg || "#fff";
-    b.style.color = a.color || "#1e88e5";
-    b.onclick = async ()=>{ try{ await (a.onClick && a.onClick()); }catch(_){ } };
-    act.appendChild(b);
-  });
-  wrap.addEventListener("click",(e)=>{ if (e.target===wrap){ try{ wrap.remove(); }catch(_){ } }});
-  return wrap;
-}
-
-// Minimal QR renderer (Version-agnostic using a tiny dependency-free generator)
-function __renderQrToCanvas__(canvas, text){
-  // Simple fallback: draw "pseudo QR" not valid? no. We need a valid QR.
-  // Implementation adapted from a compact QR generator (byte mode, ECC M) limited but sufficient for our payload.
-  try{
-    const qr = __qrcodegen__(String(text||""));
-    const scale = 6;
-    const border = 2;
-    const size = (qr.size + border*2) * scale;
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0,0,size,size);
-    ctx.fillStyle = "#000";
-    for (let y=0;y<qr.size;y++){
-      for (let x=0;x<qr.size;x++){
-        if (qr.get(x,y)){
-          ctx.fillRect((x+border)*scale,(y+border)*scale,scale,scale);
-        }
-      }
-    }
-    return true;
-  }catch(_){
-    return false;
-  }
-}
-
-/*
-  Tiny QR generator (byte mode, ECC medium) based on a compact public-domain implementation style.
-  Supports short payload strings (our DDAEFB|team|secret is short).
-*/
-function __qrcodegen__(text){
-  // Minimal QR: Version 3, ECC M (works for <= 50 bytes approx)
-  // If longer, fall back to version 5.
-  const bytes = new TextEncoder().encode(text);
-  const ver = (bytes.length <= 42) ? 3 : 5;
-  const ecc = 'M';
-  const qr = qrcodegenQrCode.encodeBinary(bytes, qrcodegenQrCode.Ecc.M, ver, ver, -1, false);
-  return { size: qr.size, get:(x,y)=>qr.getModule(x,y) };
-}
-
-// Embedded qrcodegen (Nayuki) - small subset required (kept readable)
-const qrcodegenQrCode = (function(){
-  function QrCode(){ throw new Error("static"); }
-  const Ecc = { LOW:0, MEDIUM:1, QUARTILE:2, HIGH:3, L:0, M:1, Q:2, H:3 };
-  QrCode.Ecc = Ecc;
-
-  QrCode.encodeBinary = function(data, ecl, minVersion, maxVersion, mask, boostEcl){
-    const seg = QrSegment.makeBytes(data);
-    return QrCode.encodeSegments([seg], ecl, minVersion, maxVersion, mask, boostEcl);
-  };
-
-  QrCode.encodeSegments = function(segs, ecl, minVersion, maxVersion, mask, boostEcl){
-    if (minVersion < 1 || minVersion > maxVersion || maxVersion > 40) throw new RangeError("Version");
-    let version, dataUsedBits;
-    for (version = minVersion; ; version++){
-      const dataCapacityBits = QrCode.getNumDataCodewords(version, ecl) * 8;
-      dataUsedBits = QrSegment.getTotalBits(segs, version);
-      if (dataUsedBits != null && dataUsedBits <= dataCapacityBits) break;
-      if (version >= maxVersion) throw new RangeError("Data too long");
-    }
-    // Build bit buffer
-    const bb = [];
-    for (const seg of segs){
-      QrSegment.appendBits(seg.mode.modeBits, 4, bb);
-      QrSegment.appendBits(seg.numChars, seg.mode.numCharCountBits(version), bb);
-      for (const b of seg.data) bb.push(b);
-    }
-    const dataCapacityBits = QrCode.getNumDataCodewords(version, ecl) * 8;
-    // Terminator + pad to byte
-    QrSegment.appendBits(0, Math.min(4, dataCapacityBits - dataUsedBits), bb);
-    while (bb.length % 8 !== 0) bb.push(0);
-    // Pad bytes
-    const padBytes = [0xEC, 0x11];
-    let i=0;
-    while (bb.length < dataCapacityBits){
-      QrSegment.appendBits(padBytes[i%2], 8, bb); i++;
-    }
-    const dataCodewords = [];
-    for (let i2=0;i2<bb.length;i2+=8){
-      let v=0;
-      for (let j=0;j<8;j++) v = (v<<1)|bb[i2+j];
-      dataCodewords.push(v);
-    }
-    const allCodewords = QrCode.addEccAndInterleave(dataCodewords, version, ecl);
-    return new QrCode(version, ecl, allCodewords, mask);
-  };
-
-  QrCode.getNumDataCodewords = function(ver, ecl){
-    return QrCode.getNumRawDataModules(ver) / 8 - QrCode.ECC_CODEWORDS_PER_BLOCK[ecl][ver] * QrCode.NUM_ERROR_CORRECTION_BLOCKS[ecl][ver];
-  };
-
-  QrCode.getNumRawDataModules = function(ver){
-    if (ver < 1 || ver > 40) throw new RangeError("Version");
-    let result = (16 * ver + 128) * ver + 64;
-    if (ver >= 2){
-      const numAlign = Math.floor(ver/7) + 2;
-      result -= (25 * numAlign - 10) * numAlign - 55;
-      if (ver >= 7) result -= 36;
-    }
-    return result;
-  };
-
-  QrCode.ECC_CODEWORDS_PER_BLOCK = [
-    null,
-    [null, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],
-    [null, 16, 28, 22, 26, 26, 24, 28, 26, 24, 28, 24, 28, 26, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
-    [null, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]
-  ];
-  QrCode.NUM_ERROR_CORRECTION_BLOCKS = [
-    null,
-    [null, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],
-    [null, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49, 51],
-    [null, 1, 1, 2, 4, 4, 4, 6, 6, 8, 8, 8, 10, 12, 12, 14, 14, 16, 18, 20, 21, 23, 25, 27, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61]
-  ];
-
-  QrCode.addEccAndInterleave = function(data, ver, ecl){
-    const numBlocks = QrCode.NUM_ERROR_CORRECTION_BLOCKS[ecl][ver];
-    const blockEccLen = QrCode.ECC_CODEWORDS_PER_BLOCK[ecl][ver];
-    const rawCodewords = QrCode.getNumRawDataModules(ver) / 8;
-    const numShortBlocks = numBlocks - rawCodewords % numBlocks;
-    const shortBlockLen = Math.floor(rawCodewords / numBlocks);
-    const blocks = [];
-    const rsDiv = QrCode.reedSolomonComputeDivisor(blockEccLen);
-    let k = 0;
-    for (let i=0;i<numBlocks;i++){
-      const datLen = shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1);
-      const dat = data.slice(k, k+datLen);
-      k += datLen;
-      const ecc = QrCode.reedSolomonComputeRemainder(dat, rsDiv);
-      blocks.push(dat.concat(ecc));
-    }
-    // Interleave
-    const result = [];
-    for (let i=0;i<blocks[0].length;i++){
-      for (let j=0;j<blocks.length;j++){
-        // skip padding byte in short blocks
-        if (i === shortBlockLen - blockEccLen && j < numShortBlocks) continue;
-        result.push(blocks[j][i]);
-      }
-    }
-    return result;
-  };
-
-  QrCode.reedSolomonComputeDivisor = function(degree){
-    const result = [];
-    for (let i=0;i<degree;i++) result.push(0);
-    result[degree-1] = 1;
-    let root = 1;
-    for (let i=0;i<degree;i++){
-      for (let j=0;j<result.length;j++){
-        result[j] = QrCode.reedSolomonMultiply(result[j], root);
-        if (j+1 < result.length) result[j] ^= result[j+1];
-      }
-      root = QrCode.reedSolomonMultiply(root, 0x02);
-    }
-    return result;
-  };
-  QrCode.reedSolomonComputeRemainder = function(data, divisor){
-    const result = new Array(divisor.length).fill(0);
-    for (const b of data){
-      const factor = b ^ result.shift();
-      result.push(0);
-      for (let i=0;i<result.length;i++){
-        result[i] ^= QrCode.reedSolomonMultiply(divisor[i], factor);
-      }
-    }
-    return result;
-  };
-  QrCode.reedSolomonMultiply = function(x,y){
-    let z=0;
-    for (let i=7;i>=0;i--){
-      z = (z<<1) ^ ((z>>>7)*0x11D);
-      z ^= ((y>>>i)&1) * x;
-    }
-    return z & 0xFF;
-  };
-
-  // Constructor (build modules)
-  function QrCodeCtor(ver, ecl, dataCodewords, mask){
-    this.version = ver;
-    this.errorCorrectionLevel = ecl;
-    this.size = ver*4 + 17;
-    this.modules = [];
-    this.isFunction = [];
-    for (let i=0;i<this.size;i++){
-      this.modules.push(new Array(this.size).fill(false));
-      this.isFunction.push(new Array(this.size).fill(false));
-    }
-    this.drawFunctionPatterns();
-    const allBits = [];
-    for (const cw of dataCodewords){
-      for (let i=7;i>=0;i--) allBits.push(((cw>>>i)&1) !== 0);
-    }
-    this.drawCodewords(allBits);
-    this.applyMask((mask>=0 && mask<=7) ? mask : 0);
-    this.drawFormatBits(0);
-    this.mask = (mask>=0 && mask<=7) ? mask : 0;
-  }
-  QrCodeCtor.prototype.getModule = function(x,y){ return this.modules[y][x]; };
-
-  QrCodeCtor.prototype.drawFunctionPatterns = function(){
-    const size = this.size;
-    const drawFinder = (x,y)=>{
-      for (let dy=-1;dy<=7;dy++){
-        for (let dx=-1;dx<=7;dx++){
-          const xx=x+dx, yy=y+dy;
-          if (0<=xx && xx<size && 0<=yy && yy<size){
-            const dist = Math.max(Math.abs(dx),Math.abs(dy));
-            const val = (dist!==2 && dist!==4 && dist!==6) ? (dist<=3) : (dist===4);
-            this.setFunctionModule(xx,yy,val);
-          }
-        }
-      }
-    };
-    drawFinder(0,0);
-    drawFinder(size-7,0);
-    drawFinder(0,size-7);
-    // Timing patterns
-    for (let i=0;i<size;i++){
-      this.setFunctionModule(6,i,i%2===0);
-      this.setFunctionModule(i,6,i%2===0);
-    }
-    // Dark module
-    this.setFunctionModule(8, size-8, true);
-  };
-  QrCodeCtor.prototype.setFunctionModule = function(x,y,isBlack){
-    this.modules[y][x]=isBlack;
-    this.isFunction[y][x]=true;
-  };
-  QrCodeCtor.prototype.drawCodewords = function(data){
-    const size=this.size;
-    let i=0;
-    for (let right=size-1; right>=1; right-=2){
-      if (right===6) right=5;
-      for (let vert=0; vert<size; vert++){
-        for (let j=0;j<2;j++){
-          const x=right-j;
-          const y=((right+1)&2)===0 ? size-1-vert : vert;
-          if (!this.isFunction[y][x] && i<data.length){
-            this.modules[y][x]=data[i]; i++;
-          }
-        }
-      }
-    }
-  };
-  QrCodeCtor.prototype.applyMask = function(mask){
-    const size=this.size;
-    for (let y=0;y<size;y++){
-      for (let x=0;x<size;x++){
-        if (this.isFunction[y][x]) continue;
-        let invert=false;
-        switch(mask){
-          case 0: invert = (x+y)%2===0; break;
-          case 1: invert = y%2===0; break;
-          case 2: invert = x%3===0; break;
-          case 3: invert = (x+y)%3===0; break;
-          case 4: invert = (Math.floor(y/2)+Math.floor(x/3))%2===0; break;
-          case 5: invert = (x*y)%2 + (x*y)%3===0; break;
-          case 6: invert = ((x*y)%2 + (x*y)%3)%2===0; break;
-          case 7: invert = ((x+y)%2 + (x*y)%3)%2===0; break;
-        }
-        if (invert) this.modules[y][x]=!this.modules[y][x];
-      }
-    }
-  };
-  QrCodeCtor.prototype.drawFormatBits = function(mask){
-    // Very small: fixed format for ECC M and mask 0..7
-    const fmt = QrCode.getFormatBits(QrCode.Ecc.M, mask);
-    const size=this.size;
-    for (let i=0;i<=5;i++) this.setFunctionModule(8,i, ((fmt>>>i)&1)!==0);
-    this.setFunctionModule(8,7, ((fmt>>>6)&1)!==0);
-    this.setFunctionModule(8,8, ((fmt>>>7)&1)!==0);
-    this.setFunctionModule(7,8, ((fmt>>>8)&1)!==0);
-    for (let i=9;i<15;i++) this.setFunctionModule(14-i,8, ((fmt>>>i)&1)!==0);
-    for (let i=0;i<8;i++) this.setFunctionModule(size-1-i,8, ((fmt>>>i)&1)!==0);
-    for (let i=8;i<15;i++) this.setFunctionModule(8,size-15+i, ((fmt>>>i)&1)!==0);
-    this.setFunctionModule(8,size-8,true);
-  };
-  QrCode.getFormatBits = function(ecl, mask){
-    const eclBits = [1,0,3,2][ecl]; // M=0
-    let data = (eclBits<<3) | mask;
-    let rem = data;
-    for (let i=0;i<10;i++) rem = (rem<<1) ^ (((rem>>>9)&1) * 0x537);
-    const bits = ((data<<10) | (rem & 0x3FF)) ^ 0x5412;
-    return bits;
-  };
-
-  // QrSegment
-  function QrSegment(mode, numChars, data){ this.mode=mode; this.numChars=numChars; this.data=data; }
-  const Mode = {
-    BYTE: { modeBits: 0x4, numCharCountBits: (ver)=> (ver<=9?8: (ver<=26?16:16)) }
-  };
-  QrSegment.Mode = Mode;
-  QrSegment.makeBytes = function(data){
-    const bb=[];
-    for (const b of data) QrSegment.appendBits(b,8,bb);
-    return new QrSegment(Mode.BYTE, data.length, bb);
-  };
-  QrSegment.appendBits = function(val,len,bb){
-    for (let i=len-1;i>=0;i--) bb.push(((val>>>i)&1)!==0);
-  };
-  QrSegment.getTotalBits = function(segs,ver){
-    let sum=0;
-    for (const seg of segs){
-      sum += 4 + seg.mode.numCharCountBits(ver) + seg.data.length;
-    }
-    return sum;
-  };
-
-  // Export constructor
-  function make(ver,ecl,codewords,mask){ return new QrCodeCtor(ver,ecl,codewords,mask); }
-  QrCode = function(ver,ecl,codewords,mask){ return make(ver,ecl,codewords,mask); };
-  QrCode.Ecc = Ecc;
-  QrCode.encodeBinary = QrCode.encodeBinary;
-  QrCode.encodeSegments = QrCode.encodeSegments;
-  QrCode.getNumDataCodewords = QrCode.getNumDataCodewords;
-  QrCode.getNumRawDataModules = QrCode.getNumRawDataModules;
-  QrCode.ECC_CODEWORDS_PER_BLOCK = QrCode.ECC_CODEWORDS_PER_BLOCK;
-  QrCode.NUM_ERROR_CORRECTION_BLOCKS = QrCode.NUM_ERROR_CORRECTION_BLOCKS;
-  QrCode.addEccAndInterleave = QrCode.addEccAndInterleave;
-  QrCode.reedSolomonComputeDivisor = QrCode.reedSolomonComputeDivisor;
-  QrCode.reedSolomonComputeRemainder = QrCode.reedSolomonComputeRemainder;
-  QrCode.reedSolomonMultiply = QrCode.reedSolomonMultiply;
-  return QrCode;
-})();
-
-// --- Sync actions ---
-async function __syncExportHome__(){
-  const isOp = !!(state && state.session && isOperatoreSession(state.session));
-  const kind = isOp ? "operator" : "admin";
-  const ok = await __fbEnsure__();
-  if (!ok){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } return; }
-  const link = isOp ? __getTeamLink__() : await __ensureAdminTeam__();
-  if (!link || !link.teamId || !link.secret){
-    try{ toast("Roster non collegato", "orange"); }catch(_){ }
-    return;
-  }
-  try{
-    // build export payload (reuse existing table list)
-    const tables = __dbTablesForKind__(kind);
-    const datasets = {};
-    for (const t of tables){
-      datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
-    }
-    const payload = { kind: __DB_EXPORT_KIND__, schemaVersion: __DB_SCHEMA_VERSION__, exportedAt: __nowIso__(), datasets };
-
-    const jsonStr = JSON.stringify(payload);
-    const now = firebase.firestore.FieldValue.serverTimestamp();
-
-    if (isOp){
-      const opName = __normalizeOpName__(state?.session?.username || state?.session?.nome || "operatore");
-      await __FB_SYNC__.db.collection("sync_ops").doc(`${link.teamId}__${opName}`).set({
-        teamId: link.teamId,
-        secret: link.secret,
-        opName,
-        json: jsonStr,
-        updatedAt: now
-      }, { merge:true });
-      try{ toast("Export operatore inviato", "green"); }catch(_){}
-    }else{
-      // ensure team doc and write admin latest
-      await __FB_SYNC__.db.collection("teams").doc(link.teamId).set({
-        teamId: link.teamId,
-        secret: link.secret,
-        updatedAt: now
-      }, { merge:true });
-      await __FB_SYNC__.db.collection("sync").doc(link.teamId).set({
-        teamId: link.teamId,
-        secret: link.secret,
-        admin_latest: jsonStr,
-        updatedAt: now
-      }, { merge:true });
-      try{ toast("Export admin inviato", "green"); }catch(_){}
-    }
-  }catch(e){
-    try{ toast("Errore export sync", "orange"); }catch(_){}
-  }
-}
-
-function __mergeArrayById__(baseArr, addArr){
-  const out = Array.isArray(baseArr) ? baseArr.slice() : [];
-  const seen = new Set(out.map(r=>String(r?.id||"")));
-  for (const r of (Array.isArray(addArr)?addArr:[])){
-    const id = String(r?.id||"");
-    if (id && seen.has(id)) continue;
-    out.push(r);
-    if (id) seen.add(id);
-  }
-  return out;
-}
-
-function __mergeLaundry__(baseArr, addArr){
-  const outMap = new Map();
-  const put = (row)=>{
-    const sd = String(row?.startDate||row?.start_date||"");
-    const ed = String(row?.endDate||row?.end_date||"");
-    const key = sd+"|"+ed;
-    if (!outMap.has(key)) outMap.set(key, Object.assign({}, row));
-    else{
-      const cur = outMap.get(key);
-      for (const k of Object.keys(row||{})){
-        const v = row[k];
-        const n1 = typeof cur[k]==="number" ? cur[k] : (String(cur[k]||"").match(/^\d+(\.\d+)?$/)? Number(cur[k]) : null);
-        const n2 = typeof v==="number" ? v : (String(v||"").match(/^\d+(\.\d+)?$/)? Number(v) : null);
-        if (n1!=null && n2!=null){
-          cur[k] = Math.max(n1,n2);
-        }else if (cur[k]==null || cur[k]===""){
-          cur[k]=v;
-        }
-      }
-      outMap.set(key, cur);
-    }
-  };
-  (Array.isArray(baseArr)?baseArr:[]).forEach(put);
-  (Array.isArray(addArr)?addArr:[]).forEach(put);
-  return Array.from(outMap.values());
-}
-
-async function __syncImportHome__(){
-  const isOp = !!(state && state.session && isOperatoreSession(state.session));
-  const kind = isOp ? "operator" : "admin";
-  const ok = await __fbEnsure__();
-  if (!ok){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } return; }
-  const link = __getTeamLink__();
-  if (!link || !link.teamId || !link.secret){
-    try{ toast("Roster non collegato", "orange"); }catch(_){ }
-    return;
-  }
-
-  try{
-    if (isOp){
-      const doc = await __FB_SYNC__.db.collection("sync").doc(link.teamId).get();
-      if (!doc.exists){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
-      const d = doc.data() || {};
-      if (String(d.secret||"") !== String(link.secret||"")){ try{ toast("Roster non valido", "orange"); }catch(_){ } return; }
-      const txt = String(d.admin_latest||"");
-      if (!txt){ try{ toast("Nessun dato admin", "orange"); }catch(_){ } return; }
-      const payload = JSON.parse(txt);
-      // Import solo subset operatore
-      const tables = __dbTablesForKind__("operator");
-      const datasets = payload?.datasets || {};
-      for (const t of tables){
-        if (datasets[t] != null){
-          await __tblSet__(t, datasets[t]);
-        }
-      }
-      try{ toast("Import operatore completato", "green"); }catch(_){}
-      setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 300);
-    }else{
-      // Admin: merge tutti operatori
-      const snap = await __FB_SYNC__.db.collection("sync_ops").where("teamId","==",link.teamId).get();
-      let base_operatori = await __tblGet__("operatori", []);
-      let base_pulizie = await __tblGet__("pulizie", []);
-      let base_lav = await __tblGet__("lavanderia", []);
-      snap.forEach(doc=>{
-        const d = doc.data()||{};
-        if (String(d.secret||"") !== String(link.secret||"")) return;
-        const txt = String(d.json||"");
-        if (!txt) return;
-        try{
-          const payload = JSON.parse(txt);
-          const ds = payload?.datasets || {};
-          if (ds.operatori) base_operatori = __mergeArrayById__(base_operatori, ds.operatori);
-          if (ds.pulizie) base_pulizie = __mergeArrayById__(base_pulizie, ds.pulizie);
-          if (ds.lavanderia) base_lav = __mergeLaundry__(base_lav, ds.lavanderia);
-        }catch(_){}
-      });
-      await __tblSet__("operatori", base_operatori);
-      await __tblSet__("pulizie", base_pulizie);
-      await __tblSet__("lavanderia", base_lav);
-      try{ toast("Import admin completato", "green"); }catch(_){}
-      setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 300);
-    }
-  }catch(e){
-    try{ toast("Errore import sync", "orange"); }catch(_){}
-  }
-}
-
-async function __adminShowQrRoster__(){
-  const ok = await __fbEnsure__();
-  if (!ok){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } return; }
-  const link = await __ensureAdminTeam__();
-  try{
-    // ensure team doc updated
-    await __FB_SYNC__.db.collection("teams").doc(link.teamId).set({
-      teamId: link.teamId,
-      secret: link.secret,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge:true });
-  }catch(_){}
-
-  const payload = __qrPayload__(link.teamId, link.secret);
-
-  const body = `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-      <canvas id="ddaeQrCanvas" style="width:220px;height:220px;image-rendering:pixelated;border-radius:12px;border:1px solid rgba(0,0,0,.12)"></canvas>
-      <div style="font-size:12px;opacity:.8;text-align:center">Inquadra questo QR dall\'account Operatore</div>
-      <div style="font-size:12px;word-break:break-all;opacity:.9;border:1px dashed rgba(0,0,0,.25);padding:8px 10px;border-radius:12px;width:100%">${payload}</div>
-    </div>
-  `;
-  __showOverlayModal__("Roster (QR)", body, [
-    { label:"Copia codice", onClick: async ()=>{ try{ await navigator.clipboard.writeText(payload); toast("Copiato","blue"); }catch(_){ } } },
-    { label:"Chiudi", onClick: ()=>{ try{ document.getElementById("ddaeOverlayModal").remove(); }catch(_){ } } }
-  ]);
-  setTimeout(()=>{
-    try{
-      const c = document.getElementById("ddaeQrCanvas");
-      if (c) __renderQrToCanvas__(c, payload);
-    }catch(_){}
-  }, 50);
-}
-
-async function __operatorScanQrRoster__(){
-  // Try BarcodeDetector; fallback to manual paste
-  const startManual = async ()=>{
-    const code = prompt("Incolla il codice roster (DDAEFB|...)");
-    const parsed = __parseQrPayload__(code);
-    if (!parsed){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
-    __setTeamLink__({ teamId: parsed.teamId, secret: parsed.secret, linkedAt: __nowIso__() });
-    try{ toast("Roster collegato", "green"); }catch(_){}
-  };
-
-  try{
-    if (!("BarcodeDetector" in window)){
-      await startManual();
-      return;
-    }
-    const det = new BarcodeDetector({ formats:["qr_code"] });
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
-    const video = document.createElement("video");
-    video.setAttribute("playsinline","true");
-    video.autoplay = true;
-    video.srcObject = stream;
-
-    const body = `
-      <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-        <video id="ddaeQrVideo" style="width:100%;max-width:360px;border-radius:14px;border:1px solid rgba(0,0,0,.12)"></video>
-        <div style="font-size:12px;opacity:.8;text-align:center">Inquadra il QR mostrato dall\'Admin</div>
-      </div>
-    `;
-    const modal = __showOverlayModal__("Scansiona QR", body, [
-      { label:"Incolla codice", onClick: async ()=>{ try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){ } try{ modal.remove(); }catch(_){ } await startManual(); } },
-      { label:"Chiudi", onClick: async ()=>{ try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){ } try{ modal.remove(); }catch(_){ } } }
-    ]);
-    setTimeout(()=>{ try{ const v=document.getElementById("ddaeQrVideo"); if (v){ v.srcObject=stream; v.play(); } }catch(_){ } }, 30);
-
-    let done=false;
-    const tick = async ()=>{
-      if (done) return;
-      try{
-        const v = document.getElementById("ddaeQrVideo");
-        if (!v || v.readyState < 2){ requestAnimationFrame(tick); return; }
-        const barcodes = await det.detect(v);
-        if (barcodes && barcodes.length){
-          const raw = barcodes[0].rawValue || "";
-          const parsed = __parseQrPayload__(raw);
-          if (parsed){
-            done=true;
-            __setTeamLink__({ teamId: parsed.teamId, secret: parsed.secret, linkedAt: __nowIso__() });
-            try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){ }
-            try{ modal.remove(); }catch(_){ }
-            try{ toast("Roster collegato", "green"); }catch(_){}
-            return;
-          }
-        }
-      }catch(_){}
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }catch(_){
-    await startManual();
-  }
-}
-
 function applyIconPalette(){
   try{
     const grids = document.querySelectorAll(".home-grid");
@@ -766,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "1.034";
+const BUILD_VERSION = "2.001";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1537,6 +825,467 @@ async function __localApi__(action, { method="GET", params={}, body=null } = {})
 // Import/Export DB (JSON unico) — Admin vs Operatore
 /* Legacy localStorage DB Import/Export removed (LOCAL build uses IndexedDB) */
 
+// ================================
+// __FIREBASE_SYNC__ (Firestore-only, no Storage)
+// Sync Admin <-> Operatori tramite Firebase, attivato SOLO su tap Import/Export.
+// Nessun blocco della Home se offline.
+// ================================
+const __FB_STATE__ = { token:null, exp:0, teamId:null, teamKey:null };
+
+function __fbLoadLink__(){
+  try{
+    __FB_STATE__.teamId = localStorage.getItem("ddae_fb_teamId") || "";
+    __FB_STATE__.teamKey = localStorage.getItem("ddae_fb_teamKey") || "";
+  }catch(_){}
+}
+function __fbSaveLink__(teamId, teamKey){
+  try{
+    localStorage.setItem("ddae_fb_teamId", String(teamId||""));
+    localStorage.setItem("ddae_fb_teamKey", String(teamKey||""));
+  }catch(_){}
+  __FB_STATE__.teamId = String(teamId||"");
+  __FB_STATE__.teamKey = String(teamKey||"");
+}
+
+function __randStr__(n){
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i=0;i<n;i++) s += a[(Math.random()*a.length)|0];
+  return s;
+}
+function __qrCodeText__(teamId, teamKey){
+  return `DDAE|${teamId}|${teamKey}`;
+}
+function __parseQr__(txt){
+  const s = String(txt||"").trim();
+  const m = s.match(/^DDAE\|([^|]+)\|([^|]+)$/i);
+  if (!m) return null;
+  return { teamId: m[1], teamKey: m[2] };
+}
+
+async function __fbGetIdToken__(){
+  try{
+    if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error("Firebase non configurato");
+    const now = Date.now();
+    if (__FB_STATE__.token && __FB_STATE__.exp && now < (__FB_STATE__.exp - 15000)) return __FB_STATE__.token;
+
+    // anonymous signUp (REST)
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
+    const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ returnSecureToken:true }) });
+    if (!res.ok) throw new Error("Auth Firebase fallita");
+    const data = await res.json();
+    __FB_STATE__.token = data.idToken;
+    const sec = parseInt(String(data.expiresIn||"3600"),10);
+    __FB_STATE__.exp = Date.now() + (isNaN(sec)?3600:sec)*1000;
+    return __FB_STATE__.token;
+  }catch(e){
+    throw e;
+  }
+}
+
+function __fsBase__(){
+  const pid = FIREBASE_CONFIG.projectId;
+  return `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents`;
+}
+function __fsDocUrl__(path){
+  return `${__fsBase__()}/${path}`;
+}
+function __fsEncode__(obj){
+  // only simple string/timestamp/array<string>
+  const out = { fields:{} };
+  const f = out.fields;
+  for (const k of Object.keys(obj||{})){
+    const v = obj[k];
+    if (v === undefined) continue;
+    if (v === null){ f[k] = { nullValue: null }; continue; }
+    if (typeof v === "string"){ f[k] = { stringValue: v }; continue; }
+    if (typeof v === "number"){ f[k] = { doubleValue: v }; continue; }
+    if (typeof v === "boolean"){ f[k] = { booleanValue: v }; continue; }
+    if (v && v.__ts){ f[k] = { timestampValue: v.__ts }; continue; }
+    if (Array.isArray(v)){
+      f[k] = { arrayValue: { values: v.map(x => ({ stringValue: String(x) })) } };
+      continue;
+    }
+    // fallback: stringify
+    f[k] = { stringValue: JSON.stringify(v) };
+  }
+  return out;
+}
+function __fsDecode__(doc){
+  try{
+    const f = (doc && doc.fields) ? doc.fields : {};
+    const out = {};
+    for (const k of Object.keys(f)){
+      const v = f[k];
+      if (v.stringValue !== undefined) out[k] = v.stringValue;
+      else if (v.doubleValue !== undefined) out[k] = v.doubleValue;
+      else if (v.integerValue !== undefined) out[k] = parseInt(v.integerValue,10);
+      else if (v.booleanValue !== undefined) out[k] = !!v.booleanValue;
+      else if (v.timestampValue !== undefined) out[k] = v.timestampValue;
+      else if (v.arrayValue && Array.isArray(v.arrayValue.values)) out[k] = v.arrayValue.values.map(it => it.stringValue);
+    }
+    return out;
+  }catch(_){ return {}; }
+}
+
+async function __fsGet__(path){
+  const token = await __fbGetIdToken__();
+  __syncLedBegin("GET");
+  try{
+    const res = await fetch(__fsDocUrl__(path), { headers: { "Authorization": `Bearer ${token}` }, cache:"no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  }finally{
+    __syncLedEnd("GET");
+  }
+}
+async function __fsPatch__(path, data){
+  const token = await __fbGetIdToken__();
+  __syncLedBegin("POST");
+  try{
+    const res = await fetch(__fsDocUrl__(path) + "?currentDocument.exists=true", {
+      method:"PATCH",
+      headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (res.ok) return await res.json();
+    // if missing, create
+    const res2 = await fetch(__fsDocUrl__(path), {
+      method:"POST",
+      headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (!res2.ok) throw new Error("Scrittura Firebase fallita");
+    return await res2.json();
+  }finally{
+    __syncLedEnd("POST");
+  }
+}
+async function __fsSet__(path, data){
+  const token = await __fbGetIdToken__();
+  __syncLedBegin("POST");
+  try{
+    const res = await fetch(__fsDocUrl__(path), {
+      method:"PATCH",
+      headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (!res.ok) throw new Error("Scrittura Firebase fallita");
+    return await res.json();
+  }finally{
+    __syncLedEnd("POST");
+  }
+}
+
+async function __fsList__(collectionPath){
+  const token = await __fbGetIdToken__();
+  __syncLedBegin("GET");
+  try{
+    const res = await fetch(__fsBase__() + "/" + collectionPath, { headers:{ "Authorization": `Bearer ${token}` }, cache:"no-store" });
+    if (!res.ok) return [];
+    const j = await res.json();
+    return Array.isArray(j.documents) ? j.documents : [];
+  }finally{
+    __syncLedEnd("GET");
+  }
+}
+
+async function __ensureAdminTeam__(){
+  __fbLoadLink__();
+      // QR modal close
+      try{
+        const qc = document.getElementById("qrClose");
+        const qm = document.getElementById("qrModal");
+        if (qc && qm) bindFastTap(qc, ()=>{ qm.hidden = true; try{ qm.setAttribute("aria-hidden","true"); }catch(_){} });
+      }catch(_){}
+
+  if (__FB_STATE__.teamId && __FB_STATE__.teamKey) return { teamId: __FB_STATE__.teamId, teamKey: __FB_STATE__.teamKey };
+
+  const teamId = "T" + __randStr__(10);
+  const teamKey = __randStr__(24);
+  __fbSaveLink__(teamId, teamKey);
+  return { teamId, teamKey };
+}
+
+async function __adminGenerateQr__(){
+  // ensure team
+  const { teamId, teamKey } = await __ensureAdminTeam__();
+
+  // update team doc (include operator names from impostazioni if available)
+  let ops = [];
+  try{
+    await ensureSettingsLoaded({ force:false, showLoader:false });
+    ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
+  }catch(_){}
+
+  const nowIso = new Date().toISOString();
+  await __fsSet__(`teams/${teamId}`, { key: teamKey, operators: ops, updatedAt: { __ts: nowIso } });
+
+  const code = __qrCodeText__(teamId, teamKey);
+  try{ __showQrModal__(code); }catch(_){ alert(code); }
+}
+
+function __showQrModal__(code){
+  const modal = document.getElementById("qrModal");
+  const txt = document.getElementById("qrCodeText");
+  const img = document.getElementById("qrCodeImg");
+  if (txt) txt.textContent = code;
+  if (img){
+    const u = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(code);
+    img.src = u;
+  }
+  if (modal){
+    modal.hidden = false;
+    try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
+  }
+}
+
+async function __qrScanAndLink__(){
+  // Use camera scan if available, else prompt
+  let code = "";
+  // Try BarcodeDetector + getUserMedia
+  try{
+    if ("BarcodeDetector" in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      const det = new BarcodeDetector({ formats:["qr_code"] });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
+      const video = document.getElementById("qrScanVideo");
+      const scanModal = document.getElementById("qrScanModal");
+      if (video){
+        video.srcObject = stream;
+        await video.play();
+      }
+      if (scanModal){
+        scanModal.hidden = false;
+        try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){}
+      }
+
+      code = await new Promise((resolve)=>{
+        let done = false;
+        const stopAll = ()=>{
+          if (done) return;
+          done = true;
+          try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){}
+          try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
+        };
+        const tick = async ()=>{
+          if (done) return;
+          try{
+            if (video && video.readyState >= 2){
+              const bmp = await createImageBitmap(video);
+              const codes = await det.detect(bmp);
+              if (codes && codes.length){
+                stopAll();
+                return resolve(String(codes[0].rawValue || "").trim());
+              }
+            }
+          }catch(_){}
+          requestAnimationFrame(tick);
+        };
+        tick();
+
+        // close btn
+        try{
+          const close = document.getElementById("qrScanClose");
+          if (close){
+            close.onclick = ()=>{ stopAll(); resolve(""); };
+          }
+        }catch(_){}
+        // timeout
+        setTimeout(()=>{ if(!done){ stopAll(); resolve(""); } }, 25000);
+      });
+    }
+  }catch(_){ code = ""; }
+
+  if (!code){
+    try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
+  }
+  const parsed = __parseQr__(code);
+  if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+
+  // validate team key matches
+  const doc = await __fsGet__(`teams/${parsed.teamId}`);
+  if (!doc){ try{ toast("Team non trovato", "orange"); }catch(_){ } return; }
+  const data = __fsDecode__(doc);
+  if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+
+  __fbSaveLink__(parsed.teamId, parsed.teamKey);
+  try{ toast("Collegato", "green"); }catch(_){ }
+}
+
+function __isAdmin__(){
+  return !!(state && state.session && !isOperatoreSession(state.session));
+}
+function __operatorName__(){
+  try{ return String(state?.session?.username || "").trim(); }catch(_){ return ""; }
+}
+
+async function __fbExportAdmin__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+
+  const tables = __ADMIN_TABLES__;
+  const datasets = {};
+  for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
+  const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
+
+  await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
+  try{ toast("Export Admin ok", "blue"); }catch(_){}
+}
+
+async function __fbImportOperator__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+
+  const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
+  if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  const data = __fsDecode__(doc);
+  const raw = String(data.admin_json||"");
+  if (!raw){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  let payload=null;
+  try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
+  if (!payload || !payload.datasets){ try{ toast("Dati non validi", "orange"); }catch(_){ } return; }
+
+  // Import subset operatore
+  for (const t of __OP_TABLES__){
+    if (payload.datasets[t] !== undefined){
+      await __tblSet__(t, payload.datasets[t]);
+    }
+  }
+  try{ toast("Import operatore ok", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+}
+
+async function __fbExportOperator__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+  const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
+  if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
+
+  const datasets = {
+    pulizie: await __tblGet__("pulizie", []),
+    operatori: await __tblGet__("operatori", []),
+    lavanderia: await __tblGet__("lavanderia", [])
+  };
+  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
+  await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
+  try{ toast("Export operatore ok", "blue"); }catch(_){}
+}
+
+function __pickLatestLaundry__(list){
+  try{
+    const arr = Array.isArray(list)?list:[];
+    if (!arr.length) return null;
+    // pick max updatedAt or endDate
+    return arr.slice().sort((a,b)=>{
+      const ua = String(a.updatedAt||a.updated_at||a.endDate||a.end_date||"");
+      const ub = String(b.updatedAt||b.updated_at||b.endDate||b.end_date||"");
+      return ua < ub ? 1 : (ua > ub ? -1 : 0);
+    })[0];
+  }catch(_){ return null; }
+}
+
+async function __fbImportAdmin__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+
+  // get operator list from settings if present
+  let ops = [];
+  try{
+    await ensureSettingsLoaded({ force:false, showLoader:false });
+    ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
+  }catch(_){}
+  // normalize
+  ops = ops.map(n => String(n).toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"")).filter(Boolean);
+
+  if (!ops.length){
+    // fallback: list all docs in operators collection
+    const docs = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+    ops = docs.map(d => String(d.name||"").split("/").pop());
+  }
+
+  // merge
+  let mergedOperatori = await __tblGet__("operatori", []);
+  const baseOperatori = Array.isArray(mergedOperatori) ? mergedOperatori : [];
+  mergedOperatori = baseOperatori.slice();
+
+  let bestLaundry = null;
+  const LAUNDRY_COLS = (typeof window.LAUNDRY_COLS !== "undefined" && Array.isArray(window.LAUNDRY_COLS)) ? window.LAUNDRY_COLS : ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+
+  for (const op of ops){
+    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/operators/${op}`);
+    if (!doc) continue;
+    const d = __fsDecode__(doc);
+    const raw = String(d.operator_json||"");
+    if (!raw) continue;
+    let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
+    if (!payload || !payload.datasets) continue;
+
+    // merge operatori entries (append, dedupe by id)
+    try{
+      const list = Array.isArray(payload.datasets.operatori) ? payload.datasets.operatori : [];
+      const seen = new Set(mergedOperatori.map(r=>String(r?.id||"").trim()).filter(Boolean));
+      list.forEach(r=>{
+        const id = String(r?.id||"").trim();
+        if (id && seen.has(id)) return;
+        mergedOperatori.push(r);
+        if (id) seen.add(id);
+      });
+    }catch(_){}
+
+    // pick best laundry by total sum
+    try{
+      const l = __pickLatestLaundry__(payload.datasets.lavanderia);
+      if (l){
+        const sum = LAUNDRY_COLS.reduce((acc,k)=> acc + (Number(l[k]||0)||0), 0);
+        const sumBest = bestLaundry ? LAUNDRY_COLS.reduce((acc,k)=> acc + (Number(bestLaundry[k]||0)||0), 0) : -1;
+        if (!bestLaundry || sum > sumBest){
+          bestLaundry = l;
+        }else if (bestLaundry){
+          // max field-per-field
+          LAUNDRY_COLS.forEach(k=>{
+            const a = Number(bestLaundry[k]||0)||0;
+            const b = Number(l[k]||0)||0;
+            if (b > a) bestLaundry[k] = b;
+          });
+        }
+      }
+    }catch(_){}
+  }
+
+  // write merged operatori
+  await __tblSet__("operatori", mergedOperatori);
+
+  // write bestLaundry as single-row array (replace)
+  if (bestLaundry){
+    await __tblSet__("lavanderia", [bestLaundry]);
+  }
+
+  try{ toast("Import admin ok", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+}
+
+async function __handleSyncImport__(){
+  if (__isAdmin__()) return __fbImportAdmin__();
+  return __fbImportOperator__();
+}
+async function __handleSyncExport__(){
+  if (__isAdmin__()) return __fbExportAdmin__();
+  return __fbExportOperator__();
+}
+
+// Bind sync buttons once DOM is ready
+try{
+  window.addEventListener("load", ()=>{
+    try{
+      __fbLoadLink__();
+      const imp = document.getElementById("goDbImport");
+      const exp = document.getElementById("goDbExport");
+      if (imp) bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } });
+      if (exp) bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } });
+    }catch(_){}
+  }, { passive:true });
+}catch(_){}
+
 
 // Dialog a due azioni (riusa il modal Sì/No esistente con label dinamiche)
 // Ritorna "yes" o "no".
@@ -1596,9 +1345,43 @@ function __closeDbMenuModal__(){
 }
 
 function __openDbMenuModal__(){
-  // Backup locale completo (sicurezza): solo ADMIN, solo Import/Export JSON sul telefono
-  try{ return __openDbPopup__("admin"); }catch(_){ try{ return __openDbPopup__("admin"); }catch(__){} }
+  try{
+    const modal = document.getElementById("dbMenuModal");
+    const closeBtn = document.getElementById("dbMenuClose");
+    const importBtn = document.getElementById("dbMenuImportBtn");
+    const exportBtn = document.getElementById("dbMenuExportBtn");
+    if (!modal || !importBtn || !exportBtn){
+      return __openDbPopup__("admin");
+    }
+
+    // bind once
+    if (!modal.__bound){
+      modal.__bound = true;
+      const bind = (el, fn) => { try{ if (el) bindFastTap(el, fn); }catch(_){ try{ el.addEventListener("click", fn); }catch(__){} } };
+
+      bind(closeBtn, ()=>{ __closeDbMenuModal__(); });
+
+      // Backup LOCALE completo (DB amministratore)
+      bind(importBtn, async ()=>{ __closeDbMenuModal__(); await __dbImport__("admin"); });
+      bind(exportBtn, async ()=>{ __closeDbMenuModal__();
+        let w = null;
+        try{ w = window.open("", "_blank"); }catch(_){ w = null; }
+        await __dbExport__("admin", w);
+      });
+
+      // click outside to close
+      try{
+        modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeDbMenuModal__(); });
+      }catch(_){}
+    }
+
+    modal.hidden = false;
+    try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
+  }catch(e){
+    try{ toast(e.message || String(e)); }catch(_){}
+  }
 }
+
 
 
 
@@ -2168,7 +1951,7 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: Import/Export DB (Sync) come tile in basso (griglia Home 2x5)
+  // Home: Import/Export SYNC (Firebase) — visibili sia Admin che Operatore
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
@@ -2178,12 +1961,6 @@ function applyRoleMode(){
       impTile.hidden = false;
       expTile.hidden = false;
       try{ impTile.style.display = ""; expTile.style.display = ""; }catch(_){ }
-    }
-  }catch(_){ }
-}else{
-        impTile.hidden = true;
-        expTile.hidden = true;
-      }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
@@ -3924,7 +3701,7 @@ function setupImpostazioni() {
     const dbBtn = document.getElementById("settingsDbBtn");
     if (dbBtn) bindFastTap(dbBtn, () => { __openDbMenuModal__(); });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
-    if (rosterBtn) bindFastTap(rosterBtn, async () => { try{ await __adminShowQrRoster__(); }catch(e){ try{ toast("Errore QR", "orange"); }catch(_){ } } });
+    if (rosterBtn) bindFastTap(rosterBtn, async () => { try{ await __adminGenerateQr__(); }catch(e){ try{ toast("Errore QR", "orange"); }catch(_){ } } });
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -5218,11 +4995,9 @@ function setupHeader(){
   if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
 
   const opImpRoster = document.getElementById("opImportRosterTop");
-  if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __operatorScanQrRoster__(); }catch(e){ try{ toast("Errore QR", "orange"); }catch(_){ } } });
+  if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __qrScanAndLink__(); }catch(e){ try{ toast("QR non disponibile", "orange"); }catch(_){ } } });
 
-
-
-  // HOME: ricevute mancanti (solo in HOME)
+// HOME: ricevute mancanti (solo in HOME)
   const btnRec = document.getElementById("homeReceiptsTop");
   if (btnRec) bindFastTap(btnRec, () => { openReceiptDueModal(); });
 
@@ -5282,12 +5057,12 @@ function setupHome(){
   if (build) build.textContent = `dDAE_${BUILD_VERSION}`;
 
   
-  // HOME: Import/Export (Firebase Sync)
+  // Operatore: Import/Export DB come tile in Home
   try{
     const imp = document.getElementById("goDbImport");
-    if (imp) bindFastTap(imp, () => { __syncImportHome__(); });
+    if (imp) bindFastTap(imp, () => { __dbImport__("operator"); });
     const exp = document.getElementById("goDbExport");
-    if (exp) bindFastTap(exp, () => { __syncExportHome__(); });
+    if (exp) bindFastTap(exp, () => { let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; } __dbExport__("operator", w); });
   }catch(_){ }
 // SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
   const btnAdd = $("#btnAddSpesa");
