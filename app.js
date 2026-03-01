@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.033
+ * Build: 1.034
  */
-const BUILD_VERSION = "1.035";
+const BUILD_VERSION = "1.034";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -944,51 +944,6 @@ function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
 }
 
-function __normalizeExportName__(s){
-  let t = String(s||"").trim().toLowerCase();
-  try{ t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }catch(_){}
-  t = t.replace(/['’]/g, "");
-  t = t.replace(/[^a-z0-9]+/g, "_");
-  t = t.replace(/^_+|_+$/g, "");
-  if (!t) t = "operatore";
-  return t;
-}
-
-function __getActiveOperatorNameForExport__(){
-  // 1) nome salvato localmente
-  try{
-    const v = localStorage.getItem("DDAE_ACTIVE_OPERATOR_NAME");
-    if (v && String(v).trim()) return String(v).trim();
-  }catch(_){}
-
-  // 2) nome da sessione (se presente)
-  try{
-    const u = (state && state.session && state.session.user) ? state.session.user : {};
-    const cand = (u && (u.nome || u.name || u.username)) || (state.session && (state.session.nome || state.session.name || state.session.username)) || "";
-    if (String(cand).trim()) return String(cand).trim();
-  }catch(_){}
-
-  // 3) se c'è un solo nome nel roster, usa quello
-  try{
-    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
-    if (names.length === 1) return names[0];
-  }catch(_){}
-
-  // 4) fallback: chiedi 1 volta e salva
-  try{
-    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
-    let msg = "Nome operatore per export (es. Costanza)";
-    if (names.length) msg += "\nOpzioni: " + names.join(", ");
-    const ans = window.prompt(msg, names[0] || "");
-    if (ans && String(ans).trim()){
-      try{ localStorage.setItem("DDAE_ACTIVE_OPERATOR_NAME", String(ans).trim()); }catch(_){}
-      return String(ans).trim();
-    }
-  }catch(_){}
-
-  return "operatore";
-}
-
 function __dbFmtDateDdMmYy__(){
   try{
     const ts = new Date();
@@ -1038,7 +993,7 @@ async function __dbImport__(kind){
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "application/json,.json,.dae,application/octet-stream";
+    input.accept = "application/json,.json";
     input.style.position = "fixed";
     input.style.left = "-9999px";
     document.body.appendChild(input);
@@ -1134,7 +1089,7 @@ async function __dbImport__(kind){
       const url2 = URL.createObjectURL(blob2);
       const a2 = document.createElement("a");
       a2.href = url2;
-      a2.download = __safeFileName__(`${acct}_IMP_${dt}.dae`);
+      a2.download = __safeFileName__(`${acct}_IMP_${dt}.json`);
       document.body.appendChild(a2);
       a2.click();
       setTimeout(()=>{ try{ URL.revokeObjectURL(url2); }catch(_){} try{ document.body.removeChild(a2); }catch(_){} }, 0);
@@ -1248,7 +1203,7 @@ async function __exportRosterOperators__(){
       operatori: names
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/octet-stream" });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const ts = new Date();
@@ -1293,8 +1248,7 @@ async function __dbExport__(kind, preopenWin){
     const k = String(kind||"").toLowerCase();
     const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    const baseName = (k.startsWith("admin") ? "admin" : __normalizeExportName__(__getActiveOperatorNameForExport__()));
-    const filename = __safeFileName__(`${baseName}_${dt}.dae`);
+    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
@@ -11031,7 +10985,7 @@ function piscinaPrintCurrentMonth(){
       <img class="logo" src="./assets/logo.jpg" alt="Daedalium"/>
       <div class="htxt">
         <h1>Report Piscina — ${monthTitle}</h1>
-        <div class="sub">Daedalium PMS</div>
+        <div class="sub"></div>
       </div>
     </div>
     <div class="brandbar" aria-hidden="true"><span class="c1"></span><span class="c2"></span><span class="c3"></span><span class="c4"></span><span class="c5"></span><span class="c6"></span><span class="c7"></span><span class="c8"></span></div>
