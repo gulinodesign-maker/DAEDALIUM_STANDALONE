@@ -1,5 +1,5 @@
 /* dDAE - Service Worker (PWA)
- * Build: 1.035
+ * Build: 1.036
  *
  * Obiettivi:
  * - cache name cambia ad ogni build
@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "1.035";
+const BUILD = "1.036";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)
@@ -32,6 +32,11 @@ const CORE_ASSETS = [
   `./assets/icons/favicon-32.png?v=${BUILD}`,
   `./assets/icons/favicon-16.png?v=${BUILD}`,
   `./assets/icons/apple-touch-icon.png?v=${BUILD}`,
+
+  // Firebase SDK (cached for offline after first install)
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js",
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js",
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js",
 ];
 
 self.addEventListener("install", (event) => {

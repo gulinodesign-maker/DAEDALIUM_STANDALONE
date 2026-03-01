@@ -48,6 +48,8 @@ function __lsSet__(k, v){
 
 async function __fbEnsure__(){
   try{
+    if (typeof firebase === "undefined" || !firebase || !firebase.initializeApp) return false;
+
     if (!window.FIREBASE_SYNC_ENABLED) return false;
     if (!window.FIREBASE_CONFIG) return false;
     if (!window.firebase) return false;
