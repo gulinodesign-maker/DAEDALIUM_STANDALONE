@@ -1,1 +1,1 @@
-Apps Script: NO UPDATE REQUIRED for build 1.035
+Apps Script: NO UPDATE REQUIRED for build 1.036
