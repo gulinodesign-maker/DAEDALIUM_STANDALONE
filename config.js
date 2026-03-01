@@ -7,3 +7,15 @@ const TOURIST_TAX_EUR_PPN = 1.5;
 
 // Ridotti (es. anziani): moltiplicatore sull'importo (0.5 = -50%). Per ora non usato se non c'è il campo.
 const TOURIST_TAX_REDUCED_FACTOR = 0.5;
+
+// Firebase (Sync bridge)
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDYG-TqrzfN5kDUH9GYWmYbqnwoqEnWMkM",
+  authDomain: "ddae-sync.firebaseapp.com",
+  projectId: "ddae-sync",
+  storageBucket: "ddae-sync.firebasestorage.app",
+  messagingSenderId: "460884105746",
+  appId: "1:460884105746:web:29e06fc11d43c78bdd96cb",
+  measurementId: "G-Q2BXTMGR96"
+};
+const FIREBASE_SYNC_ENABLED = true;
