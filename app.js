@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.033
+ * Build: 1.034
  */
-const BUILD_VERSION = "1.033";
+const BUILD_VERSION = "1.034";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -10985,7 +10985,7 @@ function piscinaPrintCurrentMonth(){
       <img class="logo" src="./assets/logo.jpg" alt="Daedalium"/>
       <div class="htxt">
         <h1>Report Piscina — ${monthTitle}</h1>
-        <div class="sub">Daedalium PMS</div>
+        <div class="sub"></div>
       </div>
     </div>
     <div class="brandbar" aria-hidden="true"><span class="c1"></span><span class="c2"></span><span class="c3"></span><span class="c4"></span><span class="c5"></span><span class="c6"></span><span class="c7"></span><span class="c8"></span></div>
