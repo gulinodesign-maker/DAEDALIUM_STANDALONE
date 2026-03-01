@@ -1,4 +1,4 @@
-/* dDAE Config - 1.036 */
+/* dDAE Config - 1.037 */
 const API_BASE_URL = ""; // LOCAL build: nessuna dipendenza Google
 const API_KEY = "daedalium2026";
 // Tassa di soggiorno: € per persona (>10 anni) per notte
@@ -19,3 +19,15 @@ const FIREBASE_CONFIG = {
   measurementId: "G-Q2BXTMGR96"
 };
 const FIREBASE_SYNC_ENABLED = true;
+
+// --- Firebase (Firestore) bridge config ---
+// Abilitazione sync Firebase (Firestore). Se false, i bottoni Sync saranno disattivati.
+window.FIREBASE_SYNC_ENABLED = true;
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDYG-TqrzfN5kDUH9GYWmYbqnwoqEnWMkM",
+  authDomain: "ddae-sync.firebaseapp.com",
+  projectId: "ddae-sync",
+  storageBucket: "ddae-sync.firebasestorage.app",
+  messagingSenderId: "460884105746",
+  appId: "1:460884105746:web:29e06fc11d43c78bdd96cb"
+};
