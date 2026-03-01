@@ -1052,7 +1052,6 @@ async function __qrScanAndLink__(){
       const scanModal = document.getElementById("qrScanModal");
       if (video){
         video.srcObject = stream;
-        try{ video.muted = true; video.setAttribute("muted",""); video.setAttribute("autoplay",""); }catch(_){ }
         await video.play();
       }
       if (scanModal){
@@ -1097,35 +1096,6 @@ async function __qrScanAndLink__(){
     }
   }catch(_){ code = ""; }
 
-  if (!code){
-    // Fallback: open camera (file capture) and try to decode a photo
-    try{
-      if ("BarcodeDetector" in window){
-        const det2 = new BarcodeDetector({ formats:["qr_code"] });
-        const inp = document.createElement("input");
-        inp.type = "file";
-        inp.accept = "image/*";
-        try{ inp.capture = "environment"; }catch(_){}
-        inp.style.position = "fixed";
-        inp.style.left = "-9999px";
-        document.body.appendChild(inp);
-        code = await new Promise((resolve)=>{
-          inp.onchange = async ()=>{
-            try{
-              const file = inp.files && inp.files[0];
-              if (!file){ resolve(""); return; }
-              const bmp = await createImageBitmap(file);
-              const codes = await det2.detect(bmp);
-              resolve((codes && codes[0] && codes[0].rawValue) ? String(codes[0].rawValue).trim() : "");
-            }catch(_){ resolve(""); }
-          };
-          inp.click();
-          setTimeout(()=>resolve(""), 25000);
-        });
-        try{ document.body.removeChild(inp); }catch(_){}
-      }
-    }catch(_){ code = ""; }
-  }
   if (!code){
     try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
   }
@@ -3994,15 +3964,8 @@ function setupAuth(){
   const menu = document.getElementById("authMenu");
   const form = document.getElementById("authForm");
 
-  const btnCreateAdmin = document.getElementById("btnMenuCreateAdmin");
-  const btnCreateOperator = document.getElementById("btnMenuCreateOperator");
-  const btnLoginAdmin = document.getElementById("btnMenuLoginAdmin");
-  const btnLoginOperator = document.getElementById("btnMenuLoginOperator");
-
-  // Back-compat (older ids)
   const btnAdmin = document.getElementById("btnMenuAdmin");
-  
-  
+  const btnOperator = document.getElementById("btnMenuOperator");
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");

@@ -7793,5 +7793,3 @@ color: var(--mcol,#ff3b30);
   stroke: rgba(255,255,255,0.96) !important;
   fill: none !important;
 }
-
-.auth-btn-white{background:rgba(255,255,255,0.8)!important;color:#2aa7ff!important;}
