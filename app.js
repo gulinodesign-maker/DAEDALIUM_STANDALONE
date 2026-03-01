@@ -1041,121 +1041,105 @@ function __showQrModal__(code){
 }
 
 async function __qrScanAndLink__(){
-  // Sempre apri la fotocamera; se la scansione non è supportata, consenti inserimento manuale dentro popup.
-  const scanModal = document.getElementById("qrScanModal");
-  const video = document.getElementById("qrScanVideo");
-  const close = document.getElementById("qrScanClose");
-  const manualBtn = document.getElementById("qrScanManualBtn");
-  const manualWrap = document.getElementById("qrScanManualWrap");
-  const manualInput = document.getElementById("qrScanManualInput");
-  const manualOk = document.getElementById("qrScanManualOkBtn");
-
-  let stream = null;
-  let done = false;
-
-  const stopAll = ()=>{
-    if (done) return;
-    done = true;
-    try{ if (stream){ stream.getTracks().forEach(t=>t.stop()); } }catch(_){}
-    try{ if (video){ video.pause(); video.srcObject = null; } }catch(_){}
-    try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
-  };
-
-  const showModal = ()=>{
-    try{
-      if (manualWrap) manualWrap.hidden = true;
-      if (manualInput) manualInput.value = "";
-      refreshFloatingLabels && refreshFloatingLabels();
-    }catch(_){}
-    try{ if (scanModal){ scanModal.hidden = false; scanModal.setAttribute("aria-hidden","false"); } }catch(_){}
-  };
-
-  const resolveManual = ()=> new Promise((resolve)=>{
-    try{
-      if (manualWrap) manualWrap.hidden = false;
-      refreshFloatingLabels && refreshFloatingLabels();
-      if (manualInput) manualInput.focus();
-    }catch(_){}
-    const ok = ()=>{
-      const code = String(manualInput ? manualInput.value : "").trim();
-      if (!code) return;
-      stopAll();
-      resolve(code);
-    };
-    if (manualOk) manualOk.onclick = ok;
-  });
-
-  showModal();
-
-  // close handler
-  try{ if (close){ close.onclick = ()=>{ stopAll(); }; } }catch(_){}
-  try{ if (manualBtn){ manualBtn.onclick = ()=>{ resolveManual(); }; } }catch(_){}
-
-  // avvia camera (se disponibile)
+  // Use camera scan if available, else prompt
+  let code = "";
+  // Try BarcodeDetector + getUserMedia
   try{
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
+    if ("BarcodeDetector" in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      const det = new BarcodeDetector({ formats:["qr_code"] });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
+      const video = document.getElementById("qrScanVideo");
+      const scanModal = document.getElementById("qrScanModal");
       if (video){
         video.srcObject = stream;
+        try{ video.muted = true; video.setAttribute("muted",""); video.setAttribute("autoplay",""); }catch(_){ }
         await video.play();
       }
-    }
-  }catch(_){
-    // Camera non disponibile: vai in manuale
-    return await resolveManual();
-  }
-
-  // Se BarcodeDetector non supportato: resta con camera + manuale
-  if (!("BarcodeDetector" in window)){
-    return await resolveManual();
-  }
-
-  // Scansione QR
-  const det = new BarcodeDetector({ formats:["qr_code"] });
-  const code = await new Promise((resolve)=>{
-    const timeout = setTimeout(()=>{ resolve(""); }, 25000);
-
-    const tick = async ()=>{
-      if (done) return;
-      try{
-        if (video && video.readyState >= 2){
-          const bmp = await createImageBitmap(video);
-          const codes = await det.detect(bmp);
-          if (codes && codes.length){
-            clearTimeout(timeout);
-            const v = String(codes[0].rawValue || "").trim();
-            stopAll();
-            return resolve(v);
-          }
-        }
-      }catch(_){}
-      requestAnimationFrame(tick);
-    };
-    tick();
-
-    // manual ok should also resolve if pressed
-    try{
-      if (manualOk){
-        manualOk.onclick = ()=>{
-          const v = String(manualInput ? manualInput.value : "").trim();
-          if (!v) return;
-          clearTimeout(timeout);
-          stopAll();
-          resolve(v);
-        };
+      if (scanModal){
+        scanModal.hidden = false;
+        try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){}
       }
-    }catch(_){}
-  });
+
+      code = await new Promise((resolve)=>{
+        let done = false;
+        const stopAll = ()=>{
+          if (done) return;
+          done = true;
+          try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){}
+          try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
+        };
+        const tick = async ()=>{
+          if (done) return;
+          try{
+            if (video && video.readyState >= 2){
+              const bmp = await createImageBitmap(video);
+              const codes = await det.detect(bmp);
+              if (codes && codes.length){
+                stopAll();
+                return resolve(String(codes[0].rawValue || "").trim());
+              }
+            }
+          }catch(_){}
+          requestAnimationFrame(tick);
+        };
+        tick();
+
+        // close btn
+        try{
+          const close = document.getElementById("qrScanClose");
+          if (close){
+            close.onclick = ()=>{ stopAll(); resolve(""); };
+          }
+        }catch(_){}
+        // timeout
+        setTimeout(()=>{ if(!done){ stopAll(); resolve(""); } }, 25000);
+      });
+    }
+  }catch(_){ code = ""; }
 
   if (!code){
-    // Nessuna scansione -> manuale (mantieni popup aperto)
-    const manual = await resolveManual();
-    return manual;
+    // Fallback: open camera (file capture) and try to decode a photo
+    try{
+      if ("BarcodeDetector" in window){
+        const det2 = new BarcodeDetector({ formats:["qr_code"] });
+        const inp = document.createElement("input");
+        inp.type = "file";
+        inp.accept = "image/*";
+        try{ inp.capture = "environment"; }catch(_){}
+        inp.style.position = "fixed";
+        inp.style.left = "-9999px";
+        document.body.appendChild(inp);
+        code = await new Promise((resolve)=>{
+          inp.onchange = async ()=>{
+            try{
+              const file = inp.files && inp.files[0];
+              if (!file){ resolve(""); return; }
+              const bmp = await createImageBitmap(file);
+              const codes = await det2.detect(bmp);
+              resolve((codes && codes[0] && codes[0].rawValue) ? String(codes[0].rawValue).trim() : "");
+            }catch(_){ resolve(""); }
+          };
+          inp.click();
+          setTimeout(()=>resolve(""), 25000);
+        });
+        try{ document.body.removeChild(inp); }catch(_){}
+      }
+    }catch(_){ code = ""; }
+  }
+  if (!code){
+    try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
   }
   const parsed = __parseQr__(code);
-  if (!parsed || !parsed.teamId || !parsed.teamKey){ try{ toast('QR non valido', 'orange'); }catch(_){}; return; }
+  if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+
+  // validate team key matches
+  const doc = await __fsGet__(`teams/${parsed.teamId}`);
+  if (!doc){ try{ toast("Team non trovato", "orange"); }catch(_){ } return; }
+  const data = __fsDecode__(doc);
+  if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+
   __fbSaveLink__(parsed.teamId, parsed.teamKey);
-  try{ toast('Operatore collegato', 'blue'); }catch(_){ }
+  try{ toast("Collegato", "green"); }catch(_){ }
 }
 
 function __isAdmin__(){
@@ -4010,8 +3994,15 @@ function setupAuth(){
   const menu = document.getElementById("authMenu");
   const form = document.getElementById("authForm");
 
+  const btnCreateAdmin = document.getElementById("btnMenuCreateAdmin");
+  const btnCreateOperator = document.getElementById("btnMenuCreateOperator");
+  const btnLoginAdmin = document.getElementById("btnMenuLoginAdmin");
+  const btnLoginOperator = document.getElementById("btnMenuLoginOperator");
+
+  // Back-compat (older ids)
   const btnAdmin = document.getElementById("btnMenuAdmin");
-  const btnOperator = document.getElementById("btnMenuOperator");
+  
+  
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");
@@ -4096,16 +4087,20 @@ function setupAuth(){
     return m || "Errore";
   };
 
-    // Scelta diretta: crea/login (no popup per compatibilità Android)
+  const openChoice = async (role)=>{
+    const isAdmin = String(role||"").toLowerCase().startsWith("admin");
+    const label = isAdmin ? "Admin" : "Operatore";
+    const choice = await __confirmTwoActions__(label + ": scegli operazione", "Crea", "Accedi");
+    if (choice === "yes"){
+      setMode(isAdmin ? "create_admin" : "create_operator");
+    }else{
+      setMode(isAdmin ? "login_admin" : "login_operator");
+    }
+  };
 
-
-    const btnAdminLogin = document.getElementById("btnMenuAdminLogin");
-  const btnOperatorLogin = document.getElementById("btnMenuOperatorLogin");
-  if (btnAdmin) bindFastTap(btnAdmin, ()=>setMode("create_admin"));
-  if (btnAdminLogin) bindFastTap(btnAdminLogin, ()=>setMode("login_admin"));
-  if (btnOperator) bindFastTap(btnOperator, ()=>setMode("create_operator"));
-  if (btnOperatorLogin) bindFastTap(btnOperatorLogin, ()=>setMode("login_operator"));
-if (btnBack) bindFastTap(btnBack, showMenu);
+  if (btnAdmin) bindFastTap(btnAdmin, ()=>openChoice("admin"));
+  if (btnOperator) bindFastTap(btnOperator, ()=>openChoice("operatore"));
+  if (btnBack) bindFastTap(btnBack, showMenu);
 
   if (btnSubmit) bindFastTap(btnSubmit, async ()=>{
     try{
