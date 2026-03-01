@@ -45,43 +45,16 @@ function applyIconPalette(){
 }
 
 
-// dDAE_1.036 — iOS BFCache: rebind tappable Home icons
+// dDAE_1.020 — iOS BFCache: rebind tappable Home icons
 try{
   window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } }, { passive:true });
 }catch(_){ }
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.036
+ * Build: 1.033
  */
-const BUILD_VERSION = "1.036";
-// Auto-update guard: se sul server c'è una build diversa, forza refresh (fix iOS cache aggressiva)
-(async function autoUpdateGuard(){
-  try{
-    const url = `./version.json?v=${Date.now()}`;
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) return;
-    const j = await r.json();
-    const remote = String(j.build || j.version || "").trim();
-    if (remote && remote !== BUILD_VERSION){
-      // prova update SW + cleanup cache vecchie, poi reload con cache-buster
-      try{
-        if (navigator.serviceWorker){
-          const regs = await navigator.serviceWorker.getRegistrations();
-          for (const reg of regs){ try{ await reg.update(); }catch(_){ } }
-        }
-      }catch(_){ }
-      try{
-        if (window.caches){
-          const keys = await caches.keys();
-          await Promise.all(keys.map(k => k.startsWith("dDAE") ? caches.delete(k) : Promise.resolve()));
-        }
-      }catch(_){ }
-      // reload forte
-      location.replace(`./?v=${remote}&ts=${Date.now()}`);
-    }
-  }catch(_){ }
-})();
+const BUILD_VERSION = "1.037";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -918,7 +891,6 @@ function __openDbMenuModal__(){
     const optO = document.getElementById("dbMenuOptOperator");
     const importBtn = document.getElementById("dbMenuImportBtn");
     const exportBtn = document.getElementById("dbMenuExportBtn");
-    const shareBtn = document.getElementById("dbMenuShareBtn");
     if (!modal || !optA || !optO || !importBtn || !exportBtn){
       // fallback: vecchio comportamento
       return __openDbPopup__("admin");
@@ -944,9 +916,6 @@ function __openDbMenuModal__(){
         try{ w = window.open("", "_blank"); }catch(_){ w = null; }
         try{ await __dbExport__(k, w); }finally{ try{ __closeDbMenuModal__(); }catch(_){ } }
       });
-
-
-      bind(shareBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbShare__(k); });
 
       // click outside to close
       try{
@@ -975,24 +944,6 @@ function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
 }
 
-
-function __slugName__(s){
-  try{
-    s = String(s||"").trim().toLowerCase();
-    if (!s) return "";
-    // remove accents
-    try{ s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }catch(_){}
-    // remove apostrophes
-    s = s.replace(/['’`]/g, "");
-    // spaces/separators -> underscore
-    s = s.replace(/\s+/g, "_").replace(/-+/g, "_");
-    // keep only a-z0-9 and underscore
-    s = s.replace(/[^a-z0-9_]/g, "_");
-    // collapse underscores
-    s = s.replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-    return s;
-  }catch(_){ return ""; }
-}
 function __dbFmtDateDdMmYy__(){
   try{
     const ts = new Date();
@@ -1004,16 +955,16 @@ function __dbFmtDateDdMmYy__(){
 }
 
 function __dbAccountNameForKind__(kind){
-  // name for filenames: admin fixed, operator = session username (normalized later)
+  // admin/operator name for filenames. Prefer current session username; fallback to app label.
   try{
     const k = String(kind||"").toLowerCase();
-    if (k.startsWith("admin")) return "admin";
     const sess = (typeof loadSession === "function") ? loadSession() : null;
     const uname = String(sess?.username || "").trim();
-    if (uname) return uname;
-    return "operatore";
+    if (uname) return uname.toUpperCase();
+    if (k.startsWith("admin")) return "DAEDALIUM";
+    return "OPERATORE";
   }catch(_){
-    return "operatore";
+    return "DAEDALIUM";
   }
 }
 
@@ -1042,7 +993,7 @@ async function __dbImport__(kind){
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "application/octet-stream,application/json,.dae,.json";
+    input.accept = "application/json,.json";
     input.style.position = "fixed";
     input.style.left = "-9999px";
     document.body.appendChild(input);
@@ -1134,11 +1085,11 @@ async function __dbImport__(kind){
       // Salva una copia del file importato con naming standardizzato
       const acct = __dbAccountNameForKind__(kind);
       const dt = __dbFmtDateDdMmYy__();
-      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/octet-stream" });
+      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url2 = URL.createObjectURL(blob2);
       const a2 = document.createElement("a");
       a2.href = url2;
-      a2.download = __safeFileName__(`${__slugName__(acct) || acct}_IMP_${dt}.dae`);
+      a2.download = __safeFileName__(`${acct}_IMP_${dt}.json`);
       document.body.appendChild(a2);
       a2.click();
       setTimeout(()=>{ try{ URL.revokeObjectURL(url2); }catch(_){} try{ document.body.removeChild(a2); }catch(_){} }, 0);
@@ -1290,15 +1241,14 @@ async function __dbExport__(kind, preopenWin){
       datasets
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/octet-stream" });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
-    // Nome file export: admin_DD-MM-YY.dae oppure <operatore>_DD-MM-YY.dae
+    // Nome file export: distinguere chiaramente ADMIN vs OPER
     const k = String(kind||"").toLowerCase();
+    const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    let baseName = __dbAccountNameForKind__(kind);
-    baseName = k.startsWith("admin") ? "admin" : (__slugName__(baseName) || "operatore");
-    const filename = __safeFileName__(`${baseName}_${dt}.dae`);
+    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
@@ -1337,57 +1287,7 @@ async function __dbExport__(kind, preopenWin){
     try{ toast("Errore export", "orange"); }catch(_){}
   }
 }
-// ===== /DB Import/Export
-
-async function __dbShare__(kind){
-  // Condivide un pacchetto .dae tramite WhatsApp (o altre app) via Web Share API.
-  // Fallback: export download standard.
-  try{
-    const tables = __dbTablesForKind__(kind);
-    const datasets = {};
-    for (const t of tables){
-      datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
-    }
-    const payload = {
-      kind: __DB_EXPORT_KIND__,
-      schemaVersion: __DB_SCHEMA_VERSION__,
-      exportedAt: __nowIso__(),
-      datasets
-    };
-
-    const k = String(kind||"").toLowerCase();
-    const dt = __dbFmtDateDdMmYy__();
-    let baseName = __dbAccountNameForKind__(kind);
-    baseName = k.startsWith("admin") ? "admin" : (__slugName__(baseName) || "operatore");
-    const filename = __safeFileName__(`${baseName}_${dt}.dae`);
-
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/octet-stream" });
-
-    if (navigator.share){
-      try{
-        const file = new File([blob], filename, { type: "application/octet-stream" });
-        if (navigator.canShare && !navigator.canShare({ files: [file] })) throw new Error("cannot share files");
-        await navigator.share({ files: [file], title: filename, text: "Aggiornamento database Daedalium" });
-        try{ toast("Condivisione avviata", "blue"); }catch(_){}
-        return;
-      }catch(_){ /* fallback */ }
-    }
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
-      try{ document.body.removeChild(a); }catch(_){}
-    }, 500);
-    try{ toast("Export pronto", "blue"); }catch(_){}
-  }catch(e){
-    try{ toast("Errore condivisione/export", "orange"); }catch(_){}
-  }
-}
- (LOCAL) =====
+// ===== /DB Import/Export (LOCAL) =====
 
 
 // Utility: parse importi (usato anche in guest list)
@@ -1662,7 +1562,7 @@ function __isRemoteNewer(remote, local){
 }
 
 // =========================
-// AUTH + SESSION (dDAE_1.036)
+// AUTH + SESSION (dDAE_1.020)
 // =========================
 
 const __SESSION_KEY = "dDAE_session_v2";
@@ -2201,7 +2101,7 @@ function truthy(v){
   return (s === "1" || s === "true" || s === "yes" || s === "si" || s === "on");
 }
 
-// dDAE_1.036 — error overlay: evita blocchi silenziosi su iPhone PWA
+// dDAE_1.020 — error overlay: evita blocchi silenziosi su iPhone PWA
 window.addEventListener("error", (e) => {
   try {
     const msg = (e?.message || "Errore JS") + (e?.filename ? ` @ ${e.filename.split("/").pop()}:${e.lineno||0}` : "");
@@ -4022,7 +3922,7 @@ function bindFastTap(el, fn){
 }
 
 
-/* dDAE_1.036 — iOS hardening: Home icons always tappable (fallback binding) */
+/* dDAE_1.020 — iOS hardening: Home icons always tappable (fallback binding) */
 function bindHomeStrongTap(){
   // evita doppio binding
   try{
@@ -4062,7 +3962,7 @@ function bindHomeStrongTap(){
 }
 
 
-/* dDAE_1.036 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
+/* dDAE_1.020 — Tap counters: Adulti / Bambini <10 (tap increment, long press 0.5s = reset) */
 function bindGuestTapCounters(){
   const ids = ["guestAdults","guestKidsU10"];
   const fireRecalc = ()=>{ try{ updateGuestRemaining(); }catch(_){ } try{ updateGuestTaxTotalPill(); }catch(_){ } };
@@ -4246,7 +4146,7 @@ function setSpeseView(view, { render=false } = {}){
 /* NAV pages (5 pagine interne: home + 4 funzioni) */
 
 
-// dDAE_1.036 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
+// dDAE_1.020 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
 // Applichiamo una classe .is-light ai pulsanti con background chiaro, così CSS forza icone scure.
 function __parseRGBA__(s){
   try{
@@ -4629,7 +4529,7 @@ state.page = page;
 if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 
-  // dDAE_1.036: fallback visualizzazione Pulizie
+  // dDAE_1.020: fallback visualizzazione Pulizie
   try{
     if (page === "pulizie"){
       const el = document.getElementById("page-pulizie");
@@ -5934,7 +5834,7 @@ function escapeHtml(s){
 }
 
 // =========================
-// STATISTICHE (dDAE_1.036)
+// STATISTICHE (dDAE_1.020)
 // =========================
 
 function computeStatGen(){
@@ -6032,7 +5932,7 @@ function computeStatGen(){
   }
 
 
-  // dDAE_1.036+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
+  // dDAE_1.020+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
   try{
     giacenza = (money(conRicevuta) + money(senzaRicevuta)) - money(speseTot);
   }catch(_){ }
@@ -7945,7 +7845,7 @@ function renderRoomsReadOnly(ospite){
 }
 
 
-// ===== dDAE_1.036 — Multi prenotazioni per stesso nome =====
+// ===== dDAE_1.020 — Multi prenotazioni per stesso nome =====
 function normalizeGuestNameKey(name){
   try{ return collapseSpaces(String(name || "").trim()).toLowerCase(); }catch(_){ return String(name||"").trim().toLowerCase(); }
 }
@@ -8984,7 +8884,7 @@ function setupOspite(){
           : "Eliminare definitivamente questo ospite?";
         if (!confirm(msg)) return;
 
-        // ✅ dDAE_1.036: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
+        // ✅ dDAE_1.020: dopo cancellazione, vai SUBITO alla guest list (UX immediata su iOS)
         // 1) Navigazione istantanea + rimozione ottimistica dalla lista
         try{
           const idsSet = new Set((idsToDelete || []).map(x => String(x)));
@@ -10688,7 +10588,7 @@ function refreshFloatingLabels(){
 
 
 /* =========================
-   Piscina (dDAE_1.036)
+   Piscina (dDAE_1.020)
 ========================= */
 const PISCINA_ACTION = "piscina";
 
@@ -11408,7 +11308,7 @@ try{
   let __laundryRefreshT = null;
   let __savingHours = false;
   let __pendingHours = false;
-  // dDAE_1.036: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
+  // dDAE_1.020: salvataggio PULIZIE per-stanza (evita generazione righe/report inutili)
   // Mantiene UI fluida: nessun "blink" dei numeri durante autosave / refresh.
   let __dirtyLaundryRooms = new Set();   // stanze modificate (solo queste vengono salvate)
   let __dirtyLaundryCells = new Set();   // celle modificate (solo queste ricevono bordo rosso post-save)
@@ -11675,7 +11575,7 @@ try{
   const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
   const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
-  // dDAE_1.036 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
+  // dDAE_1.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
   const __getLoggedOperatorName = () => {
     try{
       if (!(state && state.session)) return "";
@@ -12312,7 +12212,7 @@ if (typeof btnOrePuliziaFromPulizie !== "undefined" && btnOrePuliziaFromPulizie)
 }
 
 
-// ===== CALENDARIO (dDAE_1.036) =====
+// ===== CALENDARIO (dDAE_1.020) =====
 function setupCalendario(){
   const pickBtn = document.getElementById("calPickBtn");
   const todayBtn = document.getElementById("calTodayBtn");
@@ -12547,7 +12447,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_1.036 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
+/* dDAE_1.020 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
 function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
@@ -12778,7 +12678,7 @@ function __fitCalendarioMonthLandscape(){
 
     const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
 
-    // dDAE_1.036: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
+    // dDAE_1.020: in vista mese su iPad landscape usa tutta la larghezza disponibile (margine 10px L/R)
     try{ document.body.classList.toggle("cal-month-landscape", !!isLandscape); }catch(_){}
 
     const grid = document.getElementById("calGridMonth");
@@ -13286,7 +13186,7 @@ function toRoman(n){
 
 
 /* =========================
-   Lavanderia (dDAE_1.036)
+   Lavanderia (dDAE_1.020)
 ========================= */
 const LAUNDRY_COLS = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 const LAUNDRY_LABELS = {
@@ -13689,7 +13589,7 @@ document.getElementById('rc_cancel')?.addEventListener('click', ()=>{
 // --- end room beds config ---
 
 
-// --- FIX dDAE_1.036: renderSpese allineato al backend ---
+// --- FIX dDAE_1.020: renderSpese allineato al backend ---
 // --- dDAE: Spese riga singola (senza IVA in visualizzazione) ---
 function renderSpese(){
   const list = document.getElementById("speseList");
@@ -13785,7 +13685,7 @@ function renderSpese(){
 
 
 
-// --- FIX dDAE_1.036: delete reale ospiti ---
+// --- FIX dDAE_1.020: delete reale ospiti ---
 function attachDeleteOspite(card, ospite){
   const btn = document.createElement("button");
   btn.className = "delbtn";
@@ -13821,7 +13721,7 @@ function attachDeleteOspite(card, ospite){
 })();
 
 
-// --- FIX dDAE_1.036: mostra nome ospite ---
+// --- FIX dDAE_1.020: mostra nome ospite ---
 (function(){
   const orig = window.renderOspiti;
   if (!orig) return;
@@ -14132,7 +14032,7 @@ function initTassaPage(){
 
 /* =========================
    Ore pulizia (Calendario ore operatori)
-   Build: dDAE_1.036
+   Build: dDAE_1.020
 ========================= */
 
 state.orepulizia = state.orepulizia || {
