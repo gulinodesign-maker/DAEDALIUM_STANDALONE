@@ -7793,3 +7793,7 @@ color: var(--mcol,#ff3b30);
   stroke: rgba(255,255,255,0.96) !important;
   fill: none !important;
 }
+
+
+/* DB menu: share tile */
+.db-share{ }

@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.034
+ * Build: 1.033
  */
-const BUILD_VERSION = "1.034";
+const BUILD_VERSION = "1.035";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -891,6 +891,7 @@ function __openDbMenuModal__(){
     const optO = document.getElementById("dbMenuOptOperator");
     const importBtn = document.getElementById("dbMenuImportBtn");
     const exportBtn = document.getElementById("dbMenuExportBtn");
+    const shareBtn = document.getElementById("dbMenuShareBtn");
     if (!modal || !optA || !optO || !importBtn || !exportBtn){
       // fallback: vecchio comportamento
       return __openDbPopup__("admin");
@@ -916,6 +917,9 @@ function __openDbMenuModal__(){
         try{ w = window.open("", "_blank"); }catch(_){ w = null; }
         try{ await __dbExport__(k, w); }finally{ try{ __closeDbMenuModal__(); }catch(_){ } }
       });
+
+
+      bind(shareBtn, async ()=>{ const k = window.__dbMenuKind || "admin"; __closeDbMenuModal__(); await __dbShare__(k); });
 
       // click outside to close
       try{
@@ -944,6 +948,24 @@ function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
 }
 
+
+function __slugName__(s){
+  try{
+    s = String(s||"").trim().toLowerCase();
+    if (!s) return "";
+    // remove accents
+    try{ s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }catch(_){}
+    // remove apostrophes
+    s = s.replace(/['’`]/g, "");
+    // spaces/separators -> underscore
+    s = s.replace(/\s+/g, "_").replace(/-+/g, "_");
+    // keep only a-z0-9 and underscore
+    s = s.replace(/[^a-z0-9_]/g, "_");
+    // collapse underscores
+    s = s.replace(/_+/g, "_").replace(/^_+|_+$/g, "");
+    return s;
+  }catch(_){ return ""; }
+}
 function __dbFmtDateDdMmYy__(){
   try{
     const ts = new Date();
@@ -955,16 +977,16 @@ function __dbFmtDateDdMmYy__(){
 }
 
 function __dbAccountNameForKind__(kind){
-  // admin/operator name for filenames. Prefer current session username; fallback to app label.
+  // name for filenames: admin fixed, operator = session username (normalized later)
   try{
     const k = String(kind||"").toLowerCase();
+    if (k.startsWith("admin")) return "admin";
     const sess = (typeof loadSession === "function") ? loadSession() : null;
     const uname = String(sess?.username || "").trim();
-    if (uname) return uname.toUpperCase();
-    if (k.startsWith("admin")) return "DAEDALIUM";
-    return "OPERATORE";
+    if (uname) return uname;
+    return "operatore";
   }catch(_){
-    return "DAEDALIUM";
+    return "operatore";
   }
 }
 
@@ -993,7 +1015,7 @@ async function __dbImport__(kind){
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "application/json,.json";
+    input.accept = "application/octet-stream,application/json,.dae,.json";
     input.style.position = "fixed";
     input.style.left = "-9999px";
     document.body.appendChild(input);
@@ -1085,11 +1107,11 @@ async function __dbImport__(kind){
       // Salva una copia del file importato con naming standardizzato
       const acct = __dbAccountNameForKind__(kind);
       const dt = __dbFmtDateDdMmYy__();
-      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/octet-stream" });
       const url2 = URL.createObjectURL(blob2);
       const a2 = document.createElement("a");
       a2.href = url2;
-      a2.download = __safeFileName__(`${acct}_IMP_${dt}.json`);
+      a2.download = __safeFileName__(`${__slugName__(acct) || acct}_IMP_${dt}.dae`);
       document.body.appendChild(a2);
       a2.click();
       setTimeout(()=>{ try{ URL.revokeObjectURL(url2); }catch(_){} try{ document.body.removeChild(a2); }catch(_){} }, 0);
@@ -1241,14 +1263,15 @@ async function __dbExport__(kind, preopenWin){
       datasets
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
 
-    // Nome file export: distinguere chiaramente ADMIN vs OPER
+    // Nome file export: admin_DD-MM-YY.dae oppure <operatore>_DD-MM-YY.dae
     const k = String(kind||"").toLowerCase();
-    const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
+    let baseName = __dbAccountNameForKind__(kind);
+    baseName = k.startsWith("admin") ? "admin" : (__slugName__(baseName) || "operatore");
+    const filename = __safeFileName__(`${baseName}_${dt}.dae`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
@@ -1287,7 +1310,57 @@ async function __dbExport__(kind, preopenWin){
     try{ toast("Errore export", "orange"); }catch(_){}
   }
 }
-// ===== /DB Import/Export (LOCAL) =====
+// ===== /DB Import/Export
+
+async function __dbShare__(kind){
+  // Condivide un pacchetto .dae tramite WhatsApp (o altre app) via Web Share API.
+  // Fallback: export download standard.
+  try{
+    const tables = __dbTablesForKind__(kind);
+    const datasets = {};
+    for (const t of tables){
+      datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
+    }
+    const payload = {
+      kind: __DB_EXPORT_KIND__,
+      schemaVersion: __DB_SCHEMA_VERSION__,
+      exportedAt: __nowIso__(),
+      datasets
+    };
+
+    const k = String(kind||"").toLowerCase();
+    const dt = __dbFmtDateDdMmYy__();
+    let baseName = __dbAccountNameForKind__(kind);
+    baseName = k.startsWith("admin") ? "admin" : (__slugName__(baseName) || "operatore");
+    const filename = __safeFileName__(`${baseName}_${dt}.dae`);
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/octet-stream" });
+
+    if (navigator.share){
+      try{
+        const file = new File([blob], filename, { type: "application/octet-stream" });
+        if (navigator.canShare && !navigator.canShare({ files: [file] })) throw new Error("cannot share files");
+        await navigator.share({ files: [file], title: filename, text: "Aggiornamento database Daedalium" });
+        try{ toast("Condivisione avviata", "blue"); }catch(_){}
+        return;
+      }catch(_){ /* fallback */ }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){}
+      try{ document.body.removeChild(a); }catch(_){}
+    }, 500);
+    try{ toast("Export pronto", "blue"); }catch(_){}
+  }catch(e){
+    try{ toast("Errore condivisione/export", "orange"); }catch(_){}
+  }
+}
+ (LOCAL) =====
 
 
 // Utility: parse importi (usato anche in guest list)
@@ -10985,7 +11058,7 @@ function piscinaPrintCurrentMonth(){
       <img class="logo" src="./assets/logo.jpg" alt="Daedalium"/>
       <div class="htxt">
         <h1>Report Piscina — ${monthTitle}</h1>
-        <div class="sub"></div>
+        <div class="sub">Daedalium PMS</div>
       </div>
     </div>
     <div class="brandbar" aria-hidden="true"><span class="c1"></span><span class="c2"></span><span class="c3"></span><span class="c4"></span><span class="c5"></span><span class="c6"></span><span class="c7"></span><span class="c8"></span></div>
