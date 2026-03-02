@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.001";
+const BUILD_VERSION = "2.002";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1041,144 +1041,64 @@ function __showQrModal__(code){
 }
 
 async function __qrScanAndLink__(){
-  // Obiettivo UX: 1 tap → si apre SEMPRE la fotocamera; niente tab "codice" come fallback immediato.
-  // Se la lettura automatica QR non è disponibile, mostriamo comunque la fotocamera + pulsante "Inserisci codice".
+  // Use camera scan if available, else prompt
   let code = "";
-
-  const video = document.getElementById("qrScanVideo");
-  const scanModal = document.getElementById("qrScanModal");
-  const closeBtn = document.getElementById("qrScanClose");
-  const manualBtn = document.getElementById("qrScanManualBtn");
-
-  const openModal = ()=>{
-    try{
-      if (scanModal){
-        scanModal.hidden = false;
-        scanModal.setAttribute("aria-hidden","false");
-      }
-    }catch(_){}
-  };
-  const closeModal = ()=>{
-    try{
-      if (scanModal){
-        scanModal.hidden = true;
-        scanModal.setAttribute("aria-hidden","true");
-      }
-    }catch(_){}
-  };
-
-  let stream = null;
-  const stopStream = ()=>{
-    try{ if (stream) stream.getTracks().forEach(t=>t.stop()); }catch(_){}
-    stream = null;
-    try{ if (video) video.srcObject = null; }catch(_){}
-  };
-
-  // bind close/manual once
+  // Try BarcodeDetector + getUserMedia
   try{
-    if (closeBtn && !closeBtn.__bound){
-      closeBtn.__bound = true;
-      closeBtn.onclick = ()=>{ stopStream(); closeModal(); };
-    }
-    if (manualBtn && !manualBtn.__bound){
-      manualBtn.__bound = true;
-      manualBtn.onclick = ()=>{
-        try{
-          const v = String(prompt("Incolla codice QR (DDAE|...)") || "").trim();
-          if (v) code = v;
-        }catch(_){}
-        stopStream();
-        closeModal();
-      };
-    }
-  }catch(_){}
-
-  // 1) apri sempre la fotocamera se possibile
-  try{
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      openModal();
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
+    if ("BarcodeDetector" in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      const det = new BarcodeDetector({ formats:["qr_code"] });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
+      const video = document.getElementById("qrScanVideo");
+      const scanModal = document.getElementById("qrScanModal");
       if (video){
         video.srcObject = stream;
-        // iOS richiede playsinline nel markup; comunque lo forziamo qui
-        try{ video.setAttribute("playsinline",""); }catch(_){}
         await video.play();
       }
-    }
-  }catch(_){
-    // se non possiamo aprire la camera, passiamo al fallback manuale sotto
-    stopStream();
-    closeModal();
-  }
-
-  // 2) prova lettura automatica (solo se disponibile)
-  if (!code){
-    try{
-      if ("BarcodeDetector" in window && video && stream){
-        const det = new BarcodeDetector({ formats:["qr_code"] });
-
-        code = await new Promise((resolve)=>{
-          let done = false;
-          const tick = async ()=>{
-            if (done) return;
-            try{
-              if (video.readyState >= 2){
-                const bmp = await createImageBitmap(video);
-                const codes = await det.detect(bmp);
-                if (codes && codes.length){
-                  done = true;
-                  return resolve(String(codes[0].rawValue || "").trim());
-                }
-              }
-            }catch(_){}
-            requestAnimationFrame(tick);
-          };
-          tick();
-          // timeout: se non legge, resta in modal (l'utente può chiudere o usare "Inserisci codice")
-          setTimeout(()=>{ if(!done) resolve(""); }, 25000);
-        });
+      if (scanModal){
+        scanModal.hidden = false;
+        try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){}
       }
-    }catch(_){ code = ""; }
-  }
 
-  // se abbiamo letto automaticamente, chiudiamo e validiamo
-  if (code){
-    stopStream();
-    closeModal();
-  }
-
-  // 3) fallback finale: se la camera non si è aperta, o non c'è QR letto e l'utente non ha inserito il codice
-  if (!code){
-    try{
-      // ultimo tentativo: input "scatta foto" (su molti telefoni apre direttamente la camera)
-      const imgInput = document.getElementById("qrScanImageInput");
-      if (imgInput){
-        const file = await new Promise((resolve)=>{
-          imgInput.value = "";
-          const onChange = ()=>{ imgInput.removeEventListener("change", onChange); resolve(imgInput.files && imgInput.files[0] ? imgInput.files[0] : null); };
-          imgInput.addEventListener("change", onChange, { once:true });
-          try{ imgInput.click(); }catch(_){ resolve(null); }
-        });
-        if (file && ("BarcodeDetector" in window)){
-          const det = new BarcodeDetector({ formats:["qr_code"] });
+      code = await new Promise((resolve)=>{
+        let done = false;
+        const stopAll = ()=>{
+          if (done) return;
+          done = true;
+          try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){}
+          try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
+        };
+        const tick = async ()=>{
+          if (done) return;
           try{
-            const bmp = await createImageBitmap(file);
-            const codes = await det.detect(bmp);
-            if (codes && codes.length){
-              code = String(codes[0].rawValue || "").trim();
+            if (video && video.readyState >= 2){
+              const bmp = await createImageBitmap(video);
+              const codes = await det.detect(bmp);
+              if (codes && codes.length){
+                stopAll();
+                return resolve(String(codes[0].rawValue || "").trim());
+              }
             }
           }catch(_){}
-        }
-      }
-    }catch(_){}
-  }
+          requestAnimationFrame(tick);
+        };
+        tick();
+
+        // close btn
+        try{
+          const close = document.getElementById("qrScanClose");
+          if (close){
+            close.onclick = ()=>{ stopAll(); resolve(""); };
+          }
+        }catch(_){}
+        // timeout
+        setTimeout(()=>{ if(!done){ stopAll(); resolve(""); } }, 25000);
+      });
+    }
+  }catch(_){ code = ""; }
 
   if (!code){
-    // Niente più popup automatici “a sorpresa”: qui l’utente arriva solo se non è stato possibile aprire/leggere.
-    try{ toast("Fotocamera non disponibile: incolla il codice", "orange"); }catch(_){}
     try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
   }
-
   const parsed = __parseQr__(code);
   if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
 
@@ -1561,6 +1481,17 @@ async function __dbImport__(kind){
       return;
     }
 
+    // Restore Firebase link (teamId/teamKey) if present in backup
+    try{
+      const link = data && data.meta && data.meta.firebaseLink ? data.meta.firebaseLink : null;
+      const teamId = String(link && link.teamId ? link.teamId : "").trim();
+      const teamKey = String(link && link.teamKey ? link.teamKey : "").trim();
+      if (teamId && teamKey){
+        __fbSaveLink__(teamId, teamKey);
+      }
+    }catch(_){ }
+
+
     const allowedTables = new Set(__dbTablesForKind__(kind));
     const ds = data.datasets || {};
     const tablesToWrite = Object.keys(ds).filter(t => allowedTables.has(t));
@@ -1768,11 +1699,21 @@ async function __dbExport__(kind, preopenWin){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
 
+
+    // Include Firebase link in local backup so admin can migrate device without redoing QR
+    let __fbTeamId = "";
+    let __fbTeamKey = "";
+    try{ __fbLoadLink__(); }catch(_){ }
+    try{ __fbTeamId = String(__FB_STATE__.teamId || ""); __fbTeamKey = String(__FB_STATE__.teamKey || ""); }catch(_){ }
+
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
-      datasets
+      datasets,
+      meta: {
+        firebaseLink: (__fbTeamId && __fbTeamKey) ? { teamId: __fbTeamId, teamKey: __fbTeamKey } : null
+      }
     };
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
