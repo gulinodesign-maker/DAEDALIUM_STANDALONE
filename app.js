@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.009
  */
-const BUILD_VERSION = "2.010";
+const BUILD_VERSION = "2.011";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1384,11 +1384,14 @@ async function __confirmTwoActions__(message, yesLabel, noLabel){
 }
 
 
-async function __openDbPopup__(kind){
-  const label = (kind==="admin") ? "DB Amministratore" : "DB Operatore";
+async async function __openDbPopup__(kind){
+  const k = String(kind||"admin").toLowerCase().startsWith("op") ? "operator" : "admin";
+  const label = (k==="admin") ? "DB Amministratore" : "DB Operatore";
   const choice = await __confirmTwoActions__(label + ": scegli operazione", "Importa", "Esporta");
-  if (choice === "yes") return __handleSyncImport__();
-  return __handleSyncExport__();
+  if (choice === "yes") return __dbImport__(k);
+  // best-effort preopen for iOS download
+  let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; }
+  return __dbExport__(k, w);
 }
 
 
@@ -1425,10 +1428,6 @@ function __openDbMenuModal__(){
       return __openDbPopup__("admin");
     }
 
-    // mostra/nascondi backup FILE (solo Admin)
-    const backupBtn = document.getElementById("dbMenuFullBackupBtn");
-    if (backupBtn) backupBtn.hidden = !__isAdmin__();
-
     // bind once
     if (!modal.__bound){
       modal.__bound = true;
@@ -1436,11 +1435,14 @@ function __openDbMenuModal__(){
 
       bind(closeBtn, ()=>{ __closeDbMenuModal__(); });
 
-      // Import/Export SYNC (Firebase) — silente (no file)
-      bind(importBtn, async ()=>{ __closeDbMenuModal__(); await __handleSyncImport__(); });
-      bind(exportBtn, async ()=>{ __closeDbMenuModal__(); await __handleSyncExport__(); });
-
-      // Backup FILE completo (solo Admin)
+      // Import/Export LOCAL (FILE OFFLINE) — solo Admin
+      bind(importBtn, async ()=>{ __closeDbMenuModal__(); await __dbImport__("admin"); });
+      bind(exportBtn, async ()=>{
+        __closeDbMenuModal__();
+        // Pre-open window to keep iOS user gesture for download (best-effort)
+        let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; }
+        await __dbExport__("admin", w);
+      });
       if (backupBtn){
         bind(backupBtn, async ()=>{ __closeDbMenuModal__();
           await __dbExport__("admin");
@@ -1752,22 +1754,12 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
-
-
-    // Include Firebase link in local backup so admin can migrate device without redoing QR
-    let __fbTeamId = "";
-    let __fbTeamKey = "";
-    try{ __fbLoadLink__(); }catch(_){ }
-    try{ __fbTeamId = String(__FB_STATE__.teamId || ""); __fbTeamKey = String(__FB_STATE__.teamKey || ""); }catch(_){ }
-
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
       datasets,
-      meta: {
-        firebaseLink: (__fbTeamId && __fbTeamKey) ? { teamId: __fbTeamId, teamKey: __fbTeamKey } : null
-      }
+      meta: {}
     };
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
