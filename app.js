@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.004
+ * Build: 2.005
  */
-const BUILD_VERSION = "2.004";
+const BUILD_VERSION = "2.005";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1007,7 +1007,7 @@ async function __ensureAdminTeam__(){
   return { teamId, teamKey };
 }
 
-async function __adminGenerateQr__(){
+async function __adminGenerateCode__(){
   // ensure team
   const { teamId, teamKey } = await __ensureAdminTeam__();
 
@@ -1028,85 +1028,104 @@ async function __adminGenerateQr__(){
 function __showQrModal__(code){
   const modal = document.getElementById("qrModal");
   const txt = document.getElementById("qrCodeText");
-  const img = document.getElementById("qrCodeImg");
-  if (txt) txt.textContent = code;
-  if (img){
-    const u = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(code);
-    img.src = u;
+
+  if (txt){
+    txt.textContent = code;
+
+    // Tap per copiare (iOS-friendly)
+    try{
+      txt.onclick = async () => {
+        try{
+          if (navigator.clipboard && navigator.clipboard.writeText){
+            await navigator.clipboard.writeText(String(code||""));
+            try{ toast("Codice copiato", "blue"); }catch(_){}
+          }else{
+            // fallback: seleziona e copia via execCommand
+            const r = document.createRange();
+            r.selectNodeContents(txt);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(r);
+            document.execCommand("copy");
+            sel.removeAllRanges();
+            try{ toast("Codice copiato", "blue"); }catch(_){}
+          }
+        }catch(_e){
+          try{ toast("Copia non disponibile", "orange"); }catch(_){}
+        }
+      };
+    }catch(_){}
   }
+
   if (modal){
     modal.hidden = false;
     try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
   }
 }
 
-async function __qrScanAndLink__(){
-  // Use camera scan if available, else prompt
-  let code = "";
-  // Try BarcodeDetector + getUserMedia
-  try{
-    if ("BarcodeDetector" in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      const det = new BarcodeDetector({ formats:["qr_code"] });
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
-      const video = document.getElementById("qrScanVideo");
-      const scanModal = document.getElementById("qrScanModal");
-      if (video){
-        video.srcObject = stream;
-        await video.play();
-      }
-      if (scanModal){
-        scanModal.hidden = false;
-        try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){}
-      }
+function __openCodeLinkModal__(){
+  return new Promise((resolve)=>{
+    const modal = document.getElementById("qrScanModal");
+    const input = document.getElementById("qrScanInput");
+    const ok = document.getElementById("qrScanConfirm");
+    const close = document.getElementById("qrScanClose");
 
-      code = await new Promise((resolve)=>{
-        let done = false;
-        const stopAll = ()=>{
-          if (done) return;
-          done = true;
-          try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){}
-          try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
-        };
-        const tick = async ()=>{
-          if (done) return;
-          try{
-            if (video && video.readyState >= 2){
-              const bmp = await createImageBitmap(video);
-              const codes = await det.detect(bmp);
-              if (codes && codes.length){
-                stopAll();
-                return resolve(String(codes[0].rawValue || "").trim());
-              }
-            }
-          }catch(_){}
-          requestAnimationFrame(tick);
-        };
-        tick();
+    const finish = (val)=>{
+      try{
+        if (modal){
+          modal.hidden = true;
+          try{ modal.setAttribute("aria-hidden","true"); }catch(_){}
+        }
+      }catch(_){}
+      resolve(String(val||"").trim());
+    };
 
-        // close btn
-        try{
-          const close = document.getElementById("qrScanClose");
-          if (close){
-            close.onclick = ()=>{ stopAll(); resolve(""); };
-          }
-        }catch(_){}
-        // timeout
-        setTimeout(()=>{ if(!done){ stopAll(); resolve(""); } }, 25000);
-      });
+    // open
+    try{
+      if (modal){
+        modal.hidden = false;
+        try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
+      }
+    }catch(_){}
+
+    try{
+      if (input){
+        input.value = "";
+        setTimeout(()=>{ try{ input.focus(); }catch(_){ } }, 80);
+      }
+    }catch(_){}
+
+    const onOk = (e)=>{ try{ if(e && e.preventDefault) e.preventDefault(); }catch(_){ } finish(input ? input.value : ""); };
+    const onClose = (e)=>{ try{ if(e && e.preventDefault) e.preventDefault(); }catch(_){ } finish(""); };
+
+    if (ok) ok.onclick = onOk;
+    if (close) close.onclick = onClose;
+    if (input){
+      input.onkeydown = (e)=>{ if (e && e.key === "Enter") onOk(e); };
     }
+  });
+}
+
+async function __qrScanAndLink__(){
+  // Ora: inserimento codice (no QR)
+  let code = "";
+  try{
+    code = await __openCodeLinkModal__();
   }catch(_){ code = ""; }
 
   if (!code){
-    try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
+    try{ code = String(prompt("Incolla codice (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
   }
+  if (!code) return;
+
   const parsed = __parseQr__(code);
-  if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+  if (!parsed) { try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
 
   // validate team key matches
   const doc = await __fsGet__(`teams/${parsed.teamId}`);
   if (!doc){ try{ toast("Team non trovato", "orange"); }catch(_){ } return; }
   const data = __fsDecode__(doc);
-  if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("QR non valido", "orange"); }catch(_){ } return; }
+  if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
 
   __fbSaveLink__(parsed.teamId, parsed.teamKey);
   try{ toast("Collegato", "green"); }catch(_){ }
@@ -1121,7 +1140,7 @@ function __operatorName__(){
 
 async function __fbExportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
   const tables = __ADMIN_TABLES__;
   const datasets = {};
@@ -1134,7 +1153,7 @@ async function __fbExportAdmin__(){
 
 async function __fbImportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
 
   const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
   if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
@@ -1157,7 +1176,7 @@ async function __fbImportOperator__(){
 
 async function __fbExportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
   if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
 
@@ -1186,7 +1205,7 @@ function __pickLatestLaundry__(list){
 
 async function __fbImportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
   // get operator list from settings if present
   let ops = [];
@@ -3722,7 +3741,14 @@ function setupImpostazioni() {
     const dbBtn = document.getElementById("settingsDbBtn");
     if (dbBtn) bindFastTap(dbBtn, () => { __openDbMenuModal__(); });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
-    if (rosterBtn) bindFastTap(rosterBtn, async () => { try{ await __adminGenerateQr__(); }catch(e){ try{ toast("Errore QR", "orange"); }catch(_){ } } });
+    if (rosterBtn) bindFastTap(rosterBtn, async () => {
+      try{
+        if (__isAdmin__()) await __adminGenerateCode__();
+        else await __qrScanAndLink__();
+      }catch(e){
+        try{ toast("Errore codice", "orange"); }catch(_){ }
+      }
+    });
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -5087,7 +5113,7 @@ function setupHeader(){
   if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
 
   const opImpRoster = document.getElementById("opImportRosterTop");
-  if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __qrScanAndLink__(); }catch(e){ try{ toast("QR non disponibile", "orange"); }catch(_){ } } });
+  if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __qrScanAndLink__(); }catch(e){ try{ toast("Codice non disponibile", "orange"); }catch(_){ } } });
 
 // HOME: ricevute mancanti (solo in HOME)
   const btnRec = document.getElementById("homeReceiptsTop");
