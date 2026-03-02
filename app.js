@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.006
+ * Build: 2.007
  */
-const BUILD_VERSION = "2.006";
+const BUILD_VERSION = "2.007";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1223,6 +1223,10 @@ async function __fbImportAdmin__(){
   }
 
   // merge
+  let mergedPulizie = await __tblGet__("pulizie", []);
+  const basePulizie = Array.isArray(mergedPulizie) ? mergedPulizie : [];
+  mergedPulizie = basePulizie.slice();
+
   let mergedOperatori = await __tblGet__("operatori", []);
   const baseOperatori = Array.isArray(mergedOperatori) ? mergedOperatori : [];
   mergedOperatori = baseOperatori.slice();
@@ -1238,6 +1242,41 @@ async function __fbImportAdmin__(){
     if (!raw) continue;
     let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
     if (!payload || !payload.datasets) continue;
+
+    // merge pulizie entries (merge by id or by key data+stanza; max per-col)
+    try{
+      const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+      const listP = Array.isArray(payload.datasets.pulizie) ? payload.datasets.pulizie : [];
+      const byId = new Map();
+      mergedPulizie.forEach(r=>{ const id = String(r?.id||"").trim(); if (id) byId.set(id, r); });
+      const byKey = new Map();
+      mergedPulizie.forEach(r=>{
+        const d = String(r?.data||r?.date||"").slice(0,10);
+        const s = String(r?.stanza||r?.room||"").trim();
+        if (d && s) byKey.set(d+"|"+s, r);
+      });
+      listP.forEach(r=>{
+        if (!r) return;
+        const id = String(r?.id||"").trim();
+        const d = String(r?.data||r?.date||"").slice(0,10);
+        const s = String(r?.stanza||r?.room||"").trim();
+        const key = (d && s) ? (d+"|"+s) : "";
+        const target = (id && byId.has(id)) ? byId.get(id) : (key && byKey.has(key) ? byKey.get(key) : null);
+        if (!target){
+          mergedPulizie.push(r);
+          if (id) byId.set(id, r);
+          if (key) byKey.set(key, r);
+          return;
+        }
+        cols.forEach(c=>{ target[c] = Math.max(Number(target[c]||0)||0, Number(r[c]||0)||0); });
+        // aggiorna campi meta se presenti e più recenti
+        const ua = String(target.updatedAt||target.updated_at||"");
+        const ub = String(r.updatedAt||r.updated_at||"");
+        if (ub && (!ua || ub > ua)){
+          try{ target.updatedAt = r.updatedAt || r.updated_at; }catch(_){ }
+        }
+      });
+    }catch(_){ }
 
     // merge operatori entries (append, dedupe by id)
     try{
@@ -1270,6 +1309,9 @@ async function __fbImportAdmin__(){
       }
     }catch(_){}
   }
+
+  // write merged pulizie
+  await __tblSet__("pulizie", mergedPulizie);
 
   // write merged operatori
   await __tblSet__("operatori", mergedOperatori);
@@ -4153,6 +4195,7 @@ function setupAuth(){
     try{ updateYearPill(); }catch(_ ){}
     try{ __applyContext__({ force:true }); }catch(_ ){}
     try{ applyRoleMode(); }catch(_ ){}
+    try{ if (window.__syncCleanOperators__) window.__syncCleanOperators__(); }catch(_ ){}
     showPage(isOperatoreSession(state.session) ? "pulizie" : "home");
   };
 
@@ -12308,6 +12351,8 @@ try{
   }catch(_){}
 
 };
+
+  try{ window.__syncCleanOperators__ = syncCleanOperators; }catch(_){ }
 
   try{ syncCleanOperators(); }catch(_){}
   opEls.forEach(r => { try{ bindHourDot(r.hours); }catch(_){ } });

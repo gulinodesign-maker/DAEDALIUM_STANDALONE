@@ -2318,22 +2318,28 @@ body[data-page="ospiti"] .guest-card .actions {
 }
 
 .auth-page{
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 140px);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding: 18px 14px;
+  padding: 34px 16px 28px;
 }
 
+
 .auth-card{
-  width: min(420px, 92vw);
+  width: min(360px, 88vw);
   border-radius: 22px;
-  padding: 18px 16px 14px;
+  padding: 20px 16px 16px;
+  margin: 18px 0;
+  max-height: calc(100vh - 210px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: rgba(255,255,255,0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 12px 34px rgba(0,0,0,0.08);
 }
+
 
 .auth-logo-wrap{ display:flex; justify-content:center; margin: 2px 0 12px; }
 .auth-logo{ width: 148px; height: 148px; object-fit: contain; border-radius: 18px; }
