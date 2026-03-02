@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.018
+ * Build: 2.019
  */
-const BUILD_VERSION = "2.018";
+const BUILD_VERSION = "2.019";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -235,6 +235,30 @@ function __normIsoDate__(s){
   }catch(_){}
   return v0;
 }
+
+// =========================
+// Spese: data di riferimento = quella mostrata nella card (dataSpesa || data || data_spesa)
+// =========================
+function __spesaCardDateISO__(row){
+  try{
+    return __normIsoDate__((row && (row.dataSpesa || row.data || row.data_spesa)) || "");
+  }catch(_){
+    return "";
+  }
+}
+function __filterSpeseByCardDateRange__(rows, fromISO, toISO){
+  const list = Array.isArray(rows) ? rows : [];
+  const from = __normIsoDate__(fromISO);
+  const to = __normIsoDate__(toISO);
+  if (!from || !to) return list.slice();
+  return list.filter((r)=>{
+    const d = __spesaCardDateISO__(r);
+    if (!d) return false;
+    return d >= from && d <= to;
+  });
+}
+
+
 
 function __dateInRange__(d, from, to){
   if (!d) return true;
@@ -6024,7 +6048,7 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
 
   if (!force) {
     if (hitS && Array.isArray(hitS.data)) {
-      state.spese = __filterByExerciseYear__(hitS.data, state.exerciseYear || loadExerciseYear(), ["dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"]);
+      state.spese = __filterByExerciseYear__(__filterSpeseByCardDateRange__(hitS.data, from, to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
       state.report = buildReportFromSpese(state.spese);
     } else if (hitR && hitR.data) {
       state.report = hitR.data;
@@ -6045,9 +6069,7 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
         const annoNow = (state && state.exerciseYear) ? String(state.exerciseYear) : "";
         const kNow = `${uidNow}|${annoNow}|${state.period.from}|${state.period.to}`;
         if (kNow !== key) return;
-        state.spese = __filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
-          "dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"
-        ]);
+        state.spese = __filterByExerciseYear__(__filterSpeseByCardDateRange__(Array.isArray(spese) ? spese : [], state.period.from, state.period.to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
         state.report = buildReportFromSpese(state.spese);
         state._dataKey = key;
         __lsSet(lsReportKey, state.report);
@@ -6069,9 +6091,7 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
   }
 
   const [spese, ospiti] = await fetchAll();
-  state.spese = __filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
-          "dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"
-        ]);
+  state.spese = __filterByExerciseYear__(__filterSpeseByCardDateRange__(Array.isArray(spese) ? spese : [], state.period.from, state.period.to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
   state.report = buildReportFromSpese(state.spese);
   state._dataKey = key;
   __lsSet(lsReportKey, state.report);
@@ -6109,7 +6129,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
 
   if (!force) {
     if (hitS && Array.isArray(hitS.data)) {
-      state.speseAll = hitS.data;
+      state.speseAll = __filterByExerciseYear__(__filterSpeseByCardDateRange__(hitS.data, from, to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
       state.reportAll = buildReportFromSpese(state.speseAll);
     } else if (hitR && hitR.data) {
       state.reportAll = hitR.data;
@@ -6135,7 +6155,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
         const annoNow = (state && state.exerciseYear) ? String(state.exerciseYear) : "";
         const kNow = `${uidNow}|${annoNow}|ALL|${from}|${to}`;
         if (kNow !== key) return;
-        state.speseAll = Array.isArray(spese) ? spese : [];
+        state.speseAll = __filterByExerciseYear__(__filterSpeseByCardDateRange__(Array.isArray(spese) ? spese : [], from, to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
         state.reportAll = buildReportFromSpese(state.speseAll);
         state._statsDataKey = key;
         __lsSet(lsReportKey, state.reportAll);
@@ -6160,7 +6180,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
   }
 
   const [spese, ospiti] = await fetchAll();
-  state.speseAll = Array.isArray(spese) ? spese : [];
+  state.speseAll = __filterByExerciseYear__(__filterSpeseByCardDateRange__(Array.isArray(spese) ? spese : [], from, to), state.exerciseYear || loadExerciseYear(), ["dataSpesa","data","data_spesa"]);
   state.reportAll = buildReportFromSpese(state.speseAll);
   state._statsDataKey = key;
   __lsSet(lsReportKey, state.reportAll);
@@ -7848,6 +7868,7 @@ function computeStatSpese(){
   }
 
   return {
+    totale: (acc.CONTANTI + acc.TASSA_SOGGIORNO + acc.IVA_22 + acc.IVA_10 + acc.IVA_4),
     contanti: acc.CONTANTI,
     tassaSoggiorno: acc.TASSA_SOGGIORNO,
     iva22: acc.IVA_22,
@@ -7946,6 +7967,8 @@ function renderStatSpese(){
     const el = document.getElementById(id);
     if (el) el.textContent = euro(Number(v || 0));
   };
+
+  set("ssTotaleSpese", s.totale);
 
   set("ssContanti", s.contanti);
   set("ssTassa", s.tassaSoggiorno);
