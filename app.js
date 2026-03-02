@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.024
+ * Build: 2.025
  */
-const BUILD_VERSION = "2.024";
+const BUILD_VERSION = "2.025";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2333,7 +2333,7 @@ function applyRoleMode(){
 
 function __parseBuildVersion(v){
   try{
-    const m = String(v||'').match(/dDAE_(\d+)\.(\d+)/);
+    const m = String(v||'').match(/(?:dDAE_)?(\d+)\.(\d+)/);
     if(!m) return null;
     return {maj:Number(m[1]), min:Number(m[2])};
   }catch(_){ return null; }
@@ -2531,6 +2531,17 @@ async function hardUpdateCheck(){
     if (!res.ok) return;
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
+    // Guard anti-loop: se abbiamo gia' tentato lo stesso aggiornamento di recente, evita reload infinito
+    try{
+      const k="__ddae_last_hard_update";
+      const prev = JSON.parse(sessionStorage.getItem(k) || "null");
+      const now = Date.now();
+      if (prev && prev.remote === remote && (now - (prev.ts||0)) < 120000){
+        return;
+      }
+      sessionStorage.setItem(k, JSON.stringify({remote, ts: now}));
+    }catch(_){}
+
     if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
 
     try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
