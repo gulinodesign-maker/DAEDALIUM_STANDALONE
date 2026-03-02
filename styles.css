@@ -59,7 +59,7 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 body{
   min-height: 100vh;
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.003");
+    url("./assets/bg-daedalium.png?v=dDAE_2.004");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -398,7 +398,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.003 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.004 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -975,7 +975,7 @@ input[type="date"]{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.003");
+    url("./assets/bg-daedalium.png?v=dDAE_2.004");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2358,7 +2358,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.003 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.004 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -2423,7 +2423,7 @@ body[data-page="ospiti"] .guest-card .actions {
   transform: translate(-50%,-50%);
 }
 .auth-role-label{
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 900;
   letter-spacing: 0.8px;
   line-height: 1;
