@@ -6644,24 +6644,24 @@ color: var(--mcol,#ff3b30);
   background: rgba(201,119,43,0.22);
 }
 .prod-rectbtn.is-active{
-  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  /* FLAT: niente bagliori/ombre */
+  box-shadow: none;
 }
+
 .prod-rectbtn.prod-blue.is-active{
   border-color: rgba(56,189,248,0.95);
-  box-shadow:
-    0 0 0 2px rgba(56,189,248,0.22),
-    0 0 18px rgba(56,189,248,0.80),
-    0 0 44px rgba(56,189,248,0.55);
-  text-shadow: 0 0 10px rgba(56,189,248,0.45);
+  /* FLAT: niente bagliori/ombre */
+  box-shadow: none;
+  text-shadow: none;
 }
+
 .prod-rectbtn.prod-orange.is-active{
   border-color: rgba(249,115,22,0.95);
-  box-shadow:
-    0 0 0 2px rgba(249,115,22,0.22),
-    0 0 18px rgba(249,115,22,0.80),
-    0 0 44px rgba(249,115,22,0.55);
-  text-shadow: 0 0 10px rgba(249,115,22,0.45);
+  /* FLAT: niente bagliori/ombre */
+  box-shadow: none;
+  text-shadow: none;
 }
+
 
 
 .prodotti-list{
