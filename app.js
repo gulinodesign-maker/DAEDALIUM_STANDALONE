@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.009
+ * Build: 2.014
  */
-const BUILD_VERSION = "2.013";
+const BUILD_VERSION = "2.014";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5832,6 +5832,7 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
   // Prefill immediato da cache locale (perceived speed) — poi refresh SWR
   const lsSpeseKey = `spese|${uid}|${anno}|${from}|${to}`;
   const lsReportKey = `report|${uid}|${anno}|${from}|${to}`;
+  const lsGuestsKey = `ospiti|${uid}|${anno}|${from}|${to}`;
   const hitS = !force ? __lsGet(lsSpeseKey) : null;
   const hitR = !force ? __lsGet(lsReportKey) : null;
   const hitG = !force ? __lsGet(lsGuestsKey) : null;
