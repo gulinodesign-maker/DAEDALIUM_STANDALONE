@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.001";
+const BUILD_VERSION = "2.002";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1481,6 +1481,17 @@ async function __dbImport__(kind){
       return;
     }
 
+    // Restore Firebase link (teamId/teamKey) if present in backup
+    try{
+      const link = data && data.meta && data.meta.firebaseLink ? data.meta.firebaseLink : null;
+      const teamId = String(link && link.teamId ? link.teamId : "").trim();
+      const teamKey = String(link && link.teamKey ? link.teamKey : "").trim();
+      if (teamId && teamKey){
+        __fbSaveLink__(teamId, teamKey);
+      }
+    }catch(_){ }
+
+
     const allowedTables = new Set(__dbTablesForKind__(kind));
     const ds = data.datasets || {};
     const tablesToWrite = Object.keys(ds).filter(t => allowedTables.has(t));
@@ -1688,11 +1699,21 @@ async function __dbExport__(kind, preopenWin){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
 
+
+    // Include Firebase link in local backup so admin can migrate device without redoing QR
+    let __fbTeamId = "";
+    let __fbTeamKey = "";
+    try{ __fbLoadLink__(); }catch(_){ }
+    try{ __fbTeamId = String(__FB_STATE__.teamId || ""); __fbTeamKey = String(__FB_STATE__.teamKey || ""); }catch(_){ }
+
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
-      datasets
+      datasets,
+      meta: {
+        firebaseLink: (__fbTeamId && __fbTeamKey) ? { teamId: __fbTeamId, teamKey: __fbTeamKey } : null
+      }
     };
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
