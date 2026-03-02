@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.015
+ * Build: 2.014
  */
-const BUILD_VERSION = "2.015";
+const BUILD_VERSION = "2.014";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2924,33 +2924,7 @@ function todayISO(){
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth()+1).padStart(2,"0");
   const dd = String(d.getDate()).padStart(2,"0");
-  r
-
-// --- Spese: usa SEMPRE la data visualizzata in card per filtri/periodi ---
-function __spesaDateISO__(row){
-  if (!row) return null;
-  const v = row.dataSpesa || row.data || row.data_spesa || row.date || row.dataSpesaISO || row.data_spesa_iso;
-  if (!v) return null;
-  const s = String(v);
-  const iso = s.slice(0,10);
-  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
-  const t = Date.parse(s);
-  if (isNaN(t)) return null;
-  return new Date(t).toISOString().slice(0,10);
-}
-
-function __filterSpeseByPeriod__(rows, from, to){
-  if (!Array.isArray(rows)) return [];
-  const f = String(from || "").slice(0,10);
-  const t = String(to || "").slice(0,10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(f) || !/^\d{4}-\d{2}-\d{2}$/.test(t)) return rows;
-  return rows.filter(r => {
-    const d = __spesaDateISO__(r);
-    if (!d) return false;
-    return (d >= f && d <= t);
-  });
-}
-eturn `${yyyy}-${mm}-${dd}`;
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 // --- Guest status LED (scheda ospiti) ---
@@ -5977,7 +5951,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
         const annoNow = (state && state.exerciseYear) ? String(state.exerciseYear) : "";
         const kNow = `${uidNow}|${annoNow}|ALL|${from}|${to}`;
         if (kNow !== key) return;
-        state.speseAll = __filterSpeseByPeriod__(Array.isArray(spese) ? spese : [], from, to);
+        state.speseAll = Array.isArray(spese) ? spese : [];
         state.reportAll = buildReportFromSpese(state.speseAll);
         state._statsDataKey = key;
         __lsSet(lsReportKey, state.reportAll);
@@ -6002,7 +5976,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
   }
 
   const [spese, ospiti] = await fetchAll();
-  state.speseAll = __filterSpeseByPeriod__(Array.isArray(spese) ? spese : [], from, to);
+  state.speseAll = Array.isArray(spese) ? spese : [];
   state.reportAll = buildReportFromSpese(state.speseAll);
   state._statsDataKey = key;
   __lsSet(lsReportKey, state.reportAll);
