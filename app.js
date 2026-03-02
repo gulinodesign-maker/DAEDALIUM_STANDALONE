@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.025
+ * Build: 2.027
  */
-const BUILD_VERSION = "2.026";
+const BUILD_VERSION = "2.027";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1308,8 +1308,6 @@ async function __fbImportAdmin__(){
   const __mergeSpesaList__ = (base, inc) => {
     const out = Array.isArray(base) ? base.slice() : [];
     const idxByKey = new Map();
-      const __opBaseKeys__ = new Set();
-      try{ mergedOperatori.forEach((it)=>{ const k = __opKey__(it); if (k) __opBaseKeys__.add(k); }); }catch(_){ }
     out.forEach((r, i) => { const k = __spesaKey__(r); if (k) idxByKey.set(k, i); });
     (Array.isArray(inc) ? inc : []).forEach((r) => {
       const k = __spesaKey__(r);
@@ -1419,6 +1417,8 @@ async function __fbImportAdmin__(){
 
     // merge operatori entries (LWW by data+operatore; consente decrementi/cancellazioni)
     try{
+      const list = Array.isArray(payload.datasets.operatori)// merge operatori entries (per-operatore; LWW by data+operatore; l'operatore prevale su admin a parità/assenza meta)
+    try{
       const list = Array.isArray(payload.datasets.operatori) ? payload.datasets.operatori : [];
       const __opKey__ = (it) => {
         const d = __normIsoDate__(it?.data || it?.date || "");
@@ -1426,20 +1426,27 @@ async function __fbImportAdmin__(){
         return (d && op) ? (d + "|" + op) : "";
       };
       const __opUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+
+      // indicizza base admin: conserva la più recente per chiave (data+operatore)
       const idxByKey = new Map();
-      // indicizza base (dedupe interno: tieni la più recente)
-      mergedOperatori.forEach((it, i) => {
+      const bestByKey = new Map();
+      (Array.isArray(mergedOperatori) ? mergedOperatori : []).forEach((it) => {
         const k = __opKey__(it);
         if (!k) return;
-        if (!idxByKey.has(k)) { idxByKey.set(k, i); return; }
-        const j = idxByKey.get(k);
-        const a = mergedOperatori[j];
-        const ua = __opUAt__(a);
+        const prev = bestByKey.get(k);
+        if (!prev){
+          bestByKey.set(k, it);
+          return;
+        }
+        const ua = __opUAt__(prev);
         const ub = __opUAt__(it);
         const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
-        if (should) idxByKey.set(k, i);
+        if (should) bestByKey.set(k, it);
       });
+      mergedOperatori = Array.from(bestByKey.values());
+      mergedOperatori.forEach((it, i) => { const k = __opKey__(it); if (k) idxByKey.set(k, i); });
 
+      // merge operatore -> admin (non influenza tra operatori diversi)
       list.forEach((it) => {
         const k = __opKey__(it);
         if (!k){ mergedOperatori.push(it); return; }
@@ -1452,18 +1459,15 @@ async function __fbImportAdmin__(){
         const a = mergedOperatori[i];
         const ua = __opUAt__(a);
         const ub = __opUAt__(it);
-        const isBase = __opBaseKeys__.has(k);
-        const should = isBase ? true : ((!ua && !ub) ? true : (ub && (!ua || ub > ua)));
-        if (isBase){ try{ __opBaseKeys__.delete(k); }catch(_){ } }
+
+        // Se entrambe senza meta, prevale comunque l'operatore (evita che admin mantenga valori obsoleti)
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
         if (should){
           mergedOperatori[i] = it;
         }
       });
-    }catch(_){}
-// merge lista spesa (colazione + prodotti pulizia)
-    try{
-      if (payload.datasets.colazione !== undefined){
-        mergedColazione = __mergeSpesaList__(mergedColazione, payload.datasets.colazione);
+    }catch(_){ }
+t__(mergedColazione, payload.datasets.colazione);
       }
       if (payload.datasets.prodotti_pulizia !== undefined){
         mergedProdottiPulizia = __mergeSpesaList__(mergedProdottiPulizia, payload.datasets.prodotti_pulizia);
