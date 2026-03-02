@@ -59,7 +59,7 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 body{
   min-height: 100vh;
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.001");
+    url("./assets/bg-daedalium.png?v=dDAE_2.003");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -395,6 +395,22 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .icon-btn.is-light .ui-ico,
 .icon-btn.is-light .ui-ico *{
   stroke: var(--ico-blue-night) !important;
+  fill: none !important;
+}
+
+/* dDAE_2.003 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+.topbar .icon-btn{
+  background: rgba(255,255,255,0.80) !important;
+  border: 1px solid rgba(15,23,42,0.14) !important;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .ui-ico *{
+  stroke: var(--ico-sky) !important;
   fill: none !important;
 }
 
@@ -959,7 +975,7 @@ input[type="date"]{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.001");
+    url("./assets/bg-daedalium.png?v=dDAE_2.003");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2341,6 +2357,79 @@ body[data-page="ospiti"] .guest-card .actions {
 .auth-grid .auth-btn{ padding: 24px 8px; }
 
 .auth-form[hidden]{ display:none !important; }
+
+/* dDAE_2.003 — AUTH: tag + selezione tipologia account (popup crea account) */
+.auth-create-role{
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+.auth-type-tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin: 0 auto 10px auto;
+  width: fit-content;
+  background: rgba(43,124,180,0.18);
+  color: rgba(43,124,180,0.98);
+  border: 1px solid rgba(15,23,42,0.12);
+}
+.auth-type-tag.is-operator{
+  background: rgba(201,119,43,0.18);
+  color: rgba(155,92,32,0.98);
+}
+
+.auth-role-picker{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+  margin: 0;
+}
+.auth-role-option{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  cursor:pointer;
+  user-select:none;
+}
+.auth-role-option input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.auth-role-dot{
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 3px solid rgba(11,15,22,0.86);
+  background: transparent;
+  flex: 0 0 auto;
+  position: relative;
+}
+.auth-role-option input:checked + .auth-role-dot::after{
+  content:"";
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(11,15,22,0.86);
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+.auth-role-label{
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  line-height: 1;
+}
+.auth-role-label.admin{ color: rgba(43,124,180,0.96); }
+.auth-role-label.operator{ color: rgba(155,92,32,0.96); }
 
 .auth-action-row{
   display:flex;

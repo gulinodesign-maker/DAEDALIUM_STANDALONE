@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 1.034
+ * Build: 2.003
  */
-const BUILD_VERSION = "2.002";
+const BUILD_VERSION = "2.003";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3985,11 +3985,20 @@ function setupAuth(){
   const menu = document.getElementById("authMenu");
   const form = document.getElementById("authForm");
 
-  const btnAdmin = document.getElementById("btnMenuAdmin");
-  const btnOperator = document.getElementById("btnMenuOperator");
+  // Menu (landing login) — 4 pulsanti
+  const btnCreate = document.getElementById("btnMenuCreate");
+  const btnUpdate = document.getElementById("btnMenuUpdate");
+  const btnLoginAdmin = document.getElementById("btnMenuLoginAdmin");
+  const btnLoginOperator = document.getElementById("btnMenuLoginOperator");
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");
+
+  // Crea account: selezione tipologia + tag
+  const createRoleWrap = document.getElementById("authCreateRoleWrap");
+  const createRoleAdmin = document.getElementById("authCreateRoleAdmin");
+  const createRoleOperator = document.getElementById("authCreateRoleOperator");
+  const createTypeTag = document.getElementById("authCreateTypeTag");
 
   const tenantWrap = document.getElementById("authOperatorTenant");
   const credsWrap = document.getElementById("authCredsWrap");
@@ -4002,57 +4011,104 @@ function setupAuth(){
   const p2Wrap = document.getElementById("authConfirmPasswordWrap");
   const npWrap = document.getElementById("authNewPasswordWrap");
 
+  const p2 = document.getElementById("authPassword2");
+  const np1 = document.getElementById("authNewPassword");
+  const np2 = document.getElementById("authNewPassword2");
+
   const hint = document.getElementById("authHint");
   const setHint = (msg)=>{ try{ if (hint) hint.textContent = msg || ""; }catch(_ ){} };
 
-  let mode = "menu"; // menu | create_admin | create_operator | login_admin | login_operator
+  let mode = "menu"; // menu | create | update | login_admin | login_operator
+
+  const getCreateRole = ()=>{
+    try{ if (createRoleOperator && createRoleOperator.checked) return "operatore"; }catch(_ ){}
+    return "admin";
+  };
+
+  const syncCreateTag = ()=>{
+    try{
+      if (!createTypeTag) return;
+      const role = getCreateRole();
+      if (role === "operatore"){
+        createTypeTag.textContent = "OPERATORE";
+        createTypeTag.classList.add("is-operator");
+      } else {
+        createTypeTag.textContent = "ADMIN";
+        createTypeTag.classList.remove("is-operator");
+      }
+    }catch(_ ){}
+  };
+
+  const clearFields = ()=>{
+    try{
+      if (u) u.value = "";
+      if (p) p.value = "";
+      if (p2) p2.value = "";
+      if (np1) np1.value = "";
+      if (np2) np2.value = "";
+      try{ if (createRoleAdmin) createRoleAdmin.checked = true; }catch(_ ){}
+      try{ if (createRoleOperator) createRoleOperator.checked = false; }catch(_ ){}
+      try{ refreshFloatingLabels(); }catch(_ ){}
+    }catch(_ ){}
+  };
 
   const showMenu = ()=>{
     mode = "menu";
-    try{ if (menu) menu.hidden = false; }catch(_){}
-    try{ if (form) form.hidden = true; }catch(_){}
+    try{ if (menu) menu.hidden = false; }catch(_ ){}
+    try{ if (form) form.hidden = true; }catch(_ ){}
     setHint("");
+    try{ if (createRoleWrap) createRoleWrap.hidden = true; }catch(_ ){}
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
     try{ if (extra) extra.hidden = true; }catch(_ ){}
     try{ if (p2Wrap) p2Wrap.hidden = true; }catch(_ ){}
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
     try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
-    try{ if (u) u.value = ""; if (p) p.value = ""; }catch(_ ){}
-    try{ refreshFloatingLabels(); }catch(_ ){}
+    clearFields();
   };
 
   const setMode = (m)=>{
     mode = m;
-    try{ if (menu) menu.hidden = true; }catch(_){}
-    try{ if (form) form.hidden = false; }catch(_){}
+    try{ if (menu) menu.hidden = true; }catch(_ ){}
+    try{ if (form) form.hidden = false; }catch(_ ){}
     setHint("");
 
-    // ensure only username/password
+    // base reset
+    try{ if (createRoleWrap) createRoleWrap.hidden = true; }catch(_ ){}
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
     try{ if (extra) extra.hidden = true; }catch(_ ){}
     try{ if (p2Wrap) p2Wrap.hidden = true; }catch(_ ){}
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
     try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
-    try{ if (uLabel) uLabel.textContent = "Username"; }catch(_ ){}
+    try{ if (uLabel) uLabel.textContent = "User"; }catch(_ ){}
     try{ if (pLabel) pLabel.textContent = "Password"; }catch(_ ){}
 
-    if (m === "create_admin"){
-      try{ if (btnSubmit) btnSubmit.textContent = "crea admin"; }catch(_ ){}
+    clearFields();
+
+    if (m === "create"){
+      try{ if (btnSubmit) btnSubmit.textContent = "crea account"; }catch(_ ){}
+      try{ if (createRoleWrap) createRoleWrap.hidden = false; }catch(_ ){}
+      try{ if (p2Wrap) p2Wrap.hidden = false; }catch(_ ){}
+      try{ syncCreateTag(); }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
-    if (m === "create_operator"){
-      try{ if (btnSubmit) btnSubmit.textContent = "crea operatore"; }catch(_ ){}
+
+    if (m === "update"){
+      try{ if (btnSubmit) btnSubmit.textContent = "modifica account"; }catch(_ ){}
+      try{ if (npWrap) npWrap.hidden = false; }catch(_ ){}
+      try{ if (pLabel) pLabel.textContent = "Password attuale"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
+
     if (m === "login_admin"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi admin"; }catch(_ ){}
+      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
+
     if (m === "login_operator"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi operatore"; }catch(_ ){}
+      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
     }
@@ -4071,32 +4127,48 @@ function setupAuth(){
     return m || "Errore";
   };
 
-  const openChoice = async (role)=>{
-    const isAdmin = String(role||"").toLowerCase().startsWith("admin");
-    const label = isAdmin ? "Admin" : "Operatore";
-    const choice = await __confirmTwoActions__(label + ": scegli operazione", "Crea", "Accedi");
-    if (choice === "yes"){
-      setMode(isAdmin ? "create_admin" : "create_operator");
-    }else{
-      setMode(isAdmin ? "login_admin" : "login_operator");
-    }
-  };
-
-  if (btnAdmin) bindFastTap(btnAdmin, ()=>openChoice("admin"));
-  if (btnOperator) bindFastTap(btnOperator, ()=>openChoice("operatore"));
+  // Bind menu
+  if (btnCreate) bindFastTap(btnCreate, ()=>setMode("create"));
+  if (btnUpdate) bindFastTap(btnUpdate, ()=>setMode("update"));
+  if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>setMode("login_admin"));
+  if (btnLoginOperator) bindFastTap(btnLoginOperator, ()=>setMode("login_operator"));
   if (btnBack) bindFastTap(btnBack, showMenu);
+
+  // Radio create role -> tag
+  try{
+    if (createRoleAdmin) createRoleAdmin.addEventListener("change", syncCreateTag);
+    if (createRoleOperator) createRoleOperator.addEventListener("change", syncCreateTag);
+  }catch(_ ){}
 
   if (btnSubmit) bindFastTap(btnSubmit, async ()=>{
     try{
       const username = String(u ? u.value : "").trim();
       const password = String(p ? p.value : "");
-      if (!username || !password){ setHint("Inserisci username e password"); return; }
+      if (!username || !password){ setHint("Inserisci user e password"); return; }
 
-      if (mode === "create_admin" || mode === "create_operator"){
+      if (mode === "create"){
+        const confirm = String(p2 ? p2.value : "");
+        if (!confirm){ setHint("Conferma password"); return; }
+        if (confirm !== password){ setHint("Le password non coincidono"); return; }
         setHint("...");
-        const role = (mode === "create_operator") ? "operatore" : "admin";
+        const role = getCreateRole();
         const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
+        state.session = data.user;
+        saveSession(state.session);
+        setHint("");
+        goAfterLogin();
+        return;
+      }
+
+      if (mode === "update"){
+        const newPassword = String(np1 ? np1.value : "");
+        const newPassword2 = String(np2 ? np2.value : "");
+        if (!newPassword || !newPassword2){ setHint("Inserisci e conferma la nuova password"); return; }
+        if (newPassword !== newPassword2){ setHint("Le nuove password non coincidono"); return; }
+        setHint("...");
+        const data = await api("utenti", { method:"POST", body:{ op:"update", username, password, newPassword } });
+        if (!data || !data.user) throw new Error("Errore modifica account");
         state.session = data.user;
         saveSession(state.session);
         setHint("");
@@ -4125,7 +4197,6 @@ function setupAuth(){
 
   showMenu();
 }
-
 // ===== API Cache (speed + dedupe richieste) =====
 const __apiCache = new Map();      // key -> { t:number, data:any }
 const __apiInflight = new Map();   // key -> Promise
