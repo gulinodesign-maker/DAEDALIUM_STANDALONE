@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.021
+ * Build: 2.022
  */
-const BUILD_VERSION = "2.021";
+const BUILD_VERSION = "2.022";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7207,8 +7207,8 @@ function openStatPieModal(){
 
   const s = state.statGen || computeStatGen();
   const slices = [
-    { label: "Importo senza ricevuta", value: s.senzaRicevuta, color: "#bfbea9" },
-    { label: "Importo con ricevuta", value: s.conRicevuta, color: "#6fb7d6" },
+    { label: "Senza ricevuta", value: s.senzaRicevuta, color: "#bfbea9" },
+    { label: "Con ricevuta", value: s.conRicevuta, color: "#6fb7d6" },
   ];
 
   drawPie("statPieCanvas", slices);
@@ -14119,6 +14119,35 @@ const LAUNDRY_LABELS = {
   TPI: "Telo Piscina",
 };
 
+
+function __laundryDeletedKey__(){
+  try{
+    const uid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : "anon";
+    const yr = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+    return `ddae_laundry_deleted_${uid}_${yr}`;
+  }catch(_){
+    return "ddae_laundry_deleted_anon";
+  }
+}
+function __laundryDeletedIds__(){
+  try{
+    const raw = localStorage.getItem(__laundryDeletedKey__());
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr.map(x => String(x)) : []);
+  }catch(_){
+    return new Set();
+  }
+}
+function __laundryMarkDeleted__(id){
+  try{
+    const sid = String(id || "");
+    if (!sid) return;
+    const set = __laundryDeletedIds__();
+    set.add(sid);
+    localStorage.setItem(__laundryDeletedKey__(), JSON.stringify(Array.from(set)));
+  }catch(_){}
+}
 function sanitizeLaundryItem_(it){
   it = it || {};
   const out = {};
@@ -14227,6 +14256,7 @@ function renderLaundryHistory_(list){
       try {
         ev && ev.preventDefault && ev.preventDefault();
         ev && ev.stopPropagation && ev.stopPropagation();
+        ev && ev.stopImmediatePropagation && ev.stopImmediatePropagation();
       } catch(_){}
 
       // Anti-doppio tap / tocchi multipli
@@ -14244,8 +14274,23 @@ function renderLaundryHistory_(list){
       del.disabled = true;
       del.innerHTML = `<span class="spinner" aria-hidden="true"></span>`;
 
+      // Nascondi subito in UI (e persisti localmente) per evitare che resti visibile
+      try{ __laundryMarkDeleted__(it.id); }catch(_){ }
       try{
-        await api("lavanderia", { method:"DELETE", body:{ id: it.id }, showLoader:true });
+        if (state && state.laundry && Array.isArray(state.laundry.list)){
+          state.laundry.list = state.laundry.list.filter(x => String(x && x.id) !== String(it.id));
+        }
+      }catch(_){ }
+      try{ btn && btn.remove && btn.remove(); }catch(_){ }
+
+      try{
+        try{
+          // Soft-delete (preferito): marca come eliminato
+          await api("lavanderia", { method:"PUT", body:{ id: it.id, isDeleted:true, is_deleted:true }, showLoader:true });
+        }catch(_e){
+          // Fallback: DELETE
+          await api("lavanderia", { method:"DELETE", body:{ id: it.id }, showLoader:true });
+        }
         toast("Report eliminato");
         await loadLavanderia();
       }catch(e){
@@ -14306,7 +14351,8 @@ async function loadLavanderia() {
       : (res && Array.isArray(res.rows) ? res.rows
       : [])));
     const rawList = (rows || []).map(sanitizeLaundryItem_);
-    const list = __filterByExerciseYear__(rawList, state.exerciseYear || loadExerciseYear(), ["startDate","endDate","createdAt","created_at","updatedAt","updated_at"]).filter(it => !(it && (it.isDeleted || it.is_deleted))).sort((a,b) => String(b.endDate||"").localeCompare(String(a.endDate||"")));
+    const __delSet = __laundryDeletedIds__();
+    const list = __filterByExerciseYear__(rawList, state.exerciseYear || loadExerciseYear(), ["startDate","endDate","createdAt","created_at","updatedAt","updated_at"]).filter(it => !(it && (it.isDeleted || it.is_deleted))).filter(it => { try{ return !(it && it.id && __delSet.has(String(it.id))); }catch(_){ return true; } }).sort((a,b) => String(b.endDate||"").localeCompare(String(a.endDate||"")));
 
     state.laundry.list = list;
     renderLaundryHistory_(list);
