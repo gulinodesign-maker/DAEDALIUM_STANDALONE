@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.007";
+const BUILD_VERSION = "dDAE_2.008";
 
 // ===== Safety: evita "Home bloccata" su errori runtime (iOS/PWA) =====
 try{
@@ -865,7 +865,7 @@ function __qrCodeText__(teamId, teamKey){
 }
 function __parseQr__(txt){
   const s = String(txt||"").trim();
-  const m = s.match(/^DDAE-([A-Z0-9_-]+)-([A-Z0-9_-]+)$/i);
+    const m = s.match(/^DDAE(?:-|\|)([A-Z0-9_-]+)(?:-|\|)([A-Z0-9_-]+)$/i);
   if (!m) return null;
   return { teamId: m[1], teamKey: m[2] };
 }
