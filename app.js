@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.002";
+const BUILD_VERSION = "2.004";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1041,64 +1041,117 @@ function __showQrModal__(code){
 }
 
 async function __qrScanAndLink__(){
-  // Use camera scan if available, else prompt
+  // Always try to open camera. If QR auto-detect isn't available, allow a "LEGGI QR" capture button.
   let code = "";
-  // Try BarcodeDetector + getUserMedia
-  try{
-    if ("BarcodeDetector" in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      const det = new BarcodeDetector({ formats:["qr_code"] });
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
-      const video = document.getElementById("qrScanVideo");
-      const scanModal = document.getElementById("qrScanModal");
+  const scanModal = document.getElementById("qrScanModal");
+  const video = document.getElementById("qrScanVideo");
+  const closeBtn = document.getElementById("qrScanClose");
+  const captureBtn = document.getElementById("qrScanCapture");
+
+  let stream = null;
+
+  const stopUI = ()=>{
+    try{ if (stream) stream.getTracks().forEach(t=>t.stop()); }catch(_){ }
+    stream = null;
+    try{ if (video) video.srcObject = null; }catch(_){ }
+    try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){ }
+  };
+
+  const openUI = async ()=>{
+    if (scanModal){
+      scanModal.hidden = false;
+      try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){ }
+    }
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
       if (video){
         video.srcObject = stream;
         await video.play();
       }
-      if (scanModal){
-        scanModal.hidden = false;
-        try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){}
-      }
-
-      code = await new Promise((resolve)=>{
-        let done = false;
-        const stopAll = ()=>{
-          if (done) return;
-          done = true;
-          try{ stream.getTracks().forEach(t=>t.stop()); }catch(_){}
-          try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
-        };
-        const tick = async ()=>{
-          if (done) return;
-          try{
-            if (video && video.readyState >= 2){
-              const bmp = await createImageBitmap(video);
-              const codes = await det.detect(bmp);
-              if (codes && codes.length){
-                stopAll();
-                return resolve(String(codes[0].rawValue || "").trim());
-              }
-            }
-          }catch(_){}
-          requestAnimationFrame(tick);
-        };
-        tick();
-
-        // close btn
-        try{
-          const close = document.getElementById("qrScanClose");
-          if (close){
-            close.onclick = ()=>{ stopAll(); resolve(""); };
-          }
-        }catch(_){}
-        // timeout
-        setTimeout(()=>{ if(!done){ stopAll(); resolve(""); } }, 25000);
-      });
+      return true;
     }
-  }catch(_){ code = ""; }
+    return false;
+  };
+
+  const readWithQrServer = async ()=>{
+    if (!video) return "";
+    try{
+      const w = video.videoWidth || 0;
+      const h = video.videoHeight || 0;
+      if (!w || !h) return "";
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, w, h);
+      const blob = await new Promise((res)=>canvas.toBlob(res, "image/jpeg", 0.92));
+      if (!blob) return "";
+      const fd = new FormData();
+      fd.append("file", blob, "qr.jpg");
+      const r = await fetch("https://api.qrserver.com/v1/read-qr-code/", { method:"POST", body: fd, cache:"no-store" });
+      const j = await r.json();
+      const data = j?.[0]?.symbol?.[0]?.data;
+      return String(data || "").trim();
+    }catch(_){
+      return "";
+    }
+  };
+
+  try{ await openUI(); }catch(_){ }
+
+  if (closeBtn){
+    closeBtn.onclick = ()=>{ stopUI(); };
+  }
+
+  let done = false;
+  if ("BarcodeDetector" in window && video && stream){
+    try{
+      const det = new BarcodeDetector({ formats:["qr_code"] });
+      const tick = async ()=>{
+        if (done) return;
+        try{
+          if (video.readyState >= 2){
+            const bmp = await createImageBitmap(video);
+            const codes = await det.detect(bmp);
+            if (codes && codes.length){
+              done = true;
+              code = String(codes[0].rawValue || "").trim();
+              stopUI();
+              return;
+            }
+          }
+        }catch(_){ }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    }catch(_){ }
+  }
+
+  if (captureBtn){
+    captureBtn.onclick = async ()=>{
+      if (done) return;
+      try{ captureBtn.disabled = true; }catch(_){ }
+      const got = await readWithQrServer();
+      if (got){
+        done = true;
+        code = got;
+        stopUI();
+      }else{
+        try{ toast("QR non letto, riprova", "orange"); }catch(_){ }
+        try{ captureBtn.disabled = false; }catch(_){ }
+      }
+    };
+  }
+
+  const started = Date.now();
+  while (!code && Date.now() - started < 25000){
+    await new Promise(r=>setTimeout(r, 200));
+  }
+  stopUI();
 
   if (!code){
     try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
   }
+
   const parsed = __parseQr__(code);
   if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
 
