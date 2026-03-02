@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.008
+ * Build: 2.009
  */
-const BUILD_VERSION = "2.008";
+const BUILD_VERSION = "2.009";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1142,7 +1142,7 @@ async function __fbExportAdmin__(){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
-  const tables = __ADMIN_TABLES__;
+  const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
@@ -1164,8 +1164,18 @@ async function __fbImportOperator__(){
   try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
   if (!payload || !payload.datasets){ try{ toast("Dati non validi", "orange"); }catch(_){ } return; }
 
-  // Import subset operatore
+  // Import subset operatore (NON sovrascrivere credenziali locali)
+  // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
+  // - Per sicurezza: se nel payload arriva 'utenti', lo mergiamo con quelli già presenti
+  try{
+    if (payload && payload.datasets && Array.isArray(payload.datasets.utenti)) {
+      const existingUsers = await __tblGet__("utenti", []);
+      await __tblSet__("utenti", __mergeUsers__(existingUsers, payload.datasets.utenti));
+    }
+  }catch(_){ }
+
   for (const t of __OP_TABLES__){
+    if (t === "utenti") continue;
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
@@ -1433,9 +1443,7 @@ function __openDbMenuModal__(){
       // Backup FILE completo (solo Admin)
       if (backupBtn){
         bind(backupBtn, async ()=>{ __closeDbMenuModal__();
-          let w = null;
-          try{ w = window.open("", "_blank"); }catch(_){ w = null; }
-          await __dbExport__("admin", w);
+          await __dbExport__("admin");
         });
       }
       // click outside to close
@@ -1813,19 +1821,28 @@ async function __dbExport__(kind, preopenWin){
       }catch(_){ }
     }
 
-    // fallback standard: anchor download nella finestra corrente
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
+    // iOS/PWA: per garantire il download serve un gesto utente *dopo* che il file è pronto.
+    // Mostra una conferma con pulsante 'Salva' e avvia il download solo su tap.
+    let doSave = true;
+    try{
+      const choice = await __confirmTwoActions__(`${label}: backup pronto`, "Salva", "Chiudi");
+      doSave = (choice === "yes");
+    }catch(_){ doSave = true; }
 
-    setTimeout(()=>{ 
-      try{ URL.revokeObjectURL(url); }catch(_){}
-      try{ document.body.removeChild(a); }catch(_){}
-    }, 500);
-
-    try{ toast(`${label}: export pronto`, "blue"); }catch(_){}
+    if (doSave){
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      try{ a.click(); }catch(_){ }
+      setTimeout(()=>{
+        try{ document.body.removeChild(a); }catch(_){ }
+        try{ URL.revokeObjectURL(url); }catch(_){ }
+      }, 800);
+      try{ toast("Backup creato", "green"); }catch(_){ }
+    } else {
+      try{ URL.revokeObjectURL(url); }catch(_){ }
+    }
 
   }catch(e){
     try{ toast("Errore export", "orange"); }catch(_){}
