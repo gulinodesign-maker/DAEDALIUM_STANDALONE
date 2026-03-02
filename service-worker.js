@@ -1,5 +1,5 @@
 /* dDAE - Service Worker (PWA)
- * Build: 2.016
+ * Build: 2.017
  *
  * Obiettivi:
  * - cache name cambia ad ogni build
@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "2.016";
+const BUILD = "2.017";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)
@@ -76,13 +76,19 @@ self.addEventListener("message", (event) => {
 });
 
 function isApiRequest(url) {
-  // Evita cache per chiamate a Google Apps Script / Googleusercontent
+  // Evita cache per chiamate API (Apps Script + Firebase/Google APIs)
+  const h = url.hostname;
   return (
-    url.hostname.includes("script.google.com") ||
-    url.hostname.includes("script.googleusercontent.com")
+    h.includes("script.google.com") ||
+    h.includes("script.googleusercontent.com") ||
+    h === "firestore.googleapis.com" ||
+    h === "firebasestorage.googleapis.com" ||
+    h === "identitytoolkit.googleapis.com" ||
+    h === "securetoken.googleapis.com" ||
+    h === "firebase.googleapis.com" ||
+    h === "www.googleapis.com"
   );
 }
-
 
 
 async function networkFirstAsset(req){
@@ -181,6 +187,12 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
+
+  // Non cache richieste cross-origin (es. Firebase/Google APIs/CDN)
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(req, { cache: "no-store" }));
+    return;
+  }
 
   // Non cache API
   if (isApiRequest(url)) {
