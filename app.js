@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.020
+ * Build: 2.021
  */
-const BUILD_VERSION = "2.020";
+const BUILD_VERSION = "2.021";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14199,8 +14199,9 @@ function renderLaundryHistory_(list){
 
   list.forEach((raw) => {
     const it = sanitizeLaundryItem_(raw);
-    const btn = document.createElement("button");
-    btn.type = "button";
+    const btn = document.createElement("div");
+    btn.setAttribute("role","button");
+    btn.tabIndex = 0;
     btn.className = "item";
     btn.style.width = "100%";
     btn.style.textAlign = "left";
