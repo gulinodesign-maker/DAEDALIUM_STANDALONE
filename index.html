@@ -402,7 +402,7 @@
 
 </div>
 <div class="operator-db-row" id="operatorDbRow" hidden></div>
-<div class="build" id="buildText">dDAE_2.004</div></div></section>
+<div class="build" id="buildText">dDAE_2.005</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1606,23 +1606,26 @@
 </div>
 
 
-<!-- QR MODAL (Admin) -->
+<!-- CODICE MODAL (Admin) -->
 <div aria-hidden="true" class="modal modal-center" hidden id="qrModal">
-  <div aria-label="QR" aria-modal="true" class="modal-card" role="dialog">
+  <div aria-label="Codice" aria-modal="true" class="modal-card" role="dialog">
     <div class="db-menu-head">
-      <div class="db-menu-title">QR</div>
+      <div class="db-menu-title">CODICE</div>
       <button aria-label="Chiudi" class="icon-btn" id="qrClose" type="button">
         <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
       </button>
     </div>
     <div class="db-menu-body" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px">
-      <img id="qrCodeImg" alt="QR" style="width:220px;height:220px;border-radius:18px;border:1px solid rgba(15,23,42,0.10);background:rgba(255,255,255,0.8)"/>
-      <div id="qrCodeText" style="font-size:12px;font-weight:700;opacity:0.8;text-align:center;word-break:break-all"></div>
+      <div id="qrCodeText" style="font-size:14px;font-weight:800;opacity:0.9;text-align:center;word-break:break-all"></div>
+      <div class="row" style="justify-content:center; gap:12px; margin-top:4px;">
+        <button class="btn primary" id="codeCopyBtn" type="button">COPIA</button>
+      </div>
+      <div style="font-size:12px;opacity:0.65;text-align:center">Condividi questo codice con l’operatore</div>
     </div>
   </div>
 </div>
 
-<!-- QR SCAN MODAL (Operatore) -->
+<!-- CODICE MODAL (Operatore) -->
 <div aria-hidden="true" class="modal modal-center" hidden id="qrScanModal">
   <div aria-label="Scansiona QR" aria-modal="true" class="modal-card" role="dialog">
     <div class="db-menu-head">

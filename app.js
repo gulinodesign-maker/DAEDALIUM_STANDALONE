@@ -54,7 +54,7 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.004";
+const BUILD_VERSION = "2.005";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -858,7 +858,7 @@ function __qrCodeText__(teamId, teamKey){
 }
 function __parseQr__(txt){
   const s = String(txt||"").trim();
-  const m = s.match(/^DDAE\|([^|]+)\|([^|]+)$/i);
+  const m = s.match(/^DDAE-([A-Z0-9_-]+)-([A-Z0-9_-]+)$/i);
   if (!m) return null;
   return { teamId: m[1], teamKey: m[2] };
 }
@@ -992,7 +992,7 @@ async function __fsList__(collectionPath){
 
 async function __ensureAdminTeam__(){
   __fbLoadLink__();
-      // QR modal close
+      // CODICE modal close
       try{
         const qc = document.getElementById("qrClose");
         const qm = document.getElementById("qrModal");
@@ -1028,12 +1028,23 @@ async function __adminGenerateQr__(){
 function __showQrModal__(code){
   const modal = document.getElementById("qrModal");
   const txt = document.getElementById("qrCodeText");
-  const img = document.getElementById("qrCodeImg");
   if (txt) txt.textContent = code;
-  if (img){
-    const u = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(code);
-    img.src = u;
-  }
+
+  // copy button
+  try{
+    const cp = document.getElementById("codeCopyBtn");
+    if (cp){
+      cp.onclick = async ()=>{
+        try{
+          await navigator.clipboard.writeText(String(code||""));
+          toast("Copiato", "green");
+        }catch(_){
+          try{ prompt("Copia il codice:", String(code||"")); }catch(__){}
+        }
+      };
+    }
+  }catch(_){}
+
   if (modal){
     modal.hidden = false;
     try{ modal.setAttribute("aria-hidden","false"); }catch(_){}
@@ -1041,128 +1052,57 @@ function __showQrModal__(code){
 }
 
 async function __qrScanAndLink__(){
-  // Always try to open camera. If QR auto-detect isn't available, allow a "LEGGI QR" capture button.
   let code = "";
   const scanModal = document.getElementById("qrScanModal");
-  const video = document.getElementById("qrScanVideo");
   const closeBtn = document.getElementById("qrScanClose");
-  const captureBtn = document.getElementById("qrScanCapture");
-
-  let stream = null;
+  const input = document.getElementById("pairCodeInput");
+  const linkBtn = document.getElementById("pairCodeLinkBtn");
 
   const stopUI = ()=>{
-    try{ if (stream) stream.getTracks().forEach(t=>t.stop()); }catch(_){ }
-    stream = null;
-    try{ if (video) video.srcObject = null; }catch(_){ }
-    try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){ }
+    try{ if (scanModal){ scanModal.hidden = true; scanModal.setAttribute("aria-hidden","true"); } }catch(_){}
   };
-
-  const openUI = async ()=>{
-    if (scanModal){
-      scanModal.hidden = false;
-      try{ scanModal.setAttribute("aria-hidden","false"); }catch(_){ }
-    }
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio:false });
-      if (video){
-        video.srcObject = stream;
-        await video.play();
-      }
-      return true;
-    }
-    return false;
-  };
-
-  const readWithQrServer = async ()=>{
-    if (!video) return "";
+  const openUI = ()=>{
     try{
-      const w = video.videoWidth || 0;
-      const h = video.videoHeight || 0;
-      if (!w || !h) return "";
-      const canvas = document.createElement("canvas");
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, w, h);
-      const blob = await new Promise((res)=>canvas.toBlob(res, "image/jpeg", 0.92));
-      if (!blob) return "";
-      const fd = new FormData();
-      fd.append("file", blob, "qr.jpg");
-      const r = await fetch("https://api.qrserver.com/v1/read-qr-code/", { method:"POST", body: fd, cache:"no-store" });
-      const j = await r.json();
-      const data = j?.[0]?.symbol?.[0]?.data;
-      return String(data || "").trim();
-    }catch(_){
-      return "";
-    }
+      if (scanModal){
+        scanModal.hidden = false;
+        scanModal.setAttribute("aria-hidden","false");
+      }
+      if (input){
+        input.value = "";
+        setTimeout(()=>{ try{ input.focus(); }catch(_){} }, 50);
+      }
+    }catch(_){}
   };
 
-  try{ await openUI(); }catch(_){ }
+  openUI();
 
   if (closeBtn){
     closeBtn.onclick = ()=>{ stopUI(); };
   }
 
-  let done = false;
-  if ("BarcodeDetector" in window && video && stream){
-    try{
-      const det = new BarcodeDetector({ formats:["qr_code"] });
-      const tick = async ()=>{
-        if (done) return;
-        try{
-          if (video.readyState >= 2){
-            const bmp = await createImageBitmap(video);
-            const codes = await det.detect(bmp);
-            if (codes && codes.length){
-              done = true;
-              code = String(codes[0].rawValue || "").trim();
-              stopUI();
-              return;
-            }
-          }
-        }catch(_){ }
-        requestAnimationFrame(tick);
-      };
-      tick();
-    }catch(_){ }
+  const doLink = async ()=>{
+    try{ code = String(input ? input.value : "").trim(); }catch(_){ code=""; }
+    if (!code){ try{ toast("Inserisci il codice", "orange"); }catch(_){ } return; }
+
+    const parsed = __parseQr__(code);
+    if (!parsed) { try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
+
+    const doc = await __fsGet__(`teams/${parsed.teamId}`);
+    if (!doc){ try{ toast("Team non trovato", "orange"); }catch(_){ } return; }
+    const data = __fsDecode__(doc);
+    if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
+
+    __fbSaveLink__(parsed.teamId, parsed.teamKey);
+    stopUI();
+    try{ toast("Collegato", "green"); }catch(_){ }
+  };
+
+  if (linkBtn){
+    linkBtn.onclick = ()=>{ doLink(); };
   }
-
-  if (captureBtn){
-    captureBtn.onclick = async ()=>{
-      if (done) return;
-      try{ captureBtn.disabled = true; }catch(_){ }
-      const got = await readWithQrServer();
-      if (got){
-        done = true;
-        code = got;
-        stopUI();
-      }else{
-        try{ toast("QR non letto, riprova", "orange"); }catch(_){ }
-        try{ captureBtn.disabled = false; }catch(_){ }
-      }
-    };
+  if (input){
+    input.onkeydown = (e)=>{ if (e && e.key === "Enter"){ e.preventDefault(); doLink(); } };
   }
-
-  const started = Date.now();
-  while (!code && Date.now() - started < 25000){
-    await new Promise(r=>setTimeout(r, 200));
-  }
-  stopUI();
-
-  if (!code){
-    try{ code = String(prompt("Incolla codice QR (DDAE|...)") || "").trim(); }catch(_){ code = ""; }
-  }
-
-  const parsed = __parseQr__(code);
-  if (!parsed) { try{ toast("QR non valido", "orange"); }catch(_){ } return; }
-
-  // validate team key matches
-  const doc = await __fsGet__(`teams/${parsed.teamId}`);
-  if (!doc){ try{ toast("Team non trovato", "orange"); }catch(_){ } return; }
-  const data = __fsDecode__(doc);
-  if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("QR non valido", "orange"); }catch(_){ } return; }
-
-  __fbSaveLink__(parsed.teamId, parsed.teamKey);
-  try{ toast("Collegato", "green"); }catch(_){ }
 }
 
 function __isAdmin__(){
@@ -1174,7 +1114,7 @@ function __operatorName__(){
 
 async function __fbExportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il CODICE in Impostazioni", "orange"); }catch(_){ } return; }
 
   const tables = __ADMIN_TABLES__;
   const datasets = {};
@@ -1187,7 +1127,7 @@ async function __fbExportAdmin__(){
 
 async function __fbImportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il CODICE", "orange"); }catch(_){ } return; }
 
   const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
   if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
@@ -1210,7 +1150,7 @@ async function __fbImportOperator__(){
 
 async function __fbExportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Scansiona prima il QR", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il CODICE", "orange"); }catch(_){ } return; }
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
   if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
 
@@ -1239,7 +1179,7 @@ function __pickLatestLaundry__(list){
 
 async function __fbImportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il QR in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il CODICE in Impostazioni", "orange"); }catch(_){ } return; }
 
   // get operator list from settings if present
   let ops = [];
