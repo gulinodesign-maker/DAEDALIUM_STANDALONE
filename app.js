@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.017
+ * Build: 2.018
  */
-const BUILD_VERSION = "2.017";
+const BUILD_VERSION = "2.018";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -524,13 +524,24 @@ async function __localApiLavanderia__(method, params, body){
   if (method === "DELETE"){
     const id = String((body && body.id) || (params && params.id) || "").trim();
     if (!id) return { ok:true };
+    const now = __nowIso__();
     const idx = list.findIndex(it => String(it?.id||"").trim() === id);
-    if (idx >= 0) list.splice(idx, 1);
+    if (idx >= 0){
+      try{
+        const prev = list[idx] || {};
+        list[idx] = Object.assign({}, prev, { id: (prev.id || id), isDeleted: true, updatedAt: now, createdAt: (prev.createdAt || prev.created_at || now) });
+      }catch(_){
+        list[idx] = { id, isDeleted: true, createdAt: now, updatedAt: now };
+      }
+    } else {
+      list.push({ id, isDeleted: true, createdAt: now, updatedAt: now });
+    }
     await save();
     return { ok:true };
   }
 
-  if (method === "POST"){
+
+if (method === "POST"){
     const startDate = __normIsoDate__(body?.startDate || body?.start_date || body?.from);
     const endDate = __normIsoDate__(body?.endDate || body?.end_date || body?.to);
 
@@ -1294,10 +1305,21 @@ async function __fbImportAdmin__(){
     return out;
   };
 
-  let bestLaundry = null;
-  const LAUNDRY_COLS = (typeof window.LAUNDRY_COLS !== "undefined" && Array.isArray(window.LAUNDRY_COLS)) ? window.LAUNDRY_COLS : ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+  let mergedLavanderia = await __tblGet__("lavanderia", []);
+  mergedLavanderia = Array.isArray(mergedLavanderia) ? mergedLavanderia.slice() : [];
+  const __lavKey__ = (it) => {
+    const id = String(it?.id || "").trim();
+    if (id) return "id:" + id;
+    const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
+    const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
+    return (a && b) ? ("rng:" + a + "|" + b) : "";
+  };
+  const __lavUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+  const __lavIdx__ = new Map();
+  mergedLavanderia.forEach((it, i) => { const k = __lavKey__(it); if (k && !__lavIdx__.has(k)) __lavIdx__.set(k, i); });
 
   for (const op of ops){
+
     const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/operators/${op}`);
     if (!doc) continue;
     const d = __fsDecode__(doc);
@@ -1331,30 +1353,57 @@ async function __fbImportAdmin__(){
           if (key) byKey.set(key, r);
           return;
         }
-        cols.forEach(c=>{ target[c] = Math.max(Number(target[c]||0)||0, Number(r[c]||0)||0); });
-        // aggiorna campi meta se presenti e più recenti
-        const ua = String(target.updatedAt||target.updated_at||"");
-        const ub = String(r.updatedAt||r.updated_at||"");
-        if (ub && (!ua || ub > ua)){
-          try{ target.updatedAt = r.updatedAt || r.updated_at; }catch(_){ }
+        const ua = String(target.updatedAt||target.updated_at||target.createdAt||target.created_at||"");
+        const ub = String(r.updatedAt||r.updated_at||r.createdAt||r.created_at||"");
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        if (should){
+          try{ Object.keys(r||{}).forEach(k=>{ target[k] = r[k]; }); }catch(_){ }
         }
       });
     }catch(_){ }
 
-    // merge operatori entries (append, dedupe by id)
+    // merge operatori entries (LWW by data+operatore; consente decrementi/cancellazioni)
     try{
       const list = Array.isArray(payload.datasets.operatori) ? payload.datasets.operatori : [];
-      const seen = new Set(mergedOperatori.map(r=>String(r?.id||"").trim()).filter(Boolean));
-      list.forEach(r=>{
-        const id = String(r?.id||"").trim();
-        if (id && seen.has(id)) return;
-        mergedOperatori.push(r);
-        if (id) seen.add(id);
+      const __opKey__ = (it) => {
+        const d = __normIsoDate__(it?.data || it?.date || "");
+        const op = String(it?.operatore || it?.nome || "").trim().toLowerCase();
+        return (d && op) ? (d + "|" + op) : "";
+      };
+      const __opUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+      const idxByKey = new Map();
+      // indicizza base (dedupe interno: tieni la più recente)
+      mergedOperatori.forEach((it, i) => {
+        const k = __opKey__(it);
+        if (!k) return;
+        if (!idxByKey.has(k)) { idxByKey.set(k, i); return; }
+        const j = idxByKey.get(k);
+        const a = mergedOperatori[j];
+        const ua = __opUAt__(a);
+        const ub = __opUAt__(it);
+        const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+        if (should) idxByKey.set(k, i);
+      });
+
+      list.forEach((it) => {
+        const k = __opKey__(it);
+        if (!k){ mergedOperatori.push(it); return; }
+        const i = idxByKey.get(k);
+        if (i === undefined){
+          mergedOperatori.push(it);
+          idxByKey.set(k, mergedOperatori.length - 1);
+          return;
+        }
+        const a = mergedOperatori[i];
+        const ua = __opUAt__(a);
+        const ub = __opUAt__(it);
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        if (should){
+          mergedOperatori[i] = it;
+        }
       });
     }catch(_){}
-
-
-    // merge lista spesa (colazione + prodotti pulizia)
+// merge lista spesa (colazione + prodotti pulizia)
     try{
       if (payload.datasets.colazione !== undefined){
         mergedColazione = __mergeSpesaList__(mergedColazione, payload.datasets.colazione);
@@ -1364,27 +1413,95 @@ async function __fbImportAdmin__(){
       }
     }catch(_){}
 
-    // pick best laundry by total sum
+    // merge lavanderia entries (LWW; supporta eliminazioni via isDeleted)
     try{
-      const l = __pickLatestLaundry__(payload.datasets.lavanderia);
-      if (l){
-        const sum = LAUNDRY_COLS.reduce((acc,k)=> acc + (Number(l[k]||0)||0), 0);
-        const sumBest = bestLaundry ? LAUNDRY_COLS.reduce((acc,k)=> acc + (Number(bestLaundry[k]||0)||0), 0) : -1;
-        if (!bestLaundry || sum > sumBest){
-          bestLaundry = l;
-        }else if (bestLaundry){
-          // max field-per-field
-          LAUNDRY_COLS.forEach(k=>{
-            const a = Number(bestLaundry[k]||0)||0;
-            const b = Number(l[k]||0)||0;
-            if (b > a) bestLaundry[k] = b;
-          });
+      const listL = Array.isArray(payload.datasets.lavanderia) ? payload.datasets.lavanderia : [];
+      (Array.isArray(listL) ? listL : []).forEach((it) => {
+        const k = __lavKey__(it);
+        if (!k){ mergedLavanderia.push(it); return; }
+        const i = __lavIdx__.get(k);
+        if (i === undefined){
+          mergedLavanderia.push(it);
+          __lavIdx__.set(k, mergedLavanderia.length - 1);
+          return;
         }
-      }
+        const a = mergedLavanderia[i];
+        const ua = __lavUAt__(a);
+        const ub = __lavUAt__(it);
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        if (should){
+          mergedLavanderia[i] = it;
+        }
+      });
     }catch(_){}
   }
 
-  // write merged pulizie
+  // cleanup: dedupe pulizie/operatori/lavanderia con logica LWW (evita che i vecchi valori "restino appiccicati")
+  try{
+    const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+    const __pKey__ = (it) => {
+      const d = String(it?.data || it?.date || "").slice(0,10);
+      const s = String(it?.stanza || it?.room || "").trim();
+      return (d && s) ? (d + "|" + s) : "";
+    };
+    const bestP = new Map();
+    (Array.isArray(mergedPulizie) ? mergedPulizie : []).forEach(it => {
+      const k = __pKey__(it);
+      if (!k) return;
+      const prev = bestP.get(k);
+      if (!prev){ bestP.set(k, it); return; }
+      const ua = __uAt__(prev);
+      const ub = __uAt__(it);
+      const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+      if (should) bestP.set(k, it);
+    });
+    mergedPulizie = Array.from(bestP.values());
+  }catch(_){}
+
+  try{
+    const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+    const __oKey__ = (it) => {
+      const d = __normIsoDate__(it?.data || it?.date || "");
+      const op = String(it?.operatore || it?.nome || "").trim().toLowerCase();
+      return (d && op) ? (d + "|" + op) : "";
+    };
+    const bestO = new Map();
+    (Array.isArray(mergedOperatori) ? mergedOperatori : []).forEach(it => {
+      const k = __oKey__(it);
+      if (!k) return;
+      const prev = bestO.get(k);
+      if (!prev){ bestO.set(k, it); return; }
+      const ua = __uAt__(prev);
+      const ub = __uAt__(it);
+      const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+      if (should) bestO.set(k, it);
+    });
+    mergedOperatori = Array.from(bestO.values());
+  }catch(_){}
+
+  try{
+    const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+    const __lKey__ = (it) => {
+      const id = String(it?.id || "").trim();
+      if (id) return "id:" + id;
+      const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
+      const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
+      return (a && b) ? ("rng:" + a + "|" + b) : "";
+    };
+    const bestL = new Map();
+    (Array.isArray(mergedLavanderia) ? mergedLavanderia : []).forEach(it => {
+      const k = __lKey__(it);
+      if (!k) return;
+      const prev = bestL.get(k);
+      if (!prev){ bestL.set(k, it); return; }
+      const ua = __uAt__(prev);
+      const ub = __uAt__(it);
+      const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+      if (should) bestL.set(k, it);
+    });
+    mergedLavanderia = Array.from(bestL.values());
+  }catch(_){}
+// write merged pulizie
   await __tblSet__("pulizie", mergedPulizie);
 
   // write merged operatori
@@ -1394,10 +1511,9 @@ async function __fbImportAdmin__(){
   await __tblSet__("colazione", mergedColazione);
   await __tblSet__("prodotti_pulizia", mergedProdottiPulizia);
 
-  // write bestLaundry as single-row array (replace)
-  if (bestLaundry){
-    await __tblSet__("lavanderia", [bestLaundry]);
-  }
+  // write merged lavanderia (include tombstones; UI filtra isDeleted)
+  await __tblSet__("lavanderia", mergedLavanderia);
+
 
   try{ toast("Operazione completata", "green"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
@@ -4894,7 +5010,7 @@ function showPage(page){
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
     if (state.session && isOperatoreSession(state.session)){
-      const allowed = new Set(["home","pulizie","lavanderia","calendario","orepulizia","auth","prodotti","colazione","statistiche","statpiscina"]);
+      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statpiscina"]);
       if (!allowed.has(page)) page = "pulizie";
     }
   }catch(_){ }
@@ -5003,7 +5119,7 @@ state.page = page;
   // Top tools (solo Pulizie) — lavanderia + ore lavoro accanto al tasto Home
   const pulizieTopTools = $("#pulizieTopTools");
   if (pulizieTopTools){
-    pulizieTopTools.hidden = (page !== "pulizie");
+    pulizieTopTools.hidden = (page !== "pulizie" || (state && state.session && isOperatoreSession(state.session)));
   }
 
   // Top tools (Lavanderia) — genera report accanto al tasto Home
@@ -12206,8 +12322,9 @@ try{
             hours = map.get(name.toLowerCase()) || 0;
           }
 
-          if (hours > 0){
-            rows.push({ data: date, operatore: name, ore: hours, benzina_euro: OP_BENZINA_EUR });
+          const isActive = (idx === idxActive && idxActive >= 0);
+          if (hours > 0 || isActive){
+            rows.push({ data: date, operatore: name, ore: hours, benzina_euro: (hours > 0 ? OP_BENZINA_EUR : 0) });
           }
         });
 
@@ -12290,6 +12407,10 @@ try{
   };
 
   const getCleanDate = () => {
+    try{
+      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
+      if (__isOp) return toISODateLocal(new Date());
+    }catch(_){ }
     const d = state.cleanDay ? new Date(state.cleanDay) : new Date();
     return toISODateLocal(d);
   };
@@ -12616,7 +12737,7 @@ try{
     // Quando cambi giorno: griglia subito vuota, poi (se ci sono) applica dati salvati.
     if (clearFirst) clearAllSlots();
     try{
-      const day = state.cleanDay ? new Date(state.cleanDay) : new Date();
+      const day = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
       const data = toISODateLocal(day);
       const res = await api("pulizie", { method:"GET", params:{ data }, showLoader:false });
 
@@ -12880,11 +13001,21 @@ if (cleanResetAll){
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
     if (!lab) return;
-    const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
+    const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
     lab.textContent = formatFullDateIT(startOfLocalDay(base));
   };
 
   const shiftClean = (deltaDays) => {
+    try{
+      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
+      if (__isOp){
+        state.cleanDay = startOfLocalDay(new Date()).toISOString();
+        updateCleanLabel();
+        try{ loadPulizieForDay(); }catch(_){ }
+        try{ loadOperatoriForDay(); }catch(_){ }
+        return;
+      }
+    }catch(_){ }
     const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
     const d = startOfLocalDay(base);
     d.setDate(d.getDate() + deltaDays);
@@ -12904,10 +13035,19 @@ if (cleanResetAll){
   });
 
   // inizializza label se apri direttamente la pagina
-  if (!state.cleanDay) state.cleanDay = startOfLocalDay(new Date()).toISOString();
+  try{
+    const __isOp = !!(state && state.session && isOperatoreSession(state.session));
+    const nav = document.querySelector("#page-pulizie .clean-nav");
+    if (nav) nav.style.display = __isOp ? "none" : "";
+    if (__isOp){
+      state.cleanDay = startOfLocalDay(new Date()).toISOString();
+    } else {
+      if (!state.cleanDay) state.cleanDay = startOfLocalDay(new Date()).toISOString();
+    }
+  }catch(_){ if (!state.cleanDay) state.cleanDay = startOfLocalDay(new Date()).toISOString(); }
   updateCleanLabel();
   try{ loadPulizieForDay(); }catch(_){ }
-    try{ loadOperatoriForDay(); }catch(_){ }
+  try{ loadOperatoriForDay(); }catch(_){ }
 
 
 
@@ -14023,6 +14163,8 @@ function renderLaundryHistory_(list){
   if (!host) return;
   host.innerHTML = "";
 
+  try{ list = (Array.isArray(list)?list:[]).filter(it => !(it && (it.isDeleted || it.is_deleted))); }catch(_){ }
+
   if (!list || !list.length){
     const empty = document.createElement("div");
     empty.className = "item";
@@ -14140,7 +14282,7 @@ async function loadLavanderia() {
       : (res && Array.isArray(res.rows) ? res.rows
       : [])));
     const rawList = (rows || []).map(sanitizeLaundryItem_);
-    const list = __filterByExerciseYear__(rawList, state.exerciseYear || loadExerciseYear(), ["startDate","endDate","createdAt","created_at","updatedAt","updated_at"]).sort((a,b) => String(b.endDate||"").localeCompare(String(a.endDate||"")));
+    const list = __filterByExerciseYear__(rawList, state.exerciseYear || loadExerciseYear(), ["startDate","endDate","createdAt","created_at","updatedAt","updated_at"]).filter(it => !(it && (it.isDeleted || it.is_deleted))).sort((a,b) => String(b.endDate||"").localeCompare(String(a.endDate||"")));
 
     state.laundry.list = list;
     renderLaundryHistory_(list);
