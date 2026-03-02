@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.014
+ * Build: 2.015
  */
-const BUILD_VERSION = "2.014";
+const BUILD_VERSION = "2.015";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4420,6 +4420,52 @@ function __filterByExerciseYear__(rows, year, candidateFields){
   return Array.isArray(rows) ? rows : [];
 }
 
+// Filtra le spese nel periodo usando la DATA SPESA (quella visualizzata in card), NON createdAt.
+function __spesaDateISO__(s){
+  try{
+    const v = (s && (s.dataSpesa || s.data || s.data_spesa || s.date)) ? (s.dataSpesa || s.data || s.data_spesa || s.date) : "";
+    const str = String(v || "").trim();
+    if (!str) return null;
+
+    // ISO: YYYY-MM-DD...
+    const iso = str.slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+
+    // IT: DD/MM/YY or DD/MM/YYYY
+    const m = str.match(/^(\d{2})\/(\d{2})\/(\d{2,4})/);
+    if (m){
+      const dd = m[1], mm = m[2];
+      let yy = m[3];
+      if (yy.length === 2) yy = (Number(yy) >= 70 ? "19" : "20") + yy; // fallback
+      return `${yy}-${mm}-${dd}`;
+    }
+
+    // Fallback parse
+    const t = Date.parse(str);
+    if (!isNaN(t)){
+      const d = new Date(t);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+  }catch(_){}
+  return null;
+}
+
+function __filterSpeseByPeriod__(spese, from, to){
+  if (!Array.isArray(spese)) return [];
+  const f = String(from || "").slice(0,10);
+  const t = String(to || "").slice(0,10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f) || !/^\d{4}-\d{2}-\d{2}$/.test(t)) return spese.slice();
+  return spese.filter(s => {
+    const d = __spesaDateISO__(s);
+    if (!d) return false;
+    return d >= f && d <= t;
+  });
+}
+
+
 function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
 
 function __lsClearAll(){
@@ -5832,16 +5878,14 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
   // Prefill immediato da cache locale (perceived speed) — poi refresh SWR
   const lsSpeseKey = `spese|${uid}|${anno}|${from}|${to}`;
   const lsReportKey = `report|${uid}|${anno}|${from}|${to}`;
-  const lsGuestsKey = `ospiti|${uid}|${anno}|${from}|${to}`;
   const hitS = !force ? __lsGet(lsSpeseKey) : null;
   const hitR = !force ? __lsGet(lsReportKey) : null;
-  const hitG = !force ? __lsGet(lsGuestsKey) : null;
-  const hasLocal = !!((hitS && hitS.data) || (hitR && hitR.data) || (hitG && hitG.data));
+  const hasLocal = !!((hitS && hitS.data) || (hitR && hitR.data));
 
   if (!force) {
     if (hitS && Array.isArray(hitS.data)) {
-      state.spese = __filterByExerciseYear__(hitS.data, state.exerciseYear || loadExerciseYear(), ["dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"]);
-      state.report = buildReportFromSpese(state.spese);
+      state.spese = __filterSpeseByPeriod__(__filterByExerciseYear__(hitS.data, state.exerciseYear || loadExerciseYear(), ["dataSpesa","data_spesa","data","date"]), from, to);
+      state.report = buildReportFromSpese(state.spese)(state.spese);
     } else if (hitR && hitR.data) {
       state.report = hitR.data;
     }
@@ -5861,9 +5905,9 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
         const annoNow = (state && state.exerciseYear) ? String(state.exerciseYear) : "";
         const kNow = `${uidNow}|${annoNow}|${state.period.from}|${state.period.to}`;
         if (kNow !== key) return;
-        state.spese = __filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
-          "dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"
-        ]);
+        state.spese = __filterSpeseByPeriod__(__filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
+          "dataSpesa","data_spesa","data","date"
+        ]), from, to);
         state.report = buildReportFromSpese(state.spese);
         state._dataKey = key;
         __lsSet(lsReportKey, state.report);
@@ -5885,9 +5929,9 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
   }
 
   const [spese, ospiti] = await fetchAll();
-  state.spese = __filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
-          "dataSpesa","data_spesa","data","date","createdAt","created_at","updatedAt","updated_at"
-        ]);
+  state.spese = __filterSpeseByPeriod__(__filterByExerciseYear__(Array.isArray(spese) ? spese : [], state.exerciseYear || loadExerciseYear(), [
+          "dataSpesa","data_spesa","data","date"
+        ]), from, to);
   state.report = buildReportFromSpese(state.spese);
   state._dataKey = key;
   __lsSet(lsReportKey, state.report);
@@ -5920,8 +5964,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
   const lsGuestsKey = `ospitiALL|${uid}|${anno}|${from}|${to}`;
   const hitS = !force ? __lsGet(lsSpeseKey) : null;
   const hitR = !force ? __lsGet(lsReportKey) : null;
-  const hitG = !force ? __lsGet(lsGuestsKey) : null;
-  const hasLocal = !!((hitS && hitS.data) || (hitR && hitR.data) || (hitG && hitG.data));
+  const hasLocal = !!((hitS && hitS.data) || (hitR && hitR.data));
 
   if (!force) {
     if (hitS && Array.isArray(hitS.data)) {
