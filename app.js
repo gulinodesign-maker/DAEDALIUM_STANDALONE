@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.005
+ * Build: 2.006
  */
-const BUILD_VERSION = "2.005";
+const BUILD_VERSION = "2.006";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1148,7 +1148,7 @@ async function __fbExportAdmin__(){
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Export Admin ok", "blue"); }catch(_){}
+  try{ toast("Operazione completata", "blue"); }catch(_){}
 }
 
 async function __fbImportOperator__(){
@@ -1170,7 +1170,7 @@ async function __fbImportOperator__(){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
-  try{ toast("Import operatore ok", "green"); }catch(_){}
+  try{ toast("Operazione completata", "green"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
@@ -1187,7 +1187,7 @@ async function __fbExportOperator__(){
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Export operatore ok", "blue"); }catch(_){}
+  try{ toast("Operazione completata", "blue"); }catch(_){}
 }
 
 function __pickLatestLaundry__(list){
@@ -1279,7 +1279,7 @@ async function __fbImportAdmin__(){
     await __tblSet__("lavanderia", [bestLaundry]);
   }
 
-  try{ toast("Import admin ok", "green"); }catch(_){}
+  try{ toast("Operazione completata", "green"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
@@ -1299,8 +1299,8 @@ try{
       __fbLoadLink__();
       const imp = document.getElementById("goDbImport");
       const exp = document.getElementById("goDbExport");
-      if (imp) bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } });
-      if (exp) bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } });
+      if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
   }, { passive:true });
 }catch(_){}
@@ -1335,8 +1335,8 @@ async function __confirmTwoActions__(message, yesLabel, noLabel){
 async function __openDbPopup__(kind){
   const label = (kind==="admin") ? "DB Amministratore" : "DB Operatore";
   const choice = await __confirmTwoActions__(label + ": scegli operazione", "Importa", "Esporta");
-  if (choice === "yes") return __dbImport__(kind);
-  return __dbExport__(kind);
+  if (choice === "yes") return __handleSyncImport__();
+  return __handleSyncExport__();
 }
 
 
@@ -1373,6 +1373,10 @@ function __openDbMenuModal__(){
       return __openDbPopup__("admin");
     }
 
+    // mostra/nascondi backup FILE (solo Admin)
+    const backupBtn = document.getElementById("dbMenuFullBackupBtn");
+    if (backupBtn) backupBtn.hidden = !__isAdmin__();
+
     // bind once
     if (!modal.__bound){
       modal.__bound = true;
@@ -1380,14 +1384,18 @@ function __openDbMenuModal__(){
 
       bind(closeBtn, ()=>{ __closeDbMenuModal__(); });
 
-      // Backup LOCALE completo (DB amministratore)
-      bind(importBtn, async ()=>{ __closeDbMenuModal__(); await __dbImport__("admin"); });
-      bind(exportBtn, async ()=>{ __closeDbMenuModal__();
-        let w = null;
-        try{ w = window.open("", "_blank"); }catch(_){ w = null; }
-        await __dbExport__("admin", w);
-      });
+      // Import/Export SYNC (Firebase) — silente (no file)
+      bind(importBtn, async ()=>{ __closeDbMenuModal__(); await __handleSyncImport__(); });
+      bind(exportBtn, async ()=>{ __closeDbMenuModal__(); await __handleSyncExport__(); });
 
+      // Backup FILE completo (solo Admin)
+      if (backupBtn){
+        bind(backupBtn, async ()=>{ __closeDbMenuModal__();
+          let w = null;
+          try{ w = window.open("", "_blank"); }catch(_){ w = null; }
+          await __dbExport__("admin", w);
+        });
+      }
       // click outside to close
       try{
         modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeDbMenuModal__(); });
@@ -5175,14 +5183,14 @@ function setupHome(){
   if (build) build.textContent = `dDAE_${BUILD_VERSION}`;
 
   
-  // Operatore: Import/Export DB come tile in Home
+  // Home: Import/Export SYNC (Firebase) — silente (no file)
   try{
     const imp = document.getElementById("goDbImport");
-    if (imp) bindFastTap(imp, () => { __dbImport__("operator"); });
+    if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     const exp = document.getElementById("goDbExport");
-    if (exp) bindFastTap(exp, () => { let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; } __dbExport__("operator", w); });
+    if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
   }catch(_){ }
-// SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo
+// SPESE: pulsante + (nuova spesa) e pulsante grafico+riepilogo e pulsante grafico+riepilogo
   const btnAdd = $("#btnAddSpesa");
   if (btnAdd){
     bindFastTap(btnAdd, () => { hideLauncher(); showPage("inserisci"); });

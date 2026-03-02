@@ -7835,6 +7835,8 @@ color: var(--mcol,#ff3b30);
   border-radius:16px !important;
 }
 
+.db-backup{ grid-column: 1 / -1; }
+
 /* DB popup: remove legacy dots (HTML already removed, keep safe) */
 .db-menu-grid .db-dot{ display:none !important; }
 
