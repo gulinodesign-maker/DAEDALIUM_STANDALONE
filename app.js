@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.007
+ * Build: 2.008
  */
-const BUILD_VERSION = "2.007";
+const BUILD_VERSION = "2.008";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2222,12 +2222,25 @@ async function __wipeBrowserDb__(){
 }
 
 function updateYearPill(){
-  const pill = document.getElementById("yearPill");
-  if (!pill) return;
   const y = state.exerciseYear;
-  if (!y){ pill.hidden = true; return; }
-  pill.textContent = `${y}`;
-  pill.hidden = false;
+  const pill = document.getElementById("yearPill");
+  if (pill){
+    if (!y){ pill.hidden = true; }
+    else{
+      pill.textContent = `${y}`;
+      pill.hidden = false;
+    }
+  }
+
+  // Topbar: mostra SOLO l'anno corrente al centro
+  try{
+    const yEl = document.getElementById("topbarYear");
+    if (yEl){
+      const nowY = (new Date()).getFullYear();
+      yEl.textContent = String(nowY);
+    }
+  }catch(_){}
+
   try{ updateSettingsTabs(); }catch(_){ }
 }
 

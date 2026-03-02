@@ -91,7 +91,8 @@ body{
 }
 
 .brand{
-  display:flex;
+    position: relative;
+display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 12px;
@@ -106,6 +107,26 @@ body{
   flex: 1 1 auto;
   flex-wrap: nowrap;
 }
+
+/* dDAE_2.008 — Anno corrente centrato in topbar (sostituisce titolo) */
+.topbar-year{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.6px;
+  color: rgba(15,23,42,0.92);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
 .brand-right{
   display:flex;
   align-items:center;
