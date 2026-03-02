@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.022
+ * Build: 2.023
  */
-const BUILD_VERSION = "2.022";
+const BUILD_VERSION = "2.023";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1221,6 +1221,10 @@ async function __fbImportOperator__(){
 
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
+
+    // Operatore ha precedenza: NON importare da admin i dataset operativi dell'operatore
+    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
+
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
@@ -1304,6 +1308,8 @@ async function __fbImportAdmin__(){
   const __mergeSpesaList__ = (base, inc) => {
     const out = Array.isArray(base) ? base.slice() : [];
     const idxByKey = new Map();
+      const __opBaseKeys__ = new Set();
+      try{ mergedOperatori.forEach((it)=>{ const k = __opKey__(it); if (k) __opBaseKeys__.add(k); }); }catch(_){ }
     out.forEach((r, i) => { const k = __spesaKey__(r); if (k) idxByKey.set(k, i); });
     (Array.isArray(inc) ? inc : []).forEach((r) => {
       const k = __spesaKey__(r);
@@ -1341,6 +1347,8 @@ async function __fbImportAdmin__(){
   const __lavUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
   const __lavIdx__ = new Map();
   mergedLavanderia.forEach((it, i) => { const k = __lavKey__(it); if (k && !__lavIdx__.has(k)) __lavIdx__.set(k, i); });
+  const __lavBaseKeys__ = new Set();
+  try{ mergedLavanderia.forEach((it)=>{ const k = __lavKey__(it); if (k) __lavBaseKeys__.add(k); }); }catch(_){ }
 
   for (const op of ops){
 
@@ -1356,6 +1364,17 @@ async function __fbImportAdmin__(){
     try{
       const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
       const listP = Array.isArray(payload.datasets.pulizie) ? payload.datasets.pulizie : [];
+      const __pBaseIds__ = new Set();
+      const __pBaseKeys__ = new Set();
+      try{
+        (Array.isArray(basePulizie) ? basePulizie : []).forEach(r=>{
+          const id0 = String(r?.id||"").trim();
+          const d0 = String(r?.data||r?.date||"").slice(0,10);
+          const s0 = String(r?.stanza||r?.room||"").trim();
+          if (id0) __pBaseIds__.add(id0);
+          if (d0 && s0) __pBaseKeys__.add(d0+"|"+s0);
+        });
+      }catch(_){ }
       const byId = new Map();
       mergedPulizie.forEach(r=>{ const id = String(r?.id||"").trim(); if (id) byId.set(id, r); });
       const byKey = new Map();
@@ -1379,7 +1398,9 @@ async function __fbImportAdmin__(){
         }
         const ua = String(target.updatedAt||target.updated_at||target.createdAt||target.created_at||"");
         const ub = String(r.updatedAt||r.updated_at||r.createdAt||r.created_at||"");
-        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        const isBase = (id && __pBaseIds__.has(id)) || (key && __pBaseKeys__.has(key));
+        const should = isBase ? true : ((!ua && !ub) ? true : (ub && (!ua || ub > ua)));
+        if (isBase){ try{ if (id) __pBaseIds__.delete(id); }catch(_){ } try{ if (key) __pBaseKeys__.delete(key); }catch(_){ } }
         if (should){
           try{ Object.keys(r||{}).forEach(k=>{ target[k] = r[k]; }); }catch(_){ }
         }
@@ -1421,7 +1442,9 @@ async function __fbImportAdmin__(){
         const a = mergedOperatori[i];
         const ua = __opUAt__(a);
         const ub = __opUAt__(it);
-        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        const isBase = __opBaseKeys__.has(k);
+        const should = isBase ? true : ((!ua && !ub) ? true : (ub && (!ua || ub > ua)));
+        if (isBase){ try{ __opBaseKeys__.delete(k); }catch(_){ } }
         if (should){
           mergedOperatori[i] = it;
         }
@@ -1452,7 +1475,9 @@ async function __fbImportAdmin__(){
         const a = mergedLavanderia[i];
         const ua = __lavUAt__(a);
         const ub = __lavUAt__(it);
-        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        const isBase = __lavBaseKeys__.has(k);
+        const should = isBase ? true : ((!ua && !ub) ? true : (ub && (!ua || ub > ua)));
+        if (isBase){ try{ __lavBaseKeys__.delete(k); }catch(_){ } }
         if (should){
           mergedLavanderia[i] = it;
         }
@@ -5403,7 +5428,10 @@ function setupHeader(){
 
 
   const opLogout = document.getElementById("opLogoutTop");
-  if (opLogout) bindFastTap(opLogout, () => {
+  if (opLogout) bindFastTap(opLogout, async () => {
+    let ok = false;
+    try{ ok = await __confirmTwoActions__("Cancella operatore?", "Sì", "No"); }catch(_){ ok = false; }
+    if (!ok) return;
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
