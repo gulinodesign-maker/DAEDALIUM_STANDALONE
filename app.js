@@ -54,7 +54,14 @@ try{
 /**
  * Build: 1.034
  */
-const BUILD_VERSION = "2.005";
+const BUILD_VERSION = "2.007";
+
+// ===== Safety: evita "Home bloccata" su errori runtime (iOS/PWA) =====
+try{
+  window.addEventListener("error", (e)=>{ try{ console.error(e); }catch(_){ } });
+  window.addEventListener("unhandledrejection", (e)=>{ try{ console.error(e); }catch(_){ } });
+}catch(_){}
+
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
