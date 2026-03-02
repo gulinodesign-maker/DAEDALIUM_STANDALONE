@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.009
  */
-const BUILD_VERSION = "2.011";
+const BUILD_VERSION = "2.012";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1443,11 +1443,6 @@ function __openDbMenuModal__(){
         let w=null; try{ w = window.open("", "_blank"); }catch(_){ w=null; }
         await __dbExport__("admin", w);
       });
-      if (backupBtn){
-        bind(backupBtn, async ()=>{ __closeDbMenuModal__();
-          await __dbExport__("admin");
-        });
-      }
       // click outside to close
       try{
         modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeDbMenuModal__(); });
@@ -1521,7 +1516,7 @@ function __mergeUsers__(existing, incoming){
   return out;
 }
 
-async function __dbImport__(kind){
+async async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const input = document.createElement("input");
@@ -1746,7 +1741,7 @@ async function __exportRosterOperators__(){
 }
 
 
-async function __dbExport__(kind, preopenWin){
+async async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const tables = __dbTablesForKind__(kind);
