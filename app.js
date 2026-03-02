@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.025
  */
-const BUILD_VERSION = "2.025";
+const BUILD_VERSION = "2.026";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1418,7 +1418,6 @@ async function __fbImportAdmin__(){
     }catch(_){ }
 
     // merge operatori entries (LWW by data+operatore; consente decrementi/cancellazioni)
- (LWW by data+operatore; consente decrementi/cancellazioni)
     try{
       const list = Array.isArray(payload.datasets.operatori) ? payload.datasets.operatori : [];
       const __opKey__ = (it) => {
