@@ -6170,6 +6170,58 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 
 .stat-row:active{ transform: scale(0.985); }
 
+/* Conteggio generale: card stile "lista" (tutte uguali, una sopra l'altra) */
+#page-statgen .stat-row{
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 12px 28px rgba(15,23,42,0.12);
+  color: rgba(15,23,42,0.92);
+  padding: 18px 18px 18px 78px;
+  min-height: 84px;
+}
+
+#page-statgen .stat-row::before{
+  inset: 0 auto 0 0;
+  width: 10px;
+  opacity: 1;
+  background: var(--statbg, var(--blue));
+  border-radius: 22px 0 0 22px;
+}
+
+#page-statgen .stat-row::after{
+  content: none;
+}
+
+#page-statgen .stat-name{
+  font-weight: 900;
+  font-size: 20px;
+}
+
+#page-statgen .stat-val{
+  font-weight: 950;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+}
+
+#page-statgen .stat-ico-wrap{
+  position: absolute;
+  left: 22px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15,23,42,0.10);
+  color: var(--statbg, var(--blue));
+}
+
+#page-statgen .stat-ico-wrap .ui-ico{
+  width: 22px;
+  height: 22px;
+}
+
 .stat-pie-card{
   width: min(420px, calc(100vw - 28px));
   border-radius: 22px;
