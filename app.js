@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.009
  */
-const BUILD_VERSION = "2.012";
+const BUILD_VERSION = "2.013";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1384,7 +1384,7 @@ async function __confirmTwoActions__(message, yesLabel, noLabel){
 }
 
 
-async async function __openDbPopup__(kind){
+async function __openDbPopup__(kind){
   const k = String(kind||"admin").toLowerCase().startsWith("op") ? "operator" : "admin";
   const label = (k==="admin") ? "DB Amministratore" : "DB Operatore";
   const choice = await __confirmTwoActions__(label + ": scegli operazione", "Importa", "Esporta");
@@ -1516,7 +1516,7 @@ function __mergeUsers__(existing, incoming){
   return out;
 }
 
-async async function __dbImport__(kind){
+async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const input = document.createElement("input");
@@ -1741,7 +1741,7 @@ async function __exportRosterOperators__(){
 }
 
 
-async async function __dbExport__(kind, preopenWin){
+async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
     const tables = __dbTablesForKind__(kind);
