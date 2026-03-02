@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.009
  */
-const BUILD_VERSION = "2.009";
+const BUILD_VERSION = "2.010";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1558,16 +1558,6 @@ async function __dbImport__(kind){
       return;
     }
 
-    // Restore Firebase link (teamId/teamKey) if present in backup
-    try{
-      const link = data && data.meta && data.meta.firebaseLink ? data.meta.firebaseLink : null;
-      const teamId = String(link && link.teamId ? link.teamId : "").trim();
-      const teamKey = String(link && link.teamKey ? link.teamKey : "").trim();
-      if (teamId && teamKey){
-        __fbSaveLink__(teamId, teamKey);
-      }
-    }catch(_){ }
-
 
     const allowedTables = new Set(__dbTablesForKind__(kind));
     const ds = data.datasets || {};
@@ -1623,19 +1613,6 @@ async function __dbImport__(kind){
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
     try{ toast(`${label}: import completato`, "blue"); }catch(_){}
-    try{
-      // Salva una copia del file importato con naming standardizzato
-      const acct = __dbAccountNameForKind__(kind);
-      const dt = __dbFmtDateDdMmYy__();
-      const blob2 = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url2 = URL.createObjectURL(blob2);
-      const a2 = document.createElement("a");
-      a2.href = url2;
-      a2.download = __safeFileName__(`${acct}_IMP_${dt}.json`);
-      document.body.appendChild(a2);
-      a2.click();
-      setTimeout(()=>{ try{ URL.revokeObjectURL(url2); }catch(_){} try{ document.body.removeChild(a2); }catch(_){} }, 0);
-    }catch(_){}
     setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
@@ -2088,6 +2065,12 @@ function applyRoleMode(){
       try{ el.style.display = "none"; }catch(_){ }
     });
 
+
+    // Impostazioni: per Operatore non mostrare il popup Database locale (solo Admin)
+    try{
+      const sdb = document.getElementById("settingsDbBtn");
+      if (sdb){ sdb.hidden = true; try{ sdb.style.display = "none"; }catch(_){ } }
+    }catch(_){}
     // Header tools: nascondi tools non consentiti
     try{ const ospitiTopTools = document.getElementById("ospitiTopTools"); if (ospitiTopTools) ospitiTopTools.hidden = true; }catch(_){ }
     try{ const speseTopTools = document.getElementById("speseTopTools"); if (speseTopTools) speseTopTools.hidden = true; }catch(_){ }
@@ -3819,7 +3802,7 @@ function setupImpostazioni() {
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
-    if (dbBtn) bindFastTap(dbBtn, () => { __openDbMenuModal__(); });
+    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
     if (rosterBtn) bindFastTap(rosterBtn, async () => {
       try{
