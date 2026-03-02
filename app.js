@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.014
+ * Build: 2.015
  */
-const BUILD_VERSION = "2.014";
+const BUILD_VERSION = "2.015";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -85,6 +85,7 @@ const __ALL_TABLES__ = [
   "operatori",
   "motivazioni",
   "colazione",
+  "prodotti_pulizia",
   "ospiti_eliminati"
 ];
 
@@ -101,7 +102,8 @@ const __OP_TABLES__ = [
   "pulizie",
   "lavanderia",
   "operatori",
-  "colazione"
+  "colazione",
+  "prodotti_pulizia",
 ];
 
 const __idbState = { p: null };
@@ -444,11 +446,12 @@ async function __localApiImpostazioni__(method, body){
   return { rows };
 }
 
-async function __localApiColazione__(method, body){
-  const rows0 = await __tblGet__("colazione", []);
+async function __localApiSpesaList__(tableName, method, body){
+  const tName = String(tableName || "").trim() || "colazione";
+  const rows0 = await __tblGet__(tName, []);
   const rows = Array.isArray(rows0) ? rows0 : [];
 
-  const save = async ()=>{ await __tblSet__("colazione", rows); };
+  const save = async ()=>{ await __tblSet__(tName, rows); };
 
   if (method === "GET"){
     return rows;
@@ -474,11 +477,13 @@ async function __localApiColazione__(method, body){
       if (!prodotto) throw new Error("Prodotto mancante");
       const exist = rows.find(r => String(r?.prodotto||"").trim().toUpperCase() === prodotto && !__normBool01(r?.isDeleted));
       if (exist) return { ok:true };
+      const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
       rows.push({
-        id: (typeof genId === "function" ? genId("c") : ("c-"+Date.now())),
+        id: (typeof genId === "function" ? genId(prefix) : (prefix+"-"+Date.now())),
         prodotto,
         qty: 0,
         saved: 0,
+        checked: 0,
         isDeleted: 0,
         createdAt: __nowIso__(),
         updatedAt: __nowIso__(),
@@ -487,7 +492,7 @@ async function __localApiColazione__(method, body){
       return { ok:true };
     }
     if (op === "resetQty"){
-      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { r.qty = 0; r.saved = 0; r.updatedAt = __nowIso__(); } });
+      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { r.qty = 0; r.saved = 0; r.checked = 0; r.updatedAt = __nowIso__(); } });
       await save();
       return { ok:true };
     }
@@ -500,6 +505,10 @@ async function __localApiColazione__(method, body){
   }
 
   return { ok:true };
+}
+
+async function __localApiColazione__(method, body){
+  return __localApiSpesaList__("colazione", method, body);
 }
 
 async function __localApiLavanderia__(method, params, body){
@@ -818,6 +827,7 @@ async function __localApi__(action, { method="GET", params={}, body=null } = {})
   if (a === "utenti") return __localApiUtenti__(m, body || {});
   if (a === "impostazioni") return __localApiImpostazioni__(m, body || {});
   if (a === "colazione") return __localApiColazione__(m, body || {});
+  if (a === "prodotti_pulizia") return __localApiSpesaList__("prodotti_pulizia", m, body || {});
   if (a === "lavanderia") return __localApiLavanderia__(m, params || {}, body || {});
   return __localApiTable__(a, m, params || {}, body || {});
 }
@@ -1193,7 +1203,9 @@ async function __fbExportOperator__(){
   const datasets = {
     pulizie: await __tblGet__("pulizie", []),
     operatori: await __tblGet__("operatori", []),
-    lavanderia: await __tblGet__("lavanderia", [])
+    lavanderia: await __tblGet__("lavanderia", []),
+    colazione: await __tblGet__("colazione", []),
+    prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
@@ -1240,6 +1252,47 @@ async function __fbImportAdmin__(){
   let mergedOperatori = await __tblGet__("operatori", []);
   const baseOperatori = Array.isArray(mergedOperatori) ? mergedOperatori : [];
   mergedOperatori = baseOperatori.slice();
+
+
+  // merge colazione + prodotti pulizia (lista spesa) da operatori
+  let mergedColazione = await __tblGet__("colazione", []);
+  mergedColazione = Array.isArray(mergedColazione) ? mergedColazione.slice() : [];
+
+  let mergedProdottiPulizia = await __tblGet__("prodotti_pulizia", []);
+  mergedProdottiPulizia = Array.isArray(mergedProdottiPulizia) ? mergedProdottiPulizia.slice() : [];
+
+  const __spesaKey__ = (it) => {
+    const p = String(it?.prodotto || it?.nome || "").trim().toUpperCase();
+    return p || String(it?.id || "").trim();
+  };
+  const __spesaUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+  const __mergeSpesaList__ = (base, inc) => {
+    const out = Array.isArray(base) ? base.slice() : [];
+    const idxByKey = new Map();
+    out.forEach((r, i) => { const k = __spesaKey__(r); if (k) idxByKey.set(k, i); });
+    (Array.isArray(inc) ? inc : []).forEach((r) => {
+      const k = __spesaKey__(r);
+      if (!k) return;
+      const i = idxByKey.get(k);
+      if (i === undefined){
+        out.push(r);
+        idxByKey.set(k, out.length - 1);
+        return;
+      }
+      const a = out[i];
+      const ua = __spesaUAt__(a);
+      const ub = __spesaUAt__(r);
+      if (ub && (!ua || ub > ua)){
+        out[i] = r;
+      }else if (!ub && !ua){
+        // fallback: conserva qty più alta
+        const qa = parseInt(String(a?.qty ?? 0), 10);
+        const qb = parseInt(String(r?.qty ?? 0), 10);
+        if ((isNaN(qa)?0:qa) < (isNaN(qb)?0:qb)) out[i] = Object.assign({}, a, r);
+      }
+    });
+    return out;
+  };
 
   let bestLaundry = null;
   const LAUNDRY_COLS = (typeof window.LAUNDRY_COLS !== "undefined" && Array.isArray(window.LAUNDRY_COLS)) ? window.LAUNDRY_COLS : ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
@@ -1300,6 +1353,17 @@ async function __fbImportAdmin__(){
       });
     }catch(_){}
 
+
+    // merge lista spesa (colazione + prodotti pulizia)
+    try{
+      if (payload.datasets.colazione !== undefined){
+        mergedColazione = __mergeSpesaList__(mergedColazione, payload.datasets.colazione);
+      }
+      if (payload.datasets.prodotti_pulizia !== undefined){
+        mergedProdottiPulizia = __mergeSpesaList__(mergedProdottiPulizia, payload.datasets.prodotti_pulizia);
+      }
+    }catch(_){}
+
     // pick best laundry by total sum
     try{
       const l = __pickLatestLaundry__(payload.datasets.lavanderia);
@@ -1325,6 +1389,10 @@ async function __fbImportAdmin__(){
 
   // write merged operatori
   await __tblSet__("operatori", mergedOperatori);
+
+  // write merged spesa (colazione + prodotti pulizia)
+  await __tblSet__("colazione", mergedColazione);
+  await __tblSet__("prodotti_pulizia", mergedProdottiPulizia);
 
   // write bestLaundry as single-row array (replace)
   if (bestLaundry){
@@ -10671,7 +10739,6 @@ function renderProdotti(){
 function setupProdotti(){
   const btnAdd = document.getElementById("prodAddBtn");
   const btnReset = document.getElementById("prodResetBtn");
-  const btnSave = document.getElementById("prodSaveBtn");
   const list = document.getElementById("prodottiList");
 
   const tabC = document.getElementById("prodTabColazione");
@@ -10694,6 +10761,8 @@ function setupProdotti(){
     modal.hidden = true;
     try{ modal.setAttribute("aria-hidden", "true"); }catch(_){}
   };
+
+  try{ __prodDraftClear_(); }catch(_){ }
 
   if (btnAdd) bindFastTap(btnAdd, openModal);
   if (close) bindFastTap(close, closeModal);
@@ -10757,53 +10826,7 @@ function setupProdotti(){
     }catch(e){ toast(e.message); }
   });
 
-  if (btnSave) bindFastTap(btnSave, async () => {
-    const action = __prodAction_();
-    try{
-      const draft = __prodDraftBucket_();
-      const dirty = __prodDraftDirtyBucket_();
-      const ids = Object.keys(dirty || {});
-      if (!ids.length){
-        // comunque forza normalizzazione LED
-        updateProdottiHomeBlink();
-        return;
-      }
-
-      const bucket = __prodStateBucket_();
-      const items = bucket.items || [];
-
-      const qtyById = {};
-      for (const id of ids){
-        const qn = parseInt(String(draft[id] ?? 0), 10);
-        const qty = isNaN(qn) ? 0 : Math.max(0, qn);
-        qtyById[id] = qty;
-
-        const it = items.find(x => String(x.id||"") === String(id));
-        if (it){
-          it.qty = qty;
-          __spesaNormalizeItem_(it);
-          it.updatedAt = new Date().toISOString();
-        }
-      }
-
-      // UI immediata
-      __prodDraftClear_();
-      renderProdotti();
-      updateProdottiHomeBlink();
-
-      // Sync backend in background + reload forzato (stato consistente multi-dispositivo)
-      const sync = async () => {
-        await Promise.all(ids.map((id) => (
-          api(action, { method:"PUT", body:{ id:String(id), qty: qtyById[id], saved: 0 }, showLoader:false })
-        )));
-        await api(action, { method:"POST", body:{ op:"save" }, showLoader:false });
-        // aggiorna entrambe le liste (LED Home su altri device)
-        await loadSpesaAll({ force:true, showLoader:false });
-      };
-
-      sync().catch((e)=>{ try{ toast(e.message || "Errore"); }catch(_){ } });
-    }catch(e){ toast(e.message); }
-  });
+  
 
   if (!list) return;
 
@@ -10812,28 +10835,109 @@ function setupProdotti(){
     return (__prodStateBucket_().items || []).find(x => String(x.id||"") === sid);
   };
 
-  const persistPatch = async (id, patch, {showLoader=false} = {}) => {
-    const action = __prodAction_();
+  // Auto-save (0.5s) — nessun salvataggio manuale
+  const __prodAuto__ = { timer:null, pending:{} };
+
+  const __prodApplyLocal__ = (id, patch) => {
     const it = findItem(id);
-    if (it) Object.assign(it, patch, { updatedAt: new Date().toISOString() });
-    renderProdotti();
-    updateProdottiHomeBlink();
+    if (!it) return null;
     try{
-      await api(action, { method:"PUT", body: Object.assign({ id: String(id) }, patch), showLoader });
-      // ricarica in background per coerenza
-      loadProdotti({ force:true, showLoader:false }).then(()=>{ renderProdotti(); updateProdottiHomeBlink(); }).catch(()=>{});
+      Object.assign(it, patch || {});
+      __spesaNormalizeItem_(it);
+      it.updatedAt = new Date().toISOString();
+    }catch(_){}
+    return it;
+  };
+
+  const __prodAutoCommit__ = async () => {
+    try{
+      if (__prodAuto__.timer){ clearTimeout(__prodAuto__.timer); __prodAuto__.timer = null; }
+      const entries = Object.entries(__prodAuto__.pending || {});
+      if (!entries.length) return;
+      __prodAuto__.pending = {};
+
+      const byAction = {};
+      entries.forEach(([id, obj]) => {
+        const act = String(obj?.action || __prodAction_() || "");
+        if (!act) return;
+        byAction[act] = byAction[act] || [];
+        byAction[act].push({ id, patch: (obj && obj.patch) ? obj.patch : {} });
+      });
+
+      await Promise.all(
+        Object.keys(byAction).flatMap((act) => (
+          byAction[act].map(({id, patch}) => (
+            api(act, { method:"PUT", body: Object.assign({ id:String(id) }, patch || {}), showLoader:false })
+          ))
+        ))
+      );
+
+      // refresh (LED + coerenza multi-dispositivo)
+      try{ await loadSpesaAll({ force:true, showLoader:false }); }catch(_){}
+
+      renderProdotti();
+      updateProdottiHomeBlink();
     }catch(e){
-      toast(e.message);
+      try{ toast(e.message || "Errore"); }catch(_){}
+    }
+  };
+
+  const __prodAutoSchedule__ = (id, patch, { immediate=false } = {}) => {
+    const sid = String(id || "");
+    if (!sid) return;
+    const action = __prodAction_();
+    __prodAuto__.pending[sid] = __prodAuto__.pending[sid] || { action, patch:{} };
+    __prodAuto__.pending[sid].action = action;
+    __prodAuto__.pending[sid].patch = Object.assign(__prodAuto__.pending[sid].patch || {}, patch || {});
+
+    if (__prodAuto__.timer){ clearTimeout(__prodAuto__.timer); __prodAuto__.timer = null; }
+    if (immediate){
+      __prodAutoCommit__();
+    }else{
+      __prodAuto__.timer = setTimeout(__prodAutoCommit__, 500);
     }
   };
 
   // Event delegation: qty / check
 
-  // Qty dot: tap cycle (draft), long-press (0.5s) reset to empty + "carta stropicciata"
+  // Qty dot: tap cycle, long-press (0.5s) azzera quantità
   let prodQtyTimer = null;
   let prodQtyTargetId = null;
   let prodQtyLongFired = false;
   let prodLastQtyTouch = 0;
+  // Card: double-tap = elimina, long-press (0.5s) = azzera quantità
+  let prodCardTimer = null;
+  let prodCardTargetId = null;
+  let prodCardLongFired = false;
+  let prodCardLongFiredAt = 0;
+  let prodCardLastTapAt = 0;
+  let prodCardLastTapId = "";
+
+  const clearProdCardPress = () => {
+    if (prodCardTimer){ clearTimeout(prodCardTimer); prodCardTimer = null; }
+    prodCardTargetId = null;
+    prodCardLongFired = false;
+  };
+
+  const startProdCardPress = (id) => {
+    clearProdCardPress();
+    prodCardTargetId = id;
+    prodCardTimer = setTimeout(() => {
+      prodCardLongFired = true;
+      prodCardLongFiredAt = Date.now();
+      // Long press (0.5s) sulla card: svuota quantità (pallino)
+      const base = getProdBaseQty(id);
+      if (base > 0){
+        __prodApplyLocal__(id, { qty: 0, saved: 0 });
+        renderProdotti();
+        updateProdottiHomeBlink();
+        // il gesto dura già 0,5s → salva subito
+        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
+      }
+    }, 500);
+  };
+
+
 
   const clearProdQtyPress = () => {
     if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
@@ -10843,20 +10947,20 @@ function setupProdotti(){
 
   const getProdBaseQty = (id) => {
     const it = findItem(id);
-    const draftQty = __prodDraftGetQty_(id);
-    if (draftQty !== null) {
-      const n = parseInt(String(draftQty ?? 0), 10);
-      return isNaN(n) ? 0 : Math.max(0, n);
-    }
     const n = parseInt(String(it?.qty ?? 0), 10);
     return isNaN(n) ? 0 : Math.max(0, n);
   };
 
   const cycleProdQty = (id) => {
+    const it = findItem(id);
+    if (!it) return;
     const base = getProdBaseQty(id);
     const next = (base >= 9) ? 0 : (base + 1);
-    __prodDraftSetQty_(id, next);
+    __prodApplyLocal__(id, { qty: next, saved: (next > 0 ? 1 : 0) });
     renderProdotti();
+    updateProdottiHomeBlink();
+    // memorizza automaticamente dopo 0,5s
+    __prodAutoSchedule__(id, { qty: next, saved: (next > 0 ? 1 : 0) }, { immediate:false });
   };
 
   const startProdQtyPress = (id) => {
@@ -10864,13 +10968,15 @@ function setupProdotti(){
     prodQtyTargetId = id;
     prodQtyTimer = setTimeout(() => {
       prodQtyLongFired = true;
-      // Long press: gesto distinto (non deve attivare anche il tap)
-      // Se il pallino è pieno: svuota e suona "carta stropicciata"
+      // Long press (0.5s): svuota quantità (pallino)
       const base = getProdBaseQty(id);
       if (base > 0){
         try{ __sfxGlass(); }catch(_){ }
-        __prodDraftSetQty_(id, 0);
+        __prodApplyLocal__(id, { qty: 0, saved: 0 });
         renderProdotti();
+        updateProdottiHomeBlink();
+        // il gesto dura già 0,5s → salva subito
+        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
       }
     }, 500);
   };
@@ -10889,13 +10995,20 @@ function setupProdotti(){
       e.stopPropagation();
       return;
     }
+
+    // Long-press sulla card (0,5s) → azzera quantità
+    if (e.target.closest && (e.target.closest(".colazione-checkdot") || e.target.closest(".colazione-qtydot"))) return;
+    startProdCardPress(id);
   }, { passive:false, capture:true });
 
   list.addEventListener("touchend", (e) => {
     const row = e.target.closest && e.target.closest(".colazione-item");
-    if (!row) return;
-    const id = String(row.dataset.id || "");
-    if (!id) return;
+    const id = row ? String(row.dataset.id || "") : "";
+    if (!id){
+      clearProdQtyPress();
+      clearProdCardPress();
+      return;
+    }
 
     if (e.target.closest && e.target.closest(".colazione-qtydot")) {
       if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
@@ -10905,10 +11018,19 @@ function setupProdotti(){
       e.stopPropagation();
       return;
     }
+
+    const wasLong = !!prodCardLongFired;
+    clearProdCardPress();
+    if (wasLong){
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
   }, { passive:false, capture:true });
 
   list.addEventListener("touchcancel", (e) => {
     clearProdQtyPress();
+    clearProdCardPress();
     try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
   }, { passive:false, capture:true });
 
@@ -10921,32 +11043,49 @@ function setupProdotti(){
     const id = row ? String(row.dataset.id || "") : "";
     if (!id) return;
 
-    // qty: ciclo 0->1->2..->9->0 (draft)
-    if (qtyBtn){
-      if (Date.now() - prodLastQtyTouch < 450) { e.preventDefault(); e.stopPropagation(); return; }
+    // ignore click subito dopo long-press
+    if (Date.now() - prodCardLongFiredAt < 700){
       e.preventDefault();
-      const it = findItem(id);
-      const base = (()=>{
-        const draftQty = __prodDraftGetQty_(id);
-        if (draftQty !== null) return draftQty;
-        const n = parseInt(String(it?.qty ?? 0), 10);
-        return isNaN(n) ? 0 : Math.max(0, n);
-      })();
-      const next = (base >= 9) ? 0 : (base + 1);
-      __prodDraftSetQty_(id, next);
-      renderProdotti();
+      e.stopPropagation();
       return;
     }
 
-    // check: persist immediato
+    // qty: ciclo 0->1->2..->9->0 (auto-save 0,5s)
+    if (qtyBtn){
+      if (Date.now() - prodLastQtyTouch < 450) { e.preventDefault(); e.stopPropagation(); return; }
+      e.preventDefault();
+      cycleProdQty(id);
+      return;
+    }
+
+    // check: toggle (auto-save 0,5s)
     if (chkBtn){
       e.preventDefault();
       const it = findItem(id);
       const cur = __normBool01(it?.checked) ? 1 : 0;
       const next = cur ? 0 : 1;
-      persistPatch(id, { checked: next }, { showLoader:false });
+      __prodApplyLocal__(id, { checked: next });
+      renderProdotti();
+      updateProdottiHomeBlink();
+      __prodAutoSchedule__(id, { checked: next }, { immediate:false });
       return;
     }
+
+    // double click/tap sulla card: elimina la card
+    const now = Date.now();
+    if (prodCardLastTapId === id && (now - prodCardLastTapAt) < 350){
+      e.preventDefault();
+      prodCardLastTapId = "";
+      prodCardLastTapAt = 0;
+
+      __prodApplyLocal__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 });
+      renderProdotti();
+      updateProdottiHomeBlink();
+      __prodAutoSchedule__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 }, { immediate:true });
+      return;
+    }
+    prodCardLastTapId = id;
+    prodCardLastTapAt = now;
   });
 
   // Prima render (se già caricato)
