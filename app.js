@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.027
+ * Build: 2.022
  */
-const BUILD_VERSION = "2.027";
+const BUILD_VERSION = "2.022";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1221,10 +1221,6 @@ async function __fbImportOperator__(){
 
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
-
-    // Operatore ha precedenza: NON importare da admin i dataset operativi dell'operatore
-    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
-
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
@@ -1345,8 +1341,6 @@ async function __fbImportAdmin__(){
   const __lavUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
   const __lavIdx__ = new Map();
   mergedLavanderia.forEach((it, i) => { const k = __lavKey__(it); if (k && !__lavIdx__.has(k)) __lavIdx__.set(k, i); });
-  const __lavBaseKeys__ = new Set();
-  try{ mergedLavanderia.forEach((it)=>{ const k = __lavKey__(it); if (k) __lavBaseKeys__.add(k); }); }catch(_){ }
 
   for (const op of ops){
 
@@ -1358,66 +1352,41 @@ async function __fbImportAdmin__(){
     let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
     if (!payload || !payload.datasets) continue;
 
-    // merge pulizie entries (MAX per-col by data+stanza; non riduce mai i numeri)
+    // merge pulizie entries (merge by id or by key data+stanza; max per-col)
     try{
       const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
-      const __pKey__ = (it) => {
-        const d = String(it?.data || it?.date || "").slice(0,10);
-        const s = String(it?.stanza || it?.room || "").trim();
-        return (d && s) ? (d + "|" + s) : "";
-      };
-      const __toInt__ = (v) => {
-        const n = parseInt(String(v ?? 0), 10);
-        return isNaN(n) ? 0 : Math.max(0, n);
-      };
-
-      // indicizza base admin
-      const pMap = new Map();
-      (Array.isArray(mergedPulizie) ? mergedPulizie : []).forEach((r)=>{
-        const k = __pKey__(r);
-        if (!k) return;
-        const base = Object.assign({}, r);
-        cols.forEach(c => { base[c] = __toInt__(base[c]); });
-        pMap.set(k, base);
-      });
-
-      // merge operatore -> MAX per col
       const listP = Array.isArray(payload.datasets.pulizie) ? payload.datasets.pulizie : [];
-      (Array.isArray(listP) ? listP : []).forEach((r)=>{
+      const byId = new Map();
+      mergedPulizie.forEach(r=>{ const id = String(r?.id||"").trim(); if (id) byId.set(id, r); });
+      const byKey = new Map();
+      mergedPulizie.forEach(r=>{
+        const d = String(r?.data||r?.date||"").slice(0,10);
+        const s = String(r?.stanza||r?.room||"").trim();
+        if (d && s) byKey.set(d+"|"+s, r);
+      });
+      listP.forEach(r=>{
         if (!r) return;
-        const k = __pKey__(r);
-        if (!k) return;
-        const inc = Object.assign({}, r);
-        cols.forEach(c => { inc[c] = __toInt__(inc[c]); });
-
-        if (!pMap.has(k)){
-          pMap.set(k, inc);
+        const id = String(r?.id||"").trim();
+        const d = String(r?.data||r?.date||"").slice(0,10);
+        const s = String(r?.stanza||r?.room||"").trim();
+        const key = (d && s) ? (d+"|"+s) : "";
+        const target = (id && byId.has(id)) ? byId.get(id) : (key && byKey.has(key) ? byKey.get(key) : null);
+        if (!target){
+          mergedPulizie.push(r);
+          if (id) byId.set(id, r);
+          if (key) byKey.set(key, r);
           return;
         }
-        const cur = pMap.get(k);
-        // conserva meta base (id/createdAt/updatedAt) ma aggiorna numeri col MAX
-        cols.forEach(c => { cur[c] = Math.max(__toInt__(cur[c]), __toInt__(inc[c])); });
-
-        // opzionale: se l'operatore ha un updatedAt più recente, aggiorna anche i meta (senza toccare i numeri)
-        try{
-          const ua = String(cur.updatedAt||cur.updated_at||cur.createdAt||cur.created_at||"");
-          const ub = String(inc.updatedAt||inc.updated_at||inc.createdAt||inc.created_at||"");
-          if (ub && (!ua || ub > ua)){
-            // copia solo campi non-numerici per evitare regressioni sui max
-            Object.keys(inc).forEach((kk)=>{
-              if (cols.includes(kk)) return;
-              cur[kk] = inc[kk];
-            });
-          }
-        }catch(_){}
+        const ua = String(target.updatedAt||target.updated_at||target.createdAt||target.created_at||"");
+        const ub = String(r.updatedAt||r.updated_at||r.createdAt||r.created_at||"");
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
+        if (should){
+          try{ Object.keys(r||{}).forEach(k=>{ target[k] = r[k]; }); }catch(_){ }
+        }
       });
-
-      mergedPulizie = Array.from(pMap.values());
     }catch(_){ }
 
     // merge operatori entries (LWW by data+operatore; consente decrementi/cancellazioni)
-    try{
-      const list = Array.isArray(payload.datasets.operatori)// merge operatori entries (per-operatore; LWW by data+operatore; l'operatore prevale su admin a parità/assenza meta)
     try{
       const list = Array.isArray(payload.datasets.operatori) ? payload.datasets.operatori : [];
       const __opKey__ = (it) => {
@@ -1426,27 +1395,20 @@ async function __fbImportAdmin__(){
         return (d && op) ? (d + "|" + op) : "";
       };
       const __opUAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
-
-      // indicizza base admin: conserva la più recente per chiave (data+operatore)
       const idxByKey = new Map();
-      const bestByKey = new Map();
-      (Array.isArray(mergedOperatori) ? mergedOperatori : []).forEach((it) => {
+      // indicizza base (dedupe interno: tieni la più recente)
+      mergedOperatori.forEach((it, i) => {
         const k = __opKey__(it);
         if (!k) return;
-        const prev = bestByKey.get(k);
-        if (!prev){
-          bestByKey.set(k, it);
-          return;
-        }
-        const ua = __opUAt__(prev);
+        if (!idxByKey.has(k)) { idxByKey.set(k, i); return; }
+        const j = idxByKey.get(k);
+        const a = mergedOperatori[j];
+        const ua = __opUAt__(a);
         const ub = __opUAt__(it);
         const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
-        if (should) bestByKey.set(k, it);
+        if (should) idxByKey.set(k, i);
       });
-      mergedOperatori = Array.from(bestByKey.values());
-      mergedOperatori.forEach((it, i) => { const k = __opKey__(it); if (k) idxByKey.set(k, i); });
 
-      // merge operatore -> admin (non influenza tra operatori diversi)
       list.forEach((it) => {
         const k = __opKey__(it);
         if (!k){ mergedOperatori.push(it); return; }
@@ -1459,15 +1421,16 @@ async function __fbImportAdmin__(){
         const a = mergedOperatori[i];
         const ua = __opUAt__(a);
         const ub = __opUAt__(it);
-
-        // Se entrambe senza meta, prevale comunque l'operatore (evita che admin mantenga valori obsoleti)
         const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
         if (should){
           mergedOperatori[i] = it;
         }
       });
-    }catch(_){ }
-t__(mergedColazione, payload.datasets.colazione);
+    }catch(_){}
+// merge lista spesa (colazione + prodotti pulizia)
+    try{
+      if (payload.datasets.colazione !== undefined){
+        mergedColazione = __mergeSpesaList__(mergedColazione, payload.datasets.colazione);
       }
       if (payload.datasets.prodotti_pulizia !== undefined){
         mergedProdottiPulizia = __mergeSpesaList__(mergedProdottiPulizia, payload.datasets.prodotti_pulizia);
@@ -1489,9 +1452,7 @@ t__(mergedColazione, payload.datasets.colazione);
         const a = mergedLavanderia[i];
         const ua = __lavUAt__(a);
         const ub = __lavUAt__(it);
-        const isBase = __lavBaseKeys__.has(k);
-        const should = isBase ? true : ((!ua && !ub) ? true : (ub && (!ua || ub > ua)));
-        if (isBase){ try{ __lavBaseKeys__.delete(k); }catch(_){ } }
+        const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
         if (should){
           mergedLavanderia[i] = it;
         }
@@ -1501,39 +1462,22 @@ t__(mergedColazione, payload.datasets.colazione);
 
   // cleanup: dedupe pulizie/operatori/lavanderia con logica LWW (evita che i vecchi valori "restino appiccicati")
   try{
-    const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+    const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
     const __pKey__ = (it) => {
       const d = String(it?.data || it?.date || "").slice(0,10);
       const s = String(it?.stanza || it?.room || "").trim();
       return (d && s) ? (d + "|" + s) : "";
     };
-    const __toInt__ = (v) => {
-      const n = parseInt(String(v ?? 0), 10);
-      return isNaN(n) ? 0 : Math.max(0, n);
-    };
     const bestP = new Map();
     (Array.isArray(mergedPulizie) ? mergedPulizie : []).forEach(it => {
       const k = __pKey__(it);
       if (!k) return;
-      if (!bestP.has(k)){
-        const base = Object.assign({}, it);
-        cols.forEach(c => { base[c] = __toInt__(base[c]); });
-        bestP.set(k, base);
-        return;
-      }
-      const cur = bestP.get(k);
-      cols.forEach(c => { cur[c] = Math.max(__toInt__(cur[c]), __toInt__(it?.[c])); });
-      // aggiorna i meta se più recenti, senza ridurre i numeri
-      try{
-        const ua = String(cur.updatedAt||cur.updated_at||cur.createdAt||cur.created_at||"");
-        const ub = String(it?.updatedAt||it?.updated_at||it?.createdAt||it?.created_at||"");
-        if (ub && (!ua || ub > ua)){
-          Object.keys(it||{}).forEach((kk)=>{
-            if (cols.includes(kk)) return;
-            cur[kk] = it[kk];
-          });
-        }
-      }catch(_){}
+      const prev = bestP.get(k);
+      if (!prev){ bestP.set(k, it); return; }
+      const ua = __uAt__(prev);
+      const ub = __uAt__(it);
+      const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+      if (should) bestP.set(k, it);
     });
     mergedPulizie = Array.from(bestP.values());
   }catch(_){}
@@ -2336,7 +2280,7 @@ function applyRoleMode(){
 
 function __parseBuildVersion(v){
   try{
-    const m = String(v||'').match(/(?:dDAE_)?(\d+)\.(\d+)/);
+    const m = String(v||'').match(/dDAE_(\d+)\.(\d+)/);
     if(!m) return null;
     return {maj:Number(m[1]), min:Number(m[2])};
   }catch(_){ return null; }
@@ -2534,17 +2478,6 @@ async function hardUpdateCheck(){
     if (!res.ok) return;
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
-    // Guard anti-loop: se abbiamo gia' tentato lo stesso aggiornamento di recente, evita reload infinito
-    try{
-      const k="__ddae_last_hard_update";
-      const prev = JSON.parse(sessionStorage.getItem(k) || "null");
-      const now = Date.now();
-      if (prev && prev.remote === remote && (now - (prev.ts||0)) < 120000){
-        return;
-      }
-      sessionStorage.setItem(k, JSON.stringify({remote, ts: now}));
-    }catch(_){}
-
     if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
 
     try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
@@ -5470,10 +5403,7 @@ function setupHeader(){
 
 
   const opLogout = document.getElementById("opLogoutTop");
-  if (opLogout) bindFastTap(opLogout, async () => {
-    let ok = false;
-    try{ ok = await __confirmTwoActions__("Cancella operatore?", "Sì", "No"); }catch(_){ ok = false; }
-    if (!ok) return;
+  if (opLogout) bindFastTap(opLogout, () => {
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
