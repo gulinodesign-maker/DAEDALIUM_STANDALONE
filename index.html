@@ -1627,23 +1627,29 @@
 
 <!-- CODICE MODAL (Operatore) -->
 <div aria-hidden="true" class="modal modal-center" hidden id="qrScanModal">
-  <div aria-label="Scansiona QR" aria-modal="true" class="modal-card" role="dialog">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Inserisci codice">
     <div class="db-menu-head">
-      <div class="db-menu-title">SCANSIONA</div>
-      <button aria-label="Chiudi" class="icon-btn" id="qrScanClose" type="button">
-        <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+      <div class="db-menu-title">CODICE</div>
+      <button id="qrScanClose" class="icon-btn" type="button" aria-label="Chiudi">
+        <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
       </button>
     </div>
     <div class="db-menu-body" style="padding:14px">
-      <video id="qrScanVideo" playsinline style="width:100%;border-radius:18px;background:#000"></video>
-      <div style="margin-top:10px;font-size:12px;opacity:0.75;text-align:center">Inquadra il QR</div>
+      <div style="font-size:12px;opacity:0.75;text-align:center;margin-bottom:10px">Inserisci il codice fornito dall’admin</div>
+
+      <div class="field float" style="margin:0">
+        <input id="pairCodeInput" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder=" "/>
+        <label for="pairCodeInput">Codice</label>
+      </div>
+
       <div class="row" style="justify-content:center; gap:12px; margin-top:12px;">
-        <button class="btn primary" id="qrScanCapture" type="button">LEGGI QR</button>
+        <button class="btn primary" id="pairCodeLinkBtn" type="button">COLLEGA</button>
       </div>
     </div>
   </div>
 </div>
-<!-- YES/NO CONFIRM MODAL -->
+
+<!-- YES/NO CONFIRM MODAL --><!-- YES/NO CONFIRM MODAL -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="confirmYesNoModal">
   <div aria-label="Conferma" aria-modal="true" class="modal-card confirm-card" role="dialog">
     <div class="confirm-text" id="confirmYesNoText">—</div>
