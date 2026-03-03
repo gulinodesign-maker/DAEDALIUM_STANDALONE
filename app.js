@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.040
  */
-const BUILD_VERSION = "2.042";
+const BUILD_VERSION = "2.041";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12660,19 +12660,7 @@ try{
 
       __savingLaundry = true;
 
-      // Se stai AZZERANDO celle (delete), invia payload completo per rendere l'eliminazione effettiva su tutti i device post-sync.
-      let hasZero = false;
-      try{
-        hasZero = touchedCells.some(el => {
-          try{ return (readCell(el) <= 0); }catch(_){ return false; }
-        });
-      }catch(_){ hasZero = false; }
-
-      const payload = hasZero ? buildPuliziePayload(null) : buildPuliziePayload(rooms);
-      if (hasZero){
-        try{ payload.replaceDay = true; }catch(_){ }
-        try{ payload.forceWriteZero = true; }catch(_){ }
-      }
+      const payload = buildPuliziePayload(rooms);
       await api("pulizie", { method:"POST", body: payload, showLoader:false });
 
       // Post-save UI: nessun refresh/clear → niente blink.
@@ -12726,12 +12714,8 @@ try{
 
         const rawU = String(state.session._op_local || state.session.username || state.session.user || state.session.nome || state.session.name || state.session.email || '').trim();
         if (!rawU) throw new Error('Operatore non valido');
-
-        // Match robusto del nome operatore (tollerante a spazi/punteggiatura, es. "Op 2" vs "op2")
-        const __n = (s)=>String(s||"").trim().toLowerCase();
-        const __k = (s)=>__n(s).replace(/[^a-z0-9]+/g,"");
-        const keyU = __k(rawU);
-        const activeName = (names||[]).find(n => __k(n) === keyU) || (names||[]).find(n => __n(n) === __n(rawU)) || rawU;
+        const normU = rawU.toLowerCase();
+        const activeName = (names||[]).find(n => String(n||'').trim().toLowerCase() === normU) || rawU;
 
         // carica ore esistenti del giorno (per preservare gli altri)
         let existing = [];
@@ -12755,7 +12739,7 @@ try{
           if (key) mapKey.set(key, v);
         });
 
-        const idxActive = (names||[]).findIndex(n => _k(n) === _k(activeName));
+        const idxActive = (names||[]).findIndex(n => String(n||'').trim().toLowerCase() === String(activeName||'').trim().toLowerCase());
 
         const rows = [];
         (names||[]).forEach((nm, idx)=>{
@@ -13149,9 +13133,6 @@ try{
   // chiave "robusta" per tollerare differenze di spazi/punteggiatura post-sync
   const _normOpKey  = (s) => _normOpName(s).replace(/[^a-z0-9]+/g, "");
 
-  let __opOverwriteOnApply = true; // se false, non sovrascrive ore non trovate (evita sparizioni post-sync)
-
-
   const applyOperatoriRows = (rows) => {
     if (!Array.isArray(rows)) rows = [];
     const mapExact = new Map();
@@ -13170,28 +13151,13 @@ try{
     opEls.forEach((r, idx) => {
       const name = String(names[idx] || "").trim();
       if (!name) return; // non configurato (riga nascosta)
-
-      const n1 = _normOpName(name);
-      const k1 = _normOpKey(name);
-      const has = mapExact.has(n1) || mapKey.has(k1);
-      const v = (mapExact.get(n1) ?? mapKey.get(k1) ?? 0);
-
-      if (has || __opOverwriteOnApply){
-        writeHourDot(r.hours, v);
-        r.hours.classList.toggle("is-saved", v > 0);
-      } else {
-        // non toccare il valore già in UI (tipico post-sync se match fallisce)
-        try{
-          const cur = readHourDot(r.hours);
-          r.hours.classList.toggle("is-saved", cur > 0);
-        }catch(_){ }
-      }
+      const v = (mapExact.get(_normOpName(name)) ?? mapKey.get(_normOpKey(name)) ?? 0);
+      writeHourDot(r.hours, v);
+      r.hours.classList.toggle("is-saved", v > 0);
     });
-  };
   };
 
   const loadOperatoriForDay = async ({ clearFirst = true } = {}) => {
-    try{ __opOverwriteOnApply = !!clearFirst; }catch(_){ __opOverwriteOnApply = true; }
     if (clearFirst){
       // azzera dots visivamente (se poi arrivano dati li ripopola)
       const names = __getPulizieOperatorNames();
