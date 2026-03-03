@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.039";
+const BUILD_VERSION = "2.038";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1202,62 +1202,15 @@ async function __fbImportOperator__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
 
-// Carica dati condivisi SENZA dipendere dall'admin:
-// - admin_json (se presente)
-// - export di tutti gli operatori (collection operators)
-let payloads = [];
-try{
-  const docAdmin = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
-  if (docAdmin){
-    const dataA = __fsDecode__(docAdmin);
-    const rawA = String(dataA.admin_json||"");
-    if (rawA){
-      try{
-        const pA = JSON.parse(rawA);
-        if (pA && pA.datasets) payloads.push(pA);
-      }catch(_){}
-    }
-  }
-}catch(_){}
+  const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
+  if (!doc){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
+  const data = __fsDecode__(doc);
+  const raw = String(data.admin_json||"");
+  if (!raw){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
+  let payload=null;
+  try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
+  if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
 
-try{
-  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
-  (docsOps||[]).forEach(d=>{
-    try{
-      const dd = __fsDecode__(d);
-      const rawO = String(dd.operator_json||"");
-      if (!rawO) return;
-      const pO = JSON.parse(rawO);
-      if (pO && pO.datasets) payloads.push(pO);
-    }catch(_){}
-  });
-}catch(_){}
-
-if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
-
-// Combina tutti i dataset in un unico payload remoto
-let payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
-try{
-  for (const p of payloads){
-    const ds = (p && p.datasets && typeof p.datasets === "object") ? p.datasets : {};
-    for (const k of Object.keys(ds)){
-      const v = ds[k];
-      if (Array.isArray(v)){
-        if (!Array.isArray(payload.datasets[k])) payload.datasets[k] = [];
-        payload.datasets[k] = payload.datasets[k].concat(v);
-      } else if (v && typeof v === "object") {
-        // oggetti: merge shallow
-        payload.datasets[k] = Object.assign({}, payload.datasets[k]||{}, v);
-      } else {
-        if (payload.datasets[k] === undefined) payload.datasets[k] = v;
-      }
-    }
-  }
-}catch(_){}
-
-if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
-
-// Import subset operatore
   // Import subset operatore (NON sovrascrivere credenziali locali)
   // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
   // - Per sicurezza: se nel payload arriva 'utenti', lo mergiamo con quelli già presenti
@@ -1311,206 +1264,95 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     // Dati operativi: MERGE smart (key-based) per evitare di perdere lavoro locale
     // e per garantire che ogni operatore veda anche i dati degli altri.
     if (t === "pulizie"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const key = (r) => {
-      const d = String(r?.data || r?.date || "").slice(0,10);
-      const s = String(r?.stanza || r?.room || "").trim();
-      return (d && s) ? (d + "|" + s) : "";
-    };
-    const isNum = (v)=> typeof v === "number" && !Number.isNaN(v);
-    const asNum = (v)=> {
-      if (isNum(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const va = (a||{})[k];
-        const vb = (b||{})[k];
-        const na = asNum(va);
-        const nb = asNum(vb);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if (va === undefined || va === null || va === ""){
-          if (vb !== undefined) out[k] = vb;
-        } else if (vb === undefined || vb === null || vb === ""){
-          out[k] = va;
-        }
-      });
-      // timestamps
-      const ua = pickU(a);
-      const ub = pickU(b);
-      const da = pickD(a);
-      const db = pickD(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      // deletions: tombstone wins unless other has a newer update after deletion
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = da || ua;
-        const dB = db || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const key = (r) => {
+          const d = String(r?.data || r?.date || "").slice(0,10);
+          const s = String(r?.stanza || r?.room || "").trim();
+          return (d && s) ? (d + "|" + s) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, Object.assign({}, prev, it));
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
       }
-      return out;
-    };
-
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
+      continue;
+    }
 
     if (t === "operatori"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const normOp = (s) => String(s||"").trim().toLowerCase();
-    const normD  = (s) => __normIsoDate__(s);
-    const key = (r) => {
-      const d = normD(r?.data || r?.date || "");
-      const o = normOp(r?.operatore || r?.nome || "");
-      return (d && o) ? (d + "|" + o) : "";
-    };
-    const asNum = (v)=> {
-      if (typeof v === "number" && !Number.isNaN(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const normOp = (s) => String(s||"").trim().toLowerCase();
+        const normD  = (s) => __normIsoDate__(s);
+        const key = (r) => {
+          const d = normD(r?.data || r?.date || "");
+          const o = normOp(r?.operatore || r?.nome || "");
+          return (d && o) ? (d + "|" + o) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, Object.assign({}, prev||{}, it||{}));
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
       }
-      return out;
-    };
-
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
+      continue;
+    }
 
     if (t === "lavanderia"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const key = (it) => {
-      const id = String(it?.id || "").trim();
-      if (id) return "id:" + id;
-      const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
-      const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
-      return (a && b) ? ("rng:" + a + "|" + b) : "";
-    };
-    const asNum = (v)=> {
-      if (typeof v === "number" && !Number.isNaN(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const key = (it) => {
+          const id = String(it?.id || "").trim();
+          if (id) return "id:" + id;
+          const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
+          const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
+          return (a && b) ? ("rng:" + a + "|" + b) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, it);
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
       }
-      return out;
-    };
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
+      continue;
+    }
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
