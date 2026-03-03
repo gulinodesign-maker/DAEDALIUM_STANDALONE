@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.041
+ * Build: 2.031
  */
-const BUILD_VERSION = "2.041";
+const BUILD_VERSION = "2.039";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -441,61 +441,28 @@ async function __localApiImpostazioni__(method, body){
   }
 
   if (method === "POST"){
-    // MERGE: preserva le chiavi esistenti e aggiorna/crea quelle necessarie
-    const now = __nowIso__();
-    const byKey = new Map();
-    (Array.isArray(rows) ? rows : []).forEach(r => {
-      const k = String(r?.key || "").trim();
-      if (k && !byKey.has(k)) byKey.set(k, Object.assign({}, r));
-    });
+    const out = [];
 
-    const upsert = (row) => {
-      try{
-        const k = String(row?.key || "").trim();
-        if (!k) return;
-        const prev = byKey.get(k) || {};
-        byKey.set(k, Object.assign({}, prev, row, { key:k, updatedAt: now, createdAt: prev.createdAt || now }));
-      }catch(_){}
-    };
-
-    // operatori roster: se non fornito nel body, mantiene il valore precedente
+    // operatori: row speciale
     try{
-      const prev = byKey.get("operatori") || {};
-      const hasOps = !!(body && Object.prototype.hasOwnProperty.call(body, "operatori"));
-      const ops = hasOps ? (Array.isArray(body?.operatori) ? body.operatori : []) : [
-        prev.operatore_1, prev.operatore_2, prev.operatore_3
-      ];
-      upsert({
+      const ops = Array.isArray(body?.operatori) ? body.operatori : [];
+      out.push({
         key: "operatori",
         operatore_1: String(ops[0] || "").trim(),
         operatore_2: String(ops[1] || "").trim(),
         operatore_3: String(ops[2] || "").trim(),
+        updatedAt: __nowIso__(),
+        createdAt: __nowIso__(),
       });
     }catch(_){}
 
-    // numerici: assicurati che esistano sempre (come comportamento storico)
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
     numKeys.forEach((k)=>{
-      const prev = byKey.get(k) || {};
-      const v = (body && body[k] !== undefined) ? body[k] : (prev.value !== undefined ? prev.value : "");
-      upsert({ key:k, value: String(v ?? "").trim() });
+      const v = (body && body[k] !== undefined) ? body[k] : "";
+      out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
     });
 
-    // modalità admin: se non fornita, mantiene valore precedente
-    try{
-      const prev = byKey.get("admin_mode") || {};
-      const has = !!(body && (Object.prototype.hasOwnProperty.call(body, "admin_mode") || Object.prototype.hasOwnProperty.call(body, "admin_single_user")));
-      if (has){
-        const vv = (body.admin_mode !== undefined) ? body.admin_mode : body.admin_single_user;
-        const s = (typeof vv === "string") ? vv.trim().toLowerCase() : vv;
-        const isSingle = (s === 1 || s === true || s === "1" || s === "true" || String(s).includes("single") || String(s).includes("singolo"));
-        upsert({ key:"admin_mode", value: isSingle ? "single" : "multi" });
-      }else if (prev && prev.value !== undefined){
-        upsert({ key:"admin_mode", value: String(prev.value ?? "").trim() });
-      }
-    }catch(_){}
-
-    rows = Array.from(byKey.values());
+    rows = out;
     await __tblSet__("impostazioni", rows);
     return { rows };
   }
@@ -1222,10 +1189,7 @@ async function __fbExportAdmin__(opts){
 
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
-  for (const t of tables){
-    if (t === "operatori" && !isAdminSingleUserMode()) continue;
-    datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[]));
-  }
+  for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
@@ -1437,16 +1401,34 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
       if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
       return null;
     };
-    const mergeLWW = (a,b)=>{
+    const mergeMax = (a,b)=>{
+      const out = Object.assign({}, a||{}, b||{});
+      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
+      keys.forEach(k=>{
+        const na = asNum((a||{})[k]);
+        const nb = asNum((b||{})[k]);
+        if (na !== null && nb !== null){
+          out[k] = Math.max(na, nb);
+        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
+          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
+        }
+      });
       const ua = pickU(a);
       const ub = pickU(b);
-      if (ub && (!ua || ub > ua)) return Object.assign({}, a||{}, b||{});
-      if (ua && (!ub || ua >= ub)) return Object.assign({}, b||{}, a||{});
-      // fallback senza timestamp
-      const out = Object.assign({}, a||{}, b||{});
-      const ha = asNum((a||{}).ore ?? (a||{}).hours);
-      const hb = asNum((b||{}).ore ?? (b||{}).hours);
-      if (ha !== null && hb !== null) out.ore = Math.max(ha, hb);
+      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
+
+      const delA = !!(a && (a.isDeleted || a.deleted));
+      const delB = !!(b && (b.isDeleted || b.deleted));
+      if (delA || delB){
+        const dA = pickD(a) || ua;
+        const dB = pickD(b) || ub;
+        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
+        const otherU = (delT === dA) ? ub : ua;
+        if (!otherU || otherU <= delT){
+          out.isDeleted = true;
+          out.deletedAt = delT;
+        }
+      }
       return out;
     };
 
@@ -1457,7 +1439,7 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
       if (!k){ best.set("__anon_"+best.size, it); return; }
       const prev = best.get(k);
       if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeLWW(prev, it));
+      best.set(k, mergeMax(prev, it));
     };
     (Array.isArray(local)?local:[]).forEach(put);
     remote.forEach(put);
@@ -1548,13 +1530,7 @@ async function __fbExportOperator__(opts){
 
   const datasets = {
     pulizie: await __tblGet__("pulizie", []),
-    operatori: (await __tblGet__("operatori", [])).filter(r => {
-      try{
-        const op0 = String(r?.operatore || r?.nome || "").trim().toLowerCase();
-        const op = op0.replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
-        return op && op === name;
-      }catch(_){ return false; }
-    }),
+    operatori: await __tblGet__("operatori", []),
     lavanderia: await __tblGet__("lavanderia", []),
     colazione: await __tblGet__("colazione", []),
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
@@ -1798,44 +1774,19 @@ async function __fbImportAdmin__(opts){
       const s = String(it?.stanza || it?.room || "").trim();
       return (d && s) ? (d + "|" + s) : "";
     };
-    const isNum = (v)=> typeof v === "number" && !Number.isNaN(v);
-    const asNum = (v)=> {
-      if (isNum(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const va = (a||{})[k];
-        const vb = (b||{})[k];
-        const na = asNum(va);
-        const nb = asNum(vb);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if (va === undefined || va === null || va === ""){
-          if (vb !== undefined) out[k] = vb;
-        } else if (vb === undefined || vb === null || vb === ""){
-          out[k] = va;
-        }
-      });
-      const ua = __uAt__(a);
-      const ub = __uAt__(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-      return out;
-    };
-
     const bestP = new Map();
     (Array.isArray(mergedPulizie) ? mergedPulizie : []).forEach(it => {
       const k = __pKey__(it);
-      if (!k){ bestP.set("__anon_"+bestP.size, it); return; }
+      if (!k) return;
       const prev = bestP.get(k);
       if (!prev){ bestP.set(k, it); return; }
-      bestP.set(k, mergeMax(prev, it));
+      const ua = __uAt__(prev);
+      const ub = __uAt__(it);
+      const should = (!ua && !ub) ? false : (ub && (!ua || ub > ua));
+      if (should) bestP.set(k, it);
     });
     mergedPulizie = Array.from(bestP.values());
-  }catch(_){}catch(_){}
+  }catch(_){}
 
   try{
     const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
@@ -2604,50 +2555,6 @@ function setupAudioUI(){
   }catch(_){}
 }
 
-function setupAdminModeUI(){
-  try{
-    const wrap = document.getElementById("adminModeWrap");
-    const t = document.getElementById("adminModeToggle");
-    if (!wrap || !t) return;
-
-    const isOp = !!(state && state.session && isOperatoreSession(state.session));
-    if (isOp){
-      try{ wrap.hidden = true; wrap.style.display = "none"; }catch(_){ }
-      return;
-    }
-
-    try{ wrap.hidden = false; wrap.style.display = ""; }catch(_){}
-
-    // stato iniziale
-    try{ t.checked = !!isAdminSingleUserMode(); }catch(_){}
-
-    // evita doppi bind
-    if (t.__ddae_bound_adminmode) return;
-    t.__ddae_bound_adminmode = true;
-
-    t.addEventListener("change", async () => {
-      const v = !!t.checked;
-      try{ localStorage.setItem("ddae_admin_single_user", v ? "1" : "0"); }catch(_){}
-
-      try{
-        await api("impostazioni", { method:"POST", body:{ admin_mode: (v ? "single" : "multi") }, showLoader:true });
-      }catch(e){
-        // rollback UI se fallisce
-        try{ t.checked = !v; }catch(_){ }
-        try{ localStorage.setItem("ddae_admin_single_user", (!v) ? "1" : "0"); }catch(_){}
-        try{ toast("Errore salvataggio modalità", "orange"); }catch(_){}
-        return;
-      }
-
-      try{ await ensureSettingsLoaded({ force:true, showLoader:false }); }catch(_){ }
-      try{ applyRoleMode(); }catch(_){ }
-    }, { passive:true });
-
-  }catch(_){ }
-}
-
-
-
 
 // Ruoli: "user" (default) | "operatore"
 function isOperatoreSession(sess){
@@ -2726,7 +2633,7 @@ function applyRoleMode(){
     const bar = document.getElementById("homeSyncBar");
     const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      const shouldShow = __hasRosterLink__ && (isOp || !isAdminSingleUserMode());
+      const shouldShow = __hasRosterLink__;
       try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
       try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
@@ -4332,28 +4239,6 @@ function getOperatorNamesFromSettings() {
   return [op1, op2, op3];
 }
 
-function isAdminSingleUserMode(){
-  try{
-    // Admin single-user mode (ON) vs multi-user operators (OFF)
-    try{
-      const ls = localStorage.getItem("ddae_admin_single_user");
-      if (ls === "1") return true;
-      if (ls === "0") return false;
-    }catch(_){ }
-
-    const row = getSettingRow("admin_mode") || getSettingRow("admin_single_user") || getSettingRow("modalita_admin");
-    let v = row ? (row.value ?? row.Value ?? row.mode ?? row.admin_mode ?? row.admin_single_user ?? "") : "";
-    if (v === null || v === undefined) v = "";
-    if (typeof v === "boolean") return v;
-    if (typeof v === "number") return v === 1;
-    const s = String(v).trim().toLowerCase();
-    if (!s) return false; // default: multi-user (operatori)
-    return (s === "1" || s === "true" || s.includes("single") || s.includes("singolo"));
-  }catch(_){ return false; }
-}
-
-
-
 async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) {
   try {
     if (!force && state.settings?.loaded) return state.settings;
@@ -4363,8 +4248,6 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     state.settings.byKey = __parseSettingsRows(state.settings.rows);
     state.settings.loaded = true;
     state.settings.loadedAt = Date.now();
-
-    try{ setupAdminModeUI(); }catch(_){ }
 
     // Se esistono campi operatori (pulizie), mostra i nomi salvati (non editabili)
     try {
@@ -12575,7 +12458,6 @@ async function init(){
   // Perf mode: deve girare DOPO che body esiste e DOPO init delle costanti
   applyPerfMode();
   try{ setupAudioUI(); }catch(_){ }
-  try{ setupAdminModeUI(); }catch(_){ }
   const __restore = __readRestoreState();
   // Session + anno
   state.session = loadSession();
@@ -12971,10 +12853,8 @@ try{
   const canEditPulizieDay = () => {
     try {
       const isOp = !!(state && state.session && isOperatoreSession(state.session));
-      if (isOp) return isCleanDayToday();
-
-      // ADMIN: può scrivere solo in modalità "admin singolo utente"
-      return isAdminSingleUserMode();
+      if (!isOp) return true;
+      return isCleanDayToday();
     } catch (_) { return true; }
   };
 
