@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.035";
+const BUILD_VERSION = "2.036";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1261,15 +1261,103 @@ async function __fbImportOperator__(opts){
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
 
-    // Dati operativi: MERGE (non overwrite) per evitare di perdere lavoro locale
-    if (t === "pulizie" || t === "lavanderia" || t === "operatori"){
+    // Dati operativi: MERGE smart (key-based) per evitare di perdere lavoro locale
+    // e per garantire che ogni operatore veda anche i dati degli altri.
+    if (t === "pulizie"){
       if (payload.datasets[t] !== undefined){
         const local = await __tblGet__(t, []);
-        const merged = __mergeByIdLatest__(local, payload.datasets[t]);
-        await __tblSet__(t, merged);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const key = (r) => {
+          const d = String(r?.data || r?.date || "").slice(0,10);
+          const s = String(r?.stanza || r?.room || "").trim();
+          return (d && s) ? (d + "|" + s) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, Object.assign({}, prev, it));
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
       }
       continue;
     }
+
+    if (t === "operatori"){
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const normOp = (s) => String(s||"").trim().toLowerCase();
+        const normD  = (s) => __normIsoDate__(s);
+        const key = (r) => {
+          const d = normD(r?.data || r?.date || "");
+          const o = normOp(r?.operatore || r?.nome || "");
+          return (d && o) ? (d + "|" + o) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, it);
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
+      }
+      continue;
+    }
+
+    if (t === "lavanderia"){
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+        const key = (it) => {
+          const id = String(it?.id || "").trim();
+          if (id) return "id:" + id;
+          const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
+          const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
+          return (a && b) ? ("rng:" + a + "|" + b) : "";
+        };
+        const best = new Map();
+        const put = (it) => {
+          if (!it || typeof it !== "object") return;
+          const k = key(it);
+          if (!k){ best.set("__anon_"+best.size, it); return; }
+          const prev = best.get(k);
+          if (!prev){ best.set(k, it); return; }
+          const tp = pickT(prev);
+          const tn = pickT(it);
+          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
+          if (should) best.set(k, it);
+        };
+        (Array.isArray(local)?local:[]).forEach(put);
+        remote.forEach(put);
+        await __tblSet__(t, Array.from(best.values()));
+      }
+      continue;
+    }
+
+    if (payload.datasets[t] !== undefined){
+      await __tblSet__(t, payload.datasets[t]);
+    }
+  }
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
@@ -15278,7 +15366,7 @@ function __renderOrePuliziaCalendar_(){
     if (!iso.startsWith(monthKey + "-")) return;
 
     const oper = String(r.operatore || r.nome || "").trim();
-    if (op && op !== "__ALL__" && oper !== op) return;
+    if (op && op !== "__ALL__" && String(oper||"").trim().toLowerCase() !== String(op||"").trim().toLowerCase()) return;
 
     const oreRaw = (r.ore !== undefined && r.ore !== null) ? r.ore : (r.Ore !== undefined ? r.Ore : "");
     const ore = Number(String(oreRaw).trim().replace(",", "."));
