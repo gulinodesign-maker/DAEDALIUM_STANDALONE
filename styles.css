@@ -59,7 +59,7 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 body{
   min-height: 100vh;
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.043");
+    url("./assets/bg-daedalium.png?v=dDAE_2.005");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -108,7 +108,7 @@ display:flex;
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.043 — Anno corrente centrato in topbar (sostituisce titolo) */
+/* dDAE_2.008 — Anno corrente centrato in topbar (sostituisce titolo) */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -419,7 +419,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.043 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.005 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -996,7 +996,7 @@ input[type="date"]{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.043");
+    url("./assets/bg-daedalium.png?v=dDAE_2.005");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2156,7 +2156,7 @@ body[data-page="ospiti"] .guest-card .actions {
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999}
 .modal-card{background:#fff;margin:12vh auto;padding:16px;border-radius:16px;width:min(420px,92vw)}
 
-/* dDAE_2.043 — Popup letti (Ospiti): bottoni opacità 80% */
+/* dDAE_2.219 — Popup letti (Ospiti): bottoni opacità 80% */
 #roomConfigModal .btn{
   -webkit-appearance: none;
   appearance: none;
@@ -2385,7 +2385,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.043 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.005 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -5806,7 +5806,7 @@ grid-template-rows: 34px repeat(7, 54px);
 }
 
 /* ============================
-   dDAE_2.043 — FIX UI mirati (richiesta utente)
+   dDAE_2.219 — FIX UI mirati (richiesta utente)
    - Spese > Inserisci spesa: senza vetro sotto (elementi sullo sfondo)
    - Pulsante Salva: arancione 40% opacita
    - Popup tipologia letti: Annulla/Conferma identici, centrati; rosso/verde 80%
