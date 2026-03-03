@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.040
  */
-const BUILD_VERSION = "2.041";
+const BUILD_VERSION = "2.042";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1329,42 +1329,21 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
       return null;
     };
     const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const va = (a||{})[k];
-        const vb = (b||{})[k];
-        const na = asNum(va);
-        const nb = asNum(vb);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if (va === undefined || va === null || va === ""){
-          if (vb !== undefined) out[k] = vb;
-        } else if (vb === undefined || vb === null || vb === ""){
-          out[k] = va;
-        }
-      });
-      // timestamps
-      const ua = pickU(a);
-      const ub = pickU(b);
-      const da = pickD(a);
-      const db = pickD(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      // deletions: tombstone wins unless other has a newer update after deletion
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = da || ua;
-        const dB = db || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
+      // LWW (Last-Write-Wins): vince SEMPRE l'ultima modifica, anche se è una cancellazione (valori a 0).
+      const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+      const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+      const isDel = (o) => !!(o && (o.isDeleted || o.deleted));
+      const effT = (o) => {
+        const u = pickU(o);
+        if (isDel(o)){ const d = pickD(o) || u; return d || u; }
+        return u;
+      };
+      const ta = effT(a);
+      const tb = effT(b);
+      const newerIsB = (!ta && !tb) ? true : (tb && (!ta || tb >= ta));
+      const newer = newerIsB ? (b||{}) : (a||{});
+      const older = newerIsB ? (a||{}) : (b||{});
+      return Object.assign({}, older, newer);
     };
 
     const best = new Map();
@@ -1402,34 +1381,21 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
       return null;
     };
     const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
+      // LWW (Last-Write-Wins): vince SEMPRE l'ultima modifica, anche se è una cancellazione (valori a 0).
+      const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+      const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+      const isDel = (o) => !!(o && (o.isDeleted || o.deleted));
+      const effT = (o) => {
+        const u = pickU(o);
+        if (isDel(o)){ const d = pickD(o) || u; return d || u; }
+        return u;
+      };
+      const ta = effT(a);
+      const tb = effT(b);
+      const newerIsB = (!ta && !tb) ? true : (tb && (!ta || tb >= ta));
+      const newer = newerIsB ? (b||{}) : (a||{});
+      const older = newerIsB ? (a||{}) : (b||{});
+      return Object.assign({}, older, newer);
     };
 
     const best = new Map();
@@ -1467,34 +1433,21 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
       return null;
     };
     const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
+      // LWW (Last-Write-Wins): vince SEMPRE l'ultima modifica, anche se è una cancellazione (valori a 0).
+      const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+      const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+      const isDel = (o) => !!(o && (o.isDeleted || o.deleted));
+      const effT = (o) => {
+        const u = pickU(o);
+        if (isDel(o)){ const d = pickD(o) || u; return d || u; }
+        return u;
+      };
+      const ta = effT(a);
+      const tb = effT(b);
+      const newerIsB = (!ta && !tb) ? true : (tb && (!ta || tb >= ta));
+      const newer = newerIsB ? (b||{}) : (a||{});
+      const older = newerIsB ? (a||{}) : (b||{});
+      return Object.assign({}, older, newer);
     };
     const best = new Map();
     const put = (it) => {
