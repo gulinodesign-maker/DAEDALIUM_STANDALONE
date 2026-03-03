@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.040
  */
-const BUILD_VERSION = "2.040";
+const BUILD_VERSION = "2.041";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12724,12 +12724,19 @@ try{
           existing = parseRows(res);
         }catch(_){ existing = []; }
 
-        const map = new Map();
+        const mapExact = new Map();
+        const mapKey = new Map();
         const _max = (a,b)=> (a>b?a:b);
+        const _n = (s)=>String(s||"").trim().toLowerCase();
+        const _k = (s)=>_n(s).replace(/[^a-z0-9]+/g,"");
         existing.forEach(r=>{
-          const op = String(r?.operatore || r?.nome || '').trim().toLowerCase();
+          const raw = (r?.operatore || r?.nome || '');
+          const op = _n(raw);
+          const key = _k(raw);
           const ore = parseInt(String(r?.ore ?? 0), 10);
-          if (op) map.set(op, (ore!=ore)?0: _max(0, ore));
+          const v = (ore!=ore)?0: _max(0, ore);
+          if (op) mapExact.set(op, v);
+          if (key) mapKey.set(key, v);
         });
 
         const idxActive = (names||[]).findIndex(n => String(n||'').trim().toLowerCase() === String(activeName||'').trim().toLowerCase());
@@ -12744,7 +12751,7 @@ try{
             const el = opEls[idxActive];
             hours = el ? readHourDot(el.hours) : 0;
           } else {
-            hours = map.get(name.toLowerCase()) || 0;
+            hours = (mapExact.get(_n(name)) ?? mapKey.get(_k(name)) ?? 0);
           }
 
           const isActive = (idx === idxActive && idxActive >= 0);
@@ -13123,21 +13130,28 @@ try{
 
   // --- Ore operatori: carica dal DB per il giorno selezionato (così un nuovo salvataggio SOVRASCRIVE davvero) ---
   const _normOpName = (s) => String(s || "").trim().toLowerCase();
+  // chiave "robusta" per tollerare differenze di spazi/punteggiatura post-sync
+  const _normOpKey  = (s) => _normOpName(s).replace(/[^a-z0-9]+/g, "");
 
   const applyOperatoriRows = (rows) => {
     if (!Array.isArray(rows)) rows = [];
-    const map = new Map();
+    const mapExact = new Map();
+    const mapKey = new Map();
     rows.forEach(r => {
-      const op = _normOpName(r?.operatore || r?.nome || "");
+      const raw = (r?.operatore || r?.nome || "");
+      const op = _normOpName(raw);
+      const key = _normOpKey(raw);
       const ore = parseInt(String(r?.ore ?? 0), 10);
-      if (op) map.set(op, isNaN(ore) ? 0 : Math.max(0, ore));
+      const v = isNaN(ore) ? 0 : Math.max(0, ore);
+      if (op) mapExact.set(op, v);
+      if (key) mapKey.set(key, v);
     });
 
     const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
     opEls.forEach((r, idx) => {
       const name = String(names[idx] || "").trim();
       if (!name) return; // non configurato (riga nascosta)
-      const v = map.get(_normOpName(name)) || 0;
+      const v = (mapExact.get(_normOpName(name)) ?? mapKey.get(_normOpKey(name)) ?? 0);
       writeHourDot(r.hours, v);
       r.hours.classList.toggle("is-saved", v > 0);
     });
