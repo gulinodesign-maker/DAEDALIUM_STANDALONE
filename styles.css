@@ -7963,3 +7963,35 @@ color: var(--mcol,#ff3b30);
   stroke: rgba(255,255,255,0.96) !important;
   fill: none !important;
 }
+
+
+/* HOME: SYNC Firebase bar (tasto unico) */
+#page-home .home-sync-bar{
+  width: min(460px, 94vw);
+  margin: 10px auto 0 auto;
+  padding: 0;
+}
+#page-home .home-sync-btn{
+  width: 100%;
+  height: 58px;
+  border: 0 !important;
+  border-radius: 14px;
+  background: var(--blue80) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important; /* l'80% è già nel colore */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 10px;
+  font-weight: 950;
+  letter-spacing: 0.4px;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-home .home-sync-btn .ui-ico{
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+}
