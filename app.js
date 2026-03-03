@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.037";
+const BUILD_VERSION = "2.038";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1314,7 +1314,7 @@ async function __fbImportOperator__(opts){
           const tp = pickT(prev);
           const tn = pickT(it);
           const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, it);
+          if (should) best.set(k, Object.assign({}, prev||{}, it||{}));
         };
         (Array.isArray(local)?local:[]).forEach(put);
         remote.forEach(put);
@@ -1410,10 +1410,21 @@ async function __fbImportAdmin__(opts){
   // normalize
   ops = ops.map(n => String(n).toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"")).filter(Boolean);
 
+  // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
+  // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
+  try{
+    const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+    const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
+    if (!ops.length) ops = fromDocs;
+    else {
+      const set = new Set(ops);
+      fromDocs.forEach(n=>{ if(n) set.add(n); });
+      ops = Array.from(set);
+    }
+  }catch(_){ }
+
   if (!ops.length){
-    // fallback: list all docs in operators collection
-    const docs = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
-    ops = docs.map(d => String(d.name||"").split("/").pop());
+    try{ if(!opts?.silent) toast("Nessun operatore trovato", "orange"); }catch(_){ }
   }
 
   // merge
@@ -1560,7 +1571,7 @@ async function __fbImportAdmin__(opts){
         const ub = __opUAt__(it);
         const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
         if (should){
-          mergedOperatori[i] = it;
+          mergedOperatori[i] = Object.assign({}, (mergedOperatori[i]||{}), (it||{}));
         }
       });
     }catch(_){}
