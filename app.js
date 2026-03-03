@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.039";
+const BUILD_VERSION = "2.040";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4449,6 +4449,11 @@ const del = document.getElementById("settingsDeleteBtn");
 
   const logout = document.getElementById("settingsLogoutBtn");
   if (logout) logout.addEventListener("click", () => {
+    try{
+      const __r = String(state?.session?.role || state?.role || "");
+      const __isOp = __r.toLowerCase().includes("oper");
+      if (__isOp){ if (!confirm("Vuoi effettuare il logout?")) return; }
+    }catch(_){ }
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
@@ -15062,6 +15067,8 @@ function attachDeleteOspite(card, ospite){
     if (!confirm("Eliminare definitivamente questo ospite?")) return;
     try{ __sfxGlass(); }catch(_){ }
     await api("ospiti", { method:"DELETE", params:{ id: ospite.id } });
+    try{ if (card && card.parentNode) card.parentNode.removeChild(card); }catch(_){ }
+    try{ state.ospiti = (state.ospiti||[]).filter(o=>String(o.id)!==String(ospite.id)); }catch(_){ }
     toast("Ospite eliminato");
     invalidateApiCache("ospiti|");
     invalidateApiCache("stanze|");
