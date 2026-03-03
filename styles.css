@@ -8010,3 +8010,14 @@ color: var(--mcol,#ff3b30);
   height: 22px;
   stroke: currentColor;
 }
+
+
+/* Admin multi-utente: bacheca pulizie in sola lettura (scrittura disabilitata) */
+body.admin-multi-user #page-pulizie .clean-grid .cell:not(.head):not(.corner){
+  pointer-events: none;
+  opacity: 0.72;
+}
+body.admin-multi-user #page-pulizie #cleanResetAll{
+  pointer-events: none;
+  opacity: 0.6;
+}

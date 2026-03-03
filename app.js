@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.038";
+const BUILD_VERSION = "2.040";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -457,6 +457,16 @@ async function __localApiImpostazioni__(method, body){
     }catch(_){}
 
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
+
+    // admin_mode: "1" = admin singolo utente, "0" = multi utente con operatori
+    try{
+      const v = (body && body.admin_mode !== undefined) ? body.admin_mode : (body && body.admin_single_mode !== undefined ? body.admin_single_mode : undefined);
+      if (v !== undefined){
+        const b = (v === true || v === 1 || v === "1" || String(v).toLowerCase()==="true" || String(v).toLowerCase()==="on");
+        out.push({ key:"admin_mode", value: b ? "1" : "0", updatedAt: __nowIso__(), createdAt: __nowIso__() });
+      }
+    }catch(_){ }
+
     numKeys.forEach((k)=>{
       const v = (body && body[k] !== undefined) ? body[k] : "";
       out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
@@ -1202,15 +1212,62 @@ async function __fbImportOperator__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
 
-  const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
-  if (!doc){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
-  const data = __fsDecode__(doc);
-  const raw = String(data.admin_json||"");
-  if (!raw){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
-  let payload=null;
-  try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
-  if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
+// Carica dati condivisi SENZA dipendere dall'admin:
+// - admin_json (se presente)
+// - export di tutti gli operatori (collection operators)
+let payloads = [];
+try{
+  const docAdmin = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
+  if (docAdmin){
+    const dataA = __fsDecode__(docAdmin);
+    const rawA = String(dataA.admin_json||"");
+    if (rawA){
+      try{
+        const pA = JSON.parse(rawA);
+        if (pA && pA.datasets) payloads.push(pA);
+      }catch(_){}
+    }
+  }
+}catch(_){}
 
+try{
+  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+  (docsOps||[]).forEach(d=>{
+    try{
+      const dd = __fsDecode__(d);
+      const rawO = String(dd.operator_json||"");
+      if (!rawO) return;
+      const pO = JSON.parse(rawO);
+      if (pO && pO.datasets) payloads.push(pO);
+    }catch(_){}
+  });
+}catch(_){}
+
+if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
+
+// Combina tutti i dataset in un unico payload remoto
+let payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
+try{
+  for (const p of payloads){
+    const ds = (p && p.datasets && typeof p.datasets === "object") ? p.datasets : {};
+    for (const k of Object.keys(ds)){
+      const v = ds[k];
+      if (Array.isArray(v)){
+        if (!Array.isArray(payload.datasets[k])) payload.datasets[k] = [];
+        payload.datasets[k] = payload.datasets[k].concat(v);
+      } else if (v && typeof v === "object") {
+        // oggetti: merge shallow
+        payload.datasets[k] = Object.assign({}, payload.datasets[k]||{}, v);
+      } else {
+        if (payload.datasets[k] === undefined) payload.datasets[k] = v;
+      }
+    }
+  }
+}catch(_){}
+
+if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
+
+// Import subset operatore
   // Import subset operatore (NON sovrascrivere credenziali locali)
   // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
   // - Per sicurezza: se nel payload arriva 'utenti', lo mergiamo con quelli già presenti
@@ -1264,95 +1321,206 @@ async function __fbImportOperator__(opts){
     // Dati operativi: MERGE smart (key-based) per evitare di perdere lavoro locale
     // e per garantire che ogni operatore veda anche i dati degli altri.
     if (t === "pulizie"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const key = (r) => {
-          const d = String(r?.data || r?.date || "").slice(0,10);
-          const s = String(r?.stanza || r?.room || "").trim();
-          return (d && s) ? (d + "|" + s) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, Object.assign({}, prev, it));
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
+  if (payload.datasets[t] !== undefined){
+    const local = await __tblGet__(t, []);
+    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+
+    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+    const key = (r) => {
+      const d = String(r?.data || r?.date || "").slice(0,10);
+      const s = String(r?.stanza || r?.room || "").trim();
+      return (d && s) ? (d + "|" + s) : "";
+    };
+    const isNum = (v)=> typeof v === "number" && !Number.isNaN(v);
+    const asNum = (v)=> {
+      if (isNum(v)) return v;
+      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
+      return null;
+    };
+    const mergeMax = (a,b)=>{
+      const out = Object.assign({}, a||{}, b||{});
+      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
+      keys.forEach(k=>{
+        const va = (a||{})[k];
+        const vb = (b||{})[k];
+        const na = asNum(va);
+        const nb = asNum(vb);
+        if (na !== null && nb !== null){
+          out[k] = Math.max(na, nb);
+        } else if (va === undefined || va === null || va === ""){
+          if (vb !== undefined) out[k] = vb;
+        } else if (vb === undefined || vb === null || vb === ""){
+          out[k] = va;
+        }
+      });
+      // timestamps
+      const ua = pickU(a);
+      const ub = pickU(b);
+      const da = pickD(a);
+      const db = pickD(b);
+      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
+
+      // deletions: tombstone wins unless other has a newer update after deletion
+      const delA = !!(a && (a.isDeleted || a.deleted));
+      const delB = !!(b && (b.isDeleted || b.deleted));
+      if (delA || delB){
+        const dA = da || ua;
+        const dB = db || ub;
+        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
+        const otherU = (delT === dA) ? ub : ua;
+        if (!otherU || otherU <= delT){
+          out.isDeleted = true;
+          out.deletedAt = delT;
+        }
       }
-      continue;
-    }
+      return out;
+    };
+
+    const best = new Map();
+    const put = (it) => {
+      if (!it || typeof it !== "object") return;
+      const k = key(it);
+      if (!k){ best.set("__anon_"+best.size, it); return; }
+      const prev = best.get(k);
+      if (!prev){ best.set(k, it); return; }
+      best.set(k, mergeMax(prev, it));
+    };
+    (Array.isArray(local)?local:[]).forEach(put);
+    remote.forEach(put);
+    await __tblSet__(t, Array.from(best.values()));
+  }
+  continue;
+}
 
     if (t === "operatori"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const normOp = (s) => String(s||"").trim().toLowerCase();
-        const normD  = (s) => __normIsoDate__(s);
-        const key = (r) => {
-          const d = normD(r?.data || r?.date || "");
-          const o = normOp(r?.operatore || r?.nome || "");
-          return (d && o) ? (d + "|" + o) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, Object.assign({}, prev||{}, it||{}));
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
+  if (payload.datasets[t] !== undefined){
+    const local = await __tblGet__(t, []);
+    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+    const normOp = (s) => String(s||"").trim().toLowerCase();
+    const normD  = (s) => __normIsoDate__(s);
+    const key = (r) => {
+      const d = normD(r?.data || r?.date || "");
+      const o = normOp(r?.operatore || r?.nome || "");
+      return (d && o) ? (d + "|" + o) : "";
+    };
+    const asNum = (v)=> {
+      if (typeof v === "number" && !Number.isNaN(v)) return v;
+      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
+      return null;
+    };
+    const mergeMax = (a,b)=>{
+      const out = Object.assign({}, a||{}, b||{});
+      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
+      keys.forEach(k=>{
+        const na = asNum((a||{})[k]);
+        const nb = asNum((b||{})[k]);
+        if (na !== null && nb !== null){
+          out[k] = Math.max(na, nb);
+        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
+          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
+        }
+      });
+      const ua = pickU(a);
+      const ub = pickU(b);
+      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
+
+      const delA = !!(a && (a.isDeleted || a.deleted));
+      const delB = !!(b && (b.isDeleted || b.deleted));
+      if (delA || delB){
+        const dA = pickD(a) || ua;
+        const dB = pickD(b) || ub;
+        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
+        const otherU = (delT === dA) ? ub : ua;
+        if (!otherU || otherU <= delT){
+          out.isDeleted = true;
+          out.deletedAt = delT;
+        }
       }
-      continue;
-    }
+      return out;
+    };
+
+    const best = new Map();
+    const put = (it) => {
+      if (!it || typeof it !== "object") return;
+      const k = key(it);
+      if (!k){ best.set("__anon_"+best.size, it); return; }
+      const prev = best.get(k);
+      if (!prev){ best.set(k, it); return; }
+      best.set(k, mergeMax(prev, it));
+    };
+    (Array.isArray(local)?local:[]).forEach(put);
+    remote.forEach(put);
+    await __tblSet__(t, Array.from(best.values()));
+  }
+  continue;
+}
 
     if (t === "lavanderia"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const key = (it) => {
-          const id = String(it?.id || "").trim();
-          if (id) return "id:" + id;
-          const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
-          const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
-          return (a && b) ? ("rng:" + a + "|" + b) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, it);
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
+  if (payload.datasets[t] !== undefined){
+    const local = await __tblGet__(t, []);
+    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
+    const key = (it) => {
+      const id = String(it?.id || "").trim();
+      if (id) return "id:" + id;
+      const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
+      const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
+      return (a && b) ? ("rng:" + a + "|" + b) : "";
+    };
+    const asNum = (v)=> {
+      if (typeof v === "number" && !Number.isNaN(v)) return v;
+      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
+      return null;
+    };
+    const mergeMax = (a,b)=>{
+      const out = Object.assign({}, a||{}, b||{});
+      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
+      keys.forEach(k=>{
+        const na = asNum((a||{})[k]);
+        const nb = asNum((b||{})[k]);
+        if (na !== null && nb !== null){
+          out[k] = Math.max(na, nb);
+        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
+          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
+        }
+      });
+      const ua = pickU(a);
+      const ub = pickU(b);
+      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
+
+      const delA = !!(a && (a.isDeleted || a.deleted));
+      const delB = !!(b && (b.isDeleted || b.deleted));
+      if (delA || delB){
+        const dA = pickD(a) || ua;
+        const dB = pickD(b) || ub;
+        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
+        const otherU = (delT === dA) ? ub : ua;
+        if (!otherU || otherU <= delT){
+          out.isDeleted = true;
+          out.deletedAt = delT;
+        }
       }
-      continue;
-    }
+      return out;
+    };
+    const best = new Map();
+    const put = (it) => {
+      if (!it || typeof it !== "object") return;
+      const k = key(it);
+      if (!k){ best.set("__anon_"+best.size, it); return; }
+      const prev = best.get(k);
+      if (!prev){ best.set(k, it); return; }
+      best.set(k, mergeMax(prev, it));
+    };
+    (Array.isArray(local)?local:[]).forEach(put);
+    remote.forEach(put);
+    await __tblSet__(t, Array.from(best.values()));
+  }
+  continue;
+}
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
@@ -1708,8 +1876,14 @@ async function __handleSyncBoth__(){
   let ok1=false, ok2=false;
   try{
     if (__isAdmin__()){
-      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
-      ok2 = await __fbExportAdmin__({ silent:true });
+      // In modalità multi-utente: l'admin IMPORTA soltanto (non deve sovrascrivere i dati operatori).
+      // In modalità admin singolo utente: la sync è disabilitata in UI; qui facciamo no-op.
+      if (__isAdminSingleMode__()){
+        ok1 = true; ok2 = true;
+      }else{
+        ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
+        ok2 = true;
+      }
     }else{
       ok1 = await __fbExportOperator__({ silent:true });
       ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
@@ -2475,7 +2649,8 @@ function applyRoleMode(){
     const bar = document.getElementById("homeSyncBar");
     const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      const shouldShow = __hasRosterLink__;
+      const isAdmin = __isAdmin__();
+      const shouldShow = __hasRosterLink__ && (!isAdmin || !__isAdminSingleMode__());
       try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
       try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
@@ -4073,6 +4248,25 @@ function getSettingNumber(key, fallback = 0) {
   return isFinite(n) ? n : (Number(fallback) || 0);
 }
 
+function getSettingBool(key, fallback = false){
+  const row = getSettingRow(key);
+  let v = row ? (row.value ?? row.Value ?? row.val ?? "") : "";
+  const s = String(v ?? "").trim().toLowerCase();
+  if (s === "1" || s === "true" || s === "on" || s === "yes") return true;
+  if (s === "0" || s === "false" || s === "off" || s === "no") return false;
+  return !!fallback;
+}
+
+// Modalità admin:
+// - true  => admin singolo utente (scrittura admin abilitata, sync admin nascosto)
+// - false => multi utente con operatori (scrittura admin disabilitata, sync admin visibile)
+function __isAdminSingleMode__(){
+  try{
+    if (!__isAdmin__()) return false;
+    return getSettingBool("admin_mode", false);
+  }catch(_){ return false; }
+}
+
 function getOperatorNamesFromSettings() {
   const row = getSettingRow("operatori");
   const op1 = String(row?.operatore_1 ?? row?.Operatore_1 ?? row?.operatore1 ?? "").trim();
@@ -4179,6 +4373,15 @@ async function loadImpostazioniPage({ force = false } = {}) {
     if (b) b.value = String(getSettingNumber("costo_benzina", 0) || "");
     if (ts) ts.value = String(getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) || "");
 
+    // Admin mode toggle
+    try{
+      const tgl = document.getElementById("adminModeToggle");
+      if (tgl){
+        // default OFF (multi utente)
+        tgl.checked = getSettingBool("admin_mode", false);
+      }
+    }catch(_){ }
+
     refreshFloatingLabels();
   } catch (e) {
     toast(e.message);
@@ -4203,11 +4406,14 @@ async function saveImpostazioniPage() {
   const benzina = __readNumInput("setBenzina");
   const tassa = __readNumInput("setTassa");
 
+  const adminMode = !!document.getElementById("adminModeToggle")?.checked;
+
   const payload = {
     operatori: [op1, op2, op3],
     tariffa_oraria: tariffa,
     costo_benzina: benzina,
     tassa_soggiorno: tassa,
+    admin_mode: adminMode ? "1" : "0",
   };
 
   await api("impostazioni", { method: "POST", body: payload, showLoader: true });
@@ -4251,6 +4457,16 @@ function setupImpostazioni() {
     if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
+  }catch(_){ }
+
+  // Admin mode UI (solo admin)
+  try{
+    const wrap = document.getElementById("adminModeToggleWrap");
+    if (wrap){
+      const isAdmin = __isAdmin__();
+      wrap.hidden = !isAdmin;
+      try{ wrap.style.display = isAdmin ? "" : "none"; }catch(_){ }
+    }
   }catch(_){ }
 
   // Accordion Dati Operatore
@@ -10100,7 +10316,16 @@ function setupOspite(){
           state.guestISTATRegistered = istNow;
           setRegFlags("regTags", psNow, istNow);
 
-          refreshFloatingLabels();
+          // Admin mode toggle
+    try{
+      const tgl = document.getElementById("adminModeToggle");
+      if (tgl){
+        // default OFF (multi utente)
+        tgl.checked = getSettingBool("admin_mode", false);
+      }
+    }catch(_){ }
+
+    refreshFloatingLabels();
         } catch (_) {}
 
         showPage("ospite");
@@ -12695,7 +12920,11 @@ try{
   const canEditPulizieDay = () => {
     try {
       const isOp = !!(state && state.session && isOperatoreSession(state.session));
-      if (!isOp) return true;
+      if (!isOp){
+        // Admin: in multi-utente la scrittura è disabilitata
+        if (__isAdmin__() && !__isAdminSingleMode__()) return false;
+        return true;
+      }
       return isCleanDayToday();
     } catch (_) { return true; }
   };
@@ -12705,7 +12934,8 @@ try{
     const now = Date.now();
     if (now - __onlyTodayToastAt > 800) {
       __onlyTodayToastAt = now;
-      try { toast(ONLY_TODAY_MSG, "orange"); } catch (_) { try { toast(ONLY_TODAY_MSG); } catch (__){ } }
+      const msg = (__isAdmin__() && !__isAdminSingleMode__()) ? ADMIN_READONLY_MSG : ONLY_TODAY_MSG;
+      try { toast(msg, "orange"); } catch (_) { try { toast(msg); } catch (__){ } }
     }
     return false;
   };
