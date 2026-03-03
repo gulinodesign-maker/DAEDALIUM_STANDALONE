@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.036";
+const BUILD_VERSION = "2.037";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1359,10 +1359,6 @@ async function __fbImportOperator__(opts){
     }
   }
 
-    if (payload.datasets[t] !== undefined){
-      await __tblSet__(t, payload.datasets[t]);
-    }
-  }
   try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
   return true;
