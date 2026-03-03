@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.022
+ * Build: 2.030
  */
-const BUILD_VERSION = "2.029";
+const BUILD_VERSION = "2.030";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1194,6 +1194,8 @@ async function __fbExportAdmin__(opts){
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
+  return true;
+
 }
 
 async function __fbImportOperator__(opts){
@@ -1231,7 +1233,8 @@ async function __fbImportOperator__(opts){
     }
   }
   try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  return true;
 }
 
 async function __fbExportOperator__(opts){
@@ -1250,6 +1253,8 @@ async function __fbExportOperator__(opts){
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
+  return true;
+
 }
 
 function __pickLatestLaundry__(list){
@@ -1545,7 +1550,8 @@ async function __fbImportAdmin__(opts){
 
 
   try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  return true;
 }
 
 async function __handleSyncImport__(){
@@ -1571,7 +1577,7 @@ async function __handleSyncBoth__(){
       ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
     }
   }catch(_){ }
-  const ok = !!(ok1 && ok2);
+  const ok = (ok1 !== false) && (ok2 !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
   return ok;
@@ -1584,6 +1590,17 @@ try{
       __fbLoadLink__();
       const btn = document.getElementById("goDbSync");
       if (btn && !btn.__syncBound){ btn.__syncBound = true; bindFastTap(btn, async ()=>{ try{ await __handleSyncBoth__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+      try{
+        if (!window.__homeSyncFitBound){
+          window.__homeSyncFitBound = true;
+          let __homeSyncFitTO__ = null;
+          window.addEventListener("resize", ()=>{
+            try{ clearTimeout(__homeSyncFitTO__); }catch(_){ }
+            __homeSyncFitTO__ = setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 80);
+          }, { passive:true });
+        }
+      }catch(_){ }
     }catch(_){}
   }, { passive:true });
 }catch(_){}
@@ -2249,6 +2266,61 @@ function isOperatoreSession(sess){
   catch(_){ return false; }
 }
 
+function __fitHomeSyncBtn__(){
+  try{
+    const grid = document.querySelector("#page-home .home-grid");
+    const bar  = document.getElementById("homeSyncBar");
+    const btn  = document.getElementById("goDbSync");
+    if (!grid || !bar || !btn) return;
+
+    const barRect = bar.getBoundingClientRect();
+    if (!barRect || barRect.width < 10) return;
+
+    const glyphs = Array.from(grid.querySelectorAll(".home-main-glyph")).filter(el=>{
+      try{
+        if (!el) return false;
+        if (!el.getClientRects || !el.getClientRects().length) return false;
+        const st = getComputedStyle(el);
+        if (st.display === "none" || st.visibility === "hidden") return false;
+        return true;
+      }catch(_){ return false; }
+    });
+    if (!glyphs.length) return;
+
+    let minL = Infinity, maxR = -Infinity;
+    for (const el of glyphs){
+      const r = el.getBoundingClientRect();
+      if (r && r.width > 0 && r.height > 0){
+        if (r.left < minL) minL = r.left;
+        if (r.right > maxR) maxR = r.right;
+      }
+    }
+    if (!isFinite(minL) || !isFinite(maxR) || maxR <= minL) return;
+
+    const cs = getComputedStyle(bar);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    const contentW = Math.max(0, barRect.width - padL - padR);
+    if (contentW < 10) return;
+
+    let width = maxR - minL;
+    width = Math.max(140, width);
+    width = Math.min(contentW, width);
+
+    let left = minL - (barRect.left + padL);
+    left = Math.max(0, left);
+    left = Math.min(contentW - width, left);
+
+    bar.style.display = "flex";
+    bar.style.alignItems = "center";
+    bar.style.justifyContent = "flex-start";
+
+    btn.style.width = `${width}px`;
+    btn.style.marginLeft = `${left}px`;
+    btn.style.marginRight = "0px";
+  }catch(_){ }
+}
+
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
@@ -2263,6 +2335,7 @@ function applyRoleMode(){
     if (row) row.hidden = true;
     const bar = document.getElementById("homeSyncBar");
     if (bar){ try{ bar.hidden = false; bar.style.display = ""; }catch(_){ } }
+    try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){
@@ -5079,6 +5152,7 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
+  if (page === "home"){ try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ } }
 
   // Init pagine dinamiche (listener)
   if (page === "tassa"){
