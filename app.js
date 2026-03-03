@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.023
+ * Build: 2.024
  */
-const BUILD_VERSION = "2.023";
+const BUILD_VERSION = "2.024";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1559,8 +1559,8 @@ async function __handleSyncUnified__(){
     // Admin: prima Import (senza reload) poi Export, poi reload
     await __fbImportAdmin__({ skipReload:true });
     await __fbExportAdmin__();
-    try{ toast("Operazione completata", "blue"); }catch(_{}){}
-    setTimeout(()=>{ try{ location.reload(); }catch(_{}){ } }, 250);
+    try{ toast("Operazione completata", "blue"); }catch(_){ }
+    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
     return;
   }
   // Operatore: prima Export poi Import (import fa reload)
