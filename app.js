@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.040
+ * Build: 2.041
  */
-const BUILD_VERSION = "2.040";
+const BUILD_VERSION = "2.041";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -441,7 +441,7 @@ async function __localApiImpostazioni__(method, body){
   }
 
   if (method === "POST"){
-    // MERGE: aggiorna solo le chiavi presenti nel body (evita wipe accidentali)
+    // MERGE: preserva le chiavi esistenti e aggiorna/crea quelle necessarie
     const now = __nowIso__();
     const byKey = new Map();
     (Array.isArray(rows) ? rows : []).forEach(r => {
@@ -458,32 +458,42 @@ async function __localApiImpostazioni__(method, body){
       }catch(_){}
     };
 
-    // operatori roster
-    if (body && Object.prototype.hasOwnProperty.call(body, "operatori")){
-      const ops = Array.isArray(body?.operatori) ? body.operatori : [];
+    // operatori roster: se non fornito nel body, mantiene il valore precedente
+    try{
+      const prev = byKey.get("operatori") || {};
+      const hasOps = !!(body && Object.prototype.hasOwnProperty.call(body, "operatori"));
+      const ops = hasOps ? (Array.isArray(body?.operatori) ? body.operatori : []) : [
+        prev.operatore_1, prev.operatore_2, prev.operatore_3
+      ];
       upsert({
         key: "operatori",
         operatore_1: String(ops[0] || "").trim(),
         operatore_2: String(ops[1] || "").trim(),
         operatore_3: String(ops[2] || "").trim(),
       });
-    }
+    }catch(_){}
 
-    // numerici
+    // numerici: assicurati che esistano sempre (come comportamento storico)
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
     numKeys.forEach((k)=>{
-      if (!body || !Object.prototype.hasOwnProperty.call(body, k)) return;
-      const v = body[k];
+      const prev = byKey.get(k) || {};
+      const v = (body && body[k] !== undefined) ? body[k] : (prev.value !== undefined ? prev.value : "");
       upsert({ key:k, value: String(v ?? "").trim() });
     });
 
-    // modalità admin
-    if (body && (Object.prototype.hasOwnProperty.call(body, "admin_mode") || Object.prototype.hasOwnProperty.call(body, "admin_single_user"))){
-      const v = (body.admin_mode !== undefined) ? body.admin_mode : body.admin_single_user;
-      const s = (typeof v === "string") ? v.trim().toLowerCase() : v;
-      const isSingle = (s === 1 || s === true || s === "1" || s === "true" || String(s).includes("single") || String(s).includes("singolo"));
-      upsert({ key:"admin_mode", value: isSingle ? "single" : "multi" });
-    }
+    // modalità admin: se non fornita, mantiene valore precedente
+    try{
+      const prev = byKey.get("admin_mode") || {};
+      const has = !!(body && (Object.prototype.hasOwnProperty.call(body, "admin_mode") || Object.prototype.hasOwnProperty.call(body, "admin_single_user")));
+      if (has){
+        const vv = (body.admin_mode !== undefined) ? body.admin_mode : body.admin_single_user;
+        const s = (typeof vv === "string") ? vv.trim().toLowerCase() : vv;
+        const isSingle = (s === 1 || s === true || s === "1" || s === "true" || String(s).includes("single") || String(s).includes("singolo"));
+        upsert({ key:"admin_mode", value: isSingle ? "single" : "multi" });
+      }else if (prev && prev.value !== undefined){
+        upsert({ key:"admin_mode", value: String(prev.value ?? "").trim() });
+      }
+    }catch(_){}
 
     rows = Array.from(byKey.values());
     await __tblSet__("impostazioni", rows);
