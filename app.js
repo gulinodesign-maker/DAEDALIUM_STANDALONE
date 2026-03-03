@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.032";
+const BUILD_VERSION = "2.033";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2337,7 +2337,7 @@ function applyRoleMode(){
     const bar = document.getElementById("homeSyncBar");
     const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      const shouldShow = (!isOp) || __hasRosterLink__;
+      const shouldShow = __hasRosterLink__;
       try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
       try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
