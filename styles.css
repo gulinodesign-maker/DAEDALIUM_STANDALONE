@@ -1329,11 +1329,11 @@ body::before{
 #page-home #goDbExport .home-main-glyph{ color: var(--ico-sky) !important; }
 
 #page-statistiche #goStatGen .home-main-glyph{ color: var(--ico-blue-deep) !important; }
-#page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-sky) !important; }
+#page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatSpese .home-main-glyph{ color: var(--ico-orange) !important; }
-#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-sky-light) !important; }
+#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-orange) !important; }
 #page-statistiche #goStatPiscina .home-main-glyph{ color: var(--ico-taupe) !important; }
-#page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-blue-night) !important; }
+#page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-taupe) !important; }
 
 #page-home .home-main-label{
   font-weight: 950;
@@ -7225,6 +7225,7 @@ color: var(--mcol,#ff3b30);
   display:flex;
   flex-direction:column;
   gap: 10px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
 }
 
 .piscina-nav{
@@ -7275,6 +7276,19 @@ color: var(--mcol,#ff3b30);
   gap: 8px;
 }
 
+
+.piscina-bottom-actions{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 70;
+  pointer-events: auto;
+}
 .piscina-cell{
   background-color: rgba(255,255,255,0.80);
   position: relative;
@@ -7962,4 +7976,37 @@ color: var(--mcol,#ff3b30);
 .settings-btn-roster .ui-ico{
   stroke: rgba(255,255,255,0.96) !important;
   fill: none !important;
+}
+
+
+/* HOME: SYNC Firebase bar (tasto unico) */
+#page-home .home-sync-bar{
+  width: min(460px, 94vw);
+  margin: 60px auto 0 auto; /* +50px rispetto a prima */
+  padding: 14px; /* allinea con padding della griglia home */
+  box-sizing: border-box;
+}
+#page-home .home-sync-btn{
+  width: 100%;
+  height: 58px;
+  border: 0 !important;
+  border-radius: 14px;
+  background: var(--blue80) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important; /* l'80% è già nel colore */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 10px;
+  font-weight: 950;
+  letter-spacing: 0.4px;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-home .home-sync-btn .ui-ico{
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
 }
