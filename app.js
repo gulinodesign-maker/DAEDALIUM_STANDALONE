@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.031";
+const BUILD_VERSION = "2.032";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2325,7 +2325,7 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: SYNC Firebase — tasto unico (visibile sia Admin che Operatore)
+  // Home: SYNC Firebase — tasto unico (Admin sempre; Operatore solo dopo collegamento Roster)
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
@@ -2333,9 +2333,14 @@ function applyRoleMode(){
     if (expTile){ try{ expTile.hidden = true; expTile.style.display = "none"; }catch(_){ } }
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
+
     const bar = document.getElementById("homeSyncBar");
-    if (bar){ try{ bar.hidden = false; bar.style.display = ""; }catch(_){ } }
-    try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
+    if (bar){
+      const shouldShow = (!isOp) || __hasRosterLink__;
+      try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
+      try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+    }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){
