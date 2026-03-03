@@ -7968,8 +7968,9 @@ color: var(--mcol,#ff3b30);
 /* HOME: SYNC Firebase bar (tasto unico) */
 #page-home .home-sync-bar{
   width: min(460px, 94vw);
-  margin: 10px auto 0 auto;
-  padding: 0;
+  margin: 60px auto 0 auto; /* +50px rispetto a prima */
+  padding: 14px; /* allinea con padding della griglia home */
+  box-sizing: border-box;
 }
 #page-home .home-sync-btn{
   width: 100%;
