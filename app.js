@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.022
+ * Build: 2.023
  */
-const BUILD_VERSION = "2.022";
+const BUILD_VERSION = "2.023";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -454,6 +454,7 @@ async function __localApiImpostazioni__(method, body){
         updatedAt: __nowIso__(),
         createdAt: __nowIso__(),
       });
+      if (syn && !syn.__syncBound){ syn.__syncBound = true; bindFastTap(syn, async ()=>{ try{ await __handleSyncUnified__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
 
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
@@ -1196,7 +1197,7 @@ async function __fbExportAdmin__(){
   try{ toast("Operazione completata", "blue"); }catch(_){}
 }
 
-async function __fbImportOperator__(){
+async function __fbImportOperator__(opts={}){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
 
@@ -1226,7 +1227,7 @@ async function __fbImportOperator__(){
     }
   }
   try{ toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  if (!(opts && opts.skipReload)){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
 }
 
 async function __fbExportOperator__(){
@@ -1260,7 +1261,7 @@ function __pickLatestLaundry__(list){
   }catch(_){ return null; }
 }
 
-async function __fbImportAdmin__(){
+async function __fbImportAdmin__(opts={}){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
@@ -1540,7 +1541,7 @@ async function __fbImportAdmin__(){
 
 
   try{ toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  if (!(opts && opts.skipReload)){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
 }
 
 async function __handleSyncImport__(){
@@ -1552,6 +1553,20 @@ async function __handleSyncExport__(){
   return __fbExportOperator__();
 }
 
+// HOME: tasto unico Sync Firebase
+async function __handleSyncUnified__(){
+  if (__isAdmin__()){
+    // Admin: prima Import (senza reload) poi Export, poi reload
+    await __fbImportAdmin__({ skipReload:true });
+    await __fbExportAdmin__();
+    try{ toast("Operazione completata", "blue"); }catch(_{}){}
+    setTimeout(()=>{ try{ location.reload(); }catch(_{}){ } }, 250);
+    return;
+  }
+  // Operatore: prima Export poi Import (import fa reload)
+  await __fbExportOperator__();
+  await __fbImportOperator__();
+}
 // Bind sync buttons once DOM is ready
 try{
   window.addEventListener("load", ()=>{
@@ -1559,6 +1574,7 @@ try{
       __fbLoadLink__();
       const imp = document.getElementById("goDbImport");
       const exp = document.getElementById("goDbExport");
+      const syn = document.getElementById("goDbSync");
       if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
       if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
@@ -2230,16 +2246,22 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: Import/Export SYNC (Firebase) — visibili sia Admin che Operatore
+  // Home: Import/Export SYNC (Firebase) — tasto unico (visibile sia Admin che Operatore)
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
+    const synTile = document.getElementById("goDbSync");
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
-    if (impTile && expTile){
-      impTile.hidden = false;
-      expTile.hidden = false;
-      try{ impTile.style.display = ""; expTile.style.display = ""; }catch(_){ }
+
+    // nascondi vecchi tiles
+    if (impTile){ impTile.hidden = true; try{ impTile.style.display = "none"; }catch(_){ } }
+    if (expTile){ expTile.hidden = true; try{ expTile.style.display = "none"; }catch(_){ } }
+
+    // mostra tasto unico
+    if (synTile){
+      synTile.hidden = false;
+      try{ synTile.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
