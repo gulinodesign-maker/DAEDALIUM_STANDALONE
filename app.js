@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.034";
+const BUILD_VERSION = "2.035";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1221,12 +1221,55 @@ async function __fbImportOperator__(opts){
     }
   }catch(_){ }
 
+  // Merge helper: unisce per id scegliendo la versione più recente (updatedAt/createdAt)
+  const __mergeByIdLatest__ = (localArr, remoteArr) => {
+    try{
+      const loc = Array.isArray(localArr) ? localArr : [];
+      const rem = Array.isArray(remoteArr) ? remoteArr : [];
+      const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
+      const map = new Map();
+      let anon = 0;
+
+      const put = (it) => {
+        if (!it) return;
+        const id = String(it?.id || "").trim();
+        if (!id){
+          map.set(`__anon_${anon++}`, it);
+          return;
+        }
+        const prev = map.get(id);
+        if (!prev){ map.set(id, it); return; }
+        const tp = pickT(prev);
+        const tn = pickT(it);
+        // se "it" è più recente, sovrascrive prev; altrimenti mantiene prev
+        if (tn && (!tp || tn > tp)){
+          map.set(id, Object.assign({}, prev, it));
+        } else {
+          map.set(id, Object.assign({}, it, prev));
+        }
+      };
+
+      loc.forEach(put);
+      rem.forEach(put);
+
+      return Array.from(map.values());
+    }catch(_){
+      return Array.isArray(remoteArr) ? remoteArr : (Array.isArray(localArr) ? localArr : []);
+    }
+  };
+
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
 
-    // Regola operatore: non importare dati operativi locali (ore pulizia / biancheria) dall'admin,
-    // perché l'admin può avere questi dataset vuoti e sovrascrivere il lavoro dell'operatore.
-    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
+    // Dati operativi: MERGE (non overwrite) per evitare di perdere lavoro locale
+    if (t === "pulizie" || t === "lavanderia" || t === "operatori"){
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const merged = __mergeByIdLatest__(local, payload.datasets[t]);
+        await __tblSet__(t, merged);
+      }
+      continue;
+    }
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
@@ -15369,6 +15412,23 @@ async function initOrePuliziaPage(){
   const opItems = [{ value:"__ALL__", label:"TUTTI" }, ...ops.map(x=>({ value:x, label:x }))];
 
   // default operatore
+  // In sessione OPERATORE: pre-seleziona sempre il proprio nome (se presente), così il report è leggibile subito.
+  if (state && state.session && isOperatoreSession(state.session)){
+    const raw = String(
+      state.session._op_local ||
+      state.session.username ||
+      state.session.user ||
+      state.session.nome ||
+      state.session.name ||
+      state.session.email ||
+      ""
+    ).trim();
+    if (raw){
+      const norm = raw.toLowerCase();
+      const match = (ops||[]).find(x => String(x||"").trim().toLowerCase() === norm);
+      if (match) s.operatore = match;
+    }
+  }
   if (!s.operatore) s.operatore = ops.length ? ops[0] : "__ALL__";
   if (!opItems.some(o=>o.value === s.operatore)) s.operatore = ops.length ? ops[0] : "__ALL__";
 
