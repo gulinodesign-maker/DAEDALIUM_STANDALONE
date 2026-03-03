@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.022
  */
-const BUILD_VERSION = "2.028";
+const BUILD_VERSION = "2.029";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1221,6 +1221,11 @@ async function __fbImportOperator__(opts){
 
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
+
+    // Regola operatore: non importare dati operativi locali (ore pulizia / biancheria) dall'admin,
+    // perché l'admin può avere questi dataset vuoti e sovrascrivere il lavoro dell'operatore.
+    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
+
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
