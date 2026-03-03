@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.022" rel="stylesheet"/>
-<link href="./manifest.json?v=2.022" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.022" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.022" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.022" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.022" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.043" rel="stylesheet"/>
+<link href="./manifest.json?v=2.043" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.043" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.043" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.043" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.043" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.022"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.043"/>
 <div class="top-led-grid" id="topLedGrid" aria-label="Stato" role="status">
   <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
   <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -164,27 +164,6 @@
 <path d="M9 12h12"></path>
 </svg>
 </button>
-<button aria-label="Genera report mese" class="icon-btn icon-btn-whitegreen" id="btnPiscinaBackfillTop" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 3v3"></path>
-<path d="M17 3v3"></path>
-<path d="M4.5 8h15"></path>
-<path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
-<path d="M12 12v6"></path>
-<path d="M9 15h6"></path>
-</svg>
-</button>
-<button aria-label="Stampa report" class="icon-btn icon-btn-whiteorange" id="piscinaPrintBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
-<path d="M6 9V3h12v6"></path>
-<path d="M6 18h12v3H6z"></path>
-<path d="M6 14h12"></path>
-<path d="M8 14v4"></path>
-<path d="M16 14v4"></path>
-<path d="M6 9h-1a2 2 0 0 0-2 2v5h3"></path>
-<path d="M18 16h3v-5a2 2 0 0 0-2-2h-1"></path>
-</svg>
-</button>
 </div>
 
 <!-- HOME: Impostazioni (solo in HOME) -->
@@ -230,7 +209,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.022"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.043"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -420,8 +399,22 @@
 </button>
 
 </div>
+
+<div id="homeSyncBar" class="home-sync-bar" hidden>
+  <button id="goDbSync" type="button" class="home-sync-btn" aria-label="Sync Firebase">
+    <span class="home-sync-ico" aria-hidden="true">
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12a9 9 0 0 0-15.3-6.3"></path>
+        <path d="M3 4v6h6"></path>
+        <path d="M3 12a9 9 0 0 0 15.3 6.3"></path>
+        <path d="M21 20v-6h-6"></path>
+      </svg>
+    </span>
+    <span class="home-sync-text">SYNC</span>
+  </button>
+</div>
 <div class="operator-db-row" id="operatorDbRow" hidden></div>
-<div class="build" id="buildText">dDAE_2.019</div></div></section>
+<div class="build" id="buildText">dDAE_2.043</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -454,16 +447,16 @@
 <div class="stats-title">Statistiche</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div aria-label="Sezioni statistiche" class="home-grid" role="navigation">
-<button aria-label="Conteggio generale" class="home-main" id="goStatGen" type="button">
+<button aria-label="Generali" class="home-main" id="goStatGen" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 9V7.5A2.5 2.5 0 0 1 9.5 5h5A2.5 2.5 0 0 1 17 7.5V9"></path>
 <path d="M6 9h12a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z"></path>
 <path d="M9 15h6"></path>
 <path d="M12 12v6"></path>
 </svg></div>
-<div class="home-main-label">Conteggio generale</div>
+<div class="home-main-label">Generali</div>
 </button>
-<button aria-label="Fatturati mensili" class="home-main" id="goStatMensili" type="button">
+<button aria-label="Mensili" class="home-main" id="goStatMensili" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 19V5"></path>
 <path d="M4 19h16"></path>
@@ -471,7 +464,7 @@
 <path d="M12 17V7"></path>
 <path d="M16 17v-3"></path>
 </svg></div>
-<div class="home-main-label">Fatturati mensili</div>
+<div class="home-main-label">Mensili</div>
 </button>
 <button aria-label="Spese" class="home-main" id="goStatSpese" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -545,7 +538,7 @@
 <!-- STATISTICHE: CONTEGGIO GENERALE -->
 <section class="page" hidden="" id="page-statgen">
 <div class="stats-gen">
-<div class="stats-title">Conteggio generale</div>
+<div class="stats-title">Generali</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="stats-stack">
 <button class="stat-row" style="--statbg:#2b7cb4" type="button">
@@ -609,7 +602,7 @@
 <!-- STATISTICHE: INCASSI MENSILI -->
 <section class="page" hidden="" id="page-statmensili">
 <div class="stats-gen">
-<div class="stats-title">Fatturati mensili</div>
+<div class="stats-title">Mensili</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="month-stack" id="smList"></div>
 </div>
@@ -678,7 +671,31 @@
           <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
         </div>
         <div class="piscina-grid" id="piscinaGrid" role="grid" aria-label="Griglia giorni"></div>
+      
+      <div class="piscina-bottom-actions" aria-label="Azioni piscina">
+        <button aria-label="Genera report mese" class="icon-btn icon-btn-whitegreen" id="btnPiscinaBackfillTop" type="button">
+          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
+            <path d="M7 3v3"></path>
+            <path d="M17 3v3"></path>
+            <path d="M4.5 8h15"></path>
+            <path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
+            <path d="M12 12v6"></path>
+            <path d="M9 15h6"></path>
+          </svg>
+        </button>
+
+        <button aria-label="Stampa report" class="icon-btn icon-btn-whiteorange" id="piscinaPrintBtn" type="button">
+          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
+            <path d="M6 9V3h12v6"></path>
+            <path d="M6 18h12v3H6z"></path>
+            <path d="M6 14h12"></path>
+            <path d="M8 14v4"></path>
+            <path d="M16 14v4"></path>
+            <path d="M6 12h12"></path>
+          </svg>
+        </button>
       </div>
+</div>
 </div>
   </div>
 </section>
@@ -1470,8 +1487,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.022"></script>
-<script defer="" src="./app.js?v=2.022"></script>
+<script defer="" src="./config.js?v=2.043"></script>
+<script defer="" src="./app.js?v=2.043"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">

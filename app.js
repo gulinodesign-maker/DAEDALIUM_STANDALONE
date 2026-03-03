@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.022
+ * Build: 2.043
  */
-const BUILD_VERSION = "2.022";
+const BUILD_VERSION = "2.043";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1183,9 +1183,9 @@ function __operatorName__(){
   try{ return String(state?.session?.username || "").trim(); }catch(_){ return ""; }
 }
 
-async function __fbExportAdmin__(){
+async function __fbExportAdmin__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
 
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
@@ -1193,21 +1193,23 @@ async function __fbExportAdmin__(){
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Operazione completata", "blue"); }catch(_){}
+  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
+  return true;
+
 }
 
-async function __fbImportOperator__(){
+async function __fbImportOperator__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
 
   const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
-  if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  if (!doc){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
   const data = __fsDecode__(doc);
   const raw = String(data.admin_json||"");
-  if (!raw){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  if (!raw){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
   let payload=null;
   try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
-  if (!payload || !payload.datasets){ try{ toast("Dati non validi", "orange"); }catch(_){ } return; }
+  if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
 
   // Import subset operatore (NON sovrascrivere credenziali locali)
   // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
@@ -1221,19 +1223,25 @@ async function __fbImportOperator__(){
 
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
+
+    // Regola operatore: non importare dati operativi locali (ore pulizia / biancheria) dall'admin,
+    // perché l'admin può avere questi dataset vuoti e sovrascrivere il lavoro dell'operatore.
+    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
+
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
-  try{ toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  return true;
 }
 
-async function __fbExportOperator__(){
+async function __fbExportOperator__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
-  if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
+  if (!name){ try{ if(!opts?.silent) toast("Nome operatore mancante", "orange"); }catch(_){ } return false; }
 
   const datasets = {
     pulizie: await __tblGet__("pulizie", []),
@@ -1244,7 +1252,9 @@ async function __fbExportOperator__(){
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Operazione completata", "blue"); }catch(_){}
+  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
+  return true;
+
 }
 
 function __pickLatestLaundry__(list){
@@ -1260,9 +1270,9 @@ function __pickLatestLaundry__(list){
   }catch(_){ return null; }
 }
 
-async function __fbImportAdmin__(){
+async function __fbImportAdmin__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
 
   // get operator list from settings if present
   let ops = [];
@@ -1539,8 +1549,9 @@ async function __fbImportAdmin__(){
   await __tblSet__("lavanderia", mergedLavanderia);
 
 
-  try{ toast("Operazione completata", "green"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  return true;
 }
 
 async function __handleSyncImport__(){
@@ -1552,15 +1563,44 @@ async function __handleSyncExport__(){
   return __fbExportOperator__();
 }
 
+
+async function __handleSyncBoth__(){
+  __fbLoadLink__();
+  try{ toast("Sync in corso...", "blue"); }catch(_){}
+  let ok1=false, ok2=false;
+  try{
+    if (__isAdmin__()){
+      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
+      ok2 = await __fbExportAdmin__({ silent:true });
+    }else{
+      ok1 = await __fbExportOperator__({ silent:true });
+      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
+    }
+  }catch(_){ }
+  const ok = (ok1 !== false) && (ok2 !== false);
+  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
+  return ok;
+}
+
 // Bind sync buttons once DOM is ready
 try{
   window.addEventListener("load", ()=>{
     try{
       __fbLoadLink__();
-      const imp = document.getElementById("goDbImport");
-      const exp = document.getElementById("goDbExport");
-      if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
-      if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      const btn = document.getElementById("goDbSync");
+      if (btn && !btn.__syncBound){ btn.__syncBound = true; bindFastTap(btn, async ()=>{ try{ await __handleSyncBoth__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+      try{
+        if (!window.__homeSyncFitBound){
+          window.__homeSyncFitBound = true;
+          let __homeSyncFitTO__ = null;
+          window.addEventListener("resize", ()=>{
+            try{ clearTimeout(__homeSyncFitTO__); }catch(_){ }
+            __homeSyncFitTO__ = setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 80);
+          }, { passive:true });
+        }
+      }catch(_){ }
     }catch(_){}
   }, { passive:true });
 }catch(_){}
@@ -2226,20 +2266,80 @@ function isOperatoreSession(sess){
   catch(_){ return false; }
 }
 
+function __fitHomeSyncBtn__(){
+  try{
+    const grid = document.querySelector("#page-home .home-grid");
+    const bar  = document.getElementById("homeSyncBar");
+    const btn  = document.getElementById("goDbSync");
+    if (!grid || !bar || !btn) return;
+
+    const barRect = bar.getBoundingClientRect();
+    if (!barRect || barRect.width < 10) return;
+
+    const glyphs = Array.from(grid.querySelectorAll(".home-main-glyph")).filter(el=>{
+      try{
+        if (!el) return false;
+        if (!el.getClientRects || !el.getClientRects().length) return false;
+        const st = getComputedStyle(el);
+        if (st.display === "none" || st.visibility === "hidden") return false;
+        return true;
+      }catch(_){ return false; }
+    });
+    if (!glyphs.length) return;
+
+    let minL = Infinity, maxR = -Infinity;
+    for (const el of glyphs){
+      const r = el.getBoundingClientRect();
+      if (r && r.width > 0 && r.height > 0){
+        if (r.left < minL) minL = r.left;
+        if (r.right > maxR) maxR = r.right;
+      }
+    }
+    if (!isFinite(minL) || !isFinite(maxR) || maxR <= minL) return;
+
+    const cs = getComputedStyle(bar);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    const contentW = Math.max(0, barRect.width - padL - padR);
+    if (contentW < 10) return;
+
+    let width = maxR - minL;
+    width = Math.max(140, width);
+    width = Math.min(contentW, width);
+
+    let left = minL - (barRect.left + padL);
+    left = Math.max(0, left);
+    left = Math.min(contentW - width, left);
+
+    bar.style.display = "flex";
+    bar.style.alignItems = "center";
+    bar.style.justifyContent = "flex-start";
+
+    btn.style.width = `${width}px`;
+    btn.style.marginLeft = `${left}px`;
+    btn.style.marginRight = "0px";
+  }catch(_){ }
+}
+
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: Import/Export SYNC (Firebase) — visibili sia Admin che Operatore
+  // Home: SYNC Firebase — tasto unico (Admin sempre; Operatore solo dopo collegamento Roster)
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
+    if (impTile){ try{ impTile.hidden = true; impTile.style.display = "none"; }catch(_){ } }
+    if (expTile){ try{ expTile.hidden = true; expTile.style.display = "none"; }catch(_){ } }
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
-    if (impTile && expTile){
-      impTile.hidden = false;
-      expTile.hidden = false;
-      try{ impTile.style.display = ""; expTile.style.display = ""; }catch(_){ }
+
+    const bar = document.getElementById("homeSyncBar");
+    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
+    if (bar){
+      const shouldShow = true; // sempre visibile (anche Operatore)
+      try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
+      try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
@@ -5057,6 +5157,7 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
+  if (page === "home"){ try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ } }
 
   // Init pagine dinamiche (listener)
   if (page === "tassa"){
