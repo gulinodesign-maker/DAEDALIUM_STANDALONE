@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.031
+ * Build: 2.040
  */
-const BUILD_VERSION = "2.039";
+const BUILD_VERSION = "2.040";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12761,6 +12761,18 @@ try{
       if (!touched) return;
 
       await api("operatori", { method:"POST", body: opPayload });
+      try{
+        // UI: evidenzia subito i pallini ore salvati (cerchio rosso)
+        opEls.forEach((r, idx) => {
+          try{
+            const rowEl = (r.hours && r.hours.closest) ? r.hours.closest('.clean-op-row') : null;
+            if (rowEl && rowEl.style && rowEl.style.display === 'none') return;
+            const v = readHourDot(r.hours);
+            r.hours.classList.toggle("is-saved", v > 0);
+          }catch(_){ }
+        });
+      }catch(_){ }
+
       try{ await loadOperatoriForDay({ clearFirst:false }); }catch(_){ }
     }catch(err){
       try{ toast(String(err && err.message || "Errore salvataggio ore lavoro")); }catch(_){}
