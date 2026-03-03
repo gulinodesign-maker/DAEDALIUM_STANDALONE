@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.025
+ * Build: 2.022
  */
-const BUILD_VERSION = "2.025";
+const BUILD_VERSION = "2.026";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -454,7 +454,6 @@ async function __localApiImpostazioni__(method, body){
         updatedAt: __nowIso__(),
         createdAt: __nowIso__(),
       });
-      if (syn && !syn.__syncBound){ syn.__syncBound = true; bindFastTap(syn, async ()=>{ try{ await __handleSyncUnified__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
 
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
@@ -1184,9 +1183,9 @@ function __operatorName__(){
   try{ return String(state?.session?.username || "").trim(); }catch(_){ return ""; }
 }
 
-async function __fbExportAdmin__(){
+async function __fbExportAdmin__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
 
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
@@ -1194,21 +1193,21 @@ async function __fbExportAdmin__(){
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Operazione completata", "blue"); }catch(_){}
+  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
 }
 
-async function __fbImportOperator__(opts={}){
+async function __fbImportOperator__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
 
   const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
-  if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  if (!doc){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
   const data = __fsDecode__(doc);
   const raw = String(data.admin_json||"");
-  if (!raw){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  if (!raw){ try{ if(!opts?.silent) toast("Nessun export admin", "orange"); }catch(_){ } return false; }
   let payload=null;
   try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
-  if (!payload || !payload.datasets){ try{ toast("Dati non validi", "orange"); }catch(_){ } return; }
+  if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
 
   // Import subset operatore (NON sovrascrivere credenziali locali)
   // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
@@ -1226,15 +1225,15 @@ async function __fbImportOperator__(opts={}){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
-  try{ toast("Operazione completata", "green"); }catch(_){}
-  if (!(opts && opts.skipReload)){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
-async function __fbExportOperator__(){
+async function __fbExportOperator__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
-  if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
+  if (!name){ try{ if(!opts?.silent) toast("Nome operatore mancante", "orange"); }catch(_){ } return false; }
 
   const datasets = {
     pulizie: await __tblGet__("pulizie", []),
@@ -1245,7 +1244,7 @@ async function __fbExportOperator__(){
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ toast("Operazione completata", "blue"); }catch(_){}
+  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
 }
 
 function __pickLatestLaundry__(list){
@@ -1261,9 +1260,9 @@ function __pickLatestLaundry__(list){
   }catch(_){ return null; }
 }
 
-async function __fbImportAdmin__(opts={}){
+async function __fbImportAdmin__(opts){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
+  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
 
   // get operator list from settings if present
   let ops = [];
@@ -1540,8 +1539,8 @@ async function __fbImportAdmin__(opts={}){
   await __tblSet__("lavanderia", mergedLavanderia);
 
 
-  try{ toast("Operazione completata", "green"); }catch(_){}
-  if (!(opts && opts.skipReload)){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
 async function __handleSyncImport__(){
@@ -1553,43 +1552,33 @@ async function __handleSyncExport__(){
   return __fbExportOperator__();
 }
 
-// HOME: tasto unico Sync Firebase
-async function __handleSyncUnified__(){
+
+async function __handleSyncBoth__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
-
-  const results = [];
-  const pushRes = (label, ok, err) => results.push({ label, ok: !!ok, err: err ? (err.message || String(err)) : "" });
-
-  if (__isAdmin__()){
-    // Admin: prima Import (senza reload) poi Export, poi reload
-    try{ await __fbImportAdmin__({ skipReload:true }); pushRes("IMPORT", true); }catch(e){ pushRes("IMPORT", false, e); }
-    try{ await __fbExportAdmin__(); pushRes("EXPORT", true); }catch(e){ pushRes("EXPORT", false, e); }
-    const okAll = results.every(r=>r.ok);
-    const msg = `SYNC Admin: ${results.map(r=>`${r.label} ${r.ok?"OK":"KO"}`).join(" • ")}`;
-    try{ toast(msg, okAll?"green":"orange"); }catch(_){ }
-    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
-    return;
-  }
-
-  // Operatore: prima Export poi Import, toast finale e poi reload
-  try{ await __fbExportOperator__(); pushRes("EXPORT", true); }catch(e){ pushRes("EXPORT", false, e); }
-  try{ await __fbImportOperator__({ skipReload:true }); pushRes("IMPORT", true); }catch(e){ pushRes("IMPORT", false, e); }
-  const okAll = results.every(r=>r.ok);
-  const msg = `SYNC Operatore: ${results.map(r=>`${r.label} ${r.ok?"OK":"KO"}`).join(" • ")}`;
-  try{ toast(msg, okAll?"green":"orange"); }catch(_){ }
+  try{ toast("Sync in corso...", "blue"); }catch(_){}
+  let ok1=false, ok2=false;
+  try{
+    if (__isAdmin__()){
+      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
+      ok2 = await __fbExportAdmin__({ silent:true });
+    }else{
+      ok1 = await __fbExportOperator__({ silent:true });
+      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
+    }
+  }catch(_){ }
+  const ok = !!(ok1 && ok2);
+  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
+  return ok;
 }
+
 // Bind sync buttons once DOM is ready
 try{
   window.addEventListener("load", ()=>{
     try{
       __fbLoadLink__();
-      const imp = document.getElementById("goDbImport");
-      const exp = document.getElementById("goDbExport");
-      const syn = document.getElementById("goDbSync");
-      if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
-      if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      const btn = document.getElementById("goDbSync");
+      if (btn && !btn.__syncBound){ btn.__syncBound = true; bindFastTap(btn, async ()=>{ try{ await __handleSyncBoth__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
   }, { passive:true });
 }catch(_){}
@@ -2259,23 +2248,16 @@ function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: Import/Export SYNC (Firebase) — tasto unico (visibile sia Admin che Operatore)
+  // Home: SYNC Firebase — tasto unico (visibile sia Admin che Operatore)
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
-    const synTile = document.getElementById("goDbSync");
+    if (impTile){ try{ impTile.hidden = true; impTile.style.display = "none"; }catch(_){ } }
+    if (expTile){ try{ expTile.hidden = true; expTile.style.display = "none"; }catch(_){ } }
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
-
-    // nascondi vecchi tiles
-    if (impTile){ impTile.hidden = true; try{ impTile.style.display = "none"; }catch(_){ } }
-    if (expTile){ expTile.hidden = true; try{ expTile.style.display = "none"; }catch(_){ } }
-
-    // mostra tasto unico
-    if (synTile){
-      synTile.hidden = false;
-      try{ synTile.style.display = ""; }catch(_){ }
-    }
+    const bar = document.getElementById("homeSyncBar");
+    if (bar){ try{ bar.hidden = false; bar.style.display = ""; }catch(_){ } }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
   if (isOp){

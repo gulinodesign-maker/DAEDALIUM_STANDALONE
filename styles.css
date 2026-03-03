@@ -856,50 +856,6 @@ input[type="date"]{
   font-size: 13px;
 }
 
-/* HOME - Firebase sync tab (separato dalla griglia) */
-.home-sync-wrap{
-  /* allineamento ai bordi della griglia Home (rispetta il padding della card) */
-  width: min(420px, 92vw);
-  box-sizing: border-box;
-  padding: 0 16px;
-  margin-top: 14px;
-  display:flex;
-  justify-content:center;
-}
-.home-sync-tab{
-  width: 100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(15,23,42,0.10);
-  background: rgba(43,124,180,0.80); /* tinta unita + opacità 80% */
-  color: #fff;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.home-sync-glyph{
-  width: 22px;
-  height: 22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.home-sync-tab .ui-ico{
-  width: 22px;
-  height: 22px;
-  stroke: #fff;
-}
-.home-sync-label{
-  font-weight: 950;
-  letter-spacing: 0.6px;
-  font-size: 13px;
-}
-
 /* Build text bottom center */
 .build{
   padding-bottom: calc(10px + var(--safe-bottom));
