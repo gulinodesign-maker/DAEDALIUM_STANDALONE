@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.041";
+const BUILD_VERSION = "2.039";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1192,15 +1192,7 @@ async function __fbExportAdmin__(opts){
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
-    // Bacheca comune: merge admin -> board (sorgente unica)
-  let deleted = {};
-  try{ deleted.lavanderia = Array.from(__laundryDeletedIds__ ? __laundryDeletedIds__() : []); }catch(_){ deleted.lavanderia = []; }
-  let board = null;
-  try{ board = await __fbBoardRead__(); }catch(_){ board = null; }
-  const mergedBoard = __fbBoardMergeDatasets__(board, datasets, deleted);
-  await __fbBoardWrite__(mergedBoard);
-  // compat: salva anche admin_json (non più necessario ma utile come fallback)
-  try{ await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } }); }catch(_){ }
+  await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
 
@@ -1214,8 +1206,6 @@ async function __fbImportOperator__(opts){
 // - admin_json (se presente)
 // - export di tutti gli operatori (collection operators)
 let payloads = [];
-try{ const board = await __fbBoardRead__(); if (board && board.datasets) payloads.push(board); }catch(_){ }
-if (!payloads.length){
 try{
   const docAdmin = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
   if (docAdmin){
@@ -1227,6 +1217,7 @@ try{
         if (pA && pA.datasets) payloads.push(pA);
       }catch(_){}
     }
+  }
 }catch(_){}
 
 try{
@@ -1241,18 +1232,12 @@ try{
     }catch(_){}
   });
 }catch(_){}
-}
-
 
 if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
 
 // Combina tutti i dataset in un unico payload remoto
-let payload = null;
-if (payloads.length === 1 && payloads[0] && payloads[0].kind === "DDAE_BOARD" && payloads[0].datasets){
-  payload = payloads[0];
-}else{
-  payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
-  try{
+let payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
+try{
   for (const p of payloads){
     const ds = (p && p.datasets && typeof p.datasets === "object") ? p.datasets : {};
     for (const k of Object.keys(ds)){
@@ -1268,20 +1253,9 @@ if (payloads.length === 1 && payloads[0] && payloads[0].kind === "DDAE_BOARD" &&
       }
     }
   }
-  }
 }catch(_){}
-}
 
 if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
-
-// Applica cancellazioni condivise (lavanderia)
-try{
-  if (payload && payload.deleted && Array.isArray(payload.deleted.lavanderia)){
-    const set = __laundryDeletedIds__ ? __laundryDeletedIds__() : new Set();
-    payload.deleted.lavanderia.forEach(id=>{ try{ if(id) set.add(String(id)); }catch(_){ } });
-    try{ localStorage.setItem(__laundryDeletedKey__(), JSON.stringify(Array.from(set))); }catch(_){ }
-  }
-}catch(_){ }
 
 // Import subset operatore
   // Import subset operatore (NON sovrascrivere credenziali locali)
@@ -1548,104 +1522,6 @@ try{
   return true;
 }
 
-
-// ===== Firebase "Bacheca" comune (single source of truth) =====
-// Tutti (admin + operatori) leggono/scrivono solo su sync/{teamId}/board.
-// La bacheca contiene dataset combinati + set cancellazioni condivise.
-function __normKeyDate__(v){
-  try{ return __normIsoDate__(v); }catch(_){ return String(v||"").slice(0,10); }
-}
-function __normOpKey__(v){ return String(v||"").trim().toLowerCase(); }
-function __asNumOrNull__(v){
-  if (typeof v === "number" && !Number.isNaN(v)) return v;
-  if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-  return null;
-}
-function __mergeMaxObj__(a,b){
-  const out = Object.assign({}, a||{}, b||{});
-  const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-  keys.forEach(k=>{
-    const va = (a||{})[k];
-    const vb = (b||{})[k];
-    const na = __asNumOrNull__(va);
-    const nb = __asNumOrNull__(vb);
-    if (na !== null && nb !== null){
-      out[k] = Math.max(na, nb);
-    } else if (va === undefined || va === null || va === ""){
-      if (vb !== undefined) out[k] = vb;
-    } else if (vb === undefined || vb === null || vb === ""){
-      out[k] = va;
-    }
-  });
-  return out;
-}
-function __mergeArrayByKeyMax__(arrA, arrB, keyFn){
-  const map = new Map();
-  const put=(it)=>{
-    if (!it || typeof it !== "object") return;
-    const k = String(keyFn(it)||"");
-    if (!k){ map.set("__anon_"+map.size, it); return; }
-    const prev = map.get(k);
-    if (!prev){ map.set(k, it); return; }
-    map.set(k, __mergeMaxObj__(prev, it));
-  };
-  (Array.isArray(arrA)?arrA:[]).forEach(put);
-  (Array.isArray(arrB)?arrB:[]).forEach(put);
-  return Array.from(map.values());
-}
-async function __fbBoardRead__(){
-  try{
-    const docB = await __fsGet__(`sync/${__FB_STATE__.teamId}/board`);
-    if (!docB) return null;
-    const dataB = __fsDecode__(docB);
-    const raw = String(dataB.board_json||"");
-    if (!raw) return null;
-    const p = JSON.parse(raw);
-    if (p && p.datasets) return p;
-  }catch(_){}
-  return null;
-}
-async function __fbBoardWrite__(boardPayload){
-  await __fsSet__(`sync/${__FB_STATE__.teamId}/board`, { board_json: JSON.stringify(boardPayload), updatedAt:{ __ts: __nowIso__() } });
-}
-function __fbBoardMergeDatasets__(board, incoming, deleted){
-  const out = { kind:"DDAE_BOARD", build: BUILD_VERSION, at: __nowIso__(), datasets: {}, deleted: {} };
-  const bd = (board && board.datasets && typeof board.datasets==="object") ? board.datasets : {};
-  const idel = (board && board.deleted && typeof board.deleted==="object") ? board.deleted : {};
-  const inc = (incoming && typeof incoming==="object") ? incoming : {};
-  const del = (deleted && typeof deleted==="object") ? deleted : {};
-  // deleted ids union
-  const union = (a,b)=> Array.from(new Set([...(Array.isArray(a)?a:[]), ...(Array.isArray(b)?b:[])].map(x=>String(x||"")).filter(Boolean)));
-  out.deleted.lavanderia = union(idel.lavanderia, del.lavanderia);
-  // merge tables
-  const tables = Object.keys(Object.assign({}, bd, inc));
-  tables.forEach(t=>{
-    const A = bd[t];
-    const B = inc[t];
-    if (t === "pulizie"){
-      out.datasets[t] = __mergeArrayByKeyMax__(A, B, (r)=>{ const d=__normKeyDate__(r?.data||r?.date||""); const s=String(r?.stanza||r?.room||"").trim(); return (d&&s)?(d+"|"+s):""; });
-      return;
-    }
-    if (t === "operatori"){
-      out.datasets[t] = __mergeArrayByKeyMax__(A, B, (r)=>{ const d=__normKeyDate__(r?.data||r?.date||""); const o=__normOpKey__(r?.operatore||r?.nome||""); return (d&&o)?(d+"|"+o):""; });
-      return;
-    }
-    if (t === "lavanderia"){
-      // merge by id if present, fallback to startDate|endDate
-      out.datasets[t] = __mergeArrayByKeyMax__(A, B, (r)=>{ const id=String(r?.id||"").trim(); if(id) return "id:"+id; const sd=String(r?.startDate||r?.start_date||"").slice(0,10); const ed=String(r?.endDate||r?.end_date||"").slice(0,10); return (sd||ed)?("p:"+sd+"|"+ed):""; });
-      return;
-    }
-    // default: merge by id latest (best-effort)
-    if (Array.isArray(A) || Array.isArray(B)){
-      out.datasets[t] = __mergeArrayByKeyMax__(A, B, (r)=> String(r?.id||"").trim());
-      return;
-    }
-    if (B !== undefined) out.datasets[t] = B;
-    else out.datasets[t] = A;
-  });
-  return out;
-}
-
 async function __fbExportOperator__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
@@ -1660,13 +1536,7 @@ async function __fbExportOperator__(opts){
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
-    // Bacheca comune: merge locale -> board
-  let deleted = {};
-  try{ deleted.lavanderia = Array.from(__laundryDeletedIds__ ? __laundryDeletedIds__() : []); }catch(_){ deleted.lavanderia = []; }
-  let board = null;
-  try{ board = await __fbBoardRead__(); }catch(_){ board = null; }
-  const mergedBoard = __fbBoardMergeDatasets__(board, datasets, deleted);
-  await __fbBoardWrite__(mergedBoard);
+  await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
 
@@ -1688,27 +1558,6 @@ function __pickLatestLaundry__(list){
 async function __fbImportAdmin__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
-
-// Bacheca comune: se presente, importa direttamente
-try{
-  const board = await __fbBoardRead__();
-  if (board && board.datasets){
-    // applica cancellazioni condivise
-    try{
-      if (board.deleted && Array.isArray(board.deleted.lavanderia)){
-        const set = __laundryDeletedIds__ ? __laundryDeletedIds__() : new Set();
-        board.deleted.lavanderia.forEach(id=>{ try{ if(id) set.add(String(id)); }catch(_){ } });
-        try{ localStorage.setItem(__laundryDeletedKey__(), JSON.stringify(Array.from(set))); }catch(_){ }
-      }
-    }catch(_){ }
-    // importa tutte le tabelle admin
-    const tables = __OP_TABLES__.filter(t => t !== "utenti");
-    for (const t of tables){ if (board.datasets[t] !== undefined) await __tblSet__(t, board.datasets[t]); }
-    try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
-    if (!opts?.skipReload){ try{ setTimeout(()=>location.reload(), 300); }catch(_){ } }
-    return true;
-  }
-}catch(_){ }
 
   // get operator list from settings if present
   let ops = [];
@@ -4600,11 +4449,6 @@ const del = document.getElementById("settingsDeleteBtn");
 
   const logout = document.getElementById("settingsLogoutBtn");
   if (logout) logout.addEventListener("click", () => {
-    try{
-      const __r = String(state?.session?.role || state?.role || "");
-      const __isOp = __r.toLowerCase().includes("oper");
-      if (__isOp){ if (!confirm("Vuoi effettuare il logout?")) return; }
-    }catch(_){ }
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
@@ -13119,9 +12963,7 @@ try{
   };
 
   const syncCleanOperators = () => {
-  let names = [];
-    try{ names = getOperatorNamesFromSettings(); }catch(_){ names = []; }
-    if (!Array.isArray(names) || !names.some(n=>String(n||"").trim())) names = __getPulizieOperatorNames();
+  const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
 
   opEls.forEach((r, idx) => {
     const n = String(names[idx] || "").trim();
@@ -13204,9 +13046,7 @@ try{
   const buildOperatoriPayload = () => {
     const date = getCleanDate();
     const rows = [];
-    let names = [];
-    try{ names = getOperatorNamesFromSettings(); }catch(_){ names = []; }
-    if (!Array.isArray(names) || !names.some(n=>String(n||"").trim())) names = __getPulizieOperatorNames();
+    const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
 
     const hasAnyName = names.some(n => String(n || "").trim());
     if (!hasAnyName){
@@ -15222,8 +15062,6 @@ function attachDeleteOspite(card, ospite){
     if (!confirm("Eliminare definitivamente questo ospite?")) return;
     try{ __sfxGlass(); }catch(_){ }
     await api("ospiti", { method:"DELETE", params:{ id: ospite.id } });
-    try{ if (card && card.parentNode) card.parentNode.removeChild(card); }catch(_){ }
-    try{ state.ospiti = (state.ospiti||[]).filter(o=>String(o.id)!==String(ospite.id)); }catch(_){ }
     toast("Ospite eliminato");
     invalidateApiCache("ospiti|");
     invalidateApiCache("stanze|");
