@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.040
+ * Build: 2.043
  */
-const BUILD_VERSION = "2.042";
+const BUILD_VERSION = "2.043";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12863,9 +12863,29 @@ try{
   };
 
   const __getPulizieOperatorNames = () => {
+    // In modalità operatore mostriamo una sola riga, ma deve essere quella dell'operatore corretto (OP1/OP2/OP3)
+    // altrimenti, dopo sync, la UI può "spegnere" la riga sbagliata e svuotare il pallino ore.
     try{
-      const u = __getLoggedOperatorName();
-      if (u) return [u, "", ""]; // in operatore mostriamo solo 1 riga
+      const u = (__getLoggedOperatorName() || "").trim();
+      if (u){
+        const ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim());
+        const ul = u.toLowerCase();
+        let idx = ops.findIndex(n => n && n.toLowerCase() === ul);
+
+        // fallback: match parziale (es. username corto vs nome completo)
+        if (idx < 0){
+          idx = ops.findIndex(n => n && (n.toLowerCase().includes(ul) || ul.includes(n.toLowerCase())));
+        }
+
+        const out = ["", "", ""];
+        if (idx >= 0 && idx < out.length){
+          out[idx] = ops[idx] || u;
+          return out;
+        }
+
+        // fallback finale: comportamento precedente (1 riga), ma senza implicare OP1 quando l'indice non è risolvibile
+        return [u, "", ""];
+      }
     }catch(_){ }
     return getOperatorNamesFromSettings();
   };
