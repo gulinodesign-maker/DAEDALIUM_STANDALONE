@@ -59,7 +59,7 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 body{
   min-height: 100vh;
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.005");
+    url("./assets/bg-daedalium.png?v=2.042");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -996,7 +996,7 @@ input[type="date"]{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.005");
+    url("./assets/bg-daedalium.png?v=2.042");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

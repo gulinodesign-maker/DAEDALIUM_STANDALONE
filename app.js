@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.037";
+const BUILD_VERSION = "2.042";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1221,144 +1221,17 @@ async function __fbImportOperator__(opts){
     }
   }catch(_){ }
 
-  // Merge helper: unisce per id scegliendo la versione più recente (updatedAt/createdAt)
-  const __mergeByIdLatest__ = (localArr, remoteArr) => {
-    try{
-      const loc = Array.isArray(localArr) ? localArr : [];
-      const rem = Array.isArray(remoteArr) ? remoteArr : [];
-      const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-      const map = new Map();
-      let anon = 0;
-
-      const put = (it) => {
-        if (!it) return;
-        const id = String(it?.id || "").trim();
-        if (!id){
-          map.set(`__anon_${anon++}`, it);
-          return;
-        }
-        const prev = map.get(id);
-        if (!prev){ map.set(id, it); return; }
-        const tp = pickT(prev);
-        const tn = pickT(it);
-        // se "it" è più recente, sovrascrive prev; altrimenti mantiene prev
-        if (tn && (!tp || tn > tp)){
-          map.set(id, Object.assign({}, prev, it));
-        } else {
-          map.set(id, Object.assign({}, it, prev));
-        }
-      };
-
-      loc.forEach(put);
-      rem.forEach(put);
-
-      return Array.from(map.values());
-    }catch(_){
-      return Array.isArray(remoteArr) ? remoteArr : (Array.isArray(localArr) ? localArr : []);
-    }
-  };
-
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
 
-    // Dati operativi: MERGE smart (key-based) per evitare di perdere lavoro locale
-    // e per garantire che ogni operatore veda anche i dati degli altri.
-    if (t === "pulizie"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const key = (r) => {
-          const d = String(r?.data || r?.date || "").slice(0,10);
-          const s = String(r?.stanza || r?.room || "").trim();
-          return (d && s) ? (d + "|" + s) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, Object.assign({}, prev, it));
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
-      }
-      continue;
-    }
-
-    if (t === "operatori"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const normOp = (s) => String(s||"").trim().toLowerCase();
-        const normD  = (s) => __normIsoDate__(s);
-        const key = (r) => {
-          const d = normD(r?.data || r?.date || "");
-          const o = normOp(r?.operatore || r?.nome || "");
-          return (d && o) ? (d + "|" + o) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, it);
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
-      }
-      continue;
-    }
-
-    if (t === "lavanderia"){
-      if (payload.datasets[t] !== undefined){
-        const local = await __tblGet__(t, []);
-        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-        const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-        const key = (it) => {
-          const id = String(it?.id || "").trim();
-          if (id) return "id:" + id;
-          const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
-          const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
-          return (a && b) ? ("rng:" + a + "|" + b) : "";
-        };
-        const best = new Map();
-        const put = (it) => {
-          if (!it || typeof it !== "object") return;
-          const k = key(it);
-          if (!k){ best.set("__anon_"+best.size, it); return; }
-          const prev = best.get(k);
-          if (!prev){ best.set(k, it); return; }
-          const tp = pickT(prev);
-          const tn = pickT(it);
-          const should = (!tp && !tn) ? true : (tn && (!tp || tn > tp));
-          if (should) best.set(k, it);
-        };
-        (Array.isArray(local)?local:[]).forEach(put);
-        remote.forEach(put);
-        await __tblSet__(t, Array.from(best.values()));
-      }
-      continue;
-    }
+    // Regola operatore: non importare dati operativi locali (ore pulizia / biancheria) dall'admin,
+    // perché l'admin può avere questi dataset vuoti e sovrascrivere il lavoro dell'operatore.
+    if (t === "pulizie" || t === "lavanderia" || t === "operatori") continue;
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
-
   try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
   return true;
@@ -2464,7 +2337,7 @@ function applyRoleMode(){
     const bar = document.getElementById("homeSyncBar");
     const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      const shouldShow = __hasRosterLink__;
+      const shouldShow = isOp ? __hasRosterLink__ : true;
       try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
       try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
@@ -5284,12 +5157,7 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
-  if (page === "home"){
-    // HOME: ricalcola sempre la visibilità del SYNC dopo operazioni in Impostazioni (es. generazione codice Roster)
-    try{ __fbLoadLink__(); }catch(_){ }
-    try{ applyRoleMode(); }catch(_){ }
-    try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
-  }
+  if (page === "home"){ try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ } }
 
   // Init pagine dinamiche (listener)
   if (page === "tassa"){
@@ -15362,7 +15230,7 @@ function __renderOrePuliziaCalendar_(){
     if (!iso.startsWith(monthKey + "-")) return;
 
     const oper = String(r.operatore || r.nome || "").trim();
-    if (op && op !== "__ALL__" && String(oper||"").trim().toLowerCase() !== String(op||"").trim().toLowerCase()) return;
+    if (op && op !== "__ALL__" && oper !== op) return;
 
     const oreRaw = (r.ore !== undefined && r.ore !== null) ? r.ore : (r.Ore !== undefined ? r.Ore : "");
     const ore = Number(String(oreRaw).trim().replace(",", "."));
@@ -15496,23 +15364,6 @@ async function initOrePuliziaPage(){
   const opItems = [{ value:"__ALL__", label:"TUTTI" }, ...ops.map(x=>({ value:x, label:x }))];
 
   // default operatore
-  // In sessione OPERATORE: pre-seleziona sempre il proprio nome (se presente), così il report è leggibile subito.
-  if (state && state.session && isOperatoreSession(state.session)){
-    const raw = String(
-      state.session._op_local ||
-      state.session.username ||
-      state.session.user ||
-      state.session.nome ||
-      state.session.name ||
-      state.session.email ||
-      ""
-    ).trim();
-    if (raw){
-      const norm = raw.toLowerCase();
-      const match = (ops||[]).find(x => String(x||"").trim().toLowerCase() === norm);
-      if (match) s.operatore = match;
-    }
-  }
   if (!s.operatore) s.operatore = ops.length ? ops[0] : "__ALL__";
   if (!opItems.some(o=>o.value === s.operatore)) s.operatore = ops.length ? ops[0] : "__ALL__";
 
