@@ -1329,11 +1329,11 @@ body::before{
 #page-home #goDbExport .home-main-glyph{ color: var(--ico-sky) !important; }
 
 #page-statistiche #goStatGen .home-main-glyph{ color: var(--ico-blue-deep) !important; }
-#page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-sky) !important; }
+#page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatSpese .home-main-glyph{ color: var(--ico-orange) !important; }
-#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-sky-light) !important; }
+#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-orange) !important; }
 #page-statistiche #goStatPiscina .home-main-glyph{ color: var(--ico-taupe) !important; }
-#page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-blue-night) !important; }
+#page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-taupe) !important; }
 
 #page-home .home-main-label{
   font-weight: 950;
