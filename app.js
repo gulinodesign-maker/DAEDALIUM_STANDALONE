@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.031
  */
-const BUILD_VERSION = "2.033";
+const BUILD_VERSION = "2.034";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5157,7 +5157,12 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
-  if (page === "home"){ try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ } }
+  if (page === "home"){
+    // HOME: ricalcola sempre la visibilità del SYNC dopo operazioni in Impostazioni (es. generazione codice Roster)
+    try{ __fbLoadLink__(); }catch(_){ }
+    try{ applyRoleMode(); }catch(_){ }
+    try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+  }
 
   // Init pagine dinamiche (listener)
   if (page === "tassa"){
