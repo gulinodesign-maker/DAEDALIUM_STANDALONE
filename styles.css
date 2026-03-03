@@ -858,7 +858,10 @@ input[type="date"]{
 
 /* HOME - Firebase sync tab (separato dalla griglia) */
 .home-sync-wrap{
+  /* allineamento ai bordi della griglia Home (rispetta il padding della card) */
   width: min(420px, 92vw);
+  box-sizing: border-box;
+  padding: 0 16px;
   margin-top: 14px;
   display:flex;
   justify-content:center;

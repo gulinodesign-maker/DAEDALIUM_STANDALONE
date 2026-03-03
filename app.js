@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.024
+ * Build: 2.025
  */
-const BUILD_VERSION = "2.024";
+const BUILD_VERSION = "2.025";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1555,17 +1555,30 @@ async function __handleSyncExport__(){
 
 // HOME: tasto unico Sync Firebase
 async function __handleSyncUnified__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
+
+  const results = [];
+  const pushRes = (label, ok, err) => results.push({ label, ok: !!ok, err: err ? (err.message || String(err)) : "" });
+
   if (__isAdmin__()){
     // Admin: prima Import (senza reload) poi Export, poi reload
-    await __fbImportAdmin__({ skipReload:true });
-    await __fbExportAdmin__();
-    try{ toast("Operazione completata", "blue"); }catch(_){ }
-    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
+    try{ await __fbImportAdmin__({ skipReload:true }); pushRes("IMPORT", true); }catch(e){ pushRes("IMPORT", false, e); }
+    try{ await __fbExportAdmin__(); pushRes("EXPORT", true); }catch(e){ pushRes("EXPORT", false, e); }
+    const okAll = results.every(r=>r.ok);
+    const msg = `SYNC Admin: ${results.map(r=>`${r.label} ${r.ok?"OK":"KO"}`).join(" • ")}`;
+    try{ toast(msg, okAll?"green":"orange"); }catch(_){ }
+    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
     return;
   }
-  // Operatore: prima Export poi Import (import fa reload)
-  await __fbExportOperator__();
-  await __fbImportOperator__();
+
+  // Operatore: prima Export poi Import, toast finale e poi reload
+  try{ await __fbExportOperator__(); pushRes("EXPORT", true); }catch(e){ pushRes("EXPORT", false, e); }
+  try{ await __fbImportOperator__({ skipReload:true }); pushRes("IMPORT", true); }catch(e){ pushRes("IMPORT", false, e); }
+  const okAll = results.every(r=>r.ok);
+  const msg = `SYNC Operatore: ${results.map(r=>`${r.label} ${r.ok?"OK":"KO"}`).join(" • ")}`;
+  try{ toast(msg, okAll?"green":"orange"); }catch(_){ }
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
 }
 // Bind sync buttons once DOM is ready
 try{
