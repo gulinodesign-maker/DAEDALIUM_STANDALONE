@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.031
+ * Build: 2.022
  */
-const BUILD_VERSION = "2.040";
+const BUILD_VERSION = "2.022";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -457,16 +457,6 @@ async function __localApiImpostazioni__(method, body){
     }catch(_){}
 
     const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
-
-    // admin_mode: "1" = admin singolo utente, "0" = multi utente con operatori
-    try{
-      const v = (body && body.admin_mode !== undefined) ? body.admin_mode : (body && body.admin_single_mode !== undefined ? body.admin_single_mode : undefined);
-      if (v !== undefined){
-        const b = (v === true || v === 1 || v === "1" || String(v).toLowerCase()==="true" || String(v).toLowerCase()==="on");
-        out.push({ key:"admin_mode", value: b ? "1" : "0", updatedAt: __nowIso__(), createdAt: __nowIso__() });
-      }
-    }catch(_){ }
-
     numKeys.forEach((k)=>{
       const v = (body && body[k] !== undefined) ? body[k] : "";
       out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
@@ -1193,9 +1183,9 @@ function __operatorName__(){
   try{ return String(state?.session?.username || "").trim(); }catch(_){ return ""; }
 }
 
-async function __fbExportAdmin__(opts){
+async function __fbExportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
@@ -1203,71 +1193,22 @@ async function __fbExportAdmin__(opts){
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
-  return true;
-
+  try{ toast("Operazione completata", "blue"); }catch(_){}
 }
 
-async function __fbImportOperator__(opts){
+async function __fbImportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
 
-// Carica dati condivisi SENZA dipendere dall'admin:
-// - admin_json (se presente)
-// - export di tutti gli operatori (collection operators)
-let payloads = [];
-try{
-  const docAdmin = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
-  if (docAdmin){
-    const dataA = __fsDecode__(docAdmin);
-    const rawA = String(dataA.admin_json||"");
-    if (rawA){
-      try{
-        const pA = JSON.parse(rawA);
-        if (pA && pA.datasets) payloads.push(pA);
-      }catch(_){}
-    }
-  }
-}catch(_){}
+  const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
+  if (!doc){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  const data = __fsDecode__(doc);
+  const raw = String(data.admin_json||"");
+  if (!raw){ try{ toast("Nessun export admin", "orange"); }catch(_){ } return; }
+  let payload=null;
+  try{ payload = JSON.parse(raw); }catch(_){ payload=null; }
+  if (!payload || !payload.datasets){ try{ toast("Dati non validi", "orange"); }catch(_){ } return; }
 
-try{
-  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
-  (docsOps||[]).forEach(d=>{
-    try{
-      const dd = __fsDecode__(d);
-      const rawO = String(dd.operator_json||"");
-      if (!rawO) return;
-      const pO = JSON.parse(rawO);
-      if (pO && pO.datasets) payloads.push(pO);
-    }catch(_){}
-  });
-}catch(_){}
-
-if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
-
-// Combina tutti i dataset in un unico payload remoto
-let payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
-try{
-  for (const p of payloads){
-    const ds = (p && p.datasets && typeof p.datasets === "object") ? p.datasets : {};
-    for (const k of Object.keys(ds)){
-      const v = ds[k];
-      if (Array.isArray(v)){
-        if (!Array.isArray(payload.datasets[k])) payload.datasets[k] = [];
-        payload.datasets[k] = payload.datasets[k].concat(v);
-      } else if (v && typeof v === "object") {
-        // oggetti: merge shallow
-        payload.datasets[k] = Object.assign({}, payload.datasets[k]||{}, v);
-      } else {
-        if (payload.datasets[k] === undefined) payload.datasets[k] = v;
-      }
-    }
-  }
-}catch(_){}
-
-if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
-
-// Import subset operatore
   // Import subset operatore (NON sovrascrivere credenziali locali)
   // - Evita di perdere l'account operatore dopo logout su device che importano da Firebase
   // - Per sicurezza: se nel payload arriva 'utenti', lo mergiamo con quelli già presenti
@@ -1278,265 +1219,21 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     }
   }catch(_){ }
 
-  // Merge helper: unisce per id scegliendo la versione più recente (updatedAt/createdAt)
-  const __mergeByIdLatest__ = (localArr, remoteArr) => {
-    try{
-      const loc = Array.isArray(localArr) ? localArr : [];
-      const rem = Array.isArray(remoteArr) ? remoteArr : [];
-      const pickT = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-      const map = new Map();
-      let anon = 0;
-
-      const put = (it) => {
-        if (!it) return;
-        const id = String(it?.id || "").trim();
-        if (!id){
-          map.set(`__anon_${anon++}`, it);
-          return;
-        }
-        const prev = map.get(id);
-        if (!prev){ map.set(id, it); return; }
-        const tp = pickT(prev);
-        const tn = pickT(it);
-        // se "it" è più recente, sovrascrive prev; altrimenti mantiene prev
-        if (tn && (!tp || tn > tp)){
-          map.set(id, Object.assign({}, prev, it));
-        } else {
-          map.set(id, Object.assign({}, it, prev));
-        }
-      };
-
-      loc.forEach(put);
-      rem.forEach(put);
-
-      return Array.from(map.values());
-    }catch(_){
-      return Array.isArray(remoteArr) ? remoteArr : (Array.isArray(localArr) ? localArr : []);
-    }
-  };
-
   for (const t of __OP_TABLES__){
     if (t === "utenti") continue;
-
-    // Dati operativi: MERGE smart (key-based) per evitare di perdere lavoro locale
-    // e per garantire che ogni operatore veda anche i dati degli altri.
-    if (t === "pulizie"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const key = (r) => {
-      const d = String(r?.data || r?.date || "").slice(0,10);
-      const s = String(r?.stanza || r?.room || "").trim();
-      return (d && s) ? (d + "|" + s) : "";
-    };
-    const isNum = (v)=> typeof v === "number" && !Number.isNaN(v);
-    const asNum = (v)=> {
-      if (isNum(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const va = (a||{})[k];
-        const vb = (b||{})[k];
-        const na = asNum(va);
-        const nb = asNum(vb);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if (va === undefined || va === null || va === ""){
-          if (vb !== undefined) out[k] = vb;
-        } else if (vb === undefined || vb === null || vb === ""){
-          out[k] = va;
-        }
-      });
-      // timestamps
-      const ua = pickU(a);
-      const ub = pickU(b);
-      const da = pickD(a);
-      const db = pickD(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      // deletions: tombstone wins unless other has a newer update after deletion
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = da || ua;
-        const dB = db || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
-    };
-
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
-
-    if (t === "operatori"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const normOp = (s) => String(s||"").trim().toLowerCase();
-    const normD  = (s) => __normIsoDate__(s);
-    const key = (r) => {
-      const d = normD(r?.data || r?.date || "");
-      const o = normOp(r?.operatore || r?.nome || "");
-      return (d && o) ? (d + "|" + o) : "";
-    };
-    const asNum = (v)=> {
-      if (typeof v === "number" && !Number.isNaN(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
-    };
-
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
-
-    if (t === "lavanderia"){
-  if (payload.datasets[t] !== undefined){
-    const local = await __tblGet__(t, []);
-    const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
-    const pickU = (o) => String(o?.updatedAt || o?.updated_at || o?.createdAt || o?.created_at || "");
-    const pickD = (o) => String(o?.deletedAt || o?.deleted_at || "");
-    const key = (it) => {
-      const id = String(it?.id || "").trim();
-      if (id) return "id:" + id;
-      const a = __normIsoDate__(it?.startDate || it?.start_date || it?.from || "");
-      const b = __normIsoDate__(it?.endDate || it?.end_date || it?.to || "");
-      return (a && b) ? ("rng:" + a + "|" + b) : "";
-    };
-    const asNum = (v)=> {
-      if (typeof v === "number" && !Number.isNaN(v)) return v;
-      if (typeof v === "string" && v.trim()!=="" && !isNaN(Number(v))) return Number(v);
-      return null;
-    };
-    const mergeMax = (a,b)=>{
-      const out = Object.assign({}, a||{}, b||{});
-      const keys = new Set(Object.keys(a||{}).concat(Object.keys(b||{})));
-      keys.forEach(k=>{
-        const na = asNum((a||{})[k]);
-        const nb = asNum((b||{})[k]);
-        if (na !== null && nb !== null){
-          out[k] = Math.max(na, nb);
-        } else if ((a||{})[k] === undefined || (a||{})[k] === null || (a||{})[k] === ""){
-          if ((b||{})[k] !== undefined) out[k] = (b||{})[k];
-        }
-      });
-      const ua = pickU(a);
-      const ub = pickU(b);
-      if (ua || ub) out.updatedAt = (ua && (!ub || ua >= ub)) ? ua : ub;
-
-      const delA = !!(a && (a.isDeleted || a.deleted));
-      const delB = !!(b && (b.isDeleted || b.deleted));
-      if (delA || delB){
-        const dA = pickD(a) || ua;
-        const dB = pickD(b) || ub;
-        const delT = (dA && (!dB || dA >= dB)) ? dA : dB;
-        const otherU = (delT === dA) ? ub : ua;
-        if (!otherU || otherU <= delT){
-          out.isDeleted = true;
-          out.deletedAt = delT;
-        }
-      }
-      return out;
-    };
-    const best = new Map();
-    const put = (it) => {
-      if (!it || typeof it !== "object") return;
-      const k = key(it);
-      if (!k){ best.set("__anon_"+best.size, it); return; }
-      const prev = best.get(k);
-      if (!prev){ best.set(k, it); return; }
-      best.set(k, mergeMax(prev, it));
-    };
-    (Array.isArray(local)?local:[]).forEach(put);
-    remote.forEach(put);
-    await __tblSet__(t, Array.from(best.values()));
-  }
-  continue;
-}
-
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
-
-  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
-  return true;
+  try{ toast("Operazione completata", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
-async function __fbExportOperator__(opts){
+async function __fbExportOperator__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Inserisci prima il codice", "orange"); }catch(_){ } return false; }
+  if (!__FB_STATE__.teamId) { try{ toast("Inserisci prima il codice", "orange"); }catch(_){ } return; }
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
-  if (!name){ try{ if(!opts?.silent) toast("Nome operatore mancante", "orange"); }catch(_){ } return false; }
+  if (!name){ try{ toast("Nome operatore mancante", "orange"); }catch(_){ } return; }
 
   const datasets = {
     pulizie: await __tblGet__("pulizie", []),
@@ -1547,9 +1244,7 @@ async function __fbExportOperator__(opts){
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
-  try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
-  return true;
-
+  try{ toast("Operazione completata", "blue"); }catch(_){}
 }
 
 function __pickLatestLaundry__(list){
@@ -1565,9 +1260,9 @@ function __pickLatestLaundry__(list){
   }catch(_){ return null; }
 }
 
-async function __fbImportAdmin__(opts){
+async function __fbImportAdmin__(){
   __fbLoadLink__();
-  if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
+  if (!__FB_STATE__.teamId) { try{ toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return; }
 
   // get operator list from settings if present
   let ops = [];
@@ -1578,21 +1273,10 @@ async function __fbImportAdmin__(opts){
   // normalize
   ops = ops.map(n => String(n).toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"")).filter(Boolean);
 
-  // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
-  // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
-  try{
-    const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
-    const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
-    if (!ops.length) ops = fromDocs;
-    else {
-      const set = new Set(ops);
-      fromDocs.forEach(n=>{ if(n) set.add(n); });
-      ops = Array.from(set);
-    }
-  }catch(_){ }
-
   if (!ops.length){
-    try{ if(!opts?.silent) toast("Nessun operatore trovato", "orange"); }catch(_){ }
+    // fallback: list all docs in operators collection
+    const docs = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+    ops = docs.map(d => String(d.name||"").split("/").pop());
   }
 
   // merge
@@ -1739,7 +1423,7 @@ async function __fbImportAdmin__(opts){
         const ub = __opUAt__(it);
         const should = (!ua && !ub) ? true : (ub && (!ua || ub > ua));
         if (should){
-          mergedOperatori[i] = Object.assign({}, (mergedOperatori[i]||{}), (it||{}));
+          mergedOperatori[i] = it;
         }
       });
     }catch(_){}
@@ -1855,9 +1539,8 @@ async function __fbImportAdmin__(opts){
   await __tblSet__("lavanderia", mergedLavanderia);
 
 
-  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
-  return true;
+  try{ toast("Operazione completata", "green"); }catch(_){}
+  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250);
 }
 
 async function __handleSyncImport__(){
@@ -1869,50 +1552,15 @@ async function __handleSyncExport__(){
   return __fbExportOperator__();
 }
 
-
-async function __handleSyncBoth__(){
-  __fbLoadLink__();
-  try{ toast("Sync in corso...", "blue"); }catch(_){}
-  let ok1=false, ok2=false;
-  try{
-    if (__isAdmin__()){
-      // In modalità multi-utente: l'admin IMPORTA soltanto (non deve sovrascrivere i dati operatori).
-      // In modalità admin singolo utente: la sync è disabilitata in UI; qui facciamo no-op.
-      if (__isAdminSingleMode__()){
-        ok1 = true; ok2 = true;
-      }else{
-        ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
-        ok2 = true;
-      }
-    }else{
-      ok1 = await __fbExportOperator__({ silent:true });
-      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
-    }
-  }catch(_){ }
-  const ok = (ok1 !== false) && (ok2 !== false);
-  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
-  return ok;
-}
-
 // Bind sync buttons once DOM is ready
 try{
   window.addEventListener("load", ()=>{
     try{
       __fbLoadLink__();
-      const btn = document.getElementById("goDbSync");
-      if (btn && !btn.__syncBound){ btn.__syncBound = true; bindFastTap(btn, async ()=>{ try{ await __handleSyncBoth__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
-      try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
-      try{
-        if (!window.__homeSyncFitBound){
-          window.__homeSyncFitBound = true;
-          let __homeSyncFitTO__ = null;
-          window.addEventListener("resize", ()=>{
-            try{ clearTimeout(__homeSyncFitTO__); }catch(_){ }
-            __homeSyncFitTO__ = setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 80);
-          }, { passive:true });
-        }
-      }catch(_){ }
+      const imp = document.getElementById("goDbImport");
+      const exp = document.getElementById("goDbExport");
+      if (imp && !imp.__syncBound){ imp.__syncBound = true; bindFastTap(imp, async ()=>{ try{ await __handleSyncImport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
+      if (exp && !exp.__syncBound){ exp.__syncBound = true; bindFastTap(exp, async ()=>{ try{ await __handleSyncExport__(); }catch(e){ try{ toast("Sync non disponibile", "orange"); }catch(_){ } } }); }
     }catch(_){}
   }, { passive:true });
 }catch(_){}
@@ -2578,81 +2226,20 @@ function isOperatoreSession(sess){
   catch(_){ return false; }
 }
 
-function __fitHomeSyncBtn__(){
-  try{
-    const grid = document.querySelector("#page-home .home-grid");
-    const bar  = document.getElementById("homeSyncBar");
-    const btn  = document.getElementById("goDbSync");
-    if (!grid || !bar || !btn) return;
-
-    const barRect = bar.getBoundingClientRect();
-    if (!barRect || barRect.width < 10) return;
-
-    const glyphs = Array.from(grid.querySelectorAll(".home-main-glyph")).filter(el=>{
-      try{
-        if (!el) return false;
-        if (!el.getClientRects || !el.getClientRects().length) return false;
-        const st = getComputedStyle(el);
-        if (st.display === "none" || st.visibility === "hidden") return false;
-        return true;
-      }catch(_){ return false; }
-    });
-    if (!glyphs.length) return;
-
-    let minL = Infinity, maxR = -Infinity;
-    for (const el of glyphs){
-      const r = el.getBoundingClientRect();
-      if (r && r.width > 0 && r.height > 0){
-        if (r.left < minL) minL = r.left;
-        if (r.right > maxR) maxR = r.right;
-      }
-    }
-    if (!isFinite(minL) || !isFinite(maxR) || maxR <= minL) return;
-
-    const cs = getComputedStyle(bar);
-    const padL = parseFloat(cs.paddingLeft) || 0;
-    const padR = parseFloat(cs.paddingRight) || 0;
-    const contentW = Math.max(0, barRect.width - padL - padR);
-    if (contentW < 10) return;
-
-    let width = maxR - minL;
-    width = Math.max(140, width);
-    width = Math.min(contentW, width);
-
-    let left = minL - (barRect.left + padL);
-    left = Math.max(0, left);
-    left = Math.min(contentW - width, left);
-
-    bar.style.display = "flex";
-    bar.style.alignItems = "center";
-    bar.style.justifyContent = "flex-start";
-
-    btn.style.width = `${width}px`;
-    btn.style.marginLeft = `${left}px`;
-    btn.style.marginRight = "0px";
-  }catch(_){ }
-}
-
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
 
-  // Home: SYNC Firebase — tasto unico (Admin sempre; Operatore solo dopo collegamento Roster)
+  // Home: Import/Export SYNC (Firebase) — visibili sia Admin che Operatore
   try{
     const impTile = document.getElementById("goDbImport");
     const expTile = document.getElementById("goDbExport");
-    if (impTile){ try{ impTile.hidden = true; impTile.style.display = "none"; }catch(_){ } }
-    if (expTile){ try{ expTile.hidden = true; expTile.style.display = "none"; }catch(_){ } }
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
-
-    const bar = document.getElementById("homeSyncBar");
-    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
-    if (bar){
-      const isAdmin = __isAdmin__();
-      const shouldShow = __hasRosterLink__ && (!isAdmin || !__isAdminSingleMode__());
-      try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
-      try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+    if (impTile && expTile){
+      impTile.hidden = false;
+      expTile.hidden = false;
+      try{ impTile.style.display = ""; expTile.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
@@ -4248,25 +3835,6 @@ function getSettingNumber(key, fallback = 0) {
   return isFinite(n) ? n : (Number(fallback) || 0);
 }
 
-function getSettingBool(key, fallback = false){
-  const row = getSettingRow(key);
-  let v = row ? (row.value ?? row.Value ?? row.val ?? "") : "";
-  const s = String(v ?? "").trim().toLowerCase();
-  if (s === "1" || s === "true" || s === "on" || s === "yes") return true;
-  if (s === "0" || s === "false" || s === "off" || s === "no") return false;
-  return !!fallback;
-}
-
-// Modalità admin:
-// - true  => admin singolo utente (scrittura admin abilitata, sync admin nascosto)
-// - false => multi utente con operatori (scrittura admin disabilitata, sync admin visibile)
-function __isAdminSingleMode__(){
-  try{
-    if (!__isAdmin__()) return false;
-    return getSettingBool("admin_mode", false);
-  }catch(_){ return false; }
-}
-
 function getOperatorNamesFromSettings() {
   const row = getSettingRow("operatori");
   const op1 = String(row?.operatore_1 ?? row?.Operatore_1 ?? row?.operatore1 ?? "").trim();
@@ -4373,15 +3941,6 @@ async function loadImpostazioniPage({ force = false } = {}) {
     if (b) b.value = String(getSettingNumber("costo_benzina", 0) || "");
     if (ts) ts.value = String(getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) || "");
 
-    // Admin mode toggle
-    try{
-      const tgl = document.getElementById("adminModeToggle");
-      if (tgl){
-        // default OFF (multi utente)
-        tgl.checked = getSettingBool("admin_mode", false);
-      }
-    }catch(_){ }
-
     refreshFloatingLabels();
   } catch (e) {
     toast(e.message);
@@ -4406,14 +3965,11 @@ async function saveImpostazioniPage() {
   const benzina = __readNumInput("setBenzina");
   const tassa = __readNumInput("setTassa");
 
-  const adminMode = !!document.getElementById("adminModeToggle")?.checked;
-
   const payload = {
     operatori: [op1, op2, op3],
     tariffa_oraria: tariffa,
     costo_benzina: benzina,
     tassa_soggiorno: tassa,
-    admin_mode: adminMode ? "1" : "0",
   };
 
   await api("impostazioni", { method: "POST", body: payload, showLoader: true });
@@ -4457,16 +4013,6 @@ function setupImpostazioni() {
     if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
-  }catch(_){ }
-
-  // Admin mode UI (solo admin)
-  try{
-    const wrap = document.getElementById("adminModeToggleWrap");
-    if (wrap){
-      const isAdmin = __isAdmin__();
-      wrap.hidden = !isAdmin;
-      try{ wrap.style.display = isAdmin ? "" : "none"; }catch(_){ }
-    }
   }catch(_){ }
 
   // Accordion Dati Operatore
@@ -5511,12 +5057,6 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
-  if (page === "home"){
-    // HOME: ricalcola sempre la visibilità del SYNC dopo operazioni in Impostazioni (es. generazione codice Roster)
-    try{ __fbLoadLink__(); }catch(_){ }
-    try{ applyRoleMode(); }catch(_){ }
-    try{ setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
-  }
 
   // Init pagine dinamiche (listener)
   if (page === "tassa"){
@@ -10316,16 +9856,7 @@ function setupOspite(){
           state.guestISTATRegistered = istNow;
           setRegFlags("regTags", psNow, istNow);
 
-          // Admin mode toggle
-    try{
-      const tgl = document.getElementById("adminModeToggle");
-      if (tgl){
-        // default OFF (multi utente)
-        tgl.checked = getSettingBool("admin_mode", false);
-      }
-    }catch(_){ }
-
-    refreshFloatingLabels();
+          refreshFloatingLabels();
         } catch (_) {}
 
         showPage("ospite");
@@ -12920,11 +12451,7 @@ try{
   const canEditPulizieDay = () => {
     try {
       const isOp = !!(state && state.session && isOperatoreSession(state.session));
-      if (!isOp){
-        // Admin: in multi-utente la scrittura è disabilitata
-        if (__isAdmin__() && !__isAdminSingleMode__()) return false;
-        return true;
-      }
+      if (!isOp) return true;
       return isCleanDayToday();
     } catch (_) { return true; }
   };
@@ -12934,8 +12461,7 @@ try{
     const now = Date.now();
     if (now - __onlyTodayToastAt > 800) {
       __onlyTodayToastAt = now;
-      const msg = (__isAdmin__() && !__isAdminSingleMode__()) ? ADMIN_READONLY_MSG : ONLY_TODAY_MSG;
-      try { toast(msg, "orange"); } catch (_) { try { toast(msg); } catch (__){ } }
+      try { toast(ONLY_TODAY_MSG, "orange"); } catch (_) { try { toast(ONLY_TODAY_MSG); } catch (__){ } }
     }
     return false;
   };
@@ -15603,7 +15129,7 @@ function __renderOrePuliziaCalendar_(){
     if (!iso.startsWith(monthKey + "-")) return;
 
     const oper = String(r.operatore || r.nome || "").trim();
-    if (op && op !== "__ALL__" && String(oper||"").trim().toLowerCase() !== String(op||"").trim().toLowerCase()) return;
+    if (op && op !== "__ALL__" && oper !== op) return;
 
     const oreRaw = (r.ore !== undefined && r.ore !== null) ? r.ore : (r.Ore !== undefined ? r.Ore : "");
     const ore = Number(String(oreRaw).trim().replace(",", "."));
@@ -15737,23 +15263,6 @@ async function initOrePuliziaPage(){
   const opItems = [{ value:"__ALL__", label:"TUTTI" }, ...ops.map(x=>({ value:x, label:x }))];
 
   // default operatore
-  // In sessione OPERATORE: pre-seleziona sempre il proprio nome (se presente), così il report è leggibile subito.
-  if (state && state.session && isOperatoreSession(state.session)){
-    const raw = String(
-      state.session._op_local ||
-      state.session.username ||
-      state.session.user ||
-      state.session.nome ||
-      state.session.name ||
-      state.session.email ||
-      ""
-    ).trim();
-    if (raw){
-      const norm = raw.toLowerCase();
-      const match = (ops||[]).find(x => String(x||"").trim().toLowerCase() === norm);
-      if (match) s.operatore = match;
-    }
-  }
   if (!s.operatore) s.operatore = ops.length ? ops[0] : "__ALL__";
   if (!opItems.some(o=>o.value === s.operatore)) s.operatore = ops.length ? ops[0] : "__ALL__";
 

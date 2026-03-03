@@ -164,6 +164,27 @@
 <path d="M9 12h12"></path>
 </svg>
 </button>
+<button aria-label="Genera report mese" class="icon-btn icon-btn-whitegreen" id="btnPiscinaBackfillTop" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M7 3v3"></path>
+<path d="M17 3v3"></path>
+<path d="M4.5 8h15"></path>
+<path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
+<path d="M12 12v6"></path>
+<path d="M9 15h6"></path>
+</svg>
+</button>
+<button aria-label="Stampa report" class="icon-btn icon-btn-whiteorange" id="piscinaPrintBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
+<path d="M6 9V3h12v6"></path>
+<path d="M6 18h12v3H6z"></path>
+<path d="M6 14h12"></path>
+<path d="M8 14v4"></path>
+<path d="M16 14v4"></path>
+<path d="M6 9h-1a2 2 0 0 0-2 2v5h3"></path>
+<path d="M18 16h3v-5a2 2 0 0 0-2-2h-1"></path>
+</svg>
+</button>
 </div>
 
 <!-- HOME: Impostazioni (solo in HOME) -->
@@ -399,22 +420,8 @@
 </button>
 
 </div>
-
-<div id="homeSyncBar" class="home-sync-bar" hidden>
-  <button id="goDbSync" type="button" class="home-sync-btn" aria-label="Sync Firebase">
-    <span class="home-sync-ico" aria-hidden="true">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M21 12a9 9 0 0 0-15.3-6.3"></path>
-        <path d="M3 4v6h6"></path>
-        <path d="M3 12a9 9 0 0 0 15.3 6.3"></path>
-        <path d="M21 20v-6h-6"></path>
-      </svg>
-    </span>
-    <span class="home-sync-text">SYNC</span>
-  </button>
-</div>
 <div class="operator-db-row" id="operatorDbRow" hidden></div>
-<div class="build" id="buildText">dDAE_2.040</div></div></section>
+<div class="build" id="buildText">dDAE_2.019</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -447,16 +454,16 @@
 <div class="stats-title">Statistiche</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div aria-label="Sezioni statistiche" class="home-grid" role="navigation">
-<button aria-label="Generali" class="home-main" id="goStatGen" type="button">
+<button aria-label="Conteggio generale" class="home-main" id="goStatGen" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 9V7.5A2.5 2.5 0 0 1 9.5 5h5A2.5 2.5 0 0 1 17 7.5V9"></path>
 <path d="M6 9h12a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z"></path>
 <path d="M9 15h6"></path>
 <path d="M12 12v6"></path>
 </svg></div>
-<div class="home-main-label">Generali</div>
+<div class="home-main-label">Conteggio generale</div>
 </button>
-<button aria-label="Mensili" class="home-main" id="goStatMensili" type="button">
+<button aria-label="Fatturati mensili" class="home-main" id="goStatMensili" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 19V5"></path>
 <path d="M4 19h16"></path>
@@ -464,7 +471,7 @@
 <path d="M12 17V7"></path>
 <path d="M16 17v-3"></path>
 </svg></div>
-<div class="home-main-label">Mensili</div>
+<div class="home-main-label">Fatturati mensili</div>
 </button>
 <button aria-label="Spese" class="home-main" id="goStatSpese" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -538,7 +545,7 @@
 <!-- STATISTICHE: CONTEGGIO GENERALE -->
 <section class="page" hidden="" id="page-statgen">
 <div class="stats-gen">
-<div class="stats-title">Generali</div>
+<div class="stats-title">Conteggio generale</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="stats-stack">
 <button class="stat-row" style="--statbg:#2b7cb4" type="button">
@@ -602,7 +609,7 @@
 <!-- STATISTICHE: INCASSI MENSILI -->
 <section class="page" hidden="" id="page-statmensili">
 <div class="stats-gen">
-<div class="stats-title">Mensili</div>
+<div class="stats-title">Fatturati mensili</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="month-stack" id="smList"></div>
 </div>
@@ -671,31 +678,7 @@
           <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
         </div>
         <div class="piscina-grid" id="piscinaGrid" role="grid" aria-label="Griglia giorni"></div>
-      
-      <div class="piscina-bottom-actions" aria-label="Azioni piscina">
-        <button aria-label="Genera report mese" class="icon-btn icon-btn-whitegreen" id="btnPiscinaBackfillTop" type="button">
-          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
-            <path d="M7 3v3"></path>
-            <path d="M17 3v3"></path>
-            <path d="M4.5 8h15"></path>
-            <path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
-            <path d="M12 12v6"></path>
-            <path d="M9 15h6"></path>
-          </svg>
-        </button>
-
-        <button aria-label="Stampa report" class="icon-btn icon-btn-whiteorange" id="piscinaPrintBtn" type="button">
-          <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24">
-            <path d="M6 9V3h12v6"></path>
-            <path d="M6 18h12v3H6z"></path>
-            <path d="M6 14h12"></path>
-            <path d="M8 14v4"></path>
-            <path d="M16 14v4"></path>
-            <path d="M6 12h12"></path>
-          </svg>
-        </button>
       </div>
-</div>
 </div>
   </div>
 </section>
@@ -747,14 +730,6 @@
   <span class="settings-audio-label">Audio</span>
   <label class="switch" aria-label="Audio on/off">
     <input type="checkbox" id="audioToggle" aria-label="Audio on/off"/>
-    <span class="slider"></span>
-  </label>
-</div>
-
-<div class="settings-audio" id="adminModeToggleWrap" style="margin-left:12px;">
-  <span class="settings-audio-label">Admin singolo</span>
-  <label class="switch" aria-label="Modalità admin singolo utente">
-    <input type="checkbox" id="adminModeToggle" aria-label="Modalità admin singolo utente"/>
     <span class="slider"></span>
   </label>
 </div>
