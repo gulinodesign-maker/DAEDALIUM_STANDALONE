@@ -1,5 +1,4 @@
 :root{
-  --sync-footer-space: 92px;
   --brand-orange: #9B5C20;
   --brand-orange-2: rgba(155,92,32,0.65);
 
@@ -1193,7 +1192,7 @@ body::before{
   z-index: 60;
 }
 /* evita sovrapposizioni con la build */
-.home-page{ padding-bottom: calc(44px + var(--safe-bottom) + var(--sync-footer-space)); }
+.home-page{ padding-bottom: calc(44px + var(--safe-bottom)); }
 
 
 
@@ -1456,7 +1455,7 @@ body::before{
    OSPITE (UI demo)
 ============================ */
 
-#page-ospite .content{ padding-bottom: calc(64px + var(--safe-bottom) + var(--sync-footer-space)); }
+#page-ospite .content{ padding-bottom: calc(64px + var(--safe-bottom)); }
 #page-ospite .section-title{
   margin: 14px 6px 10px;
   font-weight: 950;
@@ -8007,59 +8006,6 @@ color: var(--mcol,#ff3b30);
   -webkit-backdrop-filter: none !important;
 }
 #page-home .home-sync-btn .ui-ico{
-  width: 22px;
-  height: 22px;
-  stroke: currentColor;
-}
-
-/* SYNC footer fisso (sempre visibile) */
-.sync-footer{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 700; /* sopra launcher (450), sotto modali critiche (999) */
-  padding: 8px 0 calc(10px + var(--safe-bottom));
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-
-#homeSyncBar.sync-footer{
-  display: block;
-}
-#homeSyncBar .sync-footer-line{
-  display: block;
-}
-
-.sync-footer-line{
-  height: 1px;
-  background: #000;
-  width: calc(100% - 20px);
-  margin: 0 10px;
-}
-.sync-footer .home-sync-btn{
-  width: min(460px, calc(100% - 20px));
-  height: 58px;
-  margin: 10px auto 0 auto;
-  border: 0 !important;
-  border-radius: 14px;
-  background: var(--blue80) !important; /* tinta unita con opacità già nel colore */
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  -webkit-appearance: none;
-  appearance: none;
-  opacity: 1 !important;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 10px;
-  font-weight: 950;
-  letter-spacing: 0.4px;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.sync-footer .home-sync-btn .ui-ico{
   width: 22px;
   height: 22px;
   stroke: currentColor;
