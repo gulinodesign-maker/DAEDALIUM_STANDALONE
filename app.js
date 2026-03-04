@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.043
+ * Build: 2.044
  */
-const BUILD_VERSION = "2.043";
+const BUILD_VERSION = "2.044";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1830,6 +1830,35 @@ async function __handleSyncBoth__(){
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
   setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
   return ok;
+}
+
+
+/**
+ * Operatore: auto-sync leggero (senza reload) su navigazione da Home / tasto Home.
+ * Evita sync multipli ravvicinati tramite lock.
+ */
+async function __opAutoSync__(opts = {}){
+  try{
+    if (!(state && state.session && isOperatoreSession(state.session))) return false;
+    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
+    if (!__hasRosterLink__) return false;
+
+    if (window.__opAutoSyncLock__) return false;
+    window.__opAutoSyncLock__ = true;
+
+    try{ __fbLoadLink__(); }catch(_){}
+
+    let ok1=false, ok2=false;
+    try{
+      ok1 = await __fbExportOperator__({ silent:true });
+      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
+    }catch(_){ }
+
+    const ok = (ok1 !== false) && (ok2 !== false);
+    return ok;
+  }finally{
+    try{ setTimeout(()=>{ try{ window.__opAutoSyncLock__ = false; }catch(_){ } }, 1200); }catch(_){ try{ window.__opAutoSyncLock__ = false; }catch(__){ } }
+  }
 }
 
 // Bind sync buttons once DOM is ready
@@ -5112,9 +5141,10 @@ function bindHomeStrongTap(){
       try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){}
       try{ hideLauncher(); }catch(_){}
 
-      try{ if (typeof before === "function") before(); }catch(_){}
-      try{ showPage(page); }catch(_){}
-    };
+      try{ if (typeof before === "function") before(); }catch(_){ }
+      try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ }
+      try{ showPage(page); }catch(_){ }
+};
 
     // per evitare che un overlay "invisibile" o una mancata emissione di click blocchi il tap,
     // ascolta anche gli eventi touch/pointer in anticipo.
@@ -5215,28 +5245,29 @@ function bindHomeDelegation(){
   homeDelegationBound = true;
   document.addEventListener("click", (e)=>{
     const o = e.target.closest && e.target.closest("#goOspite");
-    if (o){ hideLauncher(); showPage("ospiti"); return; }
+    if (o){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("ospiti"); return; }
     const cal = e.target.closest && e.target.closest("#goCalendario");
-    if (cal){ hideLauncher(); showPage("calendario"); return; }
+    if (cal){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("calendario"); return; }
     const tassa = e.target.closest && e.target.closest("#goTassaSoggiorno");
     if (tassa){
+      try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ }
       hideLauncher();
       (async ()=>{ try{ await ensureSettingsLoaded({ force:false, showLoader:false }); }catch(_){} showPage("tassa"); try{ initTassaPage(); }catch(_){} })();
       return;
     }
     const pul = e.target.closest && e.target.closest("#goPulizie");
-    if (pul){ hideLauncher(); showPage("pulizie"); return; }
+    if (pul){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("pulizie"); return; }
         const opcal = e.target.closest && e.target.closest("#goOrePulizia") || e.target.closest("#goOrePuliziaTop");
-    if (opcal){ hideLauncher(); showPage("orepulizia"); return; }
+    if (opcal){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("orepulizia"); return; }
 
 const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.closest("#goLavanderiaTop");
-    if (lav){ hideLauncher(); showPage("lavanderia"); return; }
+    if (lav){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("lavanderia"); return; }
 
     const imp = e.target.closest && e.target.closest("#goImpostazioni");
-    if (imp){ hideLauncher(); showPage("impostazioni"); return; }
+    if (imp){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("impostazioni"); return; }
 
     const g = e.target.closest && e.target.closest("#goStatistiche");
-    if (g){ hideLauncher(); showPage("statistiche"); return; }
+    if (g){ try{ void __opAutoSync__({ source:\'home-icon\' }); }catch(_){ } hideLauncher(); showPage("statistiche"); return; }
 
     // STATISTICHE (icone)
     const s1 = e.target.closest && e.target.closest("#goStatGen");
@@ -5724,7 +5755,7 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 function setupHeader(){
   const hb = $("#hamburgerBtn");
-  if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
+  if (hb) hb.addEventListener("click", () => { try{ void __opAutoSync__({ source:\'top-home\' }); }catch(_){ } hideLauncher(); showPage("home"); });
 
   const opImpRoster = document.getElementById("opImportRosterTop");
   if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __qrScanAndLink__(); }catch(e){ try{ toast("Codice non disponibile", "orange"); }catch(_){ } } });
@@ -5758,7 +5789,9 @@ function setupHeader(){
 
 
   const opLogout = document.getElementById("opLogoutTop");
-  if (opLogout) bindFastTap(opLogout, () => {
+  if (opLogout) bindFastTap(opLogout, async () => {
+    const res = await __confirmTwoActions__("Vuoi uscire?", "SI", "NO");
+    if (res !== "yes") return;
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
@@ -9945,7 +9978,7 @@ function setupOspite(){
   try{ bindGuestTapCounters(); }catch(_){ }
 
   const hb = document.getElementById("hamburgerBtnOspite");
-  if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
+  if (hb) hb.addEventListener("click", () => { try{ void __opAutoSync__({ source:\'top-home\' }); }catch(_){ } hideLauncher(); showPage("home"); });
 
   // HOME: ricevute mancanti (solo in HOME)
   const btnRec = document.getElementById("homeReceiptsTop");
