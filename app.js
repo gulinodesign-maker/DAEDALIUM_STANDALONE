@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.050
  */
-const BUILD_VERSION = "2.052";
+const BUILD_VERSION = "2.053";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11108,9 +11108,12 @@ function __spesaNormalizeItem_(it){
 // NOTA: la tombstone ha priorità SOLO in UI; se il backend elimina davvero la riga, resta comunque ok.
 function __spesaDelStorageKey_(action){
   const uid = String(state?.session?.user_id || "").trim();
+  // fallback stabile (alcuni operatori possono avere user_id vuoto/variabile in cache)
+  const rawU = String(state?.session?._op_local || state?.session?.username || state?.session?.user || state?.session?.nome || state?.session?.name || state?.session?.email || "").trim();
+  const who = (uid || rawU || "anon").toLowerCase();
   const yr  = String(state?.exerciseYear || "").trim();
   const act = String(action || "").trim();
-  return `spesa:del:${uid}:${yr}:${act}`;
+  return `spesa:del:${who}:${yr}:${act}`;
 }
 
 function __spesaDelGetSet_(action){
@@ -11145,6 +11148,27 @@ function __spesaDelRemember_(action, id){
     const set = __spesaDelGetSet_(action);
     if (!set.has(sid)) set.add(sid);
     try{ localStorage.setItem(k, JSON.stringify(Array.from(set))); }catch(_){ }
+  }catch(_){ }
+}
+
+// Se una tombstone "vecchia" contiene ID che il backend oggi restituisce come attivi,
+// la rimuoviamo per non bloccare aggiunte o riapparizioni legittime.
+function __spesaDelReconcile_(action, items){
+  try{
+    const set = __spesaDelGetSet_(action);
+    if (!set || !set.size) return;
+    let changed = false;
+    (items || []).forEach((it)=>{
+      const id = String(it?.id || "").trim();
+      if (!id) return;
+      if (set.has(id) && !__normBool01(it?.isDeleted)) {
+        set.delete(id);
+        changed = true;
+      }
+    });
+    if (changed){
+      try{ localStorage.setItem(__spesaDelStorageKey_(action), JSON.stringify(Array.from(set))); }catch(_){ }
+    }
   }catch(_){ }
 }
 
@@ -11199,6 +11223,7 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
     }
   }catch(_){}
 
+  __spesaDelReconcile_(action, items);
   items = __spesaDelFilter_(action, items);
 
   s.items = items;
