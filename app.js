@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.043
+ * Build: 2.044
  */
-const BUILD_VERSION = "2.043";
+const BUILD_VERSION = "2.044";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5758,7 +5758,10 @@ function setupHeader(){
 
 
   const opLogout = document.getElementById("opLogoutTop");
-  if (opLogout) bindFastTap(opLogout, () => {
+  if (opLogout) bindFastTap(opLogout, async () => {
+    let ok = false;
+    try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
+    if (!ok) return;
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
