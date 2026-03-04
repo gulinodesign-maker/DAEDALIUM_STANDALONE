@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.047
  */
-const BUILD_VERSION = "2.053";
+const BUILD_VERSION = "2.047";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2735,7 +2735,7 @@ function __setTopbarCenterLabel__(){
     if (!el) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
+      el.textContent = monthNameIT(a);
     } else {
       el.textContent = String((new Date()).getFullYear());
     }
@@ -6715,13 +6715,7 @@ function renderSpese(){
 
     const btn = el.querySelector("[data-del]");
     if (btn){
-      // iOS/Safari: tap affidabile anche su PWA (Operatore)
-      bindFastTap(btn, async (ev) => {
-        try{
-          ev && ev.preventDefault && ev.preventDefault();
-          ev && ev.stopPropagation && ev.stopPropagation();
-          ev && ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-        }catch(_){}
+      btn.addEventListener("click", async () => {
         if (!confirm("Eliminare definitivamente questa spesa?")) return;
         await api("spese", { method:"DELETE", params:{ id: s.id } });
         toast("Spesa eliminata");
@@ -11101,89 +11095,6 @@ function __spesaNormalizeItem_(it){
   return it;
 }
 
-
-// ---- Tombstones (eliminazioni persistenti lato client) ----
-// Serve per evitare che, in account Operatore, una card "cancellata" ricompaia dopo refresh
-// quando il backend non applica (o ritarda) la flag isDeleted.
-// NOTA: la tombstone ha priorità SOLO in UI; se il backend elimina davvero la riga, resta comunque ok.
-function __spesaDelStorageKey_(action){
-  const uid = String(state?.session?.user_id || "").trim();
-  // fallback stabile (alcuni operatori possono avere user_id vuoto/variabile in cache)
-  const rawU = String(state?.session?._op_local || state?.session?.username || state?.session?.user || state?.session?.nome || state?.session?.name || state?.session?.email || "").trim();
-  const who = (uid || rawU || "anon").toLowerCase();
-  const yr  = String(state?.exerciseYear || "").trim();
-  const act = String(action || "").trim();
-  return `spesa:del:${who}:${yr}:${act}`;
-}
-
-function __spesaDelGetSet_(action){
-  try{
-    state._spesaDelCache = state._spesaDelCache || {};
-    const k = __spesaDelStorageKey_(action);
-    if (state._spesaDelCache[k]) return state._spesaDelCache[k];
-
-    let arr = [];
-    try{
-      const raw = localStorage.getItem(k);
-      if (raw) arr = JSON.parse(raw);
-    }catch(_){ arr = []; }
-
-    const set = new Set();
-    (Array.isArray(arr) ? arr : []).forEach((x)=>{
-      const id = String(x || "").trim();
-      if (id) set.add(id);
-    });
-    state._spesaDelCache[k] = set;
-    return set;
-  }catch(_){
-    return new Set();
-  }
-}
-
-function __spesaDelRemember_(action, id){
-  try{
-    const sid = String(id || "").trim();
-    if (!sid) return;
-    const k = __spesaDelStorageKey_(action);
-    const set = __spesaDelGetSet_(action);
-    if (!set.has(sid)) set.add(sid);
-    try{ localStorage.setItem(k, JSON.stringify(Array.from(set))); }catch(_){ }
-  }catch(_){ }
-}
-
-// Se una tombstone "vecchia" contiene ID che il backend oggi restituisce come attivi,
-// la rimuoviamo per non bloccare aggiunte o riapparizioni legittime.
-function __spesaDelReconcile_(action, items){
-  try{
-    const set = __spesaDelGetSet_(action);
-    if (!set || !set.size) return;
-    let changed = false;
-    (items || []).forEach((it)=>{
-      const id = String(it?.id || "").trim();
-      if (!id) return;
-      if (set.has(id) && !__normBool01(it?.isDeleted)) {
-        set.delete(id);
-        changed = true;
-      }
-    });
-    if (changed){
-      try{ localStorage.setItem(__spesaDelStorageKey_(action), JSON.stringify(Array.from(set))); }catch(_){ }
-    }
-  }catch(_){ }
-}
-
-function __spesaDelFilter_(action, items){
-  try{
-    const set = __spesaDelGetSet_(action);
-    if (!set || !set.size) return items;
-    return (items || []).filter(it => {
-      try{ return !set.has(String(it?.id || "").trim()); }catch(_){ return true; }
-    });
-  }catch(_){
-    return items;
-  }
-}
-
 // ---- Loaders ----
 async function loadProdottiList_(action, bucket, { force=false, showLoader=true } = {}){
   const s = bucket;
@@ -11196,35 +11107,8 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
 
   const res = await api(action, { method:"GET", params:{}, showLoader });
   const rows = Array.isArray(res) ? res : (res && Array.isArray(res.rows) ? res.rows : (res && Array.isArray(res.data) ? res.data : []));
-  let items = (rows || []).filter(r => !__normBool01(r.isDeleted));
+  const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
-
-  // Deduplica per nome prodotto (evita card duplicate) + cleanup backend (best-effort)
-  try{
-    const map = new Map();
-    const dupIds = [];
-    (items || []).forEach((it)=>{
-      const k = __prodNameKey_(it);
-      if (!k) return;
-      if (!map.has(k)) { map.set(k, it); return; }
-      // duplicato: tieni il primo, marca gli altri come deleted
-      try{ if (it && it.id != null) dupIds.push(String(it.id)); }catch(_){}
-    });
-    const uniq = Array.from(map.values());
-    // sostituisci in-place
-    items.length = 0;
-    uniq.forEach(x=>items.push(x));
-    if (dupIds.length){
-      try{ dupIds.forEach((id)=>__spesaDelRemember_(action, id)); }catch(_){ }
-      // pulizia backend in background, senza bloccare UI
-      Promise.all(dupIds.map((id)=>api(action, { method:"PUT", body:{ id:String(id), isDeleted:1, qty:0, saved:0, checked:0 }, showLoader:false })))
-        .then(()=>{})
-        .catch(()=>{});
-    }
-  }catch(_){}
-
-  __spesaDelReconcile_(action, items);
-  items = __spesaDelFilter_(action, items);
 
   s.items = items;
   s.loaded = true;
@@ -11359,24 +11243,6 @@ function setupProdotti(){
     const v = raw.trim();
     if (!v) return;
     const prodotto = v.toUpperCase();
-    // Non permettere duplicati (un record unico: update/delete su id)
-    try{
-      const targetKey = (action === "prodotti_pulizia") ? "pulizia" : "colazione";
-      const bucket = __spesaBucketByKey_(targetKey);
-      if (!bucket.loaded) { try{ await loadProdottiList_(action, bucket, { force:false, showLoader:false }); }catch(_){ } }
-      const key = String(prodotto).trim().toLowerCase();
-      const exists = (bucket.items || []).some((it)=>{
-        if (__normBool01(it?.isDeleted)) return false;
-        return __prodNameKey_(it) === key;
-      });
-      if (exists){
-        try{ toast("Prodotto già presente"); }catch(_){}
-        if (input) input.value = "";
-        closeModal();
-        return;
-      }
-    }catch(_){}
-
     if (input) input.value = "";
     closeModal();
     try{
@@ -11465,12 +11331,7 @@ function setupProdotti(){
         const act = String(obj?.action || __prodAction_() || "");
         if (!act) return;
         byAction[act] = byAction[act] || [];
-        const patch = (obj && obj.patch) ? obj.patch : {};
-        try{
-          const del = patch?.isDeleted ?? patch?.is_deleted ?? patch?.deleted;
-          if (__normBool01(del) || del === true) __spesaDelRemember_(act, id);
-        }catch(_){ }
-        byAction[act].push({ id, patch });
+        byAction[act].push({ id, patch: (obj && obj.patch) ? obj.patch : {} });
       });
 
       await Promise.all(
@@ -11514,7 +11375,6 @@ function setupProdotti(){
   let prodQtyTargetId = null;
   let prodQtyLongFired = false;
   let prodLastQtyTouch = 0;
-  let prodLastPointerDown = 0;
   // Card: double-tap = elimina, long-press (0.5s) = azzera quantità
   let prodCardTimer = null;
   let prodCardTargetId = null;
@@ -11598,9 +11458,6 @@ function setupProdotti(){
     const id = String(row.dataset.id || "");
     if (!id) return;
 
-    // iOS: se PointerEvents sono attivi, evita doppio firing touch+pointer
-    if (Date.now() - prodLastPointerDown < 650) return;
-
     if (e.target.closest && e.target.closest(".colazione-qtydot")) {
       prodLastQtyTouch = Date.now();
       startProdQtyPress(id);
@@ -11647,66 +11504,6 @@ function setupProdotti(){
     try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
   }, { passive:false, capture:true });
 
-  // Pointer events fallback (iOS/iPadOS moderni): rende affidabile il long-press anche in account Operatore
-  try{
-    if (window.PointerEvent){
-      list.addEventListener("pointerdown", (e) => {
-        if (!e) return;
-        // solo gesture touch/pen
-        if (e.pointerType && e.pointerType !== "touch" && e.pointerType !== "pen") return;
-        const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
-        if (!row) return;
-        const id = String(row.dataset.id || "");
-        if (!id) return;
-        prodLastPointerDown = Date.now();
-
-        if (e.target.closest && e.target.closest(".colazione-qtydot")) {
-          prodLastQtyTouch = prodLastPointerDown;
-          startProdQtyPress(id);
-          try{ row.setPointerCapture && row.setPointerCapture(e.pointerId); }catch(_){ }
-          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-          return;
-        }
-
-        if (e.target.closest && (e.target.closest(".colazione-checkdot") || e.target.closest(".colazione-qtydot"))) return;
-        startProdCardPress(id);
-        try{ row.setPointerCapture && row.setPointerCapture(e.pointerId); }catch(_){ }
-      }, { passive:false, capture:true });
-
-      list.addEventListener("pointerup", (e) => {
-        if (!e) return;
-        if (e.pointerType && e.pointerType !== "touch" && e.pointerType !== "pen") return;
-        const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
-        const id = row ? String(row.dataset.id || "") : "";
-        if (!id){
-          clearProdQtyPress();
-          clearProdCardPress();
-          return;
-        }
-
-        if (e.target.closest && e.target.closest(".colazione-qtydot")) {
-          if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
-          if (!prodQtyLongFired) cycleProdQty(id);
-          clearProdQtyPress();
-          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-          return;
-        }
-
-        const wasLong = !!prodCardLongFired;
-        clearProdCardPress();
-        if (wasLong){
-          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-          return;
-        }
-      }, { passive:false, capture:true });
-
-      list.addEventListener("pointercancel", (e) => {
-        clearProdQtyPress();
-        clearProdCardPress();
-        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-      }, { passive:false, capture:true });
-    }
-  }catch(_){ }
 
   list.addEventListener("click", (e) => {
     const t = e.target;
@@ -14020,11 +13817,12 @@ function renderCalendarioWeek(){
 
   // Mantieni input data sincronizzato con l'anchor (utile quando navighi con le frecce)
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
+
   if (title) {
-    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
-    title.textContent = "";
-    title.hidden = true;
+    const month = monthNameIT(anchor).toUpperCase();
+    title.textContent = month;
   }
+
   const occ = buildWeekOccupancy(start);
 
   grid.innerHTML = "";
@@ -14261,10 +14059,7 @@ function __fitCalendarioMonthLandscape(){
     let cellH = Math.floor((availH - rowGaps) / rows);
     cellH = Math.max(34, Math.min(cellH, 120));
 
-    
-    // Riduci altezza celle del 10%
-    cellH = Math.floor(cellH * 0.90);
-let pillH = Math.floor(cellH * 0.38);
+    let pillH = Math.floor(cellH * 0.38);
     pillH = Math.max(18, Math.min(pillH, 46));
 
     // Applica override inline (solo month+landscape)
@@ -14299,11 +14094,12 @@ function renderCalendarioMonth(){
 
   // Mantieni input data sincronizzato con l'anchor
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
+
   if (title) {
-    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
-    title.textContent = "";
-    title.hidden = true;
+    const month = monthNameIT(anchor).toUpperCase();
+    title.textContent = month;
   }
+
   // Imposta le colonne dinamiche (1 colonna stanze + N giorni)
   try{
     grid.style.gridTemplateColumns = `var(--cal-room-w) repeat(${daysCount}, var(--cal-day-w))`;
