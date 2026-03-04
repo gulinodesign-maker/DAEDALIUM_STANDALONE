@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.047
+ * Build: 2.050
  */
-const BUILD_VERSION = "2.049";
+const BUILD_VERSION = "2.050";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6725,12 +6725,6 @@ function renderSpese(){
         if (!confirm("Eliminare definitivamente questa spesa?")) return;
         await api("spese", { method:"DELETE", params:{ id: s.id } });
         toast("Spesa eliminata");
-        invalidateApiCache("spese|");
-        invalidateApiCache("report|");
-        await ensurePeriodData({ showLoader:false, force:true });
-        renderSpese();
-      });
-      toast("Spesa eliminata");
         invalidateApiCache("spese|");
         invalidateApiCache("report|");
         await ensurePeriodData({ showLoader:false, force:true });
