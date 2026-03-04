@@ -6024,6 +6024,54 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   color: var(--ico-blue-night);
   margin: 6px 6px 14px;
 }
+/* Stats header row (title left, actions right) */
+.stats-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin: 6px 6px 14px;
+  flex-wrap: nowrap;
+}
+.stats-head-row .stats-title{
+  margin: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stats-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+/* Piscina inline actions (in-page): solid colors, 80% opacity, white icon */
+.piscina-action-btn{
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,0.14);
+  padding: 0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  appearance: none;
+  -webkit-appearance: none;
+  background-clip: padding-box;
+}
+.piscina-action-btn .ui-ico,
+.piscina-action-btn .ui-ico *{
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+.piscina-action-btn:active{
+  transform: translateY(0.5px);
+}
+.piscina-action-sim{ background: rgba(14,165,233,0.80); }
+.piscina-action-sim2{ background: rgba(34,197,94,0.80); }
+.piscina-action-report{ background: rgba(249,115,22,0.80); }
 
 .stats-subtitle{
   font-weight: 900;

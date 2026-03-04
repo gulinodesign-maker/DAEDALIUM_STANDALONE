@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.052
  */
-const BUILD_VERSION = "2.051";
+const BUILD_VERSION = "2.052";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6142,6 +6142,22 @@ if (goCalendarioTopOspiti){
   const btnBackStatsPiscina = $("#btnBackStatistichePiscina");
   if (btnBackStatsPiscina){ bindFastTap(btnBackStatsPiscina, () => { showPage("statistiche"); }); }
   const btnPiscinaBackfillTop = $("#btnPiscinaBackfillTop");
+  const btnPiscinaSimToday = $("#piscinaSimTodayBtn");
+  if (btnPiscinaSimToday){
+    bindFastTap(btnPiscinaSimToday, () => {
+      (async ()=>{
+        try{
+          const dayKey = __isoDayLocal(new Date());
+          await piscinaCreateReportForDay(dayKey, { origine:"manual" });
+          piscinaOpenModal(dayKey);
+        }catch(e){
+          toast(e?.message || "Errore");
+        }
+      })();
+    });
+  }
+
+
   if (btnPiscinaBackfillTop){ bindFastTap(btnPiscinaBackfillTop, () => { try{ piscinaBackfillCurrentMonth(); }catch(e){ toast(e.message||"Errore"); } }); }
 
 const btnPieSpese = $("#btnStatSpesePie");
@@ -12174,7 +12190,7 @@ function renderPiscinaCalendar(){
   label.textContent = __fmtMonthYear(viewMonth);
 
   const now = new Date();
-  todayLbl.textContent = __fmtItDateLong(now);
+  todayLbl.textContent = "";
 
   const y = viewMonth.getFullYear();
   const m = viewMonth.getMonth();
