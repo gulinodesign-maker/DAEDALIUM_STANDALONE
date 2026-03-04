@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.046
+ * Build: 2.047
  */
-const BUILD_VERSION = "2.046";
+const BUILD_VERSION = "2.047";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2729,6 +2729,19 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
+function __setTopbarCenterLabel__(){
+  try{
+    const el = document.getElementById("topbarYear");
+    if (!el) return;
+    if (state && state.page === "calendario"){
+      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+      el.textContent = monthNameIT(a);
+    } else {
+      el.textContent = String((new Date()).getFullYear());
+    }
+  }catch(_){}
+}
+
 function updateYearPill(){
   const y = state.exerciseYear;
   const pill = document.getElementById("yearPill");
@@ -2740,14 +2753,8 @@ function updateYearPill(){
     }
   }
 
-  // Topbar: mostra SOLO l'anno corrente al centro
-  try{
-    const yEl = document.getElementById("topbarYear");
-    if (yEl){
-      const nowY = (new Date()).getFullYear();
-      yEl.textContent = String(nowY);
-    }
-  }catch(_){}
+  // Topbar: anno (default) o mese (solo Calendario)
+  try{ __setTopbarCenterLabel__(); }catch(_){ }
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -5365,6 +5372,8 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
+
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try { __rememberPage(page); } catch (_) {}
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
@@ -13712,6 +13721,8 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = state.calendar.viewMode || "month";
+
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try{
     const sec = document.getElementById("page-calendario");
