@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.051
+ * Build: 2.050
  */
-const BUILD_VERSION = "2.051";
+const BUILD_VERSION = "2.052";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11101,6 +11101,65 @@ function __spesaNormalizeItem_(it){
   return it;
 }
 
+
+// ---- Tombstones (eliminazioni persistenti lato client) ----
+// Serve per evitare che, in account Operatore, una card "cancellata" ricompaia dopo refresh
+// quando il backend non applica (o ritarda) la flag isDeleted.
+// NOTA: la tombstone ha priorità SOLO in UI; se il backend elimina davvero la riga, resta comunque ok.
+function __spesaDelStorageKey_(action){
+  const uid = String(state?.session?.user_id || "").trim();
+  const yr  = String(state?.exerciseYear || "").trim();
+  const act = String(action || "").trim();
+  return `spesa:del:${uid}:${yr}:${act}`;
+}
+
+function __spesaDelGetSet_(action){
+  try{
+    state._spesaDelCache = state._spesaDelCache || {};
+    const k = __spesaDelStorageKey_(action);
+    if (state._spesaDelCache[k]) return state._spesaDelCache[k];
+
+    let arr = [];
+    try{
+      const raw = localStorage.getItem(k);
+      if (raw) arr = JSON.parse(raw);
+    }catch(_){ arr = []; }
+
+    const set = new Set();
+    (Array.isArray(arr) ? arr : []).forEach((x)=>{
+      const id = String(x || "").trim();
+      if (id) set.add(id);
+    });
+    state._spesaDelCache[k] = set;
+    return set;
+  }catch(_){
+    return new Set();
+  }
+}
+
+function __spesaDelRemember_(action, id){
+  try{
+    const sid = String(id || "").trim();
+    if (!sid) return;
+    const k = __spesaDelStorageKey_(action);
+    const set = __spesaDelGetSet_(action);
+    if (!set.has(sid)) set.add(sid);
+    try{ localStorage.setItem(k, JSON.stringify(Array.from(set))); }catch(_){ }
+  }catch(_){ }
+}
+
+function __spesaDelFilter_(action, items){
+  try{
+    const set = __spesaDelGetSet_(action);
+    if (!set || !set.size) return items;
+    return (items || []).filter(it => {
+      try{ return !set.has(String(it?.id || "").trim()); }catch(_){ return true; }
+    });
+  }catch(_){
+    return items;
+  }
+}
+
 // ---- Loaders ----
 async function loadProdottiList_(action, bucket, { force=false, showLoader=true } = {}){
   const s = bucket;
@@ -11113,7 +11172,7 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
 
   const res = await api(action, { method:"GET", params:{}, showLoader });
   const rows = Array.isArray(res) ? res : (res && Array.isArray(res.rows) ? res.rows : (res && Array.isArray(res.data) ? res.data : []));
-  const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
+  let items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
 
   // Deduplica per nome prodotto (evita card duplicate) + cleanup backend (best-effort)
@@ -11132,12 +11191,15 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
     items.length = 0;
     uniq.forEach(x=>items.push(x));
     if (dupIds.length){
+      try{ dupIds.forEach((id)=>__spesaDelRemember_(action, id)); }catch(_){ }
       // pulizia backend in background, senza bloccare UI
       Promise.all(dupIds.map((id)=>api(action, { method:"PUT", body:{ id:String(id), isDeleted:1, qty:0, saved:0, checked:0 }, showLoader:false })))
         .then(()=>{})
         .catch(()=>{});
     }
   }catch(_){}
+
+  items = __spesaDelFilter_(action, items);
 
   s.items = items;
   s.loaded = true;
@@ -11378,7 +11440,12 @@ function setupProdotti(){
         const act = String(obj?.action || __prodAction_() || "");
         if (!act) return;
         byAction[act] = byAction[act] || [];
-        byAction[act].push({ id, patch: (obj && obj.patch) ? obj.patch : {} });
+        const patch = (obj && obj.patch) ? obj.patch : {};
+        try{
+          const del = patch?.isDeleted ?? patch?.is_deleted ?? patch?.deleted;
+          if (__normBool01(del) || del === true) __spesaDelRemember_(act, id);
+        }catch(_){ }
+        byAction[act].push({ id, patch });
       });
 
       await Promise.all(
@@ -11415,36 +11482,6 @@ function setupProdotti(){
     }
   };
 
-
-
-  // Commit immediato (iOS/operator hardening): evita race che possono far "ricomparire" la card
-  const __prodCommitImmediate__ = async (id, patch, { refresh=true } = {}) => {
-    const sid = String(id || "");
-    if (!sid) return;
-
-    // Evita overwrite: cancella pending per questo id
-    try{
-      if (__prodAuto__.timer){ clearTimeout(__prodAuto__.timer); __prodAuto__.timer = null; }
-    }catch(_){ }
-    try{
-      if (__prodAuto__.pending && Object.prototype.hasOwnProperty.call(__prodAuto__.pending, sid)){
-        delete __prodAuto__.pending[sid];
-      }
-    }catch(_){ }
-
-    const action = __prodAction_();
-    try{
-      await api(action, { method:"PUT", body: Object.assign({ id: sid }, (patch || {})), showLoader:false });
-    }catch(e){
-      try{ toast(e.message || "Errore"); }catch(_){ }
-    }
-
-    if (refresh){
-      try{ await loadSpesaAll({ force:true, showLoader:false }); }catch(_){ }
-      try{ renderProdotti(); }catch(_){ }
-      try{ updateProdottiHomeBlink(); }catch(_){ }
-    }
-  };
   // Event delegation: qty / check
 
   // Qty dot: tap cycle, long-press (0.5s) azzera quantità
@@ -11452,7 +11489,7 @@ function setupProdotti(){
   let prodQtyTargetId = null;
   let prodQtyLongFired = false;
   let prodLastQtyTouch = 0;
-  let prodLastPointer = 0;
+  let prodLastPointerDown = 0;
   // Card: double-tap = elimina, long-press (0.5s) = azzera quantità
   let prodCardTimer = null;
   let prodCardTargetId = null;
@@ -11480,7 +11517,7 @@ function setupProdotti(){
         renderProdotti();
         updateProdottiHomeBlink();
         // il gesto dura già 0,5s → salva subito
-        __prodCommitImmediate__(id, { qty: 0, saved: 0 }, { refresh:true }).catch(()=>{});
+        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
       }
     }, 500);
   };
@@ -11524,75 +11561,20 @@ function setupProdotti(){
         renderProdotti();
         updateProdottiHomeBlink();
         // il gesto dura già 0,5s → salva subito
-        __prodCommitImmediate__(id, { qty: 0, saved: 0 }, { refresh:true }).catch(()=>{});
+        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
       }
     }, 500);
   };
 
-
-  // Delegation (pointer) — fallback iOS: alcuni contesti emettono solo PointerEvent
-  list.addEventListener("pointerdown", (e) => {
-    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
-    prodLastPointer = Date.now();
-    const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
-    if (!row) return;
-    const id = String(row.dataset.id || "");
-    if (!id) return;
-
-    if (e.target.closest && e.target.closest(".colazione-qtydot")) {
-      prodLastQtyTouch = Date.now();
-      startProdQtyPress(id);
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-      return;
-    }
-
-    // Long-press sulla card (0,5s) → azzera quantità
-    if (e.target.closest && (e.target.closest(".colazione-checkdot") || e.target.closest(".colazione-qtydot"))) return;
-    startProdCardPress(id);
-  }, { passive:false, capture:true });
-
-  list.addEventListener("pointerup", (e) => {
-    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
-    prodLastPointer = Date.now();
-    const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
-    const id = row ? String(row.dataset.id || "") : "";
-    if (!id){
-      clearProdQtyPress();
-      clearProdCardPress();
-      return;
-    }
-
-    if (e.target.closest && e.target.closest(".colazione-qtydot")) {
-      if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
-      if (!prodQtyLongFired) cycleProdQty(id);
-      clearProdQtyPress();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-      return;
-    }
-
-    const wasLong = !!prodCardLongFired;
-    clearProdCardPress();
-    if (wasLong){
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-      return;
-    }
-  }, { passive:false, capture:true });
-
-  list.addEventListener("pointercancel", (e) => {
-    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
-    prodLastPointer = Date.now();
-    clearProdQtyPress();
-    clearProdCardPress();
-    try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-  }, { passive:false, capture:true });
-
   // Delegation (touch): long-press su qtydot
   list.addEventListener("touchstart", (e) => {
-    if (Date.now() - prodLastPointer < 700) return;
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = String(row.dataset.id || "");
     if (!id) return;
+
+    // iOS: se PointerEvents sono attivi, evita doppio firing touch+pointer
+    if (Date.now() - prodLastPointerDown < 650) return;
 
     if (e.target.closest && e.target.closest(".colazione-qtydot")) {
       prodLastQtyTouch = Date.now();
@@ -11608,7 +11590,6 @@ function setupProdotti(){
   }, { passive:false, capture:true });
 
   list.addEventListener("touchend", (e) => {
-    if (Date.now() - prodLastPointer < 700) { clearProdQtyPress(); clearProdCardPress(); return; }
     const row = e.target.closest && e.target.closest(".colazione-item");
     const id = row ? String(row.dataset.id || "") : "";
     if (!id){
@@ -11641,6 +11622,66 @@ function setupProdotti(){
     try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
   }, { passive:false, capture:true });
 
+  // Pointer events fallback (iOS/iPadOS moderni): rende affidabile il long-press anche in account Operatore
+  try{
+    if (window.PointerEvent){
+      list.addEventListener("pointerdown", (e) => {
+        if (!e) return;
+        // solo gesture touch/pen
+        if (e.pointerType && e.pointerType !== "touch" && e.pointerType !== "pen") return;
+        const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
+        if (!row) return;
+        const id = String(row.dataset.id || "");
+        if (!id) return;
+        prodLastPointerDown = Date.now();
+
+        if (e.target.closest && e.target.closest(".colazione-qtydot")) {
+          prodLastQtyTouch = prodLastPointerDown;
+          startProdQtyPress(id);
+          try{ row.setPointerCapture && row.setPointerCapture(e.pointerId); }catch(_){ }
+          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+          return;
+        }
+
+        if (e.target.closest && (e.target.closest(".colazione-checkdot") || e.target.closest(".colazione-qtydot"))) return;
+        startProdCardPress(id);
+        try{ row.setPointerCapture && row.setPointerCapture(e.pointerId); }catch(_){ }
+      }, { passive:false, capture:true });
+
+      list.addEventListener("pointerup", (e) => {
+        if (!e) return;
+        if (e.pointerType && e.pointerType !== "touch" && e.pointerType !== "pen") return;
+        const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
+        const id = row ? String(row.dataset.id || "") : "";
+        if (!id){
+          clearProdQtyPress();
+          clearProdCardPress();
+          return;
+        }
+
+        if (e.target.closest && e.target.closest(".colazione-qtydot")) {
+          if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
+          if (!prodQtyLongFired) cycleProdQty(id);
+          clearProdQtyPress();
+          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+          return;
+        }
+
+        const wasLong = !!prodCardLongFired;
+        clearProdCardPress();
+        if (wasLong){
+          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+          return;
+        }
+      }, { passive:false, capture:true });
+
+      list.addEventListener("pointercancel", (e) => {
+        clearProdQtyPress();
+        clearProdCardPress();
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      }, { passive:false, capture:true });
+    }
+  }catch(_){ }
 
   list.addEventListener("click", (e) => {
     const t = e.target;
@@ -11688,7 +11729,7 @@ function setupProdotti(){
       __prodApplyLocal__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 });
       renderProdotti();
       updateProdottiHomeBlink();
-      __prodCommitImmediate__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 }, { refresh:true }).catch(()=>{});
+      __prodAutoSchedule__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 }, { immediate:true });
       return;
     }
     prodCardLastTapId = id;
@@ -11834,7 +11875,6 @@ function setupColazione(){
 
   // Delegation (touch)
   list.addEventListener("touchstart", (e) => {
-    if (Date.now() - prodLastPointer < 700) return;
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = row.dataset.id;
@@ -11857,7 +11897,6 @@ function setupColazione(){
   }, { passive:false, capture:true });
 
   list.addEventListener("touchend", (e) => {
-    if (Date.now() - prodLastPointer < 700) { clearProdQtyPress(); clearProdCardPress(); return; }
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = row.dataset.id;
