@@ -52,7 +52,7 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.051
+ * Build: 2.050
  */
 const BUILD_VERSION = "2.051";
 
@@ -172,47 +172,12 @@ async function __kvDel__(k){
 function __tblKey__(name){
   // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
   try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
-
-  // BACHECA COMUNE (tutti gli account sul dispositivo leggono/scrivono le stesse tabelle)
-  // Regola: last-write-wins (la scrittura più recente sovrascrive il valore precedente)
-  // Manteniamo solo lo scope per anno esercizio per evitare mixing di anni diversi.
-  const y = __ctxYear__();
-  return `global:ctx:COMMON:${y}:tbl:${name}`;
-}
-
-function __spesaEnsureId__(tName, it){
-  try{
-    if (!it) return it;
-    const sid = String(it.id || "").trim();
-    if (sid) return it;
-    const nameKey = String(it.prodotto || it.nome || "").trim().toLowerCase();
-    if (!nameKey) {
-      // fallback: random-ish
-      const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
-      it.id = (typeof genId === "function" ? genId(prefix) : (prefix+"-"+Date.now()+"-"+Math.floor(Math.random()*1e6)));
-      return it;
-    }
-    const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
-    it.id = `${prefix}-${_hashStr(prefix+":"+nameKey).toString(16)}`;
-  }catch(_){ }
-  return it;
+  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
 async function __tblGet__(name, fallback){
-  const newKey = __tblKey__(name);
-  const v = await __kvGet__(newKey);
-  if (v === null || v === undefined){
-    // Migrazione soft (una tantum): se esiste il vecchio key per-user, copialo nella bacheca comune
-    try{
-      const oldKey = `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
-      const oldV = await __kvGet__(oldKey);
-      if (oldV !== null && oldV !== undefined){
-        await __kvSet__(newKey, oldV);
-        return oldV;
-      }
-    }catch(_){ }
-    return fallback;
-  }
+  const v = await __kvGet__(__tblKey__(name));
+  if (v === null || v === undefined) return fallback;
   return v;
 }
 
@@ -513,17 +478,6 @@ async function __localApiSpesaList__(tableName, method, body){
   const save = async ()=>{ await __tblSet__(tName, rows); };
 
   if (method === "GET"){
-    // Garantisci ID per tutte le card (necessario per tap/doppio tap in UI)
-    let changed = false;
-    try{
-      rows.forEach((it)=>{
-        const before = String(it?.id || "").trim();
-        __spesaEnsureId__(tName, it);
-        const after = String(it?.id || "").trim();
-        if (!before && after) changed = true;
-      });
-    }catch(_){ }
-    if (changed) { try{ await save(); }catch(_){ } }
     return rows;
   }
 
@@ -1229,6 +1183,100 @@ function __operatorName__(){
   try{ return String(state?.session?.username || "").trim(); }catch(_){ return ""; }
 }
 
+
+// --- Spesa Board (bacheca condivisa) ---
+// La bacheca vive su Firebase in: sync/{teamId}/boards/spesa
+// Contiene SOLO colazione + prodotti_pulizia e viene aggiornata da admin e operatori.
+// Precedenza: ultimo aggiornamento per singolo prodotto (LWW) usando updatedAt/deletedAt.
+function __spesaKeyShared__(it){
+  const p = String(it?.prodotto || it?.nome || "").trim().toUpperCase();
+  return p || String(it?.id || "").trim();
+}
+function __spesaIsDeleted__(it){
+  const d = (it && (it.isDeleted ?? it.is_deleted ?? it.deleted));
+  return (d === true) || (String(d) === "1");
+}
+function __spesaEffTs__(it){
+  const u = String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
+  if (__spesaIsDeleted__(it)){
+    const d = String(it?.deletedAt || it?.deleted_at || "") || u;
+    return d || u;
+  }
+  return u;
+}
+function __mergeSpesaLWW__(base, inc){
+  const out = [];
+  const best = new Map();
+  const put = (r)=>{
+    if (!r || typeof r !== "object") return;
+    const k = __spesaKeyShared__(r);
+    if (!k) return;
+    const prev = best.get(k);
+    if (!prev){ best.set(k, r); return; }
+    const ta = __spesaEffTs__(prev);
+    const tb = __spesaEffTs__(r);
+    if (tb && (!ta || tb > ta)){
+      best.set(k, r);
+      return;
+    }
+    if (ta && tb && tb === ta){
+      // tie-break: prefer tombstone (evita resurrezioni a parità di timestamp)
+      if (__spesaIsDeleted__(r) && !__spesaIsDeleted__(prev)){
+        best.set(k, r);
+        return;
+      }
+      if (!__spesaIsDeleted__(r) && __spesaIsDeleted__(prev)){
+        return;
+      }
+      // else keep prev
+    }
+  };
+  (Array.isArray(base)?base:[]).forEach(put);
+  (Array.isArray(inc)?inc:[]).forEach(put);
+  best.forEach(v=>out.push(v));
+  return out;
+}
+
+async function __fbExportSpesaBoard__(opts){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) return false;
+  try{
+    const colazione = await __tblGet__("colazione", []);
+    const prodotti = await __tblGet__("prodotti_pulizia", []);
+    const payload = {
+      kind:"DDAE_SPESA_BOARD",
+      build: BUILD_VERSION,
+      at: __nowIso__(),
+      datasets:{
+        colazione: Array.isArray(colazione)?colazione:[],
+        prodotti_pulizia: Array.isArray(prodotti)?prodotti:[]
+      }
+    };
+    await __fsSet__(`sync/${__FB_STATE__.teamId}/boards/spesa`, {
+      spesa_json: JSON.stringify(payload),
+      updatedAt: { __ts: __nowIso__() }
+    });
+    return true;
+  }catch(_){
+    return false;
+  }
+}
+
+async function __fbReadSpesaBoardPayload__(){
+  __fbLoadLink__();
+  if (!__FB_STATE__.teamId) return null;
+  try{
+    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/boards/spesa`);
+    if (!doc) return null;
+    const data = __fsDecode__(doc);
+    const raw = String(data?.spesa_json || "");
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (p && p.datasets) return p;
+  }catch(_){}
+  return null;
+}
+// --- /Spesa Board ---
 async function __fbExportAdmin__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
@@ -1239,6 +1287,7 @@ async function __fbExportAdmin__(opts){
   const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
+  try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
 
@@ -1279,6 +1328,12 @@ try{
   });
 }catch(_){}
 
+
+// bacheca spesa condivisa (opzionale)
+try{
+  const b = await __fbReadSpesaBoardPayload__();
+  if (b && b.datasets) payloads.push(b);
+}catch(_){}
 if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
 
 // Combina tutti i dataset in un unico payload remoto
@@ -1301,6 +1356,18 @@ try{
   }
 }catch(_){}
 
+
+// Normalizza liste spesa (evita duplicati e applica precedenza cronologica per prodotto)
+try{
+  if (payload.datasets){
+    if (Array.isArray(payload.datasets.colazione)){
+      payload.datasets.colazione = __mergeSpesaLWW__([], payload.datasets.colazione);
+    }
+    if (Array.isArray(payload.datasets.prodotti_pulizia)){
+      payload.datasets.prodotti_pulizia = __mergeSpesaLWW__([], payload.datasets.prodotti_pulizia);
+    }
+  }
+}catch(_){}
 if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non validi", "orange"); }catch(_){ } return false; }
 
 // Import subset operatore
@@ -1511,12 +1578,23 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
   continue;
 }
 
+    if (t === "colazione" || t === "prodotti_pulizia"){
+      if (payload.datasets[t] !== undefined){
+        const local = await __tblGet__(t, []);
+        const remote = Array.isArray(payload.datasets[t]) ? payload.datasets[t] : [];
+        await __tblSet__(t, __mergeSpesaLWW__(local, remote));
+      }
+      continue;
+    }
+
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
     }
   }
 
-  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+    try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
+
+try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
@@ -1536,6 +1614,7 @@ async function __fbExportOperator__(opts){
   };
   const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
+  try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
 
@@ -1600,6 +1679,15 @@ async function __fbImportAdmin__(opts){
 
   let mergedProdottiPulizia = await __tblGet__("prodotti_pulizia", []);
   mergedProdottiPulizia = Array.isArray(mergedProdottiPulizia) ? mergedProdottiPulizia.slice() : [];
+
+  // merge bacheca condivisa spesa (se presente)
+  try{
+    const b = await __fbReadSpesaBoardPayload__();
+    if (b && b.datasets){
+      mergedColazione = __mergeSpesaLWW__(mergedColazione, b.datasets.colazione);
+      mergedProdottiPulizia = __mergeSpesaLWW__(mergedProdottiPulizia, b.datasets.prodotti_pulizia);
+    }
+  }catch(_){}
 
   const __spesaKey__ = (it) => {
     const p = String(it?.prodotto || it?.nome || "").trim().toUpperCase();
@@ -1735,10 +1823,10 @@ async function __fbImportAdmin__(opts){
 // merge lista spesa (colazione + prodotti pulizia)
     try{
       if (payload.datasets.colazione !== undefined){
-        mergedColazione = __mergeSpesaList__(mergedColazione, payload.datasets.colazione);
+        mergedColazione = __mergeSpesaLWW__(mergedColazione, payload.datasets.colazione);
       }
       if (payload.datasets.prodotti_pulizia !== undefined){
-        mergedProdottiPulizia = __mergeSpesaList__(mergedProdottiPulizia, payload.datasets.prodotti_pulizia);
+        mergedProdottiPulizia = __mergeSpesaLWW__(mergedProdottiPulizia, payload.datasets.prodotti_pulizia);
       }
     }catch(_){}
 
@@ -1844,7 +1932,9 @@ async function __fbImportAdmin__(opts){
   await __tblSet__("lavanderia", mergedLavanderia);
 
 
-  try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
+    try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
+
+try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
@@ -11159,9 +11249,6 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
 
   const res = await api(action, { method:"GET", params:{}, showLoader });
   const rows = Array.isArray(res) ? res : (res && Array.isArray(res.rows) ? res.rows : (res && Array.isArray(res.data) ? res.data : []));
-  // Ensure id (anche se arrivano record legacy senza id)
-  try{ (rows || []).forEach((it)=>{ __spesaEnsureId__(action === "prodotti_pulizia" ? "prodotti_pulizia" : "colazione", it); }); }catch(_){ }
-
   const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
 
@@ -11430,12 +11517,13 @@ function setupProdotti(){
         byAction[act].push({ id, patch: (obj && obj.patch) ? obj.patch : {} });
       });
 
-      // Commit sequenziale per evitare lost-update su storage locale (IndexedDB)
-      for (const act of Object.keys(byAction)){
-        for (const { id, patch } of (byAction[act] || [])){
-          await api(act, { method:"PUT", body: Object.assign({ id:String(id) }, patch || {}), showLoader:false });
-        }
-      }
+      await Promise.all(
+        Object.keys(byAction).flatMap((act) => (
+          byAction[act].map(({id, patch}) => (
+            api(act, { method:"PUT", body: Object.assign({ id:String(id) }, patch || {}), showLoader:false })
+          ))
+        ))
+      );
 
       // refresh (LED + coerenza multi-dispositivo)
       try{ await loadSpesaAll({ force:true, showLoader:false }); }catch(_){}
