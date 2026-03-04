@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.043
  */
-const BUILD_VERSION = "2.050";
+const BUILD_VERSION = "2.043";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2517,24 +2517,57 @@ function isOperatoreSession(sess){
 
 function __fitHomeSyncBtn__(){
   try{
-    const bar = document.getElementById("homeSyncBar");
-    const btn = document.getElementById("goDbSync");
-    if (!bar || !btn) return;
+    const grid = document.querySelector("#page-home .home-grid");
+    const bar  = document.getElementById("homeSyncBar");
+    const btn  = document.getElementById("goDbSync");
+    if (!grid || !bar || !btn) return;
 
-    // Layout vincolato: linea sopra + tasto SYNC sotto (stack verticale).
-    // Resetta eventuali override inline che potevano mettere gli elementi "affiancati".
-    try{
-      bar.style.display = "";
-      bar.style.alignItems = "";
-      bar.style.justifyContent = "";
-    }catch(_){}
+    const barRect = bar.getBoundingClientRect();
+    if (!barRect || barRect.width < 10) return;
 
-    try{
-      btn.style.width = "";
-      btn.style.marginLeft = "";
-      btn.style.marginRight = "";
-    }catch(_){}
-  }catch(_){}
+    const glyphs = Array.from(grid.querySelectorAll(".home-main-glyph")).filter(el=>{
+      try{
+        if (!el) return false;
+        if (!el.getClientRects || !el.getClientRects().length) return false;
+        const st = getComputedStyle(el);
+        if (st.display === "none" || st.visibility === "hidden") return false;
+        return true;
+      }catch(_){ return false; }
+    });
+    if (!glyphs.length) return;
+
+    let minL = Infinity, maxR = -Infinity;
+    for (const el of glyphs){
+      const r = el.getBoundingClientRect();
+      if (r && r.width > 0 && r.height > 0){
+        if (r.left < minL) minL = r.left;
+        if (r.right > maxR) maxR = r.right;
+      }
+    }
+    if (!isFinite(minL) || !isFinite(maxR) || maxR <= minL) return;
+
+    const cs = getComputedStyle(bar);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    const contentW = Math.max(0, barRect.width - padL - padR);
+    if (contentW < 10) return;
+
+    let width = maxR - minL;
+    width = Math.max(140, width);
+    width = Math.min(contentW, width);
+
+    let left = minL - (barRect.left + padL);
+    left = Math.max(0, left);
+    left = Math.min(contentW - width, left);
+
+    bar.style.display = "flex";
+    bar.style.alignItems = "center";
+    bar.style.justifyContent = "flex-start";
+
+    btn.style.width = `${width}px`;
+    btn.style.marginLeft = `${left}px`;
+    btn.style.marginRight = "0px";
+  }catch(_){ }
 }
 
 function applyRoleMode(){
@@ -2551,8 +2584,11 @@ function applyRoleMode(){
     if (row) row.hidden = true;
 
     const bar = document.getElementById("homeSyncBar");
+    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      try{ bar.hidden = false; bar.style.display = ""; }catch(_){ }
+      const shouldShow = __hasRosterLink__;
+      try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
+      try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
@@ -2729,19 +2765,6 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
-function __setTopbarCenterLabel__(){
-  try{
-    const el = document.getElementById("topbarYear");
-    if (!el) return;
-    if (state && state.page === "calendario"){
-      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
-    } else {
-      el.textContent = String((new Date()).getFullYear());
-    }
-  }catch(_){}
-}
-
 function updateYearPill(){
   const y = state.exerciseYear;
   const pill = document.getElementById("yearPill");
@@ -2753,8 +2776,14 @@ function updateYearPill(){
     }
   }
 
-  // Topbar: anno (default) o mese (solo Calendario)
-  try{ __setTopbarCenterLabel__(); }catch(_){ }
+  // Topbar: mostra SOLO l'anno corrente al centro
+  try{
+    const yEl = document.getElementById("topbarYear");
+    if (yEl){
+      const nowY = (new Date()).getFullYear();
+      yEl.textContent = String(nowY);
+    }
+  }catch(_){}
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -5373,8 +5402,6 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  try{ __setTopbarCenterLabel__(); }catch(_){}
-
   try { __rememberPage(page); } catch (_) {}
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
@@ -5731,10 +5758,7 @@ function setupHeader(){
 
 
   const opLogout = document.getElementById("opLogoutTop");
-  if (opLogout) bindFastTap(opLogout, async () => {
-    let ok = false;
-    try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
-    if (!ok) return;
+  if (opLogout) bindFastTap(opLogout, () => {
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
@@ -6715,13 +6739,7 @@ function renderSpese(){
 
     const btn = el.querySelector("[data-del]");
     if (btn){
-      // iOS/Safari: tap affidabile anche su PWA (Operatore)
-      bindFastTap(btn, async (ev) => {
-        try{
-          ev && ev.preventDefault && ev.preventDefault();
-          ev && ev.stopPropagation && ev.stopPropagation();
-          ev && ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-        }catch(_){}
+      btn.addEventListener("click", async () => {
         if (!confirm("Eliminare definitivamente questa spesa?")) return;
         await api("spese", { method:"DELETE", params:{ id: s.id } });
         toast("Spesa eliminata");
@@ -11116,29 +11134,6 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
   const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
 
-  // Deduplica per nome prodotto (evita card duplicate) + cleanup backend (best-effort)
-  try{
-    const map = new Map();
-    const dupIds = [];
-    (items || []).forEach((it)=>{
-      const k = __prodNameKey_(it);
-      if (!k) return;
-      if (!map.has(k)) { map.set(k, it); return; }
-      // duplicato: tieni il primo, marca gli altri come deleted
-      try{ if (it && it.id != null) dupIds.push(String(it.id)); }catch(_){}
-    });
-    const uniq = Array.from(map.values());
-    // sostituisci in-place
-    items.length = 0;
-    uniq.forEach(x=>items.push(x));
-    if (dupIds.length){
-      // pulizia backend in background, senza bloccare UI
-      Promise.all(dupIds.map((id)=>api(action, { method:"PUT", body:{ id:String(id), isDeleted:1, qty:0, saved:0, checked:0 }, showLoader:false })))
-        .then(()=>{})
-        .catch(()=>{});
-    }
-  }catch(_){}
-
   s.items = items;
   s.loaded = true;
   s.loadedAt = now;
@@ -11272,24 +11267,6 @@ function setupProdotti(){
     const v = raw.trim();
     if (!v) return;
     const prodotto = v.toUpperCase();
-    // Non permettere duplicati (un record unico: update/delete su id)
-    try{
-      const targetKey = (action === "prodotti_pulizia") ? "pulizia" : "colazione";
-      const bucket = __spesaBucketByKey_(targetKey);
-      if (!bucket.loaded) { try{ await loadProdottiList_(action, bucket, { force:false, showLoader:false }); }catch(_){ } }
-      const key = String(prodotto).trim().toLowerCase();
-      const exists = (bucket.items || []).some((it)=>{
-        if (__normBool01(it?.isDeleted)) return false;
-        return __prodNameKey_(it) === key;
-      });
-      if (exists){
-        try{ toast("Prodotto già presente"); }catch(_){}
-        if (input) input.value = "";
-        closeModal();
-        return;
-      }
-    }catch(_){}
-
     if (input) input.value = "";
     closeModal();
     try{
@@ -13769,8 +13746,6 @@ function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = state.calendar.viewMode || "month";
 
-  try{ __setTopbarCenterLabel__(); }catch(_){}
-
   try{
     const sec = document.getElementById("page-calendario");
     if (sec) sec.classList.toggle("is-month-view", mode === "month");
@@ -13864,11 +13839,12 @@ function renderCalendarioWeek(){
 
   // Mantieni input data sincronizzato con l'anchor (utile quando navighi con le frecce)
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
+
   if (title) {
-    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
-    title.textContent = "";
-    title.hidden = true;
+    const month = monthNameIT(anchor).toUpperCase();
+    title.textContent = month;
   }
+
   const occ = buildWeekOccupancy(start);
 
   grid.innerHTML = "";
@@ -14105,10 +14081,7 @@ function __fitCalendarioMonthLandscape(){
     let cellH = Math.floor((availH - rowGaps) / rows);
     cellH = Math.max(34, Math.min(cellH, 120));
 
-    
-    // Riduci altezza celle del 10%
-    cellH = Math.floor(cellH * 0.90);
-let pillH = Math.floor(cellH * 0.38);
+    let pillH = Math.floor(cellH * 0.38);
     pillH = Math.max(18, Math.min(pillH, 46));
 
     // Applica override inline (solo month+landscape)
@@ -14143,11 +14116,12 @@ function renderCalendarioMonth(){
 
   // Mantieni input data sincronizzato con l'anchor
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
+
   if (title) {
-    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
-    title.textContent = "";
-    title.hidden = true;
+    const month = monthNameIT(anchor).toUpperCase();
+    title.textContent = month;
   }
+
   // Imposta le colonne dinamiche (1 colonna stanze + N giorni)
   try{
     grid.style.gridTemplateColumns = `var(--cal-room-w) repeat(${daysCount}, var(--cal-day-w))`;
