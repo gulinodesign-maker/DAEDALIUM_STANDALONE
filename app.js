@@ -11223,7 +11223,7 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
     }
   }catch(_){}
 
-  if (__isAdmin__ && __isAdmin__()) { __spesaDelReconcile_(action, items); }
+  __spesaDelReconcile_(action, items);
   items = __spesaDelFilter_(action, items);
 
   s.items = items;
