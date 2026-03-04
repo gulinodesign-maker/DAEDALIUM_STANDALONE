@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.051
  */
-const BUILD_VERSION = "2.050";
+const BUILD_VERSION = "2.051";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11415,6 +11415,36 @@ function setupProdotti(){
     }
   };
 
+
+
+  // Commit immediato (iOS/operator hardening): evita race che possono far "ricomparire" la card
+  const __prodCommitImmediate__ = async (id, patch, { refresh=true } = {}) => {
+    const sid = String(id || "");
+    if (!sid) return;
+
+    // Evita overwrite: cancella pending per questo id
+    try{
+      if (__prodAuto__.timer){ clearTimeout(__prodAuto__.timer); __prodAuto__.timer = null; }
+    }catch(_){ }
+    try{
+      if (__prodAuto__.pending && Object.prototype.hasOwnProperty.call(__prodAuto__.pending, sid)){
+        delete __prodAuto__.pending[sid];
+      }
+    }catch(_){ }
+
+    const action = __prodAction_();
+    try{
+      await api(action, { method:"PUT", body: Object.assign({ id: sid }, (patch || {})), showLoader:false });
+    }catch(e){
+      try{ toast(e.message || "Errore"); }catch(_){ }
+    }
+
+    if (refresh){
+      try{ await loadSpesaAll({ force:true, showLoader:false }); }catch(_){ }
+      try{ renderProdotti(); }catch(_){ }
+      try{ updateProdottiHomeBlink(); }catch(_){ }
+    }
+  };
   // Event delegation: qty / check
 
   // Qty dot: tap cycle, long-press (0.5s) azzera quantità
@@ -11422,6 +11452,7 @@ function setupProdotti(){
   let prodQtyTargetId = null;
   let prodQtyLongFired = false;
   let prodLastQtyTouch = 0;
+  let prodLastPointer = 0;
   // Card: double-tap = elimina, long-press (0.5s) = azzera quantità
   let prodCardTimer = null;
   let prodCardTargetId = null;
@@ -11449,7 +11480,7 @@ function setupProdotti(){
         renderProdotti();
         updateProdottiHomeBlink();
         // il gesto dura già 0,5s → salva subito
-        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
+        __prodCommitImmediate__(id, { qty: 0, saved: 0 }, { refresh:true }).catch(()=>{});
       }
     }, 500);
   };
@@ -11493,13 +11524,71 @@ function setupProdotti(){
         renderProdotti();
         updateProdottiHomeBlink();
         // il gesto dura già 0,5s → salva subito
-        __prodAutoSchedule__(id, { qty: 0, saved: 0 }, { immediate:true });
+        __prodCommitImmediate__(id, { qty: 0, saved: 0 }, { refresh:true }).catch(()=>{});
       }
     }, 500);
   };
 
+
+  // Delegation (pointer) — fallback iOS: alcuni contesti emettono solo PointerEvent
+  list.addEventListener("pointerdown", (e) => {
+    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
+    prodLastPointer = Date.now();
+    const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
+    if (!row) return;
+    const id = String(row.dataset.id || "");
+    if (!id) return;
+
+    if (e.target.closest && e.target.closest(".colazione-qtydot")) {
+      prodLastQtyTouch = Date.now();
+      startProdQtyPress(id);
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+      return;
+    }
+
+    // Long-press sulla card (0,5s) → azzera quantità
+    if (e.target.closest && (e.target.closest(".colazione-checkdot") || e.target.closest(".colazione-qtydot"))) return;
+    startProdCardPress(id);
+  }, { passive:false, capture:true });
+
+  list.addEventListener("pointerup", (e) => {
+    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
+    prodLastPointer = Date.now();
+    const row = e.target && e.target.closest ? e.target.closest(".colazione-item") : null;
+    const id = row ? String(row.dataset.id || "") : "";
+    if (!id){
+      clearProdQtyPress();
+      clearProdCardPress();
+      return;
+    }
+
+    if (e.target.closest && e.target.closest(".colazione-qtydot")) {
+      if (prodQtyTimer){ clearTimeout(prodQtyTimer); prodQtyTimer = null; }
+      if (!prodQtyLongFired) cycleProdQty(id);
+      clearProdQtyPress();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+      return;
+    }
+
+    const wasLong = !!prodCardLongFired;
+    clearProdCardPress();
+    if (wasLong){
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+      return;
+    }
+  }, { passive:false, capture:true });
+
+  list.addEventListener("pointercancel", (e) => {
+    try{ if (e && (e.pointerType === "mouse")) return; }catch(_){}
+    prodLastPointer = Date.now();
+    clearProdQtyPress();
+    clearProdCardPress();
+    try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+  }, { passive:false, capture:true });
+
   // Delegation (touch): long-press su qtydot
   list.addEventListener("touchstart", (e) => {
+    if (Date.now() - prodLastPointer < 700) return;
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = String(row.dataset.id || "");
@@ -11519,6 +11608,7 @@ function setupProdotti(){
   }, { passive:false, capture:true });
 
   list.addEventListener("touchend", (e) => {
+    if (Date.now() - prodLastPointer < 700) { clearProdQtyPress(); clearProdCardPress(); return; }
     const row = e.target.closest && e.target.closest(".colazione-item");
     const id = row ? String(row.dataset.id || "") : "";
     if (!id){
@@ -11598,7 +11688,7 @@ function setupProdotti(){
       __prodApplyLocal__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 });
       renderProdotti();
       updateProdottiHomeBlink();
-      __prodAutoSchedule__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 }, { immediate:true });
+      __prodCommitImmediate__(id, { isDeleted: 1, qty: 0, saved: 0, checked: 0 }, { refresh:true }).catch(()=>{});
       return;
     }
     prodCardLastTapId = id;
@@ -11744,6 +11834,7 @@ function setupColazione(){
 
   // Delegation (touch)
   list.addEventListener("touchstart", (e) => {
+    if (Date.now() - prodLastPointer < 700) return;
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = row.dataset.id;
@@ -11766,6 +11857,7 @@ function setupColazione(){
   }, { passive:false, capture:true });
 
   list.addEventListener("touchend", (e) => {
+    if (Date.now() - prodLastPointer < 700) { clearProdQtyPress(); clearProdCardPress(); return; }
     const row = e.target.closest && e.target.closest(".colazione-item");
     if (!row) return;
     const id = row.dataset.id;
