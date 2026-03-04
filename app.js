@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.047
  */
-const BUILD_VERSION = "2.050";
+const BUILD_VERSION = "2.048";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2735,7 +2735,7 @@ function __setTopbarCenterLabel__(){
     if (!el) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
+      el.textContent = monthNameIT(a);
     } else {
       el.textContent = String((new Date()).getFullYear());
     }
@@ -6715,13 +6715,7 @@ function renderSpese(){
 
     const btn = el.querySelector("[data-del]");
     if (btn){
-      // iOS/Safari: tap affidabile anche su PWA (Operatore)
-      bindFastTap(btn, async (ev) => {
-        try{
-          ev && ev.preventDefault && ev.preventDefault();
-          ev && ev.stopPropagation && ev.stopPropagation();
-          ev && ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-        }catch(_){}
+      btn.addEventListener("click", async () => {
         if (!confirm("Eliminare definitivamente questa spesa?")) return;
         await api("spese", { method:"DELETE", params:{ id: s.id } });
         toast("Spesa eliminata");
@@ -14105,10 +14099,7 @@ function __fitCalendarioMonthLandscape(){
     let cellH = Math.floor((availH - rowGaps) / rows);
     cellH = Math.max(34, Math.min(cellH, 120));
 
-    
-    // Riduci altezza celle del 10%
-    cellH = Math.floor(cellH * 0.90);
-let pillH = Math.floor(cellH * 0.38);
+    let pillH = Math.floor(cellH * 0.38);
     pillH = Math.max(18, Math.min(pillH, 46));
 
     // Applica override inline (solo month+landscape)
