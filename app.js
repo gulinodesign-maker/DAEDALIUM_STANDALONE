@@ -52,7 +52,7 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.050
+ * Build: 2.051
  */
 const BUILD_VERSION = "2.051";
 
@@ -172,12 +172,47 @@ async function __kvDel__(k){
 function __tblKey__(name){
   // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
   try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
-  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
+
+  // BACHECA COMUNE (tutti gli account sul dispositivo leggono/scrivono le stesse tabelle)
+  // Regola: last-write-wins (la scrittura più recente sovrascrive il valore precedente)
+  // Manteniamo solo lo scope per anno esercizio per evitare mixing di anni diversi.
+  const y = __ctxYear__();
+  return `global:ctx:COMMON:${y}:tbl:${name}`;
+}
+
+function __spesaEnsureId__(tName, it){
+  try{
+    if (!it) return it;
+    const sid = String(it.id || "").trim();
+    if (sid) return it;
+    const nameKey = String(it.prodotto || it.nome || "").trim().toLowerCase();
+    if (!nameKey) {
+      // fallback: random-ish
+      const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
+      it.id = (typeof genId === "function" ? genId(prefix) : (prefix+"-"+Date.now()+"-"+Math.floor(Math.random()*1e6)));
+      return it;
+    }
+    const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
+    it.id = `${prefix}-${_hashStr(prefix+":"+nameKey).toString(16)}`;
+  }catch(_){ }
+  return it;
 }
 
 async function __tblGet__(name, fallback){
-  const v = await __kvGet__(__tblKey__(name));
-  if (v === null || v === undefined) return fallback;
+  const newKey = __tblKey__(name);
+  const v = await __kvGet__(newKey);
+  if (v === null || v === undefined){
+    // Migrazione soft (una tantum): se esiste il vecchio key per-user, copialo nella bacheca comune
+    try{
+      const oldKey = `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
+      const oldV = await __kvGet__(oldKey);
+      if (oldV !== null && oldV !== undefined){
+        await __kvSet__(newKey, oldV);
+        return oldV;
+      }
+    }catch(_){ }
+    return fallback;
+  }
   return v;
 }
 
@@ -472,110 +507,75 @@ async function __localApiImpostazioni__(method, body){
 
 async function __localApiSpesaList__(tableName, method, body){
   const tName = String(tableName || "").trim() || "colazione";
-  // Serializza tutte le operazioni sulla stessa tabella (fix iOS: update concorrenti)
-  return __spesaLocalQueue__(`spesa:${tName}`, async () => {
-    const rows0 = await __tblGet__(tName, []);
-    const rows = Array.isArray(rows0) ? rows0 : [];
+  const rows0 = await __tblGet__(tName, []);
+  const rows = Array.isArray(rows0) ? rows0 : [];
 
-    // Migrazione/normalizzazione: garantisci id + campi coerenti (fix operatore: card senza id)
-    let migrated = false;
-    const used = new Set();
-    rows.forEach((r)=>{ const id = String(r?.id || "").trim(); if (id) used.add(id); });
-    rows.forEach((r)=>{
-      if (!r || typeof r !== "object") return;
-      const beforeId = String(r.id || "").trim();
-      __spesaEnsureId__(tName, r, used);
-      __spesaNormalizeItem_(r);
-      if (String(r.id || "").trim() !== beforeId) migrated = true;
-    });
-    if (migrated){
-      try{ await __tblSet__(tName, rows); }catch(_){}
-    }
+  const save = async ()=>{ await __tblSet__(tName, rows); };
 
-    const save = async ()=>{ await __tblSet__(tName, rows); };
-
-    if (method === "GET"){
-      return rows;
-    }
-
-    if (method === "PUT"){
-      const id = String(body?.id || "").trim();
-      if (!id) return { ok:true };
-      const it = rows.find(r => String(r?.id||"").trim() === id);
-      if (!it) return { ok:true };
-      Object.keys(body||{}).forEach((k)=>{
-        if (k === "id") return;
-        it[k] = body[k];
+  if (method === "GET"){
+    // Garantisci ID per tutte le card (necessario per tap/doppio tap in UI)
+    let changed = false;
+    try{
+      rows.forEach((it)=>{
+        const before = String(it?.id || "").trim();
+        __spesaEnsureId__(tName, it);
+        const after = String(it?.id || "").trim();
+        if (!before && after) changed = true;
       });
-      __spesaNormalizeItem_(it);
-      it.updatedAt = __nowIso__();
+    }catch(_){ }
+    if (changed) { try{ await save(); }catch(_){ } }
+    return rows;
+  }
+
+  if (method === "PUT"){
+    const id = String(body?.id || "").trim();
+    const it = rows.find(r => String(r?.id||"").trim() === id);
+    if (!it) return { ok:true };
+    Object.keys(body||{}).forEach((k)=>{
+      if (k === "id") return;
+      it[k] = body[k];
+    });
+    it.updatedAt = __nowIso__();
+    await save();
+    return { ok:true };
+  }
+
+  if (method === "POST"){
+    const op = String(body?.op || "").trim();
+    if (op === "create"){
+      const prodotto = String(body?.prodotto || "").trim().toUpperCase();
+      if (!prodotto) throw new Error("Prodotto mancante");
+      const exist = rows.find(r => String(r?.prodotto||"").trim().toUpperCase() === prodotto && !__normBool01(r?.isDeleted));
+      if (exist) return { ok:true };
+      const prefix = (tName === "prodotti_pulizia") ? "p" : "c";
+      rows.push({
+        id: (typeof genId === "function" ? genId(prefix) : (prefix+"-"+Date.now())),
+        prodotto,
+        qty: 0,
+        saved: 0,
+        checked: 0,
+        isDeleted: 0,
+        createdAt: __nowIso__(),
+        updatedAt: __nowIso__(),
+      });
       await save();
       return { ok:true };
     }
-
-    if (method === "POST"){
-      const op = String(body?.op || "").trim();
-
-      if (op === "create"){
-        const prodottoRaw = String(body?.prodotto || "").trim();
-        const prodotto = prodottoRaw.toUpperCase();
-        if (!prodotto) throw new Error("Prodotto mancante");
-
-        const key = prodotto.trim().toLowerCase();
-        const exist = rows.find(r => !__normBool01(r?.isDeleted) && __prodNameKey_(r) === key);
-        if (exist) return { ok:true };
-
-        const cand = __spesaStableIdFor__(tName, key);
-        let id = cand;
-        if (used.has(id)){
-          const prefix = __spesaIdPrefixByTable__(tName);
-          id = (typeof genId === "function" ? genId(prefix) : (prefix+"-"+Date.now()));
-        }
-        used.add(id);
-
-        rows.push({
-          id,
-          prodotto,
-          qty: 0,
-          saved: 0,
-          checked: 0,
-          isDeleted: 0,
-          createdAt: __nowIso__(),
-          updatedAt: __nowIso__(),
-        });
-        await save();
-        return { ok:true };
-      }
-
-      if (op === "resetQty"){
-        rows.forEach(r => {
-          if (!__normBool01(r?.isDeleted)) {
-            r.qty = 0; r.saved = 0; r.checked = 0; r.updatedAt = __nowIso__();
-          }
-        });
-        await save();
-        return { ok:true };
-      }
-
-      if (op === "save"){
-        rows.forEach(r => {
-          if (!__normBool01(r?.isDeleted)) {
-            const q = parseInt(String(r.qty||0),10);
-            r.saved = (isNaN(q)?0:(q>0?1:0));
-            r.updatedAt = __nowIso__();
-          }
-        });
-        await save();
-        return { ok:true };
-      }
-
+    if (op === "resetQty"){
+      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { r.qty = 0; r.saved = 0; r.checked = 0; r.updatedAt = __nowIso__(); } });
+      await save();
       return { ok:true };
     }
-
+    if (op === "save"){
+      rows.forEach(r => { if (!__normBool01(r?.isDeleted)) { const q = parseInt(String(r.qty||0),10); r.saved = (isNaN(q)?0:(q>0?1:0)); r.updatedAt = __nowIso__(); } });
+      await save();
+      return { ok:true };
+    }
     return { ok:true };
-  });
-}
+  }
 
+  return { ok:true };
+}
 
 async function __localApiColazione__(method, body){
   return __localApiSpesaList__("colazione", method, body);
@@ -11134,65 +11134,6 @@ function __prodNameKey_(it){
   return String(it?.prodotto || it?.nome || "").trim().toLowerCase();
 }
 
-// ---- Spesa: ID robusti + lock locale (fix operatore: tap/doppio-tap non funzionano se manca id) ----
-function __fnv1a32__(str){
-  try{
-    const s = String(str || "");
-    let h = 0x811c9dc5; // FNV-1a offset
-    for (let i=0; i<s.length; i++){
-      h ^= s.charCodeAt(i);
-      // h *= 16777619 (con overflow 32-bit)
-      h = (h + ((h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24))) >>> 0;
-    }
-    return h >>> 0;
-  }catch(_){ return (Date.now() >>> 0); }
-}
-
-function __spesaIdPrefixByTable__(tName){
-  const t = String(tName || "").trim();
-  if (t === "prodotti_pulizia") return "p";
-  if (t === "colazione") return "c";
-  return "s";
-}
-
-function __spesaStableIdFor__(tName, nameKey){
-  const key = String(nameKey || "").trim().toLowerCase();
-  const prefix = __spesaIdPrefixByTable__(tName);
-  const h = __fnv1a32__(prefix + "|" + key);
-  return `${prefix}-${h.toString(36)}`;
-}
-
-function __spesaEnsureId__(tName, it, usedIds){
-  try{
-    if (!it || typeof it !== "object") return it;
-    let id = String(it.id || "").trim();
-    if (id) { if (usedIds && usedIds.add) usedIds.add(id); return it; }
-    const key = __prodNameKey_(it);
-    if (!key) return it;
-    let cand = __spesaStableIdFor__(tName, key);
-    if (usedIds && usedIds.has){
-      if (usedIds.has(cand)){
-        // collisione improbabile: disambigua
-        cand = `${cand}-${(__fnv1a32__(String(Date.now()) + "|" + Math.random()).toString(36))}`;
-      }
-      usedIds.add(cand);
-    }
-    it.id = cand;
-    return it;
-  }catch(_){}
-  return it;
-}
-
-// Lock per scritture locali sulla stessa tabella (evita lost-update su iOS quando arrivano PUT paralleli)
-const __SPESA_LOCAL_LOCKS__ = new Map();
-async function __spesaLocalQueue__(key, task){
-  const k = String(key || "");
-  const prev = __SPESA_LOCAL_LOCKS__.get(k) || Promise.resolve();
-  const next = prev.then(task, task);
-  __SPESA_LOCAL_LOCKS__.set(k, next.catch(()=>{}));
-  return next;
-}
-
 function __spesaNormalizeItem_(it){
   try{
     if (!it) return it;
@@ -11218,6 +11159,9 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
 
   const res = await api(action, { method:"GET", params:{}, showLoader });
   const rows = Array.isArray(res) ? res : (res && Array.isArray(res.rows) ? res.rows : (res && Array.isArray(res.data) ? res.data : []));
+  // Ensure id (anche se arrivano record legacy senza id)
+  try{ (rows || []).forEach((it)=>{ __spesaEnsureId__(action === "prodotti_pulizia" ? "prodotti_pulizia" : "colazione", it); }); }catch(_){ }
+
   const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
 
@@ -11486,10 +11430,9 @@ function setupProdotti(){
         byAction[act].push({ id, patch: (obj && obj.patch) ? obj.patch : {} });
       });
 
-      // Commit sequenziale per evitare race condition (specialmente in LOCAL/iOS)
+      // Commit sequenziale per evitare lost-update su storage locale (IndexedDB)
       for (const act of Object.keys(byAction)){
-        const list = byAction[act] || [];
-        for (const {id, patch} of list){
+        for (const { id, patch } of (byAction[act] || [])){
           await api(act, { method:"PUT", body: Object.assign({ id:String(id) }, patch || {}), showLoader:false });
         }
       }
