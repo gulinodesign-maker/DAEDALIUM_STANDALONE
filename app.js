@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.044
+ * Build: 2.045
  */
-const BUILD_VERSION = "2.044";
+const BUILD_VERSION = "2.045";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2584,11 +2584,8 @@ function applyRoleMode(){
     if (row) row.hidden = true;
 
     const bar = document.getElementById("homeSyncBar");
-    const __hasRosterLink__ = !!(__FB_STATE__ && __FB_STATE__.teamId && __FB_STATE__.teamKey);
     if (bar){
-      const shouldShow = __hasRosterLink__;
-      try{ bar.hidden = !shouldShow; bar.style.display = shouldShow ? "" : "none"; }catch(_){ }
-      try{ if (shouldShow) setTimeout(()=>{ try{ __fitHomeSyncBtn__(); }catch(_){ } }, 0); }catch(_){ }
+      try{ bar.hidden = false; bar.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
 // HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
