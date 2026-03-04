@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.047
  */
-const BUILD_VERSION = "2.047";
+const BUILD_VERSION = "2.048";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11110,6 +11110,29 @@ async function loadProdottiList_(action, bucket, { force=false, showLoader=true 
   const items = (rows || []).filter(r => !__normBool01(r.isDeleted));
   items.forEach(__spesaNormalizeItem_);
 
+  // Deduplica per nome prodotto (evita card duplicate) + cleanup backend (best-effort)
+  try{
+    const map = new Map();
+    const dupIds = [];
+    (items || []).forEach((it)=>{
+      const k = __prodNameKey_(it);
+      if (!k) return;
+      if (!map.has(k)) { map.set(k, it); return; }
+      // duplicato: tieni il primo, marca gli altri come deleted
+      try{ if (it && it.id != null) dupIds.push(String(it.id)); }catch(_){}
+    });
+    const uniq = Array.from(map.values());
+    // sostituisci in-place
+    items.length = 0;
+    uniq.forEach(x=>items.push(x));
+    if (dupIds.length){
+      // pulizia backend in background, senza bloccare UI
+      Promise.all(dupIds.map((id)=>api(action, { method:"PUT", body:{ id:String(id), isDeleted:1, qty:0, saved:0, checked:0 }, showLoader:false })))
+        .then(()=>{})
+        .catch(()=>{});
+    }
+  }catch(_){}
+
   s.items = items;
   s.loaded = true;
   s.loadedAt = now;
@@ -11243,6 +11266,24 @@ function setupProdotti(){
     const v = raw.trim();
     if (!v) return;
     const prodotto = v.toUpperCase();
+    // Non permettere duplicati (un record unico: update/delete su id)
+    try{
+      const targetKey = (action === "prodotti_pulizia") ? "pulizia" : "colazione";
+      const bucket = __spesaBucketByKey_(targetKey);
+      if (!bucket.loaded) { try{ await loadProdottiList_(action, bucket, { force:false, showLoader:false }); }catch(_){ } }
+      const key = String(prodotto).trim().toLowerCase();
+      const exists = (bucket.items || []).some((it)=>{
+        if (__normBool01(it?.isDeleted)) return false;
+        return __prodNameKey_(it) === key;
+      });
+      if (exists){
+        try{ toast("Prodotto già presente"); }catch(_){}
+        if (input) input.value = "";
+        closeModal();
+        return;
+      }
+    }catch(_){}
+
     if (input) input.value = "";
     closeModal();
     try{
@@ -13817,12 +13858,11 @@ function renderCalendarioWeek(){
 
   // Mantieni input data sincronizzato con l'anchor (utile quando navighi con le frecce)
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
-
   if (title) {
-    const month = monthNameIT(anchor).toUpperCase();
-    title.textContent = month;
+    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
+    title.textContent = "";
+    title.hidden = true;
   }
-
   const occ = buildWeekOccupancy(start);
 
   grid.innerHTML = "";
@@ -14094,12 +14134,11 @@ function renderCalendarioMonth(){
 
   // Mantieni input data sincronizzato con l'anchor
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
-
   if (title) {
-    const month = monthNameIT(anchor).toUpperCase();
-    title.textContent = month;
+    // Il mese deve comparire SOLO in top bar (non sotto i controlli)
+    title.textContent = "";
+    title.hidden = true;
   }
-
   // Imposta le colonne dinamiche (1 colonna stanze + N giorni)
   try{
     grid.style.gridTemplateColumns = `var(--cal-room-w) repeat(${daysCount}, var(--cal-day-w))`;
