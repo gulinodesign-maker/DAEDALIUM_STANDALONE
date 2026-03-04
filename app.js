@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.045
+ * Build: 2.046
  */
-const BUILD_VERSION = "2.045";
+const BUILD_VERSION = "2.046";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2517,57 +2517,24 @@ function isOperatoreSession(sess){
 
 function __fitHomeSyncBtn__(){
   try{
-    const grid = document.querySelector("#page-home .home-grid");
-    const bar  = document.getElementById("homeSyncBar");
-    const btn  = document.getElementById("goDbSync");
-    if (!grid || !bar || !btn) return;
+    const bar = document.getElementById("homeSyncBar");
+    const btn = document.getElementById("goDbSync");
+    if (!bar || !btn) return;
 
-    const barRect = bar.getBoundingClientRect();
-    if (!barRect || barRect.width < 10) return;
+    // Layout vincolato: linea sopra + tasto SYNC sotto (stack verticale).
+    // Resetta eventuali override inline che potevano mettere gli elementi "affiancati".
+    try{
+      bar.style.display = "";
+      bar.style.alignItems = "";
+      bar.style.justifyContent = "";
+    }catch(_){}
 
-    const glyphs = Array.from(grid.querySelectorAll(".home-main-glyph")).filter(el=>{
-      try{
-        if (!el) return false;
-        if (!el.getClientRects || !el.getClientRects().length) return false;
-        const st = getComputedStyle(el);
-        if (st.display === "none" || st.visibility === "hidden") return false;
-        return true;
-      }catch(_){ return false; }
-    });
-    if (!glyphs.length) return;
-
-    let minL = Infinity, maxR = -Infinity;
-    for (const el of glyphs){
-      const r = el.getBoundingClientRect();
-      if (r && r.width > 0 && r.height > 0){
-        if (r.left < minL) minL = r.left;
-        if (r.right > maxR) maxR = r.right;
-      }
-    }
-    if (!isFinite(minL) || !isFinite(maxR) || maxR <= minL) return;
-
-    const cs = getComputedStyle(bar);
-    const padL = parseFloat(cs.paddingLeft) || 0;
-    const padR = parseFloat(cs.paddingRight) || 0;
-    const contentW = Math.max(0, barRect.width - padL - padR);
-    if (contentW < 10) return;
-
-    let width = maxR - minL;
-    width = Math.max(140, width);
-    width = Math.min(contentW, width);
-
-    let left = minL - (barRect.left + padL);
-    left = Math.max(0, left);
-    left = Math.min(contentW - width, left);
-
-    bar.style.display = "flex";
-    bar.style.alignItems = "center";
-    bar.style.justifyContent = "flex-start";
-
-    btn.style.width = `${width}px`;
-    btn.style.marginLeft = `${left}px`;
-    btn.style.marginRight = "0px";
-  }catch(_){ }
+    try{
+      btn.style.width = "";
+      btn.style.marginLeft = "";
+      btn.style.marginRight = "";
+    }catch(_){}
+  }catch(_){}
 }
 
 function applyRoleMode(){

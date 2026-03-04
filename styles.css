@@ -8023,6 +8023,14 @@ color: var(--mcol,#ff3b30);
   box-sizing: border-box;
   pointer-events: auto;
 }
+
+#homeSyncBar.sync-footer{
+  display: block;
+}
+#homeSyncBar .sync-footer-line{
+  display: block;
+}
+
 .sync-footer-line{
   height: 1px;
   background: #000;
