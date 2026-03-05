@@ -335,10 +335,10 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .icon-btn.icon-btn-green .ui-ico{ stroke: #ffffff; }
 
 
-/* dDAE_1.020 — Ore pulizia: back button bianco piatto con icona arancione (fix iOS) */
+/* dDAE_2.056 — Action buttons vicino ai titoli: fondo bianco (80%) + icona azzurra */
 .icon-btn.icon-btn-whiteblue{
-  background: var(--blue280);
-  border: 1px solid rgba(15,23,42,0.10);
+  background: rgba(255,255,255,0.80);
+  border: 1px solid rgba(15,23,42,0.14);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
@@ -347,7 +347,11 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 }
 .icon-btn.icon-btn-whiteblue:active{ transform: scale(0.98); }
 
-.icon-btn.icon-btn-whiteblue .ui-ico{ stroke: #ffffff; }
+.icon-btn.icon-btn-whiteblue .ui-ico,
+.icon-btn.icon-btn-whiteblue .ui-ico *{
+  stroke: var(--ico-sky) !important;
+  fill: none !important;
+}
 
 /* Piscina: icone navigazione mesi nere */
 #piscinaPrevMonth .ui-ico, #piscinaNextMonth .ui-ico{ stroke: var(--ico-blue-night) !important; fill: var(--ico-blue-night) !important; }
