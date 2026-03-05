@@ -800,8 +800,9 @@ input[type="date"]{
   flex-direction:column;
   align-items:center;
   padding: 0 2px;
+  padding-top: 12px;
 }
-.home-spacer{ flex: 1; }
+.home-spacer{ flex: 0 0 0px; height: 0; }
 
 .home-card{
   width: min(420px, 92vw);
