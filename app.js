@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.057
+ * Build: 2.058
  */
-const BUILD_VERSION = "2.057";
+const BUILD_VERSION = "2.058";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5508,6 +5508,13 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
+
+  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
+  try{
+    const sb = document.getElementById("homeSyncBar");
+    if (sb) sb.hidden = (page === "calendario");
+  }catch(_){ }
+
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 

@@ -898,7 +898,14 @@ input[type="date"]{
 
 
 @media (min-width: 900px){
-  .kpi-stack{ grid-template-columns: 1fr 1fr 1fr; }
+  .kpi-stack{ grid-template-columns: 1fr 1fr 1fr; 
+/* Calendario: pill/toast al centro pagina (no sotto SYNC) */
+body[data-page="calendario"] .toast{
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%,-50%);
+}
+}
 }
 
 
