@@ -6065,6 +6065,10 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   appearance: none;
   -webkit-appearance: none;
   background-clip: padding-box;
+  background: rgba(255,255,255,0.80);
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
 }
 .piscina-action-btn .ui-ico,
 .piscina-action-btn .ui-ico *{
@@ -6164,6 +6168,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   align-items: stretch !important;
   width: min(460px, 94vw) !important;
   padding: 14px !important;
+  justify-content: center !important;
 }
 
 .stats-stack{
