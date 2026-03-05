@@ -466,7 +466,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   max-width: 980px;
   margin: 0 auto;
   padding: 14px;
-  padding-bottom: calc(18px + var(--safe-bottom));
+  padding-bottom: calc(120px + var(--safe-bottom));
 }
 
 .card{
@@ -876,7 +876,7 @@ input[type="date"]{
 .toast{
   position: fixed;
   left: 50%;
-  bottom: calc(18px + var(--safe-bottom));
+  bottom: calc(120px + var(--safe-bottom));
   transform: translateX(-50%);
   background: rgba(15,23,42,0.88);
   color: white;
@@ -898,14 +898,14 @@ input[type="date"]{
 
 
 @media (min-width: 900px){
-  .kpi-stack{ grid-template-columns: 1fr 1fr 1fr; 
+  .kpi-stack{ grid-template-columns: 1fr 1fr 1fr; }
+}
+
 /* Calendario: pill/toast al centro pagina (no sotto SYNC) */
 body[data-page="calendario"] .toast{
   top: 50%;
   bottom: auto;
   transform: translate(-50%,-50%);
-}
-}
 }
 
 
@@ -5488,7 +5488,7 @@ grid-template-rows: 34px repeat(7, 54px);
   padding-top: 10px;
   padding-bottom: 10px;
 }
-#page-lavanderia .card .hd-actions{ display:none !important; }
+
 
 #page-lavanderia .card .hd h2{
   width: 100%;
