@@ -6059,7 +6059,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   flex-wrap: nowrap;
 }
 
-/* Piscina inline actions (in-page): solid colors, 80% opacity, white icon */
+/* Piscina inline actions (in-page): solid colors, 80% opacity, icona azzurra */
 .piscina-action-btn{
   width: 38px;
   height: 38px;
@@ -6079,15 +6079,15 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 }
 .piscina-action-btn .ui-ico,
 .piscina-action-btn .ui-ico *{
-  stroke: #ffffff !important;
+  stroke: var(--ico-sky) !important;
   fill: none !important;
 }
 .piscina-action-btn:active{
   transform: translateY(0.5px);
 }
-.piscina-action-sim{ background: rgba(14,165,233,0.80); }
-.piscina-action-sim2{ background: rgba(34,197,94,0.80); }
-.piscina-action-report{ background: rgba(249,115,22,0.80); }
+.piscina-action-sim{ background: rgba(255,255,255,0.80); }
+.piscina-action-sim2{ background: rgba(255,255,255,0.80); }
+.piscina-action-report{ background: rgba(255,255,255,0.80); }
 
 .stats-subtitle{
   font-weight: 900;
@@ -8037,7 +8037,7 @@ color: var(--mcol,#ff3b30);
   color: rgba(111,183,214,0.98) !important;
 }
 
-/* Settings: roster export button -> indaco bg + white icon */
+/* Settings: roster export button -> indaco bg + icona azzurra */
 .settings-btn-roster{
   background: rgba(99,102,241,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
