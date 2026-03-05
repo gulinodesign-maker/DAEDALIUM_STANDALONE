@@ -1132,7 +1132,7 @@ body[data-page="home"]{
 /* HOME: Build visibile su iPhone (spostata più in alto) */
 #page-home .build{
   padding-bottom: 0 !important;
-  margin-top: 14px;
+  margin-top: 50px;
   margin-bottom: 6px;
 }
 
@@ -5887,7 +5887,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   margin-bottom: 30px;
 }
 #page-home .build{
-  margin-top: 112px;
+  margin-top: 50px;
   padding-bottom: calc(10px + var(--safe-bottom));
   position: static;
 }
@@ -8119,7 +8119,7 @@ color: var(--mcol,#ff3b30);
 
 
 /* dDAE_2.054 — Home: distanza griglia icone ↔ build */
-#buildText{ margin-top: 50px; }
+#buildText{ margin-top: 0px; }
 
 
 /* dDAE_2.054 — Pulsanti bianchi (80%) con icone azzurre */
