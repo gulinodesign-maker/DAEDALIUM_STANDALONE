@@ -335,10 +335,10 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .icon-btn.icon-btn-green .ui-ico{ stroke: #ffffff; }
 
 
-/* dDAE_2.056 — Action buttons vicino ai titoli: fondo bianco (80%) + icona azzurra */
+/* dDAE_1.020 — Ore pulizia: back button bianco piatto con icona arancione (fix iOS) */
 .icon-btn.icon-btn-whiteblue{
-  background: rgba(255,255,255,0.80);
-  border: 1px solid rgba(15,23,42,0.14);
+  background: var(--blue280);
+  border: 1px solid rgba(15,23,42,0.10);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
@@ -347,11 +347,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 }
 .icon-btn.icon-btn-whiteblue:active{ transform: scale(0.98); }
 
-.icon-btn.icon-btn-whiteblue .ui-ico,
-.icon-btn.icon-btn-whiteblue .ui-ico *{
-  stroke: var(--ico-sky) !important;
-  fill: none !important;
-}
+.icon-btn.icon-btn-whiteblue .ui-ico{ stroke: #ffffff; }
 
 /* Piscina: icone navigazione mesi nere */
 #piscinaPrevMonth .ui-ico, #piscinaNextMonth .ui-ico{ stroke: var(--ico-blue-night) !important; fill: var(--ico-blue-night) !important; }
@@ -804,9 +800,8 @@ input[type="date"]{
   flex-direction:column;
   align-items:center;
   padding: 0 2px;
-  padding-top: 12px;
 }
-.home-spacer{ flex: 0 0 0px; height: 0; }
+.home-spacer{ flex: 1; }
 
 .home-card{
   width: min(420px, 92vw);
@@ -1136,7 +1131,7 @@ body[data-page="home"]{
 /* HOME: Build visibile su iPhone (spostata più in alto) */
 #page-home .build{
   padding-bottom: 0 !important;
-  margin-top: 50px;
+  margin-top: 14px;
   margin-bottom: 6px;
 }
 
@@ -5891,7 +5886,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   margin-bottom: 30px;
 }
 #page-home .build{
-  margin-top: 50px;
+  margin-top: 112px;
   padding-bottom: calc(10px + var(--safe-bottom));
   position: static;
 }
@@ -6065,10 +6060,6 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   appearance: none;
   -webkit-appearance: none;
   background-clip: padding-box;
-  background: rgba(255,255,255,0.80);
-  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
 }
 .piscina-action-btn .ui-ico,
 .piscina-action-btn .ui-ico *{
@@ -6168,7 +6159,6 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   align-items: stretch !important;
   width: min(460px, 94vw) !important;
   padding: 14px !important;
-  justify-content: center !important;
 }
 
 .stats-stack{
@@ -8124,23 +8114,4 @@ color: var(--mcol,#ff3b30);
   width: 22px;
   height: 22px;
   stroke: currentColor;
-}
-
-
-/* dDAE_2.054 — Home: distanza griglia icone ↔ build */
-#buildText{ margin-top: 0px; }
-
-
-/* dDAE_2.054 — Pulsanti bianchi (80%) con icone azzurre */
-.icon-btn.icon-btn-whitesky{
-  background: rgba(255,255,255,0.80) !important;
-  border: 1px solid rgba(15,23,42,0.10) !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.icon-btn.icon-btn-whitesky .ui-ico,
-.icon-btn.icon-btn-whitesky .ui-ico *{
-  stroke: var(--ico-sky) !important;
-  fill: none !important;
 }
