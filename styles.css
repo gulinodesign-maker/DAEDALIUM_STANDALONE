@@ -60,7 +60,7 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 body{
   min-height: 100vh;
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.053");
+    url("./assets/bg-daedalium.png?v=dDAE_2.005");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -997,7 +997,7 @@ input[type="date"]{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.053");
+    url("./assets/bg-daedalium.png?v=dDAE_2.005");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -8114,47 +8114,4 @@ color: var(--mcol,#ff3b30);
   width: 22px;
   height: 22px;
   stroke: currentColor;
-}
-
-
-/* dDAE_2.053 — OSPITI: azioni nel titolo + header/filtri sticky durante scroll lista */
-#page-ospiti .guest-cards-card{ overflow: visible; }
-
-#page-ospiti .guest-sticky{
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  background: rgba(0,0,0,0.15);
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
-  overflow: hidden;
-}
-
-#page-ospiti .guest-sticky-filters{
-  padding: 14px;
-  border-bottom: 1px solid var(--border);
-}
-#page-ospiti .guest-sticky-filters .guest-filter-grid{ margin-bottom: 0; }
-
-#page-ospiti .guest-list-bd{
-  border-bottom-left-radius: var(--radius);
-  border-bottom-right-radius: var(--radius);
-  overflow: hidden;
-}
-
-#page-ospiti .guest-action-btn{ -webkit-tap-highlight-color: transparent; }
-#page-ospiti .guest-actions{ display:flex; align-items:center; gap:10px; }
-
-#page-ospiti .guest-actions .guest-action-add{
-  background: var(--orange80) !important;
-  border: 1px solid rgba(15,23,42,0.14) !important;
-}
-#page-ospiti .guest-actions .guest-action-cal{
-  background: var(--indigo80) !important;
-  border: 1px solid rgba(15,23,42,0.14) !important;
-}
-#page-ospiti .guest-actions .icon-btn .ui-ico,
-#page-ospiti .guest-actions .icon-btn .ui-ico *{
-  stroke: #ffffff !important;
-  fill: none !important;
 }

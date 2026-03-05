@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.053" rel="stylesheet"/>
-<link href="./manifest.json?v=2.053" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.053" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.053" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.053" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.053" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.052" rel="stylesheet"/>
+<link href="./manifest.json?v=2.052" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.052" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.052" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.052" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.052" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.053"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.052"/>
 <div class="top-led-grid" id="topLedGrid" aria-label="Stato" role="status">
   <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
   <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -50,7 +50,24 @@
 </svg>
 </button>
 </div>
-<div hidden="" id="ospitiTopTools"></div>
+<div hidden="" id="ospitiTopTools">
+<button aria-label="Nuovo ospite" class="icon-btn icon-btn-whiteorange" id="btnNewGuestTop" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M12 5v14"></path>
+<path d="M5 12h14"></path>
+</svg>
+</button>
+<button aria-label="Calendario" class="icon-btn icon-btn-whiteindigo" id="goCalendarioTopOspiti" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M7 3v3"></path>
+<path d="M17 3v3"></path>
+<path d="M4.5 8h15"></path>
+<path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
+<path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path>
+<path d="M8 16h.01"></path><path d="M12 16h.01"></path><path d="M16 16h.01"></path>
+</svg>
+</button>
+</div>
 <div hidden="" id="speseTopTools"><button aria-label="Aggiungi spesa" class="icon-btn icon-btn-whiteorange" id="btnAddSpesa" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button><button aria-label="Grafico e riepilogo" class="icon-btn icon-btn-whiteblue" id="btnSpeseInsights" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 17v-6"></path><path d="M12 17V7"></path><path d="M16 17v-3"></path></svg></button></div>
 <div hidden="" id="prodottiTopTools">
 <button aria-label="Inserisci prodotto" class="icon-btn icon-btn-whiteorange" id="prodAddBtn" type="button">
@@ -192,7 +209,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.053"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.052"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -385,7 +402,7 @@
 
 
 <div class="operator-db-row" id="operatorDbRow" hidden></div>
-<div class="build" id="buildText">dDAE_2.053</div></div></section>
+<div class="build" id="buildText">dDAE_2.052</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1117,21 +1134,8 @@
 </div>
 </div>
 </div>
-</section><section aria-label="Ospiti" class="page" hidden="" id="page-ospiti"><div class="content"><div class="ospite-wrap"><div class="card guest-cards-card"><div class="guest-sticky" id="guestStickyBar"><div class="hd"><h2>Ospiti</h2><div class="hd-actions guest-actions" aria-label="Azioni ospiti"><button aria-label="Nuovo ospite" class="icon-btn guest-action-btn guest-action-add" id="btnNewGuestTop" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 5v14"></path>
-<path d="M5 12h14"></path>
-</svg>
-</button><button aria-label="Calendario" class="icon-btn guest-action-btn guest-action-cal" id="goCalendarioTopOspiti" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 3v3"></path>
-<path d="M17 3v3"></path>
-<path d="M4.5 8h15"></path>
-<path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
-<path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path>
-<path d="M8 16h.01"></path><path d="M12 16h.01"></path><path d="M16 16h.01"></path>
-</svg>
-</button></div></div><div class="guest-sticky-filters"><div aria-label="Filtri ospiti" class="guest-filter-grid">
+</section><section aria-label="Ospiti" class="page" hidden="" id="page-ospiti"><div class="content"><div class="ospite-wrap"><div class="card guest-cards-card"><div class="hd"><h2>Ospiti</h2></div><div class="bd">
+<div aria-label="Filtri ospiti" class="guest-filter-grid">
 <div class="guest-filter-row guest-filter-row-1">
 <div aria-label="Oggi" class="field gf-tile gf-today"><button aria-label="Filtra ospiti: oggi" class="gf-today-btn" id="guestToday" type="button">Oggi</button></div>
 <div aria-label="Ordinamento" class="field gf-tile gf-sort">
@@ -1149,7 +1153,8 @@
 <div aria-label="A" class="field gf-tile">
 </div>
 </div>
-</div></div></div><div class="bd guest-list-bd"><div class="guest-cards" id="guestCards"></div></div></div></div></div></div></section>
+</div>
+<div class="guest-cards" id="guestCards"></div></div></div></div></div></section>
 <!-- CALENDARIO -->
 <section aria-label="Calendario" class="page" hidden="" id="page-calendario">
 <div class="content calendar-page">
@@ -1484,8 +1489,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.053"></script>
-<script defer="" src="./app.js?v=2.053"></script>
+<script defer="" src="./config.js?v=2.052"></script>
+<script defer="" src="./app.js?v=2.052"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">

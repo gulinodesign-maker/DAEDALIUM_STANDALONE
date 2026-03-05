@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.053
+ * Build: 2.052
  */
-const BUILD_VERSION = "2.053";
+const BUILD_VERSION = "2.052";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5617,11 +5617,10 @@ state.page = page;
   }
 
 
-  // Top tools (Ospiti) — spostati nella pagina (header "Ospiti"), quindi sempre nascosti in topbar
+  // Top tools (Ospiti) — nuovo ospite + calendario accanto al tasto Home
   const ospitiTopTools = $("#ospitiTopTools");
   if (ospitiTopTools){
-    ospitiTopTools.hidden = true;
-    try{ ospitiTopTools.style.display = "none"; }catch(_){ }
+    ospitiTopTools.hidden = (page !== "ospiti");
   }
 
   
