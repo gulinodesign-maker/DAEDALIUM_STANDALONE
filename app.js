@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.073
+ * Build: 2.074
  */
-const BUILD_VERSION = "2.073";
+const BUILD_VERSION = "2.074";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7002,10 +7002,11 @@ function drawPie(canvasId, slices, opts){
   opts = opts || {};
   const centerTitle = (opts.centerTitle != null ? String(opts.centerTitle) : "Totale");
   const centerFormatter = (typeof opts.centerFormatter === "function") ? opts.centerFormatter : euro;
+  const showCenter = (opts.showCenter !== false);
 
   const parentW = (canvas.parentElement && canvas.parentElement.clientWidth) ? canvas.parentElement.clientWidth : 0;
   const baseW = parentW || Math.floor(window.innerWidth * 0.78);
-  const cssSize = Math.min(320, Math.max(120, Math.floor(baseW - 8)));
+  const cssSize = Math.min((opts.maxSize || 320), Math.max((opts.minSize || 120), Math.floor((opts.size || baseW) - 8)));
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = cssSize + "px";
   canvas.style.height = cssSize + "px";
@@ -7068,14 +7069,15 @@ function drawPie(canvasId, slices, opts){
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // center label
-  ctx.fillStyle = "rgba(15,23,42,0.75)";
-  ctx.font = "900 12px system-ui";
-  ctx.textAlign = "center";
-  ctx.fillText(centerTitle, cx, cy-4);
-  ctx.fillStyle = "rgba(15,23,42,0.92)";
-  ctx.font = "950 14px system-ui";
-  ctx.fillText(centerFormatter(total), cx, cy+14);
+  if (showCenter){
+    ctx.fillStyle = "rgba(15,23,42,0.75)";
+    ctx.font = "900 12px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText(centerTitle, cx, cy-4);
+    ctx.fillStyle = "rgba(15,23,42,0.92)";
+    ctx.font = "950 14px system-ui";
+    ctx.fillText(centerFormatter(total), cx, cy+14);
+  }
 }
 
 
@@ -7184,6 +7186,83 @@ function __renderLegendRows__(containerId, slices, valueFormatter){
   });
 }
 
+function __getStatGraphCard__(canvasId){
+  const canvas = document.getElementById(canvasId);
+  return canvas && canvas.closest ? canvas.closest(".stats-graph-card") : null;
+}
+
+function __bindStatGraphPopup__(canvasId, payload){
+  const card = __getStatGraphCard__(canvasId);
+  const canvas = document.getElementById(canvasId);
+  const target = card || canvas;
+  if (!target || !payload) return;
+  try{
+    target.classList.add("is-tappable");
+    target.setAttribute("role", "button");
+    target.setAttribute("tabindex", "0");
+    target.setAttribute("aria-label", payload.title || "Grafico");
+  }catch(_){ }
+  const open = ()=>{ try{ __openStatGraphPopup__(payload); }catch(_){ } };
+  target.onclick = open;
+  target.onkeydown = (e)=>{
+    const k = e && (e.key || e.code);
+    if (k === "Enter" || k === " " || k === "Spacebar"){
+      try{ e.preventDefault(); }catch(_){ }
+      open();
+    }
+  };
+}
+
+function __openStatGraphPopup__(payload){
+  const modal = document.getElementById("statGraphModal");
+  if (!modal || !payload) return;
+  const titleEl = document.getElementById("statGraphModalTitle");
+  const detailEl = document.getElementById("statGraphModalDetail");
+  const legendEl = document.getElementById("statGraphModalLegend");
+  if (titleEl) titleEl.textContent = String(payload.title || "Grafico");
+  if (detailEl) detailEl.textContent = String(payload.detail || "");
+  __renderLegendRows__("statGraphModalLegend", Array.isArray(payload.slices) ? payload.slices : [], payload.valueFormatter);
+  drawPie("statGraphModalCanvas", Array.isArray(payload.slices) ? payload.slices : [], {
+    centerTitle: payload.centerTitle != null ? payload.centerTitle : "Totale",
+    centerFormatter: (typeof payload.centerFormatter === "function") ? payload.centerFormatter : euro,
+    showCenter: true,
+    maxSize: 340,
+    minSize: 180
+  });
+  modal.hidden = false;
+  try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
+}
+
+function __closeStatGraphPopup__(){
+  const modal = document.getElementById("statGraphModal");
+  if (!modal) return;
+  modal.hidden = true;
+  try{ modal.setAttribute("aria-hidden", "true"); }catch(_){ }
+}
+
+function __ensureStatGraphPopupBound__(){
+  const modal = document.getElementById("statGraphModal");
+  const closeBtn = document.getElementById("statGraphModalClose");
+  if (!modal || modal.__bound) return;
+  modal.__bound = true;
+  if (closeBtn) closeBtn.addEventListener("click", __closeStatGraphPopup__);
+  modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeStatGraphPopup__(); });
+}
+
+function __occupazioneMensileSlices__(mensili){
+  const vals = Array.isArray(mensili && mensili.occPctByMonth) ? mensili.occPctByMonth : [];
+  const colors = __mensiliPalette12();
+  return new Array(12).fill(0).map((_,i)=>({
+    label: String(__MONTHS_IT[i] || `Mese ${i+1}`),
+    value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
+    color: colors[i % colors.length] || "#2b7cb4"
+  })).filter(x=>x.value > 0);
+}
+
+function __operatorGraphColors__(){
+  return ["#43B5FF", "#FF7A1A", "rgba(15,23,42,0.55)"];
+}
+
 function computeStatOrePuliziaGrafico(rows){
   const listRaw = Array.isArray(rows) ? rows : [];
   const list = __filterByExerciseYear__(listRaw, state.exerciseYear || loadExerciseYear(), ["data","date","Data","createdAt","created_at","updatedAt","updated_at"]);
@@ -7201,7 +7280,7 @@ function computeStatOrePuliziaGrafico(rows){
   const pushUnique = (v)=>{ const s = String(v||"").trim(); if (s && !ordered.includes(s)) ordered.push(s); };
   fromSet.forEach(pushUnique);
   Array.from(totals.keys()).sort((a,b)=>a.localeCompare(b, "it")).forEach(pushUnique);
-  const palette = __mensiliPalette12();
+  const palette = __operatorGraphColors();
   const slices = ordered.map((name, i)=>({
     label: name,
     value: Number(totals.get(name) || 0),
@@ -7211,6 +7290,8 @@ function computeStatOrePuliziaGrafico(rows){
 }
 
 function renderStatGrafici(operatoriRows){
+  __ensureStatGraphPopupBound__();
+  const year = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const mensili = computeStatMensili();
   state.statMensili = mensili;
   const statGen = computeStatGen();
@@ -7232,37 +7313,73 @@ function renderStatGrafici(operatoriRows){
     { label: categoriaLabel("IVA_4"), value: statSpese.iva4, color: (COLORS.IVA_4 || "#1f2937") }
   ].filter(x=>Number(x.value || 0) > 0);
   const pulizieSlices = computeStatOrePuliziaGrafico(operatoriRows);
-
-  drawMonthlyPctBars("statGrafOccCanvas", mensili.occPctByMonth || [], __mensiliPalette12(), { labels: (__MONTHS_IT || []).map(m=>String(m||"").slice(0,1)) });
-  const occNote = document.getElementById("statGrafOccNote");
-  if (occNote){
-    const y = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-    occNote.textContent = `Anno ${y} · percentuale media mensile di occupazione`;
-  }
-
   const ricevuteSlices = [
     { label: "Senza ricevuta", value: statGen.senzaRicevuta, color: "#bfbea9" },
     { label: "Con ricevuta", value: statGen.conRicevuta, color: "#6fb7d6" }
   ];
-  drawPie("statGrafRicevuteCanvas", ricevuteSlices, { centerTitle: "Totale", centerFormatter: euro });
-  __renderLegendRows__("statGrafRicevuteLegend", ricevuteSlices, euro);
-
   const bookingSlices = [
     { label: "Con Booking", value: pren.withBooking, color: "#2b7cb4" },
     { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
   ];
-  drawPie("statGrafBookingCanvas", bookingSlices, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))) });
-  __renderLegendRows__("statGrafBookingLegend", bookingSlices, (v)=>String(Math.round(Number(v || 0))));
+  const occSlices = __occupazioneMensileSlices__(mensili);
 
-  drawPie("statGrafCancCanvas", cancSlices, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))) });
-  __renderLegendRows__("statGrafCancLegend", cancSlices, (v)=>String(Math.round(Number(v || 0))));
+  drawPie("statGrafOccCanvas", occSlices.length ? occSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Occup.", centerFormatter: (n)=>`${Number(n || 0).toFixed(1)}%`, showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafRicevuteCanvas", ricevuteSlices, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafBookingCanvas", bookingSlices, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafCancCanvas", cancSlices, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafSpeseCanvas", speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }], { centerTitle: "Spese", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafPulizieCanvas", pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0", showCenter: false, maxSize: 170, minSize: 120 });
 
-  drawPie("statGrafSpeseCanvas", speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }], { centerTitle: "Spese", centerFormatter: euro });
-  __renderLegendRows__("statGrafSpeseLegend", speseSlices, euro);
-
-  drawPie("statGrafPulizieCanvas", pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0" });
-  __renderLegendRows__("statGrafPulizieLegend", pulizieSlices, (v)=>`${__fmtHours_(v) || "0"}h`);
+  __bindStatGraphPopup__("statGrafOccCanvas", {
+    title: "Occupazione mensile",
+    detail: `Anno solare ${year} · percentuale media mensile di occupazione`,
+    slices: occSlices,
+    valueFormatter: (v)=>`${Number(v || 0).toFixed(1)}%`,
+    centerTitle: "Media",
+    centerFormatter: (n)=>`${Number(n || 0).toFixed(1)}%`
+  });
+  __bindStatGraphPopup__("statGrafRicevuteCanvas", {
+    title: "Con ricevuta / Senza ricevuta",
+    detail: `Anno solare ${year} · distribuzione degli incassi`,
+    slices: ricevuteSlices,
+    valueFormatter: euro,
+    centerTitle: "Totale",
+    centerFormatter: euro
+  });
+  __bindStatGraphPopup__("statGrafBookingCanvas", {
+    title: "Prenotazioni con / senza Booking",
+    detail: `Anno solare ${year} · numero prenotazioni`,
+    slices: bookingSlices,
+    valueFormatter: (v)=>String(Math.round(Number(v || 0))),
+    centerTitle: "Prenot.",
+    centerFormatter: (n)=>String(Math.round(Number(n || 0)))
+  });
+  __bindStatGraphPopup__("statGrafCancCanvas", {
+    title: "Cancellazioni",
+    detail: `Anno solare ${year} · attive vs cancellate`,
+    slices: cancSlices,
+    valueFormatter: (v)=>String(Math.round(Number(v || 0))),
+    centerTitle: "Totale",
+    centerFormatter: (n)=>String(Math.round(Number(n || 0)))
+  });
+  __bindStatGraphPopup__("statGrafSpeseCanvas", {
+    title: "Spese",
+    detail: `Anno solare ${year} · distribuzione per categoria`,
+    slices: speseSlices,
+    valueFormatter: euro,
+    centerTitle: "Spese",
+    centerFormatter: euro
+  });
+  __bindStatGraphPopup__("statGrafPulizieCanvas", {
+    title: "Ore pulizia operatori",
+    detail: `Anno solare ${year} · ripartizione percentuale ore operatori`,
+    slices: pulizieSlices,
+    valueFormatter: (v)=>`${__fmtHours_(v) || "0"}h`,
+    centerTitle: "Ore",
+    centerFormatter: (n)=>`${__fmtHours_(n) || "0"}h`
+  });
 }
+
 
 
 /* Helpers */

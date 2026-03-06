@@ -333,7 +333,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.073</div></div></section>
+<div class="build" id="buildText">dDAE_2.074</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1684,6 +1684,23 @@
 </div>
 </div>
 </div>
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="statGraphModal">
+<div aria-label="Dettaglio grafico" aria-modal="true" class="modal-card stat-graph-modal-card" role="dialog">
+<div class="db-menu-head">
+<div class="db-menu-title" id="statGraphModalTitle">Grafico</div>
+<button aria-label="Chiudi" class="icon-btn" id="statGraphModalClose" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="stat-graph-modal-body">
+<div class="stat-graph-modal-detail" id="statGraphModalDetail"></div>
+<div class="stats-graph-canvas stat-graph-modal-canvas"><canvas id="statGraphModalCanvas"></canvas></div>
+<div class="stats-graph-legend stat-graph-modal-legend" id="statGraphModalLegend"></div>
+</div>
+</div>
+</div>
+
 <div class="sync-footer" id="homeSyncBar">
 <div aria-hidden="true" class="sync-footer-line"></div>
 <button aria-label="Sync Firebase" class="home-sync-btn" id="goDbSync" type="button">

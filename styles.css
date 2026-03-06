@@ -8261,8 +8261,8 @@ color: var(--mcol,#ff3b30);
 /* dDAE_2.073 - Dashboard grafici unificata */
 .stats-graphs-page{padding-bottom:28px;}
 .stats-graphs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:4px;}
-.stats-graph-card{min-width:0;border:1px solid rgba(15,23,42,0.10);border-radius:20px;background:rgba(255,255,255,0.80);box-shadow:0 10px 22px rgba(15,23,42,0.08);padding:12px 10px 10px;}
-.stats-graph-card-title{font-weight:900;font-size:13px;line-height:1.2;color:rgba(15,23,42,0.88);min-height:32px;margin-bottom:8px;}
+.stats-graph-card{min-width:0;border:0;background:transparent;box-shadow:none;padding:8px 4px 4px;border-radius:0;}
+.stats-graph-card-title{font-weight:900;font-size:13px;line-height:1.2;color:rgba(15,23,42,0.88);min-height:32px;margin-bottom:6px;text-align:center;}
 .stats-graph-canvas{width:100%;display:flex;justify-content:center;align-items:center;}
 .stats-graph-canvas canvas{display:block;max-width:100%;}
 .stats-graph-legend{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
@@ -8271,3 +8271,14 @@ color: var(--mcol,#ff3b30);
 .stats-graph-legend .legright{font-size:11px;text-align:right;}
 .stats-graph-note{margin-top:8px;font-size:11px;line-height:1.25;color:rgba(15,23,42,0.62);text-align:center;}
 @media (max-width:380px){.stats-graphs-grid{gap:10px;}.stats-graph-card{padding:10px 8px 8px;}.stats-graph-card-title{font-size:12px;}}
+
+
+.stats-graphs-page .stats-graph-legend,
+.stats-graphs-page .stats-graph-note{display:none !important;}
+.stats-graphs-page .stats-graph-card.is-tappable{cursor:pointer;}
+.stats-graphs-page .stats-graph-card.is-tappable:active{transform:scale(.985);}
+.stat-graph-modal-card{width:min(92vw,420px);padding:0;overflow:hidden;}
+.stat-graph-modal-body{padding:14px;display:flex;flex-direction:column;gap:10px;}
+.stat-graph-modal-detail{font-size:12px;line-height:1.35;color:rgba(15,23,42,0.68);text-align:center;}
+.stat-graph-modal-canvas{padding-top:2px;}
+.stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
