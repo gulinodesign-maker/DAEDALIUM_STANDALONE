@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.083
+ * Build: 2.082
  */
-const BUILD_VERSION = "2.083";
+const BUILD_VERSION = "2.082";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15032,6 +15032,11 @@ function toRoman(n){
 }
 
 
+(async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
+
+
+
+
 /* =========================
    Lavanderia (dDAE_1.020)
 ========================= */
@@ -16221,5 +16226,3 @@ async function initOrePuliziaPage(){
 
   __renderOrePuliziaCalendar_();
 }
-
-(async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
