@@ -8156,3 +8156,87 @@ color: var(--mcol,#ff3b30);
   stroke: var(--ico-sky) !important;
   fill: none !important;
 }
+
+
+/* dDAE_2.063 — Ore Pulizia: header compatto + griglia 2x2 filtri/stat */
+#page-orepulizia .opcal-wrap{
+  padding: calc(6px + var(--safe-top) - 30px) 19px 26px;
+}
+#page-orepulizia .opcal-group{
+  margin-top: 0;
+}
+#page-orepulizia .opcal-group-hd{
+  padding: 4px 12px 10px;
+  border-bottom: 0;
+}
+#page-orepulizia .opcal-titleMain{
+  display: none !important;
+}
+#page-orepulizia .opcal-summaryGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+#page-orepulizia .opcal-filterRow{
+  margin: 0;
+  padding: 0;
+  gap: 10px;
+}
+#page-orepulizia .opcal-filterRow-top{
+  display: contents;
+}
+#page-orepulizia .opcal-filter select,
+#page-orepulizia .opcal-stat{
+  min-height: 64px;
+  height: 100%;
+}
+#page-orepulizia .opcal-filter select{
+  height: 64px;
+  border-radius: 18px;
+  font-size: 18px;
+  font-weight: 800;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+#page-orepulizia .opcal-stats{
+  display: contents;
+}
+#page-orepulizia .opcal-stat{
+  margin: 0;
+}
+#page-orepulizia .opcal-group-bd{
+  padding: 6px 12px 12px;
+}
+#page-orepulizia .opcal-weekdays{
+  margin: 0 0 10px;
+}
+@media (max-width: 420px){
+  #page-orepulizia .opcal-summaryGrid{
+    gap: 8px;
+  }
+  #page-orepulizia .opcal-filter select,
+  #page-orepulizia .opcal-stat{
+    min-height: 60px;
+  }
+  #page-orepulizia .opcal-filter select{
+    height: 60px;
+    padding: 0 12px;
+    font-size: 16px;
+  }
+  #page-orepulizia .opcal-stat{
+    padding: 10px 11px;
+  }
+  #page-orepulizia .opcal-statLabel{
+    font-size: 12px;
+  }
+  #page-orepulizia .opcal-statValue{
+    font-size: 12px;
+    line-height: 1.12;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
