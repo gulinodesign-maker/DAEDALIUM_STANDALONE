@@ -2891,6 +2891,8 @@ function updateYearPill(){
 
   // Topbar: anno (default) o mese (solo Calendario)
   try{ __setTopbarCenterLabel__(); }catch(_){ }
+  try{ syncTopbarOffset(); }catch(_){ }
+  try{ requestAnimationFrame(()=>{ try{ syncTopbarOffset(); }catch(_){ } }); }catch(_){ }
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -5838,6 +5840,16 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
 }
 
+function syncTopbarOffset(){
+  try{
+    const topbar = document.querySelector(".topbar");
+    if (!topbar) return;
+    const h = Math.ceil(topbar.getBoundingClientRect().height || topbar.offsetHeight || 0);
+    if (!h) return;
+    document.documentElement.style.setProperty("--topbar-offset", `${h}px`);
+  }catch(_){ }
+}
+
 function setupHeader(){
   const hb = $("#hamburgerBtn");
   if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
@@ -5887,6 +5899,8 @@ function setupHeader(){
   });
 
   // Back (ore pulizia + calendario)
+  try{ syncTopbarOffset(); }catch(_){ }
+
   const bb = $("#backBtnTop");
   if (bb) bb.addEventListener("click", () => {
     if (state.page === "orepulizia") { showPage("pulizie"); return; }
@@ -12602,6 +12616,10 @@ async function init(){
   // Imposta una pagina di default (poi showPage verrà chiamata UNA sola volta)
   document.body.dataset.page = (state.session && state.session.user_id) ? "home" : "auth";
   setupHeader();
+  try{ syncTopbarOffset(); }catch(_){ }
+  try{ window.addEventListener("resize", syncTopbarOffset, { passive:true }); }catch(_){ }
+  try{ window.addEventListener("orientationchange", ()=>setTimeout(syncTopbarOffset, 80), { passive:true }); }catch(_){ }
+  try{ window.addEventListener("pageshow", ()=>setTimeout(syncTopbarOffset, 0), { passive:true }); }catch(_){ }
   setupAuth();
   setupHome();
   // Check ricevute mancanti (solo a riavvio)
