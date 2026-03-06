@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.077
+ * Build: 2.078
  */
-const BUILD_VERSION = "2.077";
+const BUILD_VERSION = "2.078";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2244,10 +2244,29 @@ async function __dbImport__(kind){
         }
       }
     }catch(_){}
+    // Login import from auth page: crea subito l'account locale e accede automaticamente al primo admin del backup
+    try{
+      const isAuthPage = String(state?.page || "").trim() === "auth";
+      const isAdminImport = String(kind||"").toLowerCase().startsWith("admin");
+      const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : [];
+      if (isAuthPage && isAdminImport && importedUsers.length){
+        const preferred = importedUsers.find(u => !isOperatoreSession(u)) || importedUsers[0];
+        const importedSession = __sessionFromUserRow__(preferred);
+        if (importedSession){
+          try{ state.session = importedSession; }catch(_){ }
+          try{ saveSession(importedSession); }catch(_){ }
+          try{ await __kvSet__("auth:lastImportedAccount", { at: __nowIso__(), username: importedSession.username || "", role: importedSession.ruolo || "admin" }); }catch(_){ }
+        }
+      }
+    }catch(_){ }
+
 // Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
-    try{ toast(`${label}: import completato`, "blue"); }catch(_){}
+    try{
+      const isAuthAutoLogin = String(state?.page || "").trim() === "auth" && !!loadSession();
+      toast(isAuthAutoLogin ? "Backup importato: account creato e accesso eseguito" : `${label}: import completato`, "blue");
+    }catch(_){ }
     setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
