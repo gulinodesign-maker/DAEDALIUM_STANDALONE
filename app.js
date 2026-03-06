@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.069
+ * Build: 2.067
  */
-const BUILD_VERSION = "2.069";
+const BUILD_VERSION = "2.067";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1595,7 +1595,7 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
@@ -1935,7 +1935,7 @@ async function __fbImportAdmin__(opts){
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
@@ -1964,7 +1964,7 @@ async function __handleSyncBoth__(){
   }catch(_){ }
   const ok = (ok1 !== false) && (ok2 !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
+  setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
 }
 
@@ -2243,7 +2243,7 @@ async function __dbImport__(kind){
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
     try{ toast(`${label}: import completato`, "blue"); }catch(_){}
-    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 400);
+    setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
     try{ toast("Errore import", "orange"); }catch(_){}
@@ -12699,16 +12699,12 @@ try{
     try { ensureSettingsLoaded({ force:false, showLoader:false }).catch(() => {}); } catch(_){ }
   }
 
-  // avvio: ripristina sezione se il SW ha forzato un reload su iOS
-  // Avvio: sempre HOME quando l'utente è autenticato (ignora l'ultima pagina visitata)
-  try{ sessionStorage.removeItem(__RESTORE_KEY); }catch(_){ }
-  try{
-    localStorage.removeItem(__RESTORE_KEY);
-    localStorage.removeItem(__LAST_PAGE_KEY);
-  }catch(_){ }
-  try{ __writeHashPage("home"); }catch(_){ }
-
-  const targetPage = (state.session && state.session.user_id) ? "home" : "auth";
+  // avvio: se c'è uno stato di restore (es. dopo sync/import o reload SW),
+  // riapri la pagina salvata; altrimenti mantieni HOME come default per login normale.
+  const restoredPage = (__restore && __sanitizePage(__restore.page)) ? __sanitizePage(__restore.page) : null;
+  const targetPage = (state.session && state.session.user_id)
+    ? (restoredPage || "home")
+    : "auth";
   showPage(targetPage);
   if (__restore) setTimeout(() => { try { __applyUiState(__restore); } catch(_) {} }, 0);
 
