@@ -72,8 +72,7 @@ body{
 .topbar{
   position: sticky;
   top: 0;
-  z-index: 40;
-  position: relative;
+  z-index: 1000;
   padding-top: var(--safe-top);
   background: var(--glass);
   backdrop-filter: blur(14px);
@@ -2036,7 +2035,9 @@ border: 1px solid var(--border);
 
 /* Topbar: stronger premium accent */
 .topbar{
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   border-bottom-color: rgba(15,23,42,0.14);
 }
 .topbar::after{
