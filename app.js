@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.087
+ * Build: 2.088
  */
-const BUILD_VERSION = "2.087";
+const BUILD_VERSION = "2.088";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -553,12 +553,20 @@ async function __localApiLavanderia__(method, params, body){
     if (idx >= 0){
       try{
         const prev = list[idx] || {};
-        list[idx] = Object.assign({}, prev, { id: (prev.id || id), isDeleted: true, updatedAt: now, createdAt: (prev.createdAt || prev.created_at || now) });
+        list[idx] = Object.assign({}, prev, {
+          id: (prev.id || id),
+          isDeleted: true,
+          is_deleted: true,
+          deletedAt: now,
+          deleted_at: now,
+          updatedAt: now,
+          createdAt: (prev.createdAt || prev.created_at || now)
+        });
       }catch(_){
-        list[idx] = { id, isDeleted: true, createdAt: now, updatedAt: now };
+        list[idx] = { id, isDeleted: true, is_deleted: true, deletedAt: now, deleted_at: now, createdAt: now, updatedAt: now };
       }
     } else {
-      list.push({ id, isDeleted: true, createdAt: now, updatedAt: now });
+      list.push({ id, isDeleted: true, is_deleted: true, deletedAt: now, deleted_at: now, createdAt: now, updatedAt: now });
     }
     await save();
     return { ok:true };
@@ -15051,32 +15059,13 @@ const LAUNDRY_LABELS = {
 
 
 function __laundryDeletedKey__(){
-  try{
-    const uid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : "anon";
-    const yr = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-    return `ddae_laundry_deleted_${uid}_${yr}`;
-  }catch(_){
-    return "ddae_laundry_deleted_anon";
-  }
+  return "ddae_laundry_deleted_shared_board";
 }
 function __laundryDeletedIds__(){
-  try{
-    const raw = localStorage.getItem(__laundryDeletedKey__());
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    return new Set(Array.isArray(arr) ? arr.map(x => String(x)) : []);
-  }catch(_){
-    return new Set();
-  }
+  return new Set();
 }
 function __laundryMarkDeleted__(id){
-  try{
-    const sid = String(id || "");
-    if (!sid) return;
-    const set = __laundryDeletedIds__();
-    set.add(sid);
-    localStorage.setItem(__laundryDeletedKey__(), JSON.stringify(Array.from(set)));
-  }catch(_){}
+  return;
 }
 function sanitizeLaundryItem_(it){
   it = it || {};
@@ -15086,6 +15075,9 @@ function sanitizeLaundryItem_(it){
   out.endDate = String(it.endDate || it.end_date || it.to || "").trim();
   out.createdAt = String(it.createdAt || it.created_at || "").trim();
   out.updatedAt = String(it.updatedAt || it.updated_at || it.updatedAt || "").trim();
+  out.deletedAt = String(it.deletedAt || it.deleted_at || "").trim();
+  out.isDeleted = __normBool01(it.isDeleted ?? it.is_deleted ?? it.deleted);
+  out.is_deleted = out.isDeleted;
   for (const k of LAUNDRY_COLS){
     const n = Number(it[k]);
     out[k] = isNaN(n) ? 0 : Math.max(0, Math.floor(n));
@@ -15102,6 +15094,7 @@ function setLaundryLabels_(){
 
 function renderLaundry_(item){
   item = item ? sanitizeLaundryItem_(item) : null;
+  if (item && (item.isDeleted || item.is_deleted)) item = null;
   state.laundry.current = item;
 
   const rangeEl = document.getElementById("laundryPeriodLabel");
@@ -15281,11 +15274,10 @@ async function loadLavanderia() {
       : (res && Array.isArray(res.rows) ? res.rows
       : [])));
     const rawList = (rows || []).map(sanitizeLaundryItem_);
-    const __delSet = __laundryDeletedIds__();
-    const list = rawList.filter(it => !(it && (it.isDeleted || it.is_deleted))).filter(it => { try{ return !(it && it.id && __delSet.has(String(it.id))); }catch(_){ return true; } }).sort((a,b) => {
+    const list = rawList.filter(it => !(it && (it.isDeleted || it.is_deleted))).sort((a,b) => {
       const byEnd = String(b.endDate||"").localeCompare(String(a.endDate||""));
       if (byEnd) return byEnd;
-      return String(b.createdAt||b.updatedAt||"").localeCompare(String(a.createdAt||a.updatedAt||""));
+      return String(b.updatedAt||b.createdAt||"").localeCompare(String(a.updatedAt||a.createdAt||""));
     });
 
     state.laundry.list = list;

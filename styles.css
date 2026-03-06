@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.073");
+    url("./assets/bg-daedalium.png?v=dDAE_2.088");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -427,7 +427,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.073 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.088 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.073");
+    url("./assets/bg-daedalium.png?v=dDAE_2.088");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2400,7 +2400,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.073 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.088 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -8268,7 +8268,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.073 - Dashboard grafici unificata */
+/* dDAE_2.088 - Dashboard grafici unificata */
 .stats-graphs-page{padding-bottom:28px;}
 .stats-graphs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:4px;}
 .stats-graph-card{min-width:0;border:0;background:transparent;box-shadow:none;padding:8px 4px 4px;border-radius:0;}
@@ -8294,7 +8294,7 @@ color: var(--mcol,#ff3b30);
 .stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
 
 
-/* dDAE_2.087 — Statistiche: griglia davvero centrata nella pagina */
+/* dDAE_2.088 — Statistiche: griglia davvero centrata nella pagina */
 #page-statistiche .stats-page{
   min-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 28px);
   display: flex;
