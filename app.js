@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.067
+ * Build: 2.070
  */
-const BUILD_VERSION = "2.071";
+const BUILD_VERSION = "2.070";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1595,7 +1595,8 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
@@ -1935,36 +1936,40 @@ async function __fbImportAdmin__(opts){
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 250); }
+  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
 async function __handleSyncImport__(){
-  if (__isAdmin__()) return __fbImportAdmin__();
-  return __fbImportOperator__();
+  const restoreState = __captureSyncRestoreState();
+  if (__isAdmin__()) return __fbImportAdmin__({ restoreState });
+  return __fbImportOperator__({ restoreState });
 }
 async function __handleSyncExport__(){
-  if (__isAdmin__()) return __fbExportAdmin__();
-  return __fbExportOperator__();
+  const restoreState = __captureSyncRestoreState();
+  if (__isAdmin__()) return __fbExportAdmin__({ restoreState });
+  return __fbExportOperator__({ restoreState });
 }
 
 
 async function __handleSyncBoth__(){
   __fbLoadLink__();
+  const restoreState = __captureSyncRestoreState();
   try{ toast("Sync in corso...", "blue"); }catch(_){}
   let ok1=false, ok2=false;
   try{
     if (__isAdmin__()){
-      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
-      ok2 = await __fbExportAdmin__({ silent:true });
+      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true, restoreState });
+      ok2 = await __fbExportAdmin__({ silent:true, restoreState });
     }else{
-      ok1 = await __fbExportOperator__({ silent:true });
-      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
+      ok1 = await __fbExportOperator__({ silent:true, restoreState });
+      ok2 = await __fbImportOperator__({ silent:true, skipReload:true, restoreState });
     }
   }catch(_){ }
   const ok = (ok1 !== false) && (ok2 !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 900);
+  setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
 }
 
@@ -2110,9 +2115,9 @@ function __dbFmtDateDdMmYy__(){
     const ts = new Date();
     const d = String(ts.getDate()).padStart(2,"0");
     const m = String(ts.getMonth()+1).padStart(2,"0");
-    const y = String(ts.getFullYear());
+    const y = String(ts.getFullYear()).slice(-2);
     return `${d}-${m}-${y}`;
-  }catch(_){ return "00-00-0000"; }
+  }catch(_){ return "00-00-00"; }
 }
 
 function __dbAccountNameForKind__(kind){
@@ -2121,7 +2126,7 @@ function __dbAccountNameForKind__(kind){
     const k = String(kind||"").toLowerCase();
     const sess = (typeof loadSession === "function") ? loadSession() : null;
     const uname = String(sess?.username || "").trim();
-    if (uname) return uname;
+    if (uname) return uname.toUpperCase();
     if (k.startsWith("admin")) return "DAEDALIUM";
     return "OPERATORE";
   }catch(_){
@@ -2243,7 +2248,7 @@ async function __dbImport__(kind){
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
     try{ toast(`${label}: import completato`, "blue"); }catch(_){}
-    setTimeout(()=>{ try{ location.reload(); }catch(_){ } }, 400);
+    setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
     try{ toast("Errore import", "orange"); }catch(_){}
@@ -2393,12 +2398,11 @@ async function __dbExport__(kind, preopenWin){
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
-    // Nome file export: per ADMIN usa gg-mm-aaaa_nome_account, per OPER mantiene il formato esistente
+    // Nome file export: distinguere chiaramente ADMIN vs OPER
     const k = String(kind||"").toLowerCase();
+    const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    const filename = k.startsWith("admin")
-      ? __safeFileName__(`${dt}_${__dbAccountNameForKind__(kind)}`).concat(".json")
-      : __safeFileName__(`DAEDALIUM_EXP_OPER_${dt}.json`);
+    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
@@ -3106,6 +3110,20 @@ function __applyFormValue(id, v){
     if (el.type === "checkbox") el.checked = !!v;
     else el.value = String(v);
   } catch (_) {}
+}
+
+function __captureSyncRestoreState(){
+  try{
+    const out = __captureUiState();
+    const currentPage = __sanitizePage(state.page)
+      || __sanitizePage(document.body?.dataset?.page)
+      || __readHashPage()
+      || "home";
+    out.page = currentPage;
+    return out;
+  }catch(_){
+    return { page: (__sanitizePage(state.page) || "home") };
+  }
 }
 
 function __captureUiState(){
@@ -12700,16 +12718,12 @@ try{
     try { ensureSettingsLoaded({ force:false, showLoader:false }).catch(() => {}); } catch(_){ }
   }
 
-  // avvio: ripristina sezione se il SW ha forzato un reload su iOS
-  // Avvio: sempre HOME quando l'utente è autenticato (ignora l'ultima pagina visitata)
-  try{ sessionStorage.removeItem(__RESTORE_KEY); }catch(_){ }
-  try{
-    localStorage.removeItem(__RESTORE_KEY);
-    localStorage.removeItem(__LAST_PAGE_KEY);
-  }catch(_){ }
-  try{ __writeHashPage("home"); }catch(_){ }
-
-  const targetPage = (state.session && state.session.user_id) ? "home" : "auth";
+  // avvio: se c'è uno stato di restore (es. dopo sync/import o reload SW),
+  // riapri la pagina salvata; altrimenti mantieni HOME come default per login normale.
+  const restoredPage = (__restore && __sanitizePage(__restore.page)) ? __sanitizePage(__restore.page) : null;
+  const targetPage = (state.session && state.session.user_id)
+    ? (restoredPage || "home")
+    : "auth";
   showPage(targetPage);
   if (__restore) setTimeout(() => { try { __applyUiState(__restore); } catch(_) {} }, 0);
 
