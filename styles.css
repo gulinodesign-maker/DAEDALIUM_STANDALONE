@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.072");
+    url("./assets/bg-daedalium.png?v=dDAE_2.073");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -427,7 +427,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.072 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.073 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.072");
+    url("./assets/bg-daedalium.png?v=dDAE_2.073");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2400,7 +2400,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.072 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.073 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -8256,3 +8256,18 @@ color: var(--mcol,#ff3b30);
     text-overflow: ellipsis;
   }
 }
+
+
+/* dDAE_2.073 - Dashboard grafici unificata */
+.stats-graphs-page{padding-bottom:28px;}
+.stats-graphs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:4px;}
+.stats-graph-card{min-width:0;border:1px solid rgba(15,23,42,0.10);border-radius:20px;background:rgba(255,255,255,0.80);box-shadow:0 10px 22px rgba(15,23,42,0.08);padding:12px 10px 10px;}
+.stats-graph-card-title{font-weight:900;font-size:13px;line-height:1.2;color:rgba(15,23,42,0.88);min-height:32px;margin-bottom:8px;}
+.stats-graph-canvas{width:100%;display:flex;justify-content:center;align-items:center;}
+.stats-graph-canvas canvas{display:block;max-width:100%;}
+.stats-graph-legend{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+.stats-graph-legend .legrow{padding:8px 9px;border-radius:14px;background:rgba(255,255,255,0.96);box-shadow:none;}
+.stats-graph-legend .legname{font-size:11px;}
+.stats-graph-legend .legright{font-size:11px;text-align:right;}
+.stats-graph-note{margin-top:8px;font-size:11px;line-height:1.25;color:rgba(15,23,42,0.62);text-align:center;}
+@media (max-width:380px){.stats-graphs-grid{gap:10px;}.stats-graph-card{padding:10px 8px 8px;}.stats-graph-card-title{font-size:12px;}}

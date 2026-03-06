@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.072
+ * Build: 2.073
  */
-const BUILD_VERSION = "2.072";
+const BUILD_VERSION = "2.073";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5816,8 +5816,10 @@ state.page = page;
     Promise.all([
       ensureStatsAllData({ showLoader:true }),
       loadOspiti({ ...(state.period || {}), force:false }),
+      loadOspitiEliminati({ from: `${state.exerciseYear||new Date().getFullYear()}-01-01`, to: `${state.exerciseYear||new Date().getFullYear()}-12-31`, force:true }),
+      __loadOperatoriRows_().catch(()=>[])
     ])
-      .then(()=>{ if (state.navId !== _nav || state.page !== "statprenotazioni") return; renderStatPrenotazioni(); })
+      .then((res)=>{ if (state.navId !== _nav || state.page !== "statprenotazioni") return; renderStatGrafici(Array.isArray(res && res[3]) ? res[3] : []); })
       .catch(e=>toast(e.message));
   }
 
@@ -7001,7 +7003,9 @@ function drawPie(canvasId, slices, opts){
   const centerTitle = (opts.centerTitle != null ? String(opts.centerTitle) : "Totale");
   const centerFormatter = (typeof opts.centerFormatter === "function") ? opts.centerFormatter : euro;
 
-  const cssSize = Math.min(320, Math.floor(window.innerWidth * 0.78));
+  const parentW = (canvas.parentElement && canvas.parentElement.clientWidth) ? canvas.parentElement.clientWidth : 0;
+  const baseW = parentW || Math.floor(window.innerWidth * 0.78);
+  const cssSize = Math.min(320, Math.max(120, Math.floor(baseW - 8)));
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = cssSize + "px";
   canvas.style.height = cssSize + "px";
@@ -7079,7 +7083,9 @@ function drawMonthlyPctBars(canvasId, pctValues, colors, opts){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   opts = opts || {};
-  const cssW = Math.min(340, Math.floor(window.innerWidth * 0.86));
+  const parentW = (canvas.parentElement && canvas.parentElement.clientWidth) ? canvas.parentElement.clientWidth : 0;
+  const baseW = parentW || Math.floor(window.innerWidth * 0.86);
+  const cssW = Math.min(340, Math.max(140, Math.floor(baseW - 4)));
   const cssH = 180;
   const dpr = window.devicePixelRatio || 1;
 
@@ -7153,6 +7159,109 @@ function roundRect(ctx, x, y, w, h, r){
   ctx.arcTo(x, y+h, x, y, rr);
   ctx.arcTo(x, y, x+w, y, rr);
   ctx.closePath();
+}
+
+
+function __renderLegendRows__(containerId, slices, valueFormatter){
+  const leg = document.getElementById(containerId);
+  if (!leg) return;
+  const fmt = (typeof valueFormatter === "function") ? valueFormatter : ((v)=>String(v));
+  const total = (Array.isArray(slices) ? slices : []).reduce((a,x)=>a+Math.max(0, Number((x && x.value) || 0)), 0);
+  leg.innerHTML = "";
+  (Array.isArray(slices) ? slices : []).forEach((sl)=>{
+    const v = Math.max(0, Number((sl && sl.value) || 0));
+    const pct = total > 0 ? (v / total * 100) : 0;
+    const row = document.createElement("div");
+    row.className = "legrow";
+    row.innerHTML = `
+      <div class="legleft">
+        <div class="dot" style="background:${sl.color}"></div>
+        <div class="legname">${escapeHtml(sl.label)}</div>
+      </div>
+      <div class="legright">${pct.toFixed(1)}% · ${fmt(v)}</div>
+    `;
+    leg.appendChild(row);
+  });
+}
+
+function computeStatOrePuliziaGrafico(rows){
+  const listRaw = Array.isArray(rows) ? rows : [];
+  const list = __filterByExerciseYear__(listRaw, state.exerciseYear || loadExerciseYear(), ["data","date","Data","createdAt","created_at","updatedAt","updated_at"]);
+  const totals = new Map();
+  for (const r of list){
+    const name = String(r?.operatore || r?.nome || "").trim();
+    if (!name) continue;
+    const ore = Number(String(r?.ore ?? r?.Ore ?? 0).replace(",", "."));
+    if (!isFinite(ore) || ore <= 0) continue;
+    totals.set(name, (totals.get(name) || 0) + ore);
+  }
+  let fromSet = [];
+  try{ fromSet = getOperatorNamesFromSettings ? (getOperatorNamesFromSettings() || []) : []; }catch(_){ fromSet = []; }
+  const ordered = [];
+  const pushUnique = (v)=>{ const s = String(v||"").trim(); if (s && !ordered.includes(s)) ordered.push(s); };
+  fromSet.forEach(pushUnique);
+  Array.from(totals.keys()).sort((a,b)=>a.localeCompare(b, "it")).forEach(pushUnique);
+  const palette = __mensiliPalette12();
+  const slices = ordered.map((name, i)=>({
+    label: name,
+    value: Number(totals.get(name) || 0),
+    color: palette[i % palette.length] || "#2b7cb4"
+  })).filter(x=>x.value > 0);
+  return slices;
+}
+
+function renderStatGrafici(operatoriRows){
+  const mensili = computeStatMensili();
+  state.statMensili = mensili;
+  const statGen = computeStatGen();
+  state.statGen = statGen;
+  const pren = computeStatPrenotazioni();
+  const cancRows = Array.isArray(state.deletedGuests) ? state.deletedGuests.filter(r => String(r.delete_reason || "").toLowerCase() === "cancellazione" || String(r.delete_reason || "").trim() === "") : [];
+  const activeRows = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+  const cancSlices = [
+    { label: "Attive", value: activeRows.length, color: "#2b7cb4" },
+    { label: "Cancellate", value: cancRows.length, color: "#ff3b30" }
+  ];
+  const statSpese = computeStatSpese();
+  state.statSpese = statSpese;
+  const speseSlices = [
+    { label: categoriaLabel("CONTANTI"), value: statSpese.contanti, color: (COLORS.CONTANTI || "#2b7cb4") },
+    { label: categoriaLabel("TASSA_SOGGIORNO"), value: statSpese.tassaSoggiorno, color: (COLORS.TASSA_SOGGIORNO || "#d8bd97") },
+    { label: categoriaLabel("IVA_22"), value: statSpese.iva22, color: (COLORS.IVA_22 || "#c9772b") },
+    { label: categoriaLabel("IVA_10"), value: statSpese.iva10, color: (COLORS.IVA_10 || "#7ac0db") },
+    { label: categoriaLabel("IVA_4"), value: statSpese.iva4, color: (COLORS.IVA_4 || "#1f2937") }
+  ].filter(x=>Number(x.value || 0) > 0);
+  const pulizieSlices = computeStatOrePuliziaGrafico(operatoriRows);
+
+  drawMonthlyPctBars("statGrafOccCanvas", mensili.occPctByMonth || [], __mensiliPalette12(), { labels: (__MONTHS_IT || []).map(m=>String(m||"").slice(0,1)) });
+  const occNote = document.getElementById("statGrafOccNote");
+  if (occNote){
+    const y = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+    occNote.textContent = `Anno ${y} · percentuale media mensile di occupazione`;
+  }
+
+  const ricevuteSlices = [
+    { label: "Senza ricevuta", value: statGen.senzaRicevuta, color: "#bfbea9" },
+    { label: "Con ricevuta", value: statGen.conRicevuta, color: "#6fb7d6" }
+  ];
+  drawPie("statGrafRicevuteCanvas", ricevuteSlices, { centerTitle: "Totale", centerFormatter: euro });
+  __renderLegendRows__("statGrafRicevuteLegend", ricevuteSlices, euro);
+
+  const bookingSlices = [
+    { label: "Con Booking", value: pren.withBooking, color: "#2b7cb4" },
+    { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
+  ];
+  drawPie("statGrafBookingCanvas", bookingSlices, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))) });
+  __renderLegendRows__("statGrafBookingLegend", bookingSlices, (v)=>String(Math.round(Number(v || 0))));
+
+  drawPie("statGrafCancCanvas", cancSlices, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))) });
+  __renderLegendRows__("statGrafCancLegend", cancSlices, (v)=>String(Math.round(Number(v || 0))));
+
+  drawPie("statGrafSpeseCanvas", speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }], { centerTitle: "Spese", centerFormatter: euro });
+  __renderLegendRows__("statGrafSpeseLegend", speseSlices, euro);
+
+  drawPie("statGrafPulizieCanvas", pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0" });
+  __renderLegendRows__("statGrafPulizieLegend", pulizieSlices, (v)=>`${__fmtHours_(v) || "0"}h`);
 }
 
 
@@ -7580,9 +7689,8 @@ function computeStatMensili(){
     if (ciISO && coISO) __nightsByMonthFromStay(ciISO, coISO, roomsCount);
   }
 
-  // Capacità per mese (usa anno corrente per i giorni del mese)
-  const now = new Date();
-  const y = now.getFullYear();
+  // Capacita per mese: usa sempre l'anno di esercizio selezionato
+  const y = Number(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const capacityRoomNights = new Array(12).fill(0).map((_,i)=>{
     const days = new Date(Date.UTC(y, i+1, 0)).getUTCDate(); // giorni nel mese
     return days * totalRooms;

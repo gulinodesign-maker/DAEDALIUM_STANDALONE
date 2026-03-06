@@ -57,12 +57,6 @@
 <path d="M9 12h12"></path>
 </svg>
 </button>
-<button aria-label="Apri grafico" class="icon-btn icon-btn-whiteblue" id="btnStatPie" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 12V2a10 10 0 1 1-10 10h10Z"></path>
-<path d="M14 2.2A10 10 0 0 1 21.8 10H14V2.2Z"></path>
-</svg>
-</button>
 </div>
 <div hidden="" id="statMensiliTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheMensili" type="button">
@@ -71,24 +65,12 @@
 <path d="M9 12h12"></path>
 </svg>
 </button>
-<button aria-label="Apri grafico" class="icon-btn icon-btn-whiteblue" id="btnStatMensiliPie" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 12V2a10 10 0 1 1-10 10h10Z"></path>
-<path d="M14 2.2A10 10 0 0 1 21.8 10H14V2.2Z"></path>
-</svg>
-</button>
 </div>
 <div hidden="" id="statSpeseTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheSpese" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
 <path d="M9 12h12"></path>
-</svg>
-</button>
-<button aria-label="Apri grafico" class="icon-btn icon-btn-whiteblue" id="btnStatSpesePie" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 12V2a10 10 0 1 1-10 10h10Z"></path>
-<path d="M14 2.2A10 10 0 0 1 21.8 10H14V2.2Z"></path>
 </svg>
 </button>
 </div>
@@ -351,7 +333,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.072</div></div></section>
+<div class="build" id="buildText">dDAE_2.073</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -412,16 +394,16 @@
 </svg></div>
 <div class="home-main-label">Spese</div>
 </button>
-<button aria-label="Statistiche prenotazione" class="home-main" id="goStatPrenotazioni" type="button">
+<button aria-label="Grafici" class="home-main" id="goStatPrenotazioni" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 3v3"></path>
-<path d="M17 3v3"></path>
-<path d="M4.5 8h15"></path>
-<path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"></path>
-<path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path>
-<path d="M8 16h.01"></path><path d="M12 16h.01"></path><path d="M16 16h.01"></path>
+<path d="M4 19V5"></path>
+<path d="M4 19h16"></path>
+<path d="M8 17v-4"></path>
+<path d="M12 17V9"></path>
+<path d="M16 17v-7"></path>
+<path d="M7 7h10"></path>
 </svg></div>
-<div class="home-main-label">Prenotazioni</div>
+<div class="home-main-label">Grafici</div>
 </button>
 <button aria-label="Piscina" class="home-main" id="goStatPiscina" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -635,19 +617,47 @@
 </section>
 <!-- STATISTICHE: PRENOTAZIONI -->
 <section class="page" hidden="" id="page-statprenotazioni">
-<div class="stats-gen">
-<div class="stats-title">Prenotazioni</div>
+<div class="stats-gen stats-graphs-page">
+<div class="stats-title">Grafici</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div class="chart-wrap"><canvas id="statPrenCanvas"></canvas></div>
-<div class="legend" id="statPrenLegend"></div>
+<div class="stats-graphs-grid">
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Occupazione mensile</div>
+<div class="stats-graph-canvas"><canvas id="statGrafOccCanvas"></canvas></div>
+<div class="stats-graph-note" id="statGrafOccNote">Anno selezionato</div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Con ricevuta / Senza ricevuta</div>
+<div class="stats-graph-canvas"><canvas id="statGrafRicevuteCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafRicevuteLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Prenotazioni con / senza Booking</div>
+<div class="stats-graph-canvas"><canvas id="statGrafBookingCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafBookingLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Cancellazioni</div>
+<div class="stats-graph-canvas"><canvas id="statGrafCancCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafCancLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Spese</div>
+<div class="stats-graph-canvas"><canvas id="statGrafSpeseCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafSpeseLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Ore pulizia operatori</div>
+<div class="stats-graph-canvas"><canvas id="statGrafPulizieCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafPulizieLegend"></div>
+</div>
+</div>
 </div>
 </section>
 <section class="page" hidden="" id="page-statcancellazioni">
 <div class="stats-gen">
 <div class="stats-title">Cancellazioni</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div class="chart-wrap"><canvas id="statCancCanvas"></canvas></div>
-<div class="legend" id="statCancLegend"></div>
 <div class="kpi-stack" style="margin-top:12px;">
 <div class="kpi-card">
 <div class="kpi-label">Percentuale cancellazioni</div>
