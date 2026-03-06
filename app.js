@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.075
+ * Build: 2.076
  */
-const BUILD_VERSION = "2.075";
+const BUILD_VERSION = "2.076";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7261,6 +7261,9 @@ function __occupazioneMensileSlices__(mensili){
 
 function __operatorGraphColors__(){
   return ["#43B5FF", "#FF7A1A", "rgba(15,23,42,0.55)"];
+}
+function __operatorGraphColors(){
+  return __operatorGraphColors__();
 }
 // Compatibilità difensiva: alcune build/client possono richiamare un alias errato
 // e bloccare il rendering dei grafici operatori con "... is not defined".
