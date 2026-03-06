@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.085");
+    url("./assets/bg-daedalium.png?v=dDAE_2.073");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -427,7 +427,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.085 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.073 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.085");
+    url("./assets/bg-daedalium.png?v=dDAE_2.073");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2400,7 +2400,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.085 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.073 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -4640,14 +4640,8 @@ grid-template-rows: 34px repeat(7, 54px);
 }
 
 #page-lavanderia .laundry-range::after{
-  content:"";
-  position:absolute;
-  left:10px;
-  right:10px;
-  bottom:0;
-  height:1px;
-  background:#000;
-  opacity:.85;
+  content:none !important;
+  display:none !important;
 }
 
 /* Il bottone "Genera report" ora è in topbar (resta nel DOM ma non si mostra qui) */
@@ -8258,7 +8252,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.085 - Dashboard grafici unificata */
+/* dDAE_2.073 - Dashboard grafici unificata */
 .stats-graphs-page{padding-bottom:28px;}
 .stats-graphs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:4px;}
 .stats-graph-card{min-width:0;border:0;background:transparent;box-shadow:none;padding:8px 4px 4px;border-radius:0;}
@@ -8282,36 +8276,3 @@ color: var(--mcol,#ff3b30);
 .stat-graph-modal-detail{font-size:12px;line-height:1.35;color:rgba(15,23,42,0.68);text-align:center;}
 .stat-graph-modal-canvas{padding-top:2px;}
 .stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
-
-
-/* dDAE_2.085 — Statistiche: griglia icone centrata rispetto alla pagina */
-#page-statistiche{
-  min-height: calc(100vh - (64px + var(--safe-top)));
-}
-#page-statistiche .stats-page{
-  position: relative;
-  min-height: calc(100vh - (64px + var(--safe-top)) - 28px);
-  padding: 18px 14px 26px;
-}
-#page-statistiche .stats-title,
-#page-statistiche .stats-divider{
-  position: absolute;
-  left: 14px;
-  right: 14px;
-}
-#page-statistiche .stats-title{
-  top: 18px;
-  margin: 0;
-}
-#page-statistiche .stats-divider{
-  top: 56px;
-  width: auto;
-  margin: 0;
-}
-#page-statistiche .home-grid{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0 !important;
-}
