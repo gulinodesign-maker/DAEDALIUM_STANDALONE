@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.078
  */
-const BUILD_VERSION = "2.078";
+const BUILD_VERSION = "2.079";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2136,6 +2136,26 @@ function __dbAccountNameForKind__(kind){
 
 
 
+
+function __sessionFromUserRow__(u){
+  try{
+    if (!u || typeof u !== "object") return null;
+    const user_id = String(u?.id || u?.user_id || u?.userId || u?.username || "").trim();
+    const username = String(u?.username || u?.user || u?.email || "").trim();
+    const ruoloRaw = String(u?.ruolo || u?.role || u?.tipo || "").trim().toLowerCase();
+    const ruolo = ruoloRaw
+      ? (ruoloRaw.startsWith("op") ? "operatore" : "admin")
+      : ((String(u?.isOperatore || u?.is_operatore || "").trim() === "1" || u?.isOperatore === true) ? "operatore" : "admin");
+    if (!user_id || !username) return null;
+    return {
+      user_id,
+      username,
+      ruolo,
+      name: String(u?.name || u?.nome || username).trim()
+    };
+  }catch(_){ return null; }
+}
+
 function __mergeUsers__(existing, incoming){
   const out = [];
   const seen = new Set();
@@ -2263,10 +2283,32 @@ async function __dbImport__(kind){
 // Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
 
+    let __isAuthAutoLogin__ = false;
     try{
-      const isAuthAutoLogin = String(state?.page || "").trim() === "auth" && !!loadSession();
-      toast(isAuthAutoLogin ? "Backup importato: account creato e accesso eseguito" : `${label}: import completato`, "blue");
+      __isAuthAutoLogin__ = String(state?.page || "").trim() === "auth" && !!loadSession();
+      toast(__isAuthAutoLogin__ ? "Backup importato: account creato e accesso eseguito" : `${label}: import completato`, "blue");
     }catch(_){ }
+
+    if (__isAuthAutoLogin__){
+      setTimeout(()=>{
+        try{
+          state.session = loadSession() || state.session || null;
+          state.exerciseYear = loadExerciseYear();
+        }catch(_){ }
+        try{ updateYearPill(); }catch(_){ }
+        try{ __applyContext__({ force:true }); }catch(_){ }
+        try{ applyRoleMode(); }catch(_){ }
+        try{
+          const __targetAfterImport__ = (state.session && isOperatoreSession(state.session)) ? "pulizie" : "home";
+          __writeRestoreState({ page: __targetAfterImport__ });
+          showPage(__targetAfterImport__);
+        }catch(_){
+          try{ location.reload(); }catch(__){ }
+        }
+      }, 150);
+      return;
+    }
+
     setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
