@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.080
+ * Build: 2.081
  */
-const BUILD_VERSION = "2.080";
+const BUILD_VERSION = "2.081";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2223,14 +2223,33 @@ async function __dbImport__(kind){
       return;
     }
 
-    // Pre-merge "utenti" for operator import to avoid losing existing accounts
+    // Precompute auth-page imported session BEFORE writing datasets so the backup
+    // gets stored in the correct account context instead of the anonymous login context.
+    const __isAuthPageImport__ = String(state?.page || "").trim() === "auth";
     const __isAdminImport__ = String(kind||"").toLowerCase().startsWith("admin");
+    let __authImportedSession__ = null;
+    try{
+      const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : [];
+      if (__isAuthPageImport__ && importedUsers.length){
+        const preferred = __isAdminImport__
+          ? (importedUsers.find(u => !isOperatoreSession(u)) || importedUsers[0])
+          : (importedUsers.find(u => isOperatoreSession(u)) || importedUsers[0]);
+        __authImportedSession__ = __sessionFromUserRow__(preferred);
+        if (__authImportedSession__){
+          try{ state.session = __authImportedSession__; }catch(_){ }
+          try{ saveSession(__authImportedSession__); }catch(_){ }
+          try{ await __kvSet__("auth:lastImportedAccount", { at: __nowIso__(), username: __authImportedSession__.username || "", role: __authImportedSession__.ruolo || (__isAdminImport__ ? "admin" : "operatore") }); }catch(_){ }
+        }
+      }
+    }catch(_){ }
+
+    // Pre-merge "utenti" for operator import to avoid losing existing accounts
     try{
       if (!__isAdminImport__ && Array.isArray(ds?.utenti)){
         const existingUsers = await __tblGet__("utenti", []);
         ds.utenti = __mergeUsers__(existingUsers, ds.utenti);
       }
-    }catch(_){}
+    }catch(_){ }
 
     // Write datasets (only allowed tables)
     for (const t of tablesToWrite){
@@ -2264,18 +2283,20 @@ async function __dbImport__(kind){
         }
       }
     }catch(_){}
-    // Login import from auth page: crea subito l'account locale e accede automaticamente al primo admin del backup
+    // Login import from auth page: sessione già predisposta prima della scrittura dei dataset.
+    // Manteniamo qui solo un fallback difensivo per backup legacy o sessioni incomplete.
     try{
       const isAuthPage = String(state?.page || "").trim() === "auth";
-      const isAdminImport = String(kind||"").toLowerCase().startsWith("admin");
       const importedUsers = Array.isArray(ds?.utenti) ? ds.utenti : [];
-      if (isAuthPage && isAdminImport && importedUsers.length){
-        const preferred = importedUsers.find(u => !isOperatoreSession(u)) || importedUsers[0];
+      if (isAuthPage && !__authImportedSession__ && importedUsers.length){
+        const preferred = __isAdminImport__
+          ? (importedUsers.find(u => !isOperatoreSession(u)) || importedUsers[0])
+          : (importedUsers.find(u => isOperatoreSession(u)) || importedUsers[0]);
         const importedSession = __sessionFromUserRow__(preferred);
         if (importedSession){
           try{ state.session = importedSession; }catch(_){ }
           try{ saveSession(importedSession); }catch(_){ }
-          try{ await __kvSet__("auth:lastImportedAccount", { at: __nowIso__(), username: importedSession.username || "", role: importedSession.ruolo || "admin" }); }catch(_){ }
+          try{ await __kvSet__("auth:lastImportedAccount", { at: __nowIso__(), username: importedSession.username || "", role: importedSession.ruolo || (__isAdminImport__ ? "admin" : "operatore") }); }catch(_){ }
         }
       }
     }catch(_){ }
