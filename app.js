@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.076
+ * Build: 2.077
  */
-const BUILD_VERSION = "2.076";
+const BUILD_VERSION = "2.077";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5602,10 +5602,13 @@ state.page = page;
     const hb2 = document.getElementById("hamburgerBtn");
     const hs2 = document.getElementById("homeSettingsTop");
     const leds2 = document.getElementById("prodTopLeds");
+    const authImportTop = document.getElementById("authImportBackupTop");
     const isHome = (page === "home");
+    const isAuth = (page === "auth");
     const isOp = !!(state.session && isOperatoreSession(state.session));
-    if (hb2) hb2.hidden = isHome;
+    if (hb2) hb2.hidden = isHome || isAuth;
     if (hs2) hs2.hidden = (!isHome) || isOp;
+    if (authImportTop) authImportTop.hidden = !isAuth;
     if (leds2) leds2.hidden = (page !== "home") || isOp;
 
     // HOME: refresh totale dati in background (non blocca UI)
@@ -5882,6 +5885,11 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 function setupHeader(){
   const hb = $("#hamburgerBtn");
   if (hb) hb.addEventListener("click", () => { hideLauncher(); showPage("home"); });
+
+  const authImportTop = document.getElementById("authImportBackupTop");
+  if (authImportTop) bindFastTap(authImportTop, async () => {
+    try{ await __dbImport__("admin"); }catch(e){ try{ toast("Errore import", "orange"); }catch(_){ } }
+  });
 
   const opImpRoster = document.getElementById("opImportRosterTop");
   if (opImpRoster) bindFastTap(opImpRoster, async () => { try{ await __qrScanAndLink__(); }catch(e){ try{ toast("Codice non disponibile", "orange"); }catch(_){ } } });
