@@ -1,4 +1,0 @@
-Apps Script: NO UPDATE REQUIRED for build 2.009
-Build dDAE_2.014 — Apps Script: NON aggiornato
-Build dDAE_2.018 — Apps Script: NON aggiornato — Rimossi bagliori tasti Colazione/Prodotti
-Build dDAE_2.019 — Apps Script: NON aggiornato — Filtro spese su data scheda + Statistiche aggiornate
