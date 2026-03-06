@@ -8307,3 +8307,25 @@ color: var(--mcol,#ff3b30);
   justify-content: center !important;
   align-self: center;
 }
+
+
+/* dDAE_2.090 — Statistiche: centra verticalmente la griglia icone */
+#page-statistiche .stats-page{
+  min-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 28px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+#page-statistiche .stats-title,
+#page-statistiche .stats-divider{
+  flex: 0 0 auto;
+}
+#page-statistiche .home-grid{
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 auto !important;
+  align-self: center;
+  align-content: center !important;
+  justify-content: center !important;
+  place-content: center !important;
+}
