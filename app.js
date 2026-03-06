@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.081
+ * Build: 2.082
  */
-const BUILD_VERSION = "2.081";
+const BUILD_VERSION = "2.082";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -575,7 +575,7 @@ if (method === "POST"){
     // Aggrega da pulizie
     const pul0 = await __tblGet__("pulizie", []);
     const pul = Array.isArray(pul0) ? pul0 : [];
-    const cols = (typeof LAUNDRY_COLS !== "undefined" && Array.isArray(LAUNDRY_COLS)) ? LAUNDRY_COLS : ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+    const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 
     const sums = {};
     cols.forEach(k => { sums[k] = 0; });
@@ -15287,7 +15287,11 @@ async function loadLavanderia() {
       : [])));
     const rawList = (rows || []).map(sanitizeLaundryItem_);
     const __delSet = __laundryDeletedIds__();
-    const list = __filterByExerciseYear__(rawList, state.exerciseYear || loadExerciseYear(), ["startDate","endDate","createdAt","created_at","updatedAt","updated_at"]).filter(it => !(it && (it.isDeleted || it.is_deleted))).filter(it => { try{ return !(it && it.id && __delSet.has(String(it.id))); }catch(_){ return true; } }).sort((a,b) => String(b.endDate||"").localeCompare(String(a.endDate||"")));
+    const list = rawList.filter(it => !(it && (it.isDeleted || it.is_deleted))).filter(it => { try{ return !(it && it.id && __delSet.has(String(it.id))); }catch(_){ return true; } }).sort((a,b) => {
+      const byEnd = String(b.endDate||"").localeCompare(String(a.endDate||""));
+      if (byEnd) return byEnd;
+      return String(b.createdAt||b.updatedAt||"").localeCompare(String(a.createdAt||a.updatedAt||""));
+    });
 
     state.laundry.list = list;
     renderLaundryHistory_(list);
