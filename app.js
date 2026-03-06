@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.071
+ * Build: 2.072
  */
-const BUILD_VERSION = "2.071";
+const BUILD_VERSION = "2.072";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2115,9 +2115,9 @@ function __dbFmtDateDdMmYy__(){
     const ts = new Date();
     const d = String(ts.getDate()).padStart(2,"0");
     const m = String(ts.getMonth()+1).padStart(2,"0");
-    const y = String(ts.getFullYear());
+    const y = String(ts.getFullYear()).slice(-2);
     return `${d}-${m}-${y}`;
-  }catch(_){ return "00-00-0000"; }
+  }catch(_){ return "00-00-00"; }
 }
 
 function __dbAccountNameForKind__(kind){
@@ -2397,18 +2397,36 @@ async function __dbExport__(kind, preopenWin){
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-
-    // Nome file export: ADMIN => gg-mm-aaaa_nomeaccount.json | OPER => formato legacy
-    const k = String(kind||"").toLowerCase();
-    const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
-    const dt = __dbFmtDateDdMmYy__();
-    const accountName = String(__dbAccountNameForKind__(kind) || "account")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "_");
-    const filename = k.startsWith("admin")
-      ? __safeFileName__(`${dt}_${accountName}.json`)
-      : __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
+    // Nome file export: dd-mm-yyyy_nome_account.json
+    const dtObj = new Date();
+    const dd = String(dtObj.getDate()).padStart(2, "0");
+    const mm = String(dtObj.getMonth() + 1).padStart(2, "0");
+    const yyyy = String(dtObj.getFullYear());
+    const dt = `${dd}-${mm}-${yyyy}`;
+    let accountName = "";
+    try{
+      accountName =
+        String(
+          state?.session?.account_name ||
+          state?.session?.accountName ||
+          state?.session?.nome_account ||
+          state?.session?.nomeAccount ||
+          state?.session?.name ||
+          state?.session?.username ||
+          ""
+        ).trim();
+    }catch(_){ accountName = ""; }
+    if (!accountName){
+      try{
+        accountName = String(
+          payload?.meta?.account_name ||
+          payload?.meta?.accountName ||
+          ""
+        ).trim();
+      }catch(_){ accountName = ""; }
+    }
+    const accountTag = __safeFileName__(accountName || "nome_account");
+    const filename = `${dt}_${accountTag}.json`;
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
@@ -5426,25 +5444,21 @@ function hideLauncher(){
 
 
 function setSpeseView(view, { render=false } = {}){
-  state.speseView = view;
+  state.speseView = "list";
   const list = document.getElementById("speseViewList");
   const ins = document.getElementById("speseViewInsights");
-  if (list) list.hidden = (view !== "list");
-  if (ins) ins.hidden = (view !== "insights");
+  if (list) list.hidden = false;
+  if (ins) ins.hidden = true;
 
   const btn = document.getElementById("btnSpeseInsights");
   if (btn){
-    btn.setAttribute("aria-pressed", view === "insights" ? "true" : "false");
-    btn.classList.toggle("is-active", view === "insights");
+    btn.setAttribute("aria-pressed", "false");
+    btn.classList.remove("is-active");
+    btn.hidden = true;
   }
 
   if (render){
-    if (view === "list") {
-      try{ renderSpese(); }catch(_){}
-    } else {
-      try{ renderRiepilogo(); }catch(_){}
-      try{ renderGrafico(); }catch(_){}
-    }
+    try{ renderSpese(); }catch(_){}
   }
 }
 
@@ -5501,7 +5515,7 @@ function showPage(page){
   // Redirect: grafico/riepilogo ora sono dentro "Spese" (videata unica)
   if (page === "riepilogo" || page === "grafico"){
     page = "spese";
-    state.speseView = "insights";
+    state.speseView = "list";
   }
   if (page === "spese" && !state.speseView) state.speseView = "list";
 
@@ -5947,20 +5961,8 @@ function setupHome(){
   }
   const btnInsights = $("#btnSpeseInsights");
   if (btnInsights){
-    bindFastTap(btnInsights, async () => {
-      // toggle vista
-      const next = (state.speseView === "insights") ? "list" : "insights";
-      if (next === "insights"){
-        try{
-          await ensureStatsAllData({ showLoader:true });
-          setSpeseView("insights", { render:true });
-        }catch(e){ toast(e.message); }
-      } else {
-        setSpeseView("list");
-      }
-    });
+    btnInsights.hidden = true;
   }
-
 
   // HOME: tasto Spese apre direttamente la pagina "spese" (senza launcher)
   const openBtn = $("#openLauncher");

@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.005");
+    url("./assets/bg-daedalium.png?v=dDAE_2.072");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -427,7 +427,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.005 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.072 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.005");
+    url("./assets/bg-daedalium.png?v=dDAE_2.072");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2400,7 +2400,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.005 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.072 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
