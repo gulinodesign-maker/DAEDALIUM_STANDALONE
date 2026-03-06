@@ -5479,6 +5479,7 @@ grid-template-rows: 34px repeat(7, 54px);
 #page-lavanderia .laundry-hint{ display:none !important; }
 /* dDAE_2.062 — elimina il vuoto causato dal main.wrap quando si apre Lavanderia */
 body[data-page="lavanderia"] main.wrap{ display:none !important; }
+body[data-page="orepulizia"] main.wrap{ display:none !important; }
 #page-lavanderia{ margin-top: 0 !important; padding-top: 0 !important; }
 #page-lavanderia .laundry-sub{ display:none !important; margin:0 !important; padding:0 !important; min-height:0 !important; }
 #page-lavanderia .bd{ padding-top: 0 !important; }
@@ -8158,7 +8159,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.065 — Ore Pulizia: titolo come Lavanderia + linea nera */
+/* dDAE_2.066 — Ore Pulizia: titolo come Lavanderia + linea nera */
 #page-orepulizia .opcal-pageTitle{
   display: block;
   font-size: 14px;
