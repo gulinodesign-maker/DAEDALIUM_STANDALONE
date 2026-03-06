@@ -59,7 +59,6 @@ html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -appl
 
 body{
   min-height: 100vh;
-  padding-top: calc(64px + var(--safe-top));
   background-image:
     url("./assets/bg-daedalium.png?v=dDAE_2.005");
   background-repeat: no-repeat;
@@ -71,12 +70,10 @@ body{
 
 /* Topbar */
 .topbar{
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 5000;
+  z-index: 40;
+  position: relative;
   padding-top: var(--safe-top);
   background: var(--glass);
   backdrop-filter: blur(14px);
@@ -2039,6 +2036,7 @@ border: 1px solid var(--border);
 
 /* Topbar: stronger premium accent */
 .topbar{
+  position: relative;
   border-bottom-color: rgba(15,23,42,0.14);
 }
 .topbar::after{
