@@ -8158,7 +8158,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.064 — Ore Pulizia: titolo come Lavanderia + linea nera */
+/* dDAE_2.065 — Ore Pulizia: titolo come Lavanderia + linea nera */
 #page-orepulizia .opcal-pageTitle{
   display: block;
   font-size: 14px;
@@ -8173,13 +8173,13 @@ color: var(--mcol,#ff3b30);
 
 /* dDAE_2.063 — Ore Pulizia: header compatto + griglia 2x2 filtri/stat */
 #page-orepulizia .opcal-wrap{
-  padding: calc(6px + var(--safe-top) - 30px) 19px 26px;
+  padding: 0 19px 26px;
 }
 #page-orepulizia .opcal-group{
   margin-top: 0;
 }
 #page-orepulizia .opcal-group-hd{
-  padding: 4px 12px 10px;
+  padding: 0 12px 10px;
   border-bottom: 0;
 }
 #page-orepulizia .opcal-titleMain{
@@ -8253,3 +8253,19 @@ color: var(--mcol,#ff3b30);
     text-overflow: ellipsis;
   }
 }
+
+
+/* dDAE_2.067 — Ore Pulizia: stessa spaziatura top bar/titolo di Lavanderia */
+body[data-page="orepulizia"] main.wrap{ display:none !important; }
+#page-orepulizia{ margin-top:0 !important; padding-top:0 !important; }
+#page-orepulizia .opcal-wrap{ margin-top:0 !important; padding:0 19px 26px !important; }
+#page-orepulizia .opcal-group{ margin-top:0 !important; position:static !important; top:auto !important; }
+#page-orepulizia .opcal-group-hd{
+  margin-top:0 !important;
+  padding:12px 12px 10px !important;
+}
+#page-orepulizia .opcal-pageTitle{
+  margin:0 0 10px !important;
+  padding:0 0 12px !important;
+}
+#page-orepulizia .opcal-group-bd{ margin-top:0 !important; }
