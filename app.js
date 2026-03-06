@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.067
+ * Build: 2.068
  */
-const BUILD_VERSION = "2.067";
+const BUILD_VERSION = "2.068";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1595,7 +1595,8 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
@@ -1935,36 +1936,40 @@ async function __fbImportAdmin__(opts){
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
   return true;
 }
 
 async function __handleSyncImport__(){
-  if (__isAdmin__()) return __fbImportAdmin__();
-  return __fbImportOperator__();
+  const restoreState = __captureSyncRestoreState();
+  if (__isAdmin__()) return __fbImportAdmin__({ restoreState });
+  return __fbImportOperator__({ restoreState });
 }
 async function __handleSyncExport__(){
-  if (__isAdmin__()) return __fbExportAdmin__();
-  return __fbExportOperator__();
+  const restoreState = __captureSyncRestoreState();
+  if (__isAdmin__()) return __fbExportAdmin__({ restoreState });
+  return __fbExportOperator__({ restoreState });
 }
 
 
 async function __handleSyncBoth__(){
   __fbLoadLink__();
+  const restoreState = __captureSyncRestoreState();
   try{ toast("Sync in corso...", "blue"); }catch(_){}
   let ok1=false, ok2=false;
   try{
     if (__isAdmin__()){
-      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true });
-      ok2 = await __fbExportAdmin__({ silent:true });
+      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true, restoreState });
+      ok2 = await __fbExportAdmin__({ silent:true, restoreState });
     }else{
-      ok1 = await __fbExportOperator__({ silent:true });
-      ok2 = await __fbImportOperator__({ silent:true, skipReload:true });
+      ok1 = await __fbExportOperator__({ silent:true, restoreState });
+      ok2 = await __fbImportOperator__({ silent:true, skipReload:true, restoreState });
     }
   }catch(_){ }
   const ok = (ok1 !== false) && (ok2 !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
+  setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
 }
 
@@ -3105,6 +3110,20 @@ function __applyFormValue(id, v){
     if (el.type === "checkbox") el.checked = !!v;
     else el.value = String(v);
   } catch (_) {}
+}
+
+function __captureSyncRestoreState(){
+  try{
+    const out = __captureUiState();
+    const currentPage = __sanitizePage(state.page)
+      || __sanitizePage(document.body?.dataset?.page)
+      || __readHashPage()
+      || "home";
+    out.page = currentPage;
+    return out;
+  }catch(_){
+    return { page: (__sanitizePage(state.page) || "home") };
+  }
 }
 
 function __captureUiState(){
