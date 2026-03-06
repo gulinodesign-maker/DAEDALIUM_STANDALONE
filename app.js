@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.070
+ * Build: 2.071
  */
-const BUILD_VERSION = "2.070";
+const BUILD_VERSION = "2.071";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2115,9 +2115,9 @@ function __dbFmtDateDdMmYy__(){
     const ts = new Date();
     const d = String(ts.getDate()).padStart(2,"0");
     const m = String(ts.getMonth()+1).padStart(2,"0");
-    const y = String(ts.getFullYear()).slice(-2);
+    const y = String(ts.getFullYear());
     return `${d}-${m}-${y}`;
-  }catch(_){ return "00-00-00"; }
+  }catch(_){ return "00-00-0000"; }
 }
 
 function __dbAccountNameForKind__(kind){
@@ -2398,11 +2398,17 @@ async function __dbExport__(kind, preopenWin){
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
-    // Nome file export: distinguere chiaramente ADMIN vs OPER
+    // Nome file export: ADMIN => gg-mm-aaaa_nomeaccount.json | OPER => formato legacy
     const k = String(kind||"").toLowerCase();
     const roleTag = k.startsWith("admin") ? "ADMIN" : "OPER";
     const dt = __dbFmtDateDdMmYy__();
-    const filename = __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
+    const accountName = String(__dbAccountNameForKind__(kind) || "account")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_");
+    const filename = k.startsWith("admin")
+      ? __safeFileName__(`${dt}_${accountName}.json`)
+      : __safeFileName__(`DAEDALIUM_EXP_${roleTag}_${dt}.json`);
 
     // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
     if (preopenWin && typeof preopenWin === "object"){
