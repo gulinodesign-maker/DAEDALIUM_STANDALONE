@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.088
+ * Build: 2.089
  */
-const BUILD_VERSION = "2.088";
+const BUILD_VERSION = "2.089";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -543,6 +543,30 @@ async function __localApiLavanderia__(method, params, body){
 
   if (method === "GET"){
     return list;
+  }
+
+  if (method === "PUT"){
+    const id = String((body && body.id) || (params && params.id) || "").trim();
+    if (!id) return { ok:true };
+    const now = __nowIso__();
+    const idx = list.findIndex(it => String(it?.id||"").trim() === id);
+    if (idx < 0) return { ok:true };
+    const prev = list[idx] || {};
+    const patch = Object.assign({}, body || {});
+    delete patch.id;
+    list[idx] = Object.assign({}, prev, patch, {
+      id: (prev.id || id),
+      updatedAt: now,
+      createdAt: (prev.createdAt || prev.created_at || now)
+    });
+    if (__normBool01(list[idx]?.isDeleted ?? list[idx]?.is_deleted ?? list[idx]?.deleted)){
+      list[idx].isDeleted = true;
+      list[idx].is_deleted = true;
+      list[idx].deletedAt = String(list[idx].deletedAt || list[idx].deleted_at || now);
+      list[idx].deleted_at = String(list[idx].deleted_at || list[idx].deletedAt || now);
+    }
+    await save();
+    return { ok:true };
   }
 
   if (method === "DELETE"){
