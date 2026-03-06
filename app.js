@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.078
+ * Build: 2.080
  */
-const BUILD_VERSION = "2.079";
+const BUILD_VERSION = "2.080";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2301,9 +2301,9 @@ async function __dbImport__(kind){
         try{
           const __targetAfterImport__ = (state.session && isOperatoreSession(state.session)) ? "pulizie" : "home";
           __writeRestoreState({ page: __targetAfterImport__ });
-          showPage(__targetAfterImport__);
-        }catch(_){
-          try{ location.reload(); }catch(__){ }
+        }catch(_){ }
+        try{ location.reload(); }catch(__){
+          try{ showPage((state.session && isOperatoreSession(state.session)) ? "pulizie" : "home"); }catch(___){}
         }
       }, 150);
       return;
