@@ -52,24 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.069
+ * Build: 2.068
  */
-const BUILD_VERSION = "2.069";
-
-function syncTopbarOffset(){
-  try{
-    const topbar = document.querySelector('.topbar');
-    if (!topbar) return;
-    const h = Math.max(0, Math.ceil(topbar.getBoundingClientRect().height || topbar.offsetHeight || 0));
-    if (h) document.documentElement.style.setProperty('--topbar-offset', `${h}px`);
-  }catch(_){ }
-}
-
-window.addEventListener('resize', syncTopbarOffset, { passive:true });
-window.addEventListener('orientationchange', syncTopbarOffset, { passive:true });
-window.addEventListener('pageshow', syncTopbarOffset, { passive:true });
-document.addEventListener('DOMContentLoaded', ()=>{ syncTopbarOffset(); requestAnimationFrame(syncTopbarOffset); });
-try{ window.visualViewport && window.visualViewport.addEventListener('resize', syncTopbarOffset, { passive:true }); }catch(_){ }
+const BUILD_VERSION = "2.068";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
