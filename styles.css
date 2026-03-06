@@ -43,6 +43,7 @@
   --radius: 18px;
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --topbar-offset: 88px;
   --safe-top: env(safe-area-inset-top, 0px);
 
   --btn-alpha: 0.80;
@@ -70,10 +71,11 @@ body{
 
 /* Topbar */
 .topbar{
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 40;
-  position: relative;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   padding-top: var(--safe-top);
   background: var(--glass);
   backdrop-filter: blur(14px);
@@ -466,6 +468,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   max-width: 980px;
   margin: 0 auto;
   padding: 14px;
+  padding-top: calc(14px + var(--topbar-offset));
   padding-bottom: calc(120px + var(--safe-bottom));
 }
 
@@ -2036,7 +2039,11 @@ border: 1px solid var(--border);
 
 /* Topbar: stronger premium accent */
 .topbar{
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   border-bottom-color: rgba(15,23,42,0.14);
 }
 .topbar::after{
