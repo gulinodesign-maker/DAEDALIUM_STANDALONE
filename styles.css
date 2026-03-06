@@ -4640,8 +4640,14 @@ grid-template-rows: 34px repeat(7, 54px);
 }
 
 #page-lavanderia .laundry-range::after{
-  content:none !important;
-  display:none !important;
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:0;
+  height:1px;
+  background:#000;
+  opacity:.85;
 }
 
 /* Il bottone "Genera report" ora è in topbar (resta nel DOM ma non si mostra qui) */
@@ -6166,6 +6172,16 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   height: 52px;
 }
 
+#page-statistiche .stats-page{
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 64px - var(--safe-top) - var(--sync-footer-space) - 28px);
+  box-sizing: border-box;
+}
+
+#page-statistiche .home-grid{
+  margin: auto auto !important;
+}
 
 
 .stats-page .home-grid{
@@ -8276,3 +8292,18 @@ color: var(--mcol,#ff3b30);
 .stat-graph-modal-detail{font-size:12px;line-height:1.35;color:rgba(15,23,42,0.68);text-align:center;}
 .stat-graph-modal-canvas{padding-top:2px;}
 .stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
+
+
+/* dDAE_2.087 — Statistiche: griglia davvero centrata nella pagina */
+#page-statistiche .stats-page{
+  min-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 28px);
+  display: flex;
+  flex-direction: column;
+}
+#page-statistiche .home-grid{
+  flex: 1 1 auto;
+  margin: 0 auto !important;
+  align-content: center !important;
+  justify-content: center !important;
+  align-self: center;
+}
