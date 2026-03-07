@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.109");
+    url("./assets/bg-daedalium.png?v=dDAE_2.110");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.109 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.110 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.109");
+    url("./assets/bg-daedalium.png?v=dDAE_2.110");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.109 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.110 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8367,7 +8367,6 @@ color: var(--mcol,#ff3b30);
   align-content: center !important;
   justify-content: center !important;
   align-self: center;
-  transform: translateX(-20px);
 }
 #page-statistiche .home-main{
   justify-content: flex-start !important;
@@ -8729,7 +8728,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.109 — iOS flat/performance hardening */
+/* dDAE_2.110 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8813,7 +8812,28 @@ color: var(--mcol,#ff3b30);
   opacity: 1;
 }
 
-/* dDAE_2.109 — Statistiche: compensazione offset iOS nella griglia icone */
+
+/* dDAE_2.110 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
 #page-statistiche .home-grid{
-  will-change: transform;
+  grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
+  column-gap: clamp(24px, 8vw, 56px) !important;
+  row-gap: 16px !important;
+  width: max-content !important;
+  max-width: calc(100vw - 28px) !important;
+  padding: 14px 0 !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-content: center !important;
+}
+#page-statistiche .home-main{
+  width: clamp(132px, 34vw, 180px) !important;
+  max-width: clamp(132px, 34vw, 180px) !important;
+  justify-self: center !important;
+  align-self: start !important;
+  margin: 0 !important;
+}
+#page-statistiche .home-main-glyph{
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
