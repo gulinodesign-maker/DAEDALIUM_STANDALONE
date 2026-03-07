@@ -5920,6 +5920,56 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   gap: 10px;
   align-items: center;
 }
+
+.settings-tax-row{
+  display:flex;
+  align-items:stretch;
+  gap:10px;
+}
+.settings-tax-field{
+  flex:1 1 auto;
+  min-width:0;
+}
+.settings-tax-cap-btn{
+  flex:0 0 112px;
+  min-height:56px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,0.14);
+  background: rgba(111,183,214,0.80) !important;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  padding:8px 10px;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  -webkit-appearance:none;
+  appearance:none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.settings-tax-cap-btn:active{ transform: scale(0.98); }
+.settings-tax-cap-top{
+  font-size:11px;
+  line-height:1.1;
+  font-weight:800;
+  letter-spacing:0.2px;
+  color:rgba(255,255,255,0.96);
+}
+.settings-tax-cap-value{
+  font-size:24px;
+  line-height:1;
+  font-weight:900;
+  color:#fff;
+}
+.settings-tax-cap-btn.is-empty .settings-tax-cap-value{
+  font-size:20px;
+}
+@media (max-width: 380px){
+  .settings-tax-cap-btn{ flex-basis: 98px; }
+  .settings-tax-cap-value{ font-size:22px; }
+}
 .settings-tab{
   flex: 1;
   height: 44px;
@@ -8306,21 +8356,4 @@ color: var(--mcol,#ff3b30);
   align-content: center !important;
   justify-content: center !important;
   align-self: center;
-}
-
-/* dDAE_2.090 — Statistiche: griglia icone centrata orizzontalmente */
-#page-statistiche .stats-page{
-  align-items: center;
-}
-#page-statistiche .stats-title,
-#page-statistiche .stats-divider{
-  align-self: stretch;
-}
-#page-statistiche .home-grid{
-  width: min(460px, calc(100vw - 28px)) !important;
-  max-width: 460px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  justify-self: center !important;
-  align-self: center !important;
 }

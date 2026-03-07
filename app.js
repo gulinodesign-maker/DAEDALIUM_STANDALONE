@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.090
+ * Build: 2.089
  */
-const BUILD_VERSION = "2.090";
+const BUILD_VERSION = "2.091";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -456,7 +456,7 @@ async function __localApiImpostazioni__(method, body){
       });
     }catch(_){}
 
-    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno"];
+    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti"];
     numKeys.forEach((k)=>{
       const v = (body && body[k] !== undefined) ? body[k] : "";
       out.push({ key:k, value: String(v ?? "").trim(), updatedAt: __nowIso__(), createdAt: __nowIso__() });
@@ -4041,12 +4041,14 @@ function formatEUR(value){
 }
 
 function calcTouristTax(ospite, nights){
-  // Tassa di soggiorno: per persona > 10 anni (usa 'adulti'), max 3 giorni consecutivi
+  // Tassa di soggiorno: per persona > 10 anni (usa 'adulti'), max notti configurabile
   const adultsRaw = ospite?.adulti ?? ospite?.adults ?? 0;
   const adults = Math.max(0, parseInt(adultsRaw, 10) || 0);
 
   const nNights = Math.max(0, parseInt(nights, 10) || 0);
-  const taxableDays = Math.min(nNights, 3);
+  const maxTaxableNightsRaw = (state.settings && state.settings.loaded) ? getSettingNumber("tassa_soggiorno_max_notti", 3) : 3;
+  const maxTaxableNights = Math.max(0, parseInt(maxTaxableNightsRaw, 10) || 0);
+  const taxableDays = Math.min(nNights, maxTaxableNights);
 
   const rate = (state.settings && state.settings.loaded) ? getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) : ((typeof TOURIST_TAX_EUR_PPN !== "undefined") ? Number(TOURIST_TAX_EUR_PPN) : 0);
   const r = isFinite(rate) ? Math.max(0, rate) : 0;
@@ -4410,6 +4412,7 @@ return json.data;
 // - tariffa_oraria -> value (number)
 // - costo_benzina  -> value (number)
 // - tassa_soggiorno -> value (number)
+// - tassa_soggiorno_max_notti -> value (integer, max notti tassabili)
 // =========================
 
 function __normKey(k) {
@@ -4531,6 +4534,73 @@ refreshFloatingLabels();
   }
 }
 
+const __settingsTaxCapUi = {
+  value: 0,
+  holdTimer: null,
+  holdTriggered: false,
+  holdDelay: 500,
+};
+
+function getTouristTaxMaxNightsSetting(fallback = 3) {
+  const raw = getSettingNumber("tassa_soggiorno_max_notti", fallback);
+  return Math.max(0, parseInt(raw, 10) || 0);
+}
+
+function renderTassaMaxNottiButton() {
+  const btn = document.getElementById("setTassaMaxNottiBtn");
+  const val = document.getElementById("setTassaMaxNottiVal");
+  const n = Math.max(0, parseInt(__settingsTaxCapUi.value, 10) || 0);
+  if (btn) {
+    btn.dataset.value = String(n);
+    btn.classList.toggle("is-empty", n <= 0);
+  }
+  if (val) val.textContent = n > 0 ? String(n) : "—";
+}
+
+function setTassaMaxNottiValue(next, { silent = false } = {}) {
+  __settingsTaxCapUi.value = Math.max(0, parseInt(next, 10) || 0);
+  renderTassaMaxNottiButton();
+  if (!silent) refreshFloatingLabels();
+}
+
+function bindTassaMaxNottiButton() {
+  const btn = document.getElementById("setTassaMaxNottiBtn");
+  if (!btn || btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+
+  const clearHold = () => {
+    if (__settingsTaxCapUi.holdTimer) {
+      clearTimeout(__settingsTaxCapUi.holdTimer);
+      __settingsTaxCapUi.holdTimer = null;
+    }
+  };
+
+  const startHold = () => {
+    clearHold();
+    __settingsTaxCapUi.holdTriggered = false;
+    __settingsTaxCapUi.holdTimer = setTimeout(() => {
+      __settingsTaxCapUi.holdTriggered = true;
+      setTassaMaxNottiValue(0);
+      try { toast("Massimo notti azzerato"); } catch(_) {}
+    }, __settingsTaxCapUi.holdDelay);
+  };
+
+  const endHold = () => {
+    clearHold();
+    setTimeout(() => { __settingsTaxCapUi.holdTriggered = false; }, 0);
+  };
+
+  btn.addEventListener("pointerdown", startHold, { passive: true });
+  btn.addEventListener("pointerup", endHold, { passive: true });
+  btn.addEventListener("pointerleave", endHold, { passive: true });
+  btn.addEventListener("pointercancel", endHold, { passive: true });
+
+  btn.addEventListener("click", () => {
+    if (__settingsTaxCapUi.holdTriggered) return;
+    setTassaMaxNottiValue((__settingsTaxCapUi.value || 0) + 1);
+  });
+}
+
 async function loadImpostazioniPage({ force = false } = {}) {
   await ensureSettingsLoaded({ force, showLoader: true });
   try {
@@ -4553,6 +4623,9 @@ async function loadImpostazioniPage({ force = false } = {}) {
     if (t) t.value = String(getSettingNumber("tariffa_oraria", 0) || "");
     if (b) b.value = String(getSettingNumber("costo_benzina", 0) || "");
     if (ts) ts.value = String(getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) || "");
+
+    bindTassaMaxNottiButton();
+    setTassaMaxNottiValue(getTouristTaxMaxNightsSetting(3), { silent: true });
 
     refreshFloatingLabels();
   } catch (e) {
@@ -4577,12 +4650,14 @@ async function saveImpostazioniPage() {
   const tariffa = __readNumInput("setTariffa");
   const benzina = __readNumInput("setBenzina");
   const tassa = __readNumInput("setTassa");
+  const tassaMaxNotti = Math.max(0, parseInt(__settingsTaxCapUi.value, 10) || 0);
 
   const payload = {
     operatori: [op1, op2, op3],
     tariffa_oraria: tariffa,
     costo_benzina: benzina,
     tassa_soggiorno: tassa,
+    tassa_soggiorno_max_notti: tassaMaxNotti,
   };
 
   await api("impostazioni", { method: "POST", body: payload, showLoader: true });
@@ -15817,7 +15892,8 @@ function buildTaxReportText(){
   lines.push(`Schede incluse: ${t.schede} (${t.mode === "stima" ? "tutte (anche non taggate)" : "solo taggate (PS o ISTAT)"})`);
   lines.push(`Adulti (somma): ${t.adultsTot}`);
   lines.push(`Bambini <10 (somma): ${t.kidsTot || 0}`);
-  lines.push(`Giorni tassabili (somma, max 3/notte per scheda): ${t.taxableDaysTot}`);
+  const maxTaxNights = Math.max(0, parseInt(getTouristTaxMaxNightsSetting(3), 10) || 0);
+  lines.push(`Giorni tassabili (somma, max ${maxTaxNights}/scheda): ${t.taxableDaysTot}`);
   lines.push("");
   lines.push(`Tariffa: ${formatEUR(t.rate)} / persona / notte`);
   lines.push("");
