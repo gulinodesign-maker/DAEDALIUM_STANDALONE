@@ -8572,3 +8572,61 @@ color: var(--mcol,#ff3b30);
   background: rgba(0,0,0,0.80) !important;
   border-color: rgba(0,0,0,0.18) !important;
 }
+
+
+/* dDAE_2.100 — Impostazioni: popup dati soggiorno + audio centrato + icone +10% */
+#page-impostazioni .card .bd{
+  display:flex;
+  flex-direction:column;
+}
+#page-impostazioni .settings-audio-centered{
+  width: fit-content;
+  margin: 6px auto 2px auto;
+  padding: 10px 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.80);
+  border: 1px solid rgba(15,23,42,0.12);
+  justify-content:center;
+}
+#page-impostazioni .settings-audio-centered .settings-audio-label{
+  color: rgba(15,23,42,0.82);
+  font-weight: 900;
+}
+#page-impostazioni .settings-actions .settings-btn .ui-ico{
+  width: clamp(37px, 10.3vw, 51px) !important;
+  height: clamp(37px, 10.3vw, 51px) !important;
+}
+.settings-btn-config{
+  background: rgba(111,183,214,0.80) !important;
+  border-color: rgba(111,183,214,0.22) !important;
+}
+.settings-config-card{
+  width: min(92vw, 560px);
+}
+.settings-config-hd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom: 10px;
+}
+.settings-config-title{
+  font-size: 18px;
+  font-weight: 950;
+  color: var(--ico-blue-night);
+}
+.settings-config-close{
+  min-width: 44px;
+  padding: 0 10px;
+}
+.settings-main-row-modal{
+  margin-top: 4px;
+}
+@media (max-width: 560px){
+  .settings-main-row-modal{
+    flex-direction:column;
+  }
+  .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{
+    width:100%;
+  }
+}

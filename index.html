@@ -679,28 +679,14 @@
 <div class="card">
 <div class="hd">
 <h2 class="page-title">Impostazioni</h2>
-<div class="settings-audio">
+</div>
+<div class="bd">
+<div class="settings-audio settings-audio-centered">
 <span class="settings-audio-label">Audio</span>
 <label aria-label="Audio on/off" class="switch">
 <input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
 <span class="slider"></span>
 </label>
-</div>
-</div>
-<div class="bd">
-<div class="settings-main-row" style="margin-top:10px;">
-<div class="field float settings-equal-card">
-<select aria-label="Anno corrente" class="select" id="setAnno"></select>
-<label for="setAnno">Anno corrente</label>
-</div>
-<div class="field float settings-equal-card">
-<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
-<label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
-</div>
-<button aria-label="Numero massimo giorni tassa di soggiorno" class="settings-tax-cap-btn settings-equal-card" id="setTassaMaxNottiBtn" type="button">
-<span class="settings-tax-cap-top">Giorni tassa</span>
-<span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
-</button>
 </div>
 <div class="row settings-actions" style="margin-top:16px;">
 <button aria-label="Salva" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
@@ -723,13 +709,15 @@
 <path d="M4 21h16"></path>
 </svg>
 </button>
-<button aria-label="Elimina account" class="settings-btn settings-btn-delete" id="settingsDeleteBtn" type="button">
+<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config" id="settingsConfigBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 7h16"></path>
-<path d="M10 11v6"></path>
-<path d="M14 11v6"></path>
-<path d="M6 7l1 14h10l1-14"></path>
-<path d="M9 7V4h6v3"></path>
+<path d="M8 3v8"></path>
+<path d="M16 3v8"></path>
+<path d="M6 13h4"></path>
+<path d="M14 13h4"></path>
+<path d="M6 18h4"></path>
+<path d="M14 18h4"></path>
 </svg>
 </button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
@@ -1423,6 +1411,34 @@
 <div class="row" style="justify-content:flex-end; gap:10px; margin-top:12px;">
 <button class="btn ghost" id="rc_cancel" type="button">Annulla</button>
 <button class="btn primary" id="rc_save" type="button">Conferma</button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="modal" hidden="" id="settingsConfigModal">
+<div aria-modal="true" class="modal-card settings-config-card" role="dialog">
+<div class="settings-config-hd">
+<div class="settings-config-title">Dati soggiorno</div>
+<button aria-label="Chiudi" class="btn ghost settings-config-close" id="settingsConfigClose" type="button">✕</button>
+</div>
+<div class="settings-config-body">
+<div class="settings-main-row settings-main-row-modal">
+<div class="field float settings-equal-card">
+<select aria-label="Anno corrente" class="select" id="setAnno"></select>
+<label for="setAnno">Anno corrente</label>
+</div>
+<div class="field float settings-equal-card">
+<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+<label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
+</div>
+<button aria-label="Numero massimo giorni tassa di soggiorno" class="settings-tax-cap-btn settings-equal-card" id="setTassaMaxNottiBtn" type="button">
+<span class="settings-tax-cap-top">Giorni tassa</span>
+<span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
+</button>
+</div>
+<div class="row settings-config-actions" style="justify-content:flex-end; gap:10px; margin-top:14px;">
+<button class="btn ghost" id="settingsConfigCancel" type="button">Annulla</button>
+<button class="btn primary" id="settingsConfigSave" type="button">Salva</button>
+</div>
 </div>
 </div>
 </div>

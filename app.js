@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.099
+ * Build: 2.100
  */
-const BUILD_VERSION = "2.099";
+const BUILD_VERSION = "2.100";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4742,6 +4742,22 @@ function bindTassaMaxNottiButton() {
   });
 }
 
+function __openSettingsConfigModal__(){
+  const modal = document.getElementById("settingsConfigModal");
+  if (!modal) return;
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+  try{ loadImpostazioniPage({ force:false }); }catch(_){ }
+  try{ refreshFloatingLabels(); }catch(_){ }
+}
+
+function __closeSettingsConfigModal__(){
+  const modal = document.getElementById("settingsConfigModal");
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
+}
+
 async function loadImpostazioniPage({ force = false } = {}) {
   await ensureSettingsLoaded({ force, showLoader: true });
   try {
@@ -4778,6 +4794,7 @@ async function saveImpostazioniPage() {
   await api("impostazioni", { method: "POST", body: payload, showLoader: true });
   await ensureSettingsLoaded({ force: true, showLoader: false });
 
+  try{ __closeSettingsConfigModal__(); }catch(_){ }
   toast("Impostazioni salvate");
 }
 
@@ -5004,22 +5021,22 @@ function setupImpostazioni() {
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
-const del = document.getElementById("settingsDeleteBtn");
-  if (del) bindFastTap(del, async () => {
-    try{
-      const ok = confirm("Cancellare TUTTI i dati locali dal browser? (tutti account/anni su questo dispositivo)");
-      if (!ok) return;
+const cfg = document.getElementById("settingsConfigBtn");
+  if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
 
-      try{ await __wipeBrowserDb__(); }catch(_){}
-
-      try{ clearSession(); }catch(_){}
-      try{ state.session = null; }catch(_){}
-      try{ applyRoleMode(); }catch(_){}
-      try{ __resetInMemoryData__(); }catch(_){}
-      toast("Database locale cancellato");
-      try{ showPage("auth"); }catch(_){}
-    }catch(e){ toast(e.message || "Errore"); }
+  const cfgClose = document.getElementById("settingsConfigClose");
+  if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
+  const cfgCancel = document.getElementById("settingsConfigCancel");
+  if (cfgCancel) bindFastTap(cfgCancel, __closeSettingsConfigModal__);
+  const cfgSave = document.getElementById("settingsConfigSave");
+  if (cfgSave) bindFastTap(cfgSave, async () => {
+    try { await saveImpostazioniPage(); } catch (e) { toast(e.message || "Errore"); }
   });
+  const cfgModal = document.getElementById("settingsConfigModal");
+  if (cfgModal && !cfgModal.__boundClose){
+    cfgModal.__boundClose = true;
+    cfgModal.addEventListener("click", (e) => { if (e.target === cfgModal) __closeSettingsConfigModal__(); });
+  }
 
 
   const logout = document.getElementById("settingsLogoutBtn");
