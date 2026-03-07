@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.100
+ * Build: 2.101
  */
-const BUILD_VERSION = "2.100";
+const BUILD_VERSION = "2.101";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1904,6 +1904,41 @@ async function __fbImportAdmin__(opts){
     }catch(_){}
   }
 
+  // merge impostazioni dall'admin_json per preservare catalogo operatori (colore/tariffa/benzina) anche dopo sync
+  try{
+    const docAdminSync = await __fsGet__(`sync/${__FB_STATE__.teamId}`);
+    if (docAdminSync){
+      const dataAdminSync = __fsDecode__(docAdminSync);
+      const rawAdminSync = String(dataAdminSync?.admin_json || "");
+      if (rawAdminSync){
+        const payloadAdminSync = JSON.parse(rawAdminSync);
+        const remoteImp = Array.isArray(payloadAdminSync?.datasets?.impostazioni) ? payloadAdminSync.datasets.impostazioni : [];
+        if (remoteImp.length){
+          const localImp = await __tblGet__("impostazioni", []);
+          const pickKey = (r) => String(r?.key || r?.Key || "").trim().toLowerCase();
+          const pickU = (r) => String(r?.updatedAt || r?.updated_at || r?.createdAt || r?.created_at || "");
+          const byKey = new Map();
+          (Array.isArray(localImp) ? localImp : []).forEach((row) => {
+            const k = pickKey(row) || `__local_${byKey.size}`;
+            byKey.set(k, row);
+          });
+          remoteImp.forEach((row) => {
+            const k = pickKey(row) || `__remote_${byKey.size}`;
+            const prev = byKey.get(k);
+            if (!prev){ byKey.set(k, row); return; }
+            const up = pickU(prev);
+            const ur = pickU(row);
+            const takeRemote = (!up && !ur) ? true : (!!ur && (!up || ur >= up));
+            byKey.set(k, takeRemote ? Object.assign({}, prev, row) : Object.assign({}, row, prev));
+          });
+          await __tblSet__("impostazioni", Array.from(byKey.values()));
+          try{ state.settings.loaded = false; }catch(_){ }
+          try{ await ensureSettingsLoaded({ force:true, showLoader:false }); }catch(_){ }
+        }
+      }
+    }
+  }catch(_){ }
+
   // cleanup: dedupe pulizie/operatori/lavanderia con logica LWW (evita che i vecchi valori "restino appiccicati")
   try{
     const __uAt__ = (it) => String(it?.updatedAt || it?.updated_at || it?.createdAt || it?.created_at || "");
@@ -3067,6 +3102,17 @@ function updateSettingsTabs(){
     if (el){
       el.textContent = `${userLabel} - ${yLabel}`;
     }
+  }catch(_){ }
+  try{ updateSettingsAccountName(); }catch(_){ }
+}
+
+function updateSettingsAccountName(){
+  try{
+    const el = document.getElementById("settingsAccountName");
+    if (!el) return;
+    const s = state.session || {};
+    const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
+    el.textContent = raw || "—";
   }catch(_){ }
 }
 
@@ -4766,6 +4812,7 @@ async function loadImpostazioniPage({ force = false } = {}) {
 
     bindTassaMaxNottiButton();
     setTassaMaxNottiValue(getTouristTaxMaxNightsSetting(3), { silent: true });
+    try{ updateSettingsAccountName(); }catch(_){ }
 
     refreshFloatingLabels();
   } catch (e) {
@@ -5030,7 +5077,7 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfgCancel) bindFastTap(cfgCancel, __closeSettingsConfigModal__);
   const cfgSave = document.getElementById("settingsConfigSave");
   if (cfgSave) bindFastTap(cfgSave, async () => {
-    try { await saveImpostazioniPage(); } catch (e) { toast(e.message || "Errore"); }
+    try { await saveImpostazioniPage(); __closeSettingsConfigModal__(); } catch (e) { toast(e.message || "Errore"); }
   });
   const cfgModal = document.getElementById("settingsConfigModal");
   if (cfgModal && !cfgModal.__boundClose){

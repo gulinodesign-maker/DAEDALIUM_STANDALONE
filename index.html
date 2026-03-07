@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.099" rel="stylesheet"/>
-<link href="./manifest.json?v=2.099" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.099" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.099" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.099" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.099" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.101" rel="stylesheet"/>
+<link href="./manifest.json?v=2.101" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.101" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.101" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.101" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.101" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.099"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.101"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -148,7 +148,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.099"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.101"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -334,7 +334,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.099</div></div></section>
+<div class="build" id="buildText">dDAE_2.101</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -681,12 +681,15 @@
 <h2 class="page-title">Impostazioni</h2>
 </div>
 <div class="bd">
+<div class="settings-audio-wrap">
 <div class="settings-audio settings-audio-centered">
 <span class="settings-audio-label">Audio</span>
 <label aria-label="Audio on/off" class="switch">
 <input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
 <span class="slider"></span>
 </label>
+</div>
+<div class="settings-account-name" id="settingsAccountName">—</div>
 </div>
 <div class="row settings-actions" style="margin-top:16px;">
 <button aria-label="Salva" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
@@ -709,7 +712,7 @@
 <path d="M4 21h16"></path>
 </svg>
 </button>
-<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config" id="settingsConfigBtn" type="button">
+<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 7h16"></path>
 <path d="M8 3v8"></path>
@@ -1388,8 +1391,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.099"></script>
-<script defer="" src="./app.js?v=2.099"></script>
+<script defer="" src="./config.js?v=2.101"></script>
+<script defer="" src="./app.js?v=2.101"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1435,7 +1438,7 @@
 <span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
 </button>
 </div>
-<div class="row settings-config-actions" style="justify-content:flex-end; gap:10px; margin-top:14px;">
+<div class="row settings-config-actions">
 <button class="btn ghost" id="settingsConfigCancel" type="button">Annulla</button>
 <button class="btn primary" id="settingsConfigSave" type="button">Salva</button>
 </div>
