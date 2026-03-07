@@ -5930,6 +5930,42 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   flex:1 1 auto;
   min-width:0;
 }
+.settings-inline-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  align-items:stretch;
+}
+.settings-inline-grid > *{
+  min-width:0;
+}
+.settings-inline-grid .field{
+  margin-top:0 !important;
+}
+.settings-inline-grid .settings-inline-field,
+.settings-inline-grid .settings-inline-field input,
+.settings-inline-grid .settings-inline-field select{
+  width:100%;
+}
+.settings-inline-grid .settings-inline-field label{
+  max-width:calc(100% - 16px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.settings-inline-grid .settings-inline-cap{
+  width:100%;
+  min-height:56px;
+  padding:8px 6px;
+  box-shadow:none;
+  flex:none;
+}
+.settings-inline-grid .settings-tax-cap-top{
+  font-size:10px;
+}
+.settings-inline-grid .settings-tax-cap-value{
+  font-size:22px;
+}
 .settings-tax-cap-btn{
   flex:0 0 112px;
   min-height:56px;

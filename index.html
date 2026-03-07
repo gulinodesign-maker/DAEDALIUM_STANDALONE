@@ -334,7 +334,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.089</div></div></section>
+<div class="build" id="buildText">dDAE_2.092</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -691,14 +691,19 @@
 <div class="settings-tabs" style="margin-top:10px;">
 <div aria-label="Account e anno esercizio" class="settings-tab" id="settingsAccountYearTab">—</div>
 </div>
-<button aria-expanded="false" class="accordion-toggle" id="opSettingsToggle" type="button">
-<span>Dati</span>
-<svg aria-hidden="true" class="ui-ico chevron" viewbox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
-</button>
-<div class="accordion-panel" hidden="" id="opSettingsPanel">
-<div class="field float" style="margin-top:10px;">
+<div class="settings-inline-grid" style="margin-top:10px;">
+<div class="field float settings-inline-field">
 <select aria-label="Anno di esercizio" class="select" id="setAnno"></select>
 <label for="setAnno">Anno di esercizio</label>
+</div>
+<div class="field float settings-inline-field">
+<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+<label for="setTassa">Tassa di soggiorno</label>
+</div>
+<button aria-label="Massimo notti tassa di soggiorno" class="settings-tax-cap-btn settings-inline-cap" id="setTassaMaxNottiBtn" type="button">
+<span class="settings-tax-cap-top">Max notti</span>
+<span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
+</button>
 </div>
 <div class="field float" style="margin-top:10px;">
 <input autocomplete="off" id="setOp1" placeholder=" "/>
@@ -719,16 +724,6 @@
 <div class="field float" style="margin-top:10px;">
 <input id="setBenzina" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
 <label for="setBenzina">Costo benzina (€)</label>
-</div>
-<div class="settings-tax-row" style="margin-top:10px;">
-<div class="field float settings-tax-field">
-<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
-<label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
-</div>
-<button aria-label="Massimo notti tassa di soggiorno" class="settings-tax-cap-btn" id="setTassaMaxNottiBtn" type="button">
-<span class="settings-tax-cap-top">Max notti</span>
-<span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
-</button>
 </div>
 <div class="row settings-actions" style="margin-top:16px;">
 <button aria-label="Salva" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
