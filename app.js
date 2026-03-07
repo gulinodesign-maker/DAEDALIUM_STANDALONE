@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.098
+ * Build: 2.099
  */
-const BUILD_VERSION = "2.098";
+const BUILD_VERSION = "2.099";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4596,6 +4596,7 @@ async function saveOperatoriCatalogToSettings(list){
     showLoader: true,
   });
   await ensureSettingsLoaded({ force: true, showLoader: false });
+  try{ if (window.__syncCleanOperators__) window.__syncCleanOperators__(); }catch(_){ }
   return clean;
 }
 
@@ -6100,7 +6101,10 @@ state.page = page;
   // Top back button (Ore pulizia + Calendario)
   const backBtnTop = $("#backBtnTop");
   if (backBtnTop){
-    backBtnTop.hidden = !(page === "orepulizia" || page === "calendario");
+    backBtnTop.hidden = !(page === "orepulizia" || page === "calendario" || page === "operatori");
+    backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori");
+    backBtnTop.classList.toggle("icon-btn-whiteorange", page !== "operatori");
+    try{ backBtnTop.setAttribute("aria-label", page === "operatori" ? "Torna a Impostazioni" : "Indietro"); }catch(_){ }
   }
 
   // Top guest list button (solo scheda Ospite) — torna alla lista ospiti accanto al tasto Home
@@ -6348,6 +6352,7 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
     if (page === "pulizie"){
       const el = document.getElementById("page-pulizie");
       if (el) el.style.display = "block";
+      try{ if (window.__syncCleanOperators__) window.__syncCleanOperators__(); }catch(_){ }
     }
   }catch(_){}
 
@@ -6410,10 +6415,11 @@ function setupHeader(){
     try{ showPage("auth"); }catch(_){ }
   });
 
-  // Back (ore pulizia + calendario)
+  // Back (ore pulizia + calendario + operatori)
   const bb = $("#backBtnTop");
   if (bb) bb.addEventListener("click", () => {
     if (state.page === "orepulizia") { showPage("pulizie"); return; }
+    if (state.page === "operatori") { showPage("impostazioni"); return; }
     if (state.page === "calendario") {
       if (state.session && isOperatoreSession(state.session)) { showPage("pulizie"); return; }
       showPage("ospiti");
