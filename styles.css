@@ -5003,7 +5003,7 @@ grid-template-rows: 34px repeat(7, 54px);
   font-weight: 950;
   font-size: 35.2px;
   line-height: 1.05;
-  color: var(--ico-blue-night);
+  color: var(--clean-op-color, var(--ico-blue-night));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5030,23 +5030,13 @@ grid-template-rows: 34px repeat(7, 54px);
   user-select: none;
 }
 
-/* Colori operatori (Pulizie): op1 azzurro, op2 arancione, op3 grigio */
-.clean-op-row[data-op="1"] .clean-op-name{ color: var(--ico-sky); }
-.clean-op-row[data-op="2"] .clean-op-name{ color: var(--ico-orange); }
-.clean-op-row[data-op="3"] .clean-op-name{ color: rgba(15,23,42,0.55); }
-
-.clean-op-row[data-op="1"] .clean-hour-dot{
-  border-color: rgba(43,124,180,0.55);
-  color: rgba(43,124,180,0.95);
-}
-.clean-op-row[data-op="2"] .clean-hour-dot{
-  border-color: rgba(201,119,43,0.55);
-  color: rgba(201,119,43,0.95);
-}
-.clean-op-row[data-op="3"] .clean-hour-dot{
-  border-color: rgba(15,23,42,0.22);
-  color: rgba(15,23,42,0.62);
-}
+/* Colori operatori (Pulizie): gestiti dinamicamente dal catalogo operatori */
+.clean-op-row[data-color="blue"]{ --clean-op-color:#6fb7d6; --clean-op-ring: rgba(111,183,214,0.55); }
+.clean-op-row[data-color="orange"]{ --clean-op-color:#f29c50; --clean-op-ring: rgba(242,156,80,0.55); }
+.clean-op-row[data-color="green"]{ --clean-op-color:#4caf7d; --clean-op-ring: rgba(76,175,125,0.55); }
+.clean-op-row[data-color="red"]{ --clean-op-color:#e25d4b; --clean-op-ring: rgba(226,93,75,0.55); }
+.clean-op-row[data-color="purple"]{ --clean-op-color:#8f78d4; --clean-op-ring: rgba(143,120,212,0.55); }
+.clean-op-row[data-color="sand"]{ --clean-op-color:#d6b276; --clean-op-ring: rgba(214,178,118,0.55); }
 .clean-hour-dot.is-zero::after{
   content: "•";
   font-size: 26px;
@@ -5057,11 +5047,12 @@ grid-template-rows: 34px repeat(7, 54px);
   transform: scale(0.96);
 }
 
-/* Pulizie: indicatore "SALVATO" (cerchio rosso) sui pallini ore operatori */
+/* Pulizie: indicatore "SALVATO" sui pallini ore operatori */
 .clean-hour-dot.is-saved{
-  outline: 3px solid rgba(220,0,0,.85);
+  outline: 3px solid var(--clean-op-color, rgba(220,0,0,.85));
   outline-offset: 2px;
 }
+
 .clean-op-hint{
   font-size: 12px;
   opacity: .85;
@@ -8359,7 +8350,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.095 — Impostazioni + pagina Operatori */
+/* dDAE_2.096 — Impostazioni + pagina Operatori */
 
 .settings-main-row{
   display:flex;

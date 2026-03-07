@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.095
+ * Build: 2.096
  */
-const BUILD_VERSION = "2.095";
+const BUILD_VERSION = "2.096";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4485,6 +4485,66 @@ function __normalizeOperatoreColor__(value){
   return __OPERATORI_COLOR_KEYS__.includes(key) ? key : "blue";
 }
 
+
+function __operatoreColorHex__(color){
+  switch(__normalizeOperatoreColor__(color)){
+    case 'orange': return '#f29c50';
+    case 'green': return '#4caf7d';
+    case 'red': return '#e25d4b';
+    case 'purple': return '#8f78d4';
+    case 'sand': return '#d6b276';
+    case 'blue':
+    default: return '#6fb7d6';
+  }
+}
+
+function __operatoreCatalogMapByName__(){
+  const map = new Map();
+  try{
+    (getOperatoriCatalogFromSettings() || []).forEach((item) => {
+      const name = String(item?.nome || '').trim();
+      if (!name) return;
+      map.set(name.toLowerCase(), item);
+    });
+  }catch(_){ }
+  return map;
+}
+
+function getOperatoreCatalogItemByName(name){
+  const key = String(name || '').trim().toLowerCase();
+  if (!key) return null;
+  try{
+    const map = __operatoreCatalogMapByName__();
+    if (map.has(key)) return map.get(key) || null;
+    for (const [k, item] of map.entries()){
+      if (!k) continue;
+      if (k === key || k.includes(key) || key.includes(k)) return item || null;
+    }
+  }catch(_){ }
+  return null;
+}
+
+function getOperatoreColorHexByName(name, fallbackColor){
+  const item = getOperatoreCatalogItemByName(name);
+  return __operatoreColorHex__(item?.colore || fallbackColor || 'blue');
+}
+
+function getOperatoreTariffaByName(name, fallbackValue = 0){
+  const item = getOperatoreCatalogItemByName(name);
+  const val = Number(item?.tariffa);
+  if (isFinite(val) && val >= 0) return Math.round(val * 100) / 100;
+  const fb = Number(fallbackValue || 0);
+  return isFinite(fb) && fb >= 0 ? Math.round(fb * 100) / 100 : 0;
+}
+
+function getOperatoreBenzinaByName(name, fallbackValue = 0){
+  const item = getOperatoreCatalogItemByName(name);
+  const val = Number(item?.benzina);
+  if (isFinite(val) && val >= 0) return Math.round(val * 100) / 100;
+  const fb = Number(fallbackValue || 0);
+  return isFinite(fb) && fb >= 0 ? Math.round(fb * 100) / 100 : 0;
+}
+
 function __operatoriCatalogDefaultFromLegacy__(){
   const names = getOperatorNamesFromSettings().filter(Boolean);
   if (!names.length) return [];
@@ -7688,7 +7748,12 @@ function __occupazioneMensileSlices__(mensili){
 }
 
 function __operatorGraphColors__(){
-  return ["#43B5FF", "#FF7A1A", "rgba(15,23,42,0.55)"];
+  try{
+    const catalog = getOperatoriCatalogFromSettings ? (getOperatoriCatalogFromSettings() || []) : [];
+    const palette = catalog.map(item => getOperatoreColorHexByName(item?.nome || '', item?.colore || 'blue')).filter(Boolean);
+    if (palette.length) return palette;
+  }catch(_){ }
+  return ['#6fb7d6', '#f29c50', '#4caf7d', '#e25d4b', '#8f78d4', '#d6b276'];
 }
 function __operatorGraphColors(){
   return __operatorGraphColors__();
@@ -7723,7 +7788,7 @@ function computeStatOrePuliziaGrafico(rows){
   const slices = ordered.map((name, i)=>({
     label: name,
     value: Number(totals.get(name) || 0),
-    color: palette[i % palette.length] || "#2b7cb4"
+    color: getOperatoreColorHexByName(name, palette[i % palette.length] || 'blue')
   })).filter(x=>x.value > 0);
   return slices;
 }
@@ -13579,7 +13644,17 @@ try{
 
           const isActive = (idx === idxActive && idxActive >= 0);
           if (hours > 0 || isActive){
-            rows.push({ data: date, operatore: name, ore: hours, benzina_euro: (hours > 0 ? OP_BENZINA_EUR : 0) });
+            const benzinaOperatore = getOperatoreBenzinaByName(name, 0);
+            const tariffaOperatore = getOperatoreTariffaByName(name, 0);
+            rows.push({
+              data: date,
+              operatore: name,
+              ore: hours,
+              benzina_euro: (hours > 0 ? benzinaOperatore : 0),
+              benzina_unit_euro: benzinaOperatore,
+              tariffa_euro: tariffaOperatore,
+              colore: (getOperatoreCatalogItemByName(name)?.colore || 'blue')
+            });
           }
         });
 
@@ -13712,8 +13787,6 @@ try{
 
 
   // --- Ore operatori (foglio "operatori") ---
-  const OP_BENZINA_EUR = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 2.00) : 2.00;   // € per presenza
-  const OP_RATE_EUR_H = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 8.00) : 8.00;    // € per ora
 
   // dDAE_1.025 — Operatore: in Pulizie il nome è lo username loggato (non dipende da Impostazioni)
   const __getLoggedOperatorName = () => {
@@ -13765,6 +13838,22 @@ try{
     { name: document.getElementById("op2Name"), hours: document.getElementById("op2Hours") },
     { name: document.getElementById("op3Name"), hours: document.getElementById("op3Hours") },
   ].filter(x => x.name && x.hours);
+
+  const __applyOperatorePulizieVisuals__ = (rowEl, nameEl, hourEl, operatorName, fallbackColor = 'blue') => {
+    const hex = getOperatoreColorHexByName(operatorName, fallbackColor || 'blue');
+    const soft = (typeof hexToRgba === 'function') ? hexToRgba(hex, 0.22) : 'rgba(111,183,214,0.22)';
+    const softStrong = (typeof hexToRgba === 'function') ? hexToRgba(hex, 0.72) : 'rgba(111,183,214,0.72)';
+    try{ if (rowEl) rowEl.dataset.color = __normalizeOperatoreColor__(getOperatoreCatalogItemByName(operatorName)?.colore || fallbackColor || 'blue'); }catch(_){ }
+    try{ if (nameEl) nameEl.style.color = hex; }catch(_){ }
+    try{
+      if (hourEl){
+        hourEl.style.borderColor = softStrong;
+        hourEl.style.color = hex;
+        hourEl.style.background = 'rgba(255,255,255,0.80)';
+        hourEl.style.boxShadow = `0 10px 22px rgba(15,23,42,0.10), inset 0 0 0 1px rgba(255,255,255,0.35), 0 0 0 4px ${soft}`;
+      }
+    }catch(_){ }
+  };
 
   const readHourDot = (el) => {
     const n = parseInt(String(el.dataset.value || "0"), 10);
@@ -13858,6 +13947,8 @@ try{
       r.name.classList.remove("is-placeholder");
     }
 
+    try{ __applyOperatorePulizieVisuals__(rowEl, r.name, r.hours, n, (idx === 0 ? 'blue' : (idx === 1 ? 'orange' : 'green'))); }catch(_){ }
+
     // Dot: init a 0 (se mancante)
     if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
 
@@ -13923,11 +14014,16 @@ try{
       if (!name) return; // operatore non configurato
 
       const hours = readHourDot(r.hours); // può essere 0
+      const benzinaOperatore = getOperatoreBenzinaByName(name, 0);
+      const tariffaOperatore = getOperatoreTariffaByName(name, 0);
       rows.push({
         data: date,
         operatore: name,
         ore: hours,
-        benzina_euro: OP_BENZINA_EUR
+        benzina_euro: (hours > 0 ? benzinaOperatore : 0),
+        benzina_unit_euro: benzinaOperatore,
+        tariffa_euro: tariffaOperatore,
+        colore: (getOperatoreCatalogItemByName(name)?.colore || 'blue')
       });
     });
 
@@ -16378,48 +16474,46 @@ function __renderOrePuliziaCalendar_(){
   const dowMon0 = (jsDow + 6) % 7; // convert to Mon=0
   const totalCells = 42; // 6 settimane
 
-  // ore per giorno
+  // ore per giorno + costi per operatore
   const rows = state.orepulizia.rows || [];
   const hoursByDay = new Map();
+  let totalHours = 0;
+  let totalImporto = 0;
+  let presenze = 0;
+  let presenzeImporto = 0;
+  const presenceKeys = new Set();
   rows.forEach(r=>{
-    const iso = formatISODateLocal(r.data || r.date || r.Data || "");
+    const iso = formatISODateLocal(r.data || r.date || r.Data || '');
     if (!iso) return;
-    if (!iso.startsWith(monthKey + "-")) return;
+    if (!iso.startsWith(monthKey + '-')) return;
 
-    const oper = String(r.operatore || r.nome || "").trim();
-    if (op && op !== "__ALL__" && String(oper||"").trim().toLowerCase() !== String(op||"").trim().toLowerCase()) return;
+    const oper = String(r.operatore || r.nome || '').trim();
+    if (op && op !== '__ALL__' && String(oper||'').trim().toLowerCase() !== String(op||'').trim().toLowerCase()) return;
 
-    const oreRaw = (r.ore !== undefined && r.ore !== null) ? r.ore : (r.Ore !== undefined ? r.Ore : "");
-    const ore = Number(String(oreRaw).trim().replace(",", "."));
+    const oreRaw = (r.ore !== undefined && r.ore !== null) ? r.ore : (r.Ore !== undefined ? r.Ore : '');
+    const ore = Number(String(oreRaw).trim().replace(',', '.'));
     if (!isFinite(ore) || ore <= 0) return;
 
     const d = parseInt(iso.slice(8,10), 10);
     if (!d) return;
     hoursByDay.set(d, (hoursByDay.get(d) || 0) + ore);
+    totalHours += ore;
+
+    const tariffaOperatore = getOperatoreTariffaByName(oper, Number(r?.tariffa_euro ?? 0));
+    totalImporto += ore * tariffaOperatore;
+
+    const presenceKey = `${iso}|${String(oper || '').trim().toLowerCase()}`;
+    if (!presenceKeys.has(presenceKey)){
+      presenceKeys.add(presenceKey);
+      presenze += 1;
+      const benzinaOperatore = getOperatoreBenzinaByName(oper, Number(r?.benzina_unit_euro ?? r?.benzina_euro ?? 0));
+      presenzeImporto += benzinaOperatore;
+    }
   });
 
-  // stats
-  let totalHours = 0;
-  let presenze = 0;
-  for (const h of hoursByDay.values()){
-    if (h > 0){
-      totalHours += h;
-      presenze += 1;
-    }
-  }
-
-  // Tariffe da impostazioni
-  // - tariffa_oraria: €/ora
-  // - costo_benzina: €/presenza (giorno con ore)
-  const tariffaOraria = (state.settings && state.settings.loaded) ? getSettingNumber("tariffa_oraria", 0) : 0;
-  const costoBenzinaPerPresenza = (state.settings && state.settings.loaded) ? getSettingNumber("costo_benzina", 0) : 0;
-
   const hoursStr = __fmtHours_(totalHours);
-  const totalImporto = (isFinite(totalHours) && isFinite(tariffaOraria)) ? (totalHours * tariffaOraria) : 0;
-  const totalImportoStr = (tariffaOraria > 0) ? __fmtMoneyNoSpace_(totalImporto) : "—";
-
-  const presenzeImporto = (isFinite(presenze) && isFinite(costoBenzinaPerPresenza)) ? (presenze * costoBenzinaPerPresenza) : 0;
-  const presenzeImportoStr = (costoBenzinaPerPresenza > 0) ? __fmtMoneyNoSpace_(presenzeImporto) : "—";
+  const totalImportoStr = totalImporto > 0 ? __fmtMoneyNoSpace_(totalImporto) : '—';
+  const presenzeImportoStr = presenzeImporto > 0 ? __fmtMoneyNoSpace_(presenzeImporto) : '—';
 
   if (totalEl) {
     totalEl.textContent = hoursStr ? `${hoursStr} ore - ${totalImportoStr}` : "—";
