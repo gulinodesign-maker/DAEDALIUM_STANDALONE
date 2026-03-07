@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.106");
+    url("./assets/bg-daedalium.png?v=dDAE_2.107");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -96,12 +96,13 @@ body{
 }
 
 .brand{
-    position: relative;
-display:flex;
+  position: relative;
+  display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 12px;
   padding: 10px 14px;
+  min-height: 60px;
   flex-wrap: nowrap;
 }
 .brand-left{
@@ -109,23 +110,25 @@ display:flex;
   align-items:center;
   gap: 6px;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.106 — Titolo topbar inline: niente overlap, niente wrap */
+/* dDAE_2.107 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
-  position: static;
-  left: auto;
-  top: auto;
-  transform: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   height: auto;
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  flex: 0 1 auto;
+  justify-content:center;
+  width: min(52vw, 240px);
+  max-width: calc(100vw - 180px);
   min-width: 0;
-  margin-left: 2px;
+  margin: 0;
+  padding: 0 8px;
   font-weight: 800;
   font-size: 20px;
   letter-spacing: 0.6px;
@@ -133,8 +136,10 @@ display:flex;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
   pointer-events: none;
   user-select: none;
+  z-index: 1;
 }
 
 .brand-right{
@@ -1020,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.106");
+    url("./assets/bg-daedalium.png?v=dDAE_2.107");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4262,6 +4267,11 @@ body.perf-lite *::after{
   letter-spacing: .2px;
   margin: 2px 0 12px 0;
   font-size: clamp(22px, 6vw, 30px);
+}
+
+/* dDAE_2.107 — In Pulizie la data corrente passa nella topbar */
+#page-pulizie .clean-date{
+  display:none;
 }
 
 .clean-grid-wrap{
@@ -8708,7 +8718,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.106 — iOS flat/performance hardening */
+/* dDAE_2.107 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8730,15 +8740,16 @@ color: var(--mcol,#ff3b30);
   flex: 0 0 auto;
 }
 .topbar-year{
-  position: static !important;
-  left: auto !important;
-  top: auto !important;
-  transform: none !important;
-  flex: 1 1 auto;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  flex: 0 1 auto;
   min-width: 0;
-  justify-content: flex-start;
+  justify-content: center;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 .brand-right{
   margin-left: auto;

@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.106
+ * Build: 2.107
  */
-const BUILD_VERSION = "2.106";
+const BUILD_VERSION = "2.107";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3244,6 +3244,11 @@ function __setTopbarCenterLabel__(){
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie"){
+      const base = (state && state.session && isOperatoreSession(state.session))
+        ? new Date()
+        : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      el.textContent = formatDayMonthIT(startOfLocalDay(base));
     } else {
       el.textContent = String((new Date()).getFullYear());
     }
@@ -4199,6 +4204,15 @@ function formatFullDateIT(d){
     const month = months[dt.getMonth()];
     const year = dt.getFullYear();
     return `${wd} ${day} ${month} ${year}`;
+  }catch(_){ return ""; }
+}
+
+function formatDayMonthIT(d){
+  try{
+    const dt = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dt)) return "";
+    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+    return `${dt.getDate()} ${months[dt.getMonth()] || ""}`.trim();
   }catch(_){ return ""; }
 }
 
@@ -14550,9 +14564,9 @@ if (cleanResetAll){
 
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
-    if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {
