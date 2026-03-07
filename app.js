@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.112
+ * Build: 2.113
  */
-const BUILD_VERSION = "2.112";
+const BUILD_VERSION = "2.113";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5227,14 +5227,23 @@ const cfg = document.getElementById("settingsConfigBtn");
 
 
   const logout = document.getElementById("settingsLogoutBtn");
-  if (logout) logout.addEventListener("click", () => {
-    try{ clearSession(); }catch(_){ }
-    try{ state.session = null; }catch(_){ }
-    try{ applyRoleMode(); }catch(_){ }
-    try{ __resetInMemoryData__(); }catch(_){ }
-    try{ invalidateApiCache(); }catch(_){ }
-    try{ showPage("auth"); }catch(_){ }
-  });
+  if (logout && !logout.__boundConfirmLogout) {
+    logout.__boundConfirmLogout = true;
+    logout.addEventListener("click", async () => {
+      let ok = false;
+      try{ ok = await __confirmTwoActions__("Vuoi davvero uscire da questo account?", "Esci", "Annulla"); }catch(_){ }
+      if (!ok){
+        try{ if (typeof confirm === "function") ok = !!confirm("Vuoi davvero uscire da questo account?"); }catch(_){ ok = false; }
+      }
+      if (!ok) return;
+      try{ clearSession(); }catch(_){ }
+      try{ state.session = null; }catch(_){ }
+      try{ applyRoleMode(); }catch(_){ }
+      try{ __resetInMemoryData__(); }catch(_){ }
+      try{ invalidateApiCache(); }catch(_){ }
+      try{ showPage("auth"); }catch(_){ }
+    });
+  }
 
 
   // Anno di esercizio (gestito dal pulsante calendario in pagina Impostazioni)

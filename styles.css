@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.112");
+    url("./assets/bg-daedalium.png?v=dDAE_2.113");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.112 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.113 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.112");
+    url("./assets/bg-daedalium.png?v=dDAE_2.113");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.112 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.113 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8728,7 +8728,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.112 — iOS flat/performance hardening */
+/* dDAE_2.113 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8813,7 +8813,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.112 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
+/* dDAE_2.113 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
 #page-statistiche .home-grid{
   grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
   column-gap: clamp(24px, 8vw, 56px) !important;
@@ -8839,7 +8839,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.112 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
+/* dDAE_2.113 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
 #page-impostazioni .settings-actions{
   margin-top: 112px !important;
 }
