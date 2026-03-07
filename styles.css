@@ -8857,3 +8857,32 @@ color: var(--mcol,#ff3b30);
 #page-impostazioni .settings-actions .settings-btn.settings-btn-roster .ui-ico{
   stroke: rgba(255,255,255,0.96) !important;
 }
+
+/* dDAE_2.115 — Impostazioni: etichette visibili sotto le icone */
+#page-impostazioni .settings-actions .settings-btn{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap: 8px !important;
+  padding: 10px 6px 8px !important;
+}
+#page-impostazioni .settings-actions .settings-btn .ui-ico{
+  flex: 0 0 auto;
+  margin: 0 !important;
+  width: clamp(34px, 9.8vw, 48px) !important;
+  height: clamp(34px, 9.8vw, 48px) !important;
+}
+#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
+  display:block;
+  width:100%;
+  text-align:center;
+  font-size: clamp(10px, 2.7vw, 12px);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.98);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
