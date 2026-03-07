@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.089" rel="stylesheet"/>
-<link href="./manifest.json?v=2.089" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.089" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.089" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.089" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.089" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.093" rel="stylesheet"/>
+<link href="./manifest.json?v=2.093" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.093" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.093" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.093" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.093" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.089"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.093"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -148,7 +148,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.089"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.093"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -334,7 +334,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.092</div></div></section>
+<div class="build" id="buildText">dDAE_2.093</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -691,18 +691,25 @@
 <div class="settings-tabs" style="margin-top:10px;">
 <div aria-label="Account e anno esercizio" class="settings-tab" id="settingsAccountYearTab">—</div>
 </div>
-<div class="settings-inline-grid" style="margin-top:10px;">
-<div class="field float settings-inline-field">
+<div class="settings-visible-block" id="opSettingsPanel">
+<div class="settings-equal-row" style="margin-top:10px;">
+<div class="field float settings-equal-item">
 <select aria-label="Anno di esercizio" class="select" id="setAnno"></select>
 <label for="setAnno">Anno di esercizio</label>
 </div>
-<div class="field float settings-inline-field">
+<div class="field float settings-equal-item">
 <input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
-<label for="setTassa">Tassa di soggiorno</label>
+<label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
 </div>
-<button aria-label="Massimo notti tassa di soggiorno" class="settings-tax-cap-btn settings-inline-cap" id="setTassaMaxNottiBtn" type="button">
+<button aria-label="Massimo notti tassa di soggiorno" class="settings-tax-cap-btn settings-equal-item" id="setTassaMaxNottiBtn" type="button">
 <span class="settings-tax-cap-top">Max notti</span>
 <span class="settings-tax-cap-value" id="setTassaMaxNottiVal">—</span>
+</button>
+</div>
+<div class="settings-operatori-quick">
+<button aria-label="Apri pagina operatori" class="settings-open-operatori-btn" id="settingsOperatoriBtn" type="button">
+<span>Operatori</span>
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
 </button>
 </div>
 <div class="field float" style="margin-top:10px;">
@@ -717,13 +724,17 @@
 <input autocomplete="off" id="setOp3" placeholder=" "/>
 <label for="setOp3">Operatore 3 (nome)</label>
 </div>
-<div class="field float" style="margin-top:16px;">
+<div class="settings-equal-row settings-costs-row" style="margin-top:16px;">
+<div class="field float settings-equal-item">
 <input id="setTariffa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
 <label for="setTariffa">Tariffa oraria operatore (€ / ora)</label>
 </div>
-<div class="field float" style="margin-top:10px;">
+<div class="field float settings-equal-item">
 <input id="setBenzina" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
 <label for="setBenzina">Costo benzina (€)</label>
+</div>
+<div class="settings-equal-item settings-placeholder-card" aria-hidden="true"></div>
+</div>
 </div>
 <div class="row settings-actions" style="margin-top:16px;">
 <button aria-label="Salva" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
@@ -859,6 +870,15 @@
 </div>
 </section>
 <!-- 2) SPESE -->
+<section class="page" hidden="" id="page-operatori">
+<div class="card">
+<div class="hd">
+<h2>Operatori</h2>
+<div class="hd-actions"><button aria-label="Aggiungi operatore" class="icon-btn icon-btn-whiteblue" id="operatoriAddBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
+<div class="operatori-divider"></div>
+<div class="bd">
+<div class="operatori-cards-list" id="operatoriCardsList"></div>
+</div></div></section>
 <section class="page" hidden="" id="page-spese">
 <div class="card">
 <div class="hd">
@@ -1414,8 +1434,49 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.089"></script>
-<script defer="" src="./app.js?v=2.089"></script>
+
+<div class="modal-backdrop" hidden id="operatoriModal">
+  <div class="operatori-modal-card" role="dialog" aria-modal="true" aria-labelledby="operatoriModalTitle">
+    <div class="operatori-modal-head">
+      <div class="operatori-modal-title" id="operatoriModalTitle">Operatore</div>
+      <button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue" id="operatoriModalCloseBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+    </div>
+    <div class="operatori-modal-body">
+      <div class="field float">
+        <input autocomplete="off" id="operatoreNomeInput" placeholder=" "/>
+        <label for="operatoreNomeInput">Nome operatore</label>
+      </div>
+      <div class="operatori-modal-grid">
+        <div class="field float">
+          <input id="operatoreTariffaInput" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+          <label for="operatoreTariffaInput">Tariffa</label>
+        </div>
+        <div class="field float">
+          <input id="operatoreBenzinaInput" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+          <label for="operatoreBenzinaInput">Benzina</label>
+        </div>
+      </div>
+      <div class="operatori-color-wrap">
+        <div class="operatori-color-label">Tag colore</div>
+        <div class="operatori-color-row" id="operatoriColorRow">
+          <button class="operatori-color-dot is-selected" data-color="#6fb7d6" type="button"></button>
+          <button class="operatori-color-dot" data-color="#c9772b" type="button"></button>
+          <button class="operatori-color-dot" data-color="#8f9bb3" type="button"></button>
+          <button class="operatori-color-dot" data-color="#7bbf6a" type="button"></button>
+          <button class="operatori-color-dot" data-color="#b785d8" type="button"></button>
+          <button class="operatori-color-dot" data-color="#d86f8d" type="button"></button>
+        </div>
+      </div>
+      <div class="operatori-modal-actions">
+        <button class="settings-btn settings-btn-delete" id="operatoriCardDeleteBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 14h10l1-14"></path><path d="M9 7V4h6v3"></path></svg></button>
+        <button class="settings-btn settings-btn-save" id="operatoriSaveBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l3 3v11a2 2 0 0 1-2 2Z"></path><path d="M7 21V13h10v8"></path><path d="M7 3v6h8"></path></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script defer="" src="./config.js?v=2.093"></script>
+<script defer="" src="./app.js?v=2.093"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">

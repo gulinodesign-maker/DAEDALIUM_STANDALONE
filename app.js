@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.089
  */
-const BUILD_VERSION = "2.092";
+const BUILD_VERSION = "2.093";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16315,3 +16315,168 @@ async function initOrePuliziaPage(){
 }
 
 (async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
+
+
+/* ===== dDAE_2.093 - Settings layout + pagina Operatori ===== */
+const __OPERATORI_PAGE_KEY__ = "ddae_operatori_cards_v2093";
+const __OPERATORI_COLORS__ = ["#6fb7d6", "#c9772b", "#8f9bb3", "#7bbf6a", "#b785d8", "#d86f8d"];
+const __operatoriUiState__ = { list: [], editIndex: -1, color: "#6fb7d6" };
+
+function __safeNum2__(v){
+  const s = String(v ?? "").trim().replace(",", ".");
+  if (!s) return "";
+  const n = Number(s);
+  if (!isFinite(n) || n < 0) return "";
+  return Math.round(n * 100) / 100;
+}
+function __fmtEuro2__(v){
+  const n = Number(v);
+  if (!isFinite(n)) return "—";
+  try{ return new Intl.NumberFormat("it-IT", { style:"currency", currency:"EUR" }).format(n); }catch(_){ return `${n.toFixed(2)} €`; }
+}
+function __operatoriCardsLoad__(){
+  try{
+    const raw = localStorage.getItem(__OPERATORI_PAGE_KEY__);
+    const arr = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(arr) && arr.length) return arr;
+  }catch(_){ }
+  const names = [String(document.getElementById("setOp1")?.value || "").trim(), String(document.getElementById("setOp2")?.value || "").trim(), String(document.getElementById("setOp3")?.value || "").trim()].filter(Boolean);
+  const tariffa = __safeNum2__(document.getElementById("setTariffa")?.value || getSettingNumber("tariffa_oraria", 0));
+  const benzina = __safeNum2__(document.getElementById("setBenzina")?.value || getSettingNumber("costo_benzina", 0));
+  return names.map((name, idx) => ({ id:`op_${Date.now()}_${idx}`, nome:name, tariffa:tariffa === "" ? "" : tariffa, benzina:benzina === "" ? "" : benzina, color: __OPERATORI_COLORS__[idx % __OPERATORI_COLORS__.length] }));
+}
+function __operatoriCardsSave__(list){
+  __operatoriUiState__.list = Array.isArray(list) ? list.slice() : [];
+  try{ localStorage.setItem(__OPERATORI_PAGE_KEY__, JSON.stringify(__operatoriUiState__.list)); }catch(_){ }
+}
+function __operatoriSyncNamesToSettings__(){
+  const ids = ["setOp1","setOp2","setOp3"];
+  ids.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = String(__operatoriUiState__.list[idx]?.nome || "");
+  });
+  try{ refreshFloatingLabels(); }catch(_){ }
+}
+function __operatoriRenderCards__(){
+  const wrap = document.getElementById("operatoriCardsList");
+  if (!wrap) return;
+  const list = Array.isArray(__operatoriUiState__.list) ? __operatoriUiState__.list : [];
+  if (!list.length){
+    wrap.innerHTML = '<div class="operatori-empty-card">Nessun operatore</div>';
+    return;
+  }
+  wrap.innerHTML = list.map((it, idx) => `
+    <button class="operatori-card" type="button" data-idx="${idx}">
+      <span class="operatori-card-tag" style="background:${String(it.color || "#6fb7d6")}"></span>
+      <span class="operatori-card-main">
+        <span class="operatori-card-name">${String(it.nome || "Operatore")}</span>
+        <span class="operatori-card-meta-row">
+          <span class="operatori-card-chip">Tariffa <strong>${__fmtEuro2__(it.tariffa)}</strong></span>
+          <span class="operatori-card-chip">Benzina <strong>${__fmtEuro2__(it.benzina)}</strong></span>
+        </span>
+      </span>
+      <span class="operatori-card-chevron">›</span>
+    </button>`).join("");
+  wrap.querySelectorAll('.operatori-card').forEach(btn => {
+    bindFastTap(btn, () => {
+      const idx = Number(btn.dataset.idx || -1);
+      __operatoriOpenModal__(idx);
+    });
+  });
+}
+function renderOperatoriPage(){
+  __operatoriUiState__.list = __operatoriCardsLoad__();
+  __operatoriRenderCards__();
+  __operatoriSyncNamesToSettings__();
+}
+function __operatoriSetColor__(color){
+  __operatoriUiState__.color = color || __OPERATORI_COLORS__[0];
+  document.querySelectorAll('#operatoriColorRow .operatori-color-dot').forEach(btn => {
+    btn.classList.toggle('is-selected', String(btn.dataset.color||'') === String(__operatoriUiState__.color));
+  });
+}
+function __operatoriOpenModal__(idx = -1){
+  const modal = document.getElementById('operatoriModal');
+  if (!modal) return;
+  const item = (idx >= 0) ? (__operatoriUiState__.list[idx] || null) : null;
+  __operatoriUiState__.editIndex = idx;
+  document.getElementById('operatoriModalTitle').textContent = item ? 'Modifica operatore' : 'Nuovo operatore';
+  document.getElementById('operatoreNomeInput').value = String(item?.nome || '');
+  document.getElementById('operatoreTariffaInput').value = item?.tariffa === '' || item?.tariffa === undefined ? String(document.getElementById('setTariffa')?.value || '') : String(item.tariffa);
+  document.getElementById('operatoreBenzinaInput').value = item?.benzina === '' || item?.benzina === undefined ? String(document.getElementById('setBenzina')?.value || '') : String(item.benzina);
+  __operatoriSetColor__(String(item?.color || __OPERATORI_COLORS__[0]));
+  const del = document.getElementById('operatoriCardDeleteBtn');
+  if (del) del.hidden = !(idx >= 0);
+  modal.hidden = false;
+  try{ refreshFloatingLabels(); }catch(_){ }
+}
+function __operatoriCloseModal__(){
+  const modal = document.getElementById('operatoriModal');
+  if (modal) modal.hidden = true;
+}
+function __operatoriSaveCurrent__(){
+  const nome = String(document.getElementById('operatoreNomeInput')?.value || '').trim();
+  if (!nome){ try{ toast('Inserisci il nome operatore', 'orange'); }catch(_){} return; }
+  const item = {
+    id: (__operatoriUiState__.editIndex >= 0 && __operatoriUiState__.list[__operatoriUiState__.editIndex]?.id) ? __operatoriUiState__.list[__operatoriUiState__.editIndex].id : `op_${Date.now()}`,
+    nome,
+    tariffa: __safeNum2__(document.getElementById('operatoreTariffaInput')?.value || ''),
+    benzina: __safeNum2__(document.getElementById('operatoreBenzinaInput')?.value || ''),
+    color: __operatoriUiState__.color || __OPERATORI_COLORS__[0]
+  };
+  const list = __operatoriCardsLoad__();
+  if (__operatoriUiState__.editIndex >= 0 && list[__operatoriUiState__.editIndex]) list[__operatoriUiState__.editIndex] = item;
+  else list.push(item);
+  __operatoriCardsSave__(list);
+  __operatoriCloseModal__();
+  renderOperatoriPage();
+  try{ toast('Operatore salvato', 'green'); }catch(_){ }
+}
+function __operatoriDeleteCurrent__(){
+  if (__operatoriUiState__.editIndex < 0) return;
+  const list = __operatoriCardsLoad__();
+  list.splice(__operatoriUiState__.editIndex, 1);
+  __operatoriCardsSave__(list);
+  __operatoriCloseModal__();
+  renderOperatoriPage();
+  try{ toast('Operatore eliminato'); }catch(_){ }
+}
+function __bindOperatoriPage__(){
+  const add = document.getElementById('operatoriAddBtn');
+  if (add && !add.dataset.bound){ add.dataset.bound='1'; bindFastTap(add, ()=>__operatoriOpenModal__(-1)); }
+  const openFromSettings = document.getElementById('settingsOperatoriBtn');
+  if (openFromSettings && !openFromSettings.dataset.bound){ openFromSettings.dataset.bound='1'; bindFastTap(openFromSettings, ()=>{ showPage('operatori'); setTimeout(()=>{ try{ renderOperatoriPage(); }catch(_){} }, 0); }); }
+  const close = document.getElementById('operatoriModalCloseBtn');
+  if (close && !close.dataset.bound){ close.dataset.bound='1'; bindFastTap(close, __operatoriCloseModal__); }
+  const save = document.getElementById('operatoriSaveBtn');
+  if (save && !save.dataset.bound){ save.dataset.bound='1'; bindFastTap(save, __operatoriSaveCurrent__); }
+  const del = document.getElementById('operatoriCardDeleteBtn');
+  if (del && !del.dataset.bound){ del.dataset.bound='1'; bindFastTap(del, __operatoriDeleteCurrent__); }
+  const modal = document.getElementById('operatoriModal');
+  if (modal && !modal.dataset.bound){ modal.dataset.bound='1'; modal.addEventListener('click', (ev)=>{ if (ev.target === modal) __operatoriCloseModal__(); }); }
+  document.querySelectorAll('#operatoriColorRow .operatori-color-dot').forEach(btn => {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound='1';
+    bindFastTap(btn, ()=>__operatoriSetColor__(String(btn.dataset.color||__OPERATORI_COLORS__[0])));
+  });
+}
+const __origLoadImpostazioniPage__ = loadImpostazioniPage;
+loadImpostazioniPage = async function(opts = {}){
+  await __origLoadImpostazioniPage__(opts);
+  renderOperatoriPage();
+};
+const __origSetupImpostazioni__ = setupImpostazioni;
+setupImpostazioni = function(){
+  __origSetupImpostazioni__();
+  __bindOperatoriPage__();
+};
+const __origShowPage__ = showPage;
+showPage = function(page){
+  const out = __origShowPage__(page);
+  if (page === 'operatori'){
+    try{ __bindOperatoriPage__(); }catch(_){ }
+    try{ renderOperatoriPage(); }catch(_){ }
+  }
+  return out;
+};
