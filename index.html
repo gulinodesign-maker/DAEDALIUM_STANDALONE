@@ -681,19 +681,10 @@
 <h2 class="page-title">Impostazioni</h2>
 </div>
 <div class="bd">
-<div class="settings-audio-wrap">
-<div class="settings-audio settings-audio-centered">
-<span class="settings-audio-label">Audio</span>
-<label aria-label="Audio on/off" class="switch">
-<input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
 <div class="settings-account-name" id="settingsAccountName">—</div>
-</div>
 <div class="row settings-actions" style="margin-top:16px;">
-<button aria-label="Salva" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l3 3v11a2 2 0 0 1-2 2Z"></path><path d="M7 21V13h10v8"></path><path d="M7 3v6h8"></path></svg>
+<button aria-label="Anno di esercizio" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path><path d="M8 14h3"></path><path d="M13 14h3"></path><path d="M8 18h3"></path></svg>
 </button>
 <button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
@@ -714,18 +705,24 @@
 </button>
 <button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M4 7h16"></path>
-<path d="M8 3v8"></path>
-<path d="M16 3v8"></path>
-<path d="M6 13h4"></path>
-<path d="M14 13h4"></path>
-<path d="M6 18h4"></path>
-<path d="M14 18h4"></path>
+<circle cx="12" cy="12" r="8"></circle>
+<path d="M12 8v8"></path>
+<path d="M8 12h8"></path>
+<path d="M7 7l10 10"></path>
 </svg>
 </button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 </button>
+</div>
+<div class="settings-audio-wrap">
+<div class="settings-audio settings-audio-centered">
+<span class="settings-audio-label">Audio</span>
+<label aria-label="Audio on/off" class="switch">
+<input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -1425,10 +1422,6 @@
 </div>
 <div class="settings-config-body">
 <div class="settings-main-row settings-main-row-modal">
-<div class="field float settings-equal-card">
-<select aria-label="Anno corrente" class="select" id="setAnno"></select>
-<label for="setAnno">Anno corrente</label>
-</div>
 <div class="field float settings-equal-card">
 <input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
 <label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
