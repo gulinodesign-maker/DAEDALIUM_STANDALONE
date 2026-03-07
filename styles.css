@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.107");
+    url("./assets/bg-daedalium.png?v=dDAE_2.108");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.107 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.108 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.107");
+    url("./assets/bg-daedalium.png?v=dDAE_2.108");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.107 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.108 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8642,14 +8642,6 @@ color: var(--mcol,#ff3b30);
 .settings-main-row-modal{
   margin-top: 4px;
 }
-@media (max-width: 560px){
-  .settings-main-row-modal{
-    flex-direction:column;
-  }
-  .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{
-    width:100%;
-  }
-}
 
 
 /* dDAE_2.101 — Impostazioni: tasto tassa rosso, bottoni popup centrati, nome account visibile, icone +10% */
@@ -8675,6 +8667,34 @@ color: var(--mcol,#ff3b30);
   background: rgba(220,38,38,0.80) !important;
   border-color: rgba(220,38,38,0.24) !important;
 }
+.settings-config-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+  align-items:stretch;
+  margin-top:4px;
+}
+.settings-config-grid-item{
+  min-width:0;
+}
+.settings-config-grid .field,
+.settings-config-grid .settings-tax-cap-btn,
+.settings-config-grid .btn{
+  width:100%;
+  margin:0;
+}
+.settings-config-grid .field{
+  min-height:104px;
+}
+.settings-config-grid .settings-tax-cap-btn,
+.settings-config-grid .btn{
+  min-height:104px;
+}
+.settings-config-grid .btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 .settings-config-actions{
   justify-content:center !important;
   align-items:center;
@@ -8683,6 +8703,11 @@ color: var(--mcol,#ff3b30);
 }
 .settings-config-actions .btn{
   min-width:118px;
+}
+@media (max-width: 560px){
+  .settings-config-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 
@@ -8718,7 +8743,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.107 — iOS flat/performance hardening */
+/* dDAE_2.108 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
