@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.101
+ * Build: 2.102
  */
-const BUILD_VERSION = "2.101";
+const BUILD_VERSION = "2.102";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4516,12 +4516,18 @@ function getSettingNumber(key, fallback = 0) {
 }
 
 function getOperatorNamesFromSettings() {
+  try{
+    const catalog = getOperatoriCatalogFromSettings ? getOperatoriCatalogFromSettings() : [];
+    const names = (Array.isArray(catalog) ? catalog : []).map(item => String(item?.nome || '').trim()).filter(Boolean);
+    if (names.length) return names;
+  }catch(_){ }
   const row = getSettingRow("operatori");
   const op1 = String(row?.operatore_1 ?? row?.Operatore_1 ?? row?.operatore1 ?? "").trim();
   const op2 = String(row?.operatore_2 ?? row?.Operatore_2 ?? row?.operatore2 ?? "").trim();
   const op3 = String(row?.operatore_3 ?? row?.Operatore_3 ?? row?.operatore3 ?? "").trim();
-  return [op1, op2, op3];
+  return [op1, op2, op3].filter(Boolean);
 }
+
 
 
 const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand"];
@@ -4656,62 +4662,8 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     state.settings.loaded = true;
     state.settings.loadedAt = Date.now();
 
-    // Se esistono campi operatori (pulizie), mostra i nomi salvati (non editabili)
-    try {
-      const names = getOperatorNamesFromSettings(); // [op1, op2, op3]
-const ids = ["op1Name","op2Name","op3Name"];
-ids.forEach((id, idx) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const name = String(names[idx] || "").trim();
-
-  // Nascondi completamente l'operatore se non è impostato
-  const row = el.closest ? el.closest(".clean-op-row") : null;
-  if (!name) {
-    if (row) row.style.display = "none";
-    el.textContent = "";
-    el.classList.remove("is-placeholder");
-    return;
-  } else {
-    if (row) row.style.display = "";
-  }
-
-  // Se è un input (compat), rendilo readOnly e compila
-  if (String(el.tagName || "").toUpperCase() === "INPUT") {
-    el.readOnly = true;
-    el.setAttribute("readonly", "");
-    el.value = name;
-    return;
-  }
-
-  // Altrimenti è un testo (div/span)
-  el.textContent = name;
-  el.classList.remove("is-placeholder");
-});
-
-
-
-// Se sessione OPERATORE: in Pulizie mostra solo il nome dell'operatore loggato
-try{
-  if (state && state.session && isOperatoreSession(state.session)){
-    const rawU = String(state.session._op_local || state.session.username || state.session.user || state.session.nome || state.session.name || state.session.email || "").trim();
-    const normU = rawU.toLowerCase();
-    if (normU){
-      const names2 = names;
-      const active = (names2||[]).find(n => String(n||"").trim().toLowerCase() === normU) || rawU;
-      (names2||[]).forEach((nm, idx)=>{
-        const nm2 = String(nm||"").trim();
-        if (!nm2) return;
-        const rowEl = document.getElementById(ids[idx])?.closest?.('.clean-op-row');
-        if (!rowEl) return;
-        const show = nm2.toLowerCase() === String(active||"").trim().toLowerCase();
-        rowEl.style.display = show ? '' : 'none';
-      });
-    }
-  }
-}catch(_){}
-refreshFloatingLabels();
-    } catch(_) {}
+    try{ if (typeof window.__syncCleanOperators__ === "function") window.__syncCleanOperators__(); }catch(_){ }
+    try{ refreshFloatingLabels(); }catch(_){ }
 
     return state.settings;
   } catch (e) {
@@ -13871,38 +13823,40 @@ try{
   };
 
   const __getPulizieOperatorNames = () => {
-    // In modalità operatore mostriamo una sola riga, ma deve essere quella dell'operatore corretto (OP1/OP2/OP3)
-    // altrimenti, dopo sync, la UI può "spegnere" la riga sbagliata e svuotare il pallino ore.
+    const ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
     try{
       const u = (__getLoggedOperatorName() || "").trim();
-      if (u){
-        const ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim());
-        const ul = u.toLowerCase();
-        let idx = ops.findIndex(n => n && n.toLowerCase() === ul);
-
-        // fallback: match parziale (es. username corto vs nome completo)
-        if (idx < 0){
-          idx = ops.findIndex(n => n && (n.toLowerCase().includes(ul) || ul.includes(n.toLowerCase())));
-        }
-
-        const out = ["", "", ""];
-        if (idx >= 0 && idx < out.length){
-          out[idx] = ops[idx] || u;
-          return out;
-        }
-
-        // fallback finale: comportamento precedente (1 riga), ma senza implicare OP1 quando l'indice non è risolvibile
-        return [u, "", ""];
-      }
+      if (u && !ops.some(n => String(n||"").trim().toLowerCase() === u.toLowerCase())) ops.unshift(u);
     }catch(_){ }
-    return getOperatorNamesFromSettings();
+    return Array.from(new Set(ops.filter(Boolean)));
   };
 
-    const opEls = [
-    { name: document.getElementById("op1Name"), hours: document.getElementById("op1Hours") },
-    { name: document.getElementById("op2Name"), hours: document.getElementById("op2Hours") },
-    { name: document.getElementById("op3Name"), hours: document.getElementById("op3Hours") },
-  ].filter(x => x.name && x.hours);
+  const __escapeHtmlBasic__ = (value) => String(value || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+  let opEls = [];
+
+  const __ensurePulizieOperatorRows__ = (names = []) => {
+    const host = document.getElementById('cleanOps');
+    if (!host) return [];
+    const safeNames = Array.from(new Set((Array.isArray(names) ? names : []).map(n => String(n || '').trim()).filter(Boolean)));
+    host.innerHTML = safeNames.map((name, idx) => `
+<div class="clean-op-row" data-op="${idx+1}" data-name="${__escapeHtmlBasic__(name)}">
+<div aria-label="${__escapeHtmlBasic__(name)}" class="clean-op-name"></div>
+<button aria-label="Ore ${__escapeHtmlBasic__(name)}" class="clean-hour-dot is-zero" data-value="0" type="button"></button>
+</div>`).join('');
+    opEls = Array.from(host.querySelectorAll('.clean-op-row')).map((row) => ({
+      row,
+      name: row.querySelector('.clean-op-name'),
+      hours: row.querySelector('.clean-hour-dot')
+    })).filter(x => x.row && x.name && x.hours);
+    opEls.forEach(r => {
+      if (r.hours && !r.hours.dataset.boundHourDot){
+        r.hours.dataset.boundHourDot = '1';
+        try{ bindHourDot(r.hours); }catch(_){ }
+      }
+    });
+    return opEls;
+  };
+
 
   const __applyOperatorePulizieVisuals__ = (rowEl, nameEl, hourEl, operatorName, fallbackColor = 'blue') => {
     const hex = getOperatoreColorHexByName(operatorName, fallbackColor || 'blue');
@@ -13979,87 +13933,60 @@ try{
   };
 
   const syncCleanOperators = () => {
-  const names = __getPulizieOperatorNames(); // [op1, op2, op3] oppure [username,"",""]
+    const names = __getPulizieOperatorNames();
+    __ensurePulizieOperatorRows__(names);
 
-  opEls.forEach((r, idx) => {
-    const n = String(names[idx] || "").trim();
-    const rowEl = (r.hours && r.hours.closest) ? r.hours.closest(".clean-op-row") : null;
+    const loggedName = (() => { try{ return __getLoggedOperatorName(); }catch(_){ return ''; } })();
+    const loggedNorm = String(loggedName || '').trim().toLowerCase();
+    const isOpSession = !!(state && state.session && isOperatoreSession(state.session));
 
-    // Se non è impostato: NON mostrare né scritta né pallino
-    if (!n) {
-      if (rowEl) rowEl.style.display = "none";
-      if (String(r.name.tagName || "").toUpperCase() === "INPUT") {
-        r.name.value = "";
-      } else {
-        r.name.textContent = "";
-        r.name.classList.remove("is-placeholder");
-      }
-      // sicurezza: azzera il dot
-      writeHourDot(r.hours, 0);
-      return;
-    }
+    opEls.forEach((r, idx) => {
+      const rowEl = r.row || (r.hours && r.hours.closest ? r.hours.closest('.clean-op-row') : null);
+      const n = String(names[idx] || rowEl?.dataset?.name || '').trim();
+      if (!n || !rowEl) return;
 
-    // Se impostato: mostra riga e applica nome
-    if (rowEl) rowEl.style.display = "";
-
-    // Nome: solo lettura
-    if (String(r.name.tagName || "").toUpperCase() === "INPUT") {
-      r.name.readOnly = true;
-      r.name.setAttribute("readonly", "");
-      r.name.value = n;
-    } else {
+      rowEl.dataset.name = n;
+      rowEl.style.display = '';
       r.name.textContent = n;
-      r.name.classList.remove("is-placeholder");
-    }
+      r.name.classList.remove('is-placeholder');
+      try{ __applyOperatorePulizieVisuals__(rowEl, r.name, r.hours, n, __OPERATORI_COLOR_KEYS__[idx % __OPERATORI_COLOR_KEYS__.length] || 'blue'); }catch(_){ }
+      if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
+      try {
+        r.name.setAttribute('aria-label', n);
+        r.hours.setAttribute('aria-label', 'Ore ' + n);
+      } catch (_) {}
 
-    try{ __applyOperatorePulizieVisuals__(rowEl, r.name, r.hours, n, (idx === 0 ? 'blue' : (idx === 1 ? 'orange' : 'green'))); }catch(_){ }
+      if (isOpSession){
+        const show = !!loggedNorm && (n.toLowerCase() === loggedNorm || n.toLowerCase().includes(loggedNorm) || loggedNorm.includes(n.toLowerCase()));
+        rowEl.style.display = show ? '' : 'none';
+        if (!show){
+          try{ writeHourDot(r.hours, 0); }catch(_){ }
+          try{ r.hours.classList.remove('is-saved'); }catch(_){ }
+        }
+      }
+    });
 
-    // Dot: init a 0 (se mancante)
-    if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
-
-    // Accessibilità: usa il nome reale
-    try {
-      r.name.setAttribute("aria-label", n);
-      r.hours.setAttribute("aria-label", "Ore " + n);
-    } catch (_) {}
-  });
-
-  // Sessione OPERATORE: garantisci sempre 1 riga visibile con username (anche se Impostazioni non è configurato)
-  try{
-    if (state && state.session && isOperatoreSession(state.session)){
-      const u = __getLoggedOperatorName();
-      if (u){
-        opEls.forEach((r, idx)=>{
-          const rowEl = (r.hours && r.hours.closest) ? r.hours.closest('.clean-op-row') : null;
+    if (isOpSession && loggedName){
+      const visible = opEls.some(r => (r.row || (r.hours && r.hours.closest ? r.hours.closest('.clean-op-row') : null))?.style.display !== 'none');
+      if (!visible){
+        __ensurePulizieOperatorRows__([loggedName]);
+        opEls.forEach(r => {
+          const rowEl = r.row || (r.hours && r.hours.closest ? r.hours.closest('.clean-op-row') : null);
           if (!rowEl) return;
-          const show = (idx === 0);
-          rowEl.style.display = show ? '' : 'none';
-          if (show){
-            if (String(r.name.tagName || "").toUpperCase() === "INPUT"){
-              r.name.readOnly = true;
-              r.name.setAttribute("readonly", "");
-              r.name.value = u;
-            } else {
-              r.name.textContent = u;
-              r.name.classList.remove("is-placeholder");
-            }
-            try{ r.name.setAttribute("aria-label", u); r.hours.setAttribute("aria-label", "Ore " + u); }catch(_){ }
-            if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
-          } else {
-            try{ writeHourDot(r.hours, 0); }catch(_){ }
-            try{ r.hours.classList.remove('is-saved'); }catch(_){ }
-          }
+          rowEl.style.display = '';
+          rowEl.dataset.name = loggedName;
+          r.name.textContent = loggedName;
+          try{ __applyOperatorePulizieVisuals__(rowEl, r.name, r.hours, loggedName, 'blue'); }catch(_){ }
+          if (!r.hours.dataset.value) writeHourDot(r.hours, 0);
         });
       }
     }
-  }catch(_){}
+  };
 
-};
 
   try{ window.__syncCleanOperators__ = syncCleanOperators; }catch(_){ }
 
   try{ syncCleanOperators(); }catch(_){}
-  opEls.forEach(r => { try{ bindHourDot(r.hours); }catch(_){ } });
 
   const buildOperatoriPayload = () => {
     const date = getCleanDate();
