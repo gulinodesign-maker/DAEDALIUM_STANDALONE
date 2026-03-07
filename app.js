@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.113
+ * Build: 2.114
  */
-const BUILD_VERSION = "2.113";
+const BUILD_VERSION = "2.114";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5231,10 +5231,10 @@ const cfg = document.getElementById("settingsConfigBtn");
     logout.__boundConfirmLogout = true;
     logout.addEventListener("click", async () => {
       let ok = false;
-      try{ ok = await __confirmTwoActions__("Vuoi davvero uscire da questo account?", "Esci", "Annulla"); }catch(_){ }
-      if (!ok){
-        try{ if (typeof confirm === "function") ok = !!confirm("Vuoi davvero uscire da questo account?"); }catch(_){ ok = false; }
-      }
+      try{
+        const choice = await __confirmTwoActions__("Vuoi davvero uscire da questo account?", "Esci", "Annulla");
+        ok = (choice === "yes");
+      }catch(_){ ok = false; }
       if (!ok) return;
       try{ clearSession(); }catch(_){ }
       try{ state.session = null; }catch(_){ }
