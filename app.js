@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.111
+ * Build: 2.112
  */
-const BUILD_VERSION = "2.111";
+const BUILD_VERSION = "2.112";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6218,10 +6218,28 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
+  // Sync footer: nascosto nelle pagine dove il contesto dati/sync non serve
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) sb.hidden = (page === "calendario");
+    if (sb){
+      const hiddenPages = new Set([
+        "calendario",
+        "impostazioni",
+        "operatori",
+        "tassa",
+        "auth",
+        "statistiche",
+        "statgen",
+        "statmensili",
+        "statspese",
+        "statprenotazioni",
+        "statazienda",
+        "statamministratore",
+        "statpiscina",
+        "statcancellazioni"
+      ]);
+      sb.hidden = hiddenPages.has(page);
+    }
   }catch(_){ }
 
 
