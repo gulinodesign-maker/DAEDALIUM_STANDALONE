@@ -8664,3 +8664,35 @@ color: var(--mcol,#ff3b30);
 .settings-config-actions .btn{
   min-width:118px;
 }
+
+
+/* dDAE_2.103 — Impostazioni: griglia sopra audio, anno esercizio dedicato, popup soggiorno senza anno */
+#page-impostazioni .card .bd{ display:flex; flex-direction:column; }
+#page-impostazioni .settings-actions{ order:1; }
+#page-impostazioni .settings-audio-wrap{ order:2; margin-top:16px; }
+.settings-btn-save{ background: rgba(111,183,214,0.80) !important; border-color: rgba(111,183,214,0.22) !important; }
+.settings-config-body .settings-main-row-modal{ align-items:stretch; }
+.settings-config-body .settings-main-row-modal .settings-equal-card{ flex:1 1 0; }
+@media (min-width:561px){ .settings-config-body .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{ max-width:none; } }
+#page-impostazioni .settings-audio-wrap .settings-account-name{ margin-top:2px; }
+#page-impostazioni .settings-actions .settings-btn[aria-label="Anno di esercizio"] .ui-ico{ stroke-width:2.2; }
+
+
+/* dDAE_2.104 — Impostazioni: account sopra i tasti, azzurro e 2x, più spazio verso audio */
+#page-impostazioni .bd{ display:flex; flex-direction:column; align-items:center; }
+#page-impostazioni .settings-account-name{
+  order:0;
+  width:100%;
+  text-align:center;
+  margin: 4px auto 12px auto !important;
+  font-size: 28px !important;
+  line-height: 1.1;
+  font-weight: 900 !important;
+  color: var(--ico-blue-night) !important;
+}
+#page-impostazioni .settings-actions{ order:1; }
+#page-impostazioni .settings-audio-wrap{
+  order:2;
+  margin-top: 100px !important;
+  align-items:center;
+}

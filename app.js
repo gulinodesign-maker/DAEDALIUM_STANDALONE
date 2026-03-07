@@ -2976,6 +2976,46 @@ function saveExerciseYear(year){
   try{ localStorage.setItem(__YEAR_KEY, String(year || "")); } catch(_){ }
 }
 
+function __applyExerciseYearChange__(nextYear){
+  const y = String(nextYear || "").trim();
+  if (!y) return false;
+  state.exerciseYear = y;
+  saveExerciseYear(state.exerciseYear);
+  updateYearPill();
+  try{ __applyContext__({ force:true }); }catch(_){ }
+  try{
+    if (y){
+      setPresetValue("ytd");
+      setPeriod(`${y}-01-01`, `${y}-12-31`);
+    }
+  }catch(_){ }
+  invalidateApiCache();
+  try{ refreshHome(); }catch(_){ }
+  try{ if (state.page==="spese") ensurePeriodData({showLoader:true,force:true}).then(()=>{ try{ renderSpese(); }catch(_){ } }); }catch(_){ }
+  try{ if (state.page==="ospiti") ensureGuestsForPeriod(true); }catch(_){ }
+  try{ if (state.page==="statistiche") loadStatistichePage({ force:true }); }catch(_){ }
+  try{ if (state.page==="pulizie") loadPuliziePage(); }catch(_){ }
+  try{ if (state.page==="lavanderia") loadLavanderiaPage(); }catch(_){ }
+  try{ if (state.page==="calendario") renderCalendar(); }catch(_){ }
+  try{ updateSettingsAccountName(); }catch(_){ }
+  return true;
+}
+
+function __pickExerciseYearFromSettings__(){
+  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const raw = window.prompt("Anno di esercizio", current);
+  if (raw === null) return;
+  const clean = String(raw || "").trim();
+  const n = Number(clean);
+  if (!Number.isInteger(n) || n < 2000 || n > 2100){
+    toast("Anno non valido");
+    return;
+  }
+  if (String(n) === current) return;
+  __applyExerciseYearChange__(String(n));
+  toast("Anno esercizio aggiornato");
+}
+
 // =========================
 // Context change (account / anno) — reset cache + state
 // =========================
@@ -4990,9 +5030,7 @@ function setupImpostazioni() {
   if (back) back.addEventListener("click", () => showPage("home"));
 
   const save = document.getElementById("settingsSaveBtn");
-  if (save) save.addEventListener("click", async () => {
-    try { await saveImpostazioniPage(); } catch (e) { toast(e.message); }
-  });
+  if (save) bindFastTap(save, () => { __pickExerciseYearFromSettings__(); });
 
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
@@ -5049,7 +5087,7 @@ const cfg = document.getElementById("settingsConfigBtn");
   });
 
 
-  // Anno di esercizio
+  // Anno di esercizio (gestito dal pulsante calendario in pagina Impostazioni)
   const selAnno = document.getElementById("setAnno");
   if (selAnno){
     const cy = new Date().getFullYear();
@@ -5057,23 +5095,7 @@ const cfg = document.getElementById("settingsConfigBtn");
     for (let y = cy - 3; y <= cy + 2; y++) years.push(String(y));
     selAnno.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
     selAnno.value = String(state.exerciseYear || loadExerciseYear());
-    selAnno.addEventListener("change", () => {
-      state.exerciseYear = String(selAnno.value || "");
-      saveExerciseYear(state.exerciseYear);
-      updateYearPill();
-      try{ __applyContext__({ force:true }); }catch(_){ }
-      try{
-        const y = String(state.exerciseYear || "").trim();
-        if (y){
-          setPresetValue("ytd");
-          setPeriod(`${y}-01-01`, `${y}-12-31`);
-        }
-      }catch(_){ }
-      invalidateApiCache();
-      try{ refreshHome(); }catch(_){ }
-      try{ if (state.page==="spese") ensurePeriodData({showLoader:true,force:true}).then(()=>{ try{ renderSpese(); }catch(_){ } }); }catch(_){ }
-      try{ if (state.page==="ospiti") ensureGuestsForPeriod(true); }catch(_){ }
-    });
+    selAnno.addEventListener("change", () => { __applyExerciseYearChange__(String(selAnno.value || "")); });
   }
 
   // =========================
