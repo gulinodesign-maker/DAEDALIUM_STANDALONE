@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.116");
+    url("./assets/bg-daedalium.png?v=dDAE_2.117");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.116 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.117 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.116");
+    url("./assets/bg-daedalium.png?v=dDAE_2.117");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.116 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.117 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8728,7 +8728,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — iOS flat/performance hardening */
+/* dDAE_2.117 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8760,6 +8760,18 @@ color: var(--mcol,#ff3b30);
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+}
+.topbar-year[data-mode="account"]{
+  width: min(52vw, 260px);
+  max-width: min(52vw, 260px);
+  font-size: clamp(13px, 3.4vw, 16px) !important;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+body[data-page="impostazioni"] #page-impostazioni .settings-account-name,
+body[data-page="operatori"] #page-impostazioni .settings-account-name,
+body[data-page="tassa"] #page-impostazioni .settings-account-name{
+  display:none !important;
 }
 .brand-right{
   margin-left: auto;
@@ -8813,7 +8825,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
+/* dDAE_2.117 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
 #page-statistiche .home-grid{
   grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
   column-gap: clamp(24px, 8vw, 56px) !important;
@@ -8839,12 +8851,12 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
+/* dDAE_2.117 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
 #page-impostazioni .settings-actions{
   margin-top: 112px !important;
 }
 
-/* dDAE_2.116 — Impostazioni: pulsanti uniformi e conferma logout corretta */
+/* dDAE_2.117 — Impostazioni: pulsanti uniformi e conferma logout corretta */
 #page-impostazioni .settings-actions .settings-btn{
   border-width: 1px !important;
   border-style: solid !important;
@@ -8858,7 +8870,7 @@ color: var(--mcol,#ff3b30);
   stroke: rgba(255,255,255,0.96) !important;
 }
 
-/* dDAE_2.116 — Impostazioni: etichette visibili sotto le icone */
+/* dDAE_2.117 — Impostazioni: etichette visibili sotto le icone */
 #page-impostazioni .settings-actions .settings-btn{
   display:flex !important;
   flex-direction:column !important;
