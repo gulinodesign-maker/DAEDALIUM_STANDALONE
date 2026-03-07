@@ -8350,7 +8350,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.096 — Impostazioni + pagina Operatori */
+/* dDAE_2.097 — Impostazioni + pagina Operatori */
 
 .settings-main-row{
   display:flex;
@@ -8542,4 +8542,30 @@ color: var(--mcol,#ff3b30);
   .settings-tax-cap-top{ font-size:11px; }
   .settings-tax-cap-value{ font-size:20px; }
   .operatori-color-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+
+
+/* dDAE_2.098 — Impostazioni: griglia pulsanti 2x3 + Operatori nero */
+#page-impostazioni .settings-actions{
+  display:grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  width: min(460px, 92vw);
+  margin: 16px auto 0 auto !important;
+  align-items: stretch;
+}
+#page-impostazioni .settings-actions .settings-btn{
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: clamp(23px, 6.5vw, 44px);
+  padding: 0;
+}
+#page-impostazioni .settings-actions .settings-btn .ui-ico{
+  width: clamp(32px, 8.6vw, 52px);
+  height: clamp(32px, 8.6vw, 52px);
+}
+#page-impostazioni .settings-actions .settings-btn.settings-btn-operator{
+  background: rgba(0,0,0,0.80) !important;
+  border-color: rgba(0,0,0,0.18) !important;
 }

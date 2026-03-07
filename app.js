@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.096
+ * Build: 2.098
  */
-const BUILD_VERSION = "2.096";
+const BUILD_VERSION = "2.098";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4977,11 +4977,6 @@ function setupImpostazioni() {
     try { await saveImpostazioniPage(); } catch (e) { toast(e.message); }
   });
 
-  const reload = document.getElementById("settingsReloadBtn");
-  if (reload) reload.addEventListener("click", async () => {
-    try { await loadImpostazioniPage({ force: true }); toast("Impostazioni ricaricate"); } catch (e) { toast(e.message); }
-  });
-
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
   if (operatoriGo) bindFastTap(operatoriGo, () => { hideLauncher(); showPage("operatori"); });
@@ -6052,7 +6047,7 @@ state.page = page;
   // Impostazioni: aggiorna tabs (account + anno)
   if (page === "impostazioni"){
     try{ updateSettingsTabs(); }catch(_){ }
-    try{ loadImpostazioniPage({ force:false }); }catch(_){ }
+    try{ loadImpostazioniPage({ force:true }); }catch(_){ }
   }
   if (page === "operatori"){
     try{ loadOperatoriPage(); }catch(_){ }
