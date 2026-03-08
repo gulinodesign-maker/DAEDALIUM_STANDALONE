@@ -8853,3 +8853,13 @@ body[data-page^="stat"] #homeSyncBar{
     height: 44px !important;
   }
 }
+
+
+/* dDAE_2.113 - Impostazioni: audio + build subito sotto griglia 2x3 */
+#page-impostazioni .settings-page-reference{align-items:stretch !important;}
+#page-impostazioni .settings-actions.settings-actions-reference{margin:56px auto 0 auto !important;}
+#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{width:min(360px,100%) !important; margin:18px auto 0 auto !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:flex-start !important; gap:10px !important;}
+#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid .settings-audio-wrap{width:100% !important; display:flex !important; justify-content:center !important; align-items:center !important; margin:0 !important; order:1 !important;}
+#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid .settings-build{display:block !important; width:100% !important; text-align:center !important; margin:0 !important; order:2 !important;}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{width:clamp(83px, 23.4vw, 153px) !important; height:clamp(83px, 23.4vw, 153px) !important; min-width:clamp(83px, 23.4vw, 153px) !important; min-height:clamp(83px, 23.4vw, 153px) !important;}
+@media (max-width:390px){#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{width:min(286px,100%) !important;}}
