@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.108
+ * Build: 2.114
  */
-const BUILD_VERSION = "2.108";
+const BUILD_VERSION = "2.114";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3105,15 +3105,11 @@ function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    if (state && state.page === "impostazioni"){
-      const s = state.session || {};
-      const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
-      el.textContent = raw || String((new Date()).getFullYear());
-    } else if (state && state.page === "calendario"){
+    if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
     } else {
-      el.textContent = String((new Date()).getFullYear());
+      el.textContent = "Daedalium";
     }
   }catch(_){}
 }
@@ -3164,8 +3160,10 @@ function updateSettingsAccountName(){
 // Mostra la build a runtime (se il JS è vecchio, lo vedi subito)
 (function syncBuildLabel(){
   try{
-    const el = document.getElementById("buildText");
-    if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    ["buildText","settingsBuildText"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    });
     try{
       const box = document.getElementById("homeOperatorDbBox");
       if (box){
@@ -6062,27 +6060,11 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  // Sync footer: nascosto in pagine dove non serve
+  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) {
-      const pagesWithoutSync = new Set([
-        "calendario",
-        "impostazioni",
-        "operatori",
-        "tassa",
-        "statistiche",
-        "statgen",
-        "statmensili",
-        "statspese",
-        "statprenotazioni",
-        "statcancellazioni",
-        "statazienda",
-        "statamministratore",
-        "statpiscina"
-      ]);
-      sb.hidden = pagesWithoutSync.has(page);
-    }
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || String(page || "").startsWith("stat");
+    if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
 
@@ -6848,48 +6830,38 @@ function parseDateTs(v){
   return Number.isFinite(t) ? t : null;
 }
 
-function __guestInsertionNoOf__(g){
-  const raw = g?.insertion_no ?? g?.insertionNo ?? g?.ordine_inserimento ?? g?.ordineInserimento ?? g?.ins_no ?? g?._insNo ?? null;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
-}
-
 function computeInsertionMap(guests){
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
-    const fixedNo = __guestInsertionNoOf__(g);
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    return { id, idx, t, fixedNo };
+    return { id, idx, t };
   });
 
-  const map = {};
-  let nextNo = 1;
-
-  const fixed = arr
-    .filter(x => x.id && x.fixedNo != null)
-    .sort((a,b) => {
-      if (a.fixedNo !== b.fixedNo) return a.fixedNo - b.fixedNo;
-      return a.idx - b.idx;
-    });
-
-  for (const x of fixed){
-    if (map[x.id]) continue;
-    map[x.id] = x.fixedNo;
-    if (x.fixedNo >= nextNo) nextNo = x.fixedNo + 1;
-  }
-
-  const rest = arr.filter(x => x.id && !map[x.id]);
-  rest.sort((a,b) => {
-    const at = a.t, bt = b.t;
+  // Ordina gli ospiti per data di creazione (createdAt/created_at) crescente.
+  // I record senza createdAt vengono considerati “vecchi” e quindi
+  // ricevono i numeri più bassi. Questo garantisce che i nuovi ospiti
+  // creati localmente (con createdAt valorizzato) vengano numerati in
+  // coda rispetto a quelli importati dal backup. Vedi issue: la
+  // numerazione non deve ripartire da 1 dopo il restore ma continuare.
+  arr.sort((a,b) => {
+    const at = a.t;
+    const bt = b.t;
+    // entrambi hanno timestamp valido → ordine naturale
     if (at != null && bt != null) return at - bt;
-    if (at != null) return -1;
-    if (bt != null) return 1;
+    // solo a.t nullo → a prima (più vecchio)
+    if (at == null && bt != null) return -1;
+    // solo b.t nullo → b prima (a viene dopo)
+    if (at != null && bt == null) return 1;
+    // entrambi null → mantieni ordine originale
     return a.idx - b.idx;
   });
 
-  for (const x of rest){
-    map[x.id] = nextNo++;
+  const map = {};
+  let n = 1;
+  for (const x of arr){
+    if (!x.id) continue;
+    map[x.id] = n++;
   }
   return map;
 }
@@ -10855,45 +10827,6 @@ if (!name) return toast("Inserisci il nome");
     // CREATE: genera subito un ID stabile, così possiamo salvare le stanze al primo tentativo
     payload.id = payload.id || genId("o");
   }
-
-  async function resolveNextGuestInsertionNo(){
-    try{
-      const rows = await __tblGet__("ospiti", []);
-      const arr = Array.isArray(rows) ? rows : [];
-      const map = computeInsertionMap(arr);
-      let maxNo = 0;
-      for (const k in map){
-        const n = Number(map[k]) || 0;
-        if (n > maxNo) maxNo = n;
-      }
-      return maxNo + 1;
-    }catch(_){
-      const arr = Array.isArray(state.guests) ? state.guests : (Array.isArray(state.ospiti) ? state.ospiti : []);
-      const map = computeInsertionMap(arr);
-      let maxNo = 0;
-      for (const k in map){
-        const n = Number(map[k]) || 0;
-        if (n > maxNo) maxNo = n;
-      }
-      return maxNo + 1;
-    }
-  }
-
-  if (isEdit){
-    const existingNo = __guestInsertionNoOf__(state.guestEditSourceItem) || __guestInsertionNoOf__(state.guestViewItem);
-    if (existingNo){
-      payload.insertion_no = existingNo;
-      payload.insertionNo = existingNo;
-      payload.ordine_inserimento = existingNo;
-      payload.ordineInserimento = existingNo;
-    }
-  }else{
-    const nextInsertionNo = await resolveNextGuestInsertionNo();
-    payload.insertion_no = nextInsertionNo;
-    payload.insertionNo = nextInsertionNo;
-    payload.ordine_inserimento = nextInsertionNo;
-    payload.ordineInserimento = nextInsertionNo;
-  }
 // CREATE vs UPDATE (backend GAS: POST=create, PUT=update)
   const method = isEdit ? "PUT" : "POST";
 
@@ -11781,14 +11714,10 @@ function renderGuestCards(){
   }
 
   // Numero progressivo di inserimento (stabile)
-  const insertionSource = Array.isArray(state.guests) && state.guests.length
-    ? state.guests
-    : (Array.isArray(state.ospiti) && state.ospiti.length ? state.ospiti : items);
-  const insMap = computeInsertionMap(insertionSource);
+  const insMap = computeInsertionMap(items);
   items.forEach((it) => {
     const id = guestIdOf(it);
-    const fixedNo = __guestInsertionNoOf__(it);
-    it._insNo = fixedNo || (id ? insMap[id] : null);
+    it._insNo = id ? insMap[id] : null;
   });
 
   // Raggruppa per nome (multi prenotazioni sullo stesso cliente)
