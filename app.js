@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.118
+ * Build: 2.105
  */
-const BUILD_VERSION = "2.121";
+const BUILD_VERSION = "2.105";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -282,7 +282,7 @@ function __overlapRange__(start, end, from, to){
   return true;
 }
 
-function __normBool01Legacy__unused(v){
+function __normBool01(v){
   if (v === true) return true;
   if (v === false) return false;
   const s = String(v ?? "").trim().toLowerCase();
@@ -925,7 +925,7 @@ async function __localApi__(action, { method="GET", params={}, body=null } = {})
 // Sync Admin <-> Operatori tramite Firebase, attivato SOLO su tap Import/Export.
 // Nessun blocco della Home se offline.
 // ================================
-const __FB_STATE__ = { token:null, exp:0, teamId:null, teamKey:null, tokenPromise:null, reqInflight:new Map() };
+const __FB_STATE__ = { token:null, exp:0, teamId:null, teamKey:null };
 
 function __fbLoadLink__(){
   try{
@@ -958,101 +958,23 @@ function __parseQr__(txt){
   return { teamId: m[1], teamKey: m[2] };
 }
 
-function __fbSleep__(ms){ return new Promise((resolve) => setTimeout(resolve, ms)); }
-
-function __fbIsRetryableError__(err){
-  const name = String(err?.name || "").toLowerCase();
-  const msg = String(err?.message || err || "").toLowerCase();
-  return (
-    name === "aborterror" ||
-    msg.includes("timeout") ||
-    msg.includes("failed to fetch") ||
-    msg.includes("network") ||
-    msg.includes("tempor")
-  );
-}
-
-async function __fbFetchJson__(url, { method="GET", headers={}, body=null, cache="no-store" } = {}, { timeoutMs=15000, retries=1, allow404=false, dedupeKey="" } = {}){
-  const m = String(method || "GET").toUpperCase();
-  const inflightKey = dedupeKey || (m === "GET" ? `${m}|${url}` : "");
-
-  if (inflightKey && __FB_STATE__.reqInflight.has(inflightKey)){
-    return __FB_STATE__.reqInflight.get(inflightKey);
-  }
-
-  const run = async () => {
-    for (let attempt = 0; attempt <= retries; attempt++){
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-      try{
-        const res = await fetch(url, {
-          method: m,
-          headers,
-          body,
-          cache,
-          signal: ctrl.signal,
-        });
-
-        if (allow404 && res.status === 404) return null;
-
-        if (!res.ok){
-          if (attempt < retries && (res.status === 429 || res.status >= 500)){
-            await __fbSleep__(Math.min(1800, 450 * (attempt + 1)));
-            continue;
-          }
-          throw new Error(`Firebase ${res.status}`);
-        }
-
-        const raw = await res.text();
-        if (!raw) return {};
-        try{ return JSON.parse(raw); }
-        catch(_){ throw new Error('Risposta Firebase non valida'); }
-      }catch(err){
-        if (attempt < retries && __fbIsRetryableError__(err)){
-          await __fbSleep__(Math.min(1800, 450 * (attempt + 1)));
-          continue;
-        }
-        throw err;
-      }finally{
-        clearTimeout(timer);
-      }
-    }
-    throw new Error('Richiesta Firebase fallita');
-  };
-
-  const p = run().finally(() => {
-    try{ if (inflightKey) __FB_STATE__.reqInflight.delete(inflightKey); }catch(_){ }
-  });
-
-  if (inflightKey) __FB_STATE__.reqInflight.set(inflightKey, p);
-  return p;
-}
-
 async function __fbGetIdToken__(){
-  if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error('Firebase non configurato');
-  const now = Date.now();
-  if (__FB_STATE__.token && __FB_STATE__.exp && now < (__FB_STATE__.exp - 15000)) return __FB_STATE__.token;
-  if (__FB_STATE__.tokenPromise) return __FB_STATE__.tokenPromise;
-
-  __FB_STATE__.tokenPromise = (async () => {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
-    const data = await __fbFetchJson__(url, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ returnSecureToken:true }),
-      cache: 'no-store',
-    }, { timeoutMs:12000, retries:1 });
-
-    __FB_STATE__.token = data.idToken;
-    const sec = parseInt(String(data.expiresIn || '3600'), 10);
-    __FB_STATE__.exp = Date.now() + (isNaN(sec) ? 3600 : sec) * 1000;
-    return __FB_STATE__.token;
-  })();
-
   try{
-    return await __FB_STATE__.tokenPromise;
-  }finally{
-    __FB_STATE__.tokenPromise = null;
+    if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error("Firebase non configurato");
+    const now = Date.now();
+    if (__FB_STATE__.token && __FB_STATE__.exp && now < (__FB_STATE__.exp - 15000)) return __FB_STATE__.token;
+
+    // anonymous signUp (REST)
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
+    const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ returnSecureToken:true }) });
+    if (!res.ok) throw new Error("Auth Firebase fallita");
+    const data = await res.json();
+    __FB_STATE__.token = data.idToken;
+    const sec = parseInt(String(data.expiresIn||"3600"),10);
+    __FB_STATE__.exp = Date.now() + (isNaN(sec)?3600:sec)*1000;
+    return __FB_STATE__.token;
+  }catch(e){
+    throw e;
   }
 }
 
@@ -1105,52 +1027,46 @@ async function __fsGet__(path){
   const token = await __fbGetIdToken__();
   __syncLedBegin("GET");
   try{
-    return await __fbFetchJson__(__fsDocUrl__(path), {
-      headers: { "Authorization": `Bearer ${token}` },
-      cache: 'no-store',
-    }, { timeoutMs:15000, retries:1, allow404:true, dedupeKey:`GET|${path}` });
+    const res = await fetch(__fsDocUrl__(path), { headers: { "Authorization": `Bearer ${token}` }, cache:"no-store" });
+    if (!res.ok) return null;
+    return await res.json();
   }finally{
     __syncLedEnd("GET");
   }
 }
-
 async function __fsPatch__(path, data){
   const token = await __fbGetIdToken__();
   __syncLedBegin("POST");
   try{
-    const payload = JSON.stringify(__fsEncode__(data));
-    try{
-      return await __fbFetchJson__(__fsDocUrl__(path) + '?currentDocument.exists=true', {
-        method:'PATCH',
-        headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
-        body: payload,
-        cache: 'no-store',
-      }, { timeoutMs:20000, retries:1 });
-    }catch(err){
-      const msg = String(err?.message || err || '');
-      if (!/404/.test(msg)) throw err;
-      return await __fbFetchJson__(__fsDocUrl__(path), {
-        method:'PATCH',
-        headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
-        body: payload,
-        cache: 'no-store',
-      }, { timeoutMs:20000, retries:1 });
-    }
+    const res = await fetch(__fsDocUrl__(path) + "?currentDocument.exists=true", {
+      method:"PATCH",
+      headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (res.ok) return await res.json();
+    // if missing, create
+    const res2 = await fetch(__fsDocUrl__(path), {
+      method:"POST",
+      headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (!res2.ok) throw new Error("Scrittura Firebase fallita");
+    return await res2.json();
   }finally{
     __syncLedEnd("POST");
   }
 }
-
 async function __fsSet__(path, data){
   const token = await __fbGetIdToken__();
   __syncLedBegin("POST");
   try{
-    return await __fbFetchJson__(__fsDocUrl__(path), {
-      method:'PATCH',
+    const res = await fetch(__fsDocUrl__(path), {
+      method:"PATCH",
       headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
-      body: JSON.stringify(__fsEncode__(data)),
-      cache: 'no-store',
-    }, { timeoutMs:20000, retries:1 });
+      body: JSON.stringify(__fsEncode__(data))
+    });
+    if (!res.ok) throw new Error("Scrittura Firebase fallita");
+    return await res.json();
   }finally{
     __syncLedEnd("POST");
   }
@@ -1160,11 +1076,10 @@ async function __fsList__(collectionPath){
   const token = await __fbGetIdToken__();
   __syncLedBegin("GET");
   try{
-    const j = await __fbFetchJson__(__fsBase__() + '/' + collectionPath, {
-      headers:{ "Authorization": `Bearer ${token}` },
-      cache: 'no-store',
-    }, { timeoutMs:15000, retries:1, allow404:true, dedupeKey:`LIST|${collectionPath}` });
-    return Array.isArray(j?.documents) ? j.documents : [];
+    const res = await fetch(__fsBase__() + "/" + collectionPath, { headers:{ "Authorization": `Bearer ${token}` }, cache:"no-store" });
+    if (!res.ok) return [];
+    const j = await res.json();
+    return Array.isArray(j.documents) ? j.documents : [];
   }finally{
     __syncLedEnd("GET");
   }
@@ -1410,57 +1325,6 @@ async function __fbReadSpesaBoardPayload__(){
     if (p && p.datasets) return p;
   }catch(_){}
   return null;
-}
-
-function __compactSyncDatasets__(datasets){
-  const out = {};
-  Object.entries(datasets || {}).forEach(([key, value]) => {
-    if (Array.isArray(value)){
-      if (value.length) out[key] = value;
-      return;
-    }
-    if (value && typeof value === 'object'){
-      if (Object.keys(value).length) out[key] = value;
-      return;
-    }
-    if (value !== undefined && value !== null && value !== '') out[key] = value;
-  });
-  return out;
-}
-
-async function __readTablesSnapshot__(tables){
-  const names = Array.isArray(tables) ? tables : [];
-  const values = await Promise.all(names.map((name) => __tblGet__(name, [])));
-  const out = {};
-  names.forEach((name, idx) => {
-    out[name] = values[idx];
-  });
-  return __compactSyncDatasets__(out);
-}
-
-async function __refreshAfterDataSync__(restoreState){
-  const ui = (restoreState && typeof restoreState === 'object') ? restoreState : __captureSyncRestoreState();
-  try{ invalidateApiCache(); }catch(_){ }
-  try{ __lsClearCtx(); }catch(_){ }
-  try{ state._dataKey = ''; }catch(_){ }
-  try{ state._statsDataKey = ''; }catch(_){ }
-  try{ if (state.calendar) state.calendar.ready = false; }catch(_){ }
-  try{ if (state.settings) state.settings.loaded = false; }catch(_){ }
-
-  try{
-    await Promise.allSettled([
-      ensureSettingsLoaded({ force:true, showLoader:false }),
-      loadMotivazioni(),
-    ]);
-  }catch(_){ }
-
-  const target = (state && state.session && state.session.user_id)
-    ? (__sanitizePage(ui.page) || __sanitizePage(state.page) || 'home')
-    : 'auth';
-
-  try{ showPage(target); }catch(_){ }
-  try{ setTimeout(() => { try{ __applyUiState(ui); }catch(_){ } }, 0); }catch(_){ }
-  return true;
 }
 // --- /Spesa Board ---
 async function __fbExportAdmin__(opts){
@@ -2190,7 +2054,7 @@ async function __handleSyncBoth__(){
   }catch(_){ }
   const ok = (ok1 !== false) && (ok2 !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  try{ await __refreshAfterDataSync__(restoreState); }catch(_){ }
+  setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
 }
 
@@ -2532,21 +2396,26 @@ async function __dbImport__(kind){
     }catch(_){ }
 
     if (__isAuthAutoLogin__){
-      try{
-        state.session = loadSession() || state.session || null;
-        state.exerciseYear = loadExerciseYear();
-      }catch(_){ }
-      try{ updateYearPill(); }catch(_){ }
-      try{ __applyContext__({ force:true }); }catch(_){ }
-      try{ applyRoleMode(); }catch(_){ }
-      try{
-        const __targetAfterImport__ = (state.session && isOperatoreSession(state.session)) ? "pulizie" : "home";
-        await __refreshAfterDataSync__({ page: __targetAfterImport__ });
-      }catch(_){ }
+      setTimeout(()=>{
+        try{
+          state.session = loadSession() || state.session || null;
+          state.exerciseYear = loadExerciseYear();
+        }catch(_){ }
+        try{ updateYearPill(); }catch(_){ }
+        try{ __applyContext__({ force:true }); }catch(_){ }
+        try{ applyRoleMode(); }catch(_){ }
+        try{
+          const __targetAfterImport__ = (state.session && isOperatoreSession(state.session)) ? "pulizie" : "home";
+          __writeRestoreState({ page: __targetAfterImport__ });
+        }catch(_){ }
+        try{ location.reload(); }catch(__){
+          try{ showPage((state.session && isOperatoreSession(state.session)) ? "pulizie" : "home"); }catch(___){}
+        }
+      }, 150);
       return;
     }
 
-    try{ await __refreshAfterDataSync__(__captureUiState()); }catch(_){ }
+    setTimeout(()=>{ try{ __writeRestoreState(__captureUiState()); }catch(_){ } try{ location.reload(); }catch(_){ } }, 400);
 
   }catch(e){
     try{ toast("Errore import", "orange"); }catch(_){}
@@ -3232,41 +3101,16 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
-function __isSettingsDerivedPage__(page){
-  try{
-    return new Set(["impostazioni", "operatori", "tassa"]).has(String(page || "").trim());
-  }catch(_){ return false; }
-}
-
-function __getSessionAccountName__(){
-  try{
-    const s = state.session || {};
-    return String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
-  }catch(_){ return ""; }
-}
-
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    let text = String((new Date()).getFullYear());
-    let mode = "year";
-    if (state && __isSettingsDerivedPage__(state.page)){
-      text = __getSessionAccountName__() || "—";
-      mode = "account";
-    } else if (state && state.page === "calendario"){
+    if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      text = monthNameIT(a).toUpperCase();
-      mode = "month";
-    } else if (state && state.page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session))
-        ? new Date()
-        : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      text = formatDayMonthIT(startOfLocalDay(base));
-      mode = "day";
+      el.textContent = monthNameIT(a).toUpperCase();
+    } else {
+      el.textContent = String((new Date()).getFullYear());
     }
-    el.textContent = text;
-    try{ el.dataset.mode = mode; }catch(_){ }
   }catch(_){}
 }
 
@@ -3306,11 +3150,10 @@ function updateSettingsAccountName(){
   try{
     const el = document.getElementById("settingsAccountName");
     if (!el) return;
-    const raw = __getSessionAccountName__();
+    const s = state.session || {};
+    const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
     el.textContent = raw || "—";
-    try{ el.hidden = __isSettingsDerivedPage__(state && state.page); }catch(_){ }
   }catch(_){ }
-  try{ __setTopbarCenterLabel__(); }catch(_){ }
 }
 
 
@@ -3923,7 +3766,7 @@ function endRequest(){
   }, delay);
 }
 
-function euroLegacy__unused(n){
+function euro(n){
   const x = Number(n || 0);
   return x.toLocaleString("it-IT", { style:"currency", currency:"EUR" });
 }
@@ -4220,15 +4063,6 @@ function formatFullDateIT(d){
     const month = months[dt.getMonth()];
     const year = dt.getFullYear();
     return `${wd} ${day} ${month} ${year}`;
-  }catch(_){ return ""; }
-}
-
-function formatDayMonthIT(d){
-  try{
-    const dt = (d instanceof Date) ? d : new Date(d);
-    if (isNaN(dt)) return "";
-    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    return `${dt.getDate()} ${months[dt.getMonth()] || ""}`.trim();
   }catch(_){ return ""; }
 }
 
@@ -5243,23 +5077,14 @@ const cfg = document.getElementById("settingsConfigBtn");
 
 
   const logout = document.getElementById("settingsLogoutBtn");
-  if (logout && !logout.__boundConfirmLogout) {
-    logout.__boundConfirmLogout = true;
-    logout.addEventListener("click", async () => {
-      let ok = false;
-      try{
-        const choice = await __confirmTwoActions__("Vuoi davvero uscire da questo account?", "Esci", "Annulla");
-        ok = (choice === "yes");
-      }catch(_){ ok = false; }
-      if (!ok) return;
-      try{ clearSession(); }catch(_){ }
-      try{ state.session = null; }catch(_){ }
-      try{ applyRoleMode(); }catch(_){ }
-      try{ __resetInMemoryData__(); }catch(_){ }
-      try{ invalidateApiCache(); }catch(_){ }
-      try{ showPage("auth"); }catch(_){ }
-    });
-  }
+  if (logout) logout.addEventListener("click", () => {
+    try{ clearSession(); }catch(_){ }
+    try{ state.session = null; }catch(_){ }
+    try{ applyRoleMode(); }catch(_){ }
+    try{ __resetInMemoryData__(); }catch(_){ }
+    try{ invalidateApiCache(); }catch(_){ }
+    try{ showPage("auth"); }catch(_){ }
+  });
 
 
   // Anno di esercizio (gestito dal pulsante calendario in pagina Impostazioni)
@@ -5702,50 +5527,48 @@ function invalidateApiCache(prefix){
 
 // ===== HOME: refresh totale dati in background (non blocca UI) =====
 let __homeRefreshInFlight = false;
-let __homeRefreshQueued = false;
 let __homeRefreshLastAt = 0;
-let __homeRefreshCtx = "";
-function refreshAllDataInBackground({ force = false } = {}){
+function refreshAllDataInBackground(){
   try{
     if (!state || !state.session || !state.session.user_id) return;
-    const ctx = __ctxSig__();
     const now = Date.now();
-    if (!force && __homeRefreshCtx === ctx && (now - __homeRefreshLastAt) < 15000) return;
-
-    __homeRefreshCtx = ctx;
+    // evita loop/trigger ravvicinati
+    if (__homeRefreshInFlight) return;
+    if (now - __homeRefreshLastAt < 1500) return;
     __homeRefreshLastAt = now;
-
-    if (__homeRefreshInFlight){
-      __homeRefreshQueued = true;
-      return;
-    }
-
     __homeRefreshInFlight = true;
 
-    Promise.resolve().then(async () => {
-      await Promise.allSettled([
-        ensureSettingsLoaded({ force, showLoader:false }),
-        loadMotivazioni(),
-        load({ showLoader:false }),
-        ensurePeriodData({ showLoader:false, force }),
-        loadOspiti({ from:"", to:"", force }),
-        loadSpesaAll({ force, showLoader:false }),
-        (typeof loadPulizieForDay === "function") ? loadPulizieForDay({ clearFirst:false }) : Promise.resolve(),
-        (typeof loadOperatoriForDay === "function") ? loadOperatoriForDay({ clearFirst:false }) : Promise.resolve(),
-        loadLavanderia(),
-      ]);
-      try{ checkReceiptsOnStartup(); }catch(_){ }
-    }).finally(() => {
-      __homeRefreshInFlight = false;
-      try{ __syncLedUpdate(); }catch(_){ }
-      if (__homeRefreshQueued){
-        __homeRefreshQueued = false;
-        try{ refreshAllDataInBackground({ force:false }); }catch(_){ }
-      }
-    });
-  }catch(_){
-    __homeRefreshInFlight = false;
-  }
+    // Avvio async non bloccante
+    setTimeout(() => {
+      (async () => {
+        try{
+          // Svuota cache dati (in-memory + localStorage cache)
+          try{ invalidateApiCache(); }catch(_){}
+
+          // Caricamenti principali (tutti senza loader) — ognuno protetto
+          try{ await ensureSettingsLoaded({ force:true, showLoader:false }); }catch(_){}
+          try{ await loadMotivazioni(); }catch(_){}
+          try{ await load({ showLoader:false }); }catch(_){}
+
+          try{ await ensurePeriodData({ showLoader:false, force:true }); }catch(_){}
+
+          try{ await loadOspiti({ from:"", to:"", force:true }); }catch(_){}
+          try{ await loadSpesaAll({ force:true, showLoader:false }); }catch(_){ }
+
+          try{ if (typeof loadPulizieForDay === "function") await loadPulizieForDay({ clearFirst:false }); }catch(_){}
+          try{ if (typeof loadOperatoriForDay === "function") await loadOperatoriForDay({ clearFirst:false }); }catch(_){}
+          try{ await loadLavanderia(); }catch(_){}
+
+          // Check ricevute (solo acconto+saldo)
+          try{ checkReceiptsOnStartup(); }catch(_){}
+        }catch(_){}
+        finally{
+          __homeRefreshInFlight = false;
+          try{ __syncLedUpdate(); }catch(_){}
+        }
+      })();
+    }, 0);
+  }catch(_){ __homeRefreshInFlight = false; }
 }
 
 // ===== LocalStorage cache (perceived speed on iOS) =====
@@ -5909,29 +5732,21 @@ async function cachedGet(action, params = {}, { ttlMs = 30000, swrMs = null, sho
 
 // iOS/PWA: elimina i “tap” persi (click non sempre affidabile su Safari PWA)
 function bindFastTap(el, fn){
-  if (!el || typeof fn !== "function") return;
-
-  if (el.__fastTapProxy){
-    el.__fastTapProxy.fn = fn;
-    return;
-  }
-
-  const proxy = { fn, last: 0 };
-  const handler = (e) => {
+  if (!el) return;
+  let last = 0;
+  const handler = (e)=>{
     const now = Date.now();
-    if (now - proxy.last < 450) return;
-    proxy.last = now;
+    if (now - last < 450) return;
+    last = now;
     try{ e.preventDefault(); }catch(_){ }
     try{ e.stopPropagation(); }catch(_){ }
     try{ __sfxTap(); }catch(_){ }
-    try{ if (typeof proxy.fn === "function") proxy.fn(e); }catch(_){ }
+    fn();
   };
 
+  // In PWA iOS/Safari: evita doppi trigger (touch/pointer/click)
   const usePointer = (typeof window !== "undefined") && ("PointerEvent" in window);
   const events = usePointer ? ["pointerup", "click"] : ["touchend", "click"];
-
-  el.__fastTapProxy = proxy;
-  el.__fastTapHandler = handler;
 
   for (const evt of events){
     try{ el.addEventListener(evt, handler, { passive:false }); }
@@ -6243,28 +6058,10 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  // Sync footer: nascosto nelle pagine dove il contesto dati/sync non serve
+  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb){
-      const hiddenPages = new Set([
-        "calendario",
-        "impostazioni",
-        "operatori",
-        "tassa",
-        "auth",
-        "statistiche",
-        "statgen",
-        "statmensili",
-        "statspese",
-        "statprenotazioni",
-        "statazienda",
-        "statamministratore",
-        "statpiscina",
-        "statcancellazioni"
-      ]);
-      sb.hidden = hiddenPages.has(page);
-    }
+    if (sb) sb.hidden = (page === "calendario");
   }catch(_){ }
 
 
@@ -7599,7 +7396,7 @@ async function saveSpesa(){
 }
 
 /* 2) SPESE */
-function renderSpeseLegacy__unused(){
+function renderSpese(){
   const list = document.getElementById("speseList");
   if (!list) return;
   list.innerHTML = "";
@@ -14607,9 +14404,9 @@ if (cleanResetAll){
 
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
+    if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
-    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
+    lab.textContent = formatFullDateIT(startOfLocalDay(base));
   };
 
   const shiftClean = (deltaDays) => {
@@ -15975,18 +15772,13 @@ async function registerSW(){
       updateViaCache: "none"
     });
 
-    let __swUpdateBusy = false;
     const checkUpdate = () => {
-      if (__swUpdateBusy) return;
-      __swUpdateBusy = true;
       try {
         const p = reg?.update?.();
-        if (p && typeof p.finally === "function") {
-          p.catch(() => {}).finally(() => { __swUpdateBusy = false; });
-          return;
-        }
-      } catch (_) { }
-      __swUpdateBusy = false;
+        // Safari/iOS può rigettare la Promise con "Cannot update a null/nonexistent service worker registration"
+        // se la registration è stata invalidata: evitiamo un unhandled rejection.
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch (_) {}
     };
 
     // check immediato + quando torna in primo piano
@@ -16028,30 +15820,17 @@ try{ hardUpdateCheck(); }catch(_){}
 
 // iOS/PWA: quando l'app torna in foreground (senza un vero reload), alcune viste possono restare "stale".
 // Forziamo un refresh mirato del Calendario se e' la pagina attiva.
-let __appResumeBusy = false;
-let __appResumeQueued = false;
 async function __onAppResume(){
-  if (__appResumeBusy){
-    __appResumeQueued = true;
-    return;
-  }
+  // Se nel frattempo e' stata deployata una nuova build, hardUpdateCheck fara' reload.
+  try{ await hardUpdateCheck(); }catch(_){ }
 
-  __appResumeBusy = true;
   try{
-    try{ await hardUpdateCheck(); }catch(_){ }
-
     if (state.page === "calendario") {
-      try{ if (state.calendar){ state.calendar.ready = false; } }catch(_){ }
-      try{ await ensureCalendarData({ force:true, showLoader:false }); }catch(_){ }
-      try{ renderCalendario(); }catch(_){ }
+      if (state.calendar){ state.calendar.ready = false; }
+      await ensureCalendarData({ force:true, showLoader:false });
+      renderCalendario();
     }
-  }finally{
-    __appResumeBusy = false;
-    if (__appResumeQueued){
-      __appResumeQueued = false;
-      setTimeout(() => { try{ __onAppResume(); }catch(_){ } }, 120);
-    }
-  }
+  }catch(_){ }
 }
 
 try{

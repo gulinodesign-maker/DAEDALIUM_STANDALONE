@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.121" rel="stylesheet"/>
-<link href="./manifest.json?v=2.121" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.121" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.121" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.121" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.121" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.105" rel="stylesheet"/>
+<link href="./manifest.json?v=2.105" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.105" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.105" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.105" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.105" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.121"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.105"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -148,7 +148,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.121"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.105"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -334,7 +334,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-</div></section>
+<div class="build" id="buildText">dDAE_2.105</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -685,11 +685,9 @@
 <div class="row settings-actions" style="margin-top:16px;">
 <button aria-label="Anno di esercizio" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path><path d="M8 14h3"></path><path d="M13 14h3"></path><path d="M8 18h3"></path></svg>
-<span class="settings-btn-label">Anno</span>
 </button>
 <button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
-<span class="settings-btn-label">Operatori</span>
 </button>
 <button aria-label="Database" class="settings-btn settings-btn-db" id="settingsDbBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -697,33 +695,24 @@
 <path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"></path>
 <path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path>
 </svg>
-<span class="settings-btn-label">Backup</span>
 </button>
-<button aria-label="Codice Operatore" class="settings-btn settings-btn-roster" id="settingsExportRosterBtn" type="button">
+<button aria-label="Codice" class="settings-btn settings-btn-roster" id="settingsExportRosterBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<rect x="3" y="3" width="6" height="6" rx="1"></rect>
-<rect x="15" y="3" width="6" height="6" rx="1"></rect>
-<rect x="3" y="15" width="6" height="6" rx="1"></rect>
-<path d="M13 15h2"></path>
-<path d="M17 15h1"></path>
-<path d="M13 19h1"></path>
-<path d="M16 18h2v3"></path>
-<path d="M20 19h1"></path>
+<path d="M12 3v10"></path>
+<path d="M8 9l4 4 4-4"></path>
+<path d="M4 21h16"></path>
 </svg>
-<span class="settings-btn-label">Codice Operatore</span>
 </button>
-<button aria-label="Tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
+<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <circle cx="12" cy="12" r="8"></circle>
 <path d="M12 8v8"></path>
 <path d="M8 12h8"></path>
 <path d="M7 7l10 10"></path>
 </svg>
-<span class="settings-btn-label">Tassa Soggiorno</span>
 </button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M13 5h-7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"></path><path d="M14 8l5 4-5 4"></path><path d="M9 12h10"></path></svg>
-<span class="settings-btn-label">Logout</span>
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 </button>
 </div>
 <div class="settings-audio-wrap">
@@ -734,7 +723,6 @@
 <span class="slider"></span>
 </label>
 </div>
-<div class="build settings-build" id="buildText">dDAE_2.121</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -1400,8 +1388,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.121"></script>
-<script defer="" src="./app.js?v=2.121"></script>
+<script defer="" src="./config.js?v=2.105"></script>
+<script defer="" src="./app.js?v=2.105"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1644,7 +1632,7 @@
 
 <!-- QR MODAL (Admin) -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="qrModal">
-<div aria-label="Codice Operatore" aria-modal="true" class="modal-card" role="dialog">
+<div aria-label="Codice" aria-modal="true" class="modal-card" role="dialog">
 <div class="db-menu-head">
 <div class="db-menu-title">CODICE</div>
 <button aria-label="Chiudi" class="icon-btn" id="qrClose" type="button">
