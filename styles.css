@@ -8723,7 +8723,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.111 — top bar flat bianca/azzurra, impostazioni come riferimento grafico, sync nascosto in impostazioni/statistiche */
+/* dDAE_2.112 — top bar flat bianca/azzurra, impostazioni come riferimento grafico, sync nascosto in impostazioni/statistiche */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   color: var(--ico-sky) !important;
@@ -8758,30 +8758,30 @@ color: var(--mcol,#ff3b30);
 }
 #page-impostazioni .settings-actions.settings-actions-reference{
   display:grid !important;
-  grid-template-columns: repeat(2, minmax(124px, 148px)) !important;
+  grid-template-columns: repeat(2, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
   justify-content:center !important;
   gap: 18px 22px !important;
-  width: min(318px, 100%) !important;
+  width: min(360px, 100%) !important;
   margin: 56px auto 0 auto !important;
   align-items: stretch;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 132px !important;
+  width: clamp(83px, 23.4vw, 153px) !important;
+  height: clamp(83px, 23.4vw, 153px) !important;
+  min-height: clamp(83px, 23.4vw, 153px) !important;
   aspect-ratio: 1 / 1 !important;
-  border-radius: 28px !important;
-  padding: 18px 10px 14px !important;
+  border-radius: clamp(23px, 6.5vw, 44px) !important;
+  padding: 14px 10px 12px !important;
   display:flex !important;
   flex-direction:column !important;
   align-items:center !important;
   justify-content:center !important;
-  gap: 12px !important;
+  gap: 10px !important;
   box-shadow: none !important;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
-  width: 48px !important;
-  height: 48px !important;
+  width: clamp(36px, 10vw, 48px) !important;
+  height: clamp(36px, 10vw, 48px) !important;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
   display:block;
@@ -8802,15 +8802,19 @@ color: var(--mcol,#ff3b30);
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background:#e85454 !important; border-color: rgba(232,84,84,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-logout{ background:#d89a58 !important; border-color: rgba(216,154,88,0.24) !important; }
 #page-impostazioni .settings-bottom-stack{
-  margin-top: auto;
+  margin-top: 18px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap: 16px;
-  padding-top: 28px;
+  gap: 10px;
+  padding-top: 0;
 }
 #page-impostazioni .settings-audio-wrap{
+  order: 1;
   margin-top: 0 !important;
+  width: 100%;
+  display:flex;
+  justify-content:center;
 }
 #page-impostazioni .settings-audio-centered{
   margin: 0 auto !important;
@@ -8824,6 +8828,7 @@ color: var(--mcol,#ff3b30);
   letter-spacing: 2px;
 }
 #page-impostazioni .settings-build{
+  order: 2;
   padding: 0;
   font-size: 14px;
   font-weight: 900;
