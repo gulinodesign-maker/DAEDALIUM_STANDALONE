@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.114
  */
-const BUILD_VERSION = "2.116";
+const BUILD_VERSION = "2.114";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2259,84 +2259,6 @@ function __mergeUsers__(existing, incoming){
   return out;
 }
 
-function __userDisplayName__(u){
-  try{
-    return String(
-      u?.username ||
-      u?.user ||
-      u?.name ||
-      u?.nome ||
-      u?.displayName ||
-      u?.display_name ||
-      ""
-    ).trim();
-  }catch(_){ return ""; }
-}
-
-function __isOperatorUserRow__(u){
-  try{
-    const role = String(u?.ruolo || u?.role || u?.tipo || "").trim().toLowerCase();
-    if (role) return role.startsWith("op");
-  }catch(_){ }
-  try{
-    return String(u?.isOperatore || u?.is_operatore || "").trim() === "1" || u?.isOperatore === true;
-  }catch(_){ }
-  return false;
-}
-
-async function __getValidOperatorNameSet__(){
-  const out = new Set();
-  try{
-    const rows0 = await __tblGet__("utenti", []);
-    const rows = Array.isArray(rows0) ? rows0 : [];
-    rows.forEach((u) => {
-      if (!__isOperatorUserRow__(u)) return;
-      const name = __userDisplayName__(u);
-      if (name) out.add(name.toLowerCase());
-      const alt = String(u?.name || u?.nome || "").trim();
-      if (alt) out.add(alt.toLowerCase());
-    });
-  }catch(_){ }
-  return out;
-}
-
-async function __sanitizeOperatorNamesAgainstUsers__(names){
-  const raw = Array.isArray(names) ? names : [];
-  const valid = await __getValidOperatorNameSet__();
-  const out = [];
-  const seen = new Set();
-  for (const item of raw){
-    const name = String(item || "").trim();
-    if (!name) continue;
-    const key = name.toLowerCase();
-    if (seen.has(key)) continue;
-    if (valid.size && !valid.has(key)) continue;
-    seen.add(key);
-    out.push(name);
-    if (out.length >= 3) break;
-  }
-  return out;
-}
-
-async function __sanitizeImpostazioniOperatoriRows__(rows){
-  const list = Array.isArray(rows) ? rows.map(r => (r && typeof r === "object") ? { ...r } : r) : [];
-  const idx = list.findIndex(r => String(r?.key || r?.Key || "").trim().toLowerCase() === "operatori");
-  if (idx < 0) return list;
-  const row = list[idx] && typeof list[idx] === "object" ? { ...list[idx] } : { key:"operatori" };
-  const names = await __sanitizeOperatorNamesAgainstUsers__([
-    row.operatore_1, row.operatore_2, row.operatore_3,
-    row.Operatore_1, row.Operatore_2, row.Operatore_3
-  ]);
-  row.operatore_1 = names[0] || "";
-  row.operatore_2 = names[1] || "";
-  row.operatore_3 = names[2] || "";
-  delete row.Operatore_1;
-  delete row.Operatore_2;
-  delete row.Operatore_3;
-  list[idx] = row;
-  return list;
-}
-
 async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -2411,13 +2333,6 @@ async function __dbImport__(kind){
       if (!__isAdminImport__ && Array.isArray(ds?.utenti)){
         const existingUsers = await __tblGet__("utenti", []);
         ds.utenti = __mergeUsers__(existingUsers, ds.utenti);
-      }
-    }catch(_){ }
-
-    // Bonifica roster operatori dentro il backup importato usando solo gli utenti presenti.
-    try{
-      if (Array.isArray(ds?.impostazioni)){
-        ds.impostazioni = await __sanitizeImpostazioniOperatoriRows__(ds.impostazioni);
       }
     }catch(_){ }
 
@@ -2574,14 +2489,9 @@ async function __importRosterOperators__(){
     return;
   }
 
-  const namesRaw = await __extractRosterNames__(data);
-  const names = await __sanitizeOperatorNamesAgainstUsers__(namesRaw);
-  if (!namesRaw || !namesRaw.length){
+  const names = await __extractRosterNames__(data);
+  if (!names || !names.length){
     try{ toast("Roster vuoto o non valido", "orange"); }catch(_){}
-    return;
-  }
-  if (!names.length){
-    try{ toast("Nessun operatore valido nel roster", "orange"); }catch(_){}
     return;
   }
 
@@ -2601,14 +2511,9 @@ async function __importRosterOperators__(){
 async function __exportRosterOperators__(){
   try{
     await ensureSettingsLoaded({ force:false, showLoader:true });
-    const namesRaw = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
-    const names = await __sanitizeOperatorNamesAgainstUsers__(namesRaw);
-    if (!namesRaw.length){
-      try{ toast("Nessun operatore impostato", "orange"); }catch(_){}
-      return;
-    }
+    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
     if (!names.length){
-      try{ toast("Roster senza operatori validi", "orange"); }catch(_){}
+      try{ toast("Nessun operatore impostato", "orange"); }catch(_){}
       return;
     }
 
@@ -2649,11 +2554,6 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
-    try{
-      if (Array.isArray(datasets.impostazioni)){
-        datasets.impostazioni = await __sanitizeImpostazioniOperatoriRows__(datasets.impostazioni);
-      }
-    }catch(_){ }
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
@@ -5127,67 +5027,6 @@ function setupOperatoriPage(){
   });
 }
 
-
-function __openSettingsRosterModal__(){
-  try{
-    const m = document.getElementById("settingsRosterModal");
-    if (!m) return;
-    m.hidden = false;
-    requestAnimationFrame(() => m.classList.add("show"));
-  }catch(_){ }
-}
-
-function __closeSettingsRosterModal__(){
-  try{
-    const m = document.getElementById("settingsRosterModal");
-    if (!m) return;
-    m.classList.remove("show");
-    setTimeout(() => { try{ m.hidden = true; }catch(__){} }, 160);
-  }catch(_){ }
-}
-
-async function __cleanRosterOperators__(){
-  try{
-    await ensureSettingsLoaded({ force:false, showLoader:true });
-    const currentCatalog = (getOperatoriCatalogFromSettings ? getOperatoriCatalogFromSettings() : []).map(item => ({ ...item }));
-    const currentNames = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x => String(x||"").trim()).filter(Boolean);
-    const validSet = await __getValidOperatorNameSet__();
-    const cleanCatalog = [];
-    const seen = new Set();
-    for (const item of currentCatalog){
-      const name = String(item?.nome || "").trim();
-      const key = name.toLowerCase();
-      if (!name || seen.has(key)) continue;
-      if (validSet.size && !validSet.has(key)) continue;
-      seen.add(key);
-      cleanCatalog.push(item);
-    }
-    const cleanNames = await __sanitizeOperatorNamesAgainstUsers__(currentNames);
-    if (!cleanCatalog.length && !cleanNames.length){
-      try{ toast("Nessun operatore valido nel roster", "orange"); }catch(_){ }
-      return;
-    }
-    await api("impostazioni", {
-      method:"POST",
-      body:{
-        operatori_catalogo: cleanCatalog,
-        operatori: cleanNames.slice(0,3),
-      },
-      showLoader:true
-    });
-    await ensureSettingsLoaded({ force:true, showLoader:false });
-    try{ renderSettingsOperatorsNames?.(); }catch(_){ }
-    try{ renderOperatoriPage?.(); }catch(_){ }
-    try{ if (state.page === "pulizie") renderPuliziePage?.(); }catch(_){ }
-    const beforeCount = Math.max(currentCatalog.length, currentNames.length);
-    const afterCount = Math.max(cleanCatalog.length, cleanNames.length);
-    const removed = Math.max(0, beforeCount - afterCount);
-    try{ toast(removed ? `Roster ripulito: rimossi ${removed} nomi` : "Roster già pulito", removed ? "green" : "blue"); }catch(_){ }
-  }catch(e){
-    try{ toast("Errore pulizia roster", "orange"); }catch(_){ }
-  }
-}
-
 function setupImpostazioni() {
   const back = document.getElementById("settingsBackBtn");
   if (back) back.addEventListener("click", () => showPage("home"));
@@ -5206,7 +5045,14 @@ function setupImpostazioni() {
     const dbBtn = document.getElementById("settingsDbBtn");
     if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
-    if (rosterBtn) bindFastTap(rosterBtn, () => { __openSettingsRosterModal__(); });
+    if (rosterBtn) bindFastTap(rosterBtn, async () => {
+      try{
+        if (__isAdmin__()) await __adminGenerateCode__();
+        else await __qrScanAndLink__();
+      }catch(e){
+        try{ toast("Errore codice", "orange"); }catch(_){ }
+      }
+    });
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -5231,28 +5077,6 @@ const cfg = document.getElementById("settingsConfigBtn");
     cfgModal.addEventListener("click", (e) => { if (e.target === cfgModal) __closeSettingsConfigModal__(); });
   }
 
-  const rosterModal = document.getElementById("settingsRosterModal");
-  if (rosterModal && !rosterModal.__boundClose){
-    rosterModal.__boundClose = true;
-    rosterModal.addEventListener("click", (e) => { if (e.target === rosterModal) __closeSettingsRosterModal__(); });
-  }
-  const rosterClose = document.getElementById("settingsRosterClose");
-  if (rosterClose) bindFastTap(rosterClose, __closeSettingsRosterModal__);
-  const rosterCreate = document.getElementById("settingsRosterCreateBtn");
-  if (rosterCreate) bindFastTap(rosterCreate, async () => {
-    __closeSettingsRosterModal__();
-    try{
-      if (__isAdmin__()) await __adminGenerateCode__();
-      else await __qrScanAndLink__();
-    }catch(e){
-      try{ toast("Errore roster", "orange"); }catch(_){ }
-    }
-  });
-  const rosterClean = document.getElementById("settingsRosterCleanBtn");
-  if (rosterClean) bindFastTap(rosterClean, async () => {
-    __closeSettingsRosterModal__();
-    await __cleanRosterOperators__();
-  });
 
   const logout = document.getElementById("settingsLogoutBtn");
   if (logout) logout.addEventListener("click", () => {
