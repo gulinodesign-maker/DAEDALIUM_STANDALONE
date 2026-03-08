@@ -8855,7 +8855,7 @@ body[data-page^="stat"] #homeSyncBar{
 }
 
 
-/* dDAE_2.113 - Impostazioni: audio + build subito sotto griglia 2x3 */
+/* dDAE_2.114 - Impostazioni: audio + build subito sotto griglia 2x3 */
 #page-impostazioni .settings-page-reference{align-items:stretch !important;}
 #page-impostazioni .settings-actions.settings-actions-reference{margin:56px auto 0 auto !important;}
 #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{width:min(360px,100%) !important; margin:18px auto 0 auto !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:flex-start !important; gap:10px !important;}
@@ -8863,3 +8863,43 @@ body[data-page^="stat"] #homeSyncBar{
 #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid .settings-build{display:block !important; width:100% !important; text-align:center !important; margin:0 !important; order:2 !important;}
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{width:clamp(83px, 23.4vw, 153px) !important; height:clamp(83px, 23.4vw, 153px) !important; min-width:clamp(83px, 23.4vw, 153px) !important; min-height:clamp(83px, 23.4vw, 153px) !important;}
 @media (max-width:390px){#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{width:min(286px,100%) !important;}}
+
+/* dDAE_2.114 - Impostazioni: audio e build subito sotto griglia 2x3 come riferimento */
+#page-impostazioni .settings-page-reference{
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  margin-top: 140px !important;
+  margin-bottom: 0 !important;
+}
+#page-impostazioni .settings-bottom-stack,
+#page-impostazioni .settings-bottom-stack-under-grid{
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+  margin-top: 22px !important;
+  padding-top: 0 !important;
+  order: 99 !important;
+}
+#page-impostazioni .settings-audio-wrap{
+  order: 1 !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+#page-impostazioni .settings-build{
+  order: 2 !important;
+  display: block !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+@media (max-width: 430px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    margin-top: 150px !important;
+  }
+}
