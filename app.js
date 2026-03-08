@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.114
  */
-const BUILD_VERSION = "2.117";
+const BUILD_VERSION = "2.114";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4568,31 +4568,6 @@ function getOperatorNamesFromSettings() {
   const op2 = String(row?.operatore_2 ?? row?.Operatore_2 ?? row?.operatore2 ?? "").trim();
   const op3 = String(row?.operatore_3 ?? row?.Operatore_3 ?? row?.operatore3 ?? "").trim();
   return [op1, op2, op3].filter(Boolean);
-}
-
-
-async function getAccountOperatorNames(){
-  try{
-    const rows0 = await __tblGet__("utenti", []);
-    const rows = Array.isArray(rows0) ? rows0 : [];
-    const out = [];
-    const pushUnique = (value)=>{
-      const v = String(value || "").trim();
-      if (!v) return;
-      if (!out.some(x => String(x||"").trim().toLowerCase() === v.toLowerCase())) out.push(v);
-    };
-    rows.forEach((row)=>{
-      const ruolo = String(row?.ruolo || row?.role || "").trim().toLowerCase();
-      if (!ruolo.includes("oper")) return;
-      const rawUsername = String(row?.username || row?.user || "").trim();
-      if (!rawUsername) return;
-      const shortName = rawUsername.includes("__") ? rawUsername.split("__").slice(1).join("__") : rawUsername;
-      pushUnique(shortName);
-    });
-    return out.sort((a,b)=>String(a).localeCompare(String(b), "it"));
-  }catch(_){
-    return [];
-  }
 }
 
 
@@ -16656,11 +16631,13 @@ async function initOrePuliziaPage(){
 
   __fillSelect_(selMonth, monthItems, s.monthKey);
 
-  // operatori list: solo operatori salvati nell'account
-  let fromAccount = [];
-  try{ fromAccount = await getAccountOperatorNames(); }catch(_){ fromAccount = []; }
-  const ops = Array.from(new Set((fromAccount || []).map(x=>String(x||"").trim()).filter(Boolean)))
-    .sort((a,b)=>a.localeCompare(b, "it"));
+  // operatori list: da impostazioni + da righe
+  let fromSet = [];
+  try{ fromSet = getOperatorNamesFromSettings(); }catch(_){ fromSet = []; }
+  const fromRows = Array.from(new Set((s.rows||[]).map(r=>String(r.operatore||r.nome||"").trim()).filter(Boolean))).sort();
+  const ops = Array.from(new Set([...(fromSet||[]), ...(fromRows||[])]))
+    .filter(Boolean)
+    .sort();
 
   // opzioni: TUTTI + operatori
   const opItems = [{ value:"__ALL__", label:"TUTTI" }, ...ops.map(x=>({ value:x, label:x }))];
@@ -16678,8 +16655,7 @@ async function initOrePuliziaPage(){
       ""
     ).trim();
     if (raw){
-      const rawShort = raw.includes("__") ? raw.split("__").slice(1).join("__") : raw;
-      const norm = rawShort.toLowerCase();
+      const norm = raw.toLowerCase();
       const match = (ops||[]).find(x => String(x||"").trim().toLowerCase() === norm);
       if (match) s.operatore = match;
     }
