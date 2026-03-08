@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.110
+ * Build: 2.111
  */
-const BUILD_VERSION = "2.110";
+const BUILD_VERSION = "2.111";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6835,22 +6835,11 @@ function computeInsertionMap(guests){
     return { id, idx, t };
   });
 
-  // Ordina gli ospiti per data di creazione (createdAt/created_at) crescente.
-  // I record senza createdAt vengono considerati “vecchi” e quindi
-  // ricevono i numeri più bassi. Questo garantisce che i nuovi ospiti
-  // creati localmente (con createdAt valorizzato) vengano numerati in
-  // coda rispetto a quelli importati dal backup. Vedi issue: la
-  // numerazione non deve ripartire da 1 dopo il restore ma continuare.
   arr.sort((a,b) => {
-    const at = a.t;
-    const bt = b.t;
-    // entrambi hanno timestamp valido → ordine naturale
+    const at = a.t, bt = b.t;
     if (at != null && bt != null) return at - bt;
-    // solo a.t nullo → a prima (più vecchio)
-    if (at == null && bt != null) return -1;
-    // solo b.t nullo → b prima (a viene dopo)
-    if (at != null && bt == null) return 1;
-    // entrambi null → mantieni ordine originale
+    if (at != null) return -1;
+    if (bt != null) return 1;
     return a.idx - b.idx;
   });
 
