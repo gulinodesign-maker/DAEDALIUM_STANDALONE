@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.108
+ * Build: 2.109
  */
-const BUILD_VERSION = "2.108";
+const BUILD_VERSION = "2.109";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2338,7 +2338,10 @@ async function __dbImport__(kind){
 
     // Write datasets (only allowed tables)
     for (const t of tablesToWrite){
-      const v = ds[t];
+      let v = ds[t];
+      if (t === "ospiti"){
+        try{ v = __normalizeGuestInsertionRows__(Array.isArray(v) ? v : [], { persist:true }).rows; }catch(_){ }
+      }
       await __tblSet__(t, v);
     }
 
@@ -6882,9 +6885,7 @@ function computeInsertionMap(guests){
   const rest = arr.filter(x => x.id && !map[x.id]);
   rest.sort((a,b) => {
     const at = a.t, bt = b.t;
-    if (at != null && bt != null) return at - bt;
-    if (at != null) return -1;
-    if (bt != null) return 1;
+    if (at != null && bt != null && at !== bt) return at - bt;
     return a.idx - b.idx;
   });
 
@@ -6892,6 +6893,53 @@ function computeInsertionMap(guests){
     map[x.id] = nextNo++;
   }
   return map;
+}
+
+function __normalizeGuestInsertionRows__(rows, opts){
+  const list = Array.isArray(rows) ? rows.slice() : [];
+  const persist = !!(opts && opts.persist);
+  const arr = list.map((g, idx) => {
+    const c = g?.created_at ?? g?.createdAt ?? "";
+    return { row: g, idx, t: parseDateTs(c) };
+  });
+
+  arr.sort((a,b) => {
+    if (a.t != null && b.t != null && a.t !== b.t) return a.t - b.t;
+    return a.idx - b.idx;
+  });
+
+  let changed = false;
+  arr.forEach((entry, ix) => {
+    const no = ix + 1;
+    const row = entry.row || {};
+    const prev = __guestInsertionNoOf__(row);
+    if (prev !== no) changed = true;
+    if (persist || prev !== no){
+      row.insertion_no = no;
+      row.insertionNo = no;
+      row.ordine_inserimento = no;
+      row.ordineInserimento = no;
+      row.ins_no = no;
+    }
+  });
+
+  return { rows: list, changed };
+}
+
+async function __ensureGuestInsertionNumbersPersisted__(rows){
+  try{
+    const normalized = __normalizeGuestInsertionRows__(rows, { persist:true });
+    if (normalized.changed){
+      await __tblSet__("ospiti", normalized.rows);
+    }
+    return normalized.rows;
+  }catch(_){
+    try{
+      return __normalizeGuestInsertionRows__(rows, { persist:true }).rows;
+    }catch(__){
+      return Array.isArray(rows) ? rows : [];
+    }
+  }
 }
 
 function sortGuestsList(items){
@@ -7074,11 +7122,12 @@ async function loadOspiti({ from="", to="", force=false } = {}){
   if (hasLocal && !force) {
     // fire-and-forget
     Promise.all([p, refresh()])
-      .then(([ , data ]) => {
+      .then(async ([ , data ]) => {
         // aggiorna solo se l'utente è ancora nella lista ospiti
         if (state.page !== "ospiti") return;
         const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
+        const nextFixed = await __ensureGuestInsertionNumbersPersisted__(nextRaw);
+        const next = __filterByExerciseYear__(nextFixed, state.exerciseYear || loadExerciseYear(), [
           "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
           "createdAt","created_at","updatedAt","updated_at"
         ]);
@@ -7102,7 +7151,8 @@ async function loadOspiti({ from="", to="", force=false } = {}){
 
   const [ , data ] = await Promise.all([p, refresh()]);
   const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
+        const nextFixed = await __ensureGuestInsertionNumbersPersisted__(nextRaw);
+        const next = __filterByExerciseYear__(nextFixed, state.exerciseYear || loadExerciseYear(), [
           "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
           "createdAt","created_at","updatedAt","updated_at"
         ]);
@@ -10859,7 +10909,7 @@ if (!name) return toast("Inserisci il nome");
   async function resolveNextGuestInsertionNo(){
     try{
       const rows = await __tblGet__("ospiti", []);
-      const arr = Array.isArray(rows) ? rows : [];
+      const arr = Array.isArray(rows) ? __normalizeGuestInsertionRows__(rows, { persist:true }).rows : [];
       const map = computeInsertionMap(arr);
       let maxNo = 0;
       for (const k in map){
