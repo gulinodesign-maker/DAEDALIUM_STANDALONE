@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.114
  */
-const BUILD_VERSION = "2.115";
+const BUILD_VERSION = "2.116";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4578,11 +4578,12 @@ async function getAccountOperatorNames(){
     const ownerUsername = sessionUsername.includes("__") ? sessionUsername.split("__")[0] : sessionUsername;
     const rows0 = await __tblGet__("utenti", []);
     const rows = Array.isArray(rows0) ? rows0 : [];
-    const out = [];
-    const pushUnique = (value)=>{
+    const prefixed = [];
+    const plain = [];
+    const pushUnique = (target, value)=>{
       const v = String(value || "").trim();
       if (!v) return;
-      if (!out.some(x => String(x||"").trim().toLowerCase() === v.toLowerCase())) out.push(v);
+      if (!target.some(x => String(x||"").trim().toLowerCase() === v.toLowerCase())) target.push(v);
     };
     rows.forEach((row)=>{
       const ruolo = String(row?.ruolo || row?.role || "").trim().toLowerCase();
@@ -4592,14 +4593,16 @@ async function getAccountOperatorNames(){
       if (ownerUsername){
         const prefix = `${ownerUsername}__`;
         if (rawUsername.startsWith(prefix)){
-          pushUnique(rawUsername.slice(prefix.length));
+          pushUnique(prefixed, rawUsername.slice(prefix.length));
+          return;
         }
-        return;
       }
       const parts = rawUsername.split("__");
-      pushUnique(parts.length > 1 ? parts.slice(1).join("__") : rawUsername);
+      const shortName = String(parts.length > 1 ? parts.slice(1).join("__") : rawUsername).trim();
+      pushUnique(plain, shortName);
     });
-    return out;
+    const out = prefixed.length ? prefixed : plain;
+    return out.sort((a,b)=>String(a).localeCompare(String(b), "it"));
   }catch(_){
     return [];
   }
