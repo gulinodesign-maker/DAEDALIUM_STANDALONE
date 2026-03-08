@@ -8748,7 +8748,7 @@ color: var(--mcol,#ff3b30);
   margin-top: 140px !important;
 }
 
-/* dDAE_2.107 — Statistiche: griglia centrata sul display, più alta e perfettamente simmetrica */
+/* dDAE_2.108 — Statistiche: griglia centrata sul display, più alta e perfettamente simmetrica */
 #page-statistiche .stats-page{
   min-height: calc(100dvh - 68px - var(--safe-top)) !important;
   padding-bottom: 28px !important;

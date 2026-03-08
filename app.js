@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.107
+ * Build: 2.108
  */
-const BUILD_VERSION = "2.107";
+const BUILD_VERSION = "2.108";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6848,15 +6848,39 @@ function parseDateTs(v){
   return Number.isFinite(t) ? t : null;
 }
 
+function __guestInsertionNoOf__(g){
+  const raw = g?.insertion_no ?? g?.insertionNo ?? g?.ordine_inserimento ?? g?.ordineInserimento ?? g?.ins_no ?? g?._insNo ?? null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+}
+
 function computeInsertionMap(guests){
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
+    const fixedNo = __guestInsertionNoOf__(g);
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    return { id, idx, t };
+    return { id, idx, t, fixedNo };
   });
 
-  arr.sort((a,b) => {
+  const map = {};
+  let nextNo = 1;
+
+  const fixed = arr
+    .filter(x => x.id && x.fixedNo != null)
+    .sort((a,b) => {
+      if (a.fixedNo !== b.fixedNo) return a.fixedNo - b.fixedNo;
+      return a.idx - b.idx;
+    });
+
+  for (const x of fixed){
+    if (map[x.id]) continue;
+    map[x.id] = x.fixedNo;
+    if (x.fixedNo >= nextNo) nextNo = x.fixedNo + 1;
+  }
+
+  const rest = arr.filter(x => x.id && !map[x.id]);
+  rest.sort((a,b) => {
     const at = a.t, bt = b.t;
     if (at != null && bt != null) return at - bt;
     if (at != null) return -1;
@@ -6864,11 +6888,8 @@ function computeInsertionMap(guests){
     return a.idx - b.idx;
   });
 
-  const map = {};
-  let n = 1;
-  for (const x of arr){
-    if (!x.id) continue;
-    map[x.id] = n++;
+  for (const x of rest){
+    map[x.id] = nextNo++;
   }
   return map;
 }
@@ -10834,6 +10855,45 @@ if (!name) return toast("Inserisci il nome");
     // CREATE: genera subito un ID stabile, così possiamo salvare le stanze al primo tentativo
     payload.id = payload.id || genId("o");
   }
+
+  async function resolveNextGuestInsertionNo(){
+    try{
+      const rows = await __tblGet__("ospiti", []);
+      const arr = Array.isArray(rows) ? rows : [];
+      const map = computeInsertionMap(arr);
+      let maxNo = 0;
+      for (const k in map){
+        const n = Number(map[k]) || 0;
+        if (n > maxNo) maxNo = n;
+      }
+      return maxNo + 1;
+    }catch(_){
+      const arr = Array.isArray(state.guests) ? state.guests : (Array.isArray(state.ospiti) ? state.ospiti : []);
+      const map = computeInsertionMap(arr);
+      let maxNo = 0;
+      for (const k in map){
+        const n = Number(map[k]) || 0;
+        if (n > maxNo) maxNo = n;
+      }
+      return maxNo + 1;
+    }
+  }
+
+  if (isEdit){
+    const existingNo = __guestInsertionNoOf__(state.guestEditSourceItem) || __guestInsertionNoOf__(state.guestViewItem);
+    if (existingNo){
+      payload.insertion_no = existingNo;
+      payload.insertionNo = existingNo;
+      payload.ordine_inserimento = existingNo;
+      payload.ordineInserimento = existingNo;
+    }
+  }else{
+    const nextInsertionNo = await resolveNextGuestInsertionNo();
+    payload.insertion_no = nextInsertionNo;
+    payload.insertionNo = nextInsertionNo;
+    payload.ordine_inserimento = nextInsertionNo;
+    payload.ordineInserimento = nextInsertionNo;
+  }
 // CREATE vs UPDATE (backend GAS: POST=create, PUT=update)
   const method = isEdit ? "PUT" : "POST";
 
@@ -11721,10 +11781,14 @@ function renderGuestCards(){
   }
 
   // Numero progressivo di inserimento (stabile)
-  const insMap = computeInsertionMap(items);
+  const insertionSource = Array.isArray(state.guests) && state.guests.length
+    ? state.guests
+    : (Array.isArray(state.ospiti) && state.ospiti.length ? state.ospiti : items);
+  const insMap = computeInsertionMap(insertionSource);
   items.forEach((it) => {
     const id = guestIdOf(it);
-    it._insNo = id ? insMap[id] : null;
+    const fixedNo = __guestInsertionNoOf__(it);
+    it._insNo = fixedNo || (id ? insMap[id] : null);
   });
 
   // Raggruppa per nome (multi prenotazioni sullo stesso cliente)
