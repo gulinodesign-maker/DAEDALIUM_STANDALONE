@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.110
+ * Build: 2.111
  */
-const BUILD_VERSION = "2.110";
+const BUILD_VERSION = "2.111";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3109,7 +3109,7 @@ function __setTopbarCenterLabel__(){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
     } else {
-      el.textContent = String((new Date()).getFullYear());
+      el.textContent = "Daedalium";
     }
   }catch(_){}
 }
@@ -3160,8 +3160,10 @@ function updateSettingsAccountName(){
 // Mostra la build a runtime (se il JS è vecchio, lo vedi subito)
 (function syncBuildLabel(){
   try{
-    const el = document.getElementById("buildText");
-    if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    ["buildText","settingsBuildText"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    });
     try{
       const box = document.getElementById("homeOperatorDbBox");
       if (box){
@@ -6061,7 +6063,8 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) sb.hidden = (page === "calendario");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || String(page || "").startsWith("stat");
+    if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
 

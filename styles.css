@@ -8721,3 +8721,130 @@ color: var(--mcol,#ff3b30);
 #page-statistiche .home-main-glyph{
   margin: 0 !important;
 }
+
+
+/* dDAE_2.111 — top bar flat bianca/azzurra, impostazioni come riferimento grafico, sync nascosto in impostazioni/statistiche */
+.topbar .icon-btn{
+  background: rgba(255,255,255,0.80) !important;
+  color: var(--ico-sky) !important;
+  border-color: rgba(15,23,42,0.12) !important;
+}
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .backchev{
+  color: var(--ico-sky) !important;
+  stroke: currentColor;
+}
+
+.settings-page-reference{
+  min-height: calc(100dvh - 68px - var(--safe-top) - 24px);
+  display:flex;
+  flex-direction:column;
+  padding: 14px 18px calc(28px + var(--safe-bottom));
+}
+.settings-title{
+  font-size: clamp(26px, 7vw, 42px);
+  font-weight: 950;
+  color: var(--ico-blue-night);
+  margin-top: 8px;
+}
+.settings-divider{
+  height: 2px;
+  background: rgba(15,23,42,0.90);
+  border-radius: 999px;
+  margin-top: 12px;
+}
+#page-impostazioni .settings-account-name{
+  display:none !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  display:grid !important;
+  grid-template-columns: repeat(2, minmax(124px, 148px)) !important;
+  justify-content:center !important;
+  gap: 18px 22px !important;
+  width: min(318px, 100%) !important;
+  margin: 56px auto 0 auto !important;
+  align-items: stretch;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 132px !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 28px !important;
+  padding: 18px 10px 14px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap: 12px !important;
+  box-shadow: none !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: 48px !important;
+  height: 48px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  display:block;
+  max-width: 100%;
+  font-size: 15px;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #fff;
+  text-align:center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background:#8fcbe8 !important; border-color: rgba(143,203,232,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background:#4fcd66 !important; border-color: rgba(79,205,102,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background:#7f7bf2 !important; border-color: rgba(127,123,242,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background:#e85454 !important; border-color: rgba(232,84,84,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-logout{ background:#d89a58 !important; border-color: rgba(216,154,88,0.24) !important; }
+#page-impostazioni .settings-bottom-stack{
+  margin-top: auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 16px;
+  padding-top: 28px;
+}
+#page-impostazioni .settings-audio-wrap{
+  margin-top: 0 !important;
+}
+#page-impostazioni .settings-audio-centered{
+  margin: 0 auto !important;
+  min-width: 120px;
+  padding: 12px 18px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.80);
+}
+#page-impostazioni .settings-audio-centered .settings-audio-label{
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+#page-impostazioni .settings-build{
+  padding: 0;
+  font-size: 14px;
+  font-weight: 900;
+  opacity: 0.48;
+}
+body[data-page="impostazioni"] #homeSyncBar,
+body[data-page="operatori"] #homeSyncBar,
+body[data-page^="stat"] #homeSyncBar{
+  display:none !important;
+}
+@media (max-width: 390px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    grid-template-columns: repeat(2, minmax(116px, 1fr)) !important;
+    gap: 16px 18px !important;
+    width: min(290px, 100%) !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    min-height: 122px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
