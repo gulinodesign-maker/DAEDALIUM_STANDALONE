@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.121");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -78,8 +78,9 @@ body{
   width: 100%;
   z-index: 5000;
   padding-top: var(--safe-top);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-bottom: 0;
 }
 
@@ -95,12 +96,13 @@ body{
 }
 
 .brand{
-    position: relative;
-display:flex;
+  position: relative;
+  display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 12px;
   padding: 10px 14px;
+  min-height: 60px;
   flex-wrap: nowrap;
 }
 .brand-left{
@@ -108,27 +110,36 @@ display:flex;
   align-items:center;
   gap: 6px;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.008 — Anno corrente centrato in topbar (sostituisce titolo) */
+/* dDAE_2.121 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: 28px;
+  height: auto;
   display:flex;
   align-items:center;
   justify-content:center;
+  width: min(52vw, 240px);
+  max-width: calc(100vw - 180px);
+  min-width: 0;
+  margin: 0;
+  padding: 0 8px;
   font-weight: 800;
   font-size: 20px;
   letter-spacing: 0.6px;
   color: rgba(15,23,42,0.92);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
   pointer-events: none;
   user-select: none;
+  z-index: 1;
 }
 
 .brand-right{
@@ -284,8 +295,9 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   padding: 7px 10px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: 0 8px 22px rgba(15,23,42,0.08);
   white-space: nowrap;
   color: rgba(15,23,42,0.8);
@@ -296,8 +308,9 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .icon-btn{
   border: 1px solid var(--border);
   background-color: var(--glass);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-radius: 14px;
   width: 44px;
   height: 44px;
@@ -1012,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.121");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -3717,8 +3730,9 @@ border-color: rgba(255,255,255,.16);
   gap: 12px;
 
   border: 1px solid rgba(15,23,42,0.14);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 #page-ospite .pay-pill .pay-dot{
@@ -4253,6 +4267,11 @@ body.perf-lite *::after{
   letter-spacing: .2px;
   margin: 2px 0 12px 0;
   font-size: clamp(22px, 6vw, 30px);
+}
+
+/* dDAE_2.121 — In Pulizie la data corrente passa nella topbar */
+#page-pulizie .clean-date{
+  display:none;
 }
 
 .clean-grid-wrap{
@@ -7490,8 +7509,9 @@ color: var(--mcol,#ff3b30);
   justify-content:space-between;
   gap: 14px;
   border: 1px solid rgba(15,23,42,0.10);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   -webkit-backdrop-filter: blur(14px);
   border-radius: 14px;
   padding: 10px 12px;
@@ -8348,6 +8368,16 @@ color: var(--mcol,#ff3b30);
   justify-content: center !important;
   align-self: center;
 }
+#page-statistiche .home-main{
+  justify-content: flex-start !important;
+  align-self: start;
+}
+#page-statistiche .home-main-label{
+  min-height: calc(1.15em * 2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
 
 
 /* dDAE_2.097 — Impostazioni + pagina Operatori */
@@ -8695,4 +8725,229 @@ color: var(--mcol,#ff3b30);
   order:2;
   margin-top: 100px !important;
   align-items:center;
+}
+
+
+/* dDAE_2.121 — iOS flat/performance hardening */
+.topbar{
+  background: rgba(255,255,255,0.92) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.brand,
+.brand-left,
+.brand-right{
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap !important;
+}
+.brand{
+  gap: 10px !important;
+}
+.logo,
+.top-led-grid,
+.brand-right > *{
+  flex: 0 0 auto;
+}
+.topbar-year{
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  flex: 0 1 auto;
+  min-width: 0;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+.topbar-year[data-mode="account"]{
+  width: min(52vw, 260px);
+  max-width: min(52vw, 260px);
+  font-size: clamp(13px, 3.4vw, 16px) !important;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+body[data-page="impostazioni"] #page-impostazioni .settings-account-name,
+body[data-page="operatori"] #page-impostazioni .settings-account-name,
+body[data-page="tassa"] #page-impostazioni .settings-account-name{
+  display:none !important;
+}
+.brand-right{
+  margin-left: auto;
+}
+.icon-btn,
+.auth-btn,
+.prod-rectbtn,
+.seg-btn,
+.pill-toggle,
+.top-pill{
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.icon-btn.icon-btn-orange{
+  background: rgba(230,140,70,0.80) !important;
+}
+.icon-btn.icon-btn-red{
+  background: rgba(239,68,68,0.80) !important;
+}
+.icon-btn.icon-btn-green{
+  background: rgba(34,197,94,0.80) !important;
+}
+.icon-btn.icon-btn-whiteorange{
+  background: rgba(230,140,70,0.80) !important;
+}
+.icon-btn.icon-btn-whitered{
+  background: rgba(239,68,68,0.80) !important;
+}
+.icon-btn.icon-btn-whitegreen{
+  background: rgba(34,197,94,0.80) !important;
+}
+.icon-btn.icon-btn-whiteindigo{
+  background: rgba(99,102,241,0.80) !important;
+}
+.topbar .icon-btn,
+.icon-btn.icon-btn-whiteblue{
+  background: rgba(255,255,255,0.80) !important;
+  border-color: rgba(15,23,42,0.12) !important;
+}
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .ui-ico *,
+.icon-btn.icon-btn-whiteblue .ui-ico,
+.icon-btn.icon-btn-whiteblue .ui-ico *{
+  stroke: var(--ico-sky) !important;
+  fill: none !important;
+}
+#page-home .build{
+  opacity: 1;
+}
+
+
+/* dDAE_2.121 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
+#page-statistiche .home-grid{
+  grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
+  column-gap: clamp(24px, 8vw, 56px) !important;
+  row-gap: 16px !important;
+  width: max-content !important;
+  max-width: calc(100vw - 28px) !important;
+  padding: 14px 0 !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-content: center !important;
+}
+#page-statistiche .home-main{
+  width: clamp(132px, 34vw, 180px) !important;
+  max-width: clamp(132px, 34vw, 180px) !important;
+  justify-self: center !important;
+  align-self: start !important;
+  margin: 0 !important;
+}
+#page-statistiche .home-main-glyph{
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+
+/* dDAE_2.121 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
+#page-impostazioni .settings-actions{
+  margin-top: 112px !important;
+}
+
+/* dDAE_2.121 — Impostazioni: pulsanti uniformi e conferma logout corretta */
+#page-impostazioni .settings-actions .settings-btn{
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10) !important;
+}
+#page-impostazioni .settings-actions .settings-btn.settings-btn-roster{
+  background: rgba(99,102,241,0.80) !important;
+  border-color: rgba(99,102,241,0.22) !important;
+}
+#page-impostazioni .settings-actions .settings-btn.settings-btn-roster .ui-ico{
+  stroke: rgba(255,255,255,0.96) !important;
+}
+
+/* dDAE_2.121 — Impostazioni: etichette visibili sotto le icone */
+#page-impostazioni .settings-actions .settings-btn{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap: 8px !important;
+  padding: 10px 6px 8px !important;
+}
+#page-impostazioni .settings-actions .settings-btn .ui-ico{
+  flex: 0 0 auto;
+  margin: 0 !important;
+  width: clamp(34px, 9.8vw, 48px) !important;
+  height: clamp(34px, 9.8vw, 48px) !important;
+}
+#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
+  display:block;
+  width:100%;
+  text-align:center;
+  font-size: clamp(10px, 2.7vw, 12px);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.98);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* dDAE_2.118 — account topbar più grande in impostazioni derivate + build spostata in impostazioni */
+body[data-page="impostazioni"] .topbar-year[data-mode="account"],
+body[data-page="operatori"] .topbar-year[data-mode="account"],
+body[data-page="tassa"] .topbar-year[data-mode="account"]{
+  width: min(70vw, 340px) !important;
+  max-width: min(70vw, 340px) !important;
+  font-size: clamp(24px, 6.2vw, 32px) !important;
+  font-weight: 900 !important;
+  line-height: 1.02 !important;
+}
+#page-impostazioni .settings-build{
+  display:block;
+  order:0;
+  margin: 6px auto 0 auto !important;
+  text-align:center;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  color: rgba(15,23,42,0.58) !important;
+}
+#page-home .build{
+  display:none !important;
+}
+#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
+  min-height: 24px;
+}
+
+
+/* dDAE_2.121 — build sotto il toggle audio e sempre dentro il display */
+#page-impostazioni .settings-audio-wrap{
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+#page-impostazioni .settings-audio{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+#page-impostazioni .settings-build{
+  order: 3;
+  width: calc(100% - 28px) !important;
+  max-width: min(320px, calc(100% - 28px)) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
 }

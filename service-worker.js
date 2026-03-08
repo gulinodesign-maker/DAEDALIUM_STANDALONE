@@ -1,5 +1,5 @@
 /* dDAE - Service Worker (PWA)
- * Build: 2.105
+ * Build: 2.121
  *
  * Obiettivi:
  * - cache name cambia ad ogni build
@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "2.105";
+const BUILD = "2.121";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)
@@ -64,6 +64,12 @@ self.addEventListener("activate", (event) => {
     const keys = await caches.keys();
     await Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve())));
 
+    try {
+      if (self.registration && self.registration.navigationPreload) {
+        await self.registration.navigationPreload.enable();
+      }
+    } catch (_) {}
+
     // prendi controllo immediato
     await self.clients.claim();
   })());
@@ -103,9 +109,19 @@ async function networkFirstAsset(req){
     throw _;
   }
 }
-async function networkFirstHTML(req) {
+async function networkFirstHTML(req, preloadPromise) {
   const cache = await caches.open(CACHE_NAME);
   try {
+    if (preloadPromise) {
+      try {
+        const preloaded = await preloadPromise;
+        if (preloaded && preloaded.ok) {
+          await cache.put(req, preloaded.clone());
+          return preloaded;
+        }
+      } catch (_) {}
+    }
+
     // no-store per evitare cache aggressiva iOS sulla navigazione
     const fresh = await fetch(new Request(req, { cache: "no-store" }));
     if (fresh && fresh.ok) {
@@ -203,7 +219,7 @@ self.addEventListener("fetch", (event) => {
   // Navigazioni / HTML: network-first
   const accept = req.headers.get("accept") || "";
   if (req.mode === "navigate" || accept.includes("text/html")) {
-    event.respondWith(networkFirstHTML(req));
+    event.respondWith(networkFirstHTML(req, event.preloadResponse));
     return;
   }
 
