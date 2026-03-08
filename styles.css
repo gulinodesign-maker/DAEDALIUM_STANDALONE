@@ -8748,48 +8748,36 @@ color: var(--mcol,#ff3b30);
   margin-top: 140px !important;
 }
 
-/* dDAE_2.109 — Statistiche: icone stessa dimensione della Home e griglia centrata sul display */
+/* dDAE_2.108 — Statistiche: griglia centrata sul display, più alta e perfettamente simmetrica */
 #page-statistiche .stats-page{
-  min-height: calc(100dvh - 68px - var(--safe-top) - var(--safe-bottom)) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
+  min-height: calc(100dvh - 68px - var(--safe-top)) !important;
   padding-bottom: 28px !important;
 }
-#page-statistiche .stats-title,
-#page-statistiche .stats-divider{
-  width: min(360px, 88vw) !important;
-}
 #page-statistiche .home-grid{
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 170px)) !important;
-  width: min(360px, 88vw) !important;
-  gap: 14px 14px !important;
-  margin: clamp(26px, 6vh, 56px) auto 0 auto !important;
-  padding: 0 !important;
+  grid-template-columns: repeat(2, minmax(136px, 180px)) !important;
+  width: min(420px, 92vw) !important;
+  gap: clamp(18px, 2.8vh, 26px) clamp(34px, 8vw, 42px) !important;
+  margin: clamp(42px, 7.2vh, 74px) auto 0 auto !important;
   justify-content: center !important;
   justify-items: center !important;
   align-content: start !important;
+  align-self: center !important;
 }
 #page-statistiche .home-main{
-  width: 170px !important;
-  max-width: 42vw !important;
-  gap: 6px !important;
+  width: clamp(136px, 34vw, 180px) !important;
 }
 #page-statistiche .home-main-glyph{
-  width: clamp(83px, 23.4vw, 153px) !important;
-  height: clamp(83px, 23.4vw, 153px) !important;
-  border-radius: clamp(23px, 6.5vw, 44px) !important;
-  font-size: clamp(39px, 9.1vw, 70px) !important;
+  width: clamp(104px, 26vw, 150px) !important;
+  height: clamp(104px, 26vw, 150px) !important;
+  border-radius: 30px !important;
+  background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
-  background: var(--glass) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 #page-statistiche .home-main-label{
-  margin-top: 0 !important;
-  font-size: 17px !important;
-  line-height: 1.15 !important;
+  margin-top: 6px;
+  font-size: clamp(17px, 4.4vw, 23px) !important;
   font-weight: 950 !important;
   color: rgba(15,23,42,0.88) !important;
 }
