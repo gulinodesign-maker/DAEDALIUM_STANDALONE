@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.114");
+    url("./assets/bg-daedalium.png?v=dDAE_2.119");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.114 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.119 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.114");
+    url("./assets/bg-daedalium.png?v=dDAE_2.119");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.114 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.119 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8728,7 +8728,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.114 — iOS flat/performance hardening */
+/* dDAE_2.119 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8760,6 +8760,18 @@ color: var(--mcol,#ff3b30);
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+}
+.topbar-year[data-mode="account"]{
+  width: min(52vw, 260px);
+  max-width: min(52vw, 260px);
+  font-size: clamp(13px, 3.4vw, 16px) !important;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+body[data-page="impostazioni"] #page-impostazioni .settings-account-name,
+body[data-page="operatori"] #page-impostazioni .settings-account-name,
+body[data-page="tassa"] #page-impostazioni .settings-account-name{
+  display:none !important;
 }
 .brand-right{
   margin-left: auto;
@@ -8813,7 +8825,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.114 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
+/* dDAE_2.119 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
 #page-statistiche .home-grid{
   grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
   column-gap: clamp(24px, 8vw, 56px) !important;
@@ -8839,26 +8851,26 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.114 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
+/* dDAE_2.119 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
 #page-impostazioni .settings-actions{
   margin-top: 112px !important;
 }
 
-/* dDAE_2.114 — Impostazioni: pulsanti uniformi e conferma logout corretta */
+/* dDAE_2.119 — Impostazioni: pulsanti uniformi e conferma logout corretta */
 #page-impostazioni .settings-actions .settings-btn{
   border-width: 1px !important;
   border-style: solid !important;
   box-shadow: 0 10px 26px rgba(15,23,42,0.10) !important;
 }
 #page-impostazioni .settings-actions .settings-btn.settings-btn-roster{
-  background: rgba(111,183,214,0.80) !important;
-  border-color: rgba(111,183,214,0.22) !important;
+  background: rgba(99,102,241,0.80) !important;
+  border-color: rgba(99,102,241,0.22) !important;
 }
 #page-impostazioni .settings-actions .settings-btn.settings-btn-roster .ui-ico{
   stroke: rgba(255,255,255,0.96) !important;
 }
 
-/* dDAE_2.115 — Impostazioni: etichette visibili sotto le icone */
+/* dDAE_2.119 — Impostazioni: etichette visibili sotto le icone */
 #page-impostazioni .settings-actions .settings-btn{
   display:flex !important;
   flex-direction:column !important;
@@ -8885,4 +8897,57 @@ color: var(--mcol,#ff3b30);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+
+/* dDAE_2.118 — account topbar più grande in impostazioni derivate + build spostata in impostazioni */
+body[data-page="impostazioni"] .topbar-year[data-mode="account"],
+body[data-page="operatori"] .topbar-year[data-mode="account"],
+body[data-page="tassa"] .topbar-year[data-mode="account"]{
+  width: min(70vw, 340px) !important;
+  max-width: min(70vw, 340px) !important;
+  font-size: clamp(24px, 6.2vw, 32px) !important;
+  font-weight: 900 !important;
+  line-height: 1.02 !important;
+}
+#page-impostazioni .settings-build{
+  display:block;
+  order:0;
+  margin: 6px auto 0 auto !important;
+  text-align:center;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  color: rgba(15,23,42,0.58) !important;
+}
+#page-home .build{
+  display:none !important;
+}
+#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
+  min-height: 24px;
+}
+
+
+/* dDAE_2.120 — build sotto il toggle audio e sempre dentro il display */
+#page-impostazioni .settings-audio-wrap{
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+#page-impostazioni .settings-audio{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+#page-impostazioni .settings-build{
+  order: 3;
+  width: calc(100% - 28px) !important;
+  max-width: min(320px, calc(100% - 28px)) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
 }

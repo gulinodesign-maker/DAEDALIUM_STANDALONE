@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.115
+ * Build: 2.118
  */
-const BUILD_VERSION = "2.115";
+const BUILD_VERSION = "2.120";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3237,21 +3237,41 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
+function __isSettingsDerivedPage__(page){
+  try{
+    return new Set(["impostazioni", "operatori", "tassa"]).has(String(page || "").trim());
+  }catch(_){ return false; }
+}
+
+function __getSessionAccountName__(){
+  try{
+    const s = state.session || {};
+    return String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
+  }catch(_){ return ""; }
+}
+
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    if (state && state.page === "calendario"){
+    let text = String((new Date()).getFullYear());
+    let mode = "year";
+    if (state && __isSettingsDerivedPage__(state.page)){
+      text = __getSessionAccountName__() || "—";
+      mode = "account";
+    } else if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
+      text = monthNameIT(a).toUpperCase();
+      mode = "month";
     } else if (state && state.page === "pulizie"){
       const base = (state && state.session && isOperatoreSession(state.session))
         ? new Date()
         : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      el.textContent = formatDayMonthIT(startOfLocalDay(base));
-    } else {
-      el.textContent = String((new Date()).getFullYear());
+      text = formatDayMonthIT(startOfLocalDay(base));
+      mode = "day";
     }
+    el.textContent = text;
+    try{ el.dataset.mode = mode; }catch(_){ }
   }catch(_){}
 }
 
@@ -3291,10 +3311,11 @@ function updateSettingsAccountName(){
   try{
     const el = document.getElementById("settingsAccountName");
     if (!el) return;
-    const s = state.session || {};
-    const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
+    const raw = __getSessionAccountName__();
     el.textContent = raw || "—";
+    try{ el.hidden = __isSettingsDerivedPage__(state && state.page); }catch(_){ }
   }catch(_){ }
+  try{ __setTopbarCenterLabel__(); }catch(_){ }
 }
 
 
