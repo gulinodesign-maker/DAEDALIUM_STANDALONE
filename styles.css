@@ -8925,3 +8925,29 @@ body[data-page="tassa"] .topbar-year[data-mode="account"]{
 #page-impostazioni .settings-actions .settings-btn .settings-btn-label{
   min-height: 24px;
 }
+
+
+/* dDAE_2.120 — build sotto il toggle audio e sempre dentro il display */
+#page-impostazioni .settings-audio-wrap{
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+#page-impostazioni .settings-audio{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+#page-impostazioni .settings-build{
+  order: 3;
+  width: calc(100% - 28px) !important;
+  max-width: min(320px, calc(100% - 28px)) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+}
