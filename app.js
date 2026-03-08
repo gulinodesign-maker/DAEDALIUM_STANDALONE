@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.114
  */
-const BUILD_VERSION = "2.114";
+const BUILD_VERSION = "2.115";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2259,6 +2259,84 @@ function __mergeUsers__(existing, incoming){
   return out;
 }
 
+function __userDisplayName__(u){
+  try{
+    return String(
+      u?.username ||
+      u?.user ||
+      u?.name ||
+      u?.nome ||
+      u?.displayName ||
+      u?.display_name ||
+      ""
+    ).trim();
+  }catch(_){ return ""; }
+}
+
+function __isOperatorUserRow__(u){
+  try{
+    const role = String(u?.ruolo || u?.role || u?.tipo || "").trim().toLowerCase();
+    if (role) return role.startsWith("op");
+  }catch(_){ }
+  try{
+    return String(u?.isOperatore || u?.is_operatore || "").trim() === "1" || u?.isOperatore === true;
+  }catch(_){ }
+  return false;
+}
+
+async function __getValidOperatorNameSet__(){
+  const out = new Set();
+  try{
+    const rows0 = await __tblGet__("utenti", []);
+    const rows = Array.isArray(rows0) ? rows0 : [];
+    rows.forEach((u) => {
+      if (!__isOperatorUserRow__(u)) return;
+      const name = __userDisplayName__(u);
+      if (name) out.add(name.toLowerCase());
+      const alt = String(u?.name || u?.nome || "").trim();
+      if (alt) out.add(alt.toLowerCase());
+    });
+  }catch(_){ }
+  return out;
+}
+
+async function __sanitizeOperatorNamesAgainstUsers__(names){
+  const raw = Array.isArray(names) ? names : [];
+  const valid = await __getValidOperatorNameSet__();
+  const out = [];
+  const seen = new Set();
+  for (const item of raw){
+    const name = String(item || "").trim();
+    if (!name) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    if (valid.size && !valid.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+    if (out.length >= 3) break;
+  }
+  return out;
+}
+
+async function __sanitizeImpostazioniOperatoriRows__(rows){
+  const list = Array.isArray(rows) ? rows.map(r => (r && typeof r === "object") ? { ...r } : r) : [];
+  const idx = list.findIndex(r => String(r?.key || r?.Key || "").trim().toLowerCase() === "operatori");
+  if (idx < 0) return list;
+  const row = list[idx] && typeof list[idx] === "object" ? { ...list[idx] } : { key:"operatori" };
+  const names = await __sanitizeOperatorNamesAgainstUsers__([
+    row.operatore_1, row.operatore_2, row.operatore_3,
+    row.Operatore_1, row.Operatore_2, row.Operatore_3
+  ]);
+  row.operatore_1 = names[0] || "";
+  row.operatore_2 = names[1] || "";
+  row.operatore_3 = names[2] || "";
+  delete row.Operatore_1;
+  delete row.Operatore_2;
+  delete row.Operatore_3;
+  list[idx] = row;
+  return list;
+}
+
 async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -2333,6 +2411,13 @@ async function __dbImport__(kind){
       if (!__isAdminImport__ && Array.isArray(ds?.utenti)){
         const existingUsers = await __tblGet__("utenti", []);
         ds.utenti = __mergeUsers__(existingUsers, ds.utenti);
+      }
+    }catch(_){ }
+
+    // Bonifica roster operatori dentro il backup importato usando solo gli utenti presenti.
+    try{
+      if (Array.isArray(ds?.impostazioni)){
+        ds.impostazioni = await __sanitizeImpostazioniOperatoriRows__(ds.impostazioni);
       }
     }catch(_){ }
 
@@ -2489,9 +2574,14 @@ async function __importRosterOperators__(){
     return;
   }
 
-  const names = await __extractRosterNames__(data);
-  if (!names || !names.length){
+  const namesRaw = await __extractRosterNames__(data);
+  const names = await __sanitizeOperatorNamesAgainstUsers__(namesRaw);
+  if (!namesRaw || !namesRaw.length){
     try{ toast("Roster vuoto o non valido", "orange"); }catch(_){}
+    return;
+  }
+  if (!names.length){
+    try{ toast("Nessun operatore valido nel roster", "orange"); }catch(_){}
     return;
   }
 
@@ -2511,9 +2601,14 @@ async function __importRosterOperators__(){
 async function __exportRosterOperators__(){
   try{
     await ensureSettingsLoaded({ force:false, showLoader:true });
-    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
-    if (!names.length){
+    const namesRaw = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
+    const names = await __sanitizeOperatorNamesAgainstUsers__(namesRaw);
+    if (!namesRaw.length){
       try{ toast("Nessun operatore impostato", "orange"); }catch(_){}
+      return;
+    }
+    if (!names.length){
+      try{ toast("Roster senza operatori validi", "orange"); }catch(_){}
       return;
     }
 
@@ -2554,6 +2649,11 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
+    try{
+      if (Array.isArray(datasets.impostazioni)){
+        datasets.impostazioni = await __sanitizeImpostazioniOperatoriRows__(datasets.impostazioni);
+      }
+    }catch(_){ }
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
