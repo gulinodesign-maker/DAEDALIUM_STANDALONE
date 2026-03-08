@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.105
+ * Build: 2.106
  */
-const BUILD_VERSION = "2.105";
+const BUILD_VERSION = "2.106";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3105,7 +3105,11 @@ function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    if (state && state.page === "calendario"){
+    if (state && state.page === "impostazioni"){
+      const s = state.session || {};
+      const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
+      el.textContent = raw || String((new Date()).getFullYear());
+    } else if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
     } else {
@@ -6058,10 +6062,27 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
+  // Sync footer: nascosto in pagine dove non serve
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) sb.hidden = (page === "calendario");
+    if (sb) {
+      const pagesWithoutSync = new Set([
+        "calendario",
+        "impostazioni",
+        "operatori",
+        "tassa",
+        "statistiche",
+        "statgen",
+        "statmensili",
+        "statspese",
+        "statprenotazioni",
+        "statcancellazioni",
+        "statazienda",
+        "statamministratore",
+        "statpiscina"
+      ]);
+      sb.hidden = pagesWithoutSync.has(page);
+    }
   }catch(_){ }
 
 
