@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.114
  */
-const BUILD_VERSION = "2.116";
+const BUILD_VERSION = "2.117";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4573,35 +4573,22 @@ function getOperatorNamesFromSettings() {
 
 async function getAccountOperatorNames(){
   try{
-    const session = (state && state.session) ? state.session : (typeof loadSession === "function" ? loadSession() : null);
-    const sessionUsername = String(session?.username || session?.user || "").trim();
-    const ownerUsername = sessionUsername.includes("__") ? sessionUsername.split("__")[0] : sessionUsername;
     const rows0 = await __tblGet__("utenti", []);
     const rows = Array.isArray(rows0) ? rows0 : [];
-    const prefixed = [];
-    const plain = [];
-    const pushUnique = (target, value)=>{
+    const out = [];
+    const pushUnique = (value)=>{
       const v = String(value || "").trim();
       if (!v) return;
-      if (!target.some(x => String(x||"").trim().toLowerCase() === v.toLowerCase())) target.push(v);
+      if (!out.some(x => String(x||"").trim().toLowerCase() === v.toLowerCase())) out.push(v);
     };
     rows.forEach((row)=>{
       const ruolo = String(row?.ruolo || row?.role || "").trim().toLowerCase();
       if (!ruolo.includes("oper")) return;
       const rawUsername = String(row?.username || row?.user || "").trim();
       if (!rawUsername) return;
-      if (ownerUsername){
-        const prefix = `${ownerUsername}__`;
-        if (rawUsername.startsWith(prefix)){
-          pushUnique(prefixed, rawUsername.slice(prefix.length));
-          return;
-        }
-      }
-      const parts = rawUsername.split("__");
-      const shortName = String(parts.length > 1 ? parts.slice(1).join("__") : rawUsername).trim();
-      pushUnique(plain, shortName);
+      const shortName = rawUsername.includes("__") ? rawUsername.split("__").slice(1).join("__") : rawUsername;
+      pushUnique(shortName);
     });
-    const out = prefixed.length ? prefixed : plain;
     return out.sort((a,b)=>String(a).localeCompare(String(b), "it"));
   }catch(_){
     return [];
