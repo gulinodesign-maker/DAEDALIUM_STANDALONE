@@ -8898,3 +8898,30 @@ body[data-page="tassa"] #page-impostazioni .settings-account-name{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+/* dDAE_2.118 — account topbar più grande in impostazioni derivate + build spostata in impostazioni */
+body[data-page="impostazioni"] .topbar-year[data-mode="account"],
+body[data-page="operatori"] .topbar-year[data-mode="account"],
+body[data-page="tassa"] .topbar-year[data-mode="account"]{
+  width: min(70vw, 340px) !important;
+  max-width: min(70vw, 340px) !important;
+  font-size: clamp(24px, 6.2vw, 32px) !important;
+  font-weight: 900 !important;
+  line-height: 1.02 !important;
+}
+#page-impostazioni .settings-build{
+  display:block;
+  order:0;
+  margin: 6px auto 0 auto !important;
+  text-align:center;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  color: rgba(15,23,42,0.58) !important;
+}
+#page-home .build{
+  display:none !important;
+}
+#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
+  min-height: 24px;
+}
