@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.116");
+    url("./assets/bg-daedalium.png?v=dDAE_2.114");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -114,7 +114,7 @@ body{
   flex-wrap: nowrap;
 }
 
-/* dDAE_2.116 — Titolo topbar sempre centrato rispetto alla pagina */
+/* dDAE_2.114 — Titolo topbar sempre centrato rispetto alla pagina */
 .topbar-year{
   position: absolute;
   left: 50%;
@@ -1025,7 +1025,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.116");
+    url("./assets/bg-daedalium.png?v=dDAE_2.114");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -4269,7 +4269,7 @@ body.perf-lite *::after{
   font-size: clamp(22px, 6vw, 30px);
 }
 
-/* dDAE_2.116 — In Pulizie la data corrente passa nella topbar */
+/* dDAE_2.114 — In Pulizie la data corrente passa nella topbar */
 #page-pulizie .clean-date{
   display:none;
 }
@@ -8728,7 +8728,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — iOS flat/performance hardening */
+/* dDAE_2.114 — iOS flat/performance hardening */
 .topbar{
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: none !important;
@@ -8813,7 +8813,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
+/* dDAE_2.114 — Statistiche: colonne perfettamente simmetriche rispetto all'asse centrale */
 #page-statistiche .home-grid{
   grid-template-columns: repeat(2, clamp(132px, 34vw, 180px)) !important;
   column-gap: clamp(24px, 8vw, 56px) !important;
@@ -8839,26 +8839,26 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.116 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
+/* dDAE_2.114 — Impostazioni: sposta i pulsanti 100px più in basso rispetto al nome account */
 #page-impostazioni .settings-actions{
   margin-top: 112px !important;
 }
 
-/* dDAE_2.116 — Impostazioni: pulsanti uniformi e conferma logout corretta */
+/* dDAE_2.114 — Impostazioni: pulsanti uniformi e conferma logout corretta */
 #page-impostazioni .settings-actions .settings-btn{
   border-width: 1px !important;
   border-style: solid !important;
   box-shadow: 0 10px 26px rgba(15,23,42,0.10) !important;
 }
 #page-impostazioni .settings-actions .settings-btn.settings-btn-roster{
-  background: rgba(99,102,241,0.80) !important;
-  border-color: rgba(99,102,241,0.22) !important;
+  background: rgba(111,183,214,0.80) !important;
+  border-color: rgba(111,183,214,0.22) !important;
 }
 #page-impostazioni .settings-actions .settings-btn.settings-btn-roster .ui-ico{
   stroke: rgba(255,255,255,0.96) !important;
 }
 
-/* dDAE_2.116 — Impostazioni: etichette visibili sotto le icone */
+/* dDAE_2.115 — Impostazioni: etichette visibili sotto le icone */
 #page-impostazioni .settings-actions .settings-btn{
   display:flex !important;
   flex-direction:column !important;
