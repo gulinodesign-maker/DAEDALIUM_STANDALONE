@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.118
  */
-const BUILD_VERSION = "2.118";
+const BUILD_VERSION = "2.119";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
