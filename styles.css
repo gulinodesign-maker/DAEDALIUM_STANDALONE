@@ -8697,17 +8697,27 @@ color: var(--mcol,#ff3b30);
   align-items:center;
 }
 
-/* dDAE_2.110 — Settings: etichette sui pulsanti e nascondi il titolo */
-#page-impostazioni .page-title{
-  display: none !important;
+/* dDAE_2.110 — override Stats icon layout to match Home
+   In the Stats page, align the buttons like in the Home page, with two columns centered
+   and same width. This ensures symmetry on both sides of the screen and consistent sizing.
+   Use high specificity (#page-statistiche) to override previous definitions.
+*/
+#page-statistiche .home-grid{
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
 }
 
-#page-impostazioni .settings-btn .settings-btn-label{
-  margin-left: 8px;
-  font-size: 16px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.96);
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  pointer-events: none;
+#page-statistiche .home-main{
+  width: 170px !important;
+  max-width: 70vw !important;
+  margin: 10px !important;
+}
+
+#page-statistiche .home-main-glyph{
+  margin: 0 !important;
 }
