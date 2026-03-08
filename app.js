@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.109
+ * Build: 2.110
  */
-const BUILD_VERSION = "2.109";
+const BUILD_VERSION = "2.110";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2338,10 +2338,7 @@ async function __dbImport__(kind){
 
     // Write datasets (only allowed tables)
     for (const t of tablesToWrite){
-      let v = ds[t];
-      if (t === "ospiti"){
-        try{ v = __normalizeGuestInsertionRows__(Array.isArray(v) ? v : [], { persist:true }).rows; }catch(_){ }
-      }
+      const v = ds[t];
       await __tblSet__(t, v);
     }
 
@@ -3108,11 +3105,7 @@ function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    if (state && state.page === "impostazioni"){
-      const s = state.session || {};
-      const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
-      el.textContent = raw || String((new Date()).getFullYear());
-    } else if (state && state.page === "calendario"){
+    if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
     } else {
@@ -6065,27 +6058,10 @@ function showPage(page){
 state.page = page;
   document.body.dataset.page = page;
 
-  // Sync footer: nascosto in pagine dove non serve
+  // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) {
-      const pagesWithoutSync = new Set([
-        "calendario",
-        "impostazioni",
-        "operatori",
-        "tassa",
-        "statistiche",
-        "statgen",
-        "statmensili",
-        "statspese",
-        "statprenotazioni",
-        "statcancellazioni",
-        "statazienda",
-        "statamministratore",
-        "statpiscina"
-      ]);
-      sb.hidden = pagesWithoutSync.has(page);
-    }
+    if (sb) sb.hidden = (page === "calendario");
   }catch(_){ }
 
 
@@ -6851,95 +6827,40 @@ function parseDateTs(v){
   return Number.isFinite(t) ? t : null;
 }
 
-function __guestInsertionNoOf__(g){
-  const raw = g?.insertion_no ?? g?.insertionNo ?? g?.ordine_inserimento ?? g?.ordineInserimento ?? g?.ins_no ?? g?._insNo ?? null;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
-}
-
 function computeInsertionMap(guests){
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
-    const fixedNo = __guestInsertionNoOf__(g);
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    return { id, idx, t, fixedNo };
+    return { id, idx, t };
+  });
+
+  // Ordina gli ospiti per data di creazione (createdAt/created_at) crescente.
+  // I record senza createdAt vengono considerati “vecchi” e quindi
+  // ricevono i numeri più bassi. Questo garantisce che i nuovi ospiti
+  // creati localmente (con createdAt valorizzato) vengano numerati in
+  // coda rispetto a quelli importati dal backup. Vedi issue: la
+  // numerazione non deve ripartire da 1 dopo il restore ma continuare.
+  arr.sort((a,b) => {
+    const at = a.t;
+    const bt = b.t;
+    // entrambi hanno timestamp valido → ordine naturale
+    if (at != null && bt != null) return at - bt;
+    // solo a.t nullo → a prima (più vecchio)
+    if (at == null && bt != null) return -1;
+    // solo b.t nullo → b prima (a viene dopo)
+    if (at != null && bt == null) return 1;
+    // entrambi null → mantieni ordine originale
+    return a.idx - b.idx;
   });
 
   const map = {};
-  let nextNo = 1;
-
-  const fixed = arr
-    .filter(x => x.id && x.fixedNo != null)
-    .sort((a,b) => {
-      if (a.fixedNo !== b.fixedNo) return a.fixedNo - b.fixedNo;
-      return a.idx - b.idx;
-    });
-
-  for (const x of fixed){
-    if (map[x.id]) continue;
-    map[x.id] = x.fixedNo;
-    if (x.fixedNo >= nextNo) nextNo = x.fixedNo + 1;
-  }
-
-  const rest = arr.filter(x => x.id && !map[x.id]);
-  rest.sort((a,b) => {
-    const at = a.t, bt = b.t;
-    if (at != null && bt != null && at !== bt) return at - bt;
-    return a.idx - b.idx;
-  });
-
-  for (const x of rest){
-    map[x.id] = nextNo++;
+  let n = 1;
+  for (const x of arr){
+    if (!x.id) continue;
+    map[x.id] = n++;
   }
   return map;
-}
-
-function __normalizeGuestInsertionRows__(rows, opts){
-  const list = Array.isArray(rows) ? rows.slice() : [];
-  const persist = !!(opts && opts.persist);
-  const arr = list.map((g, idx) => {
-    const c = g?.created_at ?? g?.createdAt ?? "";
-    return { row: g, idx, t: parseDateTs(c) };
-  });
-
-  arr.sort((a,b) => {
-    if (a.t != null && b.t != null && a.t !== b.t) return a.t - b.t;
-    return a.idx - b.idx;
-  });
-
-  let changed = false;
-  arr.forEach((entry, ix) => {
-    const no = ix + 1;
-    const row = entry.row || {};
-    const prev = __guestInsertionNoOf__(row);
-    if (prev !== no) changed = true;
-    if (persist || prev !== no){
-      row.insertion_no = no;
-      row.insertionNo = no;
-      row.ordine_inserimento = no;
-      row.ordineInserimento = no;
-      row.ins_no = no;
-    }
-  });
-
-  return { rows: list, changed };
-}
-
-async function __ensureGuestInsertionNumbersPersisted__(rows){
-  try{
-    const normalized = __normalizeGuestInsertionRows__(rows, { persist:true });
-    if (normalized.changed){
-      await __tblSet__("ospiti", normalized.rows);
-    }
-    return normalized.rows;
-  }catch(_){
-    try{
-      return __normalizeGuestInsertionRows__(rows, { persist:true }).rows;
-    }catch(__){
-      return Array.isArray(rows) ? rows : [];
-    }
-  }
 }
 
 function sortGuestsList(items){
@@ -7122,12 +7043,11 @@ async function loadOspiti({ from="", to="", force=false } = {}){
   if (hasLocal && !force) {
     // fire-and-forget
     Promise.all([p, refresh()])
-      .then(async ([ , data ]) => {
+      .then(([ , data ]) => {
         // aggiorna solo se l'utente è ancora nella lista ospiti
         if (state.page !== "ospiti") return;
         const nextRaw = Array.isArray(data) ? data : [];
-        const nextFixed = await __ensureGuestInsertionNumbersPersisted__(nextRaw);
-        const next = __filterByExerciseYear__(nextFixed, state.exerciseYear || loadExerciseYear(), [
+        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
           "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
           "createdAt","created_at","updatedAt","updated_at"
         ]);
@@ -7151,8 +7071,7 @@ async function loadOspiti({ from="", to="", force=false } = {}){
 
   const [ , data ] = await Promise.all([p, refresh()]);
   const nextRaw = Array.isArray(data) ? data : [];
-        const nextFixed = await __ensureGuestInsertionNumbersPersisted__(nextRaw);
-        const next = __filterByExerciseYear__(nextFixed, state.exerciseYear || loadExerciseYear(), [
+        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
           "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
           "createdAt","created_at","updatedAt","updated_at"
         ]);
@@ -10905,45 +10824,6 @@ if (!name) return toast("Inserisci il nome");
     // CREATE: genera subito un ID stabile, così possiamo salvare le stanze al primo tentativo
     payload.id = payload.id || genId("o");
   }
-
-  async function resolveNextGuestInsertionNo(){
-    try{
-      const rows = await __tblGet__("ospiti", []);
-      const arr = Array.isArray(rows) ? __normalizeGuestInsertionRows__(rows, { persist:true }).rows : [];
-      const map = computeInsertionMap(arr);
-      let maxNo = 0;
-      for (const k in map){
-        const n = Number(map[k]) || 0;
-        if (n > maxNo) maxNo = n;
-      }
-      return maxNo + 1;
-    }catch(_){
-      const arr = Array.isArray(state.guests) ? state.guests : (Array.isArray(state.ospiti) ? state.ospiti : []);
-      const map = computeInsertionMap(arr);
-      let maxNo = 0;
-      for (const k in map){
-        const n = Number(map[k]) || 0;
-        if (n > maxNo) maxNo = n;
-      }
-      return maxNo + 1;
-    }
-  }
-
-  if (isEdit){
-    const existingNo = __guestInsertionNoOf__(state.guestEditSourceItem) || __guestInsertionNoOf__(state.guestViewItem);
-    if (existingNo){
-      payload.insertion_no = existingNo;
-      payload.insertionNo = existingNo;
-      payload.ordine_inserimento = existingNo;
-      payload.ordineInserimento = existingNo;
-    }
-  }else{
-    const nextInsertionNo = await resolveNextGuestInsertionNo();
-    payload.insertion_no = nextInsertionNo;
-    payload.insertionNo = nextInsertionNo;
-    payload.ordine_inserimento = nextInsertionNo;
-    payload.ordineInserimento = nextInsertionNo;
-  }
 // CREATE vs UPDATE (backend GAS: POST=create, PUT=update)
   const method = isEdit ? "PUT" : "POST";
 
@@ -11831,14 +11711,10 @@ function renderGuestCards(){
   }
 
   // Numero progressivo di inserimento (stabile)
-  const insertionSource = Array.isArray(state.guests) && state.guests.length
-    ? state.guests
-    : (Array.isArray(state.ospiti) && state.ospiti.length ? state.ospiti : items);
-  const insMap = computeInsertionMap(insertionSource);
+  const insMap = computeInsertionMap(items);
   items.forEach((it) => {
     const id = guestIdOf(it);
-    const fixedNo = __guestInsertionNoOf__(it);
-    it._insNo = fixedNo || (id ? insMap[id] : null);
+    it._insNo = id ? insMap[id] : null;
   });
 
   // Raggruppa per nome (multi prenotazioni sullo stesso cliente)

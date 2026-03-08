@@ -8678,7 +8678,7 @@ color: var(--mcol,#ff3b30);
 #page-impostazioni .settings-actions .settings-btn[aria-label="Anno di esercizio"] .ui-ico{ stroke-width:2.2; }
 
 
-/* dDAE_2.106 — Impostazioni: account sopra i tasti, azzurro e 2x, più spazio verso audio */
+/* dDAE_2.105 — Impostazioni: account sopra i tasti, azzurro e 2x, più spazio verso audio */
 #page-impostazioni .bd{ display:flex; flex-direction:column; align-items:center; }
 #page-impostazioni .settings-account-name{
   order:0;
@@ -8697,99 +8697,27 @@ color: var(--mcol,#ff3b30);
   align-items:center;
 }
 
-
-/* dDAE_2.106 — Impostazioni: etichette interne, nome account in topbar, layout come mockup */
-#page-impostazioni .settings-account-name{
-  display: none !important;
-}
-#page-impostazioni .settings-actions{
-  margin: 150px auto 0 auto !important;
-}
-#page-impostazioni .settings-actions .settings-btn{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap: 10px !important;
-  padding: 10px 8px !important;
-}
-#page-impostazioni .settings-actions .settings-btn .settings-btn-label{
-  display:block;
-  max-width:100%;
-  text-align:center;
-  font-size: clamp(12px, 3.1vw, 15px);
-  line-height: 1.05;
-  font-weight: 900;
-  color: rgba(255,255,255,0.96);
-  letter-spacing: .01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#page-impostazioni .settings-actions .settings-btn.settings-btn-roster .settings-btn-label{
-  color: rgba(255,255,255,0.96) !important;
-}
-#page-impostazioni .settings-actions .settings-btn.settings-btn-roster{
-  background: rgba(99,102,241,0.80) !important;
-  border-color: rgba(99,102,241,0.24) !important;
-}
-#page-impostazioni .settings-actions .settings-btn.settings-btn-roster .ui-ico{
-  stroke: rgba(255,255,255,0.98) !important;
-}
-#page-impostazioni .settings-actions .settings-btn.settings-btn-db{
-  background: rgba(74,212,105,0.80) !important;
-  border-color: rgba(74,212,105,0.24) !important;
-}
-#page-impostazioni .settings-actions .settings-btn.settings-btn-config{
-  background: rgba(231,76,60,0.80) !important;
-  border-color: rgba(231,76,60,0.24) !important;
-}
-#page-impostazioni .settings-audio-wrap{
-  margin-top: 140px !important;
-}
-
-/* dDAE_2.109 — Statistiche: icone stessa dimensione della Home e griglia centrata sul display */
-#page-statistiche .stats-page{
-  min-height: calc(100dvh - 68px - var(--safe-top) - var(--safe-bottom)) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  padding-bottom: 28px !important;
-}
-#page-statistiche .stats-title,
-#page-statistiche .stats-divider{
-  width: min(360px, 88vw) !important;
-}
+/* dDAE_2.110 — override Stats icon layout to match Home
+   In the Stats page, align the buttons like in the Home page, with two columns centered
+   and same width. This ensures symmetry on both sides of the screen and consistent sizing.
+   Use high specificity (#page-statistiche) to override previous definitions.
+*/
 #page-statistiche .home-grid{
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 170px)) !important;
-  width: min(360px, 88vw) !important;
-  gap: 14px 14px !important;
-  margin: clamp(26px, 6vh, 56px) auto 0 auto !important;
-  padding: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
   justify-content: center !important;
-  justify-items: center !important;
-  align-content: start !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
 }
+
 #page-statistiche .home-main{
   width: 170px !important;
-  max-width: 42vw !important;
-  gap: 6px !important;
+  max-width: 70vw !important;
+  margin: 10px !important;
 }
+
 #page-statistiche .home-main-glyph{
-  width: clamp(83px, 23.4vw, 153px) !important;
-  height: clamp(83px, 23.4vw, 153px) !important;
-  border-radius: clamp(23px, 6.5vw, 44px) !important;
-  font-size: clamp(39px, 9.1vw, 70px) !important;
-  border: 1px solid rgba(15,23,42,0.10) !important;
-  background: var(--glass) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-}
-#page-statistiche .home-main-label{
-  margin-top: 0 !important;
-  font-size: 17px !important;
-  line-height: 1.15 !important;
-  font-weight: 950 !important;
-  color: rgba(15,23,42,0.88) !important;
+  margin: 0 !important;
 }
