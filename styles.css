@@ -4054,7 +4054,9 @@ body.perf-lite .guest-booking-block{
   pointer-events:none;
 }
 .guest-form-card.is-view .guest-hd-actions,
-.guest-form-card.is-view .guest-hd-actions button{
+.guest-form-card.is-view .guest-hd-actions button,
+.guest-form-card.is-view #guestNotesToggle,
+.guest-form-card.is-view #guestNotes{
   pointer-events:auto !important;
 }
 
