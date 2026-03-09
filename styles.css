@@ -8903,3 +8903,49 @@ body[data-page^="stat"] #homeSyncBar{
     margin-top: 150px !important;
   }
 }
+
+
+/* dDAE_2.116 — Statistiche: griglia 2x3 perfettamente centrata */
+#page-statistiche .stats-page{
+  align-items: center;
+}
+#page-statistiche .stats-title,
+#page-statistiche .stats-divider{
+  align-self: stretch;
+}
+#page-statistiche .home-grid{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 170px)) !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: start !important;
+  align-content: center !important;
+  column-gap: 26px !important;
+  row-gap: 16px !important;
+  width: min(366px, calc(100vw - 48px)) !important;
+  max-width: 366px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  flex: 1 1 auto;
+}
+#page-statistiche .home-main{
+  width: 170px !important;
+  max-width: 170px !important;
+  margin: 0 !important;
+  justify-self: center !important;
+}
+#page-statistiche .home-main-glyph{
+  margin: 0 auto !important;
+}
+@media (max-width: 390px){
+  #page-statistiche .home-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: min(340px, calc(100vw - 40px)) !important;
+    max-width: 340px !important;
+    column-gap: 18px !important;
+  }
+  #page-statistiche .home-main{
+    width: 100% !important;
+    max-width: 152px !important;
+  }
+}
