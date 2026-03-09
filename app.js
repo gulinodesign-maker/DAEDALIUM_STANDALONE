@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.110
+ * Build: 2.114
  */
-const BUILD_VERSION = "2.117";
+const BUILD_VERSION = "2.114";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2463,87 +2463,6 @@ async function __extractRosterNames__(data){
   return [];
 }
 
-function __getBackupSafeOperatorCatalog__(){
-  try{
-    const catalog = getOperatoriCatalogFromSettings ? (getOperatoriCatalogFromSettings() || []) : [];
-    const out = [];
-    const seen = new Set();
-    for (const item of (Array.isArray(catalog) ? catalog : [])){
-      const nome = String(item?.nome || item?.name || "").trim();
-      if (!nome) continue;
-      const key = nome.toLowerCase();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({
-        id: String(item?.id || `op-${out.length+1}`),
-        nome,
-        tariffa: (() => {
-          const n = Number(String(item?.tariffa ?? "").replace(",", "."));
-          return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0;
-        })(),
-        benzina: (() => {
-          const n = Number(String(item?.benzina ?? "").replace(",", "."));
-          return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0;
-        })(),
-        colore: __normalizeOperatoreColor__(item?.colore),
-      });
-    }
-    return out;
-  }catch(_){
-    return [];
-  }
-}
-
-function __getBackupSafeOperatorNames__(){
-  try{
-    const catalog = __getBackupSafeOperatorCatalog__();
-    const names = catalog.map(item => String(item?.nome || "").trim()).filter(Boolean);
-    if (names.length) return names;
-  }catch(_){ }
-  try{
-    const legacy = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x => String(x || "").trim()).filter(Boolean);
-    return Array.from(new Set(legacy));
-  }catch(_){
-    return [];
-  }
-}
-
-function __sanitizeBackupPayloadOperators__(payload){
-  try{
-    if (!payload || typeof payload !== "object") return payload;
-    const cleanCatalog = __getBackupSafeOperatorCatalog__();
-    const cleanNames = __getBackupSafeOperatorNames__();
-    const ds = (payload.datasets && typeof payload.datasets === "object") ? payload.datasets : null;
-    if (!ds) return payload;
-    if (Array.isArray(ds.impostazioni)){
-      ds.impostazioni = ds.impostazioni.map((row) => {
-        if (!row || typeof row !== "object") return row;
-        const key = String(row?.key || row?.Key || "").trim().toLowerCase();
-        if (key === "operatori"){
-          const next = { ...row };
-          next.operatore_1 = cleanNames[0] || "";
-          next.operatore_2 = cleanNames[1] || "";
-          next.operatore_3 = cleanNames[2] || "";
-          next.Operatore_1 = next.operatore_1;
-          next.Operatore_2 = next.operatore_2;
-          next.Operatore_3 = next.operatore_3;
-          return next;
-        }
-        if (key === "operatori_catalogo"){
-          const next = { ...row };
-          next.value = JSON.stringify(cleanCatalog);
-          next.Value = next.value;
-          return next;
-        }
-        return row;
-      });
-    }
-    return payload;
-  }catch(_){
-    return payload;
-  }
-}
-
 async function __importRosterOperators__(){
   const input = document.createElement("input");
   input.type = "file";
@@ -2592,7 +2511,7 @@ async function __importRosterOperators__(){
 async function __exportRosterOperators__(){
   try{
     await ensureSettingsLoaded({ force:false, showLoader:true });
-    const names = __getBackupSafeOperatorNames__();
+    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
     if (!names.length){
       try{ toast("Nessun operatore impostato", "orange"); }catch(_){}
       return;
@@ -2642,7 +2561,6 @@ async function __dbExport__(kind, preopenWin){
       datasets,
       meta: {}
     };
-    __sanitizeBackupPayloadOperators__(payload);
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -3191,7 +3109,7 @@ function __setTopbarCenterLabel__(){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
     } else {
-      el.textContent = String((new Date()).getFullYear());
+      el.textContent = "Daedalium";
     }
   }catch(_){}
 }
@@ -3242,8 +3160,10 @@ function updateSettingsAccountName(){
 // Mostra la build a runtime (se il JS è vecchio, lo vedi subito)
 (function syncBuildLabel(){
   try{
-    const el = document.getElementById("buildText");
-    if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    ["buildText","settingsBuildText"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
+    });
     try{
       const box = document.getElementById("homeOperatorDbBox");
       if (box){
@@ -6143,7 +6063,8 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    if (sb) sb.hidden = (page === "calendario");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || String(page || "").startsWith("stat");
+    if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
 
@@ -16712,10 +16633,9 @@ async function initOrePuliziaPage(){
 
   // operatori list: da impostazioni + da righe
   let fromSet = [];
-  try{ fromSet = __getBackupSafeOperatorNames__(); }catch(_){ fromSet = []; }
+  try{ fromSet = getOperatorNamesFromSettings(); }catch(_){ fromSet = []; }
   const fromRows = Array.from(new Set((s.rows||[]).map(r=>String(r.operatore||r.nome||"").trim()).filter(Boolean))).sort();
-  const allow = new Set((fromSet || []).map(x => String(x || "").trim().toLowerCase()).filter(Boolean));
-  const ops = Array.from(new Set([...(fromSet||[]), ...(allow.size ? fromRows.filter(x => allow.has(String(x || "").trim().toLowerCase())) : fromRows)]))
+  const ops = Array.from(new Set([...(fromSet||[]), ...(fromRows||[])]))
     .filter(Boolean)
     .sort();
 
