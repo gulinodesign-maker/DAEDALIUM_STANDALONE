@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.121
  */
-const BUILD_VERSION = "2.121";
+const BUILD_VERSION = "2.124";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3101,6 +3101,17 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
+function __formatPulizieTopbarDate__(d){
+  try{
+    const dt = startOfLocalDay(d instanceof Date ? d : new Date(d));
+    const days = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+    const months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+    return `${days[dt.getDay()]} ${dt.getDate()} ${months[dt.getMonth()]}`;
+  }catch(_){
+    return "Daedalium";
+  }
+}
+
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
@@ -3108,6 +3119,9 @@ function __setTopbarCenterLabel__(){
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie"){
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      el.textContent = __formatPulizieTopbarDate__(base);
     } else {
       el.textContent = "Daedalium";
     }
@@ -6647,6 +6661,10 @@ if (goCalendarioTopOspiti){
   const goOrePulTop = $("#goOrePuliziaTop");
   if (goOrePulTop){
     bindFastTap(goOrePulTop, () => { hideLauncher(); showPage("orepulizia"); });
+  }
+  const goOrePulInline = $("#goOrePuliziaInline");
+  if (goOrePulInline){
+    bindFastTap(goOrePulInline, () => { hideLauncher(); showPage("orepulizia"); });
   }
 
   // HOME: tassa soggiorno (se presente)
@@ -14502,10 +14520,10 @@ if (cleanResetAll){
 }
 
   const updateCleanLabel = () => {
-    const lab = document.getElementById("cleanDateLabel");
-    if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    const lab = document.getElementById("cleanDateLabel");
+    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    try{ __setTopbarCenterLabel__(); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {
@@ -14541,7 +14559,11 @@ if (cleanResetAll){
   try{
     const __isOp = !!(state && state.session && isOperatoreSession(state.session));
     const nav = document.querySelector("#page-pulizie .clean-nav");
+    const inlineBtn = document.getElementById("goOrePuliziaInline");
+    const dateLab = document.getElementById("cleanDateLabel");
     if (nav) nav.style.display = __isOp ? "none" : "";
+    if (inlineBtn) inlineBtn.hidden = __isOp;
+    if (dateLab) dateLab.hidden = true;
     if (__isOp){
       state.cleanDay = startOfLocalDay(new Date()).toISOString();
     } else {
