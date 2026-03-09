@@ -8954,3 +8954,61 @@ body[data-page^="stat"] #homeSyncBar{
     max-width: 152px !important;
   }
 }
+
+
+#page-ospite .guest-notes-toggle-row{margin:8px 0 2px;}
+#page-ospite .guest-notes-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:56px;
+  border-radius:20px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:#f3f7fb;
+  color:#16213e;
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:.01em;
+  box-shadow:none;
+}
+#page-ospite .guest-notes-toggle.is-open{border-bottom-left-radius:14px;border-bottom-right-radius:14px;}
+#page-ospite .guest-notes-toggle-label{line-height:1;}
+#page-ospite .guest-notes-toggle-dot,
+#page-ospiti .guest-note-dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background:#ef4444;
+  box-shadow:0 0 0 2px rgba(255,255,255,0.9);
+  flex:0 0 12px;
+}
+#page-ospite .guest-notes-wrap{margin-top:10px;}
+#page-ospite .guest-notes-card{
+  border:1px solid rgba(15,23,42,0.12);
+  border-radius:24px;
+  background:#f3f7fb;
+  padding:16px;
+}
+#page-ospite .guest-notes-card-title{
+  font-size:16px;
+  font-weight:800;
+  color:#16213e;
+  margin-bottom:10px;
+}
+#page-ospite #guestNotes{
+  width:100%;
+  min-height:132px;
+  resize:vertical;
+  border:1px solid rgba(15,23,42,0.12);
+  border-radius:18px;
+  background:#fff;
+  color:#16213e;
+  padding:14px 16px;
+  font:inherit;
+  line-height:1.4;
+}
+#page-ospite #guestNotes[readonly]{background:#fff; color:#16213e; opacity:1;}
+#page-ospite #guestNotes::placeholder{color:rgba(15,23,42,0.42);}
+#page-ospiti .guest-meta-right{gap:10px;}

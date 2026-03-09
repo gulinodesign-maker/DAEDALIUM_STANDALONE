@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.119
+ * Build: 2.120
  */
-const BUILD_VERSION = "2.119";
+const BUILD_VERSION = "2.120";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9582,7 +9582,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining"];
+  const fields = ["guestName","guestPhone","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   // reset servizi state
   try{ state.guestServicesItems = []; state.guestServicesComputedTotal = 0; state.guestServicesManualOverride = false; state.guestServicesLoadedFor = null; }catch(_){ }
@@ -9627,6 +9627,7 @@ function enterGuestCreateMode(){
 
 
   try { updateGuestPriceVisibility(); } catch (_) {}
+  try{ syncGuestNotesUI(null, { open:false }); }catch(_){}
 
   // (Create mode) nulla da fare sulle stanze: la disponibilita' si aggiorna quando l'utente inserisce le date.
 }
@@ -9707,6 +9708,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   document.getElementById("guestServices").value = ospite.servizi_totale ?? ospite.serviziTotal ?? ospite.importo_servizi ?? 0;
   document.getElementById("guestDeposit").value = ospite.acconto_importo ?? ospite.deposit ?? 0;
   document.getElementById("guestSaldo").value = ospite.saldo_pagato ?? ospite.saldoPagato ?? ospite.saldo ?? 0;
+  try{ syncGuestNotesUI(ospite, { open:false }); }catch(_){}
 
   // matrimonio / G
   state.guestMarriage = !!(ospite.matrimonio);
@@ -10225,6 +10227,7 @@ function setGuestFormViewOnly(isView, ospite){
     hideRowByInputId("guestBooking", !!isView);
   }catch(_){ }
 
+  try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
   // Servizi: in sola lettura mostra il tasto accanto a "Importo servizi" (layout modifica invariato)
   try{ __placeServicesPillForView(!!isView); }catch(_){ }
 
@@ -10316,6 +10319,49 @@ function serviziPreviewText(items){
     return !(String(del) === "1" || del === true);
   }).length;
   return n > 0 ? (n + " servizi") : "";
+}
+
+
+function guestNotesValue(item){
+  return String(item?.note ?? item?.notes ?? item?.nota ?? "").trim();
+}
+
+function guestHasNotes(item){
+  return guestNotesValue(item).length > 0;
+}
+
+function setGuestNotesExpanded(expanded){
+  try{
+    const wrap = document.getElementById("guestNotesWrap");
+    const btn = document.getElementById("guestNotesToggle");
+    if (wrap) wrap.hidden = !expanded;
+    if (btn){
+      btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+      btn.classList.toggle("is-open", !!expanded);
+    }
+  }catch(_){ }
+  try{ state.guestNotesExpanded = !!expanded; }catch(_){ }
+}
+
+function updateGuestNotesIndicator(){
+  try{
+    const dot = document.getElementById("guestNotesToggleDot");
+    if (!dot) return;
+    const notesVal = String(document.getElementById("guestNotes")?.value || "").trim();
+    dot.hidden = !(notesVal.length > 0);
+  }catch(_){ }
+}
+
+function syncGuestNotesUI(item, opts = {}){
+  const notesEl = document.getElementById("guestNotes");
+  if (!notesEl) return;
+  const notes = (item === null || item === undefined) ? "" : guestNotesValue(item);
+  notesEl.value = notes;
+  const placeholder = (String(state.guestMode || "") === "view") ? "Nessuna nota" : "Inserisci eventuali note";
+  notesEl.placeholder = placeholder;
+  updateGuestNotesIndicator();
+  const wantsOpen = Object.prototype.hasOwnProperty.call(opts, "open") ? !!opts.open : (!!notes && !!state.guestNotesExpanded);
+  setGuestNotesExpanded(wantsOpen);
 }
 
 function renderServiziList(){
@@ -10793,6 +10839,7 @@ async function saveGuest(opts = {}){
   const serviziTotale = parseFloat(document.getElementById("guestServices")?.value || "0") || 0;
   const deposit = parseFloat(document.getElementById("guestDeposit")?.value || "0") || 0;
   const saldoPagato = parseFloat(document.getElementById("guestSaldo")?.value || "0") || 0;
+  const notes = String(document.getElementById("guestNotes")?.value || "").trim();
   const saldoTipo = state.guestSaldoType || "contante";
   const rooms = Array.from(state.guestRooms || [])
     .map(n => parseInt(n,10))
@@ -10821,6 +10868,9 @@ if (!name) return toast("Inserisci il nome");
     acconto_ricevuta: !!state.guestDepositReceipt,
     saldo_ricevuta: !!state.guestSaldoReceipt,
     saldo_ricevutain: !!state.guestSaldoReceipt,
+    note: notes,
+    notes: notes,
+    nota: notes,
     matrimonio,
     g: g ? "1" : "",
     col_c: (state.guestColC ? "1" : ""),
@@ -11204,6 +11254,21 @@ function setupOspite(){
       enterGuestEditMode(target);
       // enterGuestEditMode renderizza gia' la lista in modalita' edit
     });
+  }
+
+  const notesToggle = document.getElementById("guestNotesToggle");
+  if (notesToggle && !notesToggle.__bound){
+    notesToggle.__bound = true;
+    notesToggle.addEventListener("click", (e) => {
+      try{ e.preventDefault(); }catch(_){ }
+      const next = !document.getElementById("guestNotesWrap")?.hidden;
+      setGuestNotesExpanded(!next);
+    });
+  }
+  const notesField = document.getElementById("guestNotes");
+  if (notesField && !notesField.__bound){
+    notesField.__bound = true;
+    notesField.addEventListener("input", () => { updateGuestNotesIndicator(); });
   }
 
   const roomsWrap = document.getElementById("roomsPicker");
@@ -11774,6 +11839,7 @@ function renderGuestCards(){
     const led = guestLedStatus(first);
 
     const marriageOn = !!(first?.matrimonio);
+    const hasNotes = (group.bookings || []).some(b => guestHasNotes(b));
 
     const arrivoText = formatLongDateIT(first.check_in || first.checkIn || "") || "—";
 
@@ -11798,6 +11864,7 @@ function renderGuestCards(){
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
+          ${hasNotes ? `<span class="guest-note-dot" aria-label="Note presenti" title="Note presenti"></span>` : ``}
           <span class="guest-led ${led.cls}" aria-label="${led.label}" title="${led.label}"></span>
         </div>
       </div>
