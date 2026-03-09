@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.121
+ * Build: 2.122
  */
-const BUILD_VERSION = "2.121";
+const BUILD_VERSION = "2.122";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3108,10 +3108,14 @@ function __setTopbarCenterLabel__(){
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie") {
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      const d = startOfLocalDay(base);
+      el.textContent = `${weekdayShortIT(d)} ${d.getDate()} ${monthNameIT(d).replace(/^./, c => c.toUpperCase())}`;
     } else {
       el.textContent = "Daedalium";
     }
-  }catch(_){}
+  }catch(_){ }
 }
 
 function updateYearPill(){
@@ -5911,7 +5915,7 @@ function bindHomeDelegation(){
     }
     const pul = e.target.closest && e.target.closest("#goPulizie");
     if (pul){ hideLauncher(); showPage("pulizie"); return; }
-        const opcal = e.target.closest && e.target.closest("#goOrePulizia") || e.target.closest("#goOrePuliziaTop");
+        const opcal = e.target.closest && (e.target.closest("#goOrePulizia") || e.target.closest("#goOrePuliziaTop") || e.target.closest("#goOrePuliziaInline"));
     if (opcal){ hideLauncher(); showPage("orepulizia"); return; }
 
 const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.closest("#goLavanderiaTop");
@@ -6196,10 +6200,14 @@ state.page = page;
     }
   }catch(_){ }
 
-  // Top tools (solo Pulizie) — lavanderia + ore lavoro accanto al tasto Home
+  // Top tools Pulizie: tasto ore mensili inline nella riga calendario, non in topbar
   const pulizieTopTools = $("#pulizieTopTools");
   if (pulizieTopTools){
-    pulizieTopTools.hidden = (page !== "pulizie" || (state && state.session && isOperatoreSession(state.session)));
+    pulizieTopTools.hidden = true;
+  }
+  const goOrePuliziaInline = $("#goOrePuliziaInline");
+  if (goOrePuliziaInline){
+    goOrePuliziaInline.hidden = !(page === "pulizie" && state && state.session && !isOperatoreSession(state.session));
   }
 
   // Top tools (Lavanderia) — genera report accanto al tasto Home
@@ -6647,6 +6655,10 @@ if (goCalendarioTopOspiti){
   const goOrePulTop = $("#goOrePuliziaTop");
   if (goOrePulTop){
     bindFastTap(goOrePulTop, () => { hideLauncher(); showPage("orepulizia"); });
+  }
+  const goOrePulInline = $("#goOrePuliziaInline");
+  if (goOrePulInline){
+    bindFastTap(goOrePulInline, () => { hideLauncher(); showPage("orepulizia"); });
   }
 
   // HOME: tassa soggiorno (se presente)
@@ -14505,7 +14517,9 @@ if (cleanResetAll){
     const lab = document.getElementById("cleanDateLabel");
     if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    const cleanDay = startOfLocalDay(base);
+    lab.textContent = formatFullDateIT(cleanDay);
+    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {

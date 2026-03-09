@@ -9014,3 +9014,61 @@ body[data-page^="stat"] #homeSyncBar{
 #page-ospite #guestNotes[readonly]{background:#fff; color:#16213e; opacity:1;}
 #page-ospite #guestNotes::placeholder{color:rgba(15,23,42,0.42);}
 #page-ospiti .guest-meta-right{gap:10px;}
+
+
+/* dDAE_2.122 — Pulizie topbar date, riga calendario admin, Impostazioni header, popup backup close */
+#page-pulizie .clean-topbar{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+}
+#page-pulizie .clean-top-left,
+#page-pulizie .clean-top-actions{
+  min-width:0;
+}
+#page-pulizie .clean-top-actions{
+  width:100%;
+  justify-content:flex-end;
+}
+#page-pulizie #goOrePuliziaInline{
+  flex:0 0 auto;
+}
+#page-pulizie .clean-date{
+  display:none !important;
+}
+#page-impostazioni .settings-title{
+  font-size:14px !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+  color:inherit !important;
+  margin:0 !important;
+}
+#page-impostazioni .settings-divider{
+  height:1px !important;
+  background: var(--border) !important;
+  border-radius:0 !important;
+  margin-top:12px !important;
+}
+#dbMenuModal .db-menu-card{
+  position:relative;
+}
+#dbMenuModal .db-menu-head{
+  justify-content:center;
+  padding:18px 16px 6px 16px;
+}
+#dbMenuModal .db-menu-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background: rgba(255,255,255,0.80) !important;
+  color: var(--ico-sky) !important;
+}
+#dbMenuModal .db-menu-body{
+  padding-top:14px;
+}
+#dbMenuModal .btn.db-import{
+  background: rgba(220,38,38,0.80) !important;
+}
+#dbMenuModal .btn.db-export{
+  background: rgba(22,163,74,0.80) !important;
+}
