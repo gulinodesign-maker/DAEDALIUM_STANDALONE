@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.118
+ * Build: 2.119
  */
-const BUILD_VERSION = "2.118";
+const BUILD_VERSION = "2.119";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4592,16 +4592,39 @@ function __operatoreColorHex__(color){
   }
 }
 
+function __normalizeOperatoreNameKey__(value){
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 function __operatoreCatalogMapByName__(){
   const map = new Map();
   try{
     (getOperatoriCatalogFromSettings() || []).forEach((item) => {
       const name = String(item?.nome || '').trim();
-      if (!name) return;
-      map.set(name.toLowerCase(), item);
+      const key = __normalizeOperatoreNameKey__(name);
+      if (!key) return;
+      map.set(key, { ...item, nome: name });
     });
   }catch(_){ }
   return map;
+}
+
+function getActiveOperatorNames(){
+  return Array.from(__operatoreCatalogMapByName__().values()).map(item => String(item?.nome || '').trim()).filter(Boolean);
+}
+
+function getCanonicalActiveOperatorName(name){
+  const key = __normalizeOperatoreNameKey__(name);
+  if (!key) return '';
+  try{
+    const map = __operatoreCatalogMapByName__();
+    if (map.has(key)) return String(map.get(key)?.nome || '').trim();
+  }catch(_){ }
+  return '';
+}
+
+function isActiveOperatorName(name){
+  return !!getCanonicalActiveOperatorName(name);
 }
 
 function getOperatoreCatalogItemByName(name){
@@ -7825,18 +7848,17 @@ function computeStatOrePuliziaGrafico(rows){
   const list = __filterByExerciseYear__(listRaw, state.exerciseYear || loadExerciseYear(), ["data","date","Data","createdAt","created_at","updatedAt","updated_at"]);
   const totals = new Map();
   for (const r of list){
-    const name = String(r?.operatore || r?.nome || "").trim();
+    const name = getCanonicalActiveOperatorName(r?.operatore || r?.nome || '');
     if (!name) continue;
     const ore = Number(String(r?.ore ?? r?.Ore ?? 0).replace(",", "."));
     if (!isFinite(ore) || ore <= 0) continue;
     totals.set(name, (totals.get(name) || 0) + ore);
   }
   let fromSet = [];
-  try{ fromSet = getOperatorNamesFromSettings ? (getOperatorNamesFromSettings() || []) : []; }catch(_){ fromSet = []; }
+  try{ fromSet = getActiveOperatorNames ? (getActiveOperatorNames() || []) : []; }catch(_){ fromSet = []; }
   const ordered = [];
   const pushUnique = (v)=>{ const s = String(v||"").trim(); if (s && !ordered.includes(s)) ordered.push(s); };
   fromSet.forEach(pushUnique);
-  Array.from(totals.keys()).sort((a,b)=>a.localeCompare(b, "it")).forEach(pushUnique);
   const palette = __operatorGraphColors();
   const slices = ordered.map((name, i)=>({
     label: name,
@@ -13859,11 +13881,7 @@ try{
   };
 
   const __getPulizieOperatorNames = () => {
-    const ops = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x=>String(x||"").trim()).filter(Boolean);
-    try{
-      const u = (__getLoggedOperatorName() || "").trim();
-      if (u && !ops.some(n => String(n||"").trim().toLowerCase() === u.toLowerCase())) ops.unshift(u);
-    }catch(_){ }
+    const ops = (getActiveOperatorNames ? getActiveOperatorNames() : []).map(x=>String(x||"").trim()).filter(Boolean);
     return Array.from(new Set(ops.filter(Boolean)));
   };
 
@@ -16631,13 +16649,11 @@ async function initOrePuliziaPage(){
 
   __fillSelect_(selMonth, monthItems, s.monthKey);
 
-  // operatori list: da impostazioni + da righe
+  // operatori list: solo catalogo attivo dell'account
   let fromSet = [];
-  try{ fromSet = getOperatorNamesFromSettings(); }catch(_){ fromSet = []; }
-  const fromRows = Array.from(new Set((s.rows||[]).map(r=>String(r.operatore||r.nome||"").trim()).filter(Boolean))).sort();
-  const ops = Array.from(new Set([...(fromSet||[]), ...(fromRows||[])]))
-    .filter(Boolean)
-    .sort();
+  try{ fromSet = getActiveOperatorNames ? getActiveOperatorNames() : []; }catch(_){ fromSet = []; }
+  const ops = Array.from(new Set((fromSet||[]).map(x=>String(x||"").trim()).filter(Boolean)))
+    .sort((a,b)=>a.localeCompare(b, "it"));
 
   // opzioni: TUTTI + operatori
   const opItems = [{ value:"__ALL__", label:"TUTTI" }, ...ops.map(x=>({ value:x, label:x }))];
