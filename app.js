@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.119
+ * Build: 2.118
  */
-const BUILD_VERSION = "2.119";
+const BUILD_VERSION = "2.118";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1327,75 +1327,6 @@ async function __fbReadSpesaBoardPayload__(){
   return null;
 }
 // --- /Spesa Board ---
-function __operatorSlug__(name){
-  return String(name || "").trim().toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
-}
-
-function __activeOperatorNamesSet__(){
-  try{
-    const names = (getOperatorNamesFromSettings ? getOperatorNamesFromSettings() : []).map(x => String(x || "").trim()).filter(Boolean);
-    return new Set(names.map(n => n.toLowerCase()));
-  }catch(_){
-    return new Set();
-  }
-}
-
-function __sanitizeOperatorDatasets__(datasets){
-  const out = (datasets && typeof datasets === "object") ? JSON.parse(JSON.stringify(datasets)) : {};
-  const catalog = (() => {
-    try{ return (getOperatoriCatalogFromSettings ? getOperatoriCatalogFromSettings() : []).map(item => ({
-      id: String(item?.id || ""),
-      nome: String(item?.nome || "").trim(),
-      tariffa: Number(item?.tariffa || 0) || 0,
-      benzina: Number(item?.benzina || 0) || 0,
-      colore: __normalizeOperatoreColor__(item?.colore)
-    })).filter(item => item.nome); }catch(_){ return []; }
-  })();
-  const activeNames = catalog.map(item => item.nome);
-  const activeNorm = new Set(activeNames.map(name => name.toLowerCase()));
-  const keepOperatorName = (value) => {
-    const name = String(value || "").trim();
-    if (!name) return false;
-    if (!activeNorm.size) return true;
-    const low = name.toLowerCase();
-    if (activeNorm.has(low)) return true;
-    for (const item of activeNorm){
-      if (item === low || item.includes(low) || low.includes(item)) return true;
-    }
-    return false;
-  };
-
-  if (Array.isArray(out.operatori)) {
-    out.operatori = out.operatori.filter(row => keepOperatorName(row?.operatore || row?.nome));
-  }
-
-  if (Array.isArray(out.impostazioni)) {
-    const rows = out.impostazioni.filter(row => {
-      const key = String(row?.key || row?.Key || "").trim().toLowerCase();
-      return key !== "operatori" && key !== "operatori_catalogo";
-    });
-    const now = __nowIso__();
-    rows.push({
-      key: "operatori",
-      operatore_1: String(activeNames[0] || ""),
-      operatore_2: String(activeNames[1] || ""),
-      operatore_3: String(activeNames[2] || ""),
-      createdAt: now,
-      updatedAt: now
-    });
-    rows.push({
-      key: "operatori_catalogo",
-      value: JSON.stringify(catalog),
-      createdAt: now,
-      updatedAt: now
-    });
-    out.impostazioni = rows;
-  }
-
-  out.__activeOperatorSlugs = activeNames.map(__operatorSlug__).filter(Boolean);
-  return out;
-}
-
 async function __fbExportAdmin__(opts){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) { try{ if(!opts?.silent) toast("Genera prima il codice in Impostazioni", "orange"); }catch(_){ } return false; }
@@ -1403,8 +1334,7 @@ async function __fbExportAdmin__(opts){
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
-  const sanitized = __sanitizeOperatorDatasets__(datasets);
-  const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets: (()=>{ const copy = Object.assign({}, sanitized); delete copy.__activeOperatorSlugs; return copy; })() };
+  const payload = { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 
   await __fsSet__(`sync/${__FB_STATE__.teamId}`, { admin_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
@@ -1726,14 +1656,14 @@ async function __fbExportOperator__(opts){
   const name = (__operatorName__() || "operatore").toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"");
   if (!name){ try{ if(!opts?.silent) toast("Nome operatore mancante", "orange"); }catch(_){ } return false; }
 
-  const datasets = __sanitizeOperatorDatasets__({
+  const datasets = {
     pulizie: await __tblGet__("pulizie", []),
     operatori: await __tblGet__("operatori", []),
     lavanderia: await __tblGet__("lavanderia", []),
     colazione: await __tblGet__("colazione", []),
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
-  });
-  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets: (()=>{ const copy = Object.assign({}, datasets); delete copy.__activeOperatorSlugs; return copy; })() };
+  };
+  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), updatedAt:{ __ts: __nowIso__() } });
   try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
@@ -1767,15 +1697,16 @@ async function __fbImportAdmin__(opts){
   // normalize
   ops = ops.map(n => String(n).toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_\-]/g,"")).filter(Boolean);
 
-  // Leggi i documenti operatori, ma se esiste un roster attivo importa solo gli operatori ancora presenti.
-  // In questo modo i backup nuovi non trascinano operatori cancellati da vecchi backup/documenti remoti.
+  // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
+  // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
   try{
     const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
     const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
     if (!ops.length) ops = fromDocs;
     else {
-      const allowed = new Set(ops);
-      ops = fromDocs.filter(n => allowed.has(n));
+      const set = new Set(ops);
+      fromDocs.forEach(n=>{ if(n) set.add(n); });
+      ops = Array.from(set);
     }
   }catch(_){ }
 
@@ -2623,13 +2554,11 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
-    const sanitized = __sanitizeOperatorDatasets__(datasets);
-    delete sanitized.__activeOperatorSlugs;
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
-      datasets: sanitized,
+      datasets,
       meta: {}
     };
 
