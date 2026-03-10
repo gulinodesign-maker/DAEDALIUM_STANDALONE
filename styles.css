@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.134 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.135 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -9111,4 +9111,21 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-title{ font-size: 21px; }
   .prodotti-title-row{ gap: 10px; }
   .prodotti-header-actions{ gap: 8px; }
+}
+
+
+/* dDAE_2.135 — Titoli pagine richieste a 14px + separatore tassa come Spese */
+#page-ospiti .card .hd h2,
+#page-spese .card .hd h2,
+#page-tassa .card .hd h2,
+#page-lavanderia .card .hd h2{
+  font-size: 14px !important;
+}
+
+.settings-title{
+  font-size: 14px !important;
+}
+
+#page-tassa .card .hd{
+  border-bottom: 1px solid #000000 !important;
 }
