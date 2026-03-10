@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.125
+ * Build: 2.121
  */
-const BUILD_VERSION = "2.125";
+const BUILD_VERSION = "2.121";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6856,34 +6856,45 @@ function parseDateTs(v){
 function computeInsertionMap(guests){
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
+    const explicitNo = Number(
+      g?.insertionNo ?? g?.insertion_no ?? g?.ordine_inserimento ?? g?.ordineInserimento ?? g?._insNo
+    );
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    return { id, idx, t };
+    return { id, idx, t, explicitNo: (Number.isFinite(explicitNo) && explicitNo > 0) ? explicitNo : null };
   });
+
+  const explicit = arr
+    .filter(x => x.id && x.explicitNo != null)
+    .sort((a,b) => (a.explicitNo - b.explicitNo) || (a.idx - b.idx));
+
+  const map = {};
+  let maxAssigned = 0;
+  for (const x of explicit){
+    if (map[x.id] != null) continue;
+    map[x.id] = x.explicitNo;
+    if (x.explicitNo > maxAssigned) maxAssigned = x.explicitNo;
+  }
+
+  const rest = arr.filter(x => x.id && map[x.id] == null);
 
   // Ordina gli ospiti per data di creazione (createdAt/created_at) crescente.
   // I record senza createdAt vengono considerati “vecchi” e quindi
   // ricevono i numeri più bassi. Questo garantisce che i nuovi ospiti
   // creati localmente (con createdAt valorizzato) vengano numerati in
-  // coda rispetto a quelli importati dal backup. Vedi issue: la
-  // numerazione non deve ripartire da 1 dopo il restore ma continuare.
-  arr.sort((a,b) => {
+  // coda rispetto a quelli importati dal backup. Inoltre, se esiste già
+  // un numero progressivo persistito, viene sempre mantenuto invariato.
+  rest.sort((a,b) => {
     const at = a.t;
     const bt = b.t;
-    // entrambi hanno timestamp valido → ordine naturale
     if (at != null && bt != null) return at - bt;
-    // solo a.t nullo → a prima (più vecchio)
     if (at == null && bt != null) return -1;
-    // solo b.t nullo → b prima (a viene dopo)
     if (at != null && bt == null) return 1;
-    // entrambi null → mantieni ordine originale
     return a.idx - b.idx;
   });
 
-  const map = {};
-  let n = 1;
-  for (const x of arr){
-    if (!x.id) continue;
+  let n = maxAssigned + 1;
+  for (const x of rest){
     map[x.id] = n++;
   }
   return map;
@@ -11800,30 +11811,27 @@ function renderGuestCards(){
     return;
   }
 
-  // Numero progressivo di inserimento (stabile)
-  const insMap = computeInsertionMap(items);
+  // Numero progressivo di inserimento stabile sull'intero dataset,
+  // così filtri o modifiche alla scheda non cambiano la sequenza.
+  const allGuestsBase = Array.isArray(state.ospiti) && state.ospiti.length
+    ? state.ospiti
+    : (Array.isArray(state.guests) ? state.guests : items);
+  const insMap = computeInsertionMap(allGuestsBase);
   items.forEach((it) => {
     const id = guestIdOf(it);
-    it._insNo = id ? insMap[id] : null;
+    const stableNo = id ? insMap[id] : null;
+    it._insNo = stableNo;
+    if (stableNo != null && !(Number(it?.insertionNo) > 0)){
+      it.insertionNo = stableNo;
+      it.insertion_no = stableNo;
+    }
   });
 
-  // Guest list: una card per ogni prenotazione/scheda ospite.
-  // Il dettaglio può comunque mostrare eventuali altre prenotazioni dello stesso nome.
-  let cards = (items || []).slice();
-  cards = sortGuestGroups(cards.map((it) => {
-    const arrTs = parseDateTs(it?.check_in ?? it?.checkIn);
-    return {
-      ...it,
-      nome: (String(it?.nome ?? it?.name ?? it?.guest ?? "").trim() || "Ospite"),
-      _arrivoTs: arrTs == null ? null : arrTs,
-      _insNo: Number(it?._insNo) || null
-    };
-  }));
+  const cards = sortGuestsList(items);
 
   cards.forEach(first => {
     if (!first) return;
 
-    // Evidenzia checkout oggi con pagamento in sospeso (rimanenza > 0)
     const __today = todayISO();
     const outISO = __parseDateFlexibleToISO(first?.check_out || first?.checkOut);
     const total = money(first?.importo_prenotazione ?? first?.importo_prenota ?? first?.total ?? 0);
@@ -11837,17 +11845,12 @@ function renderGuestCards(){
     card.className = "guest-card";
     if (__hasCheckoutPending) card.classList.add("checkout-pending");
 
-    const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
-
+    const nome = escapeHtml(collapseSpaces(String(first?.nome ?? first?.name ?? "").trim()) || "Ospite");
     const insNo = (Number(first._insNo) && Number(first._insNo) > 0 && Number(first._insNo) < 1e18) ? Number(first._insNo) : null;
-
     const led = guestLedStatus(first);
-
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = guestHasNotes(first);
-
     const arrivoText = formatLongDateIT(first.check_in || first.checkIn || "") || "—";
-
     const tel = escapeHtml(String(first?.telefono ?? first?.tel ?? first?.phone ?? "").trim());
     const em = escapeHtml(String(first?.email ?? first?.mail ?? "").trim());
 
@@ -11858,7 +11861,7 @@ function renderGuestCards(){
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
         <div class="guest-main">
-          ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
+          ${insNo ? `<span class="guest-insno ${hasNotes ? `has-notes` : `no-notes`}">${insNo}</span>` : ``}
           <div class="guest-nameblock">
             <span class="guest-name-text">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
@@ -11875,17 +11878,10 @@ function renderGuestCards(){
     `;
 
     const open = () => {
-      const sameNameItems = groupGuestsByName(items || []).find(g => normalizeGuestNameKey(g?.nome) === normalizeGuestNameKey(first?.nome || String(first?.name ?? first?.guest ?? "").trim() || ""));
-      if (sameNameItems && sameNameItems.bookings && sameNameItems.bookings.length > 1){
-        state.guestGroupBookings = sameNameItems.bookings;
-        state.guestGroupKey = sameNameItems.key;
-        state.guestGroupActiveId = guestIdOf(first);
-      } else {
-        state.guestGroupBookings = null;
-        state.guestGroupKey = null;
-        state.guestGroupActiveId = null;
-        try{ clearGuestMulti(); }catch(_){ }
-      }
+      state.guestGroupBookings = null;
+      state.guestGroupKey = null;
+      state.guestGroupActiveId = null;
+      try{ clearGuestMulti(); }catch(_){ }
       enterGuestViewMode(first);
       showPage("ospite");
     };
