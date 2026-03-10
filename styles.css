@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.135 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.136 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -9113,19 +9113,28 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-header-actions{ gap: 8px; }
 }
 
-
-/* dDAE_2.135 — Titoli pagine richieste a 14px + separatore tassa come Spese */
-#page-ospiti .card .hd h2,
-#page-spese .card .hd h2,
-#page-tassa .card .hd h2,
-#page-lavanderia .card .hd h2{
+/* dDAE_2.136 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
+.card .hd h2,
+#page-ospite .guest-form-card .hd h2,
+#page-ospite .guest-cards-card .hd h2,
+#page-lavanderia .card .hd h2,
+#page-impostazioni .card .hd .page-title,
+.settings-title,
+.settings-config-title,
+.operator-title,
+.operatori-editor-title,
+.stats-title,
+.stats-subtitle,
+.stats-graph-card-title,
+.stat-pie-title,
+.prodotti-title,
+.prod-add-title,
+.laundry-print-title,
+.opcal-titleMain,
+.colazione-title,
+#page-ospite .guest-notes-card-title,
+.services-list-title,
+.db-menu-title,
+.tax-result-title{
   font-size: 14px !important;
-}
-
-.settings-title{
-  font-size: 14px !important;
-}
-
-#page-tassa .card .hd{
-  border-bottom: 1px solid #000000 !important;
 }
