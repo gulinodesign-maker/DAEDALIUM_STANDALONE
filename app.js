@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.129
+ * Build: 2.130
  */
-const BUILD_VERSION = "2.129";
+const BUILD_VERSION = "2.130";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6199,7 +6199,11 @@ state.page = page;
   // Top tools (solo Pulizie) — lavanderia + ore lavoro accanto al tasto Home
   const pulizieTopTools = $("#pulizieTopTools");
   if (pulizieTopTools){
-    pulizieTopTools.hidden = (page !== "pulizie" || (state && state.session && isOperatoreSession(state.session)));
+    pulizieTopTools.hidden = true;
+  }
+  const goOrePulizia = $("#goOrePulizia");
+  if (goOrePulizia){
+    goOrePulizia.hidden = (page !== "pulizie" || (state && state.session && isOperatoreSession(state.session)));
   }
 
   // Top tools (Lavanderia) — genera report accanto al tasto Home

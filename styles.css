@@ -4254,6 +4254,16 @@ body.perf-lite *::after{
 .clean-top-left{ justify-self:start; }
 .clean-nav{ justify-self:center; display:flex; gap:10px; align-items:center; }
 .clean-top-actions{ justify-self:end; display:flex; gap:10px; align-items:center; }
+.clean-top-actions{ justify-content:flex-end; min-width: 44px; }
+#page-pulizie #goOrePulizia{
+  width: 44px;
+  height: 44px;
+  border-radius: 18px;
+  flex: 0 0 44px;
+}
+#page-pulizie #goOrePulizia[hidden]{
+  display:none !important;
+}
 /* Pulizie: pulsanti top (allineati alle frecce) */
 #page-pulizie .clean-top-actions .sq-btn,
 #page-pulizie .clean-top-left .sq-btn{
@@ -8756,16 +8766,19 @@ color: var(--mcol,#ff3b30);
   padding: 14px 18px calc(28px + var(--safe-bottom));
 }
 .settings-title{
-  font-size: clamp(26px, 7vw, 42px);
+  font-size: 22px;
   font-weight: 950;
+  letter-spacing: .2px;
   color: var(--ico-blue-night);
-  margin-top: 8px;
+  margin: 0;
+  padding: 12px 0 14px;
 }
 .settings-divider{
-  height: 2px;
-  background: rgba(15,23,42,0.90);
+  height: 1px;
+  background: var(--border);
   border-radius: 999px;
-  margin-top: 12px;
+  margin-top: 0;
+  width: 100%;
 }
 #page-impostazioni .settings-account-name{
   display:none !important;
