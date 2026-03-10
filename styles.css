@@ -9199,3 +9199,49 @@ body[data-page^="stat"] #homeSyncBar{
   border-bottom: 1px solid var(--border) !important;
   padding-bottom: 12px !important;
 }
+
+
+/* dDAE_2.140 — Calendario/Pulizie: controlli accanto al titolo sopra la linea separatrice */
+.page-section-header-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  width:100%;
+}
+.page-section-header-row-calendar,
+.page-section-header-row-clean{
+  flex-wrap:nowrap;
+}
+.page-section-header-row-calendar .page-section-title,
+.page-section-header-row-clean .page-section-title{
+  flex:0 0 auto;
+}
+#page-calendario .page-section-head-calendar,
+#page-pulizie .page-section-head-clean{
+  width:min(100%,460px);
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:10px;
+  padding-right:10px;
+  box-sizing:border-box;
+}
+#page-calendario .cal-nav{
+  display:none !important;
+}
+#page-calendario .cal-nav-center-inline{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  position:relative;
+}
+#page-pulizie .page-section-header-row-clean #goOrePulizia{
+  width:44px;
+  height:44px;
+  border-radius:18px;
+  flex:0 0 44px;
+}
+#page-pulizie .clean-top-actions{
+  min-width:0;
+}
