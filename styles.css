@@ -9193,3 +9193,81 @@ body[data-page^="stat"] #homeSyncBar{
 #page-calendario #calToggleMonthBtn,
 #page-calendario #calPrevBtn,
 #page-calendario #calNextBtn{ display:none !important; }
+
+
+/* dDAE_2.141 — Uniformita grafica titoli pagina + fix linea Tassa */
+:root{
+  --dd-page-title-size: 14px;
+  --dd-page-title-weight: 800;
+  --dd-page-title-line: 1.2;
+  --dd-page-title-color: rgba(15,23,42,0.92);
+  --dd-page-title-gap-bottom: 10px;
+}
+
+#page-tassa .card > .hd > .page-title,
+#page-inserisci .card > .hd > .page-title,
+#page-operatori .card > .hd > .page-title,
+#page-spese .card > .hd > .page-title,
+#page-lavanderia .card > .hd > .page-title,
+#page-ospiti .guest-cards-card > .hd > .page-title,
+#page-calendario .app-section-head-row > .page-title,
+#page-pulizie .clean-topbar > .page-title,
+#page-prodotti .prodotti-title,
+#page-impostazioni .settings-title{
+  margin: 0 !important;
+  font-size: var(--dd-page-title-size) !important;
+  font-weight: var(--dd-page-title-weight) !important;
+  line-height: var(--dd-page-title-line) !important;
+  letter-spacing: 0 !important;
+  color: var(--dd-page-title-color) !important;
+}
+
+#page-prodotti .prodotti-header{
+  margin: 0 0 12px !important;
+}
+
+#page-impostazioni .settings-title{
+  padding: 12px 0 var(--dd-page-title-gap-bottom) !important;
+}
+#page-impostazioni .settings-divider{
+  height: 1px !important;
+  background: #000 !important;
+  border-radius: 0 !important;
+  opacity: 0.85 !important;
+}
+
+#page-tassa .card .hd{
+  justify-content: flex-start !important;
+  padding: 12px 0 0 !important;
+}
+#page-tassa .card .hd > .page-title{
+  position: relative;
+  display: block;
+  width: 100%;
+  padding-bottom: var(--dd-page-title-gap-bottom);
+}
+#page-tassa .card .hd > .page-title::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #000;
+  border-radius: 0;
+  opacity: 0.85;
+}
+
+#page-inserisci .card > .hd,
+#page-operatori .card > .hd,
+#page-spese .card > .hd,
+#page-lavanderia .card > .hd,
+#page-ospiti .guest-cards-card > .hd{
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+#page-calendario .app-section-head-row > .page-title,
+#page-pulizie .clean-topbar > .page-title{
+  align-self: center;
+}
