@@ -14703,22 +14703,19 @@ function setupCalendario(){
   if (!state.calendar) {
     state.calendar = { anchor: new Date(), ready: false, guests: [] };
   }
-// View mode: "week" (default) / "month"
+// Vista calendario: solo mensile
   state.calendar.viewMode = "month";
 
   const applyCalendarViewUI = () => {
     const sec = document.getElementById("page-calendario");
-    if (state.calendar) state.calendar.viewMode = "month";
     const isMonth = true;
-    try{ if (sec) sec.classList.toggle("is-month-view", !!isMonth); }catch(_){
-
-    try{ if (!isMonth) document.body.classList.remove("cal-month-landscape"); }catch(_){}
-}
-
+    try{ if (state.calendar) state.calendar.viewMode = "month"; }catch(_){}
+    try{ if (sec) sec.classList.add("is-month-view"); }catch(_){}
+    try{ document.body.classList.remove("cal-month-landscape"); }catch(_){}
     if (toggleMonthBtn){
       try{
-        toggleMonthBtn.setAttribute("aria-label", isMonth ? "Calendario settimanale" : "Calendario mensile");
-        toggleMonthBtn.classList.toggle("is-active", !!isMonth);
+        toggleMonthBtn.hidden = true;
+        toggleMonthBtn.setAttribute("aria-hidden", "true");
       }catch(_){}
     }
   };
@@ -14816,12 +14813,12 @@ function setupCalendario(){
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
   });
-  if (prevBtn) prevBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addDays(state.calendar.anchor, -7));
-  });
-  if (nextBtn) nextBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addDays(state.calendar.anchor, 7));
-  });
+  if (prevBtn){
+    try{ prevBtn.hidden = true; }catch(_){}
+  }
+  if (nextBtn){
+    try{ nextBtn.hidden = true; }catch(_){}
+  }
 
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
@@ -14859,7 +14856,6 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
 
   const mode = "month";
-  if (state.calendar) state.calendar.viewMode = "month";
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
@@ -14897,8 +14893,8 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
-  const mode = "month";
   state.calendar.viewMode = "month";
+  const mode = "month";
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 
@@ -14912,8 +14908,8 @@ function renderCalendario(){
   const gWeek = document.getElementById("calGrid");
   const gMonth = document.getElementById("calGridMonth");
   try{
-    if (gWeek && mode !== "month") gWeek.hidden = false;
-    if (gMonth && mode !== "month") gMonth.hidden = true;
+    if (gWeek) gWeek.hidden = true;
+    if (gMonth) gMonth.hidden = false;
   }catch(_){}
 
   return renderCalendarioMonth();

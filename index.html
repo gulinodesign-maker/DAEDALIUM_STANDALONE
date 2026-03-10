@@ -1061,10 +1061,13 @@
 <!-- CALENDARIO -->
 <section aria-label="Calendario" class="page" hidden="" id="page-calendario">
 <div class="content calendar-page">
-<div class="cal-page-head">
-<div class="cal-page-head-row">
-<h2>Calendario</h2>
-<div aria-label="Navigazione calendario" class="cal-head-actions" role="group">
+<div class="page-section-head page-section-head-calendar">
+<div class="page-section-title">Calendario</div>
+<div aria-hidden="true" class="page-section-divider"></div>
+</div>
+<div class="cal-nav">
+<div aria-label="Navigazione calendario" class="cal-nav-row cal-nav-row-centered" role="group">
+<div aria-label="Navigazione calendario" class="cal-nav-center">
 <button aria-label="Mese precedente" class="cal-nav-btn" id="calPrevMonthBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
@@ -1081,15 +1084,15 @@
 <path d="M9 18l6-6-6-6"></path>
 </svg>
 </button>
-</div>
-</div>
 <input aria-label="Data" class="cal-date-input" id="calDateInput" type="date"/>
+</div>
+</div>
 </div>
 <div class="cal-body">
 <div class="cal-week-title" id="calWeekTitle">GENNAIO</div>
 <div class="cal-grid-wrap">
-<div aria-label="Calendario settimanale" class="cal-grid" hidden="" id="calGrid"></div>
-<div aria-label="Calendario mensile" class="cal-grid cal-grid-month" id="calGridMonth"></div>
+<div aria-label="Calendario settimanale" class="cal-grid" id="calGrid"></div>
+<div aria-label="Calendario mensile" class="cal-grid cal-grid-month" hidden="" id="calGridMonth"></div>
 </div>
 </div>
 <div aria-label="Legenda letti" class="cal-legend">
@@ -1099,8 +1102,11 @@
 </div>
 </section>
 <section class="page" id="page-pulizie" style="display:none;">
-<div class="hd">
-<div class="title"></div>
+<div class="hd clean-page-head">
+<div class="page-section-head page-section-head-clean">
+<div class="page-section-title">Pulizie</div>
+<div aria-hidden="true" class="page-section-divider"></div>
+</div>
 </div>
 <div class="bd">
 <div class="clean-topbar">

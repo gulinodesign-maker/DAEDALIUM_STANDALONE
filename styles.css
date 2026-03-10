@@ -3015,6 +3015,33 @@ body[data-page="ospiti"] .guest-card .actions {
   margin-right: -9px;
 }
 
+.calendar-page .page-section-head-calendar{
+  width: min(100%, 460px);
+  margin: 0 auto 10px;
+  padding: 0 10px;
+}
+#page-calendario .cal-nav{
+  display: flex;
+  justify-content: center;
+  margin: 0 0 10px 0;
+}
+#page-calendario .cal-nav-row-centered{
+  width: 100%;
+  justify-content: center;
+}
+#page-calendario .cal-nav-center{
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+#page-calendario .cal-date-input{
+  min-width: 132px;
+  max-width: 132px;
+}
+#page-calendario .cal-body{
+  margin-top: 18px;
+}
+
 
 /* dDAE_1.020 — Calendario: grafica più simile a Pulizie (solo UI, nessuna logica) */
 #page-calendario .cal-nav-btn{
@@ -4249,7 +4276,13 @@ body.perf-lite *::after{
 
 /* dDAE_1.020 — Pulizie: raggruppa contenuto sotto topbar e spostalo giù di 30px */
 #page-pulizie .clean-mainGroup{
-  margin-top: 30px;
+  margin-top: 18px;
+}
+#page-pulizie .clean-page-head{
+  padding-bottom: 0;
+}
+#page-pulizie .clean-page-head .page-section-head{
+  margin-bottom: 6px;
 }
 .clean-top-left{ justify-self:start; }
 .clean-nav{ justify-self:center; display:flex; gap:10px; align-items:center; }
@@ -5715,7 +5748,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   justify-content: flex-start !important;
 }
 #page-impostazioni .card .hd .page-title{
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.2px;
   position: relative;
@@ -5734,6 +5767,28 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   border-radius: 0;
   background: #000;
   opacity: 0.85;
+}
+
+
+.page-section-head{
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 14px 0;
+}
+.page-section-title{
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  color: var(--text);
+  margin: 0;
+}
+.page-section-divider{
+  width: 100%;
+  height: 1px;
+  background: #000;
+  opacity: 0.85;
+  margin-top: 10px;
 }
 
 
@@ -9143,52 +9198,4 @@ body[data-page^="stat"] #homeSyncBar{
 #page-tassa .card .hd.tax-hd{
   border-bottom: 1px solid var(--border) !important;
   padding-bottom: 12px !important;
-}
-
-
-/* dDAE_2.139 — Calendario: header con titolo standard + solo vista mensile */
-#page-calendario .content.calendar-page{
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-#page-calendario .cal-page-head{
-  margin: 0 5px 0;
-}
-#page-calendario .cal-page-head-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding: 0 0 12px;
-  border-bottom: 1px solid var(--border);
-}
-#page-calendario .cal-page-head-row h2{
-  margin:0;
-  font-size:14px;
-  font-weight:700;
-  line-height:1;
-}
-#page-calendario .cal-head-actions{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:8px;
-  flex-wrap:nowrap;
-}
-#page-calendario .cal-body{
-  margin-top: 14px !important;
-}
-#page-calendario #calGrid{
-  display:none !important;
-}
-#page-calendario #calGridMonth{
-  display:grid !important;
-}
-#page-calendario .cal-grid-wrap{
-  overflow-x:auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-#page-calendario .cal-week-title{
-  display:none !important;
 }
