@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.131
+ * Build: 2.130
  */
-const BUILD_VERSION = "2.131";
+const BUILD_VERSION = "2.130";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4065,6 +4065,19 @@ function formatFullDateIT(d){
     const month = months[dt.getMonth()];
     const year = dt.getFullYear();
     return `${wd} ${day} ${month} ${year}`;
+  }catch(_){ return ""; }
+}
+
+function formatPulizieTopDateIT(d){
+  try{
+    const dt = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dt)) return "";
+    const weekdays = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+    const wd = weekdays[dt.getDay()] || "";
+    const day = dt.getDate();
+    const month = months[dt.getMonth()] || "";
+    return `${wd} ${day} ${month}`;
   }catch(_){ return ""; }
 }
 
@@ -14566,7 +14579,7 @@ if (cleanResetAll){
     const lab = document.getElementById("cleanDateLabel");
     if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    lab.textContent = formatPulizieTopDateIT(startOfLocalDay(base));
   };
 
   const shiftClean = (deltaDays) => {
