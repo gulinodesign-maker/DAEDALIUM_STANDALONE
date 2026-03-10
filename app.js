@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.141
+ * Build: 2.142
  */
-const BUILD_VERSION = "2.141";
+const BUILD_VERSION = "2.142";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1646,7 +1646,9 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
+    if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  }
   return true;
 }
 
@@ -2022,7 +2024,9 @@ async function __fbImportAdmin__(opts){
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
-  if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
+    if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  }
   return true;
 }
 
@@ -5560,6 +5564,61 @@ function invalidateApiCache(prefix){
     }
   } catch (_) {}
   try{ __lsClearCtx(); }catch(_){ }
+}
+
+function __invalidateSyncCaches__(opts = {}){
+  try{ invalidateApiCache(); }catch(_){}
+  try{ __apiInflight.clear(); }catch(_){}
+  try{ if (state && state.calendar) state.calendar.ready = false; }catch(_){}
+  try{
+    if (opts && opts.resetHomeRefresh){
+      __homeRefreshInFlight = false;
+      __homeRefreshLastAt = 0;
+    }
+  }catch(_){}
+}
+
+async function __refreshAfterSync__(restoreState){
+  const targetPage = __sanitizePage(restoreState?.page) || __sanitizePage(state?.page) || "home";
+  try{ __invalidateSyncCaches__({ resetHomeRefresh:true }); }catch(_){}
+  try{ __writeRestoreState(Object.assign({}, restoreState || {}, { page: targetPage })); }catch(_){}
+
+  try{ showPage(targetPage); }catch(_){}
+
+  try{
+    if (targetPage === "pulizie"){
+      try{ if (typeof loadPulizieForDay === "function") await loadPulizieForDay({ clearFirst:false }); }catch(_){}
+      try{ if (typeof loadOperatoriForDay === "function") await loadOperatoriForDay({ clearFirst:false }); }catch(_){}
+      try{ if (typeof renderPuliziePage === "function") renderPuliziePage(); }catch(_){}
+      return true;
+    }
+
+    if (targetPage === "home"){
+      try{ refreshAllDataInBackground(); }catch(_){}
+      try{ updateHomeReceiptsIndicator(); }catch(_){}
+      return true;
+    }
+
+    if (targetPage === "orepulizia"){
+      try{ await initOrePuliziaPage(); }catch(_){}
+      return true;
+    }
+
+    if (targetPage === "calendario"){
+      try{ if (state && state.calendar) state.calendar.ready = false; }catch(_){}
+      try{ await ensureCalendarData({ force:true, showLoader:false }); }catch(_){}
+      try{ renderCalendario(); }catch(_){}
+      return true;
+    }
+
+    if (targetPage === "lavanderia"){
+      try{ await loadLavanderia(); }catch(_){}
+      return true;
+    }
+
+    return true;
+  }catch(_){ }
+  return true;
 }
 
 
