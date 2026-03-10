@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.133
+ * Build: 2.134
  */
-const BUILD_VERSION = "2.133";
+const BUILD_VERSION = "2.134";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3105,7 +3105,7 @@ function formatPulizieTopbarDateIT(d){
   try{
     const dt = (d instanceof Date) ? d : new Date(d);
     if (isNaN(dt)) return "";
-    const weekdays = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+    const weekdays = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
     const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     return `${weekdays[dt.getDay()] || ""} ${dt.getDate()} ${months[dt.getMonth()] || ""}`.trim();
   }catch(_){ return ""; }
