@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.140
+ * Build: 2.138
  */
-const BUILD_VERSION = "2.140";
+const BUILD_VERSION = "2.138";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14703,19 +14703,21 @@ function setupCalendario(){
   if (!state.calendar) {
     state.calendar = { anchor: new Date(), ready: false, guests: [] };
   }
-// Vista calendario: solo mensile
-  state.calendar.viewMode = "month";
+// View mode: "week" (default) / "month"
+  if (!state.calendar.viewMode) state.calendar.viewMode = "month";
 
   const applyCalendarViewUI = () => {
     const sec = document.getElementById("page-calendario");
-    const isMonth = true;
-    try{ if (state.calendar) state.calendar.viewMode = "month"; }catch(_){}
-    try{ if (sec) sec.classList.add("is-month-view"); }catch(_){}
-    try{ document.body.classList.remove("cal-month-landscape"); }catch(_){}
+    const isMonth = (state.calendar && state.calendar.viewMode === "month");
+    try{ if (sec) sec.classList.toggle("is-month-view", !!isMonth); }catch(_){
+
+    try{ if (!isMonth) document.body.classList.remove("cal-month-landscape"); }catch(_){}
+}
+
     if (toggleMonthBtn){
       try{
-        toggleMonthBtn.hidden = true;
-        toggleMonthBtn.setAttribute("aria-hidden", "true");
+        toggleMonthBtn.setAttribute("aria-label", isMonth ? "Calendario settimanale" : "Calendario mensile");
+        toggleMonthBtn.classList.toggle("is-active", !!isMonth);
       }catch(_){}
     }
   };
@@ -14813,15 +14815,22 @@ function setupCalendario(){
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
   });
-  if (prevBtn){
-    try{ prevBtn.hidden = true; }catch(_){}
-  }
-  if (nextBtn){
-    try{ nextBtn.hidden = true; }catch(_){}
-  }
+  if (prevBtn) prevBtn.addEventListener("click", () => {
+    shiftAnchorAndRender(addDays(state.calendar.anchor, -7));
+  });
+  if (nextBtn) nextBtn.addEventListener("click", () => {
+    shiftAnchorAndRender(addDays(state.calendar.anchor, 7));
+  });
 
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
+  });
+  if (toggleMonthBtn) toggleMonthBtn.addEventListener("click", () => {
+    if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
+    state.calendar.viewMode = (state.calendar.viewMode === "month") ? "week" : "month";
+    applyCalendarViewUI();
+    renderCalendario();
+    __scheduleCalendarFetch({ force:false, showLoader:false });
   });
 
   // Applica stato UI all'avvio
@@ -14855,7 +14864,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
 
-  const mode = "month";
+  const mode = (state.calendar && state.calendar.viewMode) ? state.calendar.viewMode : "month";
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
@@ -14893,8 +14902,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
-  state.calendar.viewMode = "month";
-  const mode = "month";
+  const mode = state.calendar.viewMode || "month";
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 
@@ -14908,11 +14916,12 @@ function renderCalendario(){
   const gWeek = document.getElementById("calGrid");
   const gMonth = document.getElementById("calGridMonth");
   try{
-    if (gWeek) gWeek.hidden = true;
-    if (gMonth) gMonth.hidden = false;
+    if (gWeek && mode !== "month") gWeek.hidden = false;
+    if (gMonth && mode !== "month") gMonth.hidden = true;
   }catch(_){}
 
-  return renderCalendarioMonth();
+  if (mode === "month") return renderCalendarioMonth();
+  return renderCalendarioWeek();
 }
 
 

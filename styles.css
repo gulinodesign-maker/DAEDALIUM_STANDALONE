@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.139 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.138 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -3015,33 +3015,6 @@ body[data-page="ospiti"] .guest-card .actions {
   margin-right: -9px;
 }
 
-.calendar-page .page-section-head-calendar{
-  width: min(100%, 460px);
-  margin: 0 auto 10px;
-  padding: 0 10px;
-}
-#page-calendario .cal-nav{
-  display: flex;
-  justify-content: center;
-  margin: 0 0 10px 0;
-}
-#page-calendario .cal-nav-row-centered{
-  width: 100%;
-  justify-content: center;
-}
-#page-calendario .cal-nav-center{
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 10px;
-}
-#page-calendario .cal-date-input{
-  min-width: 132px;
-  max-width: 132px;
-}
-#page-calendario .cal-body{
-  margin-top: 18px;
-}
-
 
 /* dDAE_1.020 — Calendario: grafica più simile a Pulizie (solo UI, nessuna logica) */
 #page-calendario .cal-nav-btn{
@@ -4276,13 +4249,7 @@ body.perf-lite *::after{
 
 /* dDAE_1.020 — Pulizie: raggruppa contenuto sotto topbar e spostalo giù di 30px */
 #page-pulizie .clean-mainGroup{
-  margin-top: 18px;
-}
-#page-pulizie .clean-page-head{
-  padding-bottom: 0;
-}
-#page-pulizie .clean-page-head .page-section-head{
-  margin-bottom: 6px;
+  margin-top: 30px;
 }
 .clean-top-left{ justify-self:start; }
 .clean-nav{ justify-self:center; display:flex; gap:10px; align-items:center; }
@@ -5748,7 +5715,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   justify-content: flex-start !important;
 }
 #page-impostazioni .card .hd .page-title{
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.2px;
   position: relative;
@@ -5767,28 +5734,6 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   border-radius: 0;
   background: #000;
   opacity: 0.85;
-}
-
-
-.page-section-head{
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 14px 0;
-}
-.page-section-title{
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  line-height: 1.2;
-  color: var(--text);
-  margin: 0;
-}
-.page-section-divider{
-  width: 100%;
-  height: 1px;
-  background: #000;
-  opacity: 0.85;
-  margin-top: 10px;
 }
 
 
@@ -9168,7 +9113,7 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-header-actions{ gap: 8px; }
 }
 
-/* dDAE_2.139 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
+/* dDAE_2.138 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
 .card .hd h2,
 #page-ospite .guest-form-card .hd h2,
 #page-ospite .guest-cards-card .hd h2,
@@ -9194,54 +9139,8 @@ body[data-page^="stat"] #homeSyncBar{
   font-size: 14px !important;
 }
 
-/* dDAE_2.139 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
+/* dDAE_2.138 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
 #page-tassa .card .hd.tax-hd{
   border-bottom: 1px solid var(--border) !important;
   padding-bottom: 12px !important;
-}
-
-
-/* dDAE_2.140 — Calendario/Pulizie: controlli accanto al titolo sopra la linea separatrice */
-.page-section-header-row{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  width:100%;
-}
-.page-section-header-row-calendar,
-.page-section-header-row-clean{
-  flex-wrap:nowrap;
-}
-.page-section-header-row-calendar .page-section-title,
-.page-section-header-row-clean .page-section-title{
-  flex:0 0 auto;
-}
-#page-calendario .page-section-head-calendar,
-#page-pulizie .page-section-head-clean{
-  width:min(100%,460px);
-  margin-left:auto;
-  margin-right:auto;
-  padding-left:10px;
-  padding-right:10px;
-  box-sizing:border-box;
-}
-#page-calendario .cal-nav{
-  display:none !important;
-}
-#page-calendario .cal-nav-center-inline{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  position:relative;
-}
-#page-pulizie .page-section-header-row-clean #goOrePulizia{
-  width:44px;
-  height:44px;
-  border-radius:18px;
-  flex:0 0 44px;
-}
-#page-pulizie .clean-top-actions{
-  min-width:0;
 }
