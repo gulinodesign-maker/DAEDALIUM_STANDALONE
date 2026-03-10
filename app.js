@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.132
+ * Build: 2.133
  */
-const BUILD_VERSION = "2.132";
+const BUILD_VERSION = "2.133";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3103,15 +3103,12 @@ async function __wipeBrowserDb__(){
 
 function formatPulizieTopbarDateIT(d){
   try{
-    const dt = startOfLocalDay(d instanceof Date ? d : new Date(d));
-    const wd = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
-    const weekday = wd[dt.getDay()] || "";
-    const day = String(dt.getDate()).trim();
-    const month = monthNameIT(dt);
-    return `${weekday} ${day} ${month}`.trim();
-  }catch(_){
-    return "";
-  }
+    const dt = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dt)) return "";
+    const weekdays = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+    return `${weekdays[dt.getDay()] || ""} ${dt.getDate()} ${months[dt.getMonth()] || ""}`.trim();
+  }catch(_){ return ""; }
 }
 
 function __setTopbarCenterLabel__(){
@@ -3121,10 +3118,13 @@ function __setTopbarCenterLabel__(){
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie"){
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
     } else {
       el.textContent = "Daedalium";
     }
-  }catch(_){}
+  }catch(_){ }
 }
 
 function updateYearPill(){
@@ -14578,7 +14578,8 @@ if (cleanResetAll){
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    const day = startOfLocalDay(base);
+    if (lab) lab.textContent = formatFullDateIT(day);
     try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 

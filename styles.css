@@ -6799,7 +6799,46 @@ color: var(--mcol,#ff3b30);
 /* PRODOTTI (liste: colazione + pulizia) */
 
 .prodotti-page{
-  padding: 14px 14px 24px;
+  padding: 8px 14px 24px;
+}
+
+.prodotti-header{
+  width:100%;
+  margin: 0 0 14px;
+}
+
+.prodotti-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.prodotti-title{
+  margin:0;
+  font-size: 24px;
+  line-height:1.1;
+  font-weight: 950;
+  color: var(--text);
+}
+
+.prodotti-header-actions{
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.prodotti-header-btn{
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  padding: 0;
+}
+
+.prodotti-divider{
+  width:100%;
+  height:1px;
+  margin-top: 10px;
+  background: rgba(15,23,42,0.14);
 }
 
 .prodotti-topbar{
@@ -6815,6 +6854,10 @@ color: var(--mcol,#ff3b30);
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.prodotti-grid-tabs{
+  align-items: stretch;
 }
 
 .prodotti-grid-quad{
@@ -6837,11 +6880,9 @@ color: var(--mcol,#ff3b30);
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Prodotti: griglia 2x2 con pulsanti identici */
+/* Prodotti: tabs principali */
 #prodTabColazione,
-#prodTabPulizia,
-#prodAddBtn,
-#prodResetBtn{
+#prodTabPulizia{
   height: 48px;
 }
 
@@ -9065,7 +9106,8 @@ body[data-page^="stat"] #homeSyncBar{
 #page-ospite #guestNotes::placeholder{color:rgba(15,23,42,0.42);}
 #page-ospiti .guest-meta-right{gap:10px;}
 
-/* dDAE_2.132 — Pulizie: la data passa nella top bar */
-#page-pulizie .clean-date{
-  display:none;
+@media (max-width: 520px){
+  .prodotti-title{ font-size: 21px; }
+  .prodotti-title-row{ gap: 10px; }
+  .prodotti-header-actions{ gap: 8px; }
 }
