@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.138 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.134 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -9113,34 +9113,70 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-header-actions{ gap: 8px; }
 }
 
-/* dDAE_2.138 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
-.card .hd h2,
-#page-ospite .guest-form-card .hd h2,
-#page-ospite .guest-cards-card .hd h2,
-#page-lavanderia .card .hd h2,
-#page-impostazioni .card .hd .page-title,
-.settings-title,
-.settings-config-title,
-.operator-title,
-.operatori-editor-title,
-.stats-title,
-.stats-subtitle,
-.stats-graph-card-title,
-.stat-pie-title,
-.prodotti-title,
-.prod-add-title,
-.laundry-print-title,
-.opcal-titleMain,
-.colazione-title,
-#page-ospite .guest-notes-card-title,
-.services-list-title,
-.db-menu-title,
-.tax-result-title{
-  font-size: 14px !important;
-}
 
-/* dDAE_2.138 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
-#page-tassa .card .hd.tax-hd{
-  border-bottom: 1px solid var(--border) !important;
-  padding-bottom: 12px !important;
+/* dDAE_2.139 — intestazioni uniformi Calendario + Pulizie */
+.app-section-head{
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
 }
+.app-section-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:nowrap;
+  width:100%;
+}
+.app-section-head h2{
+  margin:0;
+  font-size:14px;
+  line-height:1.2;
+  text-align:left;
+}
+#page-calendario .content.calendar-page{
+  margin-left:0;
+  margin-right:0;
+}
+#page-calendario .app-section-head{
+  margin: 0 5px;
+}
+#page-calendario .cal-nav-inline,
+#page-pulizie .clean-nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+#page-calendario .cal-nav-inline{ justify-content:flex-start; }
+#page-pulizie .clean-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:0;
+}
+#page-pulizie .clean-top-actions,
+#page-pulizie .clean-top-left{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  min-width:0;
+}
+#page-pulizie .clean-top-left{ display:none !important; }
+#page-pulizie .clean-top-actions{ justify-content:flex-start; }
+#page-pulizie .hd.app-section-head{
+  display:block;
+  justify-content:initial;
+  gap:0;
+}
+#page-pulizie .bd{ padding-top: 0; }
+#page-calendario .calendar-page .cal-body{ margin-top: 16px; }
+#page-calendario .cal-week-title{
+  font-size:14px;
+  letter-spacing:.04em;
+  margin: 0 0 10px;
+  text-align:left;
+}
+#page-calendario .cal-nav-right,
+#page-calendario #calToggleMonthBtn,
+#page-calendario #calPrevBtn,
+#page-calendario #calNextBtn{ display:none !important; }

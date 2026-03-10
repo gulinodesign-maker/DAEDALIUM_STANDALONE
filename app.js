@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.138
+ * Build: 2.139
  */
-const BUILD_VERSION = "2.138";
+const BUILD_VERSION = "2.139";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3203,11 +3203,7 @@ async function hardUpdateCheck(){
     try{
       if ("serviceWorker" in navigator){
         const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(async (r) => {
-          try{ await r.update(); }catch(_){}
-          try{ const w = r.waiting || r.installing; if (w) w.postMessage({ type: "SKIP_WAITING" }); }catch(_){}
-          try{ await r.unregister(); }catch(_){}
-        }));
+        await Promise.all(regs.map(r => r.unregister()));
       }
     }catch(_){}
 
@@ -3218,7 +3214,7 @@ async function hardUpdateCheck(){
       }
     }catch(_){}
 
-    location.replace(`./?v=${encodeURIComponent(remote)}&r=${Date.now()}&sw=${encodeURIComponent(BUILD_VERSION)}`);
+    location.href = `./?v=${encodeURIComponent(remote)}&r=${Date.now()}`;
   }catch(_){}
 }
 // ===== Performance mode (iOS/Safari PWA) =====
@@ -14704,7 +14700,7 @@ function setupCalendario(){
     state.calendar = { anchor: new Date(), ready: false, guests: [] };
   }
 // View mode: "week" (default) / "month"
-  if (!state.calendar.viewMode) state.calendar.viewMode = "month";
+  state.calendar.viewMode = "month";
 
   const applyCalendarViewUI = () => {
     const sec = document.getElementById("page-calendario");
@@ -14815,24 +14811,9 @@ function setupCalendario(){
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
   });
-  if (prevBtn) prevBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addDays(state.calendar.anchor, -7));
-  });
-  if (nextBtn) nextBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addDays(state.calendar.anchor, 7));
-  });
-
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
   });
-  if (toggleMonthBtn) toggleMonthBtn.addEventListener("click", () => {
-    if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
-    state.calendar.viewMode = (state.calendar.viewMode === "month") ? "week" : "month";
-    applyCalendarViewUI();
-    renderCalendario();
-    __scheduleCalendarFetch({ force:false, showLoader:false });
-  });
-
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
@@ -14864,7 +14845,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
 
-  const mode = (state.calendar && state.calendar.viewMode) ? state.calendar.viewMode : "month";
+  const mode = "month";
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
@@ -14902,7 +14883,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
-  const mode = state.calendar.viewMode || "month";
+  const mode = "month";
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 
@@ -14920,8 +14901,7 @@ function renderCalendario(){
     if (gMonth && mode !== "month") gMonth.hidden = true;
   }catch(_){}
 
-  if (mode === "month") return renderCalendarioMonth();
-  return renderCalendarioWeek();
+  return renderCalendarioMonth();
 }
 
 
