@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.131
+ * Build: 2.132
  */
-const BUILD_VERSION = "2.131";
+const BUILD_VERSION = "2.132";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3099,6 +3099,19 @@ async function __wipeBrowserDb__(){
       }));
     }
   }catch(_){}
+}
+
+function formatPulizieTopbarDateIT(d){
+  try{
+    const dt = startOfLocalDay(d instanceof Date ? d : new Date(d));
+    const wd = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+    const weekday = wd[dt.getDay()] || "";
+    const day = String(dt.getDate()).trim();
+    const month = monthNameIT(dt);
+    return `${weekday} ${day} ${month}`.trim();
+  }catch(_){
+    return "";
+  }
 }
 
 function __setTopbarCenterLabel__(){
@@ -14564,9 +14577,9 @@ if (cleanResetAll){
 
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
-    if (!lab) return;
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-    lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
+    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {

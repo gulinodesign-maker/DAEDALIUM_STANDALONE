@@ -9064,3 +9064,8 @@ body[data-page^="stat"] #homeSyncBar{
 #page-ospite #guestNotes[readonly]{background:#fff; color:#16213e; opacity:1;}
 #page-ospite #guestNotes::placeholder{color:rgba(15,23,42,0.42);}
 #page-ospiti .guest-meta-right{gap:10px;}
+
+/* dDAE_2.132 — Pulizie: la data passa nella top bar */
+#page-pulizie .clean-date{
+  display:none;
+}
