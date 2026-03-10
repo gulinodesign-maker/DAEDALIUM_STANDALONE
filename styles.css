@@ -9114,7 +9114,7 @@ body[data-page^="stat"] #homeSyncBar{
 }
 
 
-/* dDAE_2.139 — intestazioni uniformi Calendario + Pulizie */
+/* dDAE_2.140 — intestazioni uniformi Calendario + Pulizie */
 .app-section-head{
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
@@ -9137,32 +9137,45 @@ body[data-page^="stat"] #homeSyncBar{
   margin-left:0;
   margin-right:0;
 }
-#page-calendario .app-section-head{
+#page-calendario .app-section-head,
+#page-pulizie .hd.app-section-head{
   margin: 0 5px;
+}
+#page-calendario .app-section-head-row,
+#page-pulizie .clean-topbar{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  column-gap:12px;
+  row-gap:0;
+  width:100%;
+  margin:0;
+}
+#page-calendario .app-section-head-row > h2,
+#page-pulizie .clean-topbar > h2{
+  justify-self:start;
+  text-align:left;
 }
 #page-calendario .cal-nav-inline,
 #page-pulizie .clean-nav{
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:10px;
 }
-#page-calendario .cal-nav-inline{ justify-content:flex-start; }
-#page-pulizie .clean-topbar{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  margin:0;
-}
+#page-calendario .cal-nav-inline{ justify-self:center; }
+#page-pulizie .clean-nav{ justify-self:center; }
 #page-pulizie .clean-top-actions,
 #page-pulizie .clean-top-left{
   display:flex;
   align-items:center;
-  justify-content:flex-start;
   min-width:0;
 }
 #page-pulizie .clean-top-left{ display:none !important; }
-#page-pulizie .clean-top-actions{ justify-content:flex-start; }
+#page-pulizie .clean-top-actions{
+  justify-self:end;
+  justify-content:flex-end;
+}
 #page-pulizie .hd.app-section-head{
   display:block;
   justify-content:initial;
