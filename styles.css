@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.136 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.137 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -9113,7 +9113,7 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-header-actions{ gap: 8px; }
 }
 
-/* dDAE_2.136 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
+/* dDAE_2.137 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
 .card .hd h2,
 #page-ospite .guest-form-card .hd h2,
 #page-ospite .guest-cards-card .hd h2,
@@ -9137,4 +9137,10 @@ body[data-page^="stat"] #homeSyncBar{
 .db-menu-title,
 .tax-result-title{
   font-size: 14px !important;
+}
+
+/* dDAE_2.137 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
+#page-tassa .card .hd.tax-hd{
+  border-bottom: 1px solid var(--border) !important;
+  padding-bottom: 12px !important;
 }
