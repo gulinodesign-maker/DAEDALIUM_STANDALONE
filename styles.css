@@ -9114,106 +9114,82 @@ body[data-page^="stat"] #homeSyncBar{
 }
 
 
-/* dDAE_2.141 — Header pagine coerenti */
-.page-title{
-  font-size:14px !important;
-  font-weight:800;
-  letter-spacing:0.2px;
+/* dDAE_2.140 — intestazioni uniformi Calendario + Pulizie */
+.app-section-head{
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.app-section-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:nowrap;
+  width:100%;
+}
+.app-section-head h2{
   margin:0;
-  color:#000;
+  font-size:14px;
+  line-height:1.2;
+  text-align:left;
 }
-.page-section-header{
-  width:100%;
-  margin:0 0 12px 0;
+#page-calendario .content.calendar-page{
+  margin-left:0;
+  margin-right:0;
 }
-.page-section-header-row{
-  width:100%;
-  min-height:44px;
+#page-calendario .app-section-head,
+#page-pulizie .hd.app-section-head{
+  margin: 0 5px;
+}
+#page-calendario .app-section-head-row,
+#page-pulizie .clean-topbar{
   display:grid;
-  grid-template-columns:minmax(110px,max-content) 1fr minmax(44px,max-content);
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
   align-items:center;
-  column-gap:10px;
+  column-gap:12px;
+  row-gap:0;
+  width:100%;
+  margin:0;
 }
-.page-section-header-row > .page-title{
+#page-calendario .app-section-head-row > h2,
+#page-pulizie .clean-topbar > h2{
   justify-self:start;
+  text-align:left;
 }
-.page-section-divider{
-  width:100%;
-  height:1px;
-  background:#000;
-  margin-top:8px;
-}
-#page-tassa .tax-hd{
-  display:block !important;
-  padding:0 0 12px 0 !important;
-}
-#page-tassa .tax-hd .page-title{
-  display:block;
-  width:100%;
-}
-#page-tassa .tax-hd::after{
-  content:"";
-  display:block;
-  width:100%;
-  height:1px;
-  background:#000;
-  margin-top:8px;
-}
-#page-calendario .calendar-page{
-  margin-top:0;
-}
-#page-calendario .calendar-section-header{
-  margin-bottom:10px;
-}
-#page-calendario .calendar-section-header .cal-nav-center{
-  grid-column:2;
-  justify-self:center;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:nowrap;
-}
-#page-calendario .calendar-section-header .cal-nav-btn{
-  width:44px;
-  height:44px;
-}
-#page-calendario #calPrevBtn,
-#page-calendario #calNextBtn,
-#page-calendario #calGrid{
-  display:none !important;
-}
-#page-calendario .cal-body{
-  margin-top:0 !important;
-}
-#page-pulizie .clean-section-header{
-  margin-bottom:10px;
-}
-#page-pulizie .clean-section-header-row{
-  grid-template-columns:minmax(110px,max-content) 1fr minmax(44px,max-content);
-}
+#page-calendario .cal-nav-inline,
 #page-pulizie .clean-nav{
-  grid-column:2;
-  justify-self:center;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-  flex-wrap:nowrap;
 }
-#page-pulizie .clean-top-actions{
-  grid-column:3;
-  justify-self:end;
+#page-calendario .cal-nav-inline{ justify-self:center; }
+#page-pulizie .clean-nav{ justify-self:center; }
+#page-pulizie .clean-top-actions,
+#page-pulizie .clean-top-left{
   display:flex;
   align-items:center;
+  min-width:0;
+}
+#page-pulizie .clean-top-left{ display:none !important; }
+#page-pulizie .clean-top-actions{
+  justify-self:end;
   justify-content:flex-end;
-  min-width:44px;
 }
-#page-pulizie > .bd{
-  padding-top:0;
+#page-pulizie .hd.app-section-head{
+  display:block;
+  justify-content:initial;
+  gap:0;
 }
-#page-pulizie .clean-date{
-  display:none !important;
+#page-pulizie .bd{ padding-top: 0; }
+#page-calendario .calendar-page .cal-body{ margin-top: 16px; }
+#page-calendario .cal-week-title{
+  font-size:14px;
+  letter-spacing:.04em;
+  margin: 0 0 10px;
+  text-align:left;
 }
-
-#page-impostazioni .card .hd .page-title{ font-size:14px !important; }
+#page-calendario .cal-nav-right,
+#page-calendario #calToggleMonthBtn,
+#page-calendario #calPrevBtn,
+#page-calendario #calNextBtn{ display:none !important; }
