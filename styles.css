@@ -143,7 +143,7 @@ display:flex;
 .brand-right > *{ flex-shrink: 0; }
 
 
-/* dDAE_2.138 — Topbar buttons: white (80%) + azure icons (palette) */
+/* dDAE_2.139 — Topbar buttons: white (80%) + azure icons (palette) */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
@@ -9113,7 +9113,7 @@ body[data-page^="stat"] #homeSyncBar{
   .prodotti-header-actions{ gap: 8px; }
 }
 
-/* dDAE_2.138 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
+/* dDAE_2.139 — Uniforma tutte le dimensioni dei titoli testuali a 14px */
 .card .hd h2,
 #page-ospite .guest-form-card .hd h2,
 #page-ospite .guest-cards-card .hd h2,
@@ -9139,8 +9139,56 @@ body[data-page^="stat"] #homeSyncBar{
   font-size: 14px !important;
 }
 
-/* dDAE_2.138 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
+/* dDAE_2.139 — Tassa: ripristina linea divisoria sotto il titolo come in Spese */
 #page-tassa .card .hd.tax-hd{
   border-bottom: 1px solid var(--border) !important;
   padding-bottom: 12px !important;
+}
+
+
+/* dDAE_2.139 — Calendario: header con titolo standard + solo vista mensile */
+#page-calendario .content.calendar-page{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+#page-calendario .cal-page-head{
+  margin: 0 5px 0;
+}
+#page-calendario .cal-page-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+#page-calendario .cal-page-head-row h2{
+  margin:0;
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+}
+#page-calendario .cal-head-actions{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+#page-calendario .cal-body{
+  margin-top: 14px !important;
+}
+#page-calendario #calGrid{
+  display:none !important;
+}
+#page-calendario #calGridMonth{
+  display:grid !important;
+}
+#page-calendario .cal-grid-wrap{
+  overflow-x:auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+#page-calendario .cal-week-title{
+  display:none !important;
 }
