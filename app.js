@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.127
+ * Build: 2.129
  */
-const BUILD_VERSION = "2.127";
+const BUILD_VERSION = "2.129";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11831,7 +11831,7 @@ function renderGuestCards(){
     const bookings = Array.isArray(group?.bookings) ? group.bookings.slice() : [];
     const first = bookings[0] || null;
     if (!first) return null;
-    const insNo = bookings
+    const sourceInsNo = bookings
       .map(x => Number(x?._insNo) || null)
       .filter(x => x != null && x > 0)
       .sort((a,b)=>a-b)[0] || null;
@@ -11844,11 +11844,28 @@ function renderGuestCards(){
       ...first,
       nome: group?.nome || (String(first?.nome ?? first?.name ?? first?.guest ?? "").trim() || "Ospite"),
       _arrivoTs: arrTs,
-      _insNo: insNo,
+      _insNo: sourceInsNo,
+      _sourceInsNo: sourceInsNo,
       _groupBookings: bookings,
       _hasNotesAny: hasNotes
     };
   }).filter(Boolean);
+
+  const cardsByInsertion = cards.slice().sort((a,b) => {
+    const aa = Number(a?._sourceInsNo) || 1e18;
+    const bb = Number(b?._sourceInsNo) || 1e18;
+    if (aa !== bb) return aa - bb;
+    const ta = (a?._arrivoTs == null) ? 1e18 : Number(a._arrivoTs);
+    const tb = (b?._arrivoTs == null) ? 1e18 : Number(b._arrivoTs);
+    if (ta !== tb) return ta - tb;
+    return normalizeGuestNameKey(a?.nome).localeCompare(normalizeGuestNameKey(b?.nome), "it");
+  });
+  cardsByInsertion.forEach((card, idx) => {
+    card._groupInsNo = idx + 1;
+    card._insNo = idx + 1;
+    card._displayInsNo = idx + 1;
+  });
+
   cards = sortGuestGroups(cards);
 
   cards.forEach(first => {
@@ -11870,7 +11887,7 @@ function renderGuestCards(){
 
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
 
-    const insNo = (Number(first._insNo) && Number(first._insNo) > 0 && Number(first._insNo) < 1e18) ? Number(first._insNo) : null;
+    const insNo = (Number(first._displayInsNo) && Number(first._displayInsNo) > 0 && Number(first._displayInsNo) < 1e18) ? Number(first._displayInsNo) : null;
 
     const led = guestLedStatus(first);
 
