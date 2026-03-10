@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.121
+ * Build: 2.125
  */
-const BUILD_VERSION = "2.124";
+const BUILD_VERSION = "2.125";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3101,17 +3101,6 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
-function __formatPulizieTopbarDate__(d){
-  try{
-    const dt = startOfLocalDay(d instanceof Date ? d : new Date(d));
-    const days = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
-    const months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-    return `${days[dt.getDay()]} ${dt.getDate()} ${months[dt.getMonth()]}`;
-  }catch(_){
-    return "Daedalium";
-  }
-}
-
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
@@ -3119,9 +3108,6 @@ function __setTopbarCenterLabel__(){
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       el.textContent = monthNameIT(a).toUpperCase();
-    } else if (state && state.page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      el.textContent = __formatPulizieTopbarDate__(base);
     } else {
       el.textContent = "Daedalium";
     }
@@ -6661,10 +6647,6 @@ if (goCalendarioTopOspiti){
   const goOrePulTop = $("#goOrePuliziaTop");
   if (goOrePulTop){
     bindFastTap(goOrePulTop, () => { hideLauncher(); showPage("orepulizia"); });
-  }
-  const goOrePulInline = $("#goOrePuliziaInline");
-  if (goOrePulInline){
-    bindFastTap(goOrePulInline, () => { hideLauncher(); showPage("orepulizia"); });
   }
 
   // HOME: tassa soggiorno (se presente)
@@ -11825,39 +11807,44 @@ function renderGuestCards(){
     it._insNo = id ? insMap[id] : null;
   });
 
-  // Raggruppa per nome (multi prenotazioni sullo stesso cliente)
-  let groups = groupGuestsByName(items);
-  groups = sortGuestGroups(groups);
+  // Guest list: una card per ogni prenotazione/scheda ospite.
+  // Il dettaglio può comunque mostrare eventuali altre prenotazioni dello stesso nome.
+  let cards = (items || []).slice();
+  cards = sortGuestGroups(cards.map((it) => {
+    const arrTs = parseDateTs(it?.check_in ?? it?.checkIn);
+    return {
+      ...it,
+      nome: (String(it?.nome ?? it?.name ?? it?.guest ?? "").trim() || "Ospite"),
+      _arrivoTs: arrTs == null ? null : arrTs,
+      _insNo: Number(it?._insNo) || null
+    };
+  }));
 
-  groups.forEach(group => {
-    const first = (group.bookings && group.bookings.length) ? group.bookings[0] : null;
+  cards.forEach(first => {
     if (!first) return;
 
     // Evidenzia checkout oggi con pagamento in sospeso (rimanenza > 0)
     const __today = todayISO();
-    const __hasCheckoutPending = (group.bookings || []).some(b => {
-      const outISO = __parseDateFlexibleToISO(b?.check_out || b?.checkOut);
-      if (!outISO || outISO !== __today) return false;
-      const total = money(b?.importo_prenotazione ?? b?.importo_prenota ?? b?.total ?? 0);
-      const services = money(b?.servizi_totale ?? b?.serviziTotal ?? b?.importo_servizi ?? 0);
-      const dep = money(b?.acconto_importo ?? b?.accontoImporto ?? b?.deposit ?? 0);
-      const saldo = money(b?.saldo_pagato ?? b?.saldoPagato ?? b?.saldo ?? 0);
-      const remaining = (total + services) - dep - saldo;
-      return isFinite(remaining) && remaining > 0.0001;
-    });
+    const outISO = __parseDateFlexibleToISO(first?.check_out || first?.checkOut);
+    const total = money(first?.importo_prenotazione ?? first?.importo_prenota ?? first?.total ?? 0);
+    const services = money(first?.servizi_totale ?? first?.serviziTotal ?? first?.importo_servizi ?? 0);
+    const dep = money(first?.acconto_importo ?? first?.accontoImporto ?? first?.deposit ?? 0);
+    const saldo = money(first?.saldo_pagato ?? first?.saldoPagato ?? first?.saldo ?? 0);
+    const remaining = (total + services) - dep - saldo;
+    const __hasCheckoutPending = !!(outISO && outISO === __today && isFinite(remaining) && remaining > 0.0001);
 
     const card = document.createElement("div");
     card.className = "guest-card";
     if (__hasCheckoutPending) card.classList.add("checkout-pending");
 
-    const nome = escapeHtml(group.nome || "Ospite");
+    const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
 
-    const insNo = (Number(group._insNo) && Number(group._insNo) > 0 && Number(group._insNo) < 1e18) ? Number(group._insNo) : null;
+    const insNo = (Number(first._insNo) && Number(first._insNo) > 0 && Number(first._insNo) < 1e18) ? Number(first._insNo) : null;
 
     const led = guestLedStatus(first);
 
     const marriageOn = !!(first?.matrimonio);
-    const hasNotes = (group.bookings || []).some(b => guestHasNotes(b));
+    const hasNotes = guestHasNotes(first);
 
     const arrivoText = formatLongDateIT(first.check_in || first.checkIn || "") || "—";
 
@@ -11871,7 +11858,7 @@ function renderGuestCards(){
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
         <div class="guest-main">
-          ${insNo ? `<span class="guest-insno">${insNo}</span>` : ``}
+          ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
           <div class="guest-nameblock">
             <span class="guest-name-text">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
@@ -11882,17 +11869,16 @@ function renderGuestCards(){
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
-          ${hasNotes ? `<span class="guest-note-dot" aria-label="Note presenti" title="Note presenti"></span>` : ``}
           <span class="guest-led ${led.cls}" aria-label="${led.label}" title="${led.label}"></span>
         </div>
       </div>
     `;
 
     const open = () => {
-      // In caso di multi prenotazioni: mantiene contesto e mostra elenco nella scheda
-      if (group.bookings && group.bookings.length > 1){
-        state.guestGroupBookings = group.bookings;
-        state.guestGroupKey = group.key;
+      const sameNameItems = groupGuestsByName(items || []).find(g => normalizeGuestNameKey(g?.nome) === normalizeGuestNameKey(first?.nome || String(first?.name ?? first?.guest ?? "").trim() || ""));
+      if (sameNameItems && sameNameItems.bookings && sameNameItems.bookings.length > 1){
+        state.guestGroupBookings = sameNameItems.bookings;
+        state.guestGroupKey = sameNameItems.key;
         state.guestGroupActiveId = guestIdOf(first);
       } else {
         state.guestGroupBookings = null;
@@ -14520,10 +14506,10 @@ if (cleanResetAll){
 }
 
   const updateCleanLabel = () => {
-    const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
     const lab = document.getElementById("cleanDateLabel");
-    if (lab) lab.textContent = formatFullDateIT(startOfLocalDay(base));
-    try{ __setTopbarCenterLabel__(); }catch(_){ }
+    if (!lab) return;
+    const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+    lab.textContent = formatFullDateIT(startOfLocalDay(base));
   };
 
   const shiftClean = (deltaDays) => {
@@ -14559,11 +14545,7 @@ if (cleanResetAll){
   try{
     const __isOp = !!(state && state.session && isOperatoreSession(state.session));
     const nav = document.querySelector("#page-pulizie .clean-nav");
-    const inlineBtn = document.getElementById("goOrePuliziaInline");
-    const dateLab = document.getElementById("cleanDateLabel");
     if (nav) nav.style.display = __isOp ? "none" : "";
-    if (inlineBtn) inlineBtn.hidden = __isOp;
-    if (dateLab) dateLab.hidden = true;
     if (__isOp){
       state.cleanDay = startOfLocalDay(new Date()).toISOString();
     } else {

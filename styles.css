@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.124");
+    url("./assets/bg-daedalium.png?v=dDAE_2.088");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.124");
+    url("./assets/bg-daedalium.png?v=dDAE_2.088");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -3666,6 +3666,13 @@ border-color: rgba(255,255,255,.16);
   font-weight: 600;
   line-height: 1;
   opacity: 0.85;
+  border-color: var(--ico-sky);
+  color: rgba(255,255,255,0.98);
+}
+
+#page-ospiti .guest-insno.has-notes{
+  background: rgba(255,59,48,0.35) !important;
+  border-color: rgba(255,59,48,0.55) !important;
 }
 
 
@@ -5393,12 +5400,8 @@ grid-template-rows: 34px repeat(7, 54px);
 .ui-ico.ink-orange{ stroke: var(--ico-orange) !important; }
 
 /* Pulizie: nav giorno sempre centrata */
-#page-pulizie .clean-topbar{ width:100%; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; }
+#page-pulizie .clean-topbar{ width:100%; }
 #page-pulizie .clean-nav{ justify-content:center; }
-#page-pulizie .clean-top-actions{ justify-content:flex-end; width:100%; }
-#page-pulizie #goOrePuliziaInline{ background:#fff !important; border:1px solid rgba(15,23,42,0.10) !important; box-shadow:none !important; }
-#page-pulizie #goOrePuliziaInline .ui-ico{ stroke: var(--ico-sky) !important; color: var(--ico-sky) !important; }
-#page-pulizie .clean-date[hidden]{ display:none !important; }
 
 
 /* Tassa: nuovo tasto Calcola (bianco + icona arancione) */
@@ -8753,15 +8756,14 @@ color: var(--mcol,#ff3b30);
   padding: 14px 18px calc(28px + var(--safe-bottom));
 }
 .settings-title{
-  font-size: 14px;
-  font-weight: 900;
+  font-size: clamp(26px, 7vw, 42px);
+  font-weight: 950;
   color: var(--ico-blue-night);
-  margin-top: 0;
-  line-height: 1.2;
+  margin-top: 8px;
 }
 .settings-divider{
-  height: 1px;
-  background: var(--border);
+  height: 2px;
+  background: rgba(15,23,42,0.90);
   border-radius: 999px;
   margin-top: 12px;
 }
@@ -8982,8 +8984,7 @@ body[data-page^="stat"] #homeSyncBar{
 }
 #page-ospite .guest-notes-toggle.is-open{border-bottom-left-radius:14px;border-bottom-right-radius:14px;}
 #page-ospite .guest-notes-toggle-label{line-height:1;}
-#page-ospite .guest-notes-toggle-dot,
-#page-ospiti .guest-note-dot{
+#page-ospite .guest-notes-toggle-dot{
   width:12px;
   height:12px;
   border-radius:999px;
@@ -9019,12 +9020,3 @@ body[data-page^="stat"] #homeSyncBar{
 #page-ospite #guestNotes[readonly]{background:#fff; color:#16213e; opacity:1;}
 #page-ospite #guestNotes::placeholder{color:rgba(15,23,42,0.42);}
 #page-ospiti .guest-meta-right{gap:10px;}
-
-
-/* dDAE_2.124 — Backup popup: X visibile + import/export rosso/verde 80% */
-#dbMenuClose{ background:#fff !important; border:1px solid rgba(15,23,42,0.10) !important; border-radius:14px; }
-#dbMenuClose .ui-ico{ stroke: var(--ico-sky) !important; }
-.btn.db-act.db-import{ background: hsla(0,70%,52%,.80) !important; border:1px solid rgba(0,0,0,.10) !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
-.btn.db-act.db-export{ background: hsla(135,70%,40%,.80) !important; border:1px solid rgba(0,0,0,.10) !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
-.btn.db-act.db-import .ui-ico, .btn.db-act.db-export .ui-ico{ stroke:#fff !important; color:#fff !important; }
-.btn.db-act.db-import span, .btn.db-act.db-export span{ color:#fff !important; }
