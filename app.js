@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.136
+ * Build: 2.138
  */
-const BUILD_VERSION = "2.136";
+const BUILD_VERSION = "2.138";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3203,7 +3203,11 @@ async function hardUpdateCheck(){
     try{
       if ("serviceWorker" in navigator){
         const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister()));
+        await Promise.all(regs.map(async (r) => {
+          try{ await r.update(); }catch(_){}
+          try{ const w = r.waiting || r.installing; if (w) w.postMessage({ type: "SKIP_WAITING" }); }catch(_){}
+          try{ await r.unregister(); }catch(_){}
+        }));
       }
     }catch(_){}
 
@@ -3214,7 +3218,7 @@ async function hardUpdateCheck(){
       }
     }catch(_){}
 
-    location.href = `./?v=${encodeURIComponent(remote)}&r=${Date.now()}`;
+    location.replace(`./?v=${encodeURIComponent(remote)}&r=${Date.now()}&sw=${encodeURIComponent(BUILD_VERSION)}`);
   }catch(_){}
 }
 // ===== Performance mode (iOS/Safari PWA) =====
