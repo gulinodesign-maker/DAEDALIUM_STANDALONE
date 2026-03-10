@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.140
+ * Build: 2.134
  */
-const BUILD_VERSION = "2.140";
+const BUILD_VERSION = "2.134";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14694,7 +14694,7 @@ function setupCalendario(){
   const nextMonthBtn = document.getElementById("calNextMonthBtn");
   const syncBtn = document.getElementById("calSyncBtn");
   const input = document.getElementById("calDateInput");
-  const toggleMonthBtn = document.getElementById("calToggleMonthBtn");
+  const toggleMonthBtn = null;
 
   if (!state.calendar) {
     state.calendar = { anchor: new Date(), ready: false, guests: [] };
@@ -14811,9 +14811,24 @@ function setupCalendario(){
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
   });
+  if (prevBtn) prevBtn.addEventListener("click", () => {
+    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
+  });
+  if (nextBtn) nextBtn.addEventListener("click", () => {
+    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
+  });
+
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
     shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
   });
+  if (toggleMonthBtn) toggleMonthBtn.addEventListener("click", () => {
+    if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
+    state.calendar.viewMode = "month";
+    applyCalendarViewUI();
+    renderCalendario();
+    __scheduleCalendarFetch({ force:false, showLoader:false });
+  });
+
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
@@ -14845,7 +14860,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
 
-  const mode = "month";
+  const mode = (state.calendar && state.calendar.viewMode) ? state.calendar.viewMode : "month";
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
@@ -14883,7 +14898,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
-  const mode = "month";
+  const mode = state.calendar.viewMode || "month";
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 
@@ -14901,7 +14916,8 @@ function renderCalendario(){
     if (gMonth && mode !== "month") gMonth.hidden = true;
   }catch(_){}
 
-  return renderCalendarioMonth();
+  if (mode === "month") return renderCalendarioMonth();
+  return renderCalendarioWeek();
 }
 
 
