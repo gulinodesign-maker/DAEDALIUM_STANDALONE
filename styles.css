@@ -9195,7 +9195,7 @@ body[data-page^="stat"] #homeSyncBar{
 #page-calendario #calNextBtn{ display:none !important; }
 
 
-/* dDAE_2.143 — Uniformita grafica titoli pagina + header Tassa allineato a Ospiti */
+/* dDAE_2.144 — Uniformita grafica titoli pagina + header Tassa allineato a Ospiti */
 :root{
   --dd-page-title-size: 14px;
   --dd-page-title-weight: 800;
@@ -9263,4 +9263,46 @@ body[data-page^="stat"] #homeSyncBar{
 #page-calendario .app-section-head-row > .page-title,
 #page-pulizie .clean-topbar > .page-title{
   align-self: center;
+}
+
+
+/* dDAE_2.144 — Impostazioni: audio in riga col titolo, a destra, senza pill */
+#page-impostazioni .settings-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+}
+#page-impostazioni .settings-title-row .settings-title{
+  flex:1 1 auto;
+  min-width:0;
+  padding: 12px 0 14px;
+}
+#page-impostazioni .settings-audio-header{
+  flex:0 0 auto;
+  margin:0;
+  padding:0;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  justify-content:flex-end;
+}
+#page-impostazioni .settings-audio-header .settings-audio-label{
+  color: var(--ico-blue-night);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{
+  margin:118px auto 0 auto !important;
+}
+@media (max-width:390px){
+  #page-impostazioni .settings-title-row{
+    gap:10px;
+  }
+  #page-impostazioni .settings-audio-header .settings-audio-label{
+    font-size:11px;
+  }
 }
