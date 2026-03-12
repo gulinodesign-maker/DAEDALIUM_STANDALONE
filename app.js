@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.174
  */
-const BUILD_VERSION = "2.175";
+const BUILD_VERSION = "2.176";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -4239,7 +4239,7 @@ function __setTopbarCenterLabel__(){
     if (!el) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
+      el.textContent = monthNameIT(a);
     } else if (state && state.page === "pulizie"){
       const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
       el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
@@ -6464,7 +6464,7 @@ function setupImpostazioni() {
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
-    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { __openDbMenuModal__(); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
+    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
     if (rosterBtn) bindFastTap(rosterBtn, async () => {
       try{
@@ -6477,7 +6477,7 @@ function setupImpostazioni() {
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
-    if (dbA) bindFastTap(dbA, () => { __openDbMenuModal__(); });
+    if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
@@ -16613,6 +16613,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 
 
 function renderCalendario(){
+  try{ __setTopbarCenterLabel__(); }catch(_){ }
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = "month";
 
