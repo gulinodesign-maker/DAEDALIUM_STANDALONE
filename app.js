@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.144
+ * Build: 2.152
  */
-const BUILD_VERSION = "2.144";
+const BUILD_VERSION = "2.152";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4847,6 +4847,8 @@ async function loadImpostazioniPage({ force = false } = {}) {
     bindTassaMaxNottiButton();
     setTassaMaxNottiValue(getTouristTaxMaxNightsSetting(3), { silent: true });
     try{ updateSettingsAccountName(); }catch(_){ }
+    try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
+    try{ ensureRoomsPickerButtons(); }catch(_){ }
 
     refreshFloatingLabels();
   } catch (e) {
@@ -5102,6 +5104,19 @@ function setupImpostazioni() {
   }catch(_){ }
 const cfg = document.getElementById("settingsConfigBtn");
   if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
+
+  const roomsBtn = document.getElementById("settingsRoomsBtn");
+  if (roomsBtn) bindFastTap(roomsBtn, async () => {
+    try{
+      const current = getConfiguredRoomsCount(6);
+      const raw = window.prompt('Numero stanze (1-12)', String(current));
+      if (raw == null) return;
+      const next = Math.max(1, Math.min(12, parseInt(String(raw).trim(), 10) || 0));
+      if (!next) { toast('Numero stanze non valido'); return; }
+      if (next === current){ updateSettingsRoomsButtonLabel(); return; }
+      await saveRoomsCountSetting(next);
+    }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
+  });
 
   const cfgClose = document.getElementById("settingsConfigClose");
   if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
@@ -8415,7 +8430,7 @@ function computeStatMensili(){
       }
       if (set.size > 0) return set.size;
     }catch(_){}
-    return 6;
+    return getConfiguredRoomsCount(6);
   };
 
   const totalRooms = __getTotalRooms();
@@ -9662,6 +9677,7 @@ function enterGuestCreateMode(){
   state.guestEditId = null;
   state.guestEditCreatedAt = null;
 
+  try{ ensureRoomsPickerButtons(); }catch(_){ }
   const title = document.getElementById("ospiteFormTitle");
   if (title) title.textContent = "Nuovo ospite";
   const btn = document.getElementById("createGuestCard");
@@ -9727,6 +9743,7 @@ function enterGuestCreateMode(){
 }
 
 function enterGuestEditMode(ospite){
+  try{ ensureRoomsPickerButtons(); }catch(_){ }
   setGuestFormViewOnly(false);
 
   state.guestCreateFromGroup = false;
@@ -9928,12 +9945,79 @@ function _guestIdOf(item){
   return String(item?.id || item?.ID || item?.ospite_id || item?.ospiteId || item?.guest_id || item?.guestId || "").trim();
 }
 
-function _parseRoomsArr(stanzeField){
-  // Restituisce sempre un array unico/sortato di stanze [1..6]
-  const norm = (arr) => Array.from(new Set((arr || [])
+function getConfiguredRoomsCount(fallback = 6){
+  try{
+    const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
+    if (Number.isFinite(n) && n >= 1) return n;
+  }catch(_){ }
+  return Math.max(1, parseInt(fallback, 10) || 6);
+}
+
+function updateSettingsRoomsButtonLabel(){
+  try{
+    const el = document.getElementById("settingsRoomsBtn");
+    if (!el) return;
+    const label = el.querySelector('.settings-btn-label');
+    const n = getConfiguredRoomsCount(6);
+    if (label) label.textContent = `Stanze ${n}`;
+    el.setAttribute('aria-label', `Numero stanze: ${n}`);
+    el.title = `Numero stanze: ${n}`;
+  }catch(_){ }
+}
+
+function ensureRoomsPickerButtons(){
+  try{
+    const picker = document.getElementById('roomsPicker');
+    if (!picker) return;
+    const count = getConfiguredRoomsCount(6);
+    const selected = (state && state.guestRooms instanceof Set) ? new Set(Array.from(state.guestRooms)) : new Set();
+    const parts = [];
+    for (let i = 1; i <= count; i++) {
+      const on = selected.has(i);
+      parts.push(`<button aria-pressed="${on ? "true" : "false"}" class="room-dot${on ? " selected" : ""}" data-room="${i}" type="button">${i}</button>`);
+    }
+    picker.innerHTML = parts.join('');
+  }catch(_){ }
+}
+
+async function saveRoomsCountSetting(nextCount){
+  const n = Math.max(1, Math.min(12, parseInt(nextCount, 10) || 0));
+  if (!Number.isFinite(n) || n < 1) throw new Error('Numero stanze non valido');
+  await api('impostazioni', { method: 'POST', body: { numero_stanze: n }, showLoader: true });
+  try{
+    state.settings = state.settings || {};
+    state.settings.byKey = state.settings.byKey || {};
+    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:n, val:n, Value:n };
+  }catch(_){ }
+  await ensureSettingsLoaded({ force:true, showLoader:false });
+  try{
+    if (state && state.guestRooms instanceof Set){
+      state.guestRooms = new Set(Array.from(state.guestRooms).filter(v => Number(v) >= 1 && Number(v) <= n).sort((a,b)=>a-b));
+    }
+  }catch(_){ }
+  try{ ensureRoomsPickerButtons(); }catch(_){ }
+  try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
+  try{ window.__ddae_renderRooms?.(); }catch(_){ }
+  try{ window.__ddae_refreshRoomsAvailability?.(); }catch(_){ }
+  try{ if (state && state.page === 'calendario') renderCalendario?.(); }catch(_){ }
+  try{ if (state && state.page === 'ospite'){
+    const current = state.guestMode === 'view' ? state.guestViewItem : state.guestEditSourceItem;
+    if (current) renderRoomsReadOnly?.(current);
+  } }catch(_){ }
+  toast('Numero stanze aggiornato');
+}
+
+function normalizeRoomsList(arr, fallback = 6){
+  const maxRooms = getConfiguredRoomsCount(fallback);
+  return Array.from(new Set((Array.isArray(arr) ? arr : [])
     .map(n => parseInt(n, 10))
-    .filter(n => isFinite(n) && n >= 1 && n <= 6)))
+    .filter(n => Number.isFinite(n) && n >= 1 && n <= maxRooms)))
     .sort((a,b) => a - b);
+}
+
+function _parseRoomsArr(stanzeField){
+  // Restituisce sempre un array unico/sortato di stanze [1..N configurato]
+  const norm = (arr) => normalizeRoomsList(arr, 6);
 
   const fromDateParts = (d, m, y) => {
     const dd = parseInt(d, 10);
@@ -9997,9 +10081,9 @@ function _parseRoomsArr(stanzeField){
       if (parts) return norm(parts);
     }
 
-    // Lista stanze: supporta "2,3,4" e "2|3|4" (senza pescare cifre da numeri lunghi)
+    // Lista stanze: supporta "2,3,4", "2|3|4", "10 11" e JSON/stringhe simili
     const tokens = s.split(/[|,;\s]+/).map(t => t.trim()).filter(Boolean);
-    const nums = tokens.map(t => parseInt(t, 10)).filter(n => isFinite(n) && n >= 1 && n <= 6);
+    const nums = tokens.map(t => parseInt(t, 10)).filter(n => Number.isFinite(n));
     return norm(nums);
   } catch (_) {
     return [];
@@ -10009,7 +10093,7 @@ function _parseRoomsArr(stanzeField){
 
 function buildRoomsStackHTML(guestId, roomsArr){
   if (!roomsArr || !roomsArr.length) return `<span class="room-dot-badge is-empty" aria-label="Nessuna stanza">—</span>`;
-  return `<div class="rooms-stack" aria-label=" e letti">` + roomsArr.map((n) => {
+  return `<div class="rooms-stack" aria-label=" e letti">` + normalizeRoomsList(roomsArr, 6).map((n) => {
     const key = `${guestId}:${n}`;
     const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m: 0, letto_s: 0, culla: 0 };
     const lettoM = Number(info.letto_m || 0) || 0;
@@ -10039,7 +10123,7 @@ function renderRoomsReadOnly(ospite){
   if (!roomsArr.length && state.guestRooms && state.guestRooms.size){
     roomsArr = Array.from(state.guestRooms)
       .map(n => parseInt(n,10))
-      .filter(n => isFinite(n) && n>=1 && n<=6)
+      .filter(n => Number.isFinite(n) && n>=1 && n<=getConfiguredRoomsCount(6))
       .sort((a,b)=>a-b);
   }
 
@@ -10295,7 +10379,7 @@ function setGuestFormViewOnly(isView, ospite){
   if (btn) btn.hidden = !!isView;
 
   const picker = document.getElementById("roomsPicker");
-  if (picker) picker.hidden = !!isView;
+  if (picker) { try{ ensureRoomsPickerButtons(); }catch(_){ } picker.hidden = !!isView; }
 
   const ro = document.getElementById("roomsReadOnly");
   if (ro) {
@@ -10937,7 +11021,7 @@ async function saveGuest(opts = {}){
   const saldoTipo = state.guestSaldoType || "contante";
   const rooms = Array.from(state.guestRooms || [])
     .map(n => parseInt(n,10))
-    .filter(n => isFinite(n) && n>=1 && n<=6)
+    .filter(n => Number.isFinite(n) && n>=1 && n<=getConfiguredRoomsCount(6))
     .sort((a,b)=>a-b);
   const depositType = state.guestDepositType || "contante";
   const matrimonio = !!(state.guestMarriage);
@@ -11365,6 +11449,7 @@ function setupOspite(){
     notesField.addEventListener("input", () => { updateGuestNotesIndicator(); });
   }
 
+  try{ ensureRoomsPickerButtons(); }catch(_){ }
   const roomsWrap = document.getElementById("roomsPicker");
 
   // Toggle M/G (ora accanto a Importo prenotazione)
@@ -15075,7 +15160,7 @@ function renderCalendarioWeek(){
   }
 
   // Righe: stanze (prima colonna) + celle per ogni giorno
-  for (let r = 1; r <= 6; r++) {
+  for (let r = 1, roomsCount = getConfiguredRoomsCount(6); r <= roomsCount; r++) {
     const pill = document.createElement("div");
     pill.className = `cal-pill room room-${r}`;
 
@@ -15353,7 +15438,7 @@ function renderCalendarioMonth(){
     frag.appendChild(dayPill);
   }
 
-  for (let r = 1; r <= 6; r++) {
+  for (let r = 1, roomsCount = getConfiguredRoomsCount(6); r <= roomsCount; r++) {
     const pill = document.createElement("div");
     pill.className = `cal-pill room room-${r}`;
 
@@ -15538,11 +15623,10 @@ function buildMonthOccupancy(monthStart, daysCount){
       const st = g.stanze;
       if (Array.isArray(st)) roomsArr = st;
       else if (st != null && String(st).trim().length) {
-        const m = String(st).match(/[1-6]/g) || [];
-        roomsArr = m.map(x => parseInt(x, 10));
+        roomsArr = _parseRoomsArr(st);
       }
     } catch (_) {}
-    roomsArr = Array.from(new Set((roomsArr||[]).map(n=>parseInt(n,10)).filter(n=>isFinite(n) && n>=1 && n<=6))).sort((a,b)=>a-b);
+    roomsArr = normalizeRoomsList(roomsArr, 6);
     if (!roomsArr.length) continue;
 
     const initials = initialsFromName(g.nome || g.name || g.Nome || g.NOME || g.guestName || g.fullName || g.full_name || "");
@@ -15591,11 +15675,10 @@ function buildWeekOccupancy(weekStart){
       const st = g.stanze;
       if (Array.isArray(st)) roomsArr = st;
       else if (st != null && String(st).trim().length) {
-        const m = String(st).match(/[1-6]/g) || [];
-        roomsArr = m.map(x => parseInt(x, 10));
+        roomsArr = _parseRoomsArr(st);
       }
     } catch (_) {}
-    roomsArr = Array.from(new Set((roomsArr||[]).map(n=>parseInt(n,10)).filter(n=>isFinite(n) && n>=1 && n<=6))).sort((a,b)=>a-b);
+    roomsArr = normalizeRoomsList(roomsArr, 6);
     if (!roomsArr.length) continue;
 
     const initials = initialsFromName(g.nome || g.name || g.Nome || g.NOME || g.guestName || g.fullName || g.full_name || "");
