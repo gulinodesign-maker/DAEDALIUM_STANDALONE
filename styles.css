@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.180");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -427,7 +427,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   fill: none !important;
 }
 
-/* dDAE_2.088 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+/* dDAE_2.180 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
 .topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.180");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2217,6 +2217,14 @@ body[data-page="ospiti"] .guest-card .actions {
   padding: 10px 12px;
   border-radius: 14px;
 }
+
+.clean-grid .cell.head.clean-head-info{
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .clean-info-text{
   padding: 14px 10px 10px;
   font-size: 18px;
@@ -2409,7 +2417,7 @@ body[data-page="ospiti"] .guest-card .actions {
 
 .auth-form[hidden]{ display:none !important; }
 
-/* dDAE_2.088 — AUTH: tag + selezione tipologia account (popup crea account) */
+/* dDAE_2.180 — AUTH: tag + selezione tipologia account (popup crea account) */
 .auth-create-role{
   margin-top: 2px;
   margin-bottom: 10px;
@@ -8474,7 +8482,7 @@ color: var(--mcol,#ff3b30);
 }
 
 
-/* dDAE_2.088 - Dashboard grafici unificata */
+/* dDAE_2.180 - Dashboard grafici unificata */
 .stats-graphs-page{padding-bottom:28px;}
 .stats-graphs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:4px;}
 .stats-graph-card{min-width:0;border:0;background:transparent;box-shadow:none;padding:8px 4px 4px;border-radius:0;}
@@ -8500,7 +8508,7 @@ color: var(--mcol,#ff3b30);
 .stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
 
 
-/* dDAE_2.088 — Statistiche: griglia davvero centrata nella pagina */
+/* dDAE_2.180 — Statistiche: griglia davvero centrata nella pagina */
 #page-statistiche .stats-page{
   min-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 28px);
   display: flex;
@@ -8926,10 +8934,10 @@ color: var(--mcol,#ff3b30);
 }
 #page-impostazioni .settings-actions.settings-actions-reference{
   display:grid !important;
-  grid-template-columns: repeat(2, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
+  grid-template-columns: repeat(3, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
   justify-content:center !important;
-  gap: 18px 22px !important;
-  width: min(360px, 100%) !important;
+  gap: 18px 18px !important;
+  width: min(540px, 100%) !important;
   margin: 56px auto 0 auto !important;
   align-items: stretch;
 }
@@ -8964,6 +8972,7 @@ color: var(--mcol,#ff3b30);
   text-overflow: ellipsis;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background:#8fcbe8 !important; border-color: rgba(143,203,232,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{ background:#43b5ff !important; border-color: rgba(67,181,255,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background:#4fcd66 !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background:#7f7bf2 !important; border-color: rgba(127,123,242,0.24) !important; }
@@ -9526,4 +9535,157 @@ body[data-page^="stat"] #homeSyncBar{
   background: rgba(67,181,255,0.35) !important;
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
+}
+
+
+/* dDAE_2.170 — Multilingua + icona lingua in Impostazioni */
+.settings-audio-header{
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.settings-lang-trigger{
+  border: 1px solid rgba(67,181,255,0.28);
+  background: rgba(255,255,255,0.96);
+  color: var(--ico-blue, #43B5FF);
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.settings-lang-trigger:active,
+.language-option:active{
+  transform: scale(0.98);
+}
+.settings-lang-trigger-flag,
+.language-option-flag{
+  font-size: 18px;
+  line-height: 1;
+}
+.settings-lang-trigger-label{
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.language-modal-card{
+  width: min(420px, calc(100vw - 28px));
+}
+.language-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.language-option{
+  width: 100%;
+  border: 1px solid rgba(67,181,255,0.18);
+  background: rgba(255,255,255,0.96);
+  border-radius: 16px;
+  min-height: 52px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+  cursor: pointer;
+}
+.language-option.is-active{
+  border-color: rgba(67,181,255,0.55);
+  box-shadow: 0 0 0 2px rgba(67,181,255,0.18), 0 10px 24px rgba(15,23,42,0.08);
+}
+.language-option-label{
+  flex: 1 1 auto;
+  text-align: left;
+}
+@media (max-width: 520px){
+  .settings-title-row{
+    gap: 10px;
+    align-items: center;
+  }
+  .settings-audio-header{
+    margin-left: auto;
+  }
+  .settings-lang-trigger{
+    padding: 0 10px;
+  }
+  .settings-lang-trigger-label{
+    display: none;
+  }
+}
+
+@media (max-width: 520px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: min(100%, 390px) !important;
+    gap: 14px 14px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    width: 100% !important;
+    min-width: 0 !important;
+    height: clamp(78px, 25vw, 110px) !important;
+    min-height: clamp(78px, 25vw, 110px) !important;
+  }
+}
+
+/* dDAE_2.170 — Impostazioni 3x3: tasti -20%, quadrati, smussati, non schiacciati */
+#page-impostazioni .settings-actions.settings-actions-reference{
+  grid-template-columns: repeat(3, minmax(clamp(66px, 18.72vw, 122px), clamp(66px, 18.72vw, 122px))) !important;
+  gap: 16px 16px !important;
+  width: min(414px, calc(100vw - 44px)) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: clamp(66px, 18.72vw, 122px) !important;
+  height: clamp(66px, 18.72vw, 122px) !important;
+  min-width: clamp(66px, 18.72vw, 122px) !important;
+  min-height: clamp(66px, 18.72vw, 122px) !important;
+  max-width: clamp(66px, 18.72vw, 122px) !important;
+  max-height: clamp(66px, 18.72vw, 122px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: clamp(18px, 5.2vw, 35px) !important;
+  padding: 10px 8px !important;
+  align-self: stretch !important;
+  justify-self: center !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: clamp(28px, 8vw, 38px) !important;
+  height: clamp(28px, 8vw, 38px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 12px !important;
+  line-height: 1.05 !important;
+}
+@media (max-width: 520px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: min(100%, 360px) !important;
+    gap: 12px 12px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 1 / 1 !important;
+    padding: 10px 6px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+    width: clamp(24px, 7vw, 32px) !important;
+    height: clamp(24px, 7vw, 32px) !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+    font-size: 11px !important;
+  }
 }

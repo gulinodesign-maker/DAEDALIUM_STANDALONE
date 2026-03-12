@@ -52,9 +52,1112 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.167
+ * Build: 2.174
  */
-const BUILD_VERSION = "2.167";
+const BUILD_VERSION = "2.180";
+
+const LANG_PREF_KEY = "ddae_language";
+const APP_LANG_META = {
+  it: { locale: "it-IT", flag: "🇮🇹", name: "Italiano" },
+  en: { locale: "en-GB", flag: "🇬🇧", name: "English" },
+  fr: { locale: "fr-FR", flag: "🇫🇷", name: "Français" },
+  de: { locale: "de-DE", flag: "🇩🇪", name: "Deutsch" },
+  es: { locale: "es-ES", flag: "🇪🇸", name: "Español" }
+};
+const I18N_DICT = {
+  "Lingua": {
+    "en": "Language",
+    "fr": "Langue",
+    "de": "Sprache",
+    "es": "Idioma"
+  },
+  "Italiano": {
+    "en": "Italian",
+    "fr": "Italien",
+    "de": "Italienisch",
+    "es": "Italiano"
+  },
+  "English": {
+    "fr": "Anglais",
+    "de": "Englisch",
+    "es": "Inglés"
+  },
+  "Français": {
+    "en": "French",
+    "de": "Französisch",
+    "es": "Francés"
+  },
+  "Deutsch": {
+    "en": "German",
+    "fr": "Allemand",
+    "es": "Alemán"
+  },
+  "Español": {
+    "en": "Spanish",
+    "fr": "Espagnol",
+    "de": "Spanisch"
+  },
+  "AUDIO": {
+    "en": "AUDIO",
+    "fr": "AUDIO",
+    "de": "AUDIO",
+    "es": "AUDIO"
+  },
+  "Impostazioni": {
+    "en": "Settings",
+    "fr": "Paramètres",
+    "de": "Einstellungen",
+    "es": "Ajustes"
+  },
+  "Anno": {
+    "en": "Year",
+    "fr": "Année",
+    "de": "Jahr",
+    "es": "Año"
+  },
+  "Operatori": {
+    "en": "Operators",
+    "fr": "Opérateurs",
+    "de": "Mitarbeiter",
+    "es": "Operadores"
+  },
+  "Channel": {
+    "en": "Channel",
+    "fr": "Canal",
+    "de": "Kanal",
+    "es": "Canal"
+  },
+  "Backup": {
+    "en": "Backup",
+    "fr": "Sauvegarde",
+    "de": "Backup",
+    "es": "Copia de seguridad"
+  },
+  "Codice Ope...": {
+    "en": "Operator C...",
+    "fr": "Code opé...",
+    "de": "Mitarb.-Code...",
+    "es": "Código op..."
+  },
+  "Tassa Sogg...": {
+    "en": "Tourist Tax...",
+    "fr": "Taxe séjour...",
+    "de": "Kurtaxe...",
+    "es": "Tasa turís..."
+  },
+  "Calendario": {
+    "en": "Calendar",
+    "fr": "Calendrier",
+    "de": "Kalender",
+    "es": "Calendario"
+  },
+  "Spese": {
+    "en": "Expenses",
+    "fr": "Dépenses",
+    "de": "Ausgaben",
+    "es": "Gastos"
+  },
+  "Spesa": {
+    "en": "Shopping",
+    "fr": "Courses",
+    "de": "Einkauf",
+    "es": "Compra"
+  },
+  "Tassa": {
+    "en": "Tax",
+    "fr": "Taxe",
+    "de": "Steuer",
+    "es": "Tasa"
+  },
+  "Pulizie": {
+    "en": "Cleaning",
+    "fr": "Nettoyage",
+    "de": "Reinigung",
+    "es": "Limpieza"
+  },
+  "Lavanderia": {
+    "en": "Laundry",
+    "fr": "Blanchisserie",
+    "de": "Wäscherei",
+    "es": "Lavandería"
+  },
+  "Statistiche": {
+    "en": "Statistics",
+    "fr": "Statistiques",
+    "de": "Statistiken",
+    "es": "Estadísticas"
+  },
+  "Ospiti": {
+    "en": "Guests",
+    "fr": "Invités",
+    "de": "Gäste",
+    "es": "Huéspedes"
+  },
+  "Prodotti": {
+    "en": "Products",
+    "fr": "Produits",
+    "de": "Produkte",
+    "es": "Productos"
+  },
+  "Lista della spesa": {
+    "en": "Shopping List",
+    "fr": "Liste de courses",
+    "de": "Einkaufsliste",
+    "es": "Lista de compras"
+  },
+  "Aggiungi prodotto": {
+    "en": "Add product",
+    "fr": "Ajouter un produit",
+    "de": "Produkt hinzufügen",
+    "es": "Añadir producto"
+  },
+  "Scrivi prodotto": {
+    "en": "Type product",
+    "fr": "Écrire le produit",
+    "de": "Produkt eingeben",
+    "es": "Escribe el producto"
+  },
+  "Chiudi": {
+    "en": "Close",
+    "fr": "Fermer",
+    "de": "Schließen",
+    "es": "Cerrar"
+  },
+  "Generali": {
+    "en": "General",
+    "fr": "Générales",
+    "de": "Allgemein",
+    "es": "Generales"
+  },
+  "Mensili": {
+    "en": "Monthly",
+    "fr": "Mensuelles",
+    "de": "Monatlich",
+    "es": "Mensuales"
+  },
+  "Grafici": {
+    "en": "Charts",
+    "fr": "Graphiques",
+    "de": "Diagramme",
+    "es": "Gráficos"
+  },
+  "Piscina": {
+    "en": "Pool",
+    "fr": "Piscine",
+    "de": "Pool",
+    "es": "Piscina"
+  },
+  "Cancellazioni": {
+    "en": "Cancellations",
+    "fr": "Annulations",
+    "de": "Stornierungen",
+    "es": "Cancelaciones"
+  },
+  "Percentuale cancellazioni": {
+    "en": "Cancellation rate",
+    "fr": "Taux d'annulation",
+    "de": "Stornoquote",
+    "es": "Tasa de cancelación"
+  },
+  "Totale prenotazioni": {
+    "en": "Total bookings",
+    "fr": "Réservations totales",
+    "de": "Gesamtbuchungen",
+    "es": "Reservas totales"
+  },
+  "Cancellate": {
+    "en": "Cancelled",
+    "fr": "Annulées",
+    "de": "Storniert",
+    "es": "Canceladas"
+  },
+  "Audio on/off": {
+    "en": "Audio on/off",
+    "fr": "Audio on/off",
+    "de": "Audio ein/aus",
+    "es": "Audio on/off"
+  },
+  "Nuovo ospite": {
+    "en": "New guest",
+    "fr": "Nouvel invité",
+    "de": "Neuer Gast",
+    "es": "Nuevo huésped"
+  },
+  "Oggi": {
+    "en": "Today",
+    "fr": "Aujourd'hui",
+    "de": "Heute",
+    "es": "Hoy"
+  },
+  "Ordina: data": {
+    "en": "Sort: date",
+    "fr": "Trier : date",
+    "de": "Sortieren: Datum",
+    "es": "Ordenar: fecha"
+  },
+  "Ordina: inserimento": {
+    "en": "Sort: entry",
+    "fr": "Trier : saisie",
+    "de": "Sortieren: Eingabe",
+    "es": "Ordenar: ingreso"
+  },
+  "Ordina: motivazione": {
+    "en": "Sort: reason",
+    "fr": "Trier : motif",
+    "de": "Sortieren: Grund",
+    "es": "Ordenar: motivo"
+  },
+  "Nuovo operatore": {
+    "en": "New operator",
+    "fr": "Nouvel opérateur",
+    "de": "Neuer Mitarbeiter",
+    "es": "Nuevo operador"
+  },
+  "Nuovo channel": {
+    "en": "New channel",
+    "fr": "Nouveau canal",
+    "de": "Neuer Kanal",
+    "es": "Nuevo canal"
+  },
+  "Aggiungi spesa": {
+    "en": "Add expense",
+    "fr": "Ajouter une dépense",
+    "de": "Ausgabe hinzufügen",
+    "es": "Añadir gasto"
+  },
+  "Inserisci spesa": {
+    "en": "Enter expense",
+    "fr": "Saisir la dépense",
+    "de": "Ausgabe eingeben",
+    "es": "Introducir gasto"
+  },
+  "Periodo": {
+    "en": "Period",
+    "fr": "Période",
+    "de": "Zeitraum",
+    "es": "Período"
+  },
+  "Ordina spese": {
+    "en": "Sort expenses",
+    "fr": "Trier les dépenses",
+    "de": "Ausgaben sortieren",
+    "es": "Ordenar gastos"
+  },
+  "Data": {
+    "en": "Date",
+    "fr": "Date",
+    "de": "Datum",
+    "es": "Fecha"
+  },
+  "Categoria": {
+    "en": "Category",
+    "fr": "Catégorie",
+    "de": "Kategorie",
+    "es": "Categoría"
+  },
+  "Motivazione": {
+    "en": "Reason",
+    "fr": "Motif",
+    "de": "Grund",
+    "es": "Motivo"
+  },
+  "Importo (€)": {
+    "en": "Amount (€)",
+    "fr": "Montant (€)",
+    "de": "Betrag (€)",
+    "es": "Importe (€)"
+  },
+  "Note": {
+    "en": "Notes",
+    "fr": "Notes",
+    "de": "Notizen",
+    "es": "Notas"
+  },
+  "Salva": {
+    "en": "Save",
+    "fr": "Enregistrer",
+    "de": "Speichern",
+    "es": "Guardar"
+  },
+  "annulla": {
+    "en": "cancel",
+    "fr": "annuler",
+    "de": "abbrechen",
+    "es": "cancelar"
+  },
+  "Annulla": {
+    "en": "Cancel",
+    "fr": "Annuler",
+    "de": "Abbrechen",
+    "es": "Cancelar"
+  },
+  "continua": {
+    "en": "continue",
+    "fr": "continuer",
+    "de": "weiter",
+    "es": "continuar"
+  },
+  "Conferma": {
+    "en": "Confirm",
+    "fr": "Confirmer",
+    "de": "Bestätigen",
+    "es": "Confirmar"
+  },
+  "SI": {
+    "en": "YES",
+    "fr": "OUI",
+    "de": "JA",
+    "es": "SÍ"
+  },
+  "NO": {
+    "en": "NO",
+    "fr": "NON",
+    "de": "NEIN",
+    "es": "NO"
+  },
+  "Indietro": {
+    "en": "Back",
+    "fr": "Retour",
+    "de": "Zurück",
+    "es": "Atrás"
+  },
+  "Home": {
+    "en": "Home",
+    "fr": "Accueil",
+    "de": "Start",
+    "es": "Inicio"
+  },
+  "Logout": {
+    "en": "Logout",
+    "fr": "Déconnexion",
+    "de": "Abmelden",
+    "es": "Cerrar sesión"
+  },
+  "Carica backup": {
+    "en": "Load backup",
+    "fr": "Charger sauvegarde",
+    "de": "Backup laden",
+    "es": "Cargar copia"
+  },
+  "Inserisci codice": {
+    "en": "Enter code",
+    "fr": "Saisir le code",
+    "de": "Code eingeben",
+    "es": "Introducir código"
+  },
+  "Database": {
+    "en": "Database",
+    "fr": "Base de données",
+    "de": "Datenbank",
+    "es": "Base de datos"
+  },
+  "Importa DB": {
+    "en": "Import DB",
+    "fr": "Importer BD",
+    "de": "DB importieren",
+    "es": "Importar BD"
+  },
+  "Esporta DB": {
+    "en": "Export DB",
+    "fr": "Exporter BD",
+    "de": "DB exportieren",
+    "es": "Exportar BD"
+  },
+  "Report tassa di soggiorno": {
+    "en": "Tourist tax report",
+    "fr": "Rapport taxe de séjour",
+    "de": "Kurtaxe-Bericht",
+    "es": "Informe tasa turística"
+  },
+  "Tassa di soggiorno": {
+    "en": "Tourist tax",
+    "fr": "Taxe de séjour",
+    "de": "Kurtaxe",
+    "es": "Tasa turística"
+  },
+  "Genera report": {
+    "en": "Generate report",
+    "fr": "Générer le rapport",
+    "de": "Bericht erstellen",
+    "es": "Generar informe"
+  },
+  "Resoconto Lavanderia": {
+    "en": "Laundry summary",
+    "fr": "Résumé blanchisserie",
+    "de": "Wäscherei-Zusammenfassung",
+    "es": "Resumen lavandería"
+  },
+  "Ore Pulizia Mensili": {
+    "en": "Monthly cleaning hours",
+    "fr": "Heures mensuelles de nettoyage",
+    "de": "Monatliche Reinigungsstunden",
+    "es": "Horas mensuales de limpieza"
+  },
+  "Ore pulizia operatori": {
+    "en": "Operator cleaning hours",
+    "fr": "Heures de nettoyage opérateurs",
+    "de": "Reinigungsstunden Mitarbeiter",
+    "es": "Horas de limpieza operadores"
+  },
+  "Ricevute mancanti": {
+    "en": "Missing receipts",
+    "fr": "Reçus manquants",
+    "de": "Fehlende Belege",
+    "es": "Recibos faltantes"
+  },
+  "Azienda": {
+    "en": "Company",
+    "fr": "Entreprise",
+    "de": "Unternehmen",
+    "es": "Empresa"
+  },
+  "Amministratore": {
+    "en": "Administrator",
+    "fr": "Administrateur",
+    "de": "Administrator",
+    "es": "Administrador"
+  },
+  "Operatore": {
+    "en": "Operator",
+    "fr": "Opérateur",
+    "de": "Mitarbeiter",
+    "es": "Operador"
+  },
+  "crea account": {
+    "en": "create account",
+    "fr": "créer un compte",
+    "de": "Konto erstellen",
+    "es": "crear cuenta"
+  },
+  "modifica account": {
+    "en": "edit account",
+    "fr": "modifier le compte",
+    "de": "Konto bearbeiten",
+    "es": "editar cuenta"
+  },
+  "amministratore": {
+    "en": "administrator",
+    "fr": "administrateur",
+    "de": "administrator",
+    "es": "administrador"
+  },
+  "operatore": {
+    "en": "operator",
+    "fr": "opérateur",
+    "de": "mitarbeiter",
+    "es": "operador"
+  },
+  "ADMIN": {
+    "en": "ADMIN",
+    "fr": "ADMIN",
+    "de": "ADMIN",
+    "es": "ADMIN"
+  },
+  "OPERATORE": {
+    "en": "OPERATOR",
+    "fr": "OPÉRATEUR",
+    "de": "MITARBEITER",
+    "es": "OPERADOR"
+  },
+  "Struttura": {
+    "en": "Property",
+    "fr": "Structure",
+    "de": "Unterkunft",
+    "es": "Estructura"
+  },
+  "Ricorda struttura": {
+    "en": "Remember property",
+    "fr": "Mémoriser la structure",
+    "de": "Unterkunft merken",
+    "es": "Recordar estructura"
+  },
+  "Email": {
+    "en": "Email",
+    "fr": "E-mail",
+    "de": "E-Mail",
+    "es": "Correo"
+  },
+  "Password": {
+    "en": "Password",
+    "fr": "Mot de passe",
+    "de": "Passwort",
+    "es": "Contraseña"
+  },
+  "Conferma password": {
+    "en": "Confirm password",
+    "fr": "Confirmer le mot de passe",
+    "de": "Passwort bestätigen",
+    "es": "Confirmar contraseña"
+  },
+  "Nuova password": {
+    "en": "New password",
+    "fr": "Nouveau mot de passe",
+    "de": "Neues Passwort",
+    "es": "Nueva contraseña"
+  },
+  "Conferma nuova password": {
+    "en": "Confirm new password",
+    "fr": "Confirmer le nouveau mot de passe",
+    "de": "Neues Passwort bestätigen",
+    "es": "Confirmar nueva contraseña"
+  },
+  "Incolla il codice fornito dall’Admin": {
+    "en": "Paste the code provided by the Admin",
+    "fr": "Collez le code fourni par l'admin",
+    "de": "Vom Admin bereitgestellten Code einfügen",
+    "es": "Pega el código proporcionado por el admin"
+  },
+  "CODICE": {
+    "en": "CODE",
+    "fr": "CODE",
+    "de": "CODE",
+    "es": "CÓDIGO"
+  },
+  "COLLEGA": {
+    "en": "LINK",
+    "fr": "LIER",
+    "de": "VERBINDEN",
+    "es": "VINCULAR"
+  },
+  "Modifica": {
+    "en": "Edit",
+    "fr": "Modifier",
+    "de": "Bearbeiten",
+    "es": "Editar"
+  },
+  "Elimina": {
+    "en": "Delete",
+    "fr": "Supprimer",
+    "de": "Löschen",
+    "es": "Eliminar"
+  },
+  "Check-in": {
+    "en": "Check-in",
+    "fr": "Arrivée",
+    "de": "Check-in",
+    "es": "Check-in"
+  },
+  "Check-out": {
+    "en": "Check-out",
+    "fr": "Départ",
+    "de": "Check-out",
+    "es": "Check-out"
+  },
+  "Adulti": {
+    "en": "Adults",
+    "fr": "Adultes",
+    "de": "Erwachsene",
+    "es": "Adultos"
+  },
+  "Bambini < 10": {
+    "en": "Children < 10",
+    "fr": "Enfants < 10",
+    "de": "Kinder < 10",
+    "es": "Niños < 10"
+  },
+  "Bambini (<10)": {
+    "en": "Children (<10)",
+    "fr": "Enfants (<10)",
+    "de": "Kinder (<10)",
+    "es": "Niños (<10)"
+  },
+  "Stanze": {
+    "en": "Rooms",
+    "fr": "Chambres",
+    "de": "Zimmer",
+    "es": "Habitaciones"
+  },
+  "Numero stanze": {
+    "en": "Number of rooms",
+    "fr": "Nombre de chambres",
+    "de": "Anzahl der Zimmer",
+    "es": "Número de habitaciones"
+  },
+  "Tap per avanzare, pressione lunga per azzerare": {
+    "en": "Tap to advance, long press to reset",
+    "fr": "Touchez pour avancer, appui long pour réinitialiser",
+    "de": "Tippen zum Weiterzählen, lange drücken zum Zurücksetzen",
+    "es": "Toca para avanzar, pulsación larga para reiniciar"
+  },
+  "Matrimoniale": {
+    "en": "Double bed",
+    "fr": "Lit double",
+    "de": "Doppelbett",
+    "es": "Cama doble"
+  },
+  "Singolo": {
+    "en": "Single bed",
+    "fr": "Lit simple",
+    "de": "Einzelbett",
+    "es": "Cama individual"
+  },
+  "Culla": {
+    "en": "Crib",
+    "fr": "Lit bébé",
+    "de": "Kinderbett",
+    "es": "Cuna"
+  },
+  "Dati soggiorno": {
+    "en": "Stay details",
+    "fr": "Détails du séjour",
+    "de": "Aufenthaltsdaten",
+    "es": "Datos de estancia"
+  },
+  "Arrivo": {
+    "en": "Arrival",
+    "fr": "Arrivée",
+    "de": "Ankunft",
+    "es": "Llegada"
+  },
+  "Servizi": {
+    "en": "Services",
+    "fr": "Services",
+    "de": "Leistungen",
+    "es": "Servicios"
+  },
+  "Servizio": {
+    "en": "Service",
+    "fr": "Service",
+    "de": "Service",
+    "es": "Servicio"
+  },
+  "Acconto (€)": {
+    "en": "Deposit (€)",
+    "fr": "Acompte (€)",
+    "de": "Anzahlung (€)",
+    "es": "Anticipo (€)"
+  },
+  "Tipo acconto": {
+    "en": "Deposit type",
+    "fr": "Type d'acompte",
+    "de": "Art der Anzahlung",
+    "es": "Tipo de anticipo"
+  },
+  "Contanti": {
+    "en": "Cash",
+    "fr": "Espèces",
+    "de": "Bar",
+    "es": "Efectivo"
+  },
+  "Saldo (€)": {
+    "en": "Balance (€)",
+    "fr": "Solde (€)",
+    "de": "Restbetrag (€)",
+    "es": "Saldo (€)"
+  },
+  "Registrazioni": {
+    "en": "Registrations",
+    "fr": "Enregistrements",
+    "de": "Registrierungen",
+    "es": "Registros"
+  },
+  "Filtri ospiti": {
+    "en": "Guest filters",
+    "fr": "Filtres invités",
+    "de": "Gästefilter",
+    "es": "Filtros huéspedes"
+  },
+  "Da": {
+    "en": "From",
+    "fr": "De",
+    "de": "Von",
+    "es": "Desde"
+  },
+  "A": {
+    "en": "To",
+    "fr": "À",
+    "de": "Bis",
+    "es": "A"
+  },
+  "Pulizia": {
+    "en": "Cleaning",
+    "fr": "Nettoyage",
+    "de": "Reinigung",
+    "es": "Limpieza"
+  },
+  "Genera report lavanderia": {
+    "en": "Generate laundry report",
+    "fr": "Générer le rapport blanchisserie",
+    "de": "Wäscherei-Bericht erstellen",
+    "es": "Generar informe lavandería"
+  },
+  "Data inizio": {
+    "en": "Start date",
+    "fr": "Date de début",
+    "de": "Startdatum",
+    "es": "Fecha de inicio"
+  },
+  "Data fine": {
+    "en": "End date",
+    "fr": "Date de fin",
+    "de": "Enddatum",
+    "es": "Fecha de fin"
+  },
+  "Caricamento": {
+    "en": "Loading",
+    "fr": "Chargement",
+    "de": "Laden",
+    "es": "Cargando"
+  },
+  "Importa database": {
+    "en": "Import database",
+    "fr": "Importer la base de données",
+    "de": "Datenbank importieren",
+    "es": "Importar base de datos"
+  },
+  "Esporta database": {
+    "en": "Export database",
+    "fr": "Exporter la base de données",
+    "de": "Datenbank exportieren",
+    "es": "Exportar base de datos"
+  },
+  "Dettaglio report piscina": {
+    "en": "Pool report detail",
+    "fr": "Détail du rapport piscine",
+    "de": "Poolbericht-Details",
+    "es": "Detalle del informe piscina"
+  },
+  "Dettaglio grafico": {
+    "en": "Chart detail",
+    "fr": "Détail du graphique",
+    "de": "Diagramm-Details",
+    "es": "Detalle del gráfico"
+  },
+  "Sync Firebase": {
+    "en": "Firebase sync",
+    "fr": "Synchronisation Firebase",
+    "de": "Firebase-Sync",
+    "es": "Sincronización Firebase"
+  },
+  "Gennaio": {
+    "en": "January",
+    "fr": "Janvier",
+    "de": "Januar",
+    "es": "Enero"
+  },
+  "Febbraio": {
+    "en": "February",
+    "fr": "Février",
+    "de": "Februar",
+    "es": "Febrero"
+  },
+  "Marzo": {
+    "en": "March",
+    "fr": "Mars",
+    "de": "März",
+    "es": "Marzo"
+  },
+  "Aprile": {
+    "en": "April",
+    "fr": "Avril",
+    "de": "April",
+    "es": "Abril"
+  },
+  "Maggio": {
+    "en": "May",
+    "fr": "Mai",
+    "de": "Mai",
+    "es": "Mayo"
+  },
+  "Giugno": {
+    "en": "June",
+    "fr": "Juin",
+    "de": "Juni",
+    "es": "Junio"
+  },
+  "Luglio": {
+    "en": "July",
+    "fr": "Juillet",
+    "de": "Juli",
+    "es": "Julio"
+  },
+  "Agosto": {
+    "en": "August",
+    "fr": "Août",
+    "de": "August",
+    "es": "Agosto"
+  },
+  "Settembre": {
+    "en": "September",
+    "fr": "Septembre",
+    "de": "September",
+    "es": "Septiembre"
+  },
+  "Ottobre": {
+    "en": "October",
+    "fr": "Octobre",
+    "de": "Oktober",
+    "es": "Octubre"
+  },
+  "Novembre": {
+    "en": "November",
+    "fr": "Novembre",
+    "de": "November",
+    "es": "Noviembre"
+  },
+  "Dicembre": {
+    "en": "December",
+    "fr": "Décembre",
+    "de": "Dezember",
+    "es": "Diciembre"
+  },
+  "GENNAIO": {
+    "en": "JANUARY",
+    "fr": "JANVIER",
+    "de": "JANUAR",
+    "es": "ENERO"
+  },
+  "Lunedì": {
+    "en": "Monday",
+    "fr": "Lundi",
+    "de": "Montag",
+    "es": "Lunes"
+  },
+  "Martedì": {
+    "en": "Tuesday",
+    "fr": "Mardi",
+    "de": "Dienstag",
+    "es": "Martes"
+  },
+  "Mercoledì": {
+    "en": "Wednesday",
+    "fr": "Mercredi",
+    "de": "Mittwoch",
+    "es": "Miércoles"
+  },
+  "Giovedì": {
+    "en": "Thursday",
+    "fr": "Jeudi",
+    "de": "Donnerstag",
+    "es": "Jueves"
+  },
+  "Venerdì": {
+    "en": "Friday",
+    "fr": "Vendredi",
+    "de": "Freitag",
+    "es": "Viernes"
+  },
+  "Sabato": {
+    "en": "Saturday",
+    "fr": "Samedi",
+    "de": "Samstag",
+    "es": "Sábado"
+  },
+  "Domenica": {
+    "en": "Sunday",
+    "fr": "Dimanche",
+    "de": "Sonntag",
+    "es": "Domingo"
+  },
+  "Dom": {
+    "en": "Sun",
+    "fr": "Dim",
+    "de": "So",
+    "es": "Dom"
+  },
+  "Lun": {
+    "en": "Mon",
+    "fr": "Lun",
+    "de": "Mo",
+    "es": "Lun"
+  },
+  "Mar": {
+    "en": "Tue",
+    "fr": "Mar",
+    "de": "Di",
+    "es": "Mar"
+  },
+  "Mer": {
+    "en": "Wed",
+    "fr": "Mer",
+    "de": "Mi",
+    "es": "Mié"
+  },
+  "Gio": {
+    "en": "Thu",
+    "fr": "Jeu",
+    "de": "Do",
+    "es": "Jue"
+  },
+  "Ven": {
+    "en": "Fri",
+    "fr": "Ven",
+    "de": "Fr",
+    "es": "Vie"
+  },
+  "Sab": {
+    "en": "Sat",
+    "fr": "Sam",
+    "de": "Sa",
+    "es": "Sáb"
+  },
+  "Tutti": {
+    "en": "All",
+    "fr": "Tous",
+    "de": "Alle",
+    "es": "Todos"
+  },
+  "Errore": {
+    "en": "Error",
+    "fr": "Erreur",
+    "de": "Fehler",
+    "es": "Error"
+  }
+};
+let __appLanguage = "it";
+let __languageObserver = null;
+
+function getCurrentLanguage(){
+  return APP_LANG_META[__appLanguage] ? __appLanguage : "it";
+}
+function getCurrentLocaleTag(){
+  const lang = getCurrentLanguage();
+  return (APP_LANG_META[lang] && APP_LANG_META[lang].locale) || "it-IT";
+}
+function __readLanguagePref__(){
+  try{
+    const saved = String(localStorage.getItem(LANG_PREF_KEY) || "it").trim().toLowerCase();
+    return APP_LANG_META[saved] ? saved : "it";
+  }catch(_){ return "it"; }
+}
+function __writeLanguagePref__(lang){
+  try{ localStorage.setItem(LANG_PREF_KEY, lang); }catch(_){ }
+}
+function __capLocale__(s){
+  s = String(s || "");
+  return s ? (s.charAt(0).toUpperCase() + s.slice(1)) : s;
+}
+function tr(input){
+  const value = String(input ?? "");
+  const lang = getCurrentLanguage();
+  if (lang === "it" || !value) return value;
+  const exact = I18N_DICT[value];
+  if (exact && exact[lang]) return exact[lang];
+  let out = value;
+  Object.keys(I18N_DICT)
+    .filter((key) => key && key.length > 2 && out.includes(key))
+    .sort((a,b) => b.length - a.length)
+    .forEach((key) => {
+      const repl = I18N_DICT[key] && I18N_DICT[key][lang];
+      if (repl) out = out.split(key).join(repl);
+    });
+  return out;
+}
+function __translateTextNode__(node){
+  if (!node || !node.nodeValue) return;
+  const raw = node.nodeValue;
+  if (!raw || !raw.trim()) return;
+  const trimmed = String(raw).trim();
+  if (!/[A-Za-zÀ-ÿ]/.test(trimmed)) return;
+  const parent = node.parentElement;
+  if (!parent) return;
+  if (parent.closest("script, style, textarea, input, option")) return;
+  if (parent.closest('[data-i18n-dynamic="1"]')) return;
+  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName, #cleanHeaderText, #topbarYear")) return;
+  if (!parent.dataset.i18nBaseText) parent.dataset.i18nBaseText = raw;
+  const base = parent.dataset.i18nBaseText;
+  const next = tr(base);
+  if (next !== raw) node.nodeValue = next;
+}
+function __translateAttributes__(el){
+  if (!el || !el.getAttribute) return;
+  ["placeholder","aria-label","title"].forEach((attr) => {
+    if (!el.hasAttribute(attr)) return;
+    const baseAttr = "data-i18n-base-" + attr.replace(/[^a-z]/gi, "_");
+    if (!el.hasAttribute(baseAttr)) el.setAttribute(baseAttr, el.getAttribute(attr) || "");
+    const base = el.getAttribute(baseAttr) || "";
+    const next = tr(base);
+    if (next !== (el.getAttribute(attr) || "")) el.setAttribute(attr, next);
+  });
+}
+function translateDom(root){
+  const target = root && root.querySelectorAll ? root : document.body;
+  if (!target) return;
+  if (target.nodeType === Node.TEXT_NODE){
+    __translateTextNode__(target);
+    return;
+  }
+  if (target.nodeType === Node.ELEMENT_NODE){
+    __translateAttributes__(target);
+    Array.from(target.childNodes || []).forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) __translateTextNode__(node);
+    });
+  }
+  const walker = document.createTreeWalker(target, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+  let current;
+  while ((current = walker.nextNode())){
+    if (current.nodeType === Node.TEXT_NODE) __translateTextNode__(current);
+    else if (current.nodeType === Node.ELEMENT_NODE) __translateAttributes__(current);
+  }
+  try{ refreshFloatingLabels(); }catch(_){ }
+}
+function updateLanguageButton(){
+  const meta = APP_LANG_META[getCurrentLanguage()] || APP_LANG_META.it;
+  const btn = document.getElementById("languageBtn");
+  if (btn) { btn.setAttribute("data-lang", getCurrentLanguage()); btn.setAttribute("aria-label", `${meta.label}: ${meta.nativeLabel}`); }
+  document.querySelectorAll("#languageList .language-option").forEach((btnEl) => {
+    const isActive = btnEl.getAttribute("data-lang") === getCurrentLanguage();
+    btnEl.classList.toggle("is-active", isActive);
+    btnEl.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+}
+function applyLanguage(lang){
+  __appLanguage = APP_LANG_META[lang] ? lang : "it";
+  __writeLanguagePref__(__appLanguage);
+  try{ document.documentElement.lang = __appLanguage; }catch(_){ }
+  translateDom(document.body);
+  updateLanguageButton();
+}
+function openLanguageModal(){
+  const modal = document.getElementById("languageModal");
+  if (!modal) return;
+  modal.hidden = false;
+  try{ modal.setAttribute("aria-hidden","false"); }catch(_){ }
+}
+function closeLanguageModal(){
+  const modal = document.getElementById("languageModal");
+  if (!modal) return;
+  modal.hidden = true;
+  try{ modal.setAttribute("aria-hidden","true"); }catch(_){ }
+}
+function setupLanguageUI(){
+  __appLanguage = __readLanguagePref__();
+  const openBtn = document.getElementById("languageBtn");
+  const closeBtn = document.getElementById("languageModalClose");
+  const modal = document.getElementById("languageModal");
+  if (openBtn && !openBtn.__langBound){
+    openBtn.__langBound = true;
+    bindFastTap(openBtn, openLanguageModal);
+  }
+  if (closeBtn && !closeBtn.__langBound){
+    closeBtn.__langBound = true;
+    bindFastTap(closeBtn, closeLanguageModal);
+  }
+  if (modal && !modal.__langBound){
+    modal.__langBound = true;
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeLanguageModal(); });
+  }
+  document.querySelectorAll("#languageList .language-option").forEach((btn) => {
+    if (btn.__langBound) return;
+    btn.__langBound = true;
+    bindFastTap(btn, () => {
+      const next = btn.getAttribute("data-lang") || "it";
+      applyLanguage(next);
+      closeLanguageModal();
+    });
+  });
+  if (!__languageObserver && document.body){
+    __languageObserver = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.type === "characterData") translateDom(m.target);
+        (m.addedNodes || []).forEach((n) => translateDom(n));
+      });
+    });
+    __languageObserver.observe(document.body, { childList:true, subtree:true, characterData:true });
+  }
+  applyLanguage(__appLanguage);
+}
+
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -965,14 +2068,28 @@ function __parseQr__(txt){
   return { teamId: m[1], teamKey: m[2] };
 }
 
+function __fbCfg__(){
+  try{
+    const cfg = (typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG)
+      || (typeof window !== "undefined" && window.FIREBASE_CONFIG)
+      || null;
+    const enabled = (typeof FIREBASE_ENABLED !== "undefined")
+      ? !!FIREBASE_ENABLED
+      : !!(typeof window !== "undefined" && window.FIREBASE_ENABLED);
+    return { cfg, enabled: !!enabled, ready: !!(enabled && cfg && cfg.apiKey && cfg.projectId) };
+  }catch(_){ return { cfg:null, enabled:false, ready:false }; }
+}
+
 async function __fbGetIdToken__(){
   try{
-    if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error("Firebase non configurato");
+    const fb = __fbCfg__();
+    if (!fb.ready) throw new Error("Firebase non configurato");
+    const cfg = fb.cfg;
     const now = Date.now();
     if (__FB_STATE__.token && __FB_STATE__.exp && now < (__FB_STATE__.exp - 15000)) return __FB_STATE__.token;
 
     // anonymous signUp (REST)
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(cfg.apiKey)}`;
     const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ returnSecureToken:true }) });
     if (!res.ok) throw new Error("Auth Firebase fallita");
     const data = await res.json();
@@ -986,7 +2103,9 @@ async function __fbGetIdToken__(){
 }
 
 function __fsBase__(){
-  const pid = FIREBASE_CONFIG.projectId;
+  const fb = __fbCfg();
+  if (!fb.cfg || !fb.cfg.projectId) throw new Error("Firebase non configurato");
+  const pid = fb.cfg.projectId;
   return `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents`;
 }
 function __fsDocUrl__(path){
@@ -4008,15 +5127,13 @@ function formatLongDateIT(value){
   const [y,m,d] = iso.split("-").map(n=>parseInt(n,10));
   const dt = new Date(y, (m-1), d);
   if (isNaN(dt)) return "";
-  const s = dt.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
-  // capitalizza il mese (in it-IT normalmente è minuscolo)
-  // es: "1 gennaio 2026" -> "1 Gennaio 2026"
+  const s = dt.toLocaleDateString(getCurrentLocaleTag(), { day: "numeric", month: "long", year: "numeric" });
   const parts = s.split(" ");
-  if (parts.length >= 3) {
-    parts[1] = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
+  if (parts.length >= 2) {
+    parts[1] = __capLocale__(parts[1]);
     return parts.join(" ");
   }
-  return s;
+  return __capLocale__(s);
 }
 
 function formatRangeCompactIT(checkInValue, checkOutValue){
@@ -4041,8 +5158,8 @@ function formatRangeCompactIT(checkInValue, checkOutValue){
   const y2 = end.getFullYear();
 
   const monthCap = (dt) => {
-    const s = dt.toLocaleDateString("it-IT", { month: "long" });
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    const s = dt.toLocaleDateString(getCurrentLocaleTag(), { month: "long" });
+    return __capLocale__(s);
   };
 
   // stesso mese/anno -> "21-24 Agosto"
@@ -5369,7 +6486,7 @@ function setupImpostazioni() {
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
-    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
+    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { __openDbMenuModal__(); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
     if (rosterBtn) bindFastTap(rosterBtn, async () => {
       try{
@@ -5382,7 +6499,7 @@ function setupImpostazioni() {
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
-    if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
+    if (dbA) bindFastTap(dbA, () => { __openDbMenuModal__(); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
@@ -10311,9 +11428,14 @@ function updateSettingsRoomsButtonLabel(){
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
-    if (label) label.textContent = `Stanze ${n}`;
-    el.setAttribute('aria-label', `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`);
-    el.title = `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`;
+    const txt = `${tr("Stanze")} ${n}`;
+    if (label){
+      try{ label.dataset.i18nDynamic = '1'; }catch(_){ }
+      try{ label.dataset.i18nBaseText = txt; }catch(_){ }
+      label.textContent = txt;
+    }
+    el.setAttribute('aria-label', `${tr("Numero stanze")}: ${n}. ${tr("Tap per avanzare, pressione lunga per azzerare")}`);
+    el.title = `${tr("Numero stanze")}: ${n}. ${tr("Tap per avanzare, pressione lunga per azzerare")}`;
   }catch(_){ }
 }
 
@@ -13538,16 +14660,16 @@ function __capFirst(s){
 
 function __fmtItDateLong(d){
   try{
-    const fmt = new Intl.DateTimeFormat("it-IT", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
+    const fmt = new Intl.DateTimeFormat(getCurrentLocaleTag(), { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
     return __capFirst(fmt.format(d));
   }catch(_){
-    try{ return new Date(d).toLocaleDateString("it-IT"); }catch(__){ return ""; }
+    try{ return new Date(d).toLocaleDateString(getCurrentLocaleTag()); }catch(__){ return ""; }
   }
 }
 
 function __fmtMonthYear(d){
   try{
-    const fmt = new Intl.DateTimeFormat("it-IT", { month:"long", year:"numeric" });
+    const fmt = new Intl.DateTimeFormat(getCurrentLocaleTag(), { month:"long", year:"numeric" });
     return __capFirst(fmt.format(d));
   }catch(_){
     const x = new Date(d);
@@ -14109,6 +15231,7 @@ async function init(){
   try{ applyRoleMode(); }catch(_){ }
   setupCalendario();
   setupImpostazioni();
+  try{ setupLanguageUI(); }catch(_){ }
   setupOperatoriPage();
   setupChannelPage();
 setupPiscina();
@@ -14292,7 +15415,7 @@ try{
       try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
       const parts = [];
       parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
-      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
+      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head" data-col="${col}" role="button" tabindex="0">${col}</div>`); });
       for (let r = 1; r <= count; r++) {
         parts.push(`<div class="c cell room r${r}">${r}</div>`);
         __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
@@ -14547,7 +15670,11 @@ try{
     const c = String(code || "").trim().toUpperCase();
     const text = CLEAN_HEADER_DESC[c] || "";
     if (!text) return;
-    cleanHeaderText.textContent = text;
+    try{ cleanHeaderText.dataset.i18nDynamic = '1'; }catch(_){ }
+    try{ cleanHeaderText.dataset.i18nBaseText = text; }catch(_){ }
+    try{ cleanHeaderText.textContent = text; }catch(_){ }
+    try{ cleanHeaderText.innerText = text; }catch(_){ }
+    try{ cleanHeaderText.setAttribute("data-code", c); }catch(_){ }
     cleanHeaderModal.hidden = false;
   };
 
@@ -15021,32 +16148,73 @@ const buildPuliziePayload = (roomsList = null) => {
   if (cleanGrid){
     // Header click (MAT/SIN/FED...): mostra descrizione in popup
     let __lastHeadTouchAt = 0;
-    const __pickHeadCode = (ev) => {
-      const head = ev.target && ev.target.closest ? ev.target.closest(".cell.head") : null;
+    const __cleanHeadCodes = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+    const __pickHeadCode = (targetOrEvent) => {
+      const base = targetOrEvent && targetOrEvent.target ? targetOrEvent.target : targetOrEvent;
+      const head = base && base.closest ? base.closest(".cell.head") : null;
       if (!head || head.classList.contains("corner")) return null;
-      const code = String(head.textContent || "").trim().toUpperCase();
-      return CLEAN_HEADER_DESC[code] ? code : null;
+      let raw = String((head.dataset && head.dataset.col) || head.getAttribute('data-col') || "").trim().toUpperCase();
+      if (!raw){
+        raw = String(head.textContent || "").replace(/\s+/g, "").trim().toUpperCase();
+      }
+      if (!raw){
+        const heads = Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)'));
+        const idx = heads.indexOf(head);
+        if (idx >= 0) raw = __cleanHeadCodes[idx] || "";
+      }
+      return CLEAN_HEADER_DESC[raw] ? raw : null;
+    };
+    const __showHeadInfo = (target, ev, source) => {
+      const code = __pickHeadCode(target);
+      if (!code) return false;
+      try{ cleanHeaderText.textContent = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
+      try{ cleanHeaderText.innerText = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
+      try{ __sfxTap(); }catch(_){ }
+      openCleanHeaderModal(code);
+      if (ev){
+        try{ ev.preventDefault(); }catch(_){ }
+        try{ ev.stopPropagation(); }catch(_){ }
+      }
+      return true;
     };
 
     cleanGrid.addEventListener("touchend", (e) => {
-      const code = __pickHeadCode(e);
-      if (!code) return;
+      const shown = __showHeadInfo(e, e, 'grid-touch');
+      if (!shown) return;
       __lastHeadTouchAt = Date.now();
-      try{ __sfxTap(); }catch(_){ }
-      openCleanHeaderModal(code);
-      e.preventDefault();
-      e.stopPropagation();
     }, { passive: false, capture: true });
 
     cleanGrid.addEventListener("click", (e) => {
       const code = __pickHeadCode(e);
       if (!code) return;
       if (Date.now() - __lastHeadTouchAt < 450) { e.preventDefault(); e.stopPropagation(); return; }
-      try{ __sfxTap(); }catch(_){ }
-      openCleanHeaderModal(code);
-      e.preventDefault();
-      e.stopPropagation();
+      __showHeadInfo(e, e, 'grid-click');
     }, true);
+
+    try{
+      Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)')).forEach((head, idx) => {
+        const code = __cleanHeadCodes[idx] || String(head.textContent || '').replace(/\s+/g,'').trim().toUpperCase();
+        if (!code || !CLEAN_HEADER_DESC[code]) return;
+        try{ head.dataset.col = code; }catch(_){ }
+        try{ head.setAttribute('role', 'button'); head.setAttribute('tabindex', '0'); }catch(_){ }
+        if (!head.dataset.boundInfoHead){
+          head.dataset.boundInfoHead = '1';
+          head.addEventListener('touchend', (ev) => {
+            __lastHeadTouchAt = Date.now();
+            __showHeadInfo(head, ev, 'direct-touch');
+          }, { passive:false });
+          head.addEventListener('click', (ev) => {
+            if (Date.now() - __lastHeadTouchAt < 450) { ev.preventDefault(); ev.stopPropagation(); return; }
+            __showHeadInfo(head, ev, 'direct-click');
+          }, true);
+          head.addEventListener('keydown', (ev) => {
+            const key = String(ev.key || '');
+            if (key !== 'Enter' && key !== ' ') return;
+            __showHeadInfo(head, ev, 'direct-key');
+          });
+        }
+      });
+    }catch(_){ }
 
 
     // Touch (iPhone)
@@ -16304,7 +17472,10 @@ function sanitizeLaundryItem_(it){
 function setLaundryLabels_(){
   for (const k of LAUNDRY_COLS){
     const el = document.getElementById("laundryLbl"+k);
-    if (el) el.textContent = LAUNDRY_LABELS[k] || k;
+    if (!el) continue;
+    const txt = tr(LAUNDRY_LABELS[k] || k);
+    try{ el.dataset.i18nBaseText = txt; }catch(_){ }
+    el.textContent = txt;
   }
 }
 
@@ -16317,11 +17488,11 @@ function renderLaundry_(item){
   const printRangeEl = document.getElementById("laundryPrintRange");
 
   if (!item){
-    if (rangeEl){ rangeEl.hidden = true; rangeEl.textContent = ""; }
-    if (printRangeEl) printRangeEl.textContent = "";
+    if (rangeEl){ try{ rangeEl.dataset.i18nDynamic = '1'; }catch(_){} rangeEl.hidden = true; rangeEl.textContent = ""; }
+    if (printRangeEl){ try{ printRangeEl.dataset.i18nDynamic = '1'; }catch(_){} printRangeEl.textContent = ""; }
     for (const k of LAUNDRY_COLS){
       const v = document.getElementById("laundryVal"+k);
-      if (v) v.textContent = "0";
+      if (v){ try{ v.dataset.i18nDynamic = '1'; }catch(_){} v.textContent = "0"; }
     }
     const tbody = document.getElementById("laundryPrintBody");
     if (tbody) tbody.innerHTML = "";
@@ -16331,12 +17502,12 @@ function renderLaundry_(item){
   const startLbl = item.startDate ? formatLongDateIT(item.startDate) : "";
   const endLbl = item.endDate ? formatLongDateIT(item.endDate) : "";
   const rangeText = (startLbl && endLbl) ? `${startLbl} – ${endLbl}` : (startLbl || endLbl || "—");
-  if (rangeEl){ rangeEl.hidden = false; rangeEl.innerHTML = `<b>${rangeText}</b>`; }
-  if (printRangeEl) printRangeEl.textContent = rangeText;
+  if (rangeEl){ try{ rangeEl.dataset.i18nDynamic = '1'; }catch(_){} rangeEl.hidden = false; rangeEl.innerHTML = `<b>${rangeText}</b>`; }
+  if (printRangeEl){ try{ printRangeEl.dataset.i18nDynamic = '1'; }catch(_){} printRangeEl.textContent = rangeText; }
 
   for (const k of LAUNDRY_COLS){
     const v = document.getElementById("laundryVal"+k);
-    if (v) v.textContent = String(item[k] || 0);
+    if (v){ try{ v.dataset.i18nDynamic = '1'; }catch(_){} v.textContent = String(item[k] || 0); }
   }
 
   const tbody = document.getElementById("laundryPrintBody");
@@ -17163,8 +18334,8 @@ function formatMonthYearIT_(monthKey){
   const parts = monthKey.split("-").map(n=>parseInt(n,10));
   const y = parts[0], m = parts[1];
   const dt = new Date(y, (m-1), 1);
-  const s = dt.toLocaleDateString("it-IT", { month:"long", year:"numeric" });
-  return __capitalizeFirst_(s);
+  const s = dt.toLocaleDateString(getCurrentLocaleTag(), { month:"long", year:"numeric" });
+  return __capLocale__(s);
 }
 
 function __fmtHours_(h){
