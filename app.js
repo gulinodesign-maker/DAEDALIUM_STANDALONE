@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.175";
+const BUILD_VERSION = "2.176";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16420,15 +16420,33 @@ function sanitizeLaundryItem_(it){
   out.deletedAt = String(it.deletedAt || it.deleted_at || "").trim();
   out.isDeleted = __normBool01(it.isDeleted ?? it.is_deleted ?? it.deleted);
   out.is_deleted = out.isDeleted;
+  // Inizializza quantità e resi a zero per ogni colonna
   for (const k of LAUNDRY_COLS){
-    const n = Number(it[k]);
-    // Quantità: valori negativi rappresentano resi e non vanno sommati.  
-    // Converte i valori in interi non negativi per il conteggio.  
-    out[k] = isNaN(n) ? 0 : Math.max(0, Math.floor(n));
-    // Conserva i resi come valore positivo separato (numero di pezzi restituiti).  
-    // Se la quantità originale è negativa, registriamo la sua magnitudine come reso; altrimenti zero.  
-    out[`${k}_resi`] = isNaN(n) ? 0 : Math.max(0, Math.floor(-n));
+    out[k] = 0;
+    out[`${k}_resi`] = 0;
   }
+  // Per ogni chiave presente nell'oggetto in ingresso, assegna quantità o resi.
+  Object.keys(it).forEach(rawKey => {
+    const key = String(rawKey || "").trim();
+    // Determina se la chiave corrisponde a una categoria conosciuta (case-insensitive)
+    const baseKey = LAUNDRY_COLS.find(c => c.toLowerCase() === key.toLowerCase().replace(/_r$/i, ''));
+    if (!baseKey) return;
+    let n = Number(it[rawKey]);
+    if (!isFinite(n)) return;
+    n = Math.floor(n);
+    // Se la chiave termina con "_r" (o "_R") o "R" aggiunta, considerala come reso esplicito
+    const isResKey = /_r$/i.test(key) || (key.length === baseKey.length + 1 && key.toLowerCase().startsWith(baseKey.toLowerCase()) && key.toLowerCase().endsWith('r'));
+    if (isResKey){
+      out[`${baseKey}_resi`] += Math.max(0, Math.abs(n));
+    } else {
+      // Quantità: se negativa, aggiungi ai resi; altrimenti ai pezzi
+      if (n < 0){
+        out[`${baseKey}_resi`] += Math.abs(n);
+      } else {
+        out[baseKey] += n;
+      }
+    }
+  });
   return out;
 }
 
