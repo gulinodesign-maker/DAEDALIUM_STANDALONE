@@ -4520,6 +4520,7 @@ grid-template-rows: 34px repeat(7, 54px);
   display: grid !important;
   grid-template-columns: var(--cg-corner) repeat(8, minmax(0, 1fr)) !important;
   grid-template-rows: var(--cg-head-h) repeat(7, var(--cg-row-h)) !important;
+  grid-auto-rows: var(--cg-row-h) !important;
   gap: var(--cg-gap) !important;
 }
 

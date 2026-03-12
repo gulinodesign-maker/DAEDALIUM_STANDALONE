@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.154
+ * Build: 2.155
  */
-const BUILD_VERSION = "2.154";
+const BUILD_VERSION = "2.155";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4746,6 +4746,9 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
 
     try{ if (typeof window.__syncCleanOperators__ === "function") window.__syncCleanOperators__(); }catch(_){ }
     try{ refreshFloatingLabels(); }catch(_){ }
+    try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
+    try{ ensureRoomsPickerButtons(); }catch(_){ }
+    try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
 
     return state.settings;
   } catch (e) {
@@ -13900,6 +13903,7 @@ try{
         }catch(_){ }
       }
       const count = Math.max(0, Math.min(12, getConfiguredRoomsCount(6)));
+      try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
       const parts = [];
       parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
       __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
@@ -14812,7 +14816,7 @@ if (cleanResetAll){
     window.__ddae_refreshPulizieGrid = async ({ forceReload = false } = {}) => {
       try{ rebuildPulizieGrid({ preserveValues: !forceReload }); }catch(_){ }
       try{
-        if (state && state.page === "pulizie") await loadPulizieForDay({ clearFirst: true });
+        if (state && state.page === "pulizie") await loadPulizieForDay({ clearFirst: forceReload });
       }catch(_){ }
     };
   }catch(_){ }
