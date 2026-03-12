@@ -2217,6 +2217,14 @@ body[data-page="ospiti"] .guest-card .actions {
   padding: 10px 12px;
   border-radius: 14px;
 }
+
+.clean-grid .cell.head.clean-head-info{
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .clean-info-text{
   padding: 14px 10px 10px;
   font-size: 18px;
