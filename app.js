@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.175
  */
-const BUILD_VERSION = "2.176";
+const BUILD_VERSION = "2.177";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -4237,16 +4237,21 @@ function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    if (state && state.page === "calendario"){
-      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+    const currentPage = String((state && state.page) || "").trim().toLowerCase();
+    const calVisible = (()=>{ try{ const sec = document.getElementById("page-calendario"); return !!(sec && !sec.hidden); }catch(_){ return false; } })();
+    const pulVisible = (()=>{ try{ const sec = document.getElementById("page-pulizie"); return !!(sec && sec.style.display !== "none" && !sec.hidden); }catch(_){ return false; } })();
+    if (currentPage === "calendario" || calVisible){
+      const a = (state && state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       const monthLabel = monthNameIT(a);
       el.textContent = monthLabel ? __capLocale__(String(monthLabel).toLowerCase()) : "Daedalium";
-    } else if (state && state.page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
-    } else {
-      el.textContent = "Daedalium";
+      return;
     }
+    if (currentPage === "pulizie" || pulVisible){
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : ((state && state.cleanDay) ? new Date(state.cleanDay) : new Date());
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
+      return;
+    }
+    el.textContent = "Daedalium";
   }catch(_){ }
 }
 
@@ -16311,6 +16316,10 @@ if (cleanResetAll){
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
     const day = startOfLocalDay(base);
     if (lab) lab.textContent = formatFullDateIT(day);
+    try{
+      const topbar = document.getElementById("topbarYear");
+      if (topbar) topbar.textContent = formatPulizieTopbarDateIT(day) || "Daedalium";
+    }catch(_){ }
     try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 
@@ -16716,6 +16725,11 @@ function renderCalendarioWeek(){
     title.textContent = "";
     title.hidden = true;
   }
+  try{
+    const topbar = document.getElementById("topbarYear");
+    const monthLabel = monthNameIT(anchor);
+    if (topbar && monthLabel) topbar.textContent = __capLocale__(String(monthLabel).toLowerCase());
+  }catch(_){ }
   const occ = buildWeekOccupancy(start);
 
   grid.innerHTML = "";
