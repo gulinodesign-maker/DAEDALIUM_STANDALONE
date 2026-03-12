@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.169";
+const BUILD_VERSION = "2.170";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7272,16 +7272,43 @@ function parseDateTs(v){
 }
 
 function computeInsertionMap(guests){
+  const pickSeq = (g) => {
+    const v = Number(g?.seq);
+    return Number.isFinite(v) && v > 0 ? v : null;
+  };
+  const pickIns = (g) => {
+    const vals = [g?.insertion_no, g?.insertionNo, g?.ordineInserimento, g?.ins_no];
+    for (const raw of vals){
+      const v = Number(raw);
+      if (Number.isFinite(v) && v > 0) return v;
+    }
+    return null;
+  };
+
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
+    const seq = pickSeq(g);
+    const ins = pickIns(g);
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    return { id, idx, t };
+    const bucket = (seq != null) ? 0 : (ins != null ? 1 : 2);
+    return { id, idx, seq, ins, t, bucket };
   }).filter(x => !!x.id);
 
-  // Ordine inserimento ricostruito solo dalla data di creazione originaria.
-  // Le modifiche successive (updatedAt) non devono alterare la posizione.
+  // Ordine misto stabile:
+  // 1) seq quando presente
+  // 2) insertion_no / ordineInserimento / ins_no come fallback
+  // 3) createdAt solo come ulteriore fallback
+  // updatedAt non influenza mai l'ordine di inserimento.
   arr.sort((a,b) => {
+    if (a.bucket !== b.bucket) return a.bucket - b.bucket;
+
+    if (a.bucket === 0){
+      if (a.seq !== b.seq) return a.seq - b.seq;
+    }else if (a.bucket === 1){
+      if (a.ins !== b.ins) return a.ins - b.ins;
+    }
+
     const at = a.t;
     const bt = b.t;
     if (at != null && bt != null && at !== bt) return at - bt;

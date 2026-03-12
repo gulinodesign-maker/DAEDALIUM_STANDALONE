@@ -9512,7 +9512,7 @@ body[data-page^="stat"] #homeSyncBar{
   #page-ospiti .guest-meta-right .guest-led{ width:26px !important; height:26px !important; }
 }
 
-/* dDAE_2.169 — Spesa: tasto Colazione azzurro 35% con testo nero */
+/* dDAE_2.170 — Spesa: tasto Colazione azzurro 35% con testo nero */
 #prodTabColazione,
 #prodAddToColazione{
   border-color: rgba(67,181,255,0.35) !important;
