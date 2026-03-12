@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.174
+ * Build: 2.181
  */
-const BUILD_VERSION = "2.180";
+const BUILD_VERSION = "2.181";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -156,12 +156,6 @@ const I18N_DICT = {
     "fr": "Dépenses",
     "de": "Ausgaben",
     "es": "Gastos"
-  },
-  "Spesa": {
-    "en": "Shopping",
-    "fr": "Courses",
-    "de": "Einkauf",
-    "es": "Compra"
   },
   "Tassa": {
     "en": "Tax",
@@ -1053,7 +1047,7 @@ function __translateTextNode__(node){
   if (!parent) return;
   if (parent.closest("script, style, textarea, input, option")) return;
   if (parent.closest('[data-i18n-dynamic="1"]')) return;
-  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName, #cleanHeaderText, #topbarYear")) return;
+  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName, #cleanHeaderText")) return;
   if (!parent.dataset.i18nBaseText) parent.dataset.i18nBaseText = raw;
   const base = parent.dataset.i18nBaseText;
   const next = tr(base);
@@ -2068,28 +2062,14 @@ function __parseQr__(txt){
   return { teamId: m[1], teamKey: m[2] };
 }
 
-function __fbCfg__(){
-  try{
-    const cfg = (typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG)
-      || (typeof window !== "undefined" && window.FIREBASE_CONFIG)
-      || null;
-    const enabled = (typeof FIREBASE_ENABLED !== "undefined")
-      ? !!FIREBASE_ENABLED
-      : !!(typeof window !== "undefined" && window.FIREBASE_ENABLED);
-    return { cfg, enabled: !!enabled, ready: !!(enabled && cfg && cfg.apiKey && cfg.projectId) };
-  }catch(_){ return { cfg:null, enabled:false, ready:false }; }
-}
-
 async function __fbGetIdToken__(){
   try{
-    const fb = __fbCfg__();
-    if (!fb.ready) throw new Error("Firebase non configurato");
-    const cfg = fb.cfg;
+    if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error("Firebase non configurato");
     const now = Date.now();
     if (__FB_STATE__.token && __FB_STATE__.exp && now < (__FB_STATE__.exp - 15000)) return __FB_STATE__.token;
 
     // anonymous signUp (REST)
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(cfg.apiKey)}`;
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
     const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ returnSecureToken:true }) });
     if (!res.ok) throw new Error("Auth Firebase fallita");
     const data = await res.json();
@@ -2103,9 +2083,7 @@ async function __fbGetIdToken__(){
 }
 
 function __fsBase__(){
-  const fb = __fbCfg();
-  if (!fb.cfg || !fb.cfg.projectId) throw new Error("Firebase non configurato");
-  const pid = fb.cfg.projectId;
+  const pid = FIREBASE_CONFIG.projectId;
   return `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents`;
 }
 function __fsDocUrl__(path){
@@ -5540,7 +5518,8 @@ async function api(action, { method="GET", params={}, body=null, showLoader=true
     try{ __syncLedBegin(realMethod); }catch(_){ }
     return await __localApi__(action, { method: realMethod, params: (params||{}), body });
   }
-  if (!API_BASE_URL || API_BASE_URL.includes("INCOLLA_QUI")) {
+  if (typeof API_BASE_URL === "undefined" || !API_BASE_URL || String(API_BASE_URL).includes("INCOLLA_QUI")) {
+    try{ return await __localApi__(action, { method: realMethod, params: (params||{}), body }); }catch(_){ }
     throw new Error("Config mancante: imposta API_BASE_URL in config.js");
   }
 
