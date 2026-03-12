@@ -9577,3 +9577,47 @@ body[data-page^="stat"] #homeSyncBar{
   min-width: 0;
   font-size: 28px;
 }
+
+/* dDAE_2.172 — Home gradient icons, Impostazioni 3x3, Tassa 75% */
+#page-home .home-main-glyph .ui-ico,
+#page-home .home-main-glyph .ui-ico *{
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#page-impostazioni .settings-actions.settings-actions-reference{
+  display:grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  justify-content:center !important;
+  gap: 14px 14px !important;
+  width: min(360px, 96vw) !important;
+  margin: 56px auto 0 auto !important;
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  max-width: 108px !important;
+  height: clamp(83px, 23.4vw, 108px) !important;
+  min-width: 0 !important;
+  min-height: clamp(83px, 23.4vw, 108px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  opacity: 0.75 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 13px !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+.settings-btn-language,
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{
+  background: rgba(77,156,197,0.75) !important;
+  border-color: rgba(77,156,197,0.24) !important;
+}
+
+.btn.tax-quarter.tax-q1{ background: rgba(77,156,197,0.75) !important; }
+.btn.tax-quarter.tax-q2{ background: rgba(107,114,128,0.75) !important; }
+.btn.tax-quarter.tax-q3{ background: rgba(201,119,43,0.75) !important; }
+.btn.tax-quarter.tax-q4{ background: rgba(0,0,0,0.75) !important; }

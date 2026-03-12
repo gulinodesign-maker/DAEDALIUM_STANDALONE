@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.171";
+const BUILD_VERSION = "2.172";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5420,6 +5420,52 @@ function setupChannelPage(){
   });
 }
 
+function __applyHomeIconGradients__(){
+  try{
+    const btns = Array.from(document.querySelectorAll('#page-home .home-grid .home-main:not([hidden])'));
+    const palettes = [
+      ['#0B1F3A', '#43B5FF'],
+      ['#43B5FF', '#FF7A1A'],
+      ['#FF7A1A', '#D8D0C7']
+    ];
+    btns.forEach((btn, idx) => {
+      const svg = btn.querySelector('svg.ui-ico');
+      if (!svg) return;
+      const col = idx % 3;
+      const gradId = `homeIconGrad_${col + 1}_${idx}`;
+      let defs = svg.querySelector('defs');
+      if (!defs){
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        svg.insertBefore(defs, svg.firstChild || null);
+      }
+      defs.innerHTML = '';
+      const lg = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+      lg.setAttribute('id', gradId);
+      lg.setAttribute('x1', '0%');
+      lg.setAttribute('y1', '50%');
+      lg.setAttribute('x2', '100%');
+      lg.setAttribute('y2', '50%');
+      const s1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      s1.setAttribute('offset', '0%');
+      s1.setAttribute('stop-color', palettes[col][0]);
+      const s2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      s2.setAttribute('offset', '100%');
+      s2.setAttribute('stop-color', palettes[col][1]);
+      lg.appendChild(s1);
+      lg.appendChild(s2);
+      defs.appendChild(lg);
+      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((shape) => {
+        try{
+          shape.setAttribute('stroke', `url(#${gradId})`);
+          if (!shape.hasAttribute('fill') || shape.getAttribute('fill') !== 'none') {
+            shape.setAttribute('fill', 'none');
+          }
+        }catch(_){ }
+      });
+    });
+  }catch(_){ }
+}
+
 function setupImpostazioni() {
   const back = document.getElementById("settingsBackBtn");
   if (back) back.addEventListener("click", () => showPage("home"));
@@ -5459,6 +5505,11 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
 
   const roomsBtn = document.getElementById("settingsRoomsBtn");
+  const langBtn = document.getElementById("settingsLanguageBtn");
+  if (langBtn && !langBtn.__boundLangTap){
+    langBtn.__boundLangTap = true;
+    bindFastTap(langBtn, () => { try{ toast("Funzione lingua in arrivo", "blue"); }catch(_){ } });
+  }
   if (roomsBtn && !roomsBtn.__boundRoomsTap){
     roomsBtn.__boundRoomsTap = true;
     let __roomsPressTimer = null;
@@ -7124,6 +7175,7 @@ if (goCalendarioTopOspiti){
   if (goOrePulHome){
     bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("orepulizia"); });
   }
+  try{ __applyHomeIconGradients__(); }catch(_){ }
   const goLavTop = $("#goLavanderiaTop");
   if (goLavTop){
     bindFastTap(goLavTop, () => { hideLauncher(); showPage("lavanderia"); });
