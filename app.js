@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.172
+ * Build: 2.171
  */
-const BUILD_VERSION = "2.172";
+const BUILD_VERSION = "2.171";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -15628,9 +15628,7 @@ try{
     const c = String(code || "").trim().toUpperCase();
     const text = CLEAN_HEADER_DESC[c] || "";
     if (!text) return;
-    try{ cleanHeaderText.textContent = text; }catch(_){ }
-    try{ cleanHeaderText.innerText = text; }catch(_){ }
-    try{ cleanHeaderText.setAttribute("data-code", c); }catch(_){ }
+    cleanHeaderText.textContent = text;
     cleanHeaderModal.hidden = false;
   };
 
@@ -16104,73 +16102,32 @@ const buildPuliziePayload = (roomsList = null) => {
   if (cleanGrid){
     // Header click (MAT/SIN/FED...): mostra descrizione in popup
     let __lastHeadTouchAt = 0;
-    const __cleanHeadCodes = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
-    const __pickHeadCode = (targetOrEvent) => {
-      const base = targetOrEvent && targetOrEvent.target ? targetOrEvent.target : targetOrEvent;
-      const head = base && base.closest ? base.closest(".cell.head") : null;
+    const __pickHeadCode = (ev) => {
+      const head = ev.target && ev.target.closest ? ev.target.closest(".cell.head") : null;
       if (!head || head.classList.contains("corner")) return null;
-      let raw = String((head.dataset && head.dataset.col) || head.getAttribute('data-col') || "").trim().toUpperCase();
-      if (!raw){
-        raw = String(head.textContent || "").replace(/\s+/g, "").trim().toUpperCase();
-      }
-      if (!raw){
-        const heads = Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)'));
-        const idx = heads.indexOf(head);
-        if (idx >= 0) raw = __cleanHeadCodes[idx] || "";
-      }
+      const raw = String((head.dataset && head.dataset.col) || head.getAttribute('data-col') || head.textContent || "").trim().toUpperCase();
       return CLEAN_HEADER_DESC[raw] ? raw : null;
-    };
-    const __showHeadInfo = (target, ev, source) => {
-      const code = __pickHeadCode(target);
-      if (!code) return false;
-      try{ cleanHeaderText.textContent = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
-      try{ cleanHeaderText.innerText = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
-      try{ __sfxTap(); }catch(_){ }
-      openCleanHeaderModal(code);
-      if (ev){
-        try{ ev.preventDefault(); }catch(_){ }
-        try{ ev.stopPropagation(); }catch(_){ }
-      }
-      return true;
     };
 
     cleanGrid.addEventListener("touchend", (e) => {
-      const shown = __showHeadInfo(e, e, 'grid-touch');
-      if (!shown) return;
+      const code = __pickHeadCode(e);
+      if (!code) return;
       __lastHeadTouchAt = Date.now();
+      try{ __sfxTap(); }catch(_){ }
+      openCleanHeaderModal(code);
+      e.preventDefault();
+      e.stopPropagation();
     }, { passive: false, capture: true });
 
     cleanGrid.addEventListener("click", (e) => {
       const code = __pickHeadCode(e);
       if (!code) return;
       if (Date.now() - __lastHeadTouchAt < 450) { e.preventDefault(); e.stopPropagation(); return; }
-      __showHeadInfo(e, e, 'grid-click');
+      try{ __sfxTap(); }catch(_){ }
+      openCleanHeaderModal(code);
+      e.preventDefault();
+      e.stopPropagation();
     }, true);
-
-    try{
-      Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)')).forEach((head, idx) => {
-        const code = __cleanHeadCodes[idx] || String(head.textContent || '').replace(/\s+/g,'').trim().toUpperCase();
-        if (!code || !CLEAN_HEADER_DESC[code]) return;
-        try{ head.dataset.col = code; }catch(_){ }
-        try{ head.setAttribute('role', 'button'); head.setAttribute('tabindex', '0'); }catch(_){ }
-        if (!head.dataset.boundInfoHead){
-          head.dataset.boundInfoHead = '1';
-          head.addEventListener('touchend', (ev) => {
-            __lastHeadTouchAt = Date.now();
-            __showHeadInfo(head, ev, 'direct-touch');
-          }, { passive:false });
-          head.addEventListener('click', (ev) => {
-            if (Date.now() - __lastHeadTouchAt < 450) { ev.preventDefault(); ev.stopPropagation(); return; }
-            __showHeadInfo(head, ev, 'direct-click');
-          }, true);
-          head.addEventListener('keydown', (ev) => {
-            const key = String(ev.key || '');
-            if (key !== 'Enter' && key !== ' ') return;
-            __showHeadInfo(head, ev, 'direct-key');
-          });
-        }
-      });
-    }catch(_){ }
 
 
     // Touch (iPhone)
