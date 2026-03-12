@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.174
+ * Build: 2.168
  */
-const BUILD_VERSION = "2.176";
+const BUILD_VERSION = "2.168";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -661,18 +661,6 @@ const I18N_DICT = {
     "de": "Zimmer",
     "es": "Habitaciones"
   },
-  "Numero stanze": {
-    "en": "Number of rooms",
-    "fr": "Nombre de chambres",
-    "de": "Anzahl der Zimmer",
-    "es": "Número de habitaciones"
-  },
-  "Tap per avanzare, pressione lunga per azzerare": {
-    "en": "Tap to advance, long press to reset",
-    "fr": "Touchez pour avancer, appui long pour réinitialiser",
-    "de": "Tippen zum Weiterzählen, lange drücken zum Zurücksetzen",
-    "es": "Toca para avanzar, pulsación larga para reiniciar"
-  },
   "Matrimoniale": {
     "en": "Double bed",
     "fr": "Lit double",
@@ -1041,13 +1029,10 @@ function __translateTextNode__(node){
   if (!node || !node.nodeValue) return;
   const raw = node.nodeValue;
   if (!raw || !raw.trim()) return;
-  const trimmed = String(raw).trim();
-  if (!/[A-Za-zÀ-ÿ]/.test(trimmed)) return;
   const parent = node.parentElement;
   if (!parent) return;
   if (parent.closest("script, style, textarea, input, option")) return;
-  if (parent.closest('[data-i18n-dynamic="1"]')) return;
-  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName, #cleanHeaderText")) return;
+  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName")) return;
   if (!parent.dataset.i18nBaseText) parent.dataset.i18nBaseText = raw;
   const base = parent.dataset.i18nBaseText;
   const next = tr(base);
@@ -1088,7 +1073,9 @@ function translateDom(root){
 function updateLanguageButton(){
   const meta = APP_LANG_META[getCurrentLanguage()] || APP_LANG_META.it;
   const btn = document.getElementById("languageBtn");
-  if (btn) { btn.setAttribute("data-lang", getCurrentLanguage()); btn.setAttribute("aria-label", `${meta.label}: ${meta.nativeLabel}`); }
+  const flag = document.getElementById("languageBtnFlag");
+  if (flag) flag.textContent = meta.flag;
+  if (btn) btn.setAttribute("data-lang", getCurrentLanguage());
   document.querySelectorAll("#languageList .language-option").forEach((btnEl) => {
     const isActive = btnEl.getAttribute("data-lang") === getCurrentLanguage();
     btnEl.classList.toggle("is-active", isActive);
@@ -4233,49 +4220,19 @@ function formatPulizieTopbarDateIT(d){
   }catch(_){ return ""; }
 }
 
-function formatCalendarTopbarMonthIT(d){
-  try{
-    const dt = (d instanceof Date) ? d : new Date(d);
-    if (isNaN(dt)) return "";
-    const raw = String(monthNameIT(dt) || "").trim();
-    return raw ? (raw.charAt(0).toUpperCase() + raw.slice(1)) : "";
-  }catch(_){ return ""; }
-}
-
-function __getTopbarCenterLabel__(){
-  try{
-    if (state && state.page === "calendario"){
-      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      return formatCalendarTopbarMonthIT(a) || "Daedalium";
-    }
-    if (state && state.page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      return formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
-    }
-    return "Daedalium";
-  }catch(_){ return "Daedalium"; }
-}
-
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    const label = __getTopbarCenterLabel__();
-    el.textContent = label;
-    try{ el.setAttribute("data-page", String((state && state.page) || "home")); }catch(_){ }
-    try{ el.setAttribute("aria-label", label); }catch(_){ }
-    try{
-      if (typeof requestAnimationFrame === "function"){
-        requestAnimationFrame(() => {
-          try{ if (document.getElementById("topbarYear") === el) el.textContent = __getTopbarCenterLabel__(); }catch(_){ }
-        });
-      }
-    }catch(_){ }
-    try{
-      setTimeout(() => {
-        try{ if (document.getElementById("topbarYear") === el) el.textContent = __getTopbarCenterLabel__(); }catch(_){ }
-      }, 0);
-    }catch(_){ }
+    if (state && state.page === "calendario"){
+      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+      el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie"){
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
+    } else {
+      el.textContent = "Daedalium";
+    }
   }catch(_){ }
 }
 
@@ -6494,7 +6451,7 @@ function setupImpostazioni() {
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
-    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { __openDbMenuModal__(); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
+    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
     if (rosterBtn) bindFastTap(rosterBtn, async () => {
       try{
@@ -6507,7 +6464,7 @@ function setupImpostazioni() {
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
-    if (dbA) bindFastTap(dbA, () => { __openDbMenuModal__(); });
+    if (dbA) bindFastTap(dbA, () => { __openDbPopup__("admin"); });
     const dbO = document.getElementById("dbOperatorBtn");
     if (dbO) bindFastTap(dbO, () => { __openDbPopup__("operator"); });
   }catch(_){ }
@@ -11436,14 +11393,9 @@ function updateSettingsRoomsButtonLabel(){
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
-    const txt = `${tr("Stanze")} ${n}`;
-    if (label){
-      try{ label.dataset.i18nDynamic = '1'; }catch(_){ }
-      try{ label.dataset.i18nBaseText = txt; }catch(_){ }
-      label.textContent = txt;
-    }
-    el.setAttribute('aria-label', `${tr("Numero stanze")}: ${n}. ${tr("Tap per avanzare, pressione lunga per azzerare")}`);
-    el.title = `${tr("Numero stanze")}: ${n}. ${tr("Tap per avanzare, pressione lunga per azzerare")}`;
+    if (label) label.textContent = `Stanze ${n}`;
+    el.setAttribute('aria-label', `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`);
+    el.title = `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`;
   }catch(_){ }
 }
 
@@ -15423,7 +15375,7 @@ try{
       try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
       const parts = [];
       parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
-      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head" data-col="${col}" role="button" tabindex="0">${col}</div>`); });
+      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
       for (let r = 1; r <= count; r++) {
         parts.push(`<div class="c cell room r${r}">${r}</div>`);
         __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
@@ -15678,11 +15630,7 @@ try{
     const c = String(code || "").trim().toUpperCase();
     const text = CLEAN_HEADER_DESC[c] || "";
     if (!text) return;
-    try{ cleanHeaderText.dataset.i18nDynamic = '1'; }catch(_){ }
-    try{ cleanHeaderText.dataset.i18nBaseText = text; }catch(_){ }
-    try{ cleanHeaderText.textContent = text; }catch(_){ }
-    try{ cleanHeaderText.innerText = text; }catch(_){ }
-    try{ cleanHeaderText.setAttribute("data-code", c); }catch(_){ }
+    cleanHeaderText.textContent = text;
     cleanHeaderModal.hidden = false;
   };
 
@@ -16156,73 +16104,32 @@ const buildPuliziePayload = (roomsList = null) => {
   if (cleanGrid){
     // Header click (MAT/SIN/FED...): mostra descrizione in popup
     let __lastHeadTouchAt = 0;
-    const __cleanHeadCodes = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
-    const __pickHeadCode = (targetOrEvent) => {
-      const base = targetOrEvent && targetOrEvent.target ? targetOrEvent.target : targetOrEvent;
-      const head = base && base.closest ? base.closest(".cell.head") : null;
+    const __pickHeadCode = (ev) => {
+      const head = ev.target && ev.target.closest ? ev.target.closest(".cell.head") : null;
       if (!head || head.classList.contains("corner")) return null;
-      let raw = String((head.dataset && head.dataset.col) || head.getAttribute('data-col') || "").trim().toUpperCase();
-      if (!raw){
-        raw = String(head.textContent || "").replace(/\s+/g, "").trim().toUpperCase();
-      }
-      if (!raw){
-        const heads = Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)'));
-        const idx = heads.indexOf(head);
-        if (idx >= 0) raw = __cleanHeadCodes[idx] || "";
-      }
-      return CLEAN_HEADER_DESC[raw] ? raw : null;
-    };
-    const __showHeadInfo = (target, ev, source) => {
-      const code = __pickHeadCode(target);
-      if (!code) return false;
-      try{ cleanHeaderText.textContent = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
-      try{ cleanHeaderText.innerText = CLEAN_HEADER_DESC[code] || ""; }catch(_){ }
-      try{ __sfxTap(); }catch(_){ }
-      openCleanHeaderModal(code);
-      if (ev){
-        try{ ev.preventDefault(); }catch(_){ }
-        try{ ev.stopPropagation(); }catch(_){ }
-      }
-      return true;
+      const code = String(head.textContent || "").trim().toUpperCase();
+      return CLEAN_HEADER_DESC[code] ? code : null;
     };
 
     cleanGrid.addEventListener("touchend", (e) => {
-      const shown = __showHeadInfo(e, e, 'grid-touch');
-      if (!shown) return;
+      const code = __pickHeadCode(e);
+      if (!code) return;
       __lastHeadTouchAt = Date.now();
+      try{ __sfxTap(); }catch(_){ }
+      openCleanHeaderModal(code);
+      e.preventDefault();
+      e.stopPropagation();
     }, { passive: false, capture: true });
 
     cleanGrid.addEventListener("click", (e) => {
       const code = __pickHeadCode(e);
       if (!code) return;
       if (Date.now() - __lastHeadTouchAt < 450) { e.preventDefault(); e.stopPropagation(); return; }
-      __showHeadInfo(e, e, 'grid-click');
+      try{ __sfxTap(); }catch(_){ }
+      openCleanHeaderModal(code);
+      e.preventDefault();
+      e.stopPropagation();
     }, true);
-
-    try{
-      Array.from(cleanGrid.querySelectorAll('.cell.head:not(.corner)')).forEach((head, idx) => {
-        const code = __cleanHeadCodes[idx] || String(head.textContent || '').replace(/\s+/g,'').trim().toUpperCase();
-        if (!code || !CLEAN_HEADER_DESC[code]) return;
-        try{ head.dataset.col = code; }catch(_){ }
-        try{ head.setAttribute('role', 'button'); head.setAttribute('tabindex', '0'); }catch(_){ }
-        if (!head.dataset.boundInfoHead){
-          head.dataset.boundInfoHead = '1';
-          head.addEventListener('touchend', (ev) => {
-            __lastHeadTouchAt = Date.now();
-            __showHeadInfo(head, ev, 'direct-touch');
-          }, { passive:false });
-          head.addEventListener('click', (ev) => {
-            if (Date.now() - __lastHeadTouchAt < 450) { ev.preventDefault(); ev.stopPropagation(); return; }
-            __showHeadInfo(head, ev, 'direct-click');
-          }, true);
-          head.addEventListener('keydown', (ev) => {
-            const key = String(ev.key || '');
-            if (key !== 'Enter' && key !== ' ') return;
-            __showHeadInfo(head, ev, 'direct-key');
-          });
-        }
-      });
-    }catch(_){ }
 
 
     // Touch (iPhone)
@@ -17480,10 +17387,7 @@ function sanitizeLaundryItem_(it){
 function setLaundryLabels_(){
   for (const k of LAUNDRY_COLS){
     const el = document.getElementById("laundryLbl"+k);
-    if (!el) continue;
-    const txt = tr(LAUNDRY_LABELS[k] || k);
-    try{ el.dataset.i18nBaseText = txt; }catch(_){ }
-    el.textContent = txt;
+    if (el) el.textContent = LAUNDRY_LABELS[k] || k;
   }
 }
 
@@ -17496,11 +17400,11 @@ function renderLaundry_(item){
   const printRangeEl = document.getElementById("laundryPrintRange");
 
   if (!item){
-    if (rangeEl){ try{ rangeEl.dataset.i18nDynamic = '1'; }catch(_){} rangeEl.hidden = true; rangeEl.textContent = ""; }
-    if (printRangeEl){ try{ printRangeEl.dataset.i18nDynamic = '1'; }catch(_){} printRangeEl.textContent = ""; }
+    if (rangeEl){ rangeEl.hidden = true; rangeEl.textContent = ""; }
+    if (printRangeEl) printRangeEl.textContent = "";
     for (const k of LAUNDRY_COLS){
       const v = document.getElementById("laundryVal"+k);
-      if (v){ try{ v.dataset.i18nDynamic = '1'; }catch(_){} v.textContent = "0"; }
+      if (v) v.textContent = "0";
     }
     const tbody = document.getElementById("laundryPrintBody");
     if (tbody) tbody.innerHTML = "";
@@ -17510,12 +17414,12 @@ function renderLaundry_(item){
   const startLbl = item.startDate ? formatLongDateIT(item.startDate) : "";
   const endLbl = item.endDate ? formatLongDateIT(item.endDate) : "";
   const rangeText = (startLbl && endLbl) ? `${startLbl} – ${endLbl}` : (startLbl || endLbl || "—");
-  if (rangeEl){ try{ rangeEl.dataset.i18nDynamic = '1'; }catch(_){} rangeEl.hidden = false; rangeEl.innerHTML = `<b>${rangeText}</b>`; }
-  if (printRangeEl){ try{ printRangeEl.dataset.i18nDynamic = '1'; }catch(_){} printRangeEl.textContent = rangeText; }
+  if (rangeEl){ rangeEl.hidden = false; rangeEl.innerHTML = `<b>${rangeText}</b>`; }
+  if (printRangeEl) printRangeEl.textContent = rangeText;
 
   for (const k of LAUNDRY_COLS){
     const v = document.getElementById("laundryVal"+k);
-    if (v){ try{ v.dataset.i18nDynamic = '1'; }catch(_){} v.textContent = String(item[k] || 0); }
+    if (v) v.textContent = String(item[k] || 0);
   }
 
   const tbody = document.getElementById("laundryPrintBody");
