@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.168" rel="stylesheet"/>
-<link href="./manifest.json?v=2.168" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.168" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.168" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.168" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.168" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.164" rel="stylesheet"/>
+<link href="./manifest.json?v=2.164" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.164" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.164" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.164" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.164" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.168"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.164"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -134,7 +134,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.168"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.164"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -320,7 +320,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.168</div></div></section>
+<div class="build" id="buildText">dDAE_2.167</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -681,10 +681,6 @@
 <input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
 <span class="slider"></span>
 </label>
-<button aria-label="Lingua" class="settings-lang-trigger" id="languageBtn" type="button">
-<span aria-hidden="true" class="settings-lang-trigger-flag" id="languageBtnFlag">🇮🇹</span>
-<span class="settings-lang-trigger-label">Lingua</span>
-</button>
 </div>
 </div>
 <div aria-hidden="true" class="settings-divider"></div>
@@ -740,7 +736,7 @@
 </button>
 </div>
 <div class="settings-bottom-stack settings-bottom-stack-under-grid">
-<div class="build settings-build" id="settingsBuildText">dDAE_2.168</div>
+<div class="build settings-build" id="settingsBuildText">dDAE_2.167</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -1416,8 +1412,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.168"></script>
-<script defer="" src="./app.js?v=2.168"></script>
+<script defer="" src="./config.js?v=2.164"></script>
+<script defer="" src="./app.js?v=2.164"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1824,21 +1820,6 @@
 </span>
 <span class="home-sync-text">SYNC</span>
 </button>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="languageModal">
-<div aria-labelledby="languageModalTitle" aria-modal="true" class="modal-card language-modal-card" role="dialog">
-<button aria-label="Chiudi" class="stat-modal-close" id="languageModalClose" type="button">✕</button>
-<div class="receipt-modal-head">
-<div class="receipt-modal-title" id="languageModalTitle">Lingua</div>
-</div>
-<div class="language-list" id="languageList">
-<button class="language-option" data-lang="it" type="button"><span class="language-option-flag">🇮🇹</span><span class="language-option-label">Italiano</span></button>
-<button class="language-option" data-lang="en" type="button"><span class="language-option-flag">🇬🇧</span><span class="language-option-label">English</span></button>
-<button class="language-option" data-lang="fr" type="button"><span class="language-option-flag">🇫🇷</span><span class="language-option-label">Français</span></button>
-<button class="language-option" data-lang="de" type="button"><span class="language-option-flag">🇩🇪</span><span class="language-option-label">Deutsch</span></button>
-<button class="language-option" data-lang="es" type="button"><span class="language-option-flag">🇪🇸</span><span class="language-option-label">Español</span></button>
-</div>
-</div>
 </div>
 </body>
 </html>
