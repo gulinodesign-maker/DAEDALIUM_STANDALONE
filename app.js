@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.155
  */
-const BUILD_VERSION = "2.155";
+const BUILD_VERSION = "2.156";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2046,17 +2046,31 @@ async function __handleSyncBoth__(){
   __fbLoadLink__();
   const restoreState = __captureSyncRestoreState();
   try{ toast("Sync in corso...", "blue"); }catch(_){}
-  let ok1=false, ok2=false;
+  const __sleep__ = (ms) => new Promise(r => setTimeout(r, ms));
+  const __attemptSync__ = async (fn, tries = 2, delay = 350) => {
+    let last = false;
+    for (let i = 0; i < tries; i++){
+      try{
+        last = await fn();
+        if (last !== false) return last;
+      }catch(_){
+        last = false;
+      }
+      if (i < (tries - 1)) await __sleep__(delay);
+    }
+    return last;
+  };
+  let exported = false, imported = false;
   try{
     if (__isAdmin__()){
-      ok1 = await __fbImportAdmin__({ silent:true, skipReload:true, restoreState });
-      ok2 = await __fbExportAdmin__({ silent:true, restoreState });
+      exported = await __attemptSync__(()=>__fbExportAdmin__({ silent:true, restoreState }), 2, 350);
+      imported = await __attemptSync__(()=>__fbImportAdmin__({ silent:true, skipReload:true, restoreState }), 3, 450);
     }else{
-      ok1 = await __fbExportOperator__({ silent:true, restoreState });
-      ok2 = await __fbImportOperator__({ silent:true, skipReload:true, restoreState });
+      exported = await __attemptSync__(()=>__fbExportOperator__({ silent:true, restoreState }), 2, 350);
+      imported = await __attemptSync__(()=>__fbImportOperator__({ silent:true, skipReload:true, restoreState }), 3, 450);
     }
   }catch(_){ }
-  const ok = (ok1 !== false) && (ok2 !== false);
+  const ok = (exported !== false) || (imported !== false);
   try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
   setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
