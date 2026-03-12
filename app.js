@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.174
+ * Build: 2.179
  */
-const BUILD_VERSION = "2.175";
+const BUILD_VERSION = "2.179";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -151,12 +151,6 @@ const I18N_DICT = {
     "de": "Kalender",
     "es": "Calendario"
   },
-  "Spesa": {
-    "en": "Shopping",
-    "fr": "Courses",
-    "de": "Einkauf",
-    "es": "Compra"
-  },
   "Spese": {
     "en": "Expenses",
     "fr": "Dépenses",
@@ -199,11 +193,11 @@ const I18N_DICT = {
     "de": "Produkte",
     "es": "Productos"
   },
-  "Colazione": {
-    "en": "Breakfast",
-    "fr": "Petit-déjeuner",
-    "de": "Frühstück",
-    "es": "Desayuno"
+  "Spesa": {
+    "en": "Shopping",
+    "fr": "Courses",
+    "de": "Einkauf",
+    "es": "Compras"
   },
   "Lista della spesa": {
     "en": "Shopping List",
@@ -4059,7 +4053,8 @@ function applyRoleMode(){
 
 function __parseBuildVersion(v){
   try{
-    const m = String(v||'').match(/dDAE_(\d+)\.(\d+)/);
+    const raw = String(v || '').trim();
+    const m = raw.match(/(?:dDAE_)?(\d+)\.(\d+)/i);
     if(!m) return null;
     return {maj:Number(m[1]), min:Number(m[2])};
   }catch(_){ return null; }
@@ -4245,57 +4240,20 @@ function formatPulizieTopbarDateIT(d){
   }catch(_){ return ""; }
 }
 
-function __getTopbarCenterPage__(){
-  try{
-    const page = String((state && state.page) || document.body?.dataset?.page || "").trim();
-    if (page) return page;
-    const visiblePage = document.querySelector('.page:not([hidden])');
-    if (visiblePage && visiblePage.id) return String(visiblePage.id).replace(/^page-/, '');
-  }catch(_){ }
-  return "";
-}
-
-function __capitalizeIt__(value){
-  const txt = String(value || "").trim();
-  return txt ? txt.charAt(0).toUpperCase() + txt.slice(1) : "";
-}
-
 function __setTopbarCenterLabel__(){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    const page = __getTopbarCenterPage__();
-    let label = "Daedalium";
-    let isDynamic = false;
-    if (page === "calendario"){
-      const a = (state && state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      label = __capitalizeIt__(monthNameIT(a)) || "Daedalium";
-      isDynamic = true;
-    } else if (page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session))
-        ? new Date()
-        : ((state && state.cleanDay) ? new Date(state.cleanDay) : new Date());
-      label = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
-      isDynamic = true;
-    }
-    if (isDynamic) {
-      try{ el.dataset.i18nDynamic = '1'; }catch(_){ }
-      try{ el.dataset.i18nBaseText = label; }catch(_){ }
+    if (state && state.page === "calendario"){
+      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+      el.textContent = monthNameIT(a).toUpperCase();
+    } else if (state && state.page === "pulizie"){
+      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
     } else {
-      try{ delete el.dataset.i18nDynamic; }catch(_){ try{ el.removeAttribute('data-i18n-dynamic'); }catch(_){ } }
-      try{ el.dataset.i18nBaseText = label; }catch(_){ }
+      el.textContent = "Daedalium";
     }
-    el.textContent = label;
-    try{ el.innerText = label; }catch(_){ }
-    el.setAttribute('aria-label', label);
   }catch(_){ }
-}
-
-function __queueTopbarCenterLabelSync__(){
-  try{ __setTopbarCenterLabel__(); }catch(_){ }
-  try{ requestAnimationFrame(() => { try{ __setTopbarCenterLabel__(); }catch(_){ } }); }catch(_){ }
-  try{ setTimeout(() => { try{ __setTopbarCenterLabel__(); }catch(_){ } }, 0); }catch(_){ }
-  try{ setTimeout(() => { try{ __setTopbarCenterLabel__(); }catch(_){ } }, 120); }catch(_){ }
 }
 
 function updateYearPill(){
@@ -4310,7 +4268,7 @@ function updateYearPill(){
   }
 
   // Topbar: anno (default) o mese (solo Calendario)
-  try{ __queueTopbarCenterLabelSync__(); }catch(_){ }
+  try{ __setTopbarCenterLabel__(); }catch(_){ }
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -4368,8 +4326,10 @@ async function hardUpdateCheck(){
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
     if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
+    const parsedRemote = __parseBuildVersion(remote);
+    const remoteLabel = parsedRemote ? `dDAE_${parsedRemote.maj}.${String(parsedRemote.min).padStart(3,"0")}` : remote;
 
-    try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
+    try{ toast(`Aggiornamento ${remoteLabel}…`); } catch(_) {}
 
     try{
       if ("serviceWorker" in navigator){
@@ -7645,7 +7605,7 @@ state.page = page;
   }catch(_){ }
 
 
-  try{ __queueTopbarCenterLabelSync__(); }catch(_){}
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try { __rememberPage(page); } catch (_) {}
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
@@ -16665,7 +16625,7 @@ function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = "month";
 
-  try{ __queueTopbarCenterLabelSync__(); }catch(_){}
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try{
     const sec = document.getElementById("page-calendario");
