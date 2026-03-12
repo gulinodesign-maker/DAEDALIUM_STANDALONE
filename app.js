@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.175
  */
-const BUILD_VERSION = "2.177";
+const BUILD_VERSION = "2.178";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -4233,26 +4233,47 @@ function formatPulizieTopbarDateIT(d){
   }catch(_){ return ""; }
 }
 
-function __setTopbarCenterLabel__(){
+function __setTopbarCenterLabel__(forcedPage){
   try{
     const el = document.getElementById("topbarYear");
     if (!el) return;
-    const currentPage = String((state && state.page) || "").trim().toLowerCase();
-    const calVisible = (()=>{ try{ const sec = document.getElementById("page-calendario"); return !!(sec && !sec.hidden); }catch(_){ return false; } })();
-    const pulVisible = (()=>{ try{ const sec = document.getElementById("page-pulizie"); return !!(sec && sec.style.display !== "none" && !sec.hidden); }catch(_){ return false; } })();
-    if (currentPage === "calendario" || calVisible){
+    const detectVisible = (id) => {
+      try{
+        const sec = document.getElementById(id);
+        if (!sec) return false;
+        const st = window.getComputedStyle ? window.getComputedStyle(sec) : null;
+        return !sec.hidden && (!!sec.offsetParent || (st && st.display !== "none" && st.visibility !== "hidden" && st.opacity !== "0"));
+      }catch(_){ return false; }
+    };
+    const currentPage = String(
+      forcedPage ||
+      (state && state.page) ||
+      (document.body && document.body.dataset ? document.body.dataset.page : "") ||
+      ""
+    ).trim().toLowerCase();
+    const isCalendario = currentPage === "calendario" || detectVisible("page-calendario");
+    const isPulizie = currentPage === "pulizie" || detectVisible("page-pulizie");
+    if (isCalendario){
       const a = (state && state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       const monthLabel = monthNameIT(a);
-      el.textContent = monthLabel ? __capLocale__(String(monthLabel).toLowerCase()) : "Daedalium";
+      el.textContent = monthLabel ? __capLocale__(String(monthLabel).toLowerCase()) : "Marzo";
       return;
     }
-    if (currentPage === "pulizie" || pulVisible){
+    if (isPulizie){
       const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : ((state && state.cleanDay) ? new Date(state.cleanDay) : new Date());
-      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Giovedì 12 Marzo";
       return;
     }
     el.textContent = "Daedalium";
   }catch(_){ }
+}
+
+function __refreshTopbarCenterLabel__(forcedPage){
+  try{ __setTopbarCenterLabel__(forcedPage); }catch(_){ }
+  try{ requestAnimationFrame(()=>{ try{ __setTopbarCenterLabel__(forcedPage); }catch(_){ } }); }catch(_){ }
+  try{ setTimeout(()=>{ try{ __setTopbarCenterLabel__(forcedPage); }catch(_){ } }, 0); }catch(_){ }
+  try{ setTimeout(()=>{ try{ __setTopbarCenterLabel__(forcedPage); }catch(_){ } }, 120); }catch(_){ }
+  try{ setTimeout(()=>{ try{ __setTopbarCenterLabel__(forcedPage); }catch(_){ } }, 360); }catch(_){ }
 }
 
 function updateYearPill(){
@@ -4267,7 +4288,7 @@ function updateYearPill(){
   }
 
   // Topbar: anno (default) o mese (solo Calendario)
-  try{ __setTopbarCenterLabel__(); }catch(_){ }
+  try{ __refreshTopbarCenterLabel__(); }catch(_){ }
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -7602,7 +7623,7 @@ state.page = page;
   }catch(_){ }
 
 
-  try{ __setTopbarCenterLabel__(); }catch(_){}
+  try{ __refreshTopbarCenterLabel__(page); }catch(_){}
 
   try { __rememberPage(page); } catch (_) {}
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
@@ -16320,7 +16341,7 @@ if (cleanResetAll){
       const topbar = document.getElementById("topbarYear");
       if (topbar) topbar.textContent = formatPulizieTopbarDateIT(day) || "Daedalium";
     }catch(_){ }
-    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
+    try{ __refreshTopbarCenterLabel__("pulizie"); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {
@@ -16626,7 +16647,7 @@ function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = "month";
 
-  try{ __setTopbarCenterLabel__(); }catch(_){}
+  try{ __refreshTopbarCenterLabel__("calendario"); }catch(_){}
 
   try{
     const sec = document.getElementById("page-calendario");
