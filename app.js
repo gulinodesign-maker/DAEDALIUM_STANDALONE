@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.155
+ * Build: 2.158
  */
-const BUILD_VERSION = "2.157";
+const BUILD_VERSION = "2.158";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3431,6 +3431,8 @@ function __captureUiState(){
         guestCheckIn: __captureFormValue("guestCheckIn"),
         guestCheckOut: __captureFormValue("guestCheckOut"),
         guestTotal: __captureFormValue("guestTotal"),
+        guestChannel: __captureFormValue("guestChannel"),
+        guestChannelCommission: __captureFormValue("guestChannelCommission"),
         guestBooking: __captureFormValue("guestBooking"),
         guestDeposit: __captureFormValue("guestDeposit"),
         guestSaldo: __captureFormValue("guestSaldo"),
@@ -3488,7 +3490,10 @@ function __applyUiState(restore){
       __applyFormValue("guestCheckIn", f.guestCheckIn);
       __applyFormValue("guestCheckOut", f.guestCheckOut);
       __applyFormValue("guestTotal", f.guestTotal);
+      __applyFormValue("guestChannel", f.guestChannel);
+      __applyFormValue("guestChannelCommission", f.guestChannelCommission);
       __applyFormValue("guestBooking", f.guestBooking);
+      try { applySelectedChannelToGuestForm(f.guestChannel, { preserveManual:true }); } catch (_) {}
       __applyFormValue("guestDeposit", f.guestDeposit);
       __applyFormValue("guestSaldo", f.guestSaldo);
       try { updateGuestRemaining(); } catch (_) {}
@@ -4693,6 +4698,88 @@ function getOperatoreBenzinaByName(name, fallbackValue = 0){
   return isFinite(fb) && fb >= 0 ? Math.round(fb * 100) / 100 : 0;
 }
 
+
+function __normalizeChannelColor__(color){
+  const raw = String(color || '').trim().toLowerCase();
+  return __OPERATORI_COLOR_KEYS__.includes(raw) ? raw : 'orange';
+}
+
+function __channelInitialFromName__(name){
+  const clean = String(name || '').trim();
+  return clean ? clean.charAt(0).toUpperCase() : 'C';
+}
+
+function getChannelCatalogFromSettings(){
+  const row = getSettingRow("channel_catalogo");
+  const raw = row ? (row.value ?? row.Value ?? "") : "";
+  if (!String(raw || "").trim()) return [];
+  try{
+    const parsed = JSON.parse(String(raw || '[]'));
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item, idx) => ({
+      id: String(item?.id || `ch-${idx+1}-${Date.now()}`),
+      nome: String(item?.nome || item?.name || '').trim(),
+      commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? item?.percentuale ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
+      iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
+      colore: __normalizeChannelColor__(item?.colore),
+    })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
+  }catch(_){
+    return [];
+  }
+}
+
+async function saveChannelCatalogToSettings(list){
+  const clean = (Array.isArray(list) ? list : []).map((item, idx) => ({
+    id: String(item?.id || `ch-${Date.now()}-${idx}`),
+    nome: String(item?.nome || '').trim(),
+    commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
+    iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
+    colore: __normalizeChannelColor__(item?.colore),
+  })).filter(item => item.nome);
+  await api("impostazioni", { method:"POST", body:{ channel_catalogo: clean }, showLoader:true });
+  await ensureSettingsLoaded({ force:true, showLoader:false });
+  try{ populateGuestChannelOptions(); }catch(_){ }
+  return clean;
+}
+
+function getChannelCatalogItemById(id){
+  const key = String(id || '').trim();
+  if (!key) return null;
+  return getChannelCatalogFromSettings().find(item => String(item.id) === key) || null;
+}
+
+function populateGuestChannelOptions(selectedId = null){
+  const sel = document.getElementById('guestChannel');
+  if (!sel) return;
+  const current = (selectedId == null) ? String(sel.value || '').trim() : String(selectedId || '').trim();
+  const items = getChannelCatalogFromSettings();
+  sel.innerHTML = `<option value="">Seleziona…</option>` + items.map(item => `<option value="${String(item.id).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</option>`).join('');
+  if (current && items.some(item => String(item.id) === current)) sel.value = current;
+}
+
+function applySelectedChannelToGuestForm(channelId, { preserveManual=false } = {}){
+  const sel = document.getElementById('guestChannel');
+  const pctEl = document.getElementById('guestChannelCommission');
+  const item = getChannelCatalogItemById(channelId || sel?.value || '');
+  if (sel && item) sel.value = String(item.id);
+  if (pctEl) pctEl.value = item ? String(item.commissione) : '';
+  try{ state.guestChannelId = item ? String(item.id) : ''; }catch(_){ }
+  try{ state.guestChannelName = item ? String(item.nome) : ''; }catch(_){ }
+  try{ state.guestChannelColor = item ? String(item.colore) : ''; }catch(_){ }
+  try{ state.guestChannelInitial = item ? String(item.iniziale || __channelInitialFromName__(item.nome)) : ''; }catch(_){ }
+  try{ state.guestChannelCommissionPct = item ? Number(item.commissione || 0) : 0; }catch(_){ }
+  if (!preserveManual){ try{ refreshFloatingLabels(); }catch(_){ } }
+}
+
+function getGuestChannelBadgeData(item){
+  const id = String(item?.channel_id ?? item?.channelId ?? '').trim();
+  const catalogItem = id ? getChannelCatalogItemById(id) : null;
+  const color = __normalizeChannelColor__(catalogItem?.colore || item?.channel_colore || item?.channelColor || 'orange');
+  const initial = String(catalogItem?.iniziale || item?.channel_iniziale || item?.channelInitial || __channelInitialFromName__(catalogItem?.nome || item?.channel_nome || item?.channelName || '')).trim().slice(0,1).toUpperCase() || 'C';
+  const name = String(catalogItem?.nome || item?.channel_nome || item?.channelName || '').trim();
+  return { color, initial, name };
+}
+
 function __operatoriCatalogDefaultFromLegacy__(){
   const names = getOperatorNamesFromSettings().filter(Boolean);
   if (!names.length) return [];
@@ -4762,6 +4849,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     try{ refreshFloatingLabels(); }catch(_){ }
     try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
     try{ ensureRoomsPickerButtons(); }catch(_){ }
+    try{ populateGuestChannelOptions(); }catch(_){ }
     try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
 
     return state.settings;
@@ -5086,6 +5174,176 @@ function setupOperatoriPage(){
   });
 }
 
+
+const __channelPageUi = {
+  color: "orange",
+  editingId: "",
+};
+
+function __channelFormatPct__(value){
+  const n = Number(value || 0);
+  const safe = isFinite(n) ? n : 0;
+  return `${safe.toFixed(2)}%`;
+}
+
+function __channelSetSelectedColor__(color){
+  __channelPageUi.color = __normalizeChannelColor__(color);
+  try{
+    document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
+      btn.classList.toggle('is-selected', btn.dataset.color === __channelPageUi.color);
+    });
+  }catch(_){ }
+}
+
+function __channelOpenModal__(item){
+  const modal = document.getElementById('channelEditorModal');
+  if (!modal) return;
+  const current = item || null;
+  __channelPageUi.editingId = current?.id ? String(current.id) : '';
+  const title = document.getElementById('channelEditorTitle');
+  const idEl = document.getElementById('channelEditorId');
+  const nomeEl = document.getElementById('channelEditorNome');
+  const commEl = document.getElementById('channelEditorCommission');
+  const iniEl = document.getElementById('channelEditorInitial');
+  const delBtn = document.getElementById('channelEditorDelete');
+  if (title) title.textContent = current ? 'Modifica channel' : 'Nuovo channel';
+  if (idEl) idEl.value = current?.id ? String(current.id) : '';
+  if (nomeEl) nomeEl.value = current?.nome ? String(current.nome) : '';
+  if (commEl) commEl.value = current && isFinite(Number(current.commissione)) ? String(Number(current.commissione)) : '';
+  if (iniEl) iniEl.value = current?.iniziale ? String(current.iniziale).slice(0,1).toUpperCase() : '';
+  if (delBtn) delBtn.hidden = !current;
+  __channelSetSelectedColor__(current?.colore || 'orange');
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  try{ refreshFloatingLabels(); }catch(_){ }
+}
+
+function __channelCloseModal__(){
+  const modal = document.getElementById('channelEditorModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+  ['channelEditorId','channelEditorNome','channelEditorCommission','channelEditorInitial'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  __channelPageUi.editingId = '';
+  __channelSetSelectedColor__('orange');
+}
+
+async function renderChannelPage(){
+  await ensureSettingsLoaded({ force:false, showLoader:false });
+  const listEl = document.getElementById('channelList');
+  const emptyEl = document.getElementById('channelEmpty');
+  if (!listEl) return;
+  const items = getChannelCatalogFromSettings();
+  if (!items.length){
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if (emptyEl) emptyEl.hidden = true;
+  listEl.innerHTML = items.map((item) => `
+    <article class="operatori-item channel-item" data-id="${item.id}">
+      <div class="operatori-item-top">
+        <div class="operatori-item-left">
+          <span class="operatori-tag color-${item.colore}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
+          <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
+        </div>
+        <div class="operatori-item-actions">
+          <button aria-label="Modifica channel" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          <button aria-label="Elimina channel" class="operatori-mini-btn is-delete" data-action="delete" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+      <div class="operatori-metrics channel-metrics-single">
+        <div class="operatori-metric">
+          <div class="operatori-metric-label">Commissione</div>
+          <div class="operatori-metric-value">${__channelFormatPct__(item.commissione)}</div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+async function loadChannelPage(){
+  await renderChannelPage();
+}
+
+function setupChannelPage(){
+  const goBtn = document.getElementById('settingsChannelBtn');
+  if (goBtn) bindFastTap(goBtn, () => { hideLauncher(); showPage('channel'); });
+  const addBtn = document.getElementById('btnAddChannelCard');
+  if (addBtn) bindFastTap(addBtn, () => { __channelOpenModal__(null); });
+  const closeBtn = document.getElementById('channelEditorClose');
+  if (closeBtn) bindFastTap(closeBtn, __channelCloseModal__);
+  const cancelBtn = document.getElementById('channelEditorCancel');
+  if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
+  try{
+    document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
+      bindFastTap(btn, () => { __channelSetSelectedColor__(btn.dataset.color || 'orange'); });
+    });
+  }catch(_){ }
+  const saveBtn = document.getElementById('channelEditorSave');
+  if (saveBtn) bindFastTap(saveBtn, async () => {
+    try{
+      const nome = String(document.getElementById('channelEditorNome')?.value || '').trim();
+      if (!nome){ toast('Inserisci il nome channel'); return; }
+      const commissionRaw = String(document.getElementById('channelEditorCommission')?.value || '').trim().replace(',', '.');
+      const commissione = commissionRaw ? Number(commissionRaw) : 0;
+      if (!isFinite(commissione) || commissione < 0){ toast('Commissione non valida'); return; }
+      const id = String(document.getElementById('channelEditorId')?.value || '').trim();
+      const initialRaw = String(document.getElementById('channelEditorInitial')?.value || '').trim();
+      const list = getChannelCatalogFromSettings();
+      const nextItem = {
+        id: id || `ch-${Date.now()}`,
+        nome,
+        commissione: Math.round(commissione * 100) / 100,
+        iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
+        colore: __channelPageUi.color || 'orange',
+      };
+      const idx = list.findIndex(item => String(item.id) === nextItem.id);
+      if (idx >= 0) list[idx] = nextItem;
+      else list.push(nextItem);
+      await saveChannelCatalogToSettings(list);
+      __channelCloseModal__();
+      await renderChannelPage();
+      toast('Channel salvato');
+    }catch(e){ toast(e?.message || 'Errore'); }
+  });
+  const deleteBtn = document.getElementById('channelEditorDelete');
+  if (deleteBtn) bindFastTap(deleteBtn, async () => {
+    try{
+      const id = String(document.getElementById('channelEditorId')?.value || '').trim();
+      if (!id) return;
+      if (!confirm('Eliminare questo channel?')) return;
+      const list = getChannelCatalogFromSettings().filter(item => String(item.id) !== id);
+      await saveChannelCatalogToSettings(list);
+      __channelCloseModal__();
+      await renderChannelPage();
+      toast('Channel eliminato');
+    }catch(e){ toast(e?.message || 'Errore'); }
+  });
+  const listEl = document.getElementById('channelList');
+  if (listEl) listEl.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest?.('button[data-action]');
+    const card = ev.target.closest?.('.channel-item');
+    if (!card) return;
+    const id = String(card.getAttribute('data-id') || '').trim();
+    const item = getChannelCatalogFromSettings().find(row => String(row.id) === id);
+    if (!item) return;
+    const action = btn ? String(btn.getAttribute('data-action') || '') : 'edit';
+    if (action === 'delete'){
+      if (!confirm('Eliminare questo channel?')) return;
+      const list = getChannelCatalogFromSettings().filter(row => String(row.id) !== id);
+      await saveChannelCatalogToSettings(list);
+      await renderChannelPage();
+      toast('Channel eliminato');
+      return;
+    }
+    __channelOpenModal__(item);
+  });
+}
+
 function setupImpostazioni() {
   const back = document.getElementById("settingsBackBtn");
   if (back) back.addEventListener("click", () => showPage("home"));
@@ -5096,7 +5354,8 @@ function setupImpostazioni() {
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
   if (operatoriGo) bindFastTap(operatoriGo, () => { hideLauncher(); showPage("operatori"); });
-
+  const channelGo = document.getElementById("settingsChannelBtn");
+  if (channelGo) bindFastTap(channelGo, () => { hideLauncher(); showPage("channel"); });
 
 
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
@@ -6229,7 +6488,7 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || String(page || "").startsWith("stat");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || (page === "channel") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -6259,6 +6518,9 @@ state.page = page;
   }
   if (page === "operatori"){
     try{ loadOperatoriPage(); }catch(_){ }
+  }
+  if (page === "channel"){
+    try{ loadChannelPage(); }catch(_){ }
   }
 
   // Sotto-viste della pagina Spese (lista ↔ grafico+riepilogo)
@@ -6308,10 +6570,10 @@ state.page = page;
   // Top back button (Ore pulizia + Calendario)
   const backBtnTop = $("#backBtnTop");
   if (backBtnTop){
-    backBtnTop.hidden = !(page === "orepulizia" || page === "calendario" || page === "operatori");
-    backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori");
-    backBtnTop.classList.toggle("icon-btn-whiteorange", page !== "operatori");
-    try{ backBtnTop.setAttribute("aria-label", page === "operatori" ? "Torna a Impostazioni" : "Indietro"); }catch(_){ }
+    backBtnTop.hidden = !(page === "orepulizia" || page === "calendario" || page === "operatori" || page === "channel");
+    backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori" || page === "channel");
+    backBtnTop.classList.toggle("icon-btn-whiteorange", page !== "operatori" && page !== "channel");
+    try{ backBtnTop.setAttribute("aria-label", (page === "operatori" || page === "channel") ? "Torna a Impostazioni" : "Indietro"); }catch(_){ }
   }
 
   // Top guest list button (solo scheda Ospite) — torna alla lista ospiti accanto al tasto Home
@@ -6630,7 +6892,7 @@ function setupHeader(){
   const bb = $("#backBtnTop");
   if (bb) bb.addEventListener("click", () => {
     if (state.page === "orepulizia") { showPage("pulizie"); return; }
-    if (state.page === "operatori") { showPage("impostazioni"); return; }
+    if (state.page === "operatori" || state.page === "channel") { showPage("impostazioni"); return; }
     if (state.page === "calendario") {
       if (state.session && isOperatoreSession(state.session)) { showPage("pulizie"); return; }
       showPage("ospiti");
@@ -9748,7 +10010,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   // reset servizi state
   try{ state.guestServicesItems = []; state.guestServicesComputedTotal = 0; state.guestServicesManualOverride = false; state.guestServicesLoadedFor = null; }catch(_){ }
@@ -9756,6 +10018,8 @@ function enterGuestCreateMode(){
 
   const ci = document.getElementById("guestCheckIn");
   if (ci) ci.value = todayISO();
+  try{ populateGuestChannelOptions(); }catch(_){ }
+  try{ applySelectedChannelToGuestForm(""); }catch(_){ }
 
   setMarriage(false);
   setGroup(false);
@@ -9871,6 +10135,11 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   document.getElementById("guestCheckIn").value = formatISODateLocal(ospite.check_in || ospite.checkIn || "") || "";
   document.getElementById("guestCheckOut").value = formatISODateLocal(ospite.check_out || ospite.checkOut || "") || "";
   document.getElementById("guestTotal").value = ospite.importo_prenotazione ?? ospite.total ?? 0;
+  try{ populateGuestChannelOptions(ospite.channel_id ?? ospite.channelId ?? ""); }catch(_){ }
+  const __guestChannelCommission = (ospite.channel_commissione ?? ospite.channelCommissione ?? ospite.channel_commission_pct ?? ospite.channelCommissionPct ?? 0);
+  document.getElementById("guestChannelCommission").value = (__guestChannelCommission === null || __guestChannelCommission === undefined || __guestChannelCommission === "") ? "" : __guestChannelCommission;
+  try{ document.getElementById("guestChannel").value = String(ospite.channel_id ?? ospite.channelId ?? ""); }catch(_){ }
+  try{ applySelectedChannelToGuestForm(ospite.channel_id ?? ospite.channelId ?? "", { preserveManual:true }); }catch(_){ }
   document.getElementById("guestBooking").value = ospite.importo_booking ?? ospite.booking ?? 0;
   document.getElementById("guestServices").value = ospite.servizi_totale ?? ospite.serviziTotal ?? ospite.importo_servizi ?? 0;
   document.getElementById("guestDeposit").value = ospite.acconto_importo ?? ospite.deposit ?? 0;
@@ -10458,7 +10727,8 @@ function setGuestFormViewOnly(isView, ospite){
     hideRowByInputId("guestAdults", !!isView);
     // Date check-in / check-out
     hideRowByInputId("guestCheckIn", !!isView);
-    // Importo booking: non deve comparire in sola lettura
+    // Channel e importo commissione: non devono comparire in sola lettura
+    hideRowByInputId("guestChannel", !!isView);
     hideRowByInputId("guestBooking", !!isView);
   }catch(_){ }
 
@@ -11070,6 +11340,9 @@ async function saveGuest(opts = {}){
   const checkIn = document.getElementById("guestCheckIn")?.value || "";
   const checkOut = document.getElementById("guestCheckOut")?.value || "";
   const total = parseFloat(document.getElementById("guestTotal")?.value || "0") || 0;
+  const channelId = String(document.getElementById("guestChannel")?.value || "").trim();
+  const channelItem = getChannelCatalogItemById(channelId);
+  const channelCommissionPct = parseFloat(document.getElementById("guestChannelCommission")?.value || "0") || 0;
   const booking = parseFloat(document.getElementById("guestBooking")?.value || "0") || 0;
   const serviziTotale = parseFloat(document.getElementById("guestServices")?.value || "0") || 0;
   const deposit = parseFloat(document.getElementById("guestDeposit")?.value || "0") || 0;
@@ -11084,6 +11357,7 @@ async function saveGuest(opts = {}){
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
 if (!name) return toast("Inserisci il nome");
+  if (!channelItem) return toast("Seleziona il channel");
   const payload = {
     nome: name,
     telefono: telefono,
@@ -11093,6 +11367,12 @@ if (!name) return toast("Inserisci il nome");
     check_in: checkIn,
     check_out: checkOut,
     importo_prenotazione: total,
+    channel_id: channelItem ? String(channelItem.id) : "",
+    channel_nome: channelItem ? String(channelItem.nome) : "",
+    channel_colore: channelItem ? String(channelItem.colore) : "",
+    channel_iniziale: channelItem ? String(channelItem.iniziale || __channelInitialFromName__(channelItem.nome)) : "",
+    channel_commissione: Math.round(channelCommissionPct * 100) / 100,
+    channel_commission_pct: Math.round(channelCommissionPct * 100) / 100,
     importo_booking: booking,
     servizi_totale: serviziTotale,
     servizi_preview: serviziPreviewText(state.guestServicesItems || []),
@@ -11878,6 +12158,13 @@ function setupOspite(){
 
   bindRegPill("regTags");
 
+  const guestChannelSel = document.getElementById("guestChannel");
+  if (guestChannelSel && !guestChannelSel.__boundChannel){
+    guestChannelSel.__boundChannel = true;
+    guestChannelSel.addEventListener("change", () => { try{ applySelectedChannelToGuestForm(guestChannelSel.value); }catch(_){ } });
+  }
+  try{ populateGuestChannelOptions(); }catch(_){ }
+
   // Rimanenza da pagare (Importo prenotazione - Acconto - Saldo)
   ["guestTotal","guestServices","guestDeposit","guestSaldo"].forEach((id) => {
     const el = document.getElementById(id);
@@ -12116,6 +12403,7 @@ function renderGuestCards(){
 
     const tel = escapeHtml(String(first?.telefono ?? first?.tel ?? first?.phone ?? "").trim());
     const em = escapeHtml(String(first?.email ?? first?.mail ?? "").trim());
+    const channelBadge = getGuestChannelBadgeData(first);
 
     card.tabIndex = 0;
     card.setAttribute("role", "button");
@@ -12127,6 +12415,7 @@ function renderGuestCards(){
           ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
           <div class="guest-nameblock">
             <span class="guest-name-text">${nome}</span>
+            ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
             ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
           </div>
@@ -13784,6 +14073,7 @@ async function init(){
   setupCalendario();
   setupImpostazioni();
   setupOperatoriPage();
+  setupChannelPage();
 setupPiscina();
 setupProdotti();
 // Avvio: prima cosa dopo il bootstrap UI (utente autenticato) è controllare entrambe le liste spesa

@@ -9378,3 +9378,21 @@ body[data-page^="stat"] #homeSyncBar{
   flex: 0 1 auto;
 }
 
+
+
+.settings-btn-channel{ background:#f29c50 !important; border-color: rgba(242,156,80,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ background:#f29c50 !important; border-color: rgba(242,156,80,0.24) !important; }
+.channel-tag-letter{ color:#fff; font-size:12px; font-weight:900; line-height:1; }
+.channel-metrics-single .operatori-metric{ width:100%; }
+.guest-channel-inline{ display:inline-flex; align-items:center; margin-top:6px; }
+.guest-channel-dot{ width:24px; height:24px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:12px; line-height:1; }
+.guest-channel-dot.color-blue{ background:#6fb7d6; }
+.guest-channel-dot.color-orange{ background:#f29c50; }
+.guest-channel-dot.color-green{ background:#4caf7d; }
+.guest-channel-dot.color-red{ background:#e25d4b; }
+.guest-channel-dot.color-purple{ background:#8f78d4; }
+.guest-channel-dot.color-sand{ background:#d6b276; }
+.channel-row .subfield{ min-width:0; }
+#guestChannel{ appearance:none; -webkit-appearance:none; }
+#prodTabColazione, #prodAddToColazione{ border-color: rgba(52,199,89,0.70) !important; background: rgba(52,199,89,0.35) !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
+#prodTabColazione.is-active{ border-color: rgba(52,199,89,0.98) !important; }
