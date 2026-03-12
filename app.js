@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.174
+ * Build: 2.175
  */
-const BUILD_VERSION = "2.175";
+const BUILD_VERSION = "2.176";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -4239,7 +4239,8 @@ function __setTopbarCenterLabel__(){
     if (!el) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      el.textContent = monthNameIT(a).toUpperCase();
+      const monthLabel = monthNameIT(a);
+      el.textContent = monthLabel ? __capLocale__(String(monthLabel).toLowerCase()) : "Daedalium";
     } else if (state && state.page === "pulizie"){
       const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
       el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
