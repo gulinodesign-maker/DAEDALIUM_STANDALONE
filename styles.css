@@ -9385,7 +9385,7 @@ body[data-page^="stat"] #homeSyncBar{
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ background:#f29c50 !important; border-color: rgba(242,156,80,0.24) !important; }
 .channel-tag-letter{ color:#fff; font-size:12px; font-weight:900; line-height:1; }
 .channel-metrics-single .operatori-metric{ width:100%; }
-.guest-channel-inline{ display:inline-flex; align-items:center; margin-top:6px; }
+.guest-channel-inline{ display:inline-flex; align-items:center; margin-top:0; flex:0 0 auto; }
 .guest-channel-dot{ width:24px; height:24px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:12px; line-height:1; }
 .guest-channel-dot.color-blue{ background:#6fb7d6; }
 .guest-channel-dot.color-orange{ background:#f29c50; }
@@ -9450,4 +9450,37 @@ body[data-page^="stat"] #homeSyncBar{
   background: rgba(255,255,255,0.78);
   color: var(--ico-blue-night);
   font-weight: 800;
+}
+
+
+/* dDAE_2.164 — Guest list: pallini allineati e uniformi */
+#page-ospiti .guest-meta-right{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  min-height:26px;
+}
+#page-ospiti .guest-meta-right > *,
+#page-ospiti .guest-meta-right .guest-channel-inline{
+  flex:0 0 auto;
+}
+#page-ospiti .guest-meta-right .guest-channel-dot,
+#page-ospiti .guest-meta-right .marriage-dot,
+#page-ospiti .guest-meta-right .g-dot,
+#page-ospiti .guest-meta-right .c-dot,
+#page-ospiti .guest-meta-right .guest-led{
+  width:26px !important;
+  height:26px !important;
+  min-width:26px;
+  min-height:26px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  margin:0;
+}
+@media (max-width: 480px){
+  #page-ospiti .guest-meta-right .guest-led{ width:26px !important; height:26px !important; }
 }
