@@ -9621,3 +9621,111 @@ body[data-page^="stat"] #homeSyncBar{
 .btn.tax-quarter.tax-q2{ background: rgba(107,114,128,0.75) !important; }
 .btn.tax-quarter.tax-q3{ background: rgba(201,119,43,0.75) !important; }
 .btn.tax-quarter.tax-q4{ background: rgba(0,0,0,0.75) !important; }
+
+
+body[data-role="operatore"] #page-home .home-grid{
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  width: min(260px, 92vw) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+body[data-role="operatore"] #page-home .home-main{
+  max-width: none !important;
+}
+
+.laundry-detail-card{
+  width: min(92vw, 520px);
+  border-radius: 28px;
+  padding: 20px 18px 18px;
+  background: #f6fbff;
+  border: 1px solid rgba(77,156,197,0.18);
+  box-shadow: 0 22px 60px rgba(11,31,58,0.18);
+}
+.laundry-detail-head{
+  padding-right: 28px;
+}
+.laundry-detail-kicker{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #4d9cc5;
+  margin-bottom: 6px;
+}
+.laundry-detail-title{
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.05;
+  color: #0b1f3a;
+}
+.laundry-detail-sub{
+  margin-top: 6px;
+  color: rgba(11,31,58,0.72);
+  font-weight: 700;
+}
+.laundry-detail-list{
+  margin-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+.laundry-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(77,156,197,0.10);
+}
+.laundry-detail-rowLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 0;
+}
+.laundry-detail-code{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  background: #4d9cc5;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .04em;
+  flex: 0 0 44px;
+}
+.laundry-detail-label{
+  font-weight: 900;
+  color: #0b1f3a;
+}
+.laundry-detail-meta{
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(11,31,58,0.65);
+}
+.laundry-detail-price{
+  font-weight: 950;
+  color: #0b1f3a;
+  white-space: nowrap;
+}
+.laundry-detail-totals{
+  margin-top: 16px;
+  display:grid;
+  gap: 10px;
+}
+.laundry-detail-totalRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #0b1f3a;
+  color: #fff;
+  font-weight: 900;
+}
+.laundry-detail-totalRow:last-child{
+  background: #4d9cc5;
+}

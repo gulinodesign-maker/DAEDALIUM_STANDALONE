@@ -22,26 +22,43 @@ function _hashStr(str){
 
 function applyIconPalette(){
   try{
-    const grids = document.querySelectorAll(".home-grid");
-    grids.forEach(grid => {
-      const buttons = Array.from(grid.querySelectorAll(".home-main"));
-      if (!buttons.length) return;
-
-      const page = grid.closest(".page");
-      const key = (page && page.id) ? page.id : "grid";
-      const off = _hashStr(key) % ICON_PALETTE_ALT.length;
-
-      const colors = ICON_PALETTE_ALT.slice(off).concat(ICON_PALETTE_ALT.slice(0, off));
-
-      // Assegna colori in ordine "sparso" e alternato, evitando ripetizioni (entro 8 icone)
-      buttons.forEach((btn, i) => {
-        const c = colors[i % colors.length];
-        btn.style.setProperty("--ico-color", c);
-      });
+    const HOME_ICON_COLORS = {
+      goOspite: "#0B1F3A",
+      goCalendario: "#245EA8",
+      openLauncher: "#67BDEB",
+      goTassaSoggiorno: "#9DD8F7",
+      goPulizie: "#F29C50",
+      goLavanderia: "#F6B67A",
+      goOrePuliziaHome: "#C7B198",
+      goStatistiche: "#D9CCC0",
+      goProdotti: "#AFC9D8",
+      goDbImport: "#67BDEB",
+      goDbExport: "#245EA8"
+    };
+    const statsIconColors = {
+      goStatGen: "#245EA8",
+      goStatMensili: "#4D9CC5",
+      goStatSpese: "#F29C50",
+      goStatPrenotazioni: "#F6B67A",
+      goStatPiscina: "#C7B198",
+      goStatCancellazioni: "#D9CCC0"
+    };
+    document.querySelectorAll('#page-home .home-main').forEach((btn) => {
+      const c = HOME_ICON_COLORS[btn.id] || "#4D9CC5";
+      btn.style.setProperty('--ico-color', c);
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
+        });
+      }
     });
-  }catch(_){
-    // no-op
-  }
+    document.querySelectorAll('#page-statistiche .home-main').forEach((btn) => {
+      const c = statsIconColors[btn.id] || "#4D9CC5";
+      btn.style.setProperty('--ico-color', c);
+    });
+  }catch(_){ }
 }
 
 
@@ -54,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.172";
+const BUILD_VERSION = "2.173";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2935,7 +2952,7 @@ function applyRoleMode(){
       try{ bar.hidden = false; bar.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
-// HOME: mostra solo Pulizie / Lavanderia / Calendario per operatori
+// HOME: mostra solo Pulizie / Lavanderia / Calendario / Ore Pulizia per operatori
   if (isOp){
     const hideIds = [
       "goOspite",
@@ -5422,45 +5439,11 @@ function setupChannelPage(){
 
 function __applyHomeIconGradients__(){
   try{
-    const btns = Array.from(document.querySelectorAll('#page-home .home-grid .home-main:not([hidden])'));
-    const palettes = [
-      ['#0B1F3A', '#43B5FF'],
-      ['#43B5FF', '#FF7A1A'],
-      ['#FF7A1A', '#D8D0C7']
-    ];
-    btns.forEach((btn, idx) => {
-      const svg = btn.querySelector('svg.ui-ico');
-      if (!svg) return;
-      const col = idx % 3;
-      const gradId = `homeIconGrad_${col + 1}_${idx}`;
-      let defs = svg.querySelector('defs');
-      if (!defs){
-        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        svg.insertBefore(defs, svg.firstChild || null);
-      }
-      defs.innerHTML = '';
-      const lg = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-      lg.setAttribute('id', gradId);
-      lg.setAttribute('x1', '0%');
-      lg.setAttribute('y1', '50%');
-      lg.setAttribute('x2', '100%');
-      lg.setAttribute('y2', '50%');
-      const s1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-      s1.setAttribute('offset', '0%');
-      s1.setAttribute('stop-color', palettes[col][0]);
-      const s2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-      s2.setAttribute('offset', '100%');
-      s2.setAttribute('stop-color', palettes[col][1]);
-      lg.appendChild(s1);
-      lg.appendChild(s2);
-      defs.appendChild(lg);
-      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((shape) => {
-        try{
-          shape.setAttribute('stroke', `url(#${gradId})`);
-          if (!shape.hasAttribute('fill') || shape.getAttribute('fill') !== 'none') {
-            shape.setAttribute('fill', 'none');
-          }
-        }catch(_){ }
+    document.querySelectorAll('#page-home .home-grid .home-main svg.ui-ico').forEach((svg) => {
+      svg.querySelectorAll('defs').forEach((d) => d.remove());
+      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+        node.style.stroke = 'currentColor';
+        node.style.fill = 'none';
       });
     });
   }catch(_){ }
@@ -7176,6 +7159,22 @@ if (goCalendarioTopOspiti){
     bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("orepulizia"); });
   }
   try{ __applyHomeIconGradients__(); }catch(_){ }
+  try{
+    const laundryDetailClose = document.getElementById('laundryDetailClose');
+    const laundryDetailModal = document.getElementById('laundryDetailModal');
+    if (laundryDetailClose && !laundryDetailClose.__boundLaundryDetail){
+      laundryDetailClose.__boundLaundryDetail = true;
+      bindFastTap(laundryDetailClose, () => { __closeLaundryDetailModal__(); });
+    }
+    if (laundryDetailModal && !laundryDetailModal.__boundLaundryBackdrop){
+      laundryDetailModal.__boundLaundryBackdrop = true;
+      laundryDetailModal.addEventListener('click', (ev) => { if (ev.target === laundryDetailModal) __closeLaundryDetailModal__(); });
+    }
+    if (!document.body.__boundLaundryDetailEsc){
+      document.body.__boundLaundryDetailEsc = true;
+      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') __closeLaundryDetailModal__(); });
+    }
+  }catch(_){ }
   const goLavTop = $("#goLavanderiaTop");
   if (goLavTop){
     bindFastTap(goLavTop, () => { hideLauncher(); showPage("lavanderia"); });
@@ -16575,6 +16574,50 @@ function renderLaundry_(item){
   }
 }
 
+function __laundryReportRangeText__(item){
+  const startLbl = item?.startDate ? formatLongDateIT(item.startDate) : String(item?.startDate || "");
+  const endLbl = item?.endDate ? formatLongDateIT(item.endDate) : String(item?.endDate || "");
+  return (startLbl && endLbl) ? `${startLbl} → ${endLbl}` : "—";
+}
+
+function __openLaundryDetailModal__(raw){
+  const item = sanitizeLaundryItem_(raw || {});
+  const modal = document.getElementById('laundryDetailModal');
+  const title = document.getElementById('laundryDetailTitle');
+  const range = document.getElementById('laundryDetailRange');
+  const list = document.getElementById('laundryDetailList');
+  const netEl = document.getElementById('laundryDetailNet');
+  const vatEl = document.getElementById('laundryDetailVat');
+  if (!modal || !title || !range || !list || !netEl || !vatEl) return;
+  const prices = item?.laundryPrices && typeof item.laundryPrices === 'object' ? item.laundryPrices : __laundryDisplayPricesForCurrentView__();
+  const rangeText = __laundryReportRangeText__(item);
+  title.textContent = 'Dettaglio economico';
+  range.textContent = rangeText;
+  let imponibile = 0;
+  list.innerHTML = LAUNDRY_COLS.map((k) => {
+    const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
+    const subtotal = Math.round(qty * unit * 100) / 100;
+    imponibile += subtotal;
+    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-code">${k}</div><div><div class="laundry-detail-label">${LAUNDRY_LABELS[k] || k}</div><div class="laundry-detail-meta">${qty} × ${__laundryMoneyFmt__(unit)}</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
+  }).join('');
+  imponibile = Math.round(imponibile * 100) / 100;
+  const ivato = Math.round(imponibile * 1.22 * 100) / 100;
+  netEl.textContent = __laundryMoneyFmt__(imponibile);
+  vatEl.textContent = __laundryMoneyFmt__(ivato);
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+}
+
+function __closeLaundryDetailModal__(){
+  const modal = document.getElementById('laundryDetailModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+}
+
 function renderLaundryHistory_(list){
   const host = document.getElementById("laundryHistory");
   if (!host) return;
@@ -16684,7 +16727,7 @@ function renderLaundryHistory_(list){
 
     bindFastTap(btn, () => {
       renderLaundry_(it);
-      // scroll su
+      try{ __openLaundryDetailModal__(it); }catch(_){ }
       try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch(_){
         window.scrollTo(0,0);
       }
