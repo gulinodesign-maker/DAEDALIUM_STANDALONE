@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.170
+ * Build: 2.169
  */
-const BUILD_VERSION = "2.170";
+const BUILD_VERSION = "2.169";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {

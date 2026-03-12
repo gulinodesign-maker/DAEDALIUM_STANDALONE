@@ -9530,7 +9530,7 @@ body[data-page^="stat"] #homeSyncBar{
 }
 
 
-/* dDAE_2.170 — Multilingua + icona lingua in Impostazioni */
+/* dDAE_2.169 — Multilingua + icona lingua in Impostazioni */
 .settings-audio-header{
   gap: 10px;
   flex-wrap: nowrap;
@@ -9627,57 +9627,5 @@ body[data-page^="stat"] #homeSyncBar{
     min-width: 0 !important;
     height: clamp(78px, 25vw, 110px) !important;
     min-height: clamp(78px, 25vw, 110px) !important;
-  }
-}
-
-/* dDAE_2.170 — Impostazioni 3x3: tasti -20%, quadrati, smussati, non schiacciati */
-#page-impostazioni .settings-actions.settings-actions-reference{
-  grid-template-columns: repeat(3, minmax(clamp(66px, 18.72vw, 122px), clamp(66px, 18.72vw, 122px))) !important;
-  gap: 16px 16px !important;
-  width: min(414px, calc(100vw - 44px)) !important;
-}
-#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
-  width: clamp(66px, 18.72vw, 122px) !important;
-  height: clamp(66px, 18.72vw, 122px) !important;
-  min-width: clamp(66px, 18.72vw, 122px) !important;
-  min-height: clamp(66px, 18.72vw, 122px) !important;
-  max-width: clamp(66px, 18.72vw, 122px) !important;
-  max-height: clamp(66px, 18.72vw, 122px) !important;
-  aspect-ratio: 1 / 1 !important;
-  border-radius: clamp(18px, 5.2vw, 35px) !important;
-  padding: 10px 8px !important;
-  align-self: stretch !important;
-  justify-self: center !important;
-}
-#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
-  width: clamp(28px, 8vw, 38px) !important;
-  height: clamp(28px, 8vw, 38px) !important;
-}
-#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
-  font-size: 12px !important;
-  line-height: 1.05 !important;
-}
-@media (max-width: 520px){
-  #page-impostazioni .settings-actions.settings-actions-reference{
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    width: min(100%, 360px) !important;
-    gap: 12px 12px !important;
-  }
-  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    aspect-ratio: 1 / 1 !important;
-    padding: 10px 6px !important;
-  }
-  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
-    width: clamp(24px, 7vw, 32px) !important;
-    height: clamp(24px, 7vw, 32px) !important;
-  }
-  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
-    font-size: 11px !important;
   }
 }
