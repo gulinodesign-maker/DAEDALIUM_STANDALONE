@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.153
+ * Build: 2.154
  */
-const BUILD_VERSION = "2.153";
+const BUILD_VERSION = "2.154";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5106,17 +5106,56 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
 
   const roomsBtn = document.getElementById("settingsRoomsBtn");
-  if (roomsBtn) bindFastTap(roomsBtn, async () => {
-    try{
+  if (roomsBtn && !roomsBtn.__boundRoomsTap){
+    roomsBtn.__boundRoomsTap = true;
+    let __roomsPressTimer = null;
+    let __roomsLongFired = false;
+    let __roomsTouchAt = 0;
+    const __roomsClearPress = () => {
+      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
+      __roomsPressTimer = null;
+      __roomsLongFired = false;
+    };
+    const __roomsSaveValue = async (next) => {
+      try{
+        const current = getConfiguredRoomsCount(6);
+        if (Number(next) === Number(current)) { updateSettingsRoomsButtonLabel(); return; }
+        await saveRoomsCountSetting(next);
+      }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
+    };
+    const __roomsTap = async () => {
+      try{ __sfxTap(); }catch(_){ }
       const current = getConfiguredRoomsCount(6);
-      const raw = window.prompt('Numero stanze (1-12)', String(current));
-      if (raw == null) return;
-      const next = Math.max(1, Math.min(12, parseInt(String(raw).trim(), 10) || 0));
-      if (!next) { toast('Numero stanze non valido'); return; }
-      if (next === current){ updateSettingsRoomsButtonLabel(); return; }
-      await saveRoomsCountSetting(next);
-    }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
-  });
+      const next = (current >= 12) ? 1 : (current + 1);
+      await __roomsSaveValue(next);
+    };
+    const __roomsLong = async () => {
+      try{ __sfxGlass(); }catch(_){ }
+      __roomsLongFired = true;
+      await __roomsSaveValue(0);
+    };
+    roomsBtn.addEventListener('touchstart', (e) => {
+      __roomsTouchAt = Date.now();
+      __roomsClearPress();
+      __roomsPressTimer = setTimeout(() => { __roomsLong(); }, 500);
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    roomsBtn.addEventListener('touchend', async (e) => {
+      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
+      if (!__roomsLongFired) await __roomsTap();
+      __roomsClearPress();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    roomsBtn.addEventListener('touchcancel', (e) => {
+      __roomsClearPress();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    roomsBtn.addEventListener('click', async (e) => {
+      if (Date.now() - __roomsTouchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
+      await __roomsTap();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, true);
+  }
 
   const cfgClose = document.getElementById("settingsConfigClose");
   if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
@@ -9948,9 +9987,9 @@ function _guestIdOf(item){
 function getConfiguredRoomsCount(fallback = 6){
   try{
     const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
-    if (Number.isFinite(n) && n >= 1) return n;
+    if (Number.isFinite(n) && n >= 0) return n;
   }catch(_){ }
-  return Math.max(1, parseInt(fallback, 10) || 6);
+  return Math.max(0, parseInt(fallback, 10) || 6);
 }
 
 function updateSettingsRoomsButtonLabel(){
@@ -9960,8 +9999,8 @@ function updateSettingsRoomsButtonLabel(){
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
     if (label) label.textContent = `Stanze ${n}`;
-    el.setAttribute('aria-label', `Numero stanze: ${n}`);
-    el.title = `Numero stanze: ${n}`;
+    el.setAttribute('aria-label', `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`);
+    el.title = `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`;
   }catch(_){ }
 }
 
@@ -9981,8 +10020,8 @@ function ensureRoomsPickerButtons(){
 }
 
 async function saveRoomsCountSetting(nextCount){
-  const n = Math.max(1, Math.min(12, parseInt(nextCount, 10) || 0));
-  if (!Number.isFinite(n) || n < 1) throw new Error('Numero stanze non valido');
+  const n = Math.max(0, Math.min(12, parseInt(nextCount, 10) || 0));
+  if (!Number.isFinite(n) || n < 0) throw new Error('Numero stanze non valido');
   await api('impostazioni', { method: 'POST', body: { numero_stanze: n }, showLoader: true });
   try{
     state.settings = state.settings || {};
@@ -9999,6 +10038,7 @@ async function saveRoomsCountSetting(nextCount){
   try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
   try{ window.__ddae_renderRooms?.(); }catch(_){ }
   try{ window.__ddae_refreshRoomsAvailability?.(); }catch(_){ }
+  try{ window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
   try{ if (state && state.page === 'calendario') renderCalendario?.(); }catch(_){ }
   try{ if (state && state.page === 'ospite'){
     const current = state.guestMode === 'view' ? state.guestViewItem : state.guestEditSourceItem;
@@ -13841,6 +13881,51 @@ try{
   const cleanResetHours = document.getElementById("cleanResetHours");
   const cleanResetAll = document.getElementById("cleanResetAll");
 
+  const __CLEAN_COLS__ = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+  const rebuildPulizieGrid = ({ preserveValues = true } = {}) => {
+    try{
+      if (!cleanGrid) return;
+      const prev = new Map();
+      if (preserveValues){
+        try{
+          cleanGrid.querySelectorAll('.cell.slot').forEach((cell) => {
+            const room = String(cell?.dataset?.room || '').trim();
+            const col = String(cell?.dataset?.col || '').trim().toUpperCase();
+            if (!room || !col) return;
+            prev.set(`${room}|${col}`, {
+              value: readCell(cell),
+              saved: !!cell.classList.contains('is-saved')
+            });
+          });
+        }catch(_){ }
+      }
+      const count = Math.max(0, Math.min(12, getConfiguredRoomsCount(6)));
+      const parts = [];
+      parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
+      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
+      for (let r = 1; r <= count; r++) {
+        parts.push(`<div class="c cell room r${r}">${r}</div>`);
+        __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
+      }
+      parts.push('<div class="c cell room rres">RES</div>');
+      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="RES"></div>`); });
+      cleanGrid.innerHTML = parts.join('');
+      try{ __bindResetAllCorner(document.getElementById("cleanResetAll")); }catch(_){ }
+      try{ if (typeof cleanGridHandlersBound !== 'undefined') cleanGridHandlersBound = false; }catch(_){ }
+      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){ }
+      try{
+        cleanGrid.querySelectorAll('.cell.slot').forEach((cell) => {
+          const room = String(cell?.dataset?.room || '').trim();
+          const col = String(cell?.dataset?.col || '').trim().toUpperCase();
+          const hit = prev.get(`${room}|${col}`);
+          if (!hit) return;
+          writeCell(cell, hit.value || 0);
+          cell.classList.toggle('is-saved', !!hit.saved && Number(hit.value || 0) > 0);
+        });
+      }catch(_){ }
+    }catch(_){ }
+  };
+
   // --- Autosave (debounce 1s): Pulizie (biancheria) + Ore operatori ---
   let __laundrySaveT = null;
   let __hoursSaveT = null;
@@ -14326,6 +14411,7 @@ try{
   try{ window.__syncCleanOperators__ = syncCleanOperators; }catch(_){ }
 
   try{ syncCleanOperators(); }catch(_){}
+  try{ rebuildPulizieGrid({ preserveValues:false }); }catch(_){ }
 
   const buildOperatoriPayload = () => {
     const date = getCleanDate();
@@ -14705,19 +14791,31 @@ if (cleanResetAll){
     }
   };
 
-  bindFastTap(cleanResetAll, doResetAllPulizie);
-
-  // supporto tastiera (Enter/Space)
-  try{
-    cleanResetAll.addEventListener("keydown", (e) => {
-      const k = (e && e.key) ? e.key : "";
-      if (k === "Enter" || k === " "){
-        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-        try{ doResetAllPulizie(); }catch(_){ }
-      }
-    }, true);
-  }catch(_){ }
+  const __bindResetAllCorner = (el) => {
+    try{
+      if (!el || el.__boundResetAllCorner) return;
+      el.__boundResetAllCorner = true;
+      bindFastTap(el, doResetAllPulizie);
+      el.addEventListener("keydown", (e) => {
+        const k = (e && e.key) ? e.key : "";
+        if (k === "Enter" || k === " "){
+          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+          try{ doResetAllPulizie(); }catch(_){ }
+        }
+      }, true);
+    }catch(_){ }
+  };
+  try{ __bindResetAllCorner(document.getElementById('cleanResetAll')); }catch(_){ }
 }
+
+  try{
+    window.__ddae_refreshPulizieGrid = async ({ forceReload = false } = {}) => {
+      try{ rebuildPulizieGrid({ preserveValues: !forceReload }); }catch(_){ }
+      try{
+        if (state && state.page === "pulizie") await loadPulizieForDay({ clearFirst: true });
+      }catch(_){ }
+    };
+  }catch(_){ }
 
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
