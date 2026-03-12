@@ -7909,9 +7909,9 @@ color: var(--mcol,#ff3b30);
 }
 #page-ospite .guest-form-card.is-create .total-row .subfield.field.float,
 #page-ospite .guest-form-card.is-create .booking-row .subfield.field.float{
-  flex: 0 0 auto !important;
-  width: min(360px, 86vw) !important;
-  max-width: min(360px, 86vw) !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin-left:auto !important;
   margin-right:auto !important;
 }
@@ -9399,7 +9399,7 @@ body[data-page^="stat"] #homeSyncBar{
 #prodTabColazione.is-active{ border-color: rgba(52,199,89,0.98) !important; }
 
 
-/* dDAE_2.160 — Ospite: ordine channel, note uniformi, commissione solo in lettura */
+/* dDAE_2.161 — Ospite: ordine channel, note uniformi, commissione solo in lettura */
 #page-ospite .guest-notes-toggle{
   min-height:52px;
   border-radius:18px;
@@ -9426,4 +9426,17 @@ body[data-page^="stat"] #homeSyncBar{
 }
 #page-ospite .guest-form-card.is-view #guestChannelCommissionWrap{
   display:block !important;
+}
+
+
+/* dDAE_2.161 — Campi importi allineati al channel + commissione automatica */
+#page-ospite .guest-form-card.is-create .booking-row,
+#page-ospite .guest-form-card.is-create .total-row,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  width: 100% !important;
+}
+#page-ospite #guestBooking[readonly]{
+  background: rgba(255,255,255,0.78);
+  color: var(--ico-blue-night);
+  font-weight: 800;
 }

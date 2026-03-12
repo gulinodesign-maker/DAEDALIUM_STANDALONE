@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.160
+ * Build: 2.161
  */
-const BUILD_VERSION = "2.160";
+const BUILD_VERSION = "2.161";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4775,6 +4775,7 @@ function applySelectedChannelToGuestForm(channelId, { preserveManual=false } = {
   try{ state.guestChannelColor = item ? String(item.colore) : ''; }catch(_){ }
   try{ state.guestChannelInitial = item ? String(item.iniziale || __channelInitialFromName__(item.nome)) : ''; }catch(_){ }
   try{ state.guestChannelCommissionPct = item ? Number(item.commissione || 0) : 0; }catch(_){ }
+  try{ recalcGuestCommission(); }catch(_){ }
   if (!preserveManual){ try{ refreshFloatingLabels(); }catch(_){ } }
 }
 
@@ -9948,6 +9949,25 @@ function updateGuestRemaining(){
   try { refreshFloatingLabels(); } catch (_) {}
 }
 
+function recalcGuestCommission(){
+  const totalEl = document.getElementById("guestTotal");
+  const pctEl = document.getElementById("guestChannelCommission");
+  const outEl = document.getElementById("guestBooking");
+  if (!outEl) return;
+  const totalRaw = String(totalEl?.value ?? "").trim();
+  const pctRaw = String(pctEl?.value ?? "").trim();
+  if (!totalRaw && !pctRaw){
+    outEl.value = "";
+    try { refreshFloatingLabels(); } catch (_) {}
+    return;
+  }
+  const total = parseFloat(totalRaw || "0") || 0;
+  const pct = parseFloat(pctRaw || "0") || 0;
+  const commission = Math.round((total * pct) * 100) / 10000;
+  outEl.value = (isFinite(commission) ? commission.toFixed(2) : "");
+  try { refreshFloatingLabels(); } catch (_) {}
+}
+
 function updateGuestPriceVisibility(){
   try{
     const hide = (String(state.guestMode || '').toLowerCase() === 'create' && !!state.guestCreateFromGroup);
@@ -10739,7 +10759,7 @@ function setGuestFormViewOnly(isView, ospite){
     try{
       const commWrap = document.getElementById("guestChannelCommissionWrap");
       if (commWrap) commWrap.hidden = !isView;
-    }catch(_){}
+    }catch(_){ }
   }catch(_){ }
 
   try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
@@ -12179,9 +12199,16 @@ function setupOspite(){
   ["guestTotal","guestServices","guestDeposit","guestSaldo"].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener("input", () => { try { updateGuestRemaining(); } catch (_) {} });
-    el.addEventListener("change", () => { try { updateGuestRemaining(); } catch (_) {} });
+    el.addEventListener("input", () => {
+      try { if (id === "guestTotal") recalcGuestCommission(); } catch (_) {}
+      try { updateGuestRemaining(); } catch (_) {}
+    });
+    el.addEventListener("change", () => {
+      try { if (id === "guestTotal") recalcGuestCommission(); } catch (_) {}
+      try { updateGuestRemaining(); } catch (_) {}
+    });
   });
+  try { recalcGuestCommission(); } catch (_) {}
   try { updateGuestRemaining(); } catch (_) {}
 
 
