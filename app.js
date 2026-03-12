@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.155
+ * Build: 2.156
  */
-const BUILD_VERSION = "2.155";
+const BUILD_VERSION = "2.156";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3201,8 +3201,6 @@ async function hardUpdateCheck(){
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
     if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
-
-    try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
 
     try{
       if ("serviceWorker" in navigator){
