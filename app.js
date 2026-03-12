@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.153
+ * Build: 2.155
  */
-const BUILD_VERSION = "2.153";
+const BUILD_VERSION = "2.155";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4755,6 +4755,15 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
   }
 }
 
+const __settingsRoomsUi = {
+  saving: false,
+  pendingValue: null,
+  holdTimer: null,
+  holdTriggered: false,
+  holdDelay: 500,
+  tapResetTimer: null,
+};
+
 const __settingsTaxCapUi = {
   value: 0,
   holdTimer: null,
@@ -5106,17 +5115,7 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
 
   const roomsBtn = document.getElementById("settingsRoomsBtn");
-  if (roomsBtn) bindFastTap(roomsBtn, async () => {
-    try{
-      const current = getConfiguredRoomsCount(6);
-      const raw = window.prompt('Numero stanze (1-12)', String(current));
-      if (raw == null) return;
-      const next = Math.max(1, Math.min(12, parseInt(String(raw).trim(), 10) || 0));
-      if (!next) { toast('Numero stanze non valido'); return; }
-      if (next === current){ updateSettingsRoomsButtonLabel(); return; }
-      await saveRoomsCountSetting(next);
-    }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
-  });
+  if (roomsBtn) bindSettingsRoomsButton();
 
   const cfgClose = document.getElementById("settingsConfigClose");
   if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
@@ -9958,11 +9957,90 @@ function updateSettingsRoomsButtonLabel(){
     const el = document.getElementById("settingsRoomsBtn");
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
+    const valueEl = el.querySelector('.settings-btn-value');
     const n = getConfiguredRoomsCount(6);
-    if (label) label.textContent = `Stanze ${n}`;
-    el.setAttribute('aria-label', `Numero stanze: ${n}`);
-    el.title = `Numero stanze: ${n}`;
+    if (label) label.textContent = 'Numero di stanze';
+    if (valueEl) valueEl.textContent = String(n);
+    else if (label) label.textContent = `Numero di stanze ${n}`;
+    el.dataset.value = String(n);
+    el.setAttribute('aria-label', `Numero di stanze: ${n}`);
+    el.title = `Numero di stanze: ${n}`;
   }catch(_){ }
+}
+
+async function __commitRoomsCountSetting__(nextCount){
+  const n = Math.max(1, Math.min(12, parseInt(nextCount, 10) || 0));
+  if (__settingsRoomsUi.saving){
+    __settingsRoomsUi.pendingValue = n;
+    return;
+  }
+  __settingsRoomsUi.saving = true;
+  try{
+    await saveRoomsCountSetting(n);
+  }finally{
+    __settingsRoomsUi.saving = false;
+    if (__settingsRoomsUi.pendingValue != null && parseInt(__settingsRoomsUi.pendingValue, 10) !== n){
+      const pending = __settingsRoomsUi.pendingValue;
+      __settingsRoomsUi.pendingValue = null;
+      await __commitRoomsCountSetting__(pending);
+    } else {
+      __settingsRoomsUi.pendingValue = null;
+    }
+  }
+}
+
+function bindSettingsRoomsButton(){
+  const btn = document.getElementById("settingsRoomsBtn");
+  if (!btn || btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+
+  const clearHold = () => {
+    if (__settingsRoomsUi.holdTimer) {
+      clearTimeout(__settingsRoomsUi.holdTimer);
+      __settingsRoomsUi.holdTimer = null;
+    }
+  };
+  const clearTapReset = () => {
+    if (__settingsRoomsUi.tapResetTimer) {
+      clearTimeout(__settingsRoomsUi.tapResetTimer);
+      __settingsRoomsUi.tapResetTimer = null;
+    }
+  };
+  const pulseTapReset = () => {
+    clearTapReset();
+    __settingsRoomsUi.tapResetTimer = setTimeout(() => {
+      try{ btn.classList.remove('is-multitap'); }catch(_){ }
+    }, 500);
+  };
+
+  btn.addEventListener('pointerdown', () => {
+    clearHold();
+    __settingsRoomsUi.holdTriggered = false;
+    __settingsRoomsUi.holdTimer = setTimeout(() => {
+      __settingsRoomsUi.holdTriggered = true;
+      try{ btn.classList.add('is-multitap'); }catch(_){ }
+      __commitRoomsCountSetting__(1);
+      try{ toast('Numero stanze reimpostato a 1'); }catch(_){ }
+      pulseTapReset();
+    }, __settingsRoomsUi.holdDelay);
+  }, { passive:true });
+
+  const endHold = () => {
+    clearHold();
+    setTimeout(() => { __settingsRoomsUi.holdTriggered = false; }, 0);
+  };
+  btn.addEventListener('pointerup', endHold, { passive:true });
+  btn.addEventListener('pointerleave', endHold, { passive:true });
+  btn.addEventListener('pointercancel', endHold, { passive:true });
+
+  btn.addEventListener('click', async () => {
+    if (__settingsRoomsUi.holdTriggered) return;
+    const current = getConfiguredRoomsCount(6);
+    const next = current >= 12 ? 1 : (current + 1);
+    try{ btn.classList.add('is-multitap'); }catch(_){ }
+    pulseTapReset();
+    await __commitRoomsCountSetting__(next);
+  });
 }
 
 function ensureRoomsPickerButtons(){
