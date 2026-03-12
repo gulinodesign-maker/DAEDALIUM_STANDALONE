@@ -8926,10 +8926,10 @@ color: var(--mcol,#ff3b30);
 }
 #page-impostazioni .settings-actions.settings-actions-reference{
   display:grid !important;
-  grid-template-columns: repeat(2, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
+  grid-template-columns: repeat(3, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
   justify-content:center !important;
-  gap: 18px 22px !important;
-  width: min(360px, 100%) !important;
+  gap: 18px 18px !important;
+  width: min(540px, 100%) !important;
   margin: 56px auto 0 auto !important;
   align-items: stretch;
 }
@@ -8964,6 +8964,7 @@ color: var(--mcol,#ff3b30);
   text-overflow: ellipsis;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background:#8fcbe8 !important; border-color: rgba(143,203,232,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{ background:#43b5ff !important; border-color: rgba(67,181,255,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background:#4fcd66 !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background:#7f7bf2 !important; border-color: rgba(127,123,242,0.24) !important; }
@@ -9529,7 +9530,7 @@ body[data-page^="stat"] #homeSyncBar{
 }
 
 
-/* dDAE_2.168 — Multilingua */
+/* dDAE_2.169 — Multilingua + icona lingua in Impostazioni */
 .settings-audio-header{
   gap: 10px;
   flex-wrap: nowrap;
@@ -9612,5 +9613,19 @@ body[data-page^="stat"] #homeSyncBar{
   }
   .settings-lang-trigger-label{
     display: none;
+  }
+}
+
+@media (max-width: 520px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: min(100%, 390px) !important;
+    gap: 14px 14px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    width: 100% !important;
+    min-width: 0 !important;
+    height: clamp(78px, 25vw, 110px) !important;
+    min-height: clamp(78px, 25vw, 110px) !important;
   }
 }

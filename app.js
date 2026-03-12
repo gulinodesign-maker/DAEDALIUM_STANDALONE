@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.168
+ * Build: 2.169
  */
-const BUILD_VERSION = "2.168";
+const BUILD_VERSION = "2.169";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -1073,9 +1073,7 @@ function translateDom(root){
 function updateLanguageButton(){
   const meta = APP_LANG_META[getCurrentLanguage()] || APP_LANG_META.it;
   const btn = document.getElementById("languageBtn");
-  const flag = document.getElementById("languageBtnFlag");
-  if (flag) flag.textContent = meta.flag;
-  if (btn) btn.setAttribute("data-lang", getCurrentLanguage());
+  if (btn) { btn.setAttribute("data-lang", getCurrentLanguage()); btn.setAttribute("aria-label", `${meta.label}: ${meta.nativeLabel}`); }
   document.querySelectorAll("#languageList .language-option").forEach((btnEl) => {
     const isActive = btnEl.getAttribute("data-lang") === getCurrentLanguage();
     btnEl.classList.toggle("is-active", isActive);
