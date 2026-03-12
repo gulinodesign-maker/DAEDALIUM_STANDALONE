@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.155
+ * Build: 2.157
  */
-const BUILD_VERSION = "2.156";
+const BUILD_VERSION = "2.157";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -1384,7 +1384,14 @@ try{
   const b = await __fbReadSpesaBoardPayload__();
   if (b && b.datasets) payloads.push(b);
 }catch(_){}
-if (!payloads.length){ try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ } return false; }
+if (!payloads.length){
+  if (opts?.allowEmpty){
+    try{ if(!opts?.silent) toast("Nessun dato remoto da importare", "blue"); }catch(_){ }
+    return true;
+  }
+  try{ if(!opts?.silent) toast("Nessun dato disponibile", "orange"); }catch(_){ }
+  return false;
+}
 
 // Combina tutti i dataset in un unico payload remoto
 let payload = { kind:"DDAE_SYNC_COMBINED", build: BUILD_VERSION, at: __nowIso__(), datasets: {} };
@@ -2030,6 +2037,20 @@ try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   return true;
 }
 
+async function __syncAttempt__(fn, retries = 0, delayMs = 350){
+  let last = false;
+  for (let i = 0; i <= retries; i += 1){
+    try{
+      last = await fn();
+      if (last !== false) return last;
+    }catch(_){ last = false; }
+    if (i < retries){
+      try{ await new Promise(r => setTimeout(r, delayMs)); }catch(_){ }
+    }
+  }
+  return last;
+}
+
 async function __handleSyncImport__(){
   const restoreState = __captureSyncRestoreState();
   if (__isAdmin__()) return __fbImportAdmin__({ restoreState });
@@ -2045,34 +2066,22 @@ async function __handleSyncExport__(){
 async function __handleSyncBoth__(){
   __fbLoadLink__();
   const restoreState = __captureSyncRestoreState();
-  try{ toast("Sync in corso...", "blue"); }catch(_){}
-  const __sleep__ = (ms) => new Promise(r => setTimeout(r, ms));
-  const __attemptSync__ = async (fn, tries = 2, delay = 350) => {
-    let last = false;
-    for (let i = 0; i < tries; i++){
-      try{
-        last = await fn();
-        if (last !== false) return last;
-      }catch(_){
-        last = false;
-      }
-      if (i < (tries - 1)) await __sleep__(delay);
-    }
-    return last;
-  };
-  let exported = false, imported = false;
+  try{ toast("Sync in corso...", "blue"); }catch(_){ }
+  let ok1 = false, ok2 = false;
   try{
     if (__isAdmin__()){
-      exported = await __attemptSync__(()=>__fbExportAdmin__({ silent:true, restoreState }), 2, 350);
-      imported = await __attemptSync__(()=>__fbImportAdmin__({ silent:true, skipReload:true, restoreState }), 3, 450);
+      ok1 = await __syncAttempt__(()=>__fbImportAdmin__({ silent:true, skipReload:true, restoreState }), 1, 350);
+      ok2 = await __syncAttempt__(()=>__fbExportAdmin__({ silent:true, restoreState }), 1, 350);
     }else{
-      exported = await __attemptSync__(()=>__fbExportOperator__({ silent:true, restoreState }), 2, 350);
-      imported = await __attemptSync__(()=>__fbImportOperator__({ silent:true, skipReload:true, restoreState }), 3, 450);
+      ok1 = await __syncAttempt__(()=>__fbExportOperator__({ silent:true, restoreState }), 1, 350);
+      ok2 = await __syncAttempt__(()=>__fbImportOperator__({ silent:true, skipReload:true, restoreState, allowEmpty:true }), 2, 450);
     }
   }catch(_){ }
-  const ok = (exported !== false) || (imported !== false);
-  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
-  setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
+  const ok = (ok1 !== false) || (ok2 !== false);
+  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){ }
+  if (ok){
+    setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
+  }
   return ok;
 }
 
@@ -4760,9 +4769,6 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
 
     try{ if (typeof window.__syncCleanOperators__ === "function") window.__syncCleanOperators__(); }catch(_){ }
     try{ refreshFloatingLabels(); }catch(_){ }
-    try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
-    try{ ensureRoomsPickerButtons(); }catch(_){ }
-    try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
 
     return state.settings;
   } catch (e) {
@@ -5123,56 +5129,17 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfg) bindFastTap(cfg, () => { __openSettingsConfigModal__(); });
 
   const roomsBtn = document.getElementById("settingsRoomsBtn");
-  if (roomsBtn && !roomsBtn.__boundRoomsTap){
-    roomsBtn.__boundRoomsTap = true;
-    let __roomsPressTimer = null;
-    let __roomsLongFired = false;
-    let __roomsTouchAt = 0;
-    const __roomsClearPress = () => {
-      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
-      __roomsPressTimer = null;
-      __roomsLongFired = false;
-    };
-    const __roomsSaveValue = async (next) => {
-      try{
-        const current = getConfiguredRoomsCount(6);
-        if (Number(next) === Number(current)) { updateSettingsRoomsButtonLabel(); return; }
-        await saveRoomsCountSetting(next);
-      }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
-    };
-    const __roomsTap = async () => {
-      try{ __sfxTap(); }catch(_){ }
+  if (roomsBtn) bindFastTap(roomsBtn, async () => {
+    try{
       const current = getConfiguredRoomsCount(6);
-      const next = (current >= 12) ? 1 : (current + 1);
-      await __roomsSaveValue(next);
-    };
-    const __roomsLong = async () => {
-      try{ __sfxGlass(); }catch(_){ }
-      __roomsLongFired = true;
-      await __roomsSaveValue(0);
-    };
-    roomsBtn.addEventListener('touchstart', (e) => {
-      __roomsTouchAt = Date.now();
-      __roomsClearPress();
-      __roomsPressTimer = setTimeout(() => { __roomsLong(); }, 500);
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('touchend', async (e) => {
-      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
-      if (!__roomsLongFired) await __roomsTap();
-      __roomsClearPress();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('touchcancel', (e) => {
-      __roomsClearPress();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('click', async (e) => {
-      if (Date.now() - __roomsTouchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
-      await __roomsTap();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, true);
-  }
+      const raw = window.prompt('Numero stanze (1-12)', String(current));
+      if (raw == null) return;
+      const next = Math.max(1, Math.min(12, parseInt(String(raw).trim(), 10) || 0));
+      if (!next) { toast('Numero stanze non valido'); return; }
+      if (next === current){ updateSettingsRoomsButtonLabel(); return; }
+      await saveRoomsCountSetting(next);
+    }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
+  });
 
   const cfgClose = document.getElementById("settingsConfigClose");
   if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
@@ -10004,9 +9971,9 @@ function _guestIdOf(item){
 function getConfiguredRoomsCount(fallback = 6){
   try{
     const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
-    if (Number.isFinite(n) && n >= 0) return n;
+    if (Number.isFinite(n) && n >= 1) return n;
   }catch(_){ }
-  return Math.max(0, parseInt(fallback, 10) || 6);
+  return Math.max(1, parseInt(fallback, 10) || 6);
 }
 
 function updateSettingsRoomsButtonLabel(){
@@ -10016,8 +9983,8 @@ function updateSettingsRoomsButtonLabel(){
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
     if (label) label.textContent = `Stanze ${n}`;
-    el.setAttribute('aria-label', `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`);
-    el.title = `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`;
+    el.setAttribute('aria-label', `Numero stanze: ${n}`);
+    el.title = `Numero stanze: ${n}`;
   }catch(_){ }
 }
 
@@ -10037,8 +10004,8 @@ function ensureRoomsPickerButtons(){
 }
 
 async function saveRoomsCountSetting(nextCount){
-  const n = Math.max(0, Math.min(12, parseInt(nextCount, 10) || 0));
-  if (!Number.isFinite(n) || n < 0) throw new Error('Numero stanze non valido');
+  const n = Math.max(1, Math.min(12, parseInt(nextCount, 10) || 0));
+  if (!Number.isFinite(n) || n < 1) throw new Error('Numero stanze non valido');
   await api('impostazioni', { method: 'POST', body: { numero_stanze: n }, showLoader: true });
   try{
     state.settings = state.settings || {};
@@ -10055,7 +10022,6 @@ async function saveRoomsCountSetting(nextCount){
   try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
   try{ window.__ddae_renderRooms?.(); }catch(_){ }
   try{ window.__ddae_refreshRoomsAvailability?.(); }catch(_){ }
-  try{ window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
   try{ if (state && state.page === 'calendario') renderCalendario?.(); }catch(_){ }
   try{ if (state && state.page === 'ospite'){
     const current = state.guestMode === 'view' ? state.guestViewItem : state.guestEditSourceItem;
@@ -13898,52 +13864,6 @@ try{
   const cleanResetHours = document.getElementById("cleanResetHours");
   const cleanResetAll = document.getElementById("cleanResetAll");
 
-  const __CLEAN_COLS__ = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
-  const rebuildPulizieGrid = ({ preserveValues = true } = {}) => {
-    try{
-      if (!cleanGrid) return;
-      const prev = new Map();
-      if (preserveValues){
-        try{
-          cleanGrid.querySelectorAll('.cell.slot').forEach((cell) => {
-            const room = String(cell?.dataset?.room || '').trim();
-            const col = String(cell?.dataset?.col || '').trim().toUpperCase();
-            if (!room || !col) return;
-            prev.set(`${room}|${col}`, {
-              value: readCell(cell),
-              saved: !!cell.classList.contains('is-saved')
-            });
-          });
-        }catch(_){ }
-      }
-      const count = Math.max(0, Math.min(12, getConfiguredRoomsCount(6)));
-      try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
-      const parts = [];
-      parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
-      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
-      for (let r = 1; r <= count; r++) {
-        parts.push(`<div class="c cell room r${r}">${r}</div>`);
-        __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
-      }
-      parts.push('<div class="c cell room rres">RES</div>');
-      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="RES"></div>`); });
-      cleanGrid.innerHTML = parts.join('');
-      try{ __bindResetAllCorner(document.getElementById("cleanResetAll")); }catch(_){ }
-      try{ if (typeof cleanGridHandlersBound !== 'undefined') cleanGridHandlersBound = false; }catch(_){ }
-      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){ }
-      try{
-        cleanGrid.querySelectorAll('.cell.slot').forEach((cell) => {
-          const room = String(cell?.dataset?.room || '').trim();
-          const col = String(cell?.dataset?.col || '').trim().toUpperCase();
-          const hit = prev.get(`${room}|${col}`);
-          if (!hit) return;
-          writeCell(cell, hit.value || 0);
-          cell.classList.toggle('is-saved', !!hit.saved && Number(hit.value || 0) > 0);
-        });
-      }catch(_){ }
-    }catch(_){ }
-  };
-
   // --- Autosave (debounce 1s): Pulizie (biancheria) + Ore operatori ---
   let __laundrySaveT = null;
   let __hoursSaveT = null;
@@ -14429,7 +14349,6 @@ try{
   try{ window.__syncCleanOperators__ = syncCleanOperators; }catch(_){ }
 
   try{ syncCleanOperators(); }catch(_){}
-  try{ rebuildPulizieGrid({ preserveValues:false }); }catch(_){ }
 
   const buildOperatoriPayload = () => {
     const date = getCleanDate();
@@ -14730,23 +14649,64 @@ if (cleanSaveHours){
   }, true);
 }
 
+const __getPulizieRoomsFromGrid__ = () => {
+  try{
+    return Array.from(new Set(Array.from(document.querySelectorAll('.clean-grid .cell.slot'))
+      .map(el => String(el && el.dataset ? el.dataset.room : '').trim())
+      .filter(Boolean)));
+  }catch(_){ return []; }
+};
+
+const __getPulizieOperatorNamesForReset__ = () => {
+  try{
+    const names = __getPulizieOperatorNames().map(x => String(x || '').trim()).filter(Boolean);
+    if (names.length) return Array.from(new Set(names));
+    const logged = String(__getLoggedOperatorName() || '').trim();
+    return logged ? [logged] : [];
+  }catch(_){ return []; }
+};
+
+const __buildPulizieZeroRows__ = (rooms) => {
+  const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+  return (Array.isArray(rooms) ? rooms : []).map((stanza) => {
+    const row = { data: getCleanDate(), stanza: String(stanza || '').trim() };
+    cols.forEach((c) => { row[c] = 0; });
+    return row;
+  }).filter((row) => row.stanza);
+};
+
+const __buildOperatoriZeroRows__ = (names) => {
+  const date = getCleanDate();
+  return (Array.isArray(names) ? names : []).map((nm) => {
+    const name = String(nm || '').trim();
+    if (!name) return null;
+    const benzinaOperatore = getOperatoreBenzinaByName(name, 0);
+    const tariffaOperatore = getOperatoreTariffaByName(name, 0);
+    return {
+      data: date,
+      operatore: name,
+      ore: 0,
+      benzina_euro: 0,
+      benzina_unit_euro: benzinaOperatore,
+      tariffa_euro: tariffaOperatore,
+      colore: (getOperatoreCatalogItemByName(name)?.colore || 'blue')
+    };
+  }).filter(Boolean);
+};
+
 // Reset SOLO biancheria
 if (cleanResetLaundry){
   bindFastTap(cleanResetLaundry, async () => {
     try{
-      // azzera tutte le celle biancheria (griglia pulizie)
-      // IMPORTANTE: marca tutte le stanze/celle come "dirty" così il salvataggio parte davvero
-      // e lo script può cancellare i record quando tutto è a zero.
-      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){}
-
+      const rooms = __getPulizieRoomsFromGrid__();
       const __allSlots = Array.from(document.querySelectorAll(".clean-grid .cell.slot"));
       __allSlots.forEach(el => {
         try{ el.classList.remove("is-saved"); }catch(_){ }
         try{ writeCell(el, 0); }catch(_){ }
-        try{ __markLaundryDirty(el); }catch(_){ }
       });
-      // salva immediatamente
-      await saveLaundryNow();
+      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); __pendingLaundry = false; }catch(_){ }
+      await api("pulizie", { method:"POST", body:{ data:getCleanDate(), rows: __buildPulizieZeroRows__(rooms) }, showLoader:false });
+      try{ await loadPulizieForDay({ clearFirst:false }); }catch(_){ }
     }catch(err){
       try{ toast(String(err && err.message || "Errore reset biancheria")); }catch(_){ }
     }
@@ -14757,15 +14717,16 @@ if (cleanResetLaundry){
 if (cleanResetHours){
   bindFastTap(cleanResetHours, async () => {
     try{
-      // azzera tutti i pallini ore (solo operatori visibili)
+      const names = __getPulizieOperatorNamesForReset__();
       try{
         (opEls||[]).forEach(r => {
           try{ r.hours.classList.remove("is-saved"); }catch(_){ }
           try{ writeHourDot(r.hours, 0); }catch(_){ }
         });
       }catch(_){ }
-      // salva immediatamente
-      await saveHoursNow();
+      try{ __pendingHours = false; }catch(_){ }
+      await api("operatori", { method:"POST", body:{ data:getCleanDate(), operatori: __buildOperatoriZeroRows__(names), replaceDay:true }, showLoader:false });
+      try{ await loadOperatoriForDay({ clearFirst:false }); }catch(_){ }
     }catch(err){
       try{ toast(String(err && err.message || "Errore reset ore")); }catch(_){ }
     }
@@ -14781,59 +14742,42 @@ if (cleanResetAll){
     if (!ok) return;
 
     try{
-      // azzera tutte le celle biancheria (griglia pulizie)
-      // IMPORTANTE: marca tutte le stanze/celle come "dirty" così il salvataggio parte davvero
-      // e lo script può cancellare i record quando tutto è a zero.
-      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){}
-
+      const rooms = __getPulizieRoomsFromGrid__();
+      const names = __getPulizieOperatorNamesForReset__();
       const __allSlots = Array.from(document.querySelectorAll(".clean-grid .cell.slot"));
       __allSlots.forEach(el => {
         try{ el.classList.remove("is-saved"); }catch(_){ }
         try{ writeCell(el, 0); }catch(_){ }
-        try{ __markLaundryDirty(el); }catch(_){ }
       });
-
-      // azzera tutti i pallini ore (solo operatori visibili)
       try{
         (opEls||[]).forEach(r => {
           try{ r.hours.classList.remove("is-saved"); }catch(_){ }
           try{ writeHourDot(r.hours, 0); }catch(_){ }
         });
       }catch(_){ }
-
-      // salva immediatamente (prima biancheria, poi ore)
-      await saveLaundryNow();
-      await saveHoursNow();
+      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); __pendingLaundry = false; __pendingHours = false; }catch(_){ }
+      await api("pulizie", { method:"POST", body:{ data:getCleanDate(), rows: __buildPulizieZeroRows__(rooms) }, showLoader:false });
+      await api("operatori", { method:"POST", body:{ data:getCleanDate(), operatori: __buildOperatoriZeroRows__(names), replaceDay:true }, showLoader:false });
+      try{ await loadPulizieForDay({ clearFirst:false }); }catch(_){ }
+      try{ await loadOperatoriForDay({ clearFirst:false }); }catch(_){ }
     }catch(err){
       try{ toast(String(err && err.message || "Errore reset pulizie"), "orange"); }catch(_){ }
     }
   };
 
-  const __bindResetAllCorner = (el) => {
-    try{
-      if (!el || el.__boundResetAllCorner) return;
-      el.__boundResetAllCorner = true;
-      bindFastTap(el, doResetAllPulizie);
-      el.addEventListener("keydown", (e) => {
-        const k = (e && e.key) ? e.key : "";
-        if (k === "Enter" || k === " "){
-          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-          try{ doResetAllPulizie(); }catch(_){ }
-        }
-      }, true);
-    }catch(_){ }
-  };
-  try{ __bindResetAllCorner(document.getElementById('cleanResetAll')); }catch(_){ }
-}
+  bindFastTap(cleanResetAll, doResetAllPulizie);
 
+  // supporto tastiera (Enter/Space)
   try{
-    window.__ddae_refreshPulizieGrid = async ({ forceReload = false } = {}) => {
-      try{ rebuildPulizieGrid({ preserveValues: !forceReload }); }catch(_){ }
-      try{
-        if (state && state.page === "pulizie") await loadPulizieForDay({ clearFirst: forceReload });
-      }catch(_){ }
-    };
+    cleanResetAll.addEventListener("keydown", (e) => {
+      const k = (e && e.key) ? e.key : "";
+      if (k === "Enter" || k === " "){
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+        try{ doResetAllPulizie(); }catch(_){ }
+      }
+    }, true);
   }catch(_){ }
+}
 
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
