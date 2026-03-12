@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.168";
+const BUILD_VERSION = "2.169";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7272,56 +7272,29 @@ function parseDateTs(v){
 }
 
 function computeInsertionMap(guests){
-  const STORAGE_KEY = "ddae_guest_insertion_map_v1";
-
-  let persisted = {};
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    if (parsed && typeof parsed === "object") persisted = parsed;
-  }catch(_){ persisted = {}; }
-
   const arr = (guests || []).map((g, idx) => {
     const id = guestIdOf(g);
     const c = g?.created_at ?? g?.createdAt ?? "";
     const t = parseDateTs(c);
-    const existing = Number(persisted?.[id]) || null;
-    return { id, idx, t, existing };
+    return { id, idx, t };
   }).filter(x => !!x.id);
 
-  // Mantieni stabile il progressivo di inserimento anche se il backend
-  // aggiorna createdAt o restituisce i record in un ordine diverso dopo un edit.
-  // Se un ID ha già un numero salvato, quel numero resta invariato.
-  const used = new Set();
-  const map = {};
-  let maxN = 0;
-  for (const x of arr){
-    if (x.existing && !used.has(x.existing)){
-      map[x.id] = x.existing;
-      used.add(x.existing);
-      if (x.existing > maxN) maxN = x.existing;
-    }
-  }
-
-  const fresh = arr.filter(x => !map[x.id]);
-  fresh.sort((a,b) => {
+  // Ordine inserimento ricostruito solo dalla data di creazione originaria.
+  // Le modifiche successive (updatedAt) non devono alterare la posizione.
+  arr.sort((a,b) => {
     const at = a.t;
     const bt = b.t;
-    if (at != null && bt != null) return at - bt;
-    if (at == null && bt != null) return -1;
-    if (at != null && bt == null) return 1;
+    if (at != null && bt != null && at !== bt) return at - bt;
+    if (at == null && bt != null) return 1;
+    if (at != null && bt == null) return -1;
     return a.idx - b.idx;
   });
 
-  let n = maxN + 1;
-  for (const x of fresh){
-    while (used.has(n)) n++;
-    map[x.id] = n;
-    used.add(n);
-    n++;
+  const map = {};
+  let n = 1;
+  for (const x of arr){
+    map[x.id] = n++;
   }
-
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }catch(_){ }
   return map;
 }
 
