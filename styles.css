@@ -3141,6 +3141,33 @@ body[data-page="ospiti"] .guest-card .actions {
   border-color: rgba(15,23,42,0.16);
 }
 
+#page-calendario .cal-cell.is-today-col::before{
+  opacity: .825;
+}
+#page-calendario .cal-cell.has-booking.is-today-col::before,
+#page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
+  opacity: 1;
+}
+#page-calendario .cal-cell.cal-head.is-today-col{
+  background: rgba(240,240,240,0.98);
+}
+#page-calendario .calendar-event-bar .cal-fullname{
+  color: rgba(15,23,42,0.96);
+  font-weight: 800;
+  font-size: clamp(12px, 1.6vw, 18px);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
+  align-items: center;
+}
+#page-calendario.is-month-view .calendar-event-bar .cal-fullname + .cal-dots{
+  margin-top: 2px;
+}
+
 /* === Calendario (mese): barra prenotazione accorpata (span) === */
 /* dDAE_1.020: Vista mese - iniziali visibili senza cambiare il colore di sfondo delle celle */
 #page-calendario.is-month-view .cal-cell.has-booking::before{

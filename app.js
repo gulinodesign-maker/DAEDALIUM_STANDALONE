@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.161
  */
-const BUILD_VERSION = "2.164";
+const BUILD_VERSION = "2.166";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15368,6 +15368,7 @@ function setupCalendario(){
     d.setHours(0,0,0,0);
     state.calendar.anchor = d;
     renderCalendario();
+    requestAnimationFrame(() => { try{ scrollCalendarMonthToDayLeft(d.getDate()); }catch(_){ } });
     __scheduleCalendarFetch({ force:false, showLoader:false });
   });
 
@@ -15583,6 +15584,8 @@ function renderCalendarioWeek(){
     const d = days[i];
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
+    dayPill.dataset.dayIndex = String(i + 1);
+    if (getCalendarTodayColumnIndex(anchor) === (i + 1)) dayPill.classList.add('is-today-col');
 
     // Abbreviazione (LUN, MAR...) sopra, numero giorno sotto
     const ab = document.createElement("div");
@@ -15819,6 +15822,32 @@ let pillH = Math.floor(cellH * 0.38);
   }catch(_){}
 }
 
+function getCalendarTodayColumnIndex(anchor){
+  try{
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const a = (anchor instanceof Date) ? anchor : new Date(anchor || Date.now());
+    if (now.getFullYear() !== a.getFullYear() || now.getMonth() !== a.getMonth()) return -1;
+    return now.getDate();
+  }catch(_){ return -1; }
+}
+
+function scrollCalendarMonthToDayLeft(dayIndex){
+  try{
+    const wrap = document.querySelector('#page-calendario .cal-grid-wrap');
+    const grid = document.getElementById('calGridMonth');
+    if (!wrap || !grid || !dayIndex || dayIndex < 1) return;
+    const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${dayIndex}"]`);
+    const corner = grid.querySelector('.cal-corner');
+    if (!head) return;
+    const headLeft = head.offsetLeft || 0;
+    const roomW = corner ? corner.offsetWidth || 0 : 0;
+    const target = Math.max(0, headLeft - roomW);
+    try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
+    try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
+  }catch(_){ }
+}
+
 function renderCalendarioMonth(){
   const grid = document.getElementById("calGridMonth");
   const gridWeek = document.getElementById("calGrid");
@@ -15863,6 +15892,8 @@ function renderCalendarioMonth(){
     const d = days[i];
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
+    dayPill.dataset.dayIndex = String(i + 1);
+    if (getCalendarTodayColumnIndex(anchor) === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
     ab.className = "cal-day-abbrev";
@@ -15912,6 +15943,8 @@ function renderCalendarioMonth(){
         cell.type = "button";
         cell.className = `cal-cell room-${r} has-booking calendar-event-bar`;
         cell.style.gridColumn = `span ${span}`;
+        const __todayCol = getCalendarTodayColumnIndex(anchor);
+        if (__todayCol > 0 && (i + 1) <= __todayCol && __todayCol <= (i + span)) cell.classList.add('is-today-col');
         cell.setAttribute("aria-label", `Stanza ${r}, ${weekdayShortIT(d)} ${d.getDate()} - ${days[endIdx].getDate()}`);
         cell.dataset.date = dIso;
         cell.dataset.room = String(r);
@@ -15975,10 +16008,11 @@ const openGuest = () => {
         const inner = document.createElement("div");
         inner.className = "cal-cell-inner";
 
-        const ini = document.createElement("div");
-        ini.className = "cal-initials";
-        ini.textContent = info.initials;
-        inner.appendChild(ini);
+        const fullName = collapseSpaces(String((findCalendarGuestById(info.guestId)?.nome || findCalendarGuestById(info.guestId)?.name || findCalendarGuestById(info.guestId)?.Nome || findCalendarGuestById(info.guestId)?.NOME || '')).trim());
+        const label = document.createElement("div");
+        label.className = (span >= 3 && fullName.length >= 3) ? "cal-fullname" : "cal-initials";
+        label.textContent = (span >= 3 && fullName.length >= 3) ? fullName : info.initials;
+        inner.appendChild(label);
 
         const dots = document.createElement("div");
         dots.className = "cal-dots";
@@ -16010,6 +16044,7 @@ const openGuest = () => {
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r}`;
+      if (getCalendarTodayColumnIndex(anchor) === (i + 1)) cell.classList.add('is-today-col');
       cell.setAttribute("aria-label", `Stanza ${r}, ${weekdayShortIT(d)} ${d.getDate()}`);
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
