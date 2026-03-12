@@ -1,7 +1,6 @@
-window.API_BASE_URL = window.API_BASE_URL || "INCOLLA_QUI_API_BASE_URL";
-window.API_KEY = window.API_KEY || "daedalium2026";
-window.FIREBASE_ENABLED = true;
-window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+/* dDAE_2.170 - Firebase frontend config */
+const FIREBASE_ENABLED = true;
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDYG-TqrzfN5kDUH9GYWmYbqnwoqEnWMkM",
   authDomain: "ddae-sync.firebaseapp.com",
   projectId: "ddae-sync",
