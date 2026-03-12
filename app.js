@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.158
+ * Build: 2.159
  */
-const BUILD_VERSION = "2.158";
+const BUILD_VERSION = "2.159";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -479,6 +479,13 @@ async function __localApiImpostazioni__(method, body){
         ? body.operatori_catalogo
         : JSON.stringify(body.operatori_catalogo ?? []);
       upsert({ key:"operatori_catalogo", value: raw, createdAt: now });
+    }
+
+    if (body && body.channel_catalogo !== undefined){
+      const raw = typeof body.channel_catalogo === "string"
+        ? body.channel_catalogo
+        : JSON.stringify(body.channel_catalogo ?? []);
+      upsert({ key:"channel_catalogo", value: raw, createdAt: now });
     }
 
     await __tblSet__("impostazioni", rows);
