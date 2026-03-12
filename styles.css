@@ -9511,3 +9511,19 @@ body[data-page^="stat"] #homeSyncBar{
 @media (max-width: 480px){
   #page-ospiti .guest-meta-right .guest-led{ width:26px !important; height:26px !important; }
 }
+
+/* dDAE_2.167 — Spesa: tasto Colazione azzurro 35% con testo nero */
+#prodTabColazione,
+#prodAddToColazione{
+  border-color: rgba(67,181,255,0.35) !important;
+  background: rgba(67,181,255,0.35) !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+#prodTabColazione.is-active,
+#prodAddToColazione:active{
+  border-color: rgba(67,181,255,0.35) !important;
+  background: rgba(67,181,255,0.35) !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
