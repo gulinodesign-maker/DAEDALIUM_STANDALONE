@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.155
  */
-const BUILD_VERSION = "2.156";
+const BUILD_VERSION = "2.157";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13899,6 +13899,51 @@ try{
   const cleanResetAll = document.getElementById("cleanResetAll");
 
   const __CLEAN_COLS__ = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+
+  const doResetAllPulizie = async () => {
+    if (!ensureCanEditPulizieDay()) return;
+    const ok = await confirmYesNo("Resettare tutto?");
+    if (!ok) return;
+
+    try{
+      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){ }
+
+      const __allSlots = Array.from(document.querySelectorAll(".clean-grid .cell.slot"));
+      __allSlots.forEach(el => {
+        try{ el.classList.remove("is-saved"); }catch(_){ }
+        try{ writeCell(el, 0); }catch(_){ }
+        try{ __markLaundryDirty(el); }catch(_){ }
+      });
+
+      try{
+        (opEls||[]).forEach(r => {
+          try{ r.hours.classList.remove("is-saved"); }catch(_){ }
+          try{ writeHourDot(r.hours, 0); }catch(_){ }
+        });
+      }catch(_){ }
+
+      await saveLaundryNow();
+      await saveHoursNow();
+    }catch(err){
+      try{ toast(String(err && err.message || "Errore reset pulizie"), "orange"); }catch(_){ }
+    }
+  };
+
+  const __bindResetAllCorner = (el) => {
+    try{
+      if (!el || el.__boundResetAllCorner) return;
+      el.__boundResetAllCorner = true;
+      bindFastTap(el, doResetAllPulizie);
+      el.addEventListener("keydown", (e) => {
+        const k = (e && e.key) ? e.key : "";
+        if (k === "Enter" || k === " "){
+          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+          try{ doResetAllPulizie(); }catch(_){ }
+        }
+      }, true);
+    }catch(_){ }
+  };
+
   const rebuildPulizieGrid = ({ preserveValues = true } = {}) => {
     try{
       if (!cleanGrid) return;
@@ -14775,54 +14820,6 @@ if (cleanResetHours){
 
 // Reset TUTTO (Pulizie + Ore) dalla cella corner (con conferma Sì/No)
 if (cleanResetAll){
-  const doResetAllPulizie = async () => {
-    if (!ensureCanEditPulizieDay()) return;
-    const ok = await confirmYesNo("Resettare tutto?");
-    if (!ok) return;
-
-    try{
-      // azzera tutte le celle biancheria (griglia pulizie)
-      // IMPORTANTE: marca tutte le stanze/celle come "dirty" così il salvataggio parte davvero
-      // e lo script può cancellare i record quando tutto è a zero.
-      try{ __dirtyLaundryRooms = new Set(); __dirtyLaundryCells = new Set(); }catch(_){}
-
-      const __allSlots = Array.from(document.querySelectorAll(".clean-grid .cell.slot"));
-      __allSlots.forEach(el => {
-        try{ el.classList.remove("is-saved"); }catch(_){ }
-        try{ writeCell(el, 0); }catch(_){ }
-        try{ __markLaundryDirty(el); }catch(_){ }
-      });
-
-      // azzera tutti i pallini ore (solo operatori visibili)
-      try{
-        (opEls||[]).forEach(r => {
-          try{ r.hours.classList.remove("is-saved"); }catch(_){ }
-          try{ writeHourDot(r.hours, 0); }catch(_){ }
-        });
-      }catch(_){ }
-
-      // salva immediatamente (prima biancheria, poi ore)
-      await saveLaundryNow();
-      await saveHoursNow();
-    }catch(err){
-      try{ toast(String(err && err.message || "Errore reset pulizie"), "orange"); }catch(_){ }
-    }
-  };
-
-  const __bindResetAllCorner = (el) => {
-    try{
-      if (!el || el.__boundResetAllCorner) return;
-      el.__boundResetAllCorner = true;
-      bindFastTap(el, doResetAllPulizie);
-      el.addEventListener("keydown", (e) => {
-        const k = (e && e.key) ? e.key : "";
-        if (k === "Enter" || k === " "){
-          try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-          try{ doResetAllPulizie(); }catch(_){ }
-        }
-      }, true);
-    }catch(_){ }
-  };
   try{ __bindResetAllCorner(document.getElementById('cleanResetAll')); }catch(_){ }
 }
 
