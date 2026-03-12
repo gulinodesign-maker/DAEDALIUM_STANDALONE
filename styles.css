@@ -1484,11 +1484,15 @@ body::before{
 .rooms{
   display: flex;
   gap: 6px;
-  flex-wrap: nowrap; /* mai a capo: stanza 1-6 + M sempre sulla stessa riga */
+  flex-wrap: wrap;
   padding: 10px 2px 6px;
   overflow-x: visible;
   -webkit-overflow-scrolling: touch;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .rooms::-webkit-scrollbar{ display:none; }
 .rooms{ scrollbar-width: none; }
@@ -1763,6 +1767,11 @@ border: 1px solid var(--border);
 }
 #page-ospite .rooms{
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 #page-ospite .room-dot{
   position: relative;
@@ -4520,6 +4529,7 @@ grid-template-rows: 34px repeat(7, 54px);
   display: grid !important;
   grid-template-columns: var(--cg-corner) repeat(8, minmax(0, 1fr)) !important;
   grid-template-rows: var(--cg-head-h) repeat(7, var(--cg-row-h)) !important;
+  grid-auto-rows: var(--cg-row-h) !important;
   gap: var(--cg-gap) !important;
 }
 
@@ -9341,3 +9351,30 @@ body[data-page^="stat"] #homeSyncBar{
 
 .settings-btn-rooms{ background:#ffcc00 !important; border-color: rgba(255,204,0,0.28) !important; }
 .settings-btn-rooms .ui-ico{ color:#fff !important; stroke:#fff !important; }
+
+
+#page-ospite #roomsPicker{
+  margin-left: auto;
+  margin-right: auto;
+}
+#page-ospite #roomsReadOnly,
+#page-ospite .guest-booking-ro,
+#page-ospite .guest-booking-rooms{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+#page-ospite .rooms-readonly-wrap{
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+#page-ospite .rooms-stack{
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+}
+#page-ospite .room-row{
+  flex: 0 1 auto;
+}
+
