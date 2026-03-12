@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.171
+ * Build: 2.170
  */
-const BUILD_VERSION = "2.171";
+const BUILD_VERSION = "2.170";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -15373,7 +15373,7 @@ try{
       try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
       const parts = [];
       parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
-      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head" data-col="${col}" role="button" tabindex="0">${col}</div>`); });
+      __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
       for (let r = 1; r <= count; r++) {
         parts.push(`<div class="c cell room r${r}">${r}</div>`);
         __CLEAN_COLS__.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
@@ -16105,8 +16105,8 @@ const buildPuliziePayload = (roomsList = null) => {
     const __pickHeadCode = (ev) => {
       const head = ev.target && ev.target.closest ? ev.target.closest(".cell.head") : null;
       if (!head || head.classList.contains("corner")) return null;
-      const raw = String((head.dataset && head.dataset.col) || head.getAttribute('data-col') || head.textContent || "").trim().toUpperCase();
-      return CLEAN_HEADER_DESC[raw] ? raw : null;
+      const code = String(head.textContent || "").trim().toUpperCase();
+      return CLEAN_HEADER_DESC[code] ? code : null;
     };
 
     cleanGrid.addEventListener("touchend", (e) => {
