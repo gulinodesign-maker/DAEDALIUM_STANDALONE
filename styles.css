@@ -9528,58 +9528,294 @@ body[data-page^="stat"] #homeSyncBar{
   -webkit-text-fill-color: #000000 !important;
 }
 
-/* dDAE_2.175 – Laundry report modal */
-.laundry-report-card{
-  width: calc(100vw - 32px);
-  max-width: 500px;
-  margin: 20px auto;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+
+/* dDAE_2.171 — Home 3x3 + lavanderia costi */
+#page-home .home-grid{
+  display:grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  width: min(520px, 96vw) !important;
+  margin: 0 auto !important;
+  padding: 14px !important;
 }
-.laundry-report-hd{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+#page-home .home-main{
+  width: 100% !important;
+  max-width: none !important;
 }
-.laundry-report-title{
-  font-size: 20px;
+#page-home #goOrePuliziaHome .home-main-glyph{ color: var(--ico-blue-deep) !important; }
+#page-home #goOrePuliziaHome .home-main-label{ line-height: 1.05; }
+#page-lavanderia .laundry-grid{
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+#page-lavanderia .laundry-tile{
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#page-lavanderia .laundry-tile[data-key="MAT"],
+#page-lavanderia .laundry-tile[data-key="SIN"],
+#page-lavanderia .laundry-tile[data-key="FED"],
+#page-lavanderia .laundry-tile[data-key="TDO"],
+#page-lavanderia .laundry-tile[data-key="TFA"],
+#page-lavanderia .laundry-tile[data-key="TBI"],
+#page-lavanderia .laundry-tile[data-key="TAP"],
+#page-lavanderia .laundry-tile[data-key="TPI"]{
+  cursor: pointer;
+}
+#page-lavanderia .laundry-tile--total{
+  --tile-bg: rgba(67,181,255,0.32);
+}
+#page-lavanderia .laundry-tile--total .laundry-code,
+#page-lavanderia .laundry-tile--total .laundry-label,
+#page-lavanderia .laundry-tile--total .laundry-value{
+  opacity: 1;
+}
+#page-lavanderia .laundry-value--money{
+  min-width: 0;
+  font-size: 28px;
+}
+
+/* dDAE_2.172 — Home gradient icons, Impostazioni 3x3, Tassa 75% */
+#page-home .home-main-glyph .ui-ico,
+#page-home .home-main-glyph .ui-ico *{
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#page-impostazioni .settings-actions.settings-actions-reference{
+  display:grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  justify-content:center !important;
+  gap: 14px 14px !important;
+  width: min(360px, 96vw) !important;
+  margin: 56px auto 0 auto !important;
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  max-width: 108px !important;
+  height: clamp(83px, 23.4vw, 108px) !important;
+  min-width: 0 !important;
+  min-height: clamp(83px, 23.4vw, 108px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  opacity: 0.75 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 13px !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+.settings-btn-language,
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{
+  background: rgba(77,156,197,0.75) !important;
+  border-color: rgba(77,156,197,0.24) !important;
+}
+
+.btn.tax-quarter.tax-q1{ background: rgba(77,156,197,0.75) !important; }
+.btn.tax-quarter.tax-q2{ background: rgba(107,114,128,0.75) !important; }
+.btn.tax-quarter.tax-q3{ background: rgba(201,119,43,0.75) !important; }
+.btn.tax-quarter.tax-q4{ background: rgba(0,0,0,0.75) !important; }
+
+
+body[data-role="operatore"] #page-home .home-grid{
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  width: min(260px, 92vw) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+body[data-role="operatore"] #page-home .home-main{
+  max-width: none !important;
+}
+
+.laundry-detail-card{
+  width: min(92vw, 520px);
+  border-radius: 28px;
+  padding: 20px 18px 18px;
+  background: #f6fbff;
+  border: 1px solid rgba(77,156,197,0.18);
+  box-shadow: 0 22px 60px rgba(11,31,58,0.18);
+}
+.laundry-detail-head{
+  padding-right: 28px;
+}
+.laundry-detail-kicker{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #4d9cc5;
+  margin-bottom: 6px;
+}
+.laundry-detail-title{
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.05;
+  color: #0b1f3a;
+}
+.laundry-detail-sub{
+  margin-top: 6px;
+  color: rgba(11,31,58,0.72);
   font-weight: 700;
 }
-.laundry-report-body{
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.laundry-detail-list{
+  margin-top: 16px;
+  display: grid;
+  gap: 10px;
 }
-.laundry-report-row{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 15px;
+.laundry-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(77,156,197,0.10);
 }
-.laundry-report-totals{
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  font-weight: 700;
-  font-size: 16px;
+.laundry-detail-rowLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 0;
 }
-@media (max-width: 480px){
-  .laundry-report-card{
-    width: calc(100vw - 24px);
-    padding: 12px;
+.laundry-detail-code{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  background: #4d9cc5;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .04em;
+  flex: 0 0 44px;
+}
+.laundry-detail-label{
+  font-weight: 900;
+  color: #0b1f3a;
+}
+.laundry-detail-meta{
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(11,31,58,0.65);
+}
+.laundry-detail-price{
+  font-weight: 950;
+  color: #0b1f3a;
+  white-space: nowrap;
+}
+.laundry-detail-totals{
+  margin-top: 16px;
+  display:grid;
+  gap: 10px;
+}
+.laundry-detail-totalRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #0b1f3a;
+  color: #fff;
+  font-weight: 900;
+}
+.laundry-detail-totalRow:last-child{
+  background: #4d9cc5;
+}
+
+
+/* dDAE_2.174 — Home icon palette by groups, laundry detail sizing, settings square icons */
+#page-home #goOspite .home-main-glyph{ color: #2f5f86 !important; }
+#page-home #goCalendario .home-main-glyph{ color: #4d9cc5 !important; }
+#page-home #openLauncher .home-main-glyph{ color: #88c8e8 !important; }
+#page-home #goTassaSoggiorno .home-main-glyph{ color: #c9772b !important; }
+#page-home #goPulizie .home-main-glyph{ color: #e39a49 !important; }
+#page-home #goLavanderia .home-main-glyph{ color: #f2b66b !important; }
+#page-home #goOrePuliziaHome .home-main-glyph{ color: #9c8669 !important; }
+#page-home #goStatistiche .home-main-glyph{ color: #c7ae8d !important; }
+#page-home #goProdotti .home-main-glyph{ color: #e4d6bf !important; }
+
+#page-impostazioni .settings-actions.settings-actions-reference{
+  width: min(326px, 94vw) !important;
+  gap: 12px 12px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  max-width: 86px !important;
+  height: clamp(67px, 18.8vw, 86px) !important;
+  min-height: clamp(67px, 18.8vw, 86px) !important;
+  border-radius: 24px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: 24px !important;
+  height: 24px !important;
+  opacity: 0.75 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 11px !important;
+  line-height: 1.05 !important;
+}
+
+.laundry-detail-card{
+  width: min(92vw, 500px) !important;
+  max-height: min(78vh, 640px) !important;
+  padding: 16px 16px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.laundry-detail-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.laundry-detail-tool{
+  position: static !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 14px !important;
+}
+.laundry-detail-head{
+  padding-right: 0 !important;
+}
+.laundry-detail-list{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+.laundry-detail-totals{
+  margin-top: 12px !important;
+}
+@media (max-width: 420px){
+  .laundry-detail-card{
+    max-height: min(74vh, 560px) !important;
+    border-radius: 24px !important;
+    padding: 14px 14px 14px !important;
   }
-  .laundry-report-title{
-    font-size: 18px;
+  .laundry-detail-row{
+    padding: 10px 12px !important;
+    gap: 10px !important;
   }
-  .laundry-report-row{
-    font-size: 14px;
+  .laundry-detail-code{
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
   }
-  .laundry-report-totals{
-    font-size: 15px;
+  .laundry-detail-title{
+    font-size: 21px !important;
+  }
+  .laundry-detail-price{
+    font-size: 14px !important;
   }
 }
