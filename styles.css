@@ -9729,3 +9729,93 @@ body[data-role="operatore"] #page-home .home-main{
 .laundry-detail-totalRow:last-child{
   background: #4d9cc5;
 }
+
+
+/* dDAE_2.174 — Home icon palette by groups, laundry detail sizing, settings square icons */
+#page-home #goOspite .home-main-glyph{ color: #2f5f86 !important; }
+#page-home #goCalendario .home-main-glyph{ color: #4d9cc5 !important; }
+#page-home #openLauncher .home-main-glyph{ color: #88c8e8 !important; }
+#page-home #goTassaSoggiorno .home-main-glyph{ color: #c9772b !important; }
+#page-home #goPulizie .home-main-glyph{ color: #e39a49 !important; }
+#page-home #goLavanderia .home-main-glyph{ color: #f2b66b !important; }
+#page-home #goOrePuliziaHome .home-main-glyph{ color: #9c8669 !important; }
+#page-home #goStatistiche .home-main-glyph{ color: #c7ae8d !important; }
+#page-home #goProdotti .home-main-glyph{ color: #e4d6bf !important; }
+
+#page-impostazioni .settings-actions.settings-actions-reference{
+  width: min(326px, 94vw) !important;
+  gap: 12px 12px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  max-width: 86px !important;
+  height: clamp(67px, 18.8vw, 86px) !important;
+  min-height: clamp(67px, 18.8vw, 86px) !important;
+  border-radius: 24px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: 24px !important;
+  height: 24px !important;
+  opacity: 0.75 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 11px !important;
+  line-height: 1.05 !important;
+}
+
+.laundry-detail-card{
+  width: min(92vw, 500px) !important;
+  max-height: min(78vh, 640px) !important;
+  padding: 16px 16px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.laundry-detail-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.laundry-detail-tool{
+  position: static !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 14px !important;
+}
+.laundry-detail-head{
+  padding-right: 0 !important;
+}
+.laundry-detail-list{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+.laundry-detail-totals{
+  margin-top: 12px !important;
+}
+@media (max-width: 420px){
+  .laundry-detail-card{
+    max-height: min(74vh, 560px) !important;
+    border-radius: 24px !important;
+    padding: 14px 14px 14px !important;
+  }
+  .laundry-detail-row{
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
+  .laundry-detail-code{
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
+  }
+  .laundry-detail-title{
+    font-size: 21px !important;
+  }
+  .laundry-detail-price{
+    font-size: 14px !important;
+  }
+}

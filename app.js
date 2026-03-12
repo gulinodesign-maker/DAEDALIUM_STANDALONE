@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.173";
+const BUILD_VERSION = "2.174";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5461,6 +5461,8 @@ function setupImpostazioni() {
   if (operatoriGo) bindFastTap(operatoriGo, () => { hideLauncher(); showPage("operatori"); });
   const channelGo = document.getElementById("settingsChannelBtn");
   if (channelGo) bindFastTap(channelGo, () => { hideLauncher(); showPage("channel"); });
+  const languageBtn = document.getElementById("settingsLanguageBtn");
+  if (languageBtn) bindFastTap(languageBtn, () => { toast('Funzione lingua disponibile prossimamente'); });
 
 
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
@@ -16580,6 +16582,65 @@ function __laundryReportRangeText__(item){
   return (startLbl && endLbl) ? `${startLbl} → ${endLbl}` : "—";
 }
 
+function __buildLaundryDetailShareText__(raw){
+  const item = sanitizeLaundryItem_(raw || {});
+  const prices = item?.laundryPrices && typeof item.laundryPrices === 'object' ? item.laundryPrices : __laundryDisplayPricesForCurrentView__();
+  let imponibile = 0;
+  const rows = LAUNDRY_COLS.map((k) => {
+    const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
+    const subtotal = Math.round(qty * unit * 100) / 100;
+    imponibile += subtotal;
+    return `- ${LAUNDRY_LABELS[k] || k} (${k}): ${qty} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
+  });
+  imponibile = Math.round(imponibile * 100) / 100;
+  const ivato = Math.round(imponibile * 1.22 * 100) / 100;
+  return [
+    'Report lavanderia',
+    __laundryReportRangeText__(item),
+    '',
+    ...rows,
+    '',
+    `Imponibile: ${__laundryMoneyFmt__(imponibile)}`,
+    `Totale IVA 22%: ${__laundryMoneyFmt__(ivato)}`
+  ].join('\n');
+}
+
+async function __shareLaundryDetail__(raw){
+  const text = __buildLaundryDetailShareText__(raw);
+  try{
+    if (navigator.share){
+      await navigator.share({ title: 'Report lavanderia', text });
+      return true;
+    }
+  }catch(err){
+    if (err && err.name === 'AbortError') return false;
+  }
+  try{
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      toast('Report copiato');
+      return true;
+    }
+  }catch(_){ }
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', 'readonly');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    toast('Report copiato');
+    return true;
+  }catch(_){ }
+  toast('Condivisione non disponibile');
+  return false;
+}
+
 function __openLaundryDetailModal__(raw){
   const item = sanitizeLaundryItem_(raw || {});
   const modal = document.getElementById('laundryDetailModal');
@@ -16588,6 +16649,7 @@ function __openLaundryDetailModal__(raw){
   const list = document.getElementById('laundryDetailList');
   const netEl = document.getElementById('laundryDetailNet');
   const vatEl = document.getElementById('laundryDetailVat');
+  const shareBtn = document.getElementById('laundryDetailShare');
   if (!modal || !title || !range || !list || !netEl || !vatEl) return;
   const prices = item?.laundryPrices && typeof item.laundryPrices === 'object' ? item.laundryPrices : __laundryDisplayPricesForCurrentView__();
   const rangeText = __laundryReportRangeText__(item);
@@ -16605,6 +16667,13 @@ function __openLaundryDetailModal__(raw){
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
   netEl.textContent = __laundryMoneyFmt__(imponibile);
   vatEl.textContent = __laundryMoneyFmt__(ivato);
+  modal.__currentLaundryItem = item;
+  if (shareBtn && !shareBtn.__boundLaundryShare){
+    shareBtn.__boundLaundryShare = true;
+    bindFastTap(shareBtn, async () => {
+      try{ await __shareLaundryDetail__(modal.__currentLaundryItem || item); }catch(_){ toast('Condivisione non disponibile'); }
+    });
+  }
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
