@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.167
+ * Build: 2.168
  */
-const BUILD_VERSION = "2.167";
+const BUILD_VERSION = "2.168";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -965,6 +965,36 @@ function __parseQr__(txt){
   return { teamId: m[1], teamKey: m[2] };
 }
 
+function __firebaseErrorMessage__(raw, fallback){
+  const fb = fallback || "Errore Firebase";
+  try{
+    const src = typeof raw === "string" ? raw : JSON.stringify(raw || {});
+    const j = typeof raw === "string" ? JSON.parse(raw) : (raw || {});
+    const msg = String((j && j.error && (j.error.message || j.error.status)) || src || "").trim();
+    if (!msg) return fb;
+
+    if (msg.includes("CONFIGURATION_NOT_FOUND")) return "Progetto Firebase o API key non validi";
+    if (msg.includes("API_KEY_INVALID")) return "API key Firebase non valida";
+    if (msg.includes("PROJECT_NOT_FOUND")) return "Project ID Firebase non valido";
+    if (msg.includes("OPERATION_NOT_ALLOWED")) return "Auth anonima Firebase disattivata";
+    if (msg.includes("USER_DISABLED")) return "Utente Firebase disabilitato";
+    if (msg.includes("PERMISSION_DENIED")) return "Regole Firestore bloccano la scrittura";
+    if (msg.includes("UNAUTHENTICATED")) return "Autenticazione Firebase non riuscita";
+    if (msg.includes("REQUEST_TIME_TOO_SKEWED")) return "Ora dispositivo non allineata";
+    if (msg.includes("SERVICE_DISABLED")) return "Servizi Firebase non attivi";
+    if (msg.includes("NOT_FOUND")) return "Percorso Firestore non trovato";
+
+    return msg.replace(/^Firebase:\s*/i, "");
+  }catch(_){
+    try{
+      const s = String(raw || "").trim();
+      return s || fb;
+    }catch(__){
+      return fb;
+    }
+  }
+}
+
 async function __fbGetIdToken__(){
   try{
     if (!FIREBASE_ENABLED || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) throw new Error("Firebase non configurato");
@@ -974,8 +1004,11 @@ async function __fbGetIdToken__(){
     // anonymous signUp (REST)
     const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_CONFIG.apiKey)}`;
     const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ returnSecureToken:true }) });
-    if (!res.ok) throw new Error("Auth Firebase fallita");
-    const data = await res.json();
+    const data = await res.json().catch(async ()=>{
+      const t = await res.text().catch(()=>"");
+      return t ? { error:{ message:t } } : {};
+    });
+    if (!res.ok) throw new Error(__firebaseErrorMessage__(data, "Auth Firebase fallita"));
     __FB_STATE__.token = data.idToken;
     const sec = parseInt(String(data.expiresIn||"3600"),10);
     __FB_STATE__.exp = Date.now() + (isNaN(sec)?3600:sec)*1000;
@@ -1057,7 +1090,10 @@ async function __fsPatch__(path, data){
       headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
       body: JSON.stringify(__fsEncode__(data))
     });
-    if (!res2.ok) throw new Error("Scrittura Firebase fallita");
+    if (!res2.ok){
+      const errTxt = await res2.text().catch(()=>"");
+      throw new Error(__firebaseErrorMessage__(errTxt, "Scrittura Firebase fallita"));
+    }
     return await res2.json();
   }finally{
     __syncLedEnd("POST");
@@ -1072,7 +1108,10 @@ async function __fsSet__(path, data){
       headers:{ "Authorization": `Bearer ${token}`, "Content-Type":"application/json" },
       body: JSON.stringify(__fsEncode__(data))
     });
-    if (!res.ok) throw new Error("Scrittura Firebase fallita");
+    if (!res.ok){
+      const errTxt = await res.text().catch(()=>"");
+      throw new Error(__firebaseErrorMessage__(errTxt, "Scrittura Firebase fallita"));
+    }
     return await res.json();
   }finally{
     __syncLedEnd("POST");
@@ -5376,7 +5415,10 @@ function setupImpostazioni() {
         if (__isAdmin__()) await __adminGenerateCode__();
         else await __qrScanAndLink__();
       }catch(e){
-        try{ toast("Errore codice", "orange"); }catch(_){ }
+        try{
+          const msg = String((e && e.message) || "Errore codice").trim() || "Errore codice";
+          toast(msg, "orange");
+        }catch(_){ }
       }
     });
 
