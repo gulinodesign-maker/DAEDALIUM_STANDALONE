@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.174";
+const BUILD_VERSION = "2.175";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16422,7 +16422,12 @@ function sanitizeLaundryItem_(it){
   out.is_deleted = out.isDeleted;
   for (const k of LAUNDRY_COLS){
     const n = Number(it[k]);
+    // Quantità: valori negativi rappresentano resi e non vanno sommati.  
+    // Converte i valori in interi non negativi per il conteggio.  
     out[k] = isNaN(n) ? 0 : Math.max(0, Math.floor(n));
+    // Conserva i resi come valore positivo separato (numero di pezzi restituiti).  
+    // Se la quantità originale è negativa, registriamo la sua magnitudine come reso; altrimenti zero.  
+    out[`${k}_resi`] = isNaN(n) ? 0 : Math.max(0, Math.floor(-n));
   }
   return out;
 }
@@ -16554,9 +16559,19 @@ function renderLaundry_(item){
   }
   if (printRange) printRange.textContent = rangeText;
 
+  // Aggiorna i valori visibili per ogni categoria.  
   for (const k of LAUNDRY_COLS){
     const v = document.getElementById("laundryVal"+k);
-    if (v) v.textContent = String(item[k] || 0);
+    if (v){
+      const qty = Number(item[k] || 0) || 0;
+      const resi = Number(item[`${k}_resi`] || 0) || 0;
+      // Mostra la quantità e, se presenti, i resi tra parentesi con testo rosso.  
+      if (resi > 0){
+        v.innerHTML = `${qty}<span class="laundry-resi"> (+${resi})</span>`;
+      } else {
+        v.textContent = String(qty);
+      }
+    }
   }
 
   const computedTotal = (typeof item?.totalCost === 'number' && isFinite(item.totalCost))
@@ -16566,12 +16581,17 @@ function renderLaundry_(item){
   if (totalEl) totalEl.textContent = __laundryMoneyFmt__(computedTotal);
 
   if (tbody){
+    // Costruisce le righe del report includendo il numero di resi, in rosso, accanto alla quantità.
     tbody.innerHTML = LAUNDRY_COLS.map(k => {
       const label = LAUNDRY_LABELS[k] || k;
-      const val = String(item[k] || 0);
+      const qty = Number(item[k] || 0) || 0;
+      const resi = Number(item[`${k}_resi`] || 0) || 0;
       const unit = Number(pricesForView?.[k] || 0) || 0;
-      const subtotal = Math.round(((Number(item[k] || 0) || 0) * unit) * 100) / 100;
-      return `<tr><td><b>${label}</b> <span style="opacity:.7">(${k})</span></td><td style="text-align:right;font-weight:950">${val} · ${__laundryMoneyFmt__(subtotal)}</td></tr>`;
+      const subtotal = Math.round((qty * unit) * 100) / 100;
+      const qtyHtml = resi > 0
+        ? `${qty}<span class="laundry-resi"> (+${resi})</span>`
+        : `${qty}`;
+      return `<tr><td><b>${label}</b> <span style="opacity:.7">(${k})</span></td><td style="text-align:right;font-weight:950">${qtyHtml} · ${__laundryMoneyFmt__(subtotal)}</td></tr>`;
     }).join('') + `<tr><td><b>Costo totale</b></td><td style="text-align:right;font-weight:950">${__laundryMoneyFmt__(computedTotal)}</td></tr>`;
   }
 }

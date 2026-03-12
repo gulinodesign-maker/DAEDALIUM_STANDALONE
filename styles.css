@@ -4896,6 +4896,23 @@ grid-template-rows: 34px repeat(7, 54px);
 
 .laundry-table tr td:last-child{ font-weight: 950; }
 
+/* Evidenzia la quantità di resi accanto al conteggio principale nella pagina lavanderia e nei report */
+.laundry-resi{
+  color: #d44545;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* Adatta l'area di stampa della lavanderia per mostrare tutti i dati senza scorrimento */
+#page-lavanderia .laundry-print{
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#page-lavanderia .laundry-table{
+  overflow: visible !important;
+}
+
 
 
 @media print {
