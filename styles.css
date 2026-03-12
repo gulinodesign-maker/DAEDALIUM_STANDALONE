@@ -9399,7 +9399,7 @@ body[data-page^="stat"] #homeSyncBar{
 #prodTabColazione.is-active{ border-color: rgba(52,199,89,0.98) !important; }
 
 
-/* dDAE_2.161 — Ospite: ordine channel, note uniformi, commissione solo in lettura */
+/* dDAE_2.162 — Ospite: ordine channel, note uniformi, channel piena larghezza in lettura */
 #page-ospite .guest-notes-toggle{
   min-height:52px;
   border-radius:18px;
@@ -9424,12 +9424,23 @@ body[data-page^="stat"] #homeSyncBar{
 #page-ospite .guest-form-card:not(.is-view) #guestChannelCommissionWrap{
   display:none !important;
 }
+
+#page-ospite .guest-form-card.is-view #guestChannelRow{
+  grid-template-columns:minmax(0,1fr) !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelRow > .subfield.field.float{
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel{
+  width:100% !important;
+}
 #page-ospite .guest-form-card.is-view #guestChannelCommissionWrap{
-  display:block !important;
+  display:none !important;
 }
 
 
-/* dDAE_2.161 — Campi importi allineati al channel + commissione automatica */
+/* dDAE_2.162 — Campi importi allineati al channel + commissione automatica */
 #page-ospite .guest-form-card.is-create .booking-row,
 #page-ospite .guest-form-card.is-create .total-row,
 #page-ospite .guest-form-card.is-create #guestChannelRow{
