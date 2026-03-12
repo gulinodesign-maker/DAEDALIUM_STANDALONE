@@ -1484,11 +1484,12 @@ body::before{
 .rooms{
   display: flex;
   gap: 6px;
-  flex-wrap: nowrap; /* mai a capo: stanza 1-6 + M sempre sulla stessa riga */
+  flex-wrap: wrap; /* va a capo quando le stanze aumentano */
   padding: 10px 2px 6px;
   overflow-x: visible;
   -webkit-overflow-scrolling: touch;
   justify-content: center;
+  row-gap: 8px;
 }
 .rooms::-webkit-scrollbar{ display:none; }
 .rooms{ scrollbar-width: none; }
@@ -2637,6 +2638,12 @@ body[data-page="ospiti"] .guest-card .actions {
 .room-dot-badge.room-4{ background: rgba(214,178,118,0.92); border-color: rgba(214,178,118,0.55); color: var(--ico-blue-night); }
 .room-dot-badge.room-5{ background: rgba(242,156,80,0.92); border-color: rgba(242,156,80,0.55); }
 .room-dot-badge.room-6{ background: rgba(229,114,49,0.92); border-color: rgba(229,114,49,0.55); }
+.room-dot-badge.room-7{ background: rgba(214,86,79,0.92); border-color: rgba(214,86,79,0.55); }
+.room-dot-badge.room-8{ background: rgba(193,92,130,0.92); border-color: rgba(193,92,130,0.55); }
+.room-dot-badge.room-9{ background: rgba(168,103,171,0.92); border-color: rgba(168,103,171,0.55); }
+.room-dot-badge.room-10{ background: rgba(134,114,199,0.92); border-color: rgba(134,114,199,0.55); }
+.room-dot-badge.room-11{ background: rgba(96,131,210,0.92); border-color: rgba(96,131,210,0.55); }
+.room-dot-badge.room-12{ background: rgba(74,154,204,0.92); border-color: rgba(74,154,204,0.55); }
 
 
 
@@ -3217,6 +3224,12 @@ body[data-page="ospiti"] .guest-card .actions {
   --room4: rgba(214, 178, 118, .55); /* #D6B276 */
   --room5: rgba(242, 156, 80, .55);  /* #F29C50 */
   --room6: rgba(229, 114, 49, .55);  /* #E57231 */
+  --room7: rgba(214, 86, 79, .55);   /* rosso corallo */
+  --room8: rgba(193, 92, 130, .55);  /* lampone */
+  --room9: rgba(168, 103, 171, .55); /* viola */
+  --room10: rgba(134, 114, 199, .55); /* indaco */
+  --room11: rgba(96, 131, 210, .55);  /* blu acciaio */
+  --room12: rgba(74, 154, 204, .55);  /* azzurro petrolio */
 }
 
 .calendar-page .cal-nav{
@@ -3433,6 +3446,12 @@ body[data-page="ospiti"] .guest-card .actions {
 .room-4{ --room-bg: var(--room4); }
 .room-5{ --room-bg: var(--room5); }
 .room-6{ --room-bg: var(--room6); }
+.room-7{ --room-bg: var(--room7); }
+.room-8{ --room-bg: var(--room8); }
+.room-9{ --room-bg: var(--room9); }
+.room-10{ --room-bg: var(--room10); }
+.room-11{ --room-bg: var(--room11); }
+.room-12{ --room-bg: var(--room12); }
 
 /* Legenda */
 .cal-legend{
@@ -4336,6 +4355,12 @@ grid-template-rows: 34px repeat(7, 54px);
 .clean-grid .cell.room.r4{ color: #d6b276; }
 .clean-grid .cell.room.r5{ color: #f29c50; }
 .clean-grid .cell.room.r6{ color: #e57231; }
+.clean-grid .cell.room.r7{ color: #d6564f; }
+.clean-grid .cell.room.r8{ color: #c15c82; }
+.clean-grid .cell.room.r9{ color: #a867ab; }
+.clean-grid .cell.room.r10{ color: #8672c7; }
+.clean-grid .cell.room.r11{ color: #6083d2; }
+.clean-grid .cell.room.r12{ color: #4a9acc; }
 
 /* Mobile: evita che i testi si rompano */
 @media (max-width: 420px){
@@ -4380,6 +4405,12 @@ grid-template-rows: 34px repeat(7, 54px);
 .clean-grid .cell.slot[data-room="4"]::before{ background: rgba(214,178,118,1); }       /* #D6B276 */
 .clean-grid .cell.slot[data-room="5"]::before{ background: rgba(242,156,80,1); }       /* #F29C50 */
 .clean-grid .cell.slot[data-room="6"]::before{ background: rgba(229,114,49,1); }       /* #E57231 */
+.clean-grid .cell.slot[data-room="7"]::before{ background: rgba(214,86,79,1); }
+.clean-grid .cell.slot[data-room="8"]::before{ background: rgba(193,92,130,1); }
+.clean-grid .cell.slot[data-room="9"]::before{ background: rgba(168,103,171,1); }
+.clean-grid .cell.slot[data-room="10"]::before{ background: rgba(134,114,199,1); }
+.clean-grid .cell.slot[data-room="11"]::before{ background: rgba(96,131,210,1); }
+.clean-grid .cell.slot[data-room="12"]::before{ background: rgba(74,154,204,1); }
 .clean-grid .cell.slot[data-room="RES"]::before{ background: rgba(120,120,120,1); opacity:.14; } /* grigio */
 
 /* Bordo leggermente più marcato per distinguere le celle */
@@ -8900,6 +8931,7 @@ color: var(--mcol,#ff3b30);
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background:#4fcd66 !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background:#7f7bf2 !important; border-color: rgba(127,123,242,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background:#e85454 !important; border-color: rgba(232,84,84,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ background:#ffcc00 !important; border-color: rgba(255,204,0,0.28) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-logout{ background:#d89a58 !important; border-color: rgba(216,154,88,0.24) !important; }
 #page-impostazioni .settings-bottom-stack{
   margin-top: 18px;
@@ -9305,4 +9337,24 @@ body[data-page^="stat"] #homeSyncBar{
   #page-impostazioni .settings-audio-header .settings-audio-label{
     font-size:11px;
   }
+}
+
+
+.settings-btn-rooms{ background:#ffcc00 !important; border-color: rgba(255,204,0,0.28) !important; }
+.settings-btn-rooms .ui-ico{ color:#fff !important; stroke:#fff !important; }
+.settings-btn-rooms{ gap:6px !important; }
+.settings-btn-rooms .settings-btn-label{ white-space: normal !important; overflow: visible !important; text-overflow: clip !important; line-height: 1.05 !important; }
+.settings-btn-rooms .settings-btn-value{ display:block; font-size: clamp(24px, 5vw, 30px); line-height:1; font-weight: 900; color:#fff; text-align:center; min-height: 1em; }
+
+#page-ospite #roomsPicker{
+  max-width: min(100%, 360px);
+  margin-inline: auto;
+  justify-content: center;
+  align-content: center;
+}
+#page-ospite #roomsPicker .room-dot{
+  flex: 0 0 46px;
+}
+.settings-btn-rooms.is-multitap{
+  transform: scale(0.98);
 }
