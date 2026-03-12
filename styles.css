@@ -9527,3 +9527,53 @@ body[data-page^="stat"] #homeSyncBar{
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
+
+
+/* dDAE_2.171 — Home 3x3 + lavanderia costi */
+#page-home .home-grid{
+  display:grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  width: min(520px, 96vw) !important;
+  margin: 0 auto !important;
+  padding: 14px !important;
+}
+#page-home .home-main{
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-home #goOrePuliziaHome .home-main-glyph{ color: var(--ico-blue-deep) !important; }
+#page-home #goOrePuliziaHome .home-main-label{ line-height: 1.05; }
+#page-lavanderia .laundry-grid{
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+#page-lavanderia .laundry-tile{
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#page-lavanderia .laundry-tile[data-key="MAT"],
+#page-lavanderia .laundry-tile[data-key="SIN"],
+#page-lavanderia .laundry-tile[data-key="FED"],
+#page-lavanderia .laundry-tile[data-key="TDO"],
+#page-lavanderia .laundry-tile[data-key="TFA"],
+#page-lavanderia .laundry-tile[data-key="TBI"],
+#page-lavanderia .laundry-tile[data-key="TAP"],
+#page-lavanderia .laundry-tile[data-key="TPI"]{
+  cursor: pointer;
+}
+#page-lavanderia .laundry-tile--total{
+  --tile-bg: rgba(67,181,255,0.32);
+}
+#page-lavanderia .laundry-tile--total .laundry-code,
+#page-lavanderia .laundry-tile--total .laundry-label,
+#page-lavanderia .laundry-tile--total .laundry-value{
+  opacity: 1;
+}
+#page-lavanderia .laundry-value--money{
+  min-width: 0;
+  font-size: 28px;
+}

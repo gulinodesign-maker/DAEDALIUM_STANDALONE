@@ -54,7 +54,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.170";
+const BUILD_VERSION = "2.171";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -488,6 +488,13 @@ async function __localApiImpostazioni__(method, body){
       upsert({ key:"channel_catalogo", value: raw, createdAt: now });
     }
 
+    if (body && body.laundry_prices !== undefined){
+      const raw = typeof body.laundry_prices === "string"
+        ? body.laundry_prices
+        : JSON.stringify(body.laundry_prices ?? {});
+      upsert({ key:"laundry_prices", value: raw, createdAt: now });
+    }
+
     await __tblSet__("impostazioni", rows);
     return { rows };
   }
@@ -647,14 +654,30 @@ if (method === "POST"){
       });
     });
 
+    let laundryPrices = {};
+    try{
+      const impRows = await __tblGet__("impostazioni", []);
+      const row = (Array.isArray(impRows) ? impRows : []).find(r => String(r?.key || r?.Key || "").trim().toLowerCase() === "laundry_prices");
+      const raw = row ? (row.value ?? row.Value ?? "") : "";
+      const parsed = raw ? JSON.parse(String(raw || '{}')) : {};
+      cols.forEach((k) => {
+        const n = Number(String(parsed?.[k] ?? '').replace(',', '.'));
+        laundryPrices[k] = (isFinite(n) && n >= 0) ? Math.round(n * 100) / 100 : 0;
+      });
+    }catch(_){
+      laundryPrices = {};
+    }
+
     const item = {
       id: (typeof genId === "function" ? genId("l") : ("l-"+Date.now())),
       startDate,
       endDate,
       createdAt: __nowIso__(),
       updatedAt: __nowIso__(),
+      laundryPrices,
     };
     cols.forEach(k => { item[k] = sums[k] || 0; });
+    item.totalCost = Math.round(cols.reduce((acc, k) => acc + ((Number(item[k] || 0) || 0) * (Number(laundryPrices?.[k] || 0) || 0)), 0) * 100) / 100;
 
     list.push(item);
     await save();
@@ -4600,6 +4623,50 @@ function getSettingNumber(key, fallback = 0) {
   return isFinite(n) ? n : (Number(fallback) || 0);
 }
 
+function getLaundryPricesFromSettings(){
+  const row = getSettingRow("laundry_prices");
+  const raw = row ? (row.value ?? row.Value ?? "") : "";
+  const out = {};
+  if (!String(raw || "").trim()) return out;
+  try{
+    const parsed = JSON.parse(String(raw || '{}'));
+    LAUNDRY_COLS.forEach((k) => {
+      const n = Number(String(parsed?.[k] ?? '').replace(',', '.'));
+      out[k] = (isFinite(n) && n >= 0) ? Math.round(n * 100) / 100 : 0;
+    });
+    return out;
+  }catch(_){
+    return out;
+  }
+}
+
+async function saveLaundryPricesToSettings(prices){
+  const clean = {};
+  LAUNDRY_COLS.forEach((k) => {
+    const n = Number(String(prices?.[k] ?? '').replace(',', '.'));
+    clean[k] = (isFinite(n) && n >= 0) ? Math.round(n * 100) / 100 : 0;
+  });
+  await api("impostazioni", { method:"POST", body:{ laundry_prices: clean }, showLoader:false });
+  await ensureSettingsLoaded({ force:true, showLoader:false });
+  return clean;
+}
+
+function __laundryMoneyFmt__(value){
+  const n = Number(value || 0);
+  return euro(isFinite(n) ? n : 0);
+}
+
+function __laundryComputeTotalCost__(item, prices){
+  const src = prices || getLaundryPricesFromSettings();
+  let total = 0;
+  LAUNDRY_COLS.forEach((k) => {
+    const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const unit = Math.max(0, Number(src?.[k] || 0) || 0);
+    total += qty * unit;
+  });
+  return Math.round(total * 100) / 100;
+}
+
 function getOperatorNamesFromSettings() {
   try{
     const catalog = getOperatoriCatalogFromSettings ? getOperatoriCatalogFromSettings() : [];
@@ -4859,6 +4926,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     try{ ensureRoomsPickerButtons(); }catch(_){ }
     try{ populateGuestChannelOptions(); }catch(_){ }
     try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
+    try{ if (state && state.page === "lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){ }
 
     return state.settings;
   } catch (e) {
@@ -7051,6 +7119,10 @@ if (goCalendarioTopOspiti){
   const goLav = $("#goLavanderia");
   if (goLav){
     bindFastTap(goLav, () => { hideLauncher(); showPage("lavanderia"); });
+  }
+  const goOrePulHome = $("#goOrePuliziaHome");
+  if (goOrePulHome){
+    bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("orepulizia"); });
   }
   const goLavTop = $("#goLavanderiaTop");
   if (goLavTop){
@@ -16309,44 +16381,145 @@ function setLaundryLabels_(){
   }
 }
 
-function renderLaundry_(item){
-  item = item ? sanitizeLaundryItem_(item) : null;
-  if (item && (item.isDeleted || item.is_deleted)) item = null;
-  state.laundry.current = item;
+function __laundryDisplayPricesForCurrentView__(){
+  try{
+    const current = state?.laundry?.current || null;
+    return (current && current.laundryPrices && typeof current.laundryPrices === "object") ? current.laundryPrices : getLaundryPricesFromSettings();
+  }catch(_){
+    return getLaundryPricesFromSettings();
+  }
+}
 
-  const rangeEl = document.getElementById("laundryPeriodLabel");
-  const printRangeEl = document.getElementById("laundryPrintRange");
+function __laundryUpdatePriceHints__(){
+  try{
+    const prices = getLaundryPricesFromSettings();
+    LAUNDRY_COLS.forEach((k) => {
+      const tile = document.querySelector(`#laundryGrid .laundry-tile[data-key="${k}"]`);
+      if (!tile) return;
+      const n = Number(prices?.[k] || 0) || 0;
+      tile.setAttribute('title', `Pressione lunga: imposta costo (${__laundryMoneyFmt__(n)})`);
+      tile.dataset.unitPrice = String(n.toFixed(2));
+    });
+  }catch(_){ }
+}
+
+async function __openLaundryPricePrompt__(key){
+  try{ await ensureSettingsLoaded({ force:false, showLoader:false }); }catch(_){ }
+  const label = LAUNDRY_LABELS[key] || key;
+  const prices = getLaundryPricesFromSettings();
+  const current = Number(prices?.[key] || 0) || 0;
+  const raw = window.prompt(`Costo pulizia ${label} (${key})`, String(current).replace('.', ','));
+  if (raw === null) return;
+  const txt = String(raw || '').trim().replace(',', '.');
+  if (!txt){
+    prices[key] = 0;
+  } else {
+    const value = Number(txt);
+    if (!isFinite(value) || value < 0){
+      toast('Prezzo non valido', 'orange');
+      return;
+    }
+    prices[key] = Math.round(value * 100) / 100;
+  }
+  await saveLaundryPricesToSettings(prices);
+  __laundryUpdatePriceHints__();
+  renderLaundry_(state?.laundry?.current || null);
+  try{ toast('Costo salvato', 'blue'); }catch(_){ }
+}
+
+function __bindLaundryPriceLongPress__(){
+  const host = document.getElementById('laundryGrid');
+  if (!host || host.dataset.priceLongPressBound === '1') return;
+  host.dataset.priceLongPressBound = '1';
+  let timer = null;
+  let suppressClick = false;
+  let activeTile = null;
+  const clearPress = () => {
+    if (timer) { try{ clearTimeout(timer); }catch(_){ } }
+    timer = null;
+    activeTile = null;
+  };
+  const startPress = (ev) => {
+    const tile = ev.target && ev.target.closest ? ev.target.closest('.laundry-tile[data-key]') : null;
+    const key = tile ? String(tile.dataset.key || '').trim().toUpperCase() : '';
+    if (!tile || !LAUNDRY_COLS.includes(key)) return;
+    clearPress();
+    activeTile = tile;
+    suppressClick = false;
+    timer = setTimeout(async () => {
+      suppressClick = true;
+      const useKey = String(activeTile?.dataset?.key || key || '').trim().toUpperCase();
+      clearPress();
+      try{ await __openLaundryPricePrompt__(useKey); }catch(e){ try{ toast(e?.message || 'Errore', 'orange'); }catch(_){ } }
+      setTimeout(() => { suppressClick = false; }, 320);
+    }, 500);
+  };
+  host.addEventListener('pointerdown', startPress, { passive:true });
+  host.addEventListener('pointerup', clearPress, { passive:true });
+  host.addEventListener('pointerleave', clearPress, { passive:true });
+  host.addEventListener('pointercancel', clearPress, { passive:true });
+  host.addEventListener('click', (ev) => {
+    if (!suppressClick) return;
+    const tile = ev.target && ev.target.closest ? ev.target.closest('.laundry-tile[data-key]') : null;
+    const key = tile ? String(tile.dataset.key || '').trim().toUpperCase() : '';
+    if (!LAUNDRY_COLS.includes(key)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+  }, true);
+}
+
+function renderLaundry_(item){
+  state.laundry.current = item;
+  const period = document.getElementById("laundryPeriodLabel");
+  const printRange = document.getElementById("laundryPrintRange");
+  const tbody = document.getElementById("laundryPrintBody");
+  const pricesForView = item?.laundryPrices && typeof item?.laundryPrices === 'object' ? item.laundryPrices : __laundryDisplayPricesForCurrentView__();
+
+  __bindLaundryPriceLongPress__();
+  __laundryUpdatePriceHints__();
 
   if (!item){
-    if (rangeEl){ rangeEl.hidden = true; rangeEl.textContent = ""; }
-    if (printRangeEl) printRangeEl.textContent = "";
+    if (period) { period.hidden = true; period.textContent = "—"; }
+    if (printRange) printRange.textContent = "—";
     for (const k of LAUNDRY_COLS){
       const v = document.getElementById("laundryVal"+k);
       if (v) v.textContent = "0";
     }
-    const tbody = document.getElementById("laundryPrintBody");
+    const totalEl = document.getElementById('laundryValTOTAL');
+    if (totalEl) totalEl.textContent = __laundryMoneyFmt__(0);
     if (tbody) tbody.innerHTML = "";
     return;
   }
 
-  const startLbl = item.startDate ? formatLongDateIT(item.startDate) : "";
-  const endLbl = item.endDate ? formatLongDateIT(item.endDate) : "";
-  const rangeText = (startLbl && endLbl) ? `${startLbl} – ${endLbl}` : (startLbl || endLbl || "—");
-  if (rangeEl){ rangeEl.hidden = false; rangeEl.innerHTML = `<b>${rangeText}</b>`; }
-  if (printRangeEl) printRangeEl.textContent = rangeText;
+  const startLbl = item.startDate ? formatLongDateIT(item.startDate) : String(item.startDate || "");
+  const endLbl = item.endDate ? formatLongDateIT(item.endDate) : String(item.endDate || "");
+  const rangeText = (startLbl && endLbl) ? `${startLbl} → ${endLbl}` : "—";
+
+  if (period){
+    period.hidden = false;
+    period.innerHTML = `<b>${rangeText}</b>`;
+  }
+  if (printRange) printRange.textContent = rangeText;
 
   for (const k of LAUNDRY_COLS){
     const v = document.getElementById("laundryVal"+k);
     if (v) v.textContent = String(item[k] || 0);
   }
 
-  const tbody = document.getElementById("laundryPrintBody");
+  const computedTotal = (typeof item?.totalCost === 'number' && isFinite(item.totalCost))
+    ? Math.round(Number(item.totalCost) * 100) / 100
+    : __laundryComputeTotalCost__(item, pricesForView);
+  const totalEl = document.getElementById('laundryValTOTAL');
+  if (totalEl) totalEl.textContent = __laundryMoneyFmt__(computedTotal);
+
   if (tbody){
     tbody.innerHTML = LAUNDRY_COLS.map(k => {
       const label = LAUNDRY_LABELS[k] || k;
       const val = String(item[k] || 0);
-      return `<tr><td><b>${label}</b> <span style="opacity:.7">(${k})</span></td><td style="text-align:right;font-weight:950">${val}</td></tr>`;
-    }).join("");
+      const unit = Number(pricesForView?.[k] || 0) || 0;
+      const subtotal = Math.round(((Number(item[k] || 0) || 0) * unit) * 100) / 100;
+      return `<tr><td><b>${label}</b> <span style="opacity:.7">(${k})</span></td><td style="text-align:right;font-weight:950">${val} · ${__laundryMoneyFmt__(subtotal)}</td></tr>`;
+    }).join('') + `<tr><td><b>Costo totale</b></td><td style="text-align:right;font-weight:950">${__laundryMoneyFmt__(computedTotal)}</td></tr>`;
   }
 }
 
@@ -16482,6 +16655,9 @@ function syncLaundryDateText_(){
 
 async function loadLavanderia() {
   setLaundryLabels_();
+  try{ await ensureSettingsLoaded({ force:false, showLoader:false }); }catch(_){ }
+  __bindLaundryPriceLongPress__();
+  __laundryUpdatePriceHints__();
   const hint = document.getElementById("laundryHint");
   try {
     const res = await api("lavanderia", { method:"GET", showLoader:false });
