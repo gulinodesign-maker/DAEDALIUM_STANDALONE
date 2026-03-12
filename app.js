@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.152
+ * Build: 2.153
  */
-const BUILD_VERSION = "2.152";
+const BUILD_VERSION = "2.153";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -468,7 +468,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti"];
+    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze"];
     numKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
