@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.172
+ * Build: 2.173
  */
-const BUILD_VERSION = "2.172";
+const BUILD_VERSION = "2.173";
 
 const LANG_PREF_KEY = "ddae_language";
 const APP_LANG_META = {
@@ -1032,7 +1032,7 @@ function __translateTextNode__(node){
   const parent = node.parentElement;
   if (!parent) return;
   if (parent.closest("script, style, textarea, input, option")) return;
-  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName")) return;
+  if (parent.closest("#buildText, #settingsBuildText, #settingsAccountName, #cleanHeaderText")) return;
   if (!parent.dataset.i18nBaseText) parent.dataset.i18nBaseText = raw;
   const base = parent.dataset.i18nBaseText;
   const next = tr(base);
@@ -15628,6 +15628,7 @@ try{
     const c = String(code || "").trim().toUpperCase();
     const text = CLEAN_HEADER_DESC[c] || "";
     if (!text) return;
+    try{ cleanHeaderText.dataset.i18nBaseText = text; }catch(_){ }
     try{ cleanHeaderText.textContent = text; }catch(_){ }
     try{ cleanHeaderText.innerText = text; }catch(_){ }
     try{ cleanHeaderText.setAttribute("data-code", c); }catch(_){ }
