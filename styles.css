@@ -4084,6 +4084,7 @@ body.perf-lite .guest-booking-block{
 /* Scheda sola lettura: blocca solo i controlli del form (ma lascia attivi i pallini in testata) */
 .guest-form-card.is-view input,
 .guest-form-card.is-view textarea,
+.guest-form-card.is-view select,
 .guest-form-card.is-view .bd button{
   pointer-events:none;
 }
@@ -9396,3 +9397,33 @@ body[data-page^="stat"] #homeSyncBar{
 #guestChannel{ appearance:none; -webkit-appearance:none; }
 #prodTabColazione, #prodAddToColazione{ border-color: rgba(52,199,89,0.70) !important; background: rgba(52,199,89,0.35) !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
 #prodTabColazione.is-active{ border-color: rgba(52,199,89,0.98) !important; }
+
+
+/* dDAE_2.160 — Ospite: ordine channel, note uniformi, commissione solo in lettura */
+#page-ospite .guest-notes-toggle{
+  min-height:52px;
+  border-radius:18px;
+  background:#fff;
+  color:rgba(15,23,42,0.72);
+  font-weight:700;
+  font-size:13px;
+  border:1px solid rgba(15,23,42,0.12);
+  box-shadow:none;
+}
+#page-ospite .guest-notes-toggle-label{
+  font-weight:700;
+  color:var(--p1);
+}
+#page-ospite .guest-notes-toggle.is-open{
+  border-bottom-left-radius:18px;
+  border-bottom-right-radius:18px;
+}
+#page-ospite .guest-form-card:not(.is-view) #guestChannelRow{
+  grid-template-columns:minmax(0,1fr) !important;
+}
+#page-ospite .guest-form-card:not(.is-view) #guestChannelCommissionWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelCommissionWrap{
+  display:block !important;
+}

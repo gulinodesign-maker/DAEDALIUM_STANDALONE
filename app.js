@@ -52,9 +52,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.159
+ * Build: 2.160
  */
-const BUILD_VERSION = "2.159";
+const BUILD_VERSION = "2.160";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -10734,9 +10734,12 @@ function setGuestFormViewOnly(isView, ospite){
     hideRowByInputId("guestAdults", !!isView);
     // Date check-in / check-out
     hideRowByInputId("guestCheckIn", !!isView);
-    // Channel e importo commissione: non devono comparire in sola lettura
-    hideRowByInputId("guestChannel", !!isView);
+    // In sola lettura mantieni visibile il channel con la sua percentuale; nascondi solo l'importo commissione
     hideRowByInputId("guestBooking", !!isView);
+    try{
+      const commWrap = document.getElementById("guestChannelCommissionWrap");
+      if (commWrap) commWrap.hidden = !isView;
+    }catch(_){}
   }catch(_){ }
 
   try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
