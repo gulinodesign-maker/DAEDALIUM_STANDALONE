@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.195";
+const BUILD_VERSION = "2.196";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2940,6 +2940,20 @@ function __sfxSave(){
     o1.stop(t + 0.6);
     o2.stop(t + 0.6);
   }catch(_){}
+}
+
+function setupThemeUI(){
+  try{ __loadThemePref(); }catch(_){ }
+  try{
+    const t = document.getElementById("themeToggle");
+    if (t && !t.dataset.boundTheme){
+      t.dataset.boundTheme = "1";
+      t.checked = (__getThemeMode__() === "dark");
+      t.addEventListener("change", () => {
+        __setThemePref(!!t.checked);
+      }, { passive:true });
+    }
+  }catch(_){ }
 }
 
 function setupAudioUI(){
@@ -16151,7 +16165,7 @@ function setupPiscina(){
 async function init(){
   // Perf mode: deve girare DOPO che body esiste e DOPO init delle costanti
   applyPerfMode();
-  try{ __loadThemePref(); }catch(_){ }
+  try{ setupThemeUI(); }catch(_){ }
   try{ setupAudioUI(); }catch(_){ }
   const __restore = __readRestoreState();
   // Session + anno

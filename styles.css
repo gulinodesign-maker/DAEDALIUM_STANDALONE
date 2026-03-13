@@ -10575,7 +10575,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
-/* dDAE_2.195 — impostazioni: audio + dark mode sulla stessa riga */
+/* dDAE_2.196 — impostazioni: audio + dark mode sulla stessa riga */
 #page-impostazioni .settings-title-controls{
   display:flex;
   align-items:center;
@@ -10594,7 +10594,7 @@ body[data-role="operatore"] #page-home .home-grid{
   #page-impostazioni .settings-title-controls{ gap:10px; }
 }
 
-/* dDAE_2.195 — dark mode */
+/* dDAE_2.196 — dark mode */
 html[data-theme="dark"]{
   --bg: #08111d;
   --text: #e5eefb;
