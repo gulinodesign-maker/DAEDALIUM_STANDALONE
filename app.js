@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.176";
+const BUILD_VERSION = "2.177";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -658,16 +658,32 @@ if (method === "POST"){
     const pul = Array.isArray(pul0) ? pul0 : [];
     const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
 
+    // Inizializza accumulatori per pezzi e resi.  I resi sono
+    // rappresentati nelle pulizie come una riga separata con stanza
+    // "RES".  Dobbiamo sommare i valori di tale riga separatamente e
+    // non conteggiarli nel totale pagabile.  Inoltre, trattiamo
+    // qualsiasi valore negativo come reso.
     const sums = {};
-    cols.forEach(k => { sums[k] = 0; });
+    const resi = {};
+    cols.forEach(k => { sums[k] = 0; resi[k] = 0; });
 
     pul.forEach(r => {
       const d = __normIsoDate__(r?.data || r?.date || "");
       if (!d) return;
       if (d < startDate || d > endDate) return;
+      const s = String(r?.stanza || r?.room || "").trim().toUpperCase();
+      const isResRow = (s === 'RES');
       cols.forEach(k => {
-        const n = Number(r?.[k] ?? 0);
-        sums[k] += (isNaN(n) ? 0 : Math.max(0, Math.floor(n)));
+        let n = Number(r?.[k] ?? 0);
+        if (!isFinite(n)) return;
+        n = Math.floor(n);
+        // Se la riga rappresenta i resi o la quantità è negativa,
+        // accumula nei resi; altrimenti nei pezzi.
+        if (isResRow || n < 0){
+          resi[k] += Math.abs(n);
+        } else {
+          sums[k] += Math.max(0, n);
+        }
       });
     });
 
@@ -693,8 +709,14 @@ if (method === "POST"){
       updatedAt: __nowIso__(),
       laundryPrices,
     };
-    cols.forEach(k => { item[k] = sums[k] || 0; });
-    item.totalCost = Math.round(cols.reduce((acc, k) => acc + ((Number(item[k] || 0) || 0) * (Number(laundryPrices?.[k] || 0) || 0)), 0) * 100) / 100;
+    // Copia i pezzi (sums) e i resi nel record.  I resi sono
+    // salvati con suffisso "_resi" per ogni colonna.
+    cols.forEach(k => {
+      item[k] = sums[k] || 0;
+      item[`${k}_resi`] = resi[k] || 0;
+    });
+    // Calcola il costo totale utilizzando solo i pezzi (sums) e non i resi.
+    item.totalCost = Math.round(cols.reduce((acc, k) => acc + ((Number(sums[k] || 0) || 0) * (Number(laundryPrices?.[k] || 0) || 0)), 0) * 100) / 100;
 
     list.push(item);
     await save();
@@ -16429,13 +16451,24 @@ function sanitizeLaundryItem_(it){
   Object.keys(it).forEach(rawKey => {
     const key = String(rawKey || "").trim();
     // Determina se la chiave corrisponde a una categoria conosciuta (case-insensitive)
-    const baseKey = LAUNDRY_COLS.find(c => c.toLowerCase() === key.toLowerCase().replace(/_r$/i, ''));
+    // Rimuove il suffisso "_resi" o "_r" per trovare la categoria base.
+    const lowered = key.toLowerCase();
+    let baseName = lowered;
+    if (/_resi$/i.test(key)){
+      baseName = lowered.slice(0, -5);
+    } else if (/_r$/i.test(key)){
+      baseName = lowered.slice(0, -2);
+    } else if (key.length === lowered.length + 1 && lowered.endsWith('r')){
+      baseName = lowered.slice(0, -1);
+    }
+    const baseKey = LAUNDRY_COLS.find(c => c.toLowerCase() === baseName);
     if (!baseKey) return;
     let n = Number(it[rawKey]);
     if (!isFinite(n)) return;
     n = Math.floor(n);
-    // Se la chiave termina con "_r" (o "_R") o "R" aggiunta, considerala come reso esplicito
-    const isResKey = /_r$/i.test(key) || (key.length === baseKey.length + 1 && key.toLowerCase().startsWith(baseKey.toLowerCase()) && key.toLowerCase().endsWith('r'));
+    // Se la chiave termina con "_resi" oppure "_r"/"_R" o un "R" aggiunto,
+    // considerala come reso esplicito.
+    const isResKey = /_resi$/i.test(key) || /_r$/i.test(key) || (key.length === baseKey.length + 1 && key.toLowerCase().startsWith(baseKey.toLowerCase()) && key.toLowerCase().endsWith('r'));
     if (isResKey){
       out[`${baseKey}_resi`] += Math.max(0, Math.abs(n));
     } else {
@@ -16626,10 +16659,12 @@ function __buildLaundryDetailShareText__(raw){
   let imponibile = 0;
   const rows = LAUNDRY_COLS.map((k) => {
     const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
     const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
     imponibile += subtotal;
-    return `- ${LAUNDRY_LABELS[k] || k} (${k}): ${qty} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
+    const qtyText = resi > 0 ? `${qty} (+${resi})` : `${qty}`;
+    return `- ${LAUNDRY_LABELS[k] || k} (${k}): ${qtyText} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
   });
   imponibile = Math.round(imponibile * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
