@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.195";
+const BUILD_VERSION = "2.196";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7241,6 +7241,18 @@ state.page = page;
   if (lavanderiaTopTools){
     lavanderiaTopTools.hidden = (page !== "lavanderia");
   }
+
+  // Rimuove eventuali scorciatoie incrociate tra Pulizie e Lavanderia
+  try{
+    const crossIds = ["topLaundryBtn","goLavanderiaTop","topPulizieBtn","goPulizieTop"];
+    crossIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      try{ el.hidden = true; }catch(_){ }
+      try{ el.style.display = "none"; }catch(_){ }
+      try{ el.remove(); }catch(_){ }
+    });
+  }catch(_){ }
 
 
   // Top tools (Ospiti) — nuovo ospite + calendario accanto al tasto Home
