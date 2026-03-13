@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.180";
+const BUILD_VERSION = "2.181";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7221,7 +7221,7 @@ if (goCalendarioTopOspiti){
     }
     if (!document.body.__boundLaundryDetailEsc){
       document.body.__boundLaundryDetailEsc = true;
-      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') __closeLaundryDetailModal__(); });
+      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { __closeLaundryDetailModal__(); __closeLaundryPricesModal__(); } });
     }
   }catch(_){ }
   const goLavTop = $("#goLavanderiaTop");
@@ -15389,6 +15389,11 @@ if (cleanResetAll){
 // --- Lavanderia ---
   const btnLaundryGenerate = document.getElementById("btnLaundryGenerate");
   const btnLaundryGenerateTop = document.getElementById("btnLaundryGenerateTop");
+  const btnLaundryPricesTop = document.getElementById("btnLaundryPricesTop");
+  const laundryPricesModal = document.getElementById("laundryPricesModal");
+  const laundryPricesClose = document.getElementById("laundryPricesClose");
+  const laundryPricesCancel = document.getElementById("laundryPricesCancel");
+  const laundryPricesSave = document.getElementById("laundryPricesSave");
   try{
     const fromEl = document.getElementById("laundryFrom");
     const toEl   = document.getElementById("laundryTo");
@@ -15420,6 +15425,35 @@ if (btnLaundryGenerate){
         try{ toast(e.message || "Errore"); }catch(_){ }
       }
     });
+  }
+  if (btnLaundryPricesTop){
+    bindFastTap(btnLaundryPricesTop, async () => {
+      try{
+        showPage("lavanderia");
+        await __openLaundryPricesModal__();
+      }catch(e){
+        console.error(e);
+        try{ toast(e.message || "Errore"); }catch(_){ }
+      }
+    });
+  }
+  if (laundryPricesClose && !laundryPricesClose.__boundLaundryPricesClose){
+    laundryPricesClose.__boundLaundryPricesClose = true;
+    bindFastTap(laundryPricesClose, () => { __closeLaundryPricesModal__(); });
+  }
+  if (laundryPricesCancel && !laundryPricesCancel.__boundLaundryPricesCancel){
+    laundryPricesCancel.__boundLaundryPricesCancel = true;
+    bindFastTap(laundryPricesCancel, () => { __closeLaundryPricesModal__(); });
+  }
+  if (laundryPricesSave && !laundryPricesSave.__boundLaundryPricesSave){
+    laundryPricesSave.__boundLaundryPricesSave = true;
+    bindFastTap(laundryPricesSave, async () => {
+      try{ await __saveLaundryPricesModal__(); }catch(e){ try{ toast(e?.message || "Errore"); }catch(_){ } }
+    });
+  }
+  if (laundryPricesModal && !laundryPricesModal.__boundLaundryPricesBackdrop){
+    laundryPricesModal.__boundLaundryPricesBackdrop = true;
+    laundryPricesModal.addEventListener('click', (ev) => { if (ev.target === laundryPricesModal) __closeLaundryPricesModal__(); });
   }
 if (typeof btnOrePuliziaFromPulizie !== "undefined" && btnOrePuliziaFromPulizie){
     bindFastTap(btnOrePuliziaFromPulizie, () => {
@@ -16566,6 +16600,66 @@ async function __openLaundryPricePrompt__(key){
   __laundryUpdatePriceHints__();
   renderLaundry_(state?.laundry?.current || null);
   try{ toast('Costo salvato', 'blue'); }catch(_){ }
+}
+
+function __ensureLaundryPricesModalBuilt__(){
+  const host = document.getElementById('laundryPricesList');
+  if (!host || host.dataset.ready === '1') return;
+  host.innerHTML = LAUNDRY_COLS.map((k) => {
+    const label = LAUNDRY_LABELS[k] || k;
+    return `<label class="laundry-price-row"><div class="laundry-price-copy"><div class="laundry-price-title">${label}</div><div class="laundry-price-code">${k}</div></div><input class="laundry-price-input" data-key="${k}" inputmode="decimal" min="0" step="0.01" type="number" /></label>`;
+  }).join('');
+  host.dataset.ready = '1';
+}
+
+async function __openLaundryPricesModal__(){
+  try{ await ensureSettingsLoaded({ force:false, showLoader:false }); }catch(_){ }
+  __ensureLaundryPricesModalBuilt__();
+  const modal = document.getElementById('laundryPricesModal');
+  if (!modal) return;
+  const prices = getLaundryPricesFromSettings();
+  LAUNDRY_COLS.forEach((k) => {
+    const input = modal.querySelector(`.laundry-price-input[data-key="${k}"]`);
+    if (!input) return;
+    const n = Number(prices?.[k] || 0) || 0;
+    input.value = n ? String(n.toFixed(2)) : '';
+  });
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+}
+
+function __closeLaundryPricesModal__(){
+  const modal = document.getElementById('laundryPricesModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+}
+
+async function __saveLaundryPricesModal__(){
+  const modal = document.getElementById('laundryPricesModal');
+  if (!modal) return;
+  const next = {};
+  for (const k of LAUNDRY_COLS){
+    const input = modal.querySelector(`.laundry-price-input[data-key="${k}"]`);
+    const raw = String(input?.value ?? '').trim().replace(',', '.');
+    if (!raw){
+      next[k] = 0;
+      continue;
+    }
+    const n = Number(raw);
+    if (!isFinite(n) || n < 0){
+      if (input && typeof input.focus === 'function') input.focus();
+      throw new Error(`Prezzo non valido per ${LAUNDRY_LABELS[k] || k}`);
+    }
+    next[k] = Math.round(n * 100) / 100;
+  }
+  await saveLaundryPricesToSettings(next);
+  __laundryUpdatePriceHints__();
+  renderLaundry_(state?.laundry?.current || null);
+  __closeLaundryPricesModal__();
+  try{ toast('Costi salvati', 'blue'); }catch(_){ }
 }
 
 function __bindLaundryPriceLongPress__(){

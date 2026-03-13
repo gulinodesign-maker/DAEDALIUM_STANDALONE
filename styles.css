@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.180");
+    url("./assets/bg-daedalium.png?v=dDAE_2.181");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.180");
+    url("./assets/bg-daedalium.png?v=dDAE_2.181");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -9838,7 +9838,7 @@ body[data-role="operatore"] #page-home .home-main{
 }
 
 
-/* dDAE_2.180 — Home operatore 2x2 senza Ore Pulizia */
+/* dDAE_2.181 — Home operatore 2x2 senza Ore Pulizia */
 body[data-role="operatore"] #page-home #goOrePuliziaHome{
   display: none !important;
 }
@@ -9852,7 +9852,7 @@ body[data-role="operatore"] #page-home .home-main{
   max-width: none !important;
 }
 
-/* dDAE_2.180 — Dettaglio economico lavanderia senza scroll interno, card più alta */
+/* dDAE_2.181 — Dettaglio economico lavanderia senza scroll interno, card più alta */
 #laundryDetailModal{
   overflow-y: auto;
   padding: 14px 10px 24px;
@@ -10030,5 +10030,140 @@ body[data-role="operatore"] #page-home .home-main{
   }
   #laundryDetailModal .laundry-detail-totalCell strong{
     font-size: 15px;
+  }
+}
+
+/* dDAE_2.181 — Lavanderia rivoluzionata: controlli sopra la linea, sotto solo report generati */
+#page-lavanderia{
+  padding-top: 6px !important;
+}
+#page-lavanderia .card{
+  margin-top: 4px;
+}
+#page-lavanderia .hd-actions{
+  gap: 8px;
+}
+#page-lavanderia .laundry-sub{
+  display:none !important;
+}
+#page-lavanderia .laundry-range{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 0 0;
+  padding-bottom: 14px;
+}
+#page-lavanderia .laundry-range-field{
+  min-height: 50px;
+  padding: 12px 8px;
+  border-radius: 18px;
+}
+#page-lavanderia .laundry-dateText{
+  font-size: 13px;
+}
+#page-lavanderia .laundry-history-wrap{
+  margin-top: 18px;
+  padding-top: 4px;
+}
+#page-lavanderia .laundry-history-wrap--solo .list{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+#page-lavanderia .laundry-history-wrap--solo .item{
+  border-radius: 20px;
+  background: rgba(255,255,255,0.74);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+  padding: 14px 16px;
+}
+#page-lavanderia .laundry-grid,
+#page-lavanderia .laundry-reportChip,
+#page-lavanderia .laundry-print,
+#page-lavanderia #btnLaundryGenerate{
+  display:none !important;
+}
+
+.laundry-prices-card{
+  width: min(92vw, 520px);
+  max-height: min(80vh, 760px);
+  overflow: hidden;
+  padding: 0;
+}
+.laundry-prices-body{
+  padding: 14px;
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+}
+.laundry-prices-list{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  overflow:auto;
+  padding-right: 2px;
+}
+.laundry-price-row{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) 116px;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.62);
+  border: 1px solid var(--border);
+}
+.laundry-price-copy{
+  min-width: 0;
+}
+.laundry-price-title{
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.laundry-price-code{
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .68;
+}
+.laundry-price-input{
+  width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,0.14);
+  background: rgba(255,255,255,0.96);
+  padding: 0 12px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.laundry-prices-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 10px;
+}
+@media (max-width: 420px){
+  #page-lavanderia .laundry-range{
+    gap: 8px;
+  }
+  #page-lavanderia .laundry-dateText{
+    font-size: 12px;
+  }
+  .laundry-price-row{
+    grid-template-columns: minmax(0, 1fr) 102px;
+    gap: 8px;
+    padding: 9px 10px;
+  }
+  .laundry-price-title{
+    font-size: 13px;
+  }
+  .laundry-price-input{
+    min-height: 42px;
+    font-size: 14px;
+    padding: 0 10px;
   }
 }
