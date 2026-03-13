@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.191";
+const BUILD_VERSION = "2.192";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4202,10 +4202,10 @@ const __I18N_PHRASES__ = {
     "es": "Ajustes"
   },
   "AUDIO": {
-    "en": "AUDIO",
-    "fr": "AUDIO",
-    "de": "AUDIO",
-    "es": "AUDIO"
+    "en": "Sound",
+    "fr": "Son",
+    "de": "Ton",
+    "es": "Sonido"
   },
   "Anno": {
     "en": "Year",
@@ -4986,6 +4986,12 @@ const __I18N_PHRASES__ = {
     "fr": "Tous",
     "de": "Alle",
     "es": "Todos"
+  },
+  "Audio on/off": {
+    "en": "Sound on/off",
+    "fr": "Activer/désactiver le son",
+    "de": "Ton ein/aus",
+    "es": "Activar/desactivar sonido"
   },
   "Lingua aggiornata": {
     "en": "Language updated",

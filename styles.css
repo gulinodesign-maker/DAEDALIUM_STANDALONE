@@ -10464,7 +10464,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
-/* dDAE_2.191 — popup lingua */
+/* dDAE_2.192 — popup lingua */
 .language-modal-card{
   width: calc(100% - 28px);
   max-width: 460px;
@@ -10476,8 +10476,8 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 .language-grid{
   margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 .language-option{
@@ -10518,9 +10518,4 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 .language-option:active{
   transform: translateY(1px);
-}
-@media (max-width: 420px){
-  .language-grid{
-    grid-template-columns: 1fr;
-  }
 }
