@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.177";
+const BUILD_VERSION = "2.178";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -668,6 +668,11 @@ if (method === "POST"){
     cols.forEach(k => { sums[k] = 0; resi[k] = 0; });
 
     pul.forEach(r => {
+      // Salta le righe eliminate (soft-delete) per evitare conteggi fantasma.
+      try{
+        const del = __normBool01(r?.isDeleted ?? r?.is_deleted ?? r?.deleted);
+        if (del) return;
+      }catch(_){ }
       const d = __normIsoDate__(r?.data || r?.date || "");
       if (!d) return;
       if (d < startDate || d > endDate) return;
@@ -16451,17 +16456,24 @@ function sanitizeLaundryItem_(it){
   Object.keys(it).forEach(rawKey => {
     const key = String(rawKey || "").trim();
     // Determina se la chiave corrisponde a una categoria conosciuta (case-insensitive)
-    // Rimuove il suffisso "_resi" o "_r" per trovare la categoria base.
+    // Determina la baseKey rimuovendo i suffissi relativi ai resi.
     const lowered = key.toLowerCase();
-    let baseName = lowered;
+    let candidate = lowered;
     if (/_resi$/i.test(key)){
-      baseName = lowered.slice(0, -5);
+      // chiavi come "mat_resi" -> base "mat"
+      candidate = lowered.slice(0, -5);
     } else if (/_r$/i.test(key)){
-      baseName = lowered.slice(0, -2);
-    } else if (key.length === lowered.length + 1 && lowered.endsWith('r')){
-      baseName = lowered.slice(0, -1);
+      // chiavi come "mat_r" -> base "mat"
+      candidate = lowered.slice(0, -2);
+    } else {
+      // chiavi come "MATR" (baseKey + 'R'): se rimuovendo l'ultima lettera otteniamo
+      // una chiave valida in LAUNDRY_COLS, usiamo quella come base.
+      const maybe = lowered.slice(0, -1);
+      if (LAUNDRY_COLS.some(c => c.toLowerCase() === maybe)){
+        candidate = maybe;
+      }
     }
-    const baseKey = LAUNDRY_COLS.find(c => c.toLowerCase() === baseName);
+    const baseKey = LAUNDRY_COLS.find(c => c.toLowerCase() === candidate);
     if (!baseKey) return;
     let n = Number(it[rawKey]);
     if (!isFinite(n)) return;
@@ -16616,9 +16628,9 @@ function renderLaundry_(item){
     if (v){
       const qty = Number(item[k] || 0) || 0;
       const resi = Number(item[`${k}_resi`] || 0) || 0;
-      // Mostra la quantità e, se presenti, i resi tra parentesi con testo rosso.  
+      // Mostra la quantità e, se presenti, i resi tra parentesi con testo rosso (senza il segno +).
       if (resi > 0){
-        v.innerHTML = `${qty}<span class="laundry-resi"> (+${resi})</span>`;
+        v.innerHTML = `${qty}<span class="laundry-resi"> (${resi})</span>`;
       } else {
         v.textContent = String(qty);
       }
@@ -16640,7 +16652,7 @@ function renderLaundry_(item){
       const unit = Number(pricesForView?.[k] || 0) || 0;
       const subtotal = Math.round((qty * unit) * 100) / 100;
       const qtyHtml = resi > 0
-        ? `${qty}<span class="laundry-resi"> (+${resi})</span>`
+        ? `${qty}<span class="laundry-resi"> (${resi})</span>`
         : `${qty}`;
       return `<tr><td><b>${label}</b> <span style="opacity:.7">(${k})</span></td><td style="text-align:right;font-weight:950">${qtyHtml} · ${__laundryMoneyFmt__(subtotal)}</td></tr>`;
     }).join('') + `<tr><td><b>Costo totale</b></td><td style="text-align:right;font-weight:950">${__laundryMoneyFmt__(computedTotal)}</td></tr>`;
@@ -16663,7 +16675,7 @@ function __buildLaundryDetailShareText__(raw){
     const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
     imponibile += subtotal;
-    const qtyText = resi > 0 ? `${qty} (+${resi})` : `${qty}`;
+    const qtyText = resi > 0 ? `${qty} (${resi})` : `${qty}`;
     return `- ${LAUNDRY_LABELS[k] || k} (${k}): ${qtyText} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
   });
   imponibile = Math.round(imponibile * 100) / 100;
