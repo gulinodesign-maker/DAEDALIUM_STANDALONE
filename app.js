@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.178";
+const BUILD_VERSION = "2.179";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -657,6 +657,22 @@ if (method === "POST"){
     const pul0 = await __tblGet__("pulizie", []);
     const pul = Array.isArray(pul0) ? pul0 : [];
     const cols = ["MAT","SIN","FED","TDO","TFA","TBI","TAP","TPI"];
+    // Recupera l'elenco delle stanze valide (stanza_num) dalla tabella "stanze" per filtrare
+    // eventuali righe con stanza non riconosciuta (es. stanza "7" fantasma).
+    let validRooms = null;
+    try{
+      const stanzeList = await __tblGet__("stanze", []);
+      if (Array.isArray(stanzeList)){
+        validRooms = new Set();
+        stanzeList.forEach((r) => {
+          const sn = r?.stanza_num ?? r?.stanzaNum ?? r?.room_number ?? r?.roomNumber ?? r?.stanza ?? r?.room;
+          if (sn !== undefined && sn !== null){
+            const v = String(sn).trim().toUpperCase();
+            if (v) validRooms.add(v);
+          }
+        });
+      }
+    }catch(_){ validRooms = null; }
 
     // Inizializza accumulatori per pezzi e resi.  I resi sono
     // rappresentati nelle pulizie come una riga separata con stanza
@@ -678,6 +694,10 @@ if (method === "POST"){
       if (d < startDate || d > endDate) return;
       const s = String(r?.stanza || r?.room || "").trim().toUpperCase();
       const isResRow = (s === 'RES');
+      // Se non è una riga di resi, verifica che la stanza sia valida; altrimenti scarta.
+      if (!isResRow && validRooms && validRooms.size > 0){
+        if (!validRooms.has(s)) return;
+      }
       cols.forEach(k => {
         let n = Number(r?.[k] ?? 0);
         if (!isFinite(n)) return;
