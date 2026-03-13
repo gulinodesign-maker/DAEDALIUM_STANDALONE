@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.182");
+    url("./assets/bg-daedalium.png?v=dDAE_2.183");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.182");
+    url("./assets/bg-daedalium.png?v=dDAE_2.183");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -9838,7 +9838,7 @@ body[data-role="operatore"] #page-home .home-main{
 }
 
 
-/* dDAE_2.182 — Home operatore 2x2 senza Ore Pulizia */
+/* dDAE_2.183 — Home operatore 2x2 senza Ore Pulizia */
 body[data-role="operatore"] #page-home #goOrePuliziaHome{
   display: none !important;
 }
@@ -9852,7 +9852,7 @@ body[data-role="operatore"] #page-home .home-main{
   max-width: none !important;
 }
 
-/* dDAE_2.182 — Dettaglio economico lavanderia senza scroll interno, card più alta */
+/* dDAE_2.183 — Dettaglio economico lavanderia senza scroll interno, card più alta */
 #laundryDetailModal{
   overflow-y: auto;
   padding: 14px 10px 24px;
@@ -10033,7 +10033,7 @@ body[data-role="operatore"] #page-home .home-main{
   }
 }
 
-/* dDAE_2.182 — Lavanderia rivoluzionata: controlli sopra la linea, sotto solo report generati */
+/* dDAE_2.183 — Lavanderia rivoluzionata: controlli sopra la linea, sotto solo report generati */
 #page-lavanderia{
   padding-top: 6px !important;
 }
@@ -10168,7 +10168,7 @@ body[data-role="operatore"] #page-home .home-main{
   }
 }
 
-/* dDAE_2.182 — Home operatore bloccata su 4 icone in griglia 2x2 */
+/* dDAE_2.183 — Home operatore bloccata su 4 icone in griglia 2x2 */
 body[data-role="operatore"] #page-home .home-grid > .home-main{
   display: none !important;
 }
@@ -10184,7 +10184,7 @@ body[data-role="operatore"] #page-home .home-grid{
   gap: 12px !important;
 }
 
-/* dDAE_2.182 — Report lavanderia sopra la top bar */
+/* dDAE_2.183 — Report lavanderia sopra la top bar */
 #laundryDetailModal,
 #laundryPricesModal{
   z-index: 6500 !important;

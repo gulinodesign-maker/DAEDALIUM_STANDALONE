@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.182";
+const BUILD_VERSION = "2.183";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16805,39 +16805,190 @@ function __buildLaundryDetailShareText__(raw){
   ].join('\n');
 }
 
+function __laundryRoundRect__(ctx, x, y, w, h, r){
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
+  ctx.closePath();
+}
+
+function __laundryDetailFileName__(item){
+  const from = String(item?.startDate || '').replace(/[^0-9]/g, '') || 'report';
+  const to = String(item?.endDate || '').replace(/[^0-9]/g, '') || 'lavanderia';
+  return __safeFileName__(`dDAE_Lavanderia_${from}_${to}.png`);
+}
+
+async function __laundryDetailImageBlob__(raw){
+  const item = sanitizeLaundryItem_(raw || {});
+  const prices = item?.laundryPrices && typeof item.laundryPrices === 'object' ? item.laundryPrices : __laundryDisplayPricesForCurrentView__();
+  try{ if (document.fonts && document.fonts.ready) await document.fonts.ready; }catch(_){ }
+
+  const rows = LAUNDRY_COLS.map((k) => {
+    const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
+    const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
+    const subtotal = Math.round(qty * unit * 100) / 100;
+    return { key:k, label: LAUNDRY_LABELS[k] || k, qty, resi, unit, subtotal };
+  });
+  const imponibile = Math.round(rows.reduce((acc, row) => acc + row.subtotal, 0) * 100) / 100;
+  const ivato = Math.round(imponibile * 1.22 * 100) / 100;
+  const width = 1200;
+  const outerPad = 36;
+  const cardPadX = 46;
+  const cardPadTop = 42;
+  const rowHeight = 120;
+  const rowGap = 18;
+  const totalsHeight = 92;
+  const cardHeight = cardPadTop + 150 + rows.length * rowHeight + (rows.length - 1) * rowGap + 28 + totalsHeight + 42;
+  const height = cardHeight + outerPad * 2;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas non disponibile');
+
+  ctx.clearRect(0, 0, width, height);
+  const cardX = outerPad;
+  const cardY = outerPad;
+  const cardW = width - outerPad * 2;
+  const cardH = cardHeight;
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(11,31,58,0.12)';
+  ctx.shadowBlur = 26;
+  ctx.shadowOffsetY = 10;
+  __laundryRoundRect__(ctx, cardX, cardY, cardW, cardH, 42);
+  ctx.fillStyle = '#f6fbff';
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = '#4d9cc5';
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.letterSpacing = '0';
+  ctx.fillText('REPORT LAVANDERIA', cardX + cardPadX, cardY + 54);
+
+  ctx.fillStyle = '#0b1f3a';
+  ctx.font = '900 52px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Dettaglio economico', cardX + cardPadX, cardY + 122);
+
+  ctx.fillStyle = 'rgba(11,31,58,0.78)';
+  ctx.font = '800 30px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(__laundryReportRangeText__(item), cardX + cardPadX, cardY + 178);
+
+  let y = cardY + 212;
+  const rowX = cardX + 32;
+  const rowW = cardW - 64;
+  rows.forEach((row) => {
+    __laundryRoundRect__(ctx, rowX, y, rowW, rowHeight, 34);
+    ctx.fillStyle = 'rgba(77,156,197,0.10)';
+    ctx.fill();
+
+    const boxY = y + 14;
+    __laundryRoundRect__(ctx, rowX + 18, boxY, 92, 92, 24);
+    ctx.fillStyle = '#4d9cc5';
+    ctx.fill();
+    __laundryRoundRect__(ctx, rowX + 128, boxY, 92, 92, 24);
+    ctx.fillStyle = '#88c8e8';
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(String(row.qty), rowX + 64, y + 56);
+    ctx.font = '900 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText('USATI', rowX + 64, y + 88);
+
+    ctx.fillStyle = '#0b1f3a';
+    ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(String(row.resi), rowX + 174, y + 56);
+    ctx.font = '900 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText('RESI', rowX + 174, y + 88);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#0b1f3a';
+    ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(row.label, rowX + 250, y + 58);
+    ctx.fillStyle = 'rgba(11,31,58,0.68)';
+    ctx.font = '700 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(`${__laundryMoneyFmt__(row.unit)} / pezzo`, rowX + 250, y + 94);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#0b1f3a';
+    ctx.font = '900 30px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(__laundryMoneyFmt__(row.subtotal), rowX + rowW - 32, y + 74);
+
+    y += rowHeight + rowGap;
+  });
+
+  const totalsY = y + 10;
+  const totalsGap = 20;
+  const totalsW = (rowW - totalsGap) / 2;
+  __laundryRoundRect__(ctx, rowX, totalsY, totalsW, totalsHeight, 28);
+  ctx.fillStyle = '#0b1f3a';
+  ctx.fill();
+  __laundryRoundRect__(ctx, rowX + totalsW + totalsGap, totalsY, totalsW, totalsHeight, 28);
+  ctx.fillStyle = '#4d9cc5';
+  ctx.fill();
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Imponibile', rowX + 26, totalsY + 52);
+  ctx.textAlign = 'right';
+  ctx.font = '900 34px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(__laundryMoneyFmt__(imponibile), rowX + totalsW - 26, totalsY + 58);
+
+  ctx.textAlign = 'left';
+  ctx.font = '900 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Totale IVA', rowX + totalsW + totalsGap + 26, totalsY + 42);
+  ctx.fillText('22%', rowX + totalsW + totalsGap + 26, totalsY + 72);
+  ctx.textAlign = 'right';
+  ctx.font = '900 34px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(__laundryMoneyFmt__(ivato), rowX + rowW - 26, totalsY + 58);
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 1));
+  if (blob) return blob;
+  const dataUrl = canvas.toDataURL('image/png');
+  const base64 = dataUrl.split(',')[1] || '';
+  const bin = atob(base64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: 'image/png' });
+}
+
 async function __shareLaundryDetail__(raw){
-  const text = __buildLaundryDetailShareText__(raw);
+  const item = sanitizeLaundryItem_(raw || {});
+  const blob = await __laundryDetailImageBlob__(item);
+  const filename = __laundryDetailFileName__(item);
+  const file = new File([blob], filename, { type: 'image/png' });
   try{
-    if (navigator.share){
-      await navigator.share({ title: 'Report lavanderia', text });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      await navigator.share({ title: 'Report lavanderia', files:[file] });
       return true;
     }
   }catch(err){
     if (err && err.name === 'AbortError') return false;
   }
+  const url = URL.createObjectURL(blob);
   try{
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      await navigator.clipboard.writeText(text);
-      toast('Report copiato');
-      return true;
-    }
-  }catch(_){ }
-  try{
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', 'readonly');
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-    toast('Report copiato');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    try{ a.click(); }catch(_){ }
+    try{ document.body.removeChild(a); }catch(_){ }
+    try{ toast('Immagine report pronta', 'blue'); }catch(_){ }
     return true;
-  }catch(_){ }
-  toast('Condivisione non disponibile');
-  return false;
+  }catch(_){
+    return false;
+  }finally{
+    setTimeout(() => { try{ URL.revokeObjectURL(url); }catch(_){ } }, 1200);
+  }
 }
 
 function __openLaundryDetailModal__(raw){
