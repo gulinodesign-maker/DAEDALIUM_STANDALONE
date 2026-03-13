@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.180");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.088");
+    url("./assets/bg-daedalium.png?v=dDAE_2.180");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -9834,5 +9834,201 @@ body[data-role="operatore"] #page-home .home-main{
   }
   .laundry-detail-price{
     font-size: 14px !important;
+  }
+}
+
+
+/* dDAE_2.180 — Home operatore 2x2 senza Ore Pulizia */
+body[data-role="operatore"] #page-home #goOrePuliziaHome{
+  display: none !important;
+}
+body[data-role="operatore"] #page-home .home-grid{
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  width: min(312px, 94vw) !important;
+  gap: 12px !important;
+}
+body[data-role="operatore"] #page-home .home-main{
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* dDAE_2.180 — Dettaglio economico lavanderia senza scroll interno, card più alta */
+#laundryDetailModal{
+  overflow-y: auto;
+  padding: 14px 10px 24px;
+}
+#laundryDetailModal .laundry-detail-card{
+  width: min(92vw, 520px) !important;
+  min-height: min(680px, calc(100vh - 40px)) !important;
+  max-height: none !important;
+  height: auto !important;
+  margin: 12px auto !important;
+  padding: 16px 16px 18px !important;
+  overflow: visible !important;
+}
+#laundryDetailModal .laundry-detail-toolbar{
+  margin-bottom: 6px !important;
+}
+#laundryDetailModal .laundry-detail-head{
+  margin-bottom: 2px;
+}
+#laundryDetailModal .laundry-detail-title{
+  font-size: 23px !important;
+}
+#laundryDetailModal .laundry-detail-sub{
+  margin-top: 4px !important;
+  font-size: 13px;
+}
+#laundryDetailModal .laundry-detail-list{
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  gap: 8px !important;
+}
+#laundryDetailModal .laundry-detail-row{
+  padding: 9px 12px !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+#laundryDetailModal .laundry-detail-rowLeft{
+  gap: 10px !important;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+#laundryDetailModal .laundry-detail-badges{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+#laundryDetailModal .laundry-detail-code{
+  width: 48px !important;
+  height: 48px !important;
+  flex: 0 0 48px !important;
+  border-radius: 15px !important;
+  padding: 4px 2px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  letter-spacing: 0 !important;
+}
+#laundryDetailModal .laundry-detail-code--secondary{
+  background: #88c8e8 !important;
+  color: #0b1f3a !important;
+}
+#laundryDetailModal .laundry-detail-codeValue{
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 950;
+}
+#laundryDetailModal .laundry-detail-codeLabel{
+  display: block;
+  font-size: 8px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+#laundryDetailModal .laundry-detail-copy{
+  min-width: 0;
+}
+#laundryDetailModal .laundry-detail-label{
+  font-size: 14px;
+  line-height: 1.05;
+}
+#laundryDetailModal .laundry-detail-meta{
+  margin-top: 3px !important;
+  font-size: 12px !important;
+  line-height: 1.1;
+}
+#laundryDetailModal .laundry-detail-price{
+  font-size: 14px !important;
+  line-height: 1;
+  align-self: center;
+}
+#laundryDetailModal .laundry-detail-totals{
+  margin-top: 10px !important;
+  gap: 0 !important;
+}
+#laundryDetailModal .laundry-detail-totalRow--split{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 !important;
+  background: transparent !important;
+}
+#laundryDetailModal .laundry-detail-totalCell{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 14px;
+  border-radius: 18px;
+  color: #fff;
+  font-weight: 900;
+}
+#laundryDetailModal .laundry-detail-totalCell span{
+  font-size: 12px;
+  line-height: 1.05;
+}
+#laundryDetailModal .laundry-detail-totalCell strong{
+  font-size: 16px;
+  white-space: nowrap;
+}
+#laundryDetailModal .laundry-detail-totalCell--dark{
+  background: #0b1f3a;
+}
+#laundryDetailModal .laundry-detail-totalCell--blue{
+  background: #4d9cc5;
+}
+@media (max-width: 420px){
+  #laundryDetailModal{
+    padding: 10px 8px 18px;
+  }
+  #laundryDetailModal .laundry-detail-card{
+    min-height: auto !important;
+    width: min(94vw, 520px) !important;
+    padding: 14px 14px 16px !important;
+  }
+  #laundryDetailModal .laundry-detail-row{
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+  #laundryDetailModal .laundry-detail-badges{
+    gap: 6px;
+  }
+  #laundryDetailModal .laundry-detail-code{
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+    border-radius: 13px !important;
+  }
+  #laundryDetailModal .laundry-detail-codeValue{
+    font-size: 14px;
+  }
+  #laundryDetailModal .laundry-detail-codeLabel{
+    font-size: 7px;
+  }
+  #laundryDetailModal .laundry-detail-label{
+    font-size: 13px;
+  }
+  #laundryDetailModal .laundry-detail-meta{
+    font-size: 11px !important;
+  }
+  #laundryDetailModal .laundry-detail-totalRow--split{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  #laundryDetailModal .laundry-detail-totalCell{
+    padding: 11px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #laundryDetailModal .laundry-detail-totalCell strong{
+    font-size: 15px;
   }
 }

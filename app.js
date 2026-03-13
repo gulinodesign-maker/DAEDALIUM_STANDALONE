@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.179";
+const BUILD_VERSION = "2.180";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2999,14 +2999,14 @@ function applyRoleMode(){
       try{ bar.hidden = false; bar.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
-// HOME: mostra solo Pulizie / Lavanderia / Calendario / Ore Pulizia per operatori
+// HOME operatore: mostra solo Pulizie / Lavanderia / Calendario / Spesa in griglia 2x2
   if (isOp){
     const hideIds = [
       "goOspite",
-      "openLauncher",
       "goTassaSoggiorno",
       "goStatistiche",
       "homeSettingsTop",
+      "goOrePuliziaHome",
             // icone/shortcuts ospiti duplicati (se presenti)
       "goOspiti",
     ];
@@ -16763,10 +16763,11 @@ function __openLaundryDetailModal__(raw){
   let imponibile = 0;
   list.innerHTML = LAUNDRY_COLS.map((k) => {
     const qty = Math.max(0, Number(item?.[k] || 0) || 0);
+    const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
     const unit = Math.max(0, Number(prices?.[k] || 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
     imponibile += subtotal;
-    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-code">${k}</div><div><div class="laundry-detail-label">${LAUNDRY_LABELS[k] || k}</div><div class="laundry-detail-meta">${qty} × ${__laundryMoneyFmt__(unit)}</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
+    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-badges"><div class="laundry-detail-code"><span class="laundry-detail-codeValue">${qty}</span><span class="laundry-detail-codeLabel">usati</span></div><div class="laundry-detail-code laundry-detail-code--secondary"><span class="laundry-detail-codeValue">${resi}</span><span class="laundry-detail-codeLabel">resi</span></div></div><div class="laundry-detail-copy"><div class="laundry-detail-label">${LAUNDRY_LABELS[k] || k}</div><div class="laundry-detail-meta">${__laundryMoneyFmt__(unit)} / pezzo</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
   }).join('');
   imponibile = Math.round(imponibile * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;

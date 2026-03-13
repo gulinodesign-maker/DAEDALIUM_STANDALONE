@@ -1,4 +1,4 @@
-/* dDAE_2.179 - Firebase frontend config */
+/* dDAE_2.180 - Firebase frontend config */
 const FIREBASE_ENABLED = true;
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDYG-TqrzfN5kDUH9GYWmYbqnwoqEnWMkM",
