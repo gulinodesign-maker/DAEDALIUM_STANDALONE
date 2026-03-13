@@ -10573,3 +10573,185 @@ body[data-role="operatore"] #page-home .home-grid{
 #settingsBackupModal .settings-backup-actions .btn{
   justify-content:center !important;
 }
+
+
+/* dDAE_2.195 — impostazioni: audio + dark mode sulla stessa riga */
+#page-impostazioni .settings-title-controls{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:14px;
+  flex:0 0 auto;
+  flex-wrap:nowrap;
+}
+#page-impostazioni .settings-theme-header{
+  margin-left:0;
+}
+#page-impostazioni .settings-theme-header .settings-audio-label{
+  color: var(--ico-blue-night);
+}
+@media (max-width: 460px){
+  #page-impostazioni .settings-title-controls{ gap:10px; }
+}
+
+/* dDAE_2.195 — dark mode */
+html[data-theme="dark"]{
+  --bg: #08111d;
+  --text: #e5eefb;
+  --black: #e5eefb;
+  --glass: rgba(10,18,31,0.90);
+  --glass2: rgba(12,22,36,0.84);
+  --border: rgba(148,163,184,0.22);
+  --shadow: 0 16px 36px rgba(0,0,0,0.42);
+  --ico-blue-night: #e6f0ff;
+  --dark-card: rgba(11,19,33,0.92);
+  --dark-input: rgba(17,27,43,0.96);
+  --dark-muted: rgba(203,213,225,0.76);
+}
+html[data-theme="dark"] body{
+  background-color:#08111d;
+  color:var(--text);
+}
+html[data-theme="dark"] body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(4,10,18,0.55);
+  pointer-events:none;
+  z-index:0;
+}
+html[data-theme="dark"] body > *{ position:relative; z-index:1; }
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .modal-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .item,
+html[data-theme="dark"] .list > .item,
+html[data-theme="dark"] .sheet,
+html[data-theme="dark"] .menu-sheet,
+html[data-theme="dark"] .operatori-editor-card,
+html[data-theme="dark"] .settings-popup-card,
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .guest-card,
+html[data-theme="dark"] .kpi-card,
+html[data-theme="dark"] .clean-card,
+html[data-theme="dark"] .clean-info-card,
+html[data-theme="dark"] .services-modal-card,
+html[data-theme="dark"] .receipt-modal-card,
+html[data-theme="dark"] .piscina-modal-card,
+html[data-theme="dark"] .stat-graph-modal-card,
+html[data-theme="dark"] .language-modal-card,
+html[data-theme="dark"] .home-main-card{
+  background: var(--dark-card) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .field select,
+html[data-theme="dark"] .field textarea,
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .searchbar,
+html[data-theme="dark"] .seg-btn,
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .settings-year-pill,
+html[data-theme="dark"] .settings-account-name,
+html[data-theme="dark"] .settings-tax-cap-btn,
+html[data-theme="dark"] .laundry-detail-totalCell,
+html[data-theme="dark"] .clean-grid .cell,
+html[data-theme="dark"] .operatori-line,
+html[data-theme="dark"] .operatori-stat,
+html[data-theme="dark"] .channel-line,
+html[data-theme="dark"] .channel-stat,
+html[data-theme="dark"] .laundrycatalog-line,
+html[data-theme="dark"] .laundrycatalog-stat,
+html[data-theme="dark"] .guest-inline-card,
+html[data-theme="dark"] .calendar-toolbar,
+html[data-theme="dark"] .calendar-week-header,
+html[data-theme="dark"] .calendar-cell,
+html[data-theme="dark"] .calendar-event,
+html[data-theme="dark"] .accordion-toggle,
+html[data-theme="dark"] .settings-divider,
+html[data-theme="dark"] .home-quick-btn,
+html[data-theme="dark"] .guest-notes-toggle{
+  background: var(--dark-input) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .btn,
+html[data-theme="dark"] button:not(.settings-btn):not(.icon-btn):not(.operatori-color-option):not(.language-option):not(.fab):not(.home-icon):not(.calendar-nav-btn){
+  background: var(--dark-input) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+html[data-theme="dark"] .btn.primary{
+  background: rgba(43,124,180,0.28) !important;
+  color: #9dd6ff !important;
+  border-color: rgba(96,165,250,0.42) !important;
+}
+html[data-theme="dark"] .btn.ghost{
+  background: rgba(15,23,42,0.88) !important;
+}
+html[data-theme="dark"] .settings-title,
+html[data-theme="dark"] .operatori-editor-title,
+html[data-theme="dark"] .settings-account-name,
+html[data-theme="dark"] .home-main-label,
+html[data-theme="dark"] .build,
+html[data-theme="dark"] .topbar-year,
+html[data-theme="dark"] .brand-title,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] .kpi-value,
+html[data-theme="dark"] .settings-audio-label,
+html[data-theme="dark"] .settings-btn-label,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .field label,
+html[data-theme="dark"] .operatori-color-label,
+html[data-theme="dark"] .settings-backup-note,
+html[data-theme="dark"] .language-modal-hint,
+html[data-theme="dark"] .list-title,
+html[data-theme="dark"] .page-title{
+  color: var(--text) !important;
+}
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .sub,
+html[data-theme="dark"] .hint,
+html[data-theme="dark"] .field small,
+html[data-theme="dark"] .settings-tax-cap-top,
+html[data-theme="dark"] .settings-backup-note,
+html[data-theme="dark"] .settings-year-pill,
+html[data-theme="dark"] ::placeholder{
+  color: var(--dark-muted) !important;
+}
+html[data-theme="dark"] .topbar .icon-btn{
+  background: rgba(15,23,42,0.92) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+}
+html[data-theme="dark"] .switch .slider{
+  background: rgba(51,65,85,0.86) !important;
+  border-color: rgba(148,163,184,0.28) !important;
+}
+html[data-theme="dark"] .switch .slider:before{
+  background: #dbeafe !important;
+  border-color: rgba(148,163,184,0.22) !important;
+}
+html[data-theme="dark"] .switch input:checked + .slider{
+  background: rgba(43,124,180,0.56) !important;
+}
+html[data-theme="dark"] .top-led,
+html[data-theme="dark"] .top-led-grid .top-led{
+  background: rgba(226,232,240,0.12);
+  border-color: rgba(226,232,240,0.20);
+}
+html[data-theme="dark"] .logo-wrap,
+html[data-theme="dark"] .home-icon,
+html[data-theme="dark"] .settings-btn{
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28) !important;
+}

@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.194";
+const BUILD_VERSION = "2.195";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2779,9 +2779,40 @@ function money(v){
 
 /* Audio SFX (iOS-friendly, no assets) */
 const AUDIO_PREF_KEY = "ddae_audio_enabled";
+const THEME_PREF_KEY = "ddae_theme";
 let __audioEnabled = false;
 let __audioCtx = null;
 let __lastTapSfxAt = 0;
+let __themeMode = "light";
+
+function __getThemeMode__(){
+  return (__themeMode === "dark") ? "dark" : "light";
+}
+function __applyThemeMeta__(){
+  try{
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', __getThemeMode__() === 'dark' ? '#0b1220' : '#ffffff');
+  }catch(_){}
+}
+function __applyThemeMode__(){
+  const dark = (__getThemeMode__() === "dark");
+  try{ document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); }catch(_){}
+  try{ document.body && document.body.classList.toggle("theme-dark", dark); }catch(_){}
+  try{ const t = document.getElementById("themeToggle"); if (t) t.checked = dark; }catch(_){}
+  __applyThemeMeta__();
+}
+function __loadThemePref(){
+  try{
+    const saved = String(localStorage.getItem(THEME_PREF_KEY) || "").trim().toLowerCase();
+    __themeMode = (saved === "dark") ? "dark" : "light";
+  }catch(_){ __themeMode = "light"; }
+  __applyThemeMode__();
+}
+function __setThemePref(v){
+  __themeMode = v ? "dark" : "light";
+  try{ localStorage.setItem(THEME_PREF_KEY, __themeMode); }catch(_){}
+  __applyThemeMode__();
+}
 
 function __loadAudioPref(){
   try{ __audioEnabled = (localStorage.getItem(AUDIO_PREF_KEY) === "1"); }
@@ -4206,6 +4237,30 @@ const __I18N_PHRASES__ = {
     "fr": "Son",
     "de": "Ton",
     "es": "Sonido"
+  },
+  "SCURO": {
+    "en": "DARK",
+    "fr": "SOMBRE",
+    "de": "DUNKEL",
+    "es": "OSCURO"
+  },
+  "Dark mode": {
+    "en": "Dark mode",
+    "fr": "Mode sombre",
+    "de": "Dunkelmodus",
+    "es": "Modo oscuro"
+  },
+  "Dark mode on": {
+    "en": "Dark mode on",
+    "fr": "Mode sombre activé",
+    "de": "Dunkelmodus aktiv",
+    "es": "Modo oscuro activado"
+  },
+  "Dark mode off": {
+    "en": "Dark mode off",
+    "fr": "Mode sombre désactivé",
+    "de": "Dunkelmodus aus",
+    "es": "Modo oscuro desactivado"
   },
   "Anno": {
     "en": "Year",
@@ -16096,6 +16151,7 @@ function setupPiscina(){
 async function init(){
   // Perf mode: deve girare DOPO che body esiste e DOPO init delle costanti
   applyPerfMode();
+  try{ __loadThemePref(); }catch(_){ }
   try{ setupAudioUI(); }catch(_){ }
   const __restore = __readRestoreState();
   // Session + anno
