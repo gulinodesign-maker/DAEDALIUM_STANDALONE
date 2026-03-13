@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.185";
+const BUILD_VERSION = "2.186";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3277,15 +3277,17 @@ function updateYearPill(){
 
 function updateSettingsTabs(){
   try{
+    const y = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear() || "").trim();
+    const yLabel = y || "—";
     const el = document.getElementById("settingsAccountYearTab");
-    const s = state.session || {};
-    const raw = (s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
-    const userLabel = raw ? raw : "—";
-    const y = String(state.exerciseYear || "").trim();
-    const yLabel = y ? y : "—";
     if (el){
+      const s = state.session || {};
+      const raw = (s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
+      const userLabel = raw ? raw : "—";
       el.textContent = `${userLabel} - ${yLabel}`;
     }
+    const yearPill = document.getElementById("settingsYearPill");
+    if (yearPill) yearPill.textContent = yLabel;
   }catch(_){ }
   try{ updateSettingsAccountName(); }catch(_){ }
 }

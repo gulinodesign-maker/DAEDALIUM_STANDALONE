@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.185");
+    url("./assets/bg-daedalium.png?v=dDAE_2.186");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.185");
+    url("./assets/bg-daedalium.png?v=dDAE_2.186");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -10202,4 +10202,145 @@ body[data-role="operatore"] #page-home .home-grid{
 #laundryDetailModal[hidden],
 #laundryPricesModal[hidden]{
   display: none !important;
+}
+
+
+/* dDAE_2.186 — Impostazioni: anno pill, griglia 3x3 ordinata, logout pill in basso */
+#page-impostazioni .settings-page-reference{
+  min-height: calc(100dvh - 68px - var(--safe-top) - 24px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-year-pill{
+  width: min(360px, 96vw) !important;
+  margin: 20px auto 0 auto !important;
+  min-height: 48px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.80) !important;
+  border: 1px solid rgba(77,156,197,0.18) !important;
+  color: #4d9cc5 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  justify-content: center !important;
+  gap: 14px 14px !important;
+  width: min(360px, 96vw) !important;
+  margin: 18px auto 0 auto !important;
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  max-width: 108px !important;
+  height: clamp(83px, 23.4vw, 108px) !important;
+  min-width: 0 !important;
+  min-height: clamp(83px, 23.4vw, 108px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 30px !important;
+  padding: 14px 8px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  box-shadow: none !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: 40px !important;
+  height: 40px !important;
+  opacity: 1 !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 13px !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  color: #ffffff !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background: rgba(143,203,232,0.80) !important; border-color: rgba(143,203,232,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background: rgba(79,205,102,0.80) !important; border-color: rgba(79,205,102,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ background: rgba(255,204,0,0.80) !important; border-color: rgba(255,204,0,0.28) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ background: rgba(242,156,80,0.80) !important; border-color: rgba(242,156,80,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ background: rgba(214,193,160,0.80) !important; border-color: rgba(214,193,160,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background: rgba(232,84,84,0.80) !important; border-color: rgba(232,84,84,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background: rgba(127,123,242,0.80) !important; border-color: rgba(127,123,242,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{ background: rgba(77,156,197,0.80) !important; border-color: rgba(77,156,197,0.24) !important; }
+#page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{
+  width: min(360px, 96vw) !important;
+  margin: auto auto 0 auto !important;
+  padding-top: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+#page-impostazioni .settings-btn-logout-pill{
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 56px !important;
+  height: 56px !important;
+  border-radius: 999px !important;
+  padding: 0 22px !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  background: rgba(201,119,43,0.80) !important;
+  border: 1px solid rgba(201,119,43,0.24) !important;
+  box-shadow: none !important;
+}
+#page-impostazioni .settings-btn-logout-pill .ui-ico{
+  width: 24px !important;
+  height: 24px !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label{
+  font-size: 17px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  color: #ffffff !important;
+}
+#page-impostazioni .settings-build{
+  width: 100% !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  opacity: 0.48 !important;
+}
+@media (max-width: 390px){
+  #page-impostazioni .settings-year-pill,
+  #page-impostazioni .settings-actions.settings-actions-reference,
+  #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{
+    width: min(320px, 94vw) !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    gap: 12px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    height: 96px !important;
+    min-height: 96px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+    width: 36px !important;
+    height: 36px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+    font-size: 12px !important;
+  }
 }

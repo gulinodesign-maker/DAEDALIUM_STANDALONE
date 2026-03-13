@@ -329,7 +329,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.185</div></div></section>
+<div class="build" id="buildText">dDAE_2.186</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -694,22 +694,11 @@
 </div>
 <div aria-hidden="true" class="settings-divider"></div>
 <div class="settings-account-name" id="settingsAccountName">—</div>
+<div aria-label="Anno selezionato" class="settings-year-pill" id="settingsYearPill">2026</div>
 <div class="settings-actions settings-actions-reference" style="margin-top:16px;">
 <button aria-label="Anno di esercizio" class="settings-btn settings-btn-save" id="settingsSaveBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path><path d="M8 14h3"></path><path d="M13 14h3"></path><path d="M8 18h3"></path></svg>
 <span class="settings-btn-label">Anno</span>
-</button>
-<button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
-<span class="settings-btn-label">Operatori</span>
-</button>
-<button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
-<span class="settings-btn-label">Lavanderia</span>
-</button>
-<button aria-label="Channel" class="settings-btn settings-btn-channel" id="settingsChannelBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
-<span class="settings-btn-label">Channel</span>
 </button>
 <button aria-label="Database" class="settings-btn settings-btn-db" id="settingsDbBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -718,6 +707,31 @@
 <path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path>
 </svg>
 <span class="settings-btn-label">Backup</span>
+</button>
+<button aria-label="Numero stanze" class="settings-btn settings-btn-rooms" id="settingsRoomsBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path><path d="M7 4v16"></path><path d="M12 4v16"></path><path d="M17 4v16"></path></svg>
+<span class="settings-btn-label">Stanze</span>
+</button>
+<button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+<span class="settings-btn-label">Operatori</span>
+</button>
+<button aria-label="Channel" class="settings-btn settings-btn-channel" id="settingsChannelBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
+<span class="settings-btn-label">Channel</span>
+</button>
+<button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
+<span class="settings-btn-label">Lavanderia</span>
+</button>
+<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="8"></circle>
+<path d="M12 8v8"></path>
+<path d="M8 12h8"></path>
+<path d="M7 7l10 10"></path>
+</svg>
+<span class="settings-btn-label">Tassa Sogg...</span>
 </button>
 <button aria-label="Codice" class="settings-btn settings-btn-roster" id="settingsExportRosterBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -730,30 +744,17 @@
 </svg>
 <span class="settings-btn-label">Codice Ope...</span>
 </button>
-<button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<circle cx="12" cy="12" r="8"></circle>
-<path d="M12 8v8"></path>
-<path d="M8 12h8"></path>
-<path d="M7 7l10 10"></path>
-</svg>
-<span class="settings-btn-label">Tassa Sogg...</span>
-</button>
-<button aria-label="Numero stanze" class="settings-btn settings-btn-rooms" id="settingsRoomsBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path><path d="M7 4v16"></path><path d="M12 4v16"></path><path d="M17 4v16"></path></svg>
-<span class="settings-btn-label">Stanze</span>
-</button>
 <button aria-label="Lingua" class="settings-btn settings-btn-language" id="settingsLanguageBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h9"></path><path d="M8.5 5c0 6-2 10-5.5 13"></path><path d="M6 11c1.5 2 3.5 3.5 6 4.5"></path><path d="M14 19h7"></path><path d="M17.5 5l4.5 14"></path><path d="M15 13h5"></path></svg>
 <span class="settings-btn-label">Lingua</span>
 </button>
-<button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
+</div>
+<div class="settings-bottom-stack settings-bottom-stack-under-grid">
+<button aria-label="Logout" class="settings-btn settings-btn-logout settings-btn-logout-pill" id="settingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
-</div>
-<div class="settings-bottom-stack settings-bottom-stack-under-grid">
-<div class="build settings-build" id="settingsBuildText">dDAE_2.185</div>
+<div class="build settings-build" id="settingsBuildText">dDAE_2.186</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
