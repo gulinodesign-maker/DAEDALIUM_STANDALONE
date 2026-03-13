@@ -10464,7 +10464,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
-/* dDAE_2.193 — popup lingua */
+/* dDAE_2.194 — popup lingua */
 .language-modal-card{
   width: calc(100% - 28px);
   max-width: 460px;
@@ -10518,4 +10518,58 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 .language-option:active{
   transform: translateY(1px);
+}
+
+
+/* dDAE_2.194 — popup azioni uniformate senza tasto X */
+.operatori-editor-close{
+  display:none !important;
+}
+.editor-modal-actions,
+.settings-popup-actions,
+.settings-backup-actions{
+  width:100%;
+  gap:12px !important;
+  margin-top:16px !important;
+  align-items:stretch;
+}
+.editor-modal-actions{
+  display:grid !important;
+  grid-auto-flow:column;
+  grid-auto-columns:1fr;
+}
+.editor-modal-actions > .btn,
+.settings-popup-actions .btn,
+.settings-backup-actions .btn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:72px !important;
+  height:72px !important;
+  border-radius:24px !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.editor-modal-actions > .btn.ghost,
+.settings-popup-actions .btn.ghost,
+#settingsBackupCancel.btn{
+  background:rgba(205,72,72,0.75) !important;
+  border-color:rgba(205,72,72,0.75) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+.editor-modal-actions > .btn.primary,
+.settings-popup-actions .btn.primary,
+#settingsBackupImport.btn,
+#settingsBackupExport.btn{
+  background:rgba(72,170,96,0.75) !important;
+  border-color:rgba(72,170,96,0.75) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#settingsConfigModal .settings-popup-actions .btn,
+#settingsYearModal .settings-popup-actions .btn,
+#settingsBackupModal .settings-backup-actions .btn{
+  justify-content:center !important;
 }
