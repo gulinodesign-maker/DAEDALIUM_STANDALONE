@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.190";
+const BUILD_VERSION = "2.191";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3261,9 +3261,9 @@ function formatPulizieTopbarDateIT(d){
   try{
     const dt = (d instanceof Date) ? d : new Date(d);
     if (isNaN(dt)) return "";
-    const weekdays = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    return `${weekdays[dt.getDay()] || ""} ${dt.getDate()} ${months[dt.getMonth()] || ""}`.trim();
+    const wd = __capitalizeLocale__(__getWeekdayLongForLocale__(dt));
+    const month = __capitalizeLocale__(dt.toLocaleDateString(__getCurrentLocale__(), { month:"long" }));
+    return `${wd} ${dt.getDate()} ${month}`.trim();
   }catch(_){ return ""; }
 }
 
@@ -3946,13 +3946,14 @@ function endRequest(){
 
 function euro(n){
   const x = Number(n || 0);
-  return x.toLocaleString("it-IT", { style:"currency", currency:"EUR" });
+  try{ return x.toLocaleString(__getCurrentLocale__(), { style:"currency", currency:"EUR" }); }catch(_){ return `${(Math.round(x * 100) / 100).toFixed(2)} €`; }
 }
 
 let __toastTimer = null;
 function toast(msg, kind){
   const t = $("#toast");
   if (!t) return;
+  try{ msg = __translateText__ ? __translateText__(msg) : msg; }catch(_){ }
   t.textContent = msg;
   // kind: "blue" | "orange" | "" (default)
   t.dataset.kind = kind ? String(kind) : "";
@@ -3963,6 +3964,1381 @@ function toast(msg, kind){
     t.dataset.kind = "";
   }, 1700);
 }
+
+
+const __I18N_STORAGE_KEY__ = "ddae:app-language";
+const __I18N_LOCALES__ = { it:"it-IT", en:"en-GB", fr:"fr-FR", de:"de-DE", es:"es-ES" };
+let __appLanguage__ = "it";
+let __applyingLanguage__ = false;
+let __languageObserver__ = null;
+let __MONTHS_IT = [];
+const __I18N_PHRASES__ = {
+  "crea account": {
+    "en": "create account",
+    "fr": "créer un compte",
+    "de": "Konto erstellen",
+    "es": "crear cuenta"
+  },
+  "modifica account": {
+    "en": "edit account",
+    "fr": "modifier le compte",
+    "de": "Konto bearbeiten",
+    "es": "editar cuenta"
+  },
+  "amministratore": {
+    "en": "administrator",
+    "fr": "administrateur",
+    "de": "Administrator",
+    "es": "administrador"
+  },
+  "operatore": {
+    "en": "operator",
+    "fr": "opérateur",
+    "de": "Mitarbeiter",
+    "es": "operador"
+  },
+  "Struttura": {
+    "en": "Property",
+    "fr": "Structure",
+    "de": "Unterkunft",
+    "es": "Alojamiento"
+  },
+  "Ricorda struttura": {
+    "en": "Remember property",
+    "fr": "Mémoriser la structure",
+    "de": "Unterkunft merken",
+    "es": "Recordar alojamiento"
+  },
+  "Username": {
+    "en": "Username",
+    "fr": "Nom d'utilisateur",
+    "de": "Benutzername",
+    "es": "Usuario"
+  },
+  "Password": {
+    "en": "Password",
+    "fr": "Mot de passe",
+    "de": "Passwort",
+    "es": "Contraseña"
+  },
+  "Conferma password": {
+    "en": "Confirm password",
+    "fr": "Confirmer le mot de passe",
+    "de": "Passwort bestätigen",
+    "es": "Confirmar contraseña"
+  },
+  "Nuova password": {
+    "en": "New password",
+    "fr": "Nouveau mot de passe",
+    "de": "Neues Passwort",
+    "es": "Nueva contraseña"
+  },
+  "Conferma nuova password": {
+    "en": "Confirm new password",
+    "fr": "Confirmer le nouveau mot de passe",
+    "de": "Neues Passwort bestätigen",
+    "es": "Confirmar nueva contraseña"
+  },
+  "Nome": {
+    "en": "Name",
+    "fr": "Nom",
+    "de": "Name",
+    "es": "Nombre"
+  },
+  "Telefono": {
+    "en": "Phone",
+    "fr": "Téléphone",
+    "de": "Telefon",
+    "es": "Teléfono"
+  },
+  "Email": {
+    "en": "Email",
+    "fr": "E-mail",
+    "de": "E-Mail",
+    "es": "Correo"
+  },
+  "indietro": {
+    "en": "back",
+    "fr": "retour",
+    "de": "zurück",
+    "es": "volver"
+  },
+  "continua": {
+    "en": "continue",
+    "fr": "continuer",
+    "de": "weiter",
+    "es": "continuar"
+  },
+  "Ospiti": {
+    "en": "Guests",
+    "fr": "Clients",
+    "de": "Gäste",
+    "es": "Huéspedes"
+  },
+  "Calendario": {
+    "en": "Calendar",
+    "fr": "Calendrier",
+    "de": "Kalender",
+    "es": "Calendario"
+  },
+  "Spese": {
+    "en": "Expenses",
+    "fr": "Dépenses",
+    "de": "Ausgaben",
+    "es": "Gastos"
+  },
+  "Tassa": {
+    "en": "Tax",
+    "fr": "Taxe",
+    "de": "Steuer",
+    "es": "Tasa"
+  },
+  "Pulizie": {
+    "en": "Cleaning",
+    "fr": "Ménage",
+    "de": "Reinigung",
+    "es": "Limpieza"
+  },
+  "Lavanderia": {
+    "en": "Laundry",
+    "fr": "Blanchisserie",
+    "de": "Wäscherei",
+    "es": "Lavandería"
+  },
+  "Ore Pulizia": {
+    "en": "Cleaning Hours",
+    "fr": "Heures de ménage",
+    "de": "Reinigungsstunden",
+    "es": "Horas de limpieza"
+  },
+  "Ore Pulizia Mensili": {
+    "en": "Monthly Cleaning Hours",
+    "fr": "Heures de ménage mensuelles",
+    "de": "Monatliche Reinigungsstunden",
+    "es": "Horas de limpieza mensuales"
+  },
+  "Statistiche": {
+    "en": "Stats",
+    "fr": "Statistiques",
+    "de": "Statistiken",
+    "es": "Estadísticas"
+  },
+  "Spesa": {
+    "en": "Shopping",
+    "fr": "Achats",
+    "de": "Einkauf",
+    "es": "Compras"
+  },
+  "IMPORTA": {
+    "en": "IMPORT",
+    "fr": "IMPORTER",
+    "de": "IMPORT",
+    "es": "IMPORTAR"
+  },
+  "ESPORTA": {
+    "en": "EXPORT",
+    "fr": "EXPORTER",
+    "de": "EXPORT",
+    "es": "EXPORTAR"
+  },
+  "Lista della spesa": {
+    "en": "Shopping List",
+    "fr": "Liste des achats",
+    "de": "Einkaufsliste",
+    "es": "Lista de compras"
+  },
+  "Colazione": {
+    "en": "Breakfast",
+    "fr": "Petit-déjeuner",
+    "de": "Frühstück",
+    "es": "Desayuno"
+  },
+  "Prodotti": {
+    "en": "Products",
+    "fr": "Produits",
+    "de": "Produkte",
+    "es": "Productos"
+  },
+  "Aggiungi prodotto": {
+    "en": "Add product",
+    "fr": "Ajouter un produit",
+    "de": "Produkt hinzufügen",
+    "es": "Añadir producto"
+  },
+  "Generali": {
+    "en": "General",
+    "fr": "Générales",
+    "de": "Allgemein",
+    "es": "Generales"
+  },
+  "Mensili": {
+    "en": "Monthly",
+    "fr": "Mensuelles",
+    "de": "Monatlich",
+    "es": "Mensuales"
+  },
+  "Grafici": {
+    "en": "Charts",
+    "fr": "Graphiques",
+    "de": "Diagramme",
+    "es": "Gráficos"
+  },
+  "Piscina": {
+    "en": "Pool",
+    "fr": "Piscine",
+    "de": "Pool",
+    "es": "Piscina"
+  },
+  "Cancellazioni": {
+    "en": "Cancellations",
+    "fr": "Annulations",
+    "de": "Stornierungen",
+    "es": "Cancelaciones"
+  },
+  "Impostazioni": {
+    "en": "Settings",
+    "fr": "Paramètres",
+    "de": "Einstellungen",
+    "es": "Ajustes"
+  },
+  "AUDIO": {
+    "en": "AUDIO",
+    "fr": "AUDIO",
+    "de": "AUDIO",
+    "es": "AUDIO"
+  },
+  "Anno": {
+    "en": "Year",
+    "fr": "Année",
+    "de": "Jahr",
+    "es": "Año"
+  },
+  "Backup": {
+    "en": "Backup",
+    "fr": "Sauvegarde",
+    "de": "Backup",
+    "es": "Copia de seguridad"
+  },
+  "Stanze": {
+    "en": "Rooms",
+    "fr": "Chambres",
+    "de": "Zimmer",
+    "es": "Habitaciones"
+  },
+  "Operatori": {
+    "en": "Operators",
+    "fr": "Opérateurs",
+    "de": "Mitarbeiter",
+    "es": "Operadores"
+  },
+  "Channel": {
+    "en": "Channel",
+    "fr": "Canal",
+    "de": "Kanal",
+    "es": "Canal"
+  },
+  "Tassa Sogg...": {
+    "en": "Tourist Tax",
+    "fr": "Taxe séjour",
+    "de": "Kurtaxe",
+    "es": "Tasa turíst."
+  },
+  "Codice Ope...": {
+    "en": "Operator Code",
+    "fr": "Code op.",
+    "de": "Mitarbeiter-Code",
+    "es": "Código op."
+  },
+  "Lingua": {
+    "en": "Language",
+    "fr": "Langue",
+    "de": "Sprache",
+    "es": "Idioma"
+  },
+  "Logout": {
+    "en": "Logout",
+    "fr": "Déconnexion",
+    "de": "Abmelden",
+    "es": "Cerrar sesión"
+  },
+  "Tassa di soggiorno": {
+    "en": "Tourist Tax",
+    "fr": "Taxe de séjour",
+    "de": "Kurtaxe",
+    "es": "Tasa turística"
+  },
+  "Stima": {
+    "en": "Estimate",
+    "fr": "Estimation",
+    "de": "Schätzung",
+    "es": "Estimación"
+  },
+  "Da": {
+    "en": "From",
+    "fr": "De",
+    "de": "Von",
+    "es": "Desde"
+  },
+  "A": {
+    "en": "To",
+    "fr": "À",
+    "de": "Bis",
+    "es": "Hasta"
+  },
+  "Totale tassa": {
+    "en": "Total tax",
+    "fr": "Taxe totale",
+    "de": "Gesamtsteuer",
+    "es": "Impuesto total"
+  },
+  "Ospiti paganti": {
+    "en": "Paying guests",
+    "fr": "Clients payants",
+    "de": "Zahlende Gäste",
+    "es": "Huéspedes que pagan"
+  },
+  "Bambini (<10)": {
+    "en": "Children (<10)",
+    "fr": "Enfants (<10)",
+    "de": "Kinder (<10)",
+    "es": "Niños (<10)"
+  },
+  "Altri (ridotti)": {
+    "en": "Others (reduced)",
+    "fr": "Autres (réduit)",
+    "de": "Andere (ermäßigt)",
+    "es": "Otros (reducidos)"
+  },
+  "Inserisci spesa": {
+    "en": "Add expense",
+    "fr": "Ajouter une dépense",
+    "de": "Ausgabe erfassen",
+    "es": "Añadir gasto"
+  },
+  "Motivazione": {
+    "en": "Reason",
+    "fr": "Motif",
+    "de": "Grund",
+    "es": "Motivo"
+  },
+  "Data": {
+    "en": "Date",
+    "fr": "Date",
+    "de": "Datum",
+    "es": "Fecha"
+  },
+  "Seleziona…": {
+    "en": "Select…",
+    "fr": "Sélectionner…",
+    "de": "Auswählen…",
+    "es": "Selecciona…"
+  },
+  "Categoria": {
+    "en": "Category",
+    "fr": "Catégorie",
+    "de": "Kategorie",
+    "es": "Categoría"
+  },
+  "Salva": {
+    "en": "Save",
+    "fr": "Enregistrer",
+    "de": "Speichern",
+    "es": "Guardar"
+  },
+  "Nessun operatore inserito": {
+    "en": "No operator added",
+    "fr": "Aucun opérateur saisi",
+    "de": "Kein Mitarbeiter vorhanden",
+    "es": "No hay operadores"
+  },
+  "Nessun channel inserito": {
+    "en": "No channel added",
+    "fr": "Aucun canal saisi",
+    "de": "Kein Kanal vorhanden",
+    "es": "No hay canales"
+  },
+  "Componenti lavanderia": {
+    "en": "Laundry Components",
+    "fr": "Composants blanchisserie",
+    "de": "Wäscherei-Komponenten",
+    "es": "Componentes de lavandería"
+  },
+  "Nessun componente lavanderia inserito": {
+    "en": "No laundry component added",
+    "fr": "Aucun composant blanchisserie saisi",
+    "de": "Keine Wäscherei-Komponente vorhanden",
+    "es": "No hay componentes de lavandería"
+  },
+  "Ordina: data": {
+    "en": "Sort: date",
+    "fr": "Trier : date",
+    "de": "Sortieren: Datum",
+    "es": "Ordenar: fecha"
+  },
+  "Ordina: inserimento": {
+    "en": "Sort: entry",
+    "fr": "Trier : saisie",
+    "de": "Sortieren: Eingabe",
+    "es": "Ordenar: ingreso"
+  },
+  "Ordina: motivazione": {
+    "en": "Sort: reason",
+    "fr": "Trier : motif",
+    "de": "Sortieren: Grund",
+    "es": "Ordenar: motivo"
+  },
+  "Nuovo ospite": {
+    "en": "New guest",
+    "fr": "Nouveau client",
+    "de": "Neuer Gast",
+    "es": "Nuevo huésped"
+  },
+  "Modifica": {
+    "en": "Edit",
+    "fr": "Modifier",
+    "de": "Bearbeiten",
+    "es": "Editar"
+  },
+  "Elimina": {
+    "en": "Delete",
+    "fr": "Supprimer",
+    "de": "Löschen",
+    "es": "Eliminar"
+  },
+  "Nome ospite": {
+    "en": "Guest name",
+    "fr": "Nom du client",
+    "de": "Name des Gasts",
+    "es": "Nombre del huésped"
+  },
+  "Adulti": {
+    "en": "Adults",
+    "fr": "Adultes",
+    "de": "Erwachsene",
+    "es": "Adultos"
+  },
+  "Bambini < 10": {
+    "en": "Children < 10",
+    "fr": "Enfants < 10",
+    "de": "Kinder < 10",
+    "es": "Niños < 10"
+  },
+  "Check-in": {
+    "en": "Check-in",
+    "fr": "Arrivée",
+    "de": "Check-in",
+    "es": "Check-in"
+  },
+  "Check-out": {
+    "en": "Check-out",
+    "fr": "Départ",
+    "de": "Check-out",
+    "es": "Check-out"
+  },
+  "Note": {
+    "en": "Notes",
+    "fr": "Notes",
+    "de": "Notizen",
+    "es": "Notas"
+  },
+  "Servizi": {
+    "en": "Services",
+    "fr": "Services",
+    "de": "Services",
+    "es": "Servicios"
+  },
+  "Oggi": {
+    "en": "Today",
+    "fr": "Aujourd'hui",
+    "de": "Heute",
+    "es": "Hoy"
+  },
+  "Matrimoniale": {
+    "en": "Double",
+    "fr": "Double",
+    "de": "Doppelbett",
+    "es": "Doble"
+  },
+  "Singolo": {
+    "en": "Single",
+    "fr": "Simple",
+    "de": "Einzelbett",
+    "es": "Individual"
+  },
+  "Culla": {
+    "en": "Cot",
+    "fr": "Berceau",
+    "de": "Kinderbett",
+    "es": "Cuna"
+  },
+  "Chiudi": {
+    "en": "Close",
+    "fr": "Fermer",
+    "de": "Schließen",
+    "es": "Cerrar"
+  },
+  "Annulla": {
+    "en": "Cancel",
+    "fr": "Annuler",
+    "de": "Abbrechen",
+    "es": "Cancelar"
+  },
+  "Conferma": {
+    "en": "Confirm",
+    "fr": "Confirmer",
+    "de": "Bestätigen",
+    "es": "Confirmar"
+  },
+  "Importa": {
+    "en": "Import",
+    "fr": "Importer",
+    "de": "Importieren",
+    "es": "Importar"
+  },
+  "Esporta": {
+    "en": "Export",
+    "fr": "Exporter",
+    "de": "Exportieren",
+    "es": "Exportar"
+  },
+  "Nuovo channel": {
+    "en": "New channel",
+    "fr": "Nouveau canal",
+    "de": "Neuer Kanal",
+    "es": "Nuevo canal"
+  },
+  "Nome channel": {
+    "en": "Channel name",
+    "fr": "Nom du canal",
+    "de": "Kanalname",
+    "es": "Nombre del canal"
+  },
+  "Commissione (%)": {
+    "en": "Commission (%)",
+    "fr": "Commission (%)",
+    "de": "Provision (%)",
+    "es": "Comisión (%)"
+  },
+  "Iniziale": {
+    "en": "Initial",
+    "fr": "Initiale",
+    "de": "Initiale",
+    "es": "Inicial"
+  },
+  "Tag colore": {
+    "en": "Color tag",
+    "fr": "Étiquette couleur",
+    "de": "Farbetikett",
+    "es": "Etiqueta de color"
+  },
+  "Nuovo operatore": {
+    "en": "New operator",
+    "fr": "Nouvel opérateur",
+    "de": "Neuer Mitarbeiter",
+    "es": "Nuevo operador"
+  },
+  "Nome operatore": {
+    "en": "Operator name",
+    "fr": "Nom de l'opérateur",
+    "de": "Name des Mitarbeiters",
+    "es": "Nombre del operador"
+  },
+  "Tariffa (€ / ora)": {
+    "en": "Rate (€ / hour)",
+    "fr": "Tarif (€ / heure)",
+    "de": "Satz (€ / Stunde)",
+    "es": "Tarifa (€ / hora)"
+  },
+  "Benzina (€)": {
+    "en": "Fuel (€)",
+    "fr": "Carburant (€)",
+    "de": "Kraftstoff (€)",
+    "es": "Combustible (€)"
+  },
+  "Nuovo componente lavanderia": {
+    "en": "New laundry component",
+    "fr": "Nouveau composant blanchisserie",
+    "de": "Neue Wäscherei-Komponente",
+    "es": "Nuevo componente de lavandería"
+  },
+  "Titolo componente": {
+    "en": "Component title",
+    "fr": "Titre du composant",
+    "de": "Komponententitel",
+    "es": "Título del componente"
+  },
+  "Abbreviazione": {
+    "en": "Abbreviation",
+    "fr": "Abréviation",
+    "de": "Abkürzung",
+    "es": "Abreviatura"
+  },
+  "Prezzo pulizia (€)": {
+    "en": "Cleaning price (€)",
+    "fr": "Prix nettoyage (€)",
+    "de": "Reinigungspreis (€)",
+    "es": "Precio de limpieza (€)"
+  },
+  "Azzurro": {
+    "en": "Sky blue",
+    "fr": "Bleu ciel",
+    "de": "Hellblau",
+    "es": "Azul cielo"
+  },
+  "Arancione": {
+    "en": "Orange",
+    "fr": "Orange",
+    "de": "Orange",
+    "es": "Naranja"
+  },
+  "Verde": {
+    "en": "Green",
+    "fr": "Vert",
+    "de": "Grün",
+    "es": "Verde"
+  },
+  "Rosso": {
+    "en": "Red",
+    "fr": "Rouge",
+    "de": "Rot",
+    "es": "Rojo"
+  },
+  "Viola": {
+    "en": "Purple",
+    "fr": "Violet",
+    "de": "Lila",
+    "es": "Morado"
+  },
+  "Sabbia": {
+    "en": "Sand",
+    "fr": "Sable",
+    "de": "Sand",
+    "es": "Arena"
+  },
+  "Tariffa": {
+    "en": "Rate",
+    "fr": "Tarif",
+    "de": "Satz",
+    "es": "Tarifa"
+  },
+  "Benzina": {
+    "en": "Fuel",
+    "fr": "Carburant",
+    "de": "Kraftstoff",
+    "es": "Combustible"
+  },
+  "Modifica operatore": {
+    "en": "Edit operator",
+    "fr": "Modifier l'opérateur",
+    "de": "Mitarbeiter bearbeiten",
+    "es": "Editar operador"
+  },
+  "Eliminare questo operatore?": {
+    "en": "Delete this operator?",
+    "fr": "Supprimer cet opérateur ?",
+    "de": "Diesen Mitarbeiter löschen?",
+    "es": "¿Eliminar este operador?"
+  },
+  "Inserisci il nome operatore": {
+    "en": "Enter the operator name",
+    "fr": "Saisissez le nom de l'opérateur",
+    "de": "Namen des Mitarbeiters eingeben",
+    "es": "Introduce el nombre del operador"
+  },
+  "Tariffa non valida": {
+    "en": "Invalid rate",
+    "fr": "Tarif non valide",
+    "de": "Ungültiger Satz",
+    "es": "Tarifa no válida"
+  },
+  "Benzina non valida": {
+    "en": "Invalid fuel amount",
+    "fr": "Montant carburant non valide",
+    "de": "Ungültiger Kraftstoffwert",
+    "es": "Importe de combustible no válido"
+  },
+  "Operatore salvato": {
+    "en": "Operator saved",
+    "fr": "Opérateur enregistré",
+    "de": "Mitarbeiter gespeichert",
+    "es": "Operador guardado"
+  },
+  "Operatore eliminato": {
+    "en": "Operator deleted",
+    "fr": "Opérateur supprimé",
+    "de": "Mitarbeiter gelöscht",
+    "es": "Operador eliminado"
+  },
+  "Nessun dato": {
+    "en": "No data",
+    "fr": "Aucune donnée",
+    "de": "Keine Daten",
+    "es": "Sin datos"
+  },
+  "Ricevute mancanti": {
+    "en": "Missing receipts",
+    "fr": "Reçus manquants",
+    "de": "Fehlende Belege",
+    "es": "Recibos faltantes"
+  },
+  "Calendario settimanale": {
+    "en": "Weekly calendar",
+    "fr": "Calendrier hebdomadaire",
+    "de": "Wochenkalender",
+    "es": "Calendario semanal"
+  },
+  "Calendario mensile": {
+    "en": "Monthly calendar",
+    "fr": "Calendrier mensuel",
+    "de": "Monatskalender",
+    "es": "Calendario mensual"
+  },
+  "Forza lettura database": {
+    "en": "Force database refresh",
+    "fr": "Forcer la lecture de la base",
+    "de": "Datenbank neu laden",
+    "es": "Forzar lectura de la base de datos"
+  },
+  "Reset pulizie": {
+    "en": "Reset cleaning",
+    "fr": "Réinitialiser le ménage",
+    "de": "Reinigung zurücksetzen",
+    "es": "Restablecer limpieza"
+  },
+  "Ore lavoro pulizie": {
+    "en": "Cleaning work hours",
+    "fr": "Heures de travail ménage",
+    "de": "Reinigungsarbeitsstunden",
+    "es": "Horas de trabajo de limpieza"
+  },
+  "Riepilogo ore pulizia": {
+    "en": "Cleaning hours summary",
+    "fr": "Résumé des heures de ménage",
+    "de": "Zusammenfassung Reinigungsstunden",
+    "es": "Resumen de horas de limpieza"
+  },
+  "Filtri ore pulizia": {
+    "en": "Cleaning hours filters",
+    "fr": "Filtres heures ménage",
+    "de": "Filter Reinigungsstunden",
+    "es": "Filtros horas de limpieza"
+  },
+  "Mese": {
+    "en": "Month",
+    "fr": "Mois",
+    "de": "Monat",
+    "es": "Mes"
+  },
+  "Operatore": {
+    "en": "Operator",
+    "fr": "Opérateur",
+    "de": "Mitarbeiter",
+    "es": "Operador"
+  },
+  "Totali ore e benzina": {
+    "en": "Hours and fuel totals",
+    "fr": "Totaux heures et carburant",
+    "de": "Stunden- und Kraftstoffsummen",
+    "es": "Totales de horas y combustible"
+  },
+  "Calendario ore pulizia": {
+    "en": "Cleaning hours calendar",
+    "fr": "Calendrier des heures de ménage",
+    "de": "Kalender Reinigungsstunden",
+    "es": "Calendario de horas de limpieza"
+  },
+  "Genera report lavanderia": {
+    "en": "Generate laundry report",
+    "fr": "Générer le rapport blanchisserie",
+    "de": "Wäscherei-Bericht erstellen",
+    "es": "Generar informe de lavandería"
+  },
+  "Intervallo report lavanderia": {
+    "en": "Laundry report range",
+    "fr": "Période du rapport blanchisserie",
+    "de": "Zeitraum Wäscherei-Bericht",
+    "es": "Intervalo del informe de lavandería"
+  },
+  "Data inizio": {
+    "en": "Start date",
+    "fr": "Date de début",
+    "de": "Startdatum",
+    "es": "Fecha de inicio"
+  },
+  "Data fine": {
+    "en": "End date",
+    "fr": "Date de fin",
+    "de": "Enddatum",
+    "es": "Fecha de fin"
+  },
+  "Condividi": {
+    "en": "Share",
+    "fr": "Partager",
+    "de": "Teilen",
+    "es": "Compartir"
+  },
+  "Caricamento": {
+    "en": "Loading",
+    "fr": "Chargement",
+    "de": "Laden",
+    "es": "Cargando"
+  },
+  "Costi lavanderia": {
+    "en": "Laundry costs",
+    "fr": "Coûts blanchisserie",
+    "de": "Wäschereikosten",
+    "es": "Costes de lavandería"
+  },
+  "Importa database": {
+    "en": "Import database",
+    "fr": "Importer la base",
+    "de": "Datenbank importieren",
+    "es": "Importar base de datos"
+  },
+  "Esporta database": {
+    "en": "Export database",
+    "fr": "Exporter la base",
+    "de": "Datenbank exportieren",
+    "es": "Exportar base de datos"
+  },
+  "Database": {
+    "en": "Database",
+    "fr": "Base de données",
+    "de": "Datenbank",
+    "es": "Base de datos"
+  },
+  "Aggiungi servizio": {
+    "en": "Add service",
+    "fr": "Ajouter un service",
+    "de": "Service hinzufügen",
+    "es": "Añadir servicio"
+  },
+  "Servizio": {
+    "en": "Service",
+    "fr": "Service",
+    "de": "Service",
+    "es": "Servicio"
+  },
+  "Cancella": {
+    "en": "Clear",
+    "fr": "Effacer",
+    "de": "Leeren",
+    "es": "Borrar"
+  },
+  "Eliminare definitivamente questa spesa?": {
+    "en": "Delete this expense permanently?",
+    "fr": "Supprimer définitivement cette dépense ?",
+    "de": "Diese Ausgabe endgültig löschen?",
+    "es": "¿Eliminar definitivamente este gasto?"
+  },
+  "Spesa eliminata": {
+    "en": "Expense deleted",
+    "fr": "Dépense supprimée",
+    "de": "Ausgabe gelöscht",
+    "es": "Gasto eliminado"
+  },
+  "Mese corrente": {
+    "en": "Current month",
+    "fr": "Mois en cours",
+    "de": "Aktueller Monat",
+    "es": "Mes actual"
+  },
+  "Mese precedente": {
+    "en": "Previous month",
+    "fr": "Mois précédent",
+    "de": "Vorheriger Monat",
+    "es": "Mes anterior"
+  },
+  "Mese successivo": {
+    "en": "Next month",
+    "fr": "Mois suivant",
+    "de": "Nächster Monat",
+    "es": "Mes siguiente"
+  },
+  "Giorno precedente": {
+    "en": "Previous day",
+    "fr": "Jour précédent",
+    "de": "Vorheriger Tag",
+    "es": "Día anterior"
+  },
+  "Giorno successivo": {
+    "en": "Next day",
+    "fr": "Jour suivant",
+    "de": "Nächster Tag",
+    "es": "Día siguiente"
+  },
+  "Navigazione giorno": {
+    "en": "Day navigation",
+    "fr": "Navigation jour",
+    "de": "Tagesnavigation",
+    "es": "Navegación por día"
+  },
+  "Navigazione calendario": {
+    "en": "Calendar navigation",
+    "fr": "Navigation calendrier",
+    "de": "Kalendernavigation",
+    "es": "Navegación del calendario"
+  },
+  "Legenda letti": {
+    "en": "Bed legend",
+    "fr": "Légende des lits",
+    "de": "Bettenlegende",
+    "es": "Leyenda de camas"
+  },
+  "Filtri ospiti": {
+    "en": "Guest filters",
+    "fr": "Filtres clients",
+    "de": "Gästefilter",
+    "es": "Filtros de huéspedes"
+  },
+  "Ordinamento": {
+    "en": "Sorting",
+    "fr": "Tri",
+    "de": "Sortierung",
+    "es": "Ordenación"
+  },
+  "Ordina ospiti per": {
+    "en": "Sort guests by",
+    "fr": "Trier les clients par",
+    "de": "Gäste sortieren nach",
+    "es": "Ordenar huéspedes por"
+  },
+  "Direzione ordinamento": {
+    "en": "Sort direction",
+    "fr": "Sens du tri",
+    "de": "Sortierrichtung",
+    "es": "Dirección de ordenación"
+  },
+  "Registrazioni": {
+    "en": "Registrations",
+    "fr": "Enregistrements",
+    "de": "Registrierungen",
+    "es": "Registros"
+  },
+  "Polizia di Stato": {
+    "en": "State Police",
+    "fr": "Police d'État",
+    "de": "Staatspolizei",
+    "es": "Policía del Estado"
+  },
+  "ISTAT": {
+    "en": "ISTAT",
+    "fr": "ISTAT",
+    "de": "ISTAT",
+    "es": "ISTAT"
+  },
+  "Ricevuta": {
+    "en": "Receipt",
+    "fr": "Reçu",
+    "de": "Beleg",
+    "es": "Recibo"
+  },
+  "Tipo acconto": {
+    "en": "Deposit type",
+    "fr": "Type d'acompte",
+    "de": "Art der Anzahlung",
+    "es": "Tipo de depósito"
+  },
+  "Elettronico": {
+    "en": "Electronic",
+    "fr": "Électronique",
+    "de": "Elektronisch",
+    "es": "Electrónico"
+  },
+  "Saldo": {
+    "en": "Balance",
+    "fr": "Solde",
+    "de": "Saldo",
+    "es": "Saldo"
+  },
+  "SI": {
+    "en": "YES",
+    "fr": "OUI",
+    "de": "JA",
+    "es": "SÍ"
+  },
+  "NO": {
+    "en": "NO",
+    "fr": "NON",
+    "de": "NEIN",
+    "es": "NO"
+  },
+  "Confermare?": {
+    "en": "Confirm?",
+    "fr": "Confirmer ?",
+    "de": "Bestätigen?",
+    "es": "¿Confirmar?"
+  },
+  "Sì": {
+    "en": "Yes",
+    "fr": "Oui",
+    "de": "Ja",
+    "es": "Sí"
+  },
+  "TUTTI": {
+    "en": "ALL",
+    "fr": "TOUS",
+    "de": "ALLE",
+    "es": "TODOS"
+  },
+  "Tutti": {
+    "en": "All",
+    "fr": "Tous",
+    "de": "Alle",
+    "es": "Todos"
+  },
+  "Lingua aggiornata": {
+    "en": "Language updated",
+    "fr": "Langue mise à jour",
+    "de": "Sprache aktualisiert",
+    "es": "Idioma actualizado"
+  },
+  "Seleziona la lingua dell'app": {
+    "en": "Select the app language",
+    "fr": "Sélectionnez la langue de l'application",
+    "de": "App-Sprache auswählen",
+    "es": "Selecciona el idioma de la app"
+  }
+};
+const __I18N_WORD_MAPS__ = {
+  "en": {
+    "Nuovo": "New",
+    "Nuova": "New",
+    "Modifica": "Edit",
+    "Salva": "Save",
+    "Elimina": "Delete",
+    "Chiudi": "Close",
+    "Annulla": "Cancel",
+    "Nome": "Name",
+    "operatore": "operator",
+    "operatori": "operators",
+    "ospite": "guest",
+    "ospiti": "guests",
+    "channel": "channel",
+    "lavanderia": "laundry",
+    "componente": "component",
+    "componenti": "components",
+    "Tariffa": "Rate",
+    "tariffa": "rate",
+    "Benzina": "Fuel",
+    "benzina": "fuel",
+    "Prezzo": "Price",
+    "prezzo": "price",
+    "Titolo": "Title",
+    "titolo": "title",
+    "Importo": "Amount",
+    "importo": "amount",
+    "Commissione": "Commission",
+    "commissione": "commission",
+    "Acconto": "Deposit",
+    "Saldo": "Balance",
+    "Servizi": "Services",
+    "servizi": "services",
+    "Spese": "Expenses",
+    "spese": "expenses",
+    "Spesa": "Shopping",
+    "spesa": "shopping",
+    "Pulizie": "Cleaning",
+    "pulizie": "cleaning",
+    "Calendario": "Calendar",
+    "calendario": "calendar",
+    "Impostazioni": "Settings",
+    "Lingua": "Language",
+    "lingua": "language",
+    "Stanze": "Rooms",
+    "stanze": "rooms",
+    "Tassa": "Tax",
+    "tassa": "tax",
+    "soggiorno": "stay",
+    "Data": "Date",
+    "Mese": "Month",
+    "mese": "month",
+    "Anno": "Year",
+    "anno": "year",
+    "Oggi": "Today",
+    "oggi": "today",
+    "Giorno": "Day",
+    "giorno": "day",
+    "ricevuta": "receipt",
+    "Ricevuta": "Receipt",
+    "Contanti": "Cash",
+    "Elettronico": "Electronic",
+    "Database": "Database",
+    "Codice": "Code",
+    "Report": "Report",
+    "Filtro": "Filter",
+    "Filtri": "Filters",
+    "Ordina": "Sort",
+    "Operatore": "Operator",
+    "Ore": "Hours",
+    "ore": "hours",
+    "Pulizia": "Cleaning",
+    "pulizia": "cleaning",
+    "Totale": "Total",
+    "totali": "totals",
+    "Totali": "Totals"
+  },
+  "fr": {
+    "Nuovo": "Nouveau",
+    "Nuova": "Nouvelle",
+    "Modifica": "Modifier",
+    "Salva": "Enregistrer",
+    "Elimina": "Supprimer",
+    "Chiudi": "Fermer",
+    "Annulla": "Annuler",
+    "Nome": "Nom",
+    "operatore": "opérateur",
+    "operatori": "opérateurs",
+    "ospite": "client",
+    "ospiti": "clients",
+    "channel": "canal",
+    "lavanderia": "blanchisserie",
+    "componente": "composant",
+    "componenti": "composants",
+    "Tariffa": "Tarif",
+    "tariffa": "tarif",
+    "Benzina": "Carburant",
+    "benzina": "carburant",
+    "Prezzo": "Prix",
+    "prezzo": "prix",
+    "Titolo": "Titre",
+    "titolo": "titre",
+    "Importo": "Montant",
+    "importo": "montant",
+    "Commissione": "Commission",
+    "commissione": "commission",
+    "Acconto": "Acompte",
+    "Saldo": "Solde",
+    "Servizi": "Services",
+    "servizi": "services",
+    "Spese": "Dépenses",
+    "spese": "dépenses",
+    "Spesa": "Achats",
+    "spesa": "achats",
+    "Pulizie": "Ménage",
+    "pulizie": "ménage",
+    "Calendario": "Calendrier",
+    "calendario": "calendrier",
+    "Impostazioni": "Paramètres",
+    "Lingua": "Langue",
+    "lingua": "langue",
+    "Stanze": "Chambres",
+    "stanze": "chambres",
+    "Tassa": "Taxe",
+    "tassa": "taxe",
+    "soggiorno": "séjour",
+    "Data": "Date",
+    "Mese": "Mois",
+    "mese": "mois",
+    "Anno": "Année",
+    "anno": "année",
+    "Oggi": "Aujourd'hui",
+    "oggi": "aujourd'hui",
+    "Giorno": "Jour",
+    "giorno": "jour",
+    "ricevuta": "reçu",
+    "Ricevuta": "Reçu",
+    "Contanti": "Espèces",
+    "Elettronico": "Électronique",
+    "Database": "Base de données",
+    "Codice": "Code",
+    "Report": "Rapport",
+    "Filtro": "Filtre",
+    "Filtri": "Filtres",
+    "Ordina": "Trier",
+    "Operatore": "Opérateur",
+    "Ore": "Heures",
+    "ore": "heures",
+    "Pulizia": "Ménage",
+    "pulizia": "ménage",
+    "Totale": "Total",
+    "totali": "totaux",
+    "Totali": "Totaux"
+  },
+  "de": {
+    "Nuovo": "Neu",
+    "Nuova": "Neu",
+    "Modifica": "Bearbeiten",
+    "Salva": "Speichern",
+    "Elimina": "Löschen",
+    "Chiudi": "Schließen",
+    "Annulla": "Abbrechen",
+    "Nome": "Name",
+    "operatore": "Mitarbeiter",
+    "operatori": "Mitarbeiter",
+    "ospite": "Gast",
+    "ospiti": "Gäste",
+    "channel": "Kanal",
+    "lavanderia": "Wäscherei",
+    "componente": "Komponente",
+    "componenti": "Komponenten",
+    "Tariffa": "Satz",
+    "tariffa": "Satz",
+    "Benzina": "Kraftstoff",
+    "benzina": "Kraftstoff",
+    "Prezzo": "Preis",
+    "prezzo": "Preis",
+    "Titolo": "Titel",
+    "titolo": "Titel",
+    "Importo": "Betrag",
+    "importo": "Betrag",
+    "Commissione": "Provision",
+    "commissione": "Provision",
+    "Acconto": "Anzahlung",
+    "Saldo": "Saldo",
+    "Servizi": "Services",
+    "servizi": "Services",
+    "Spese": "Ausgaben",
+    "spese": "Ausgaben",
+    "Spesa": "Einkauf",
+    "spesa": "Einkauf",
+    "Pulizie": "Reinigung",
+    "pulizie": "Reinigung",
+    "Calendario": "Kalender",
+    "calendario": "Kalender",
+    "Impostazioni": "Einstellungen",
+    "Lingua": "Sprache",
+    "lingua": "Sprache",
+    "Stanze": "Zimmer",
+    "stanze": "Zimmer",
+    "Tassa": "Steuer",
+    "tassa": "Steuer",
+    "soggiorno": "Aufenthalt",
+    "Data": "Datum",
+    "Mese": "Monat",
+    "mese": "Monat",
+    "Anno": "Jahr",
+    "anno": "Jahr",
+    "Oggi": "Heute",
+    "oggi": "heute",
+    "Giorno": "Tag",
+    "giorno": "Tag",
+    "ricevuta": "Beleg",
+    "Ricevuta": "Beleg",
+    "Contanti": "Bar",
+    "Elettronico": "Elektronisch",
+    "Database": "Datenbank",
+    "Codice": "Code",
+    "Report": "Bericht",
+    "Filtro": "Filter",
+    "Filtri": "Filter",
+    "Ordina": "Sortieren",
+    "Operatore": "Mitarbeiter",
+    "Ore": "Stunden",
+    "ore": "Stunden",
+    "Pulizia": "Reinigung",
+    "pulizia": "Reinigung",
+    "Totale": "Gesamt",
+    "totali": "Summen",
+    "Totali": "Summen"
+  },
+  "es": {
+    "Nuovo": "Nuevo",
+    "Nuova": "Nueva",
+    "Modifica": "Editar",
+    "Salva": "Guardar",
+    "Elimina": "Eliminar",
+    "Chiudi": "Cerrar",
+    "Annulla": "Cancelar",
+    "Nome": "Nombre",
+    "operatore": "operador",
+    "operatori": "operadores",
+    "ospite": "huésped",
+    "ospiti": "huéspedes",
+    "channel": "canal",
+    "lavanderia": "lavandería",
+    "componente": "componente",
+    "componenti": "componentes",
+    "Tariffa": "Tarifa",
+    "tariffa": "tarifa",
+    "Benzina": "Combustible",
+    "benzina": "combustible",
+    "Prezzo": "Precio",
+    "prezzo": "precio",
+    "Titolo": "Título",
+    "titolo": "título",
+    "Importo": "Importe",
+    "importo": "importe",
+    "Commissione": "Comisión",
+    "commissione": "comisión",
+    "Acconto": "Depósito",
+    "Saldo": "Saldo",
+    "Servizi": "Servicios",
+    "servizi": "servicios",
+    "Spese": "Gastos",
+    "spese": "gastos",
+    "Spesa": "Compras",
+    "spesa": "compras",
+    "Pulizie": "Limpieza",
+    "pulizie": "limpieza",
+    "Calendario": "Calendario",
+    "calendario": "calendario",
+    "Impostazioni": "Ajustes",
+    "Lingua": "Idioma",
+    "lingua": "idioma",
+    "Stanze": "Habitaciones",
+    "stanze": "habitaciones",
+    "Tassa": "Tasa",
+    "tassa": "tasa",
+    "soggiorno": "turística",
+    "Data": "Fecha",
+    "Mese": "Mes",
+    "mese": "mes",
+    "Anno": "Año",
+    "anno": "año",
+    "Oggi": "Hoy",
+    "oggi": "hoy",
+    "Giorno": "Día",
+    "giorno": "día",
+    "ricevuta": "recibo",
+    "Ricevuta": "Recibo",
+    "Contanti": "Efectivo",
+    "Elettronico": "Electrónico",
+    "Database": "Base de datos",
+    "Codice": "Código",
+    "Report": "Informe",
+    "Filtro": "Filtro",
+    "Filtri": "Filtros",
+    "Ordina": "Ordenar",
+    "Operatore": "Operador",
+    "Ore": "Horas",
+    "ore": "horas",
+    "Pulizia": "Limpieza",
+    "pulizia": "limpieza",
+    "Totale": "Total",
+    "totali": "totales",
+    "Totali": "Totales"
+  }
+};
+function __getAppLanguage__(){ const v = String(__appLanguage__ || "it").trim().toLowerCase(); return __I18N_LOCALES__[v] ? v : "it"; }
+function __getCurrentLocale__(){ return __I18N_LOCALES__[__getAppLanguage__()] || "it-IT"; }
+function __capitalizeLocale__(s){ const raw = String(s || ""); return raw ? (raw.charAt(0).toUpperCase() + raw.slice(1)) : ""; }
+function __normalizeI18nWhitespace__(text){ return String(text || "").replace(/\s+/g, " ").trim(); }
+function __getMonthNamesForLocale__(locale, capitalize = false){ try{ const out=[]; for(let i=0;i<12;i+=1){ let label=new Date(2026, i, 1).toLocaleDateString(locale || __getCurrentLocale__(), { month:"long" }); out.push(capitalize ? __capitalizeLocale__(label) : label); } return out; }catch(_){ return []; } }
+function __refreshMonthNamesCache__(){ __MONTHS_IT = __getMonthNamesForLocale__(__getCurrentLocale__(), true); }
+function __getWeekdayShortForLocale__(date){ try{ return new Date(date).toLocaleDateString(__getCurrentLocale__(), { weekday:"short" }); }catch(_){ return ""; } }
+function __getWeekdayLongForLocale__(date){ try{ return new Date(date).toLocaleDateString(__getCurrentLocale__(), { weekday:"long" }); }catch(_){ return ""; } }
+function __translateExactText__(value){ const lang=__getAppLanguage__(); if(lang==="it") return String(value||""); const key=__normalizeI18nWhitespace__(value); const row=__I18N_PHRASES__[key]; return row && row[lang] ? String(row[lang]) : String(value||""); }
+function __escapeRegExp__(s){ return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function __applyWordMap__(value){ let out=String(value||""); const lang=__getAppLanguage__(); const map=__I18N_WORD_MAPS__[lang]; if(!map) return out; const entries=Object.entries(map).sort((a,b)=>String(b[0]).length-String(a[0]).length); entries.forEach(([src,dst])=>{ const rx=new RegExp(`\\b${__escapeRegExp__(src)}\\b`,"gi"); out=out.replace(rx,(match)=>{ if(!match) return dst; if(match===match.toUpperCase()) return String(dst).toUpperCase(); if(match.charAt(0)===match.charAt(0).toUpperCase()) return __capitalizeLocale__(dst); return dst; }); }); return out; }
+function __translateText__(value){ const original=String(value??""); const lang=__getAppLanguage__(); if(lang==="it") return original; const trimmed=original.trim(); if(!trimmed) return original; const exact=__translateExactText__(trimmed); const translated=(exact!==trimmed)?exact:__applyWordMap__(trimmed); return (!translated || translated===trimmed) ? original : original.replace(trimmed, translated); }
+function __setOriginalAttr__(el, attr){ try{ if(!el.__i18nOriginalAttrs) el.__i18nOriginalAttrs={}; if(!(attr in el.__i18nOriginalAttrs)) el.__i18nOriginalAttrs[attr]=el.getAttribute(attr); }catch(_){} }
+function __translateElementAttributes__(el){ try{ if(!el || !el.getAttribute || el.closest?.("[data-no-i18n='1']")) return; ["aria-label","placeholder","title"].forEach((attr)=>{ if(!el.hasAttribute(attr)) return; __setOriginalAttr__(el, attr); const base=el.__i18nOriginalAttrs ? el.__i18nOriginalAttrs[attr] : el.getAttribute(attr); const next=(__getAppLanguage__()==="it") ? String(base ?? "") : __translateText__(base); if(String(next ?? "") !== String(el.getAttribute(attr) ?? "")) el.setAttribute(attr, String(next ?? "")); }); }catch(_){} }
+function __translateTextNode__(node){ try{ if(!node || !node.parentElement) return; const parent=node.parentElement; if(parent.closest?.("[data-no-i18n='1']")) return; if(/^(SCRIPT|STYLE|TEXTAREA)$/i.test(parent.tagName)) return; if(parent.closest?.("svg")) return; const current=String(node.nodeValue ?? ""); if(!current.trim()) return; if(typeof node.__i18nOriginal !== "string") node.__i18nOriginal=current; const base=String(node.__i18nOriginal ?? current); const next=(__getAppLanguage__()==="it") ? base : __translateText__(base); if(next !== current) node.nodeValue=next; }catch(_){} }
+function __translateTree__(root){ try{ if(!root || __applyingLanguage__) return; __applyingLanguage__=true; if(root.nodeType===Node.TEXT_NODE){ __translateTextNode__(root); return; } const start=(root.nodeType===Node.ELEMENT_NODE)?root:document.body; if(start && start.nodeType===Node.ELEMENT_NODE){ __translateElementAttributes__(start); const walker=document.createTreeWalker(start, NodeFilter.SHOW_TEXT, null); let textNode=walker.nextNode(); while(textNode){ __translateTextNode__(textNode); textNode=walker.nextNode(); } start.querySelectorAll?.("*").forEach((el)=>__translateElementAttributes__(el)); } }catch(_){} finally{ __applyingLanguage__=false; } }
+function __applyAppLanguageToDom__(){ try{ document.documentElement.lang=__getAppLanguage__(); }catch(_){} __refreshMonthNamesCache__(); __translateTree__(document.body); try{ document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>btn.classList.toggle("is-selected", String(btn?.dataset?.lang || "")===__getAppLanguage__())); }catch(_){} }
+window.__applyAppLanguageToDom__ = __applyAppLanguageToDom__;
+function __ensureLanguageObserver__(){ try{ if(__languageObserver__ || !document.body) return; __languageObserver__ = new MutationObserver((mutations)=>{ if(__applyingLanguage__) return; mutations.forEach((m)=>{ if(m.type==="characterData"){ __translateTextNode__(m.target); return; } if(m.type==="attributes"){ __translateElementAttributes__(m.target); return; } if(m.type==="childList"){ m.addedNodes.forEach((node)=>{ if(node.nodeType===Node.TEXT_NODE) __translateTextNode__(node); else if(node.nodeType===Node.ELEMENT_NODE) __translateTree__(node); }); } }); }); __languageObserver__.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["aria-label","placeholder","title"] }); }catch(_){} }
+async function __persistAppLanguage__(lang){ try{ localStorage.setItem(__I18N_STORAGE_KEY__, String(lang || "it")); }catch(_){} try{ if(state && state.settings && state.settings.byKey) state.settings.byKey.app_language={ key:"app_language", value:String(lang || "it") }; }catch(_){} try{ if(state && state.session && state.session.user_id) await api("impostazioni", { method:"POST", body:{ app_language:String(lang || "it") }, showLoader:false }); }catch(_){} }
+async function __setAppLanguage__(lang, { persist = true, silent = false } = {}){ const next=__I18N_LOCALES__[String(lang || "").trim().toLowerCase()] ? String(lang || "").trim().toLowerCase() : "it"; __appLanguage__=next; if(persist) await __persistAppLanguage__(next); __applyAppLanguageToDom__(); try{ window.dispatchEvent(new CustomEvent("ddae:language-change", { detail:{ lang:next } })); }catch(_){} if(!silent){ try{ toast("Lingua aggiornata", "blue"); }catch(_){} } }
+async function __hydrateAppLanguageFromSettings__(){ let next="it"; try{ const local=String(localStorage.getItem(__I18N_STORAGE_KEY__) || "").trim().toLowerCase(); if(__I18N_LOCALES__[local]) next=local; }catch(_){} try{ const fromSettings=getSettingText ? String(getSettingText("app_language", next) || "").trim().toLowerCase() : next; if(__I18N_LOCALES__[fromSettings]) next=fromSettings; }catch(_){} __appLanguage__=next; __applyAppLanguageToDom__(); }
+function __openLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=false; modal.setAttribute("aria-hidden","false"); __applyAppLanguageToDom__(); }
+function __closeLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=true; modal.setAttribute("aria-hidden","true"); }
+function setupLanguageModal(){ const modal=document.getElementById("languageModal"); if(!modal || modal.dataset.bound==="1") return; modal.dataset.bound="1"; const closeBtn=document.getElementById("languageModalClose"); const closeFooterBtn=document.getElementById("languageModalCloseBtn"); if(closeBtn) bindFastTap(closeBtn, __closeLanguageModal__); if(closeFooterBtn) bindFastTap(closeFooterBtn, __closeLanguageModal__); modal.addEventListener("click",(ev)=>{ try{ if(ev.target===modal) __closeLanguageModal__(); }catch(_){} }); document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>bindFastTap(btn, async()=>{ try{ await __setAppLanguage__(btn.dataset.lang || "it"); __closeLanguageModal__(); }catch(_){} })); }
+try{ const __nativeConfirm__=(typeof window!=="undefined" && typeof window.confirm==="function") ? window.confirm.bind(window) : null; const __nativeAlert__=(typeof window!=="undefined" && typeof window.alert==="function") ? window.alert.bind(window) : null; if(__nativeConfirm__) window.confirm=(message)=>__nativeConfirm__(__translateText__(message)); if(__nativeAlert__) window.alert=(message)=>__nativeAlert__(__translateText__(message)); }catch(_){}
+try{ if(typeof window!=="undefined") window.addEventListener("DOMContentLoaded", ()=>{ try{ __ensureLanguageObserver__(); }catch(_){} try{ __hydrateAppLanguageFromSettings__(); }catch(_){} }); }catch(_){}
+__refreshMonthNamesCache__();
+
 
 // Conferma con modal Sì/No (label esplicite)
 let __confirmYesNoResolve = null;
@@ -3975,7 +5351,7 @@ function confirmYesNo(message){
       const noBtn  = document.getElementById("confirmYesNoNo");
       if (!modal || !textEl || !yesBtn || !noBtn){
         // fallback
-        try{ resolve(!!confirm(String(message || "Confermare?"))); }catch(_){ resolve(false); }
+        try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(_){ resolve(false); }
         return;
       }
 
@@ -3983,7 +5359,7 @@ function confirmYesNo(message){
       try{ if (__confirmYesNoResolve){ __confirmYesNoResolve(false); } }catch(_){ }
       __confirmYesNoResolve = resolve;
 
-      textEl.textContent = String(message || "Confermare?");
+      textEl.textContent = __translateText__(String(message || "Confermare?"));
       modal.hidden = false;
       try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
 
@@ -4141,15 +5517,7 @@ function formatLongDateIT(value){
   const [y,m,d] = iso.split("-").map(n=>parseInt(n,10));
   const dt = new Date(y, (m-1), d);
   if (isNaN(dt)) return "";
-  const s = dt.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
-  // capitalizza il mese (in it-IT normalmente è minuscolo)
-  // es: "1 gennaio 2026" -> "1 Gennaio 2026"
-  const parts = s.split(" ");
-  if (parts.length >= 3) {
-    parts[1] = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
-    return parts.join(" ");
-  }
-  return s;
+  return __capitalizeLocale__(dt.toLocaleDateString(__getCurrentLocale__(), { day: "numeric", month: "long", year: "numeric" }));
 }
 
 function formatRangeCompactIT(checkInValue, checkOutValue){
@@ -4234,13 +5602,7 @@ function formatFullDateIT(d){
   try{
     const dt = (d instanceof Date) ? d : new Date(d);
     if (isNaN(dt)) return "";
-    const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    const weekdays = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-    const wd = weekdays[dt.getDay()] || "";
-    const day = dt.getDate();
-    const month = months[dt.getMonth()];
-    const year = dt.getFullYear();
-    return `${wd} ${day} ${month} ${year}`;
+    return __capitalizeLocale__(dt.toLocaleDateString(__getCurrentLocale__(), { weekday:"long", day:"numeric", month:"long", year:"numeric" }));
   }catch(_){ return ""; }
 }
 
@@ -5207,6 +6569,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
     try{ ensureRoomsPickerButtons(); }catch(_){ }
     try{ populateGuestChannelOptions(); }catch(_){ }
+    try{ __hydrateAppLanguageFromSettings__(); }catch(_){ }
     try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
     try{ if (state && state.page === "lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){ }
     try{ if (state && state.page === "laundrycatalog") renderLaundryCatalogPage(); }catch(_){ }
@@ -5906,6 +7269,7 @@ function setupLaundryCatalogPage(){
 }
 
 function setupImpostazioni() {
+  try{ setupLanguageModal(); }catch(_){ }
   const back = document.getElementById("settingsBackBtn");
   if (back) back.addEventListener("click", () => showPage("home"));
 
@@ -5920,7 +7284,7 @@ function setupImpostazioni() {
   const channelGo = document.getElementById("settingsChannelBtn");
   if (channelGo) bindFastTap(channelGo, () => { hideLauncher(); showPage("channel"); });
   const languageBtn = document.getElementById("settingsLanguageBtn");
-  if (languageBtn) bindFastTap(languageBtn, () => { toast('Funzione lingua disponibile prossimamente'); });
+  if (languageBtn) bindFastTap(languageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
 
 
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
@@ -5951,7 +7315,7 @@ const cfg = document.getElementById("settingsConfigBtn");
   const langBtn = document.getElementById("settingsLanguageBtn");
   if (langBtn && !langBtn.__boundLangTap){
     langBtn.__boundLangTap = true;
-    bindFastTap(langBtn, () => { try{ toast("Funzione lingua in arrivo", "blue"); }catch(_){ } });
+    bindFastTap(langBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
   }
   if (roomsBtn && !roomsBtn.__boundRoomsTap){
     roomsBtn.__boundRoomsTap = true;
@@ -7164,8 +8528,7 @@ state.page = page;
     }
   }
 
-
-
+  try{ setTimeout(() => { try{ __applyAppLanguageToDom__(); }catch(_){ } }, 0); }catch(_){ }
 
   // Topbar: in HOME il tasto "Home" non serve → mostra Impostazioni
   try{
@@ -9292,10 +10655,8 @@ function __mensiliPalette12(){
   return out;
 }
 
-const __MONTHS_IT = [
-  "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
-  "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
-];
+// month labels are refreshed by i18n
+__refreshMonthNamesCache__();
 
 function computeStatMensili(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
@@ -12883,7 +14244,7 @@ function setupOspite(){
 }
 
 function euro(n){
-  try { return (Number(n)||0).toLocaleString("it-IT", { style:"currency", currency:"EUR" }); }
+  try { return (Number(n)||0).toLocaleString(__getCurrentLocale__(), { style:"currency", currency:"EUR" }); }
   catch { return (Number(n)||0).toFixed(2) + " €"; }
 }
 
@@ -15974,7 +17335,7 @@ function setupCalendario(){
 
     if (toggleMonthBtn){
       try{
-        toggleMonthBtn.setAttribute("aria-label", isMonth ? "Calendario settimanale" : "Calendario mensile");
+        toggleMonthBtn.setAttribute("aria-label", __translateText__(isMonth ? "Calendario settimanale" : "Calendario mensile"));
         toggleMonthBtn.classList.toggle("is-active", !!isMonth);
       }catch(_){}
     }
@@ -16008,7 +17369,7 @@ function setupCalendario(){
 
   // Sync: forza lettura database (tap-safe iOS PWA)
   if (syncBtn){
-    syncBtn.setAttribute("aria-label", "Forza lettura database");
+    syncBtn.setAttribute("aria-label", __translateText__("Forza lettura database"));
     bindFastTap(syncBtn, async () => {
       try{
         syncBtn.disabled = true;
@@ -16903,13 +18264,16 @@ function isoDate(date){
 }
 
 function weekdayShortIT(date){
-  const names = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
-  return names[new Date(date).getDay()];
+  try{
+    const label = __getWeekdayShortForLocale__(date);
+    return __capitalizeLocale__(label).replace('.', '');
+  }catch(_){ return ""; }
 }
 
 function monthNameIT(date){
-  const names = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
-  return names[new Date(date).getMonth()];
+  try{
+    return String(new Date(date).toLocaleDateString(__getCurrentLocale__(), { month:"long" }) || "");
+  }catch(_){ return ""; }
 }
 
 function romanWeekOfMonth(weekStart){
@@ -18331,27 +19695,33 @@ function formatMonthYearIT_(monthKey){
   const parts = monthKey.split("-").map(n=>parseInt(n,10));
   const y = parts[0], m = parts[1];
   const dt = new Date(y, (m-1), 1);
-  const s = dt.toLocaleDateString("it-IT", { month:"long", year:"numeric" });
+  const s = dt.toLocaleDateString(__getCurrentLocale__(), { month:"long", year:"numeric" });
   return __capitalizeFirst_(s);
 }
 
 function __fmtHours_(h){
   const n = Number(h||0);
   if (!isFinite(n) || n <= 0) return "";
-  // 2 dec max, no trailing zeros
-  let s = (Math.round(n * 100) / 100).toFixed(2);
-  s = s.replace(/\.00$/, "").replace(/0$/, "");
-  // italiano: virgola
-  s = s.replace(".", ",");
-  return s;
+  const rounded = Math.round(n * 100) / 100;
+  try{
+    return new Intl.NumberFormat(__getCurrentLocale__(), { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(rounded);
+  }catch(_){
+    let s = rounded.toFixed(2);
+    s = s.replace(/\.00$/, "").replace(/0$/, "");
+    return s.replace(".", ",");
+  }
 }
 
 function __fmtMoneyNoSpace_(amount){
   const n = Number(amount || 0);
   if (!isFinite(n)) return "—";
-  // Formato italiano senza spazio prima di €
-  const s = n.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return s + "€";
+  try{
+    const parts = new Intl.NumberFormat(__getCurrentLocale__(), { style:"currency", currency:"EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).formatToParts(n);
+    return parts.map((part) => part.type === "literal" ? "" : part.value).join("");
+  }catch(_){
+    const s = n.toLocaleString(__getCurrentLocale__(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return s + "€";
+  }
 }
 
 
