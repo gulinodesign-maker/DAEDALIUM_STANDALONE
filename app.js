@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.183";
+const BUILD_VERSION = "2.184";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2984,6 +2984,17 @@ function __fitHomeSyncBtn__(){
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
+  try{
+    const shoppingBtn = document.getElementById("goProdotti");
+    if (shoppingBtn){
+      shoppingBtn.setAttribute("aria-label", isOp ? "Lista spesa" : "Spesa");
+      const shoppingLbl = shoppingBtn.querySelector(".home-main-label");
+      if (shoppingLbl){
+        shoppingLbl.textContent = isOp ? "Lista spesa" : "Spesa";
+        shoppingLbl.classList.toggle("small", !!isOp);
+      }
+    }
+  }catch(_){ }
 
   // Home: SYNC Firebase — tasto unico (Admin sempre; Operatore solo dopo collegamento Roster)
   try{
