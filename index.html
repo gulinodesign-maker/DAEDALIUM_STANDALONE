@@ -8,12 +8,12 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.184" rel="stylesheet"/>
-<link href="./manifest.json?v=2.184" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.184" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.184" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.184" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.184" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.185" rel="stylesheet"/>
+<link href="./manifest.json?v=2.185" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.185" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.185" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.185" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.185" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.184"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.185"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -134,7 +134,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.184"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.185"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -329,7 +329,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.184</div></div></section>
+<div class="build" id="buildText">dDAE_2.185</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -703,6 +703,10 @@
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
 <span class="settings-btn-label">Operatori</span>
 </button>
+<button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
+<span class="settings-btn-label">Lavanderia</span>
+</button>
 <button aria-label="Channel" class="settings-btn settings-btn-channel" id="settingsChannelBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
 <span class="settings-btn-label">Channel</span>
@@ -749,7 +753,7 @@
 </button>
 </div>
 <div class="settings-bottom-stack settings-bottom-stack-under-grid">
-<div class="build settings-build" id="settingsBuildText">dDAE_2.184</div>
+<div class="build settings-build" id="settingsBuildText">dDAE_2.185</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -864,6 +868,15 @@
 <div class="bd operatori-page-shell">
 <div class="operatori-list channel-list" id="channelList"></div>
 <div class="operatori-empty" hidden="" id="channelEmpty">Nessun channel inserito</div>
+</div></div></section>
+<section class="page" hidden="" id="page-laundrycatalog">
+<div class="card">
+<div class="hd">
+<h2 class="page-title">Componenti lavanderia</h2>
+<div class="hd-actions" id="laundryCatalogPageTools"><button aria-label="Aggiungi componente lavanderia" class="icon-btn icon-btn-whiteblue" id="btnAddLaundryComponentCard" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
+<div class="bd operatori-page-shell">
+<div class="operatori-list laundry-catalog-list" id="laundryCatalogList"></div>
+<div class="operatori-empty" hidden="" id="laundryCatalogEmpty">Nessun componente lavanderia inserito</div>
 </div></div></section>
 <!-- 2) SPESE -->
 <section class="page" hidden="" id="page-spese">
@@ -1316,12 +1329,6 @@
 <path d="M8 16h8"></path>
 </svg>
 </button>
-<button aria-label="Costi lavanderia" class="icon-btn icon-btn-whiteblue" id="btnLaundryPricesTop" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 3v18"></path>
-<path d="M17 7.5c0-1.9-2.24-3.5-5-3.5S7 5.6 7 7.5 9.24 11 12 11s5 1.6 5 3.5S14.76 18 12 18s-5-1.6-5-3.5"></path>
-</svg>
-</button>
 </div>
 </div>
 <div class="bd">
@@ -1381,8 +1388,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.184"></script>
-<script defer="" src="./app.js?v=2.184"></script>
+<script defer="" src="./config.js?v=2.185"></script>
+<script defer="" src="./app.js?v=2.185"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1509,6 +1516,47 @@
 <button class="btn ghost" id="operatoriEditorDelete" hidden="" type="button">Elimina</button>
 <button class="btn ghost" id="operatoriEditorCancel" type="button">Annulla</button>
 <button class="btn primary" id="operatoriEditorSave" type="button">Salva</button>
+</div>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="modal" hidden="" id="laundryCatalogEditorModal">
+<div aria-modal="true" class="modal-card operatori-editor-card" role="dialog">
+<div class="operatori-editor-hd">
+<div class="operatori-editor-title" id="laundryCatalogEditorTitle">Nuovo componente lavanderia</div>
+<button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="laundryCatalogEditorClose" type="button">✕</button>
+</div>
+<div class="operatori-editor-body">
+<input id="laundryCatalogEditorId" type="hidden"/>
+<div class="field float" style="margin-top:10px;">
+<input autocomplete="off" id="laundryCatalogEditorTitleInput" placeholder=" "/>
+<label for="laundryCatalogEditorTitleInput">Titolo componente</label>
+</div>
+<div class="operatori-editor-grid">
+<div class="field float">
+<input autocomplete="off" id="laundryCatalogEditorCode" maxlength="10" placeholder=" "/>
+<label for="laundryCatalogEditorCode">Abbreviazione</label>
+</div>
+<div class="field float">
+<input id="laundryCatalogEditorPrice" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+<label for="laundryCatalogEditorPrice">Prezzo pulizia (€)</label>
+</div>
+</div>
+<div class="operatori-color-wrap">
+<div class="operatori-color-label">Tag colore</div>
+<div class="operatori-color-grid" id="laundryCatalogColorGrid">
+<button aria-label="Azzurro" class="operatori-color-option is-selected" data-color="blue" type="button"></button>
+<button aria-label="Arancione" class="operatori-color-option" data-color="orange" type="button"></button>
+<button aria-label="Verde" class="operatori-color-option" data-color="green" type="button"></button>
+<button aria-label="Rosso" class="operatori-color-option" data-color="red" type="button"></button>
+<button aria-label="Viola" class="operatori-color-option" data-color="purple" type="button"></button>
+<button aria-label="Sabbia" class="operatori-color-option" data-color="sand" type="button"></button>
+</div>
+</div>
+<div class="row operatori-editor-actions" style="justify-content:flex-end; gap:10px; margin-top:14px;">
+<button class="btn ghost" id="laundryCatalogEditorDelete" hidden="" type="button">Elimina</button>
+<button class="btn ghost" id="laundryCatalogEditorCancel" type="button">Annulla</button>
+<button class="btn primary" id="laundryCatalogEditorSave" type="button">Salva</button>
 </div>
 </div>
 </div>
