@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.186";
+const BUILD_VERSION = "2.190";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3132,19 +3132,44 @@ function __applyExerciseYearChange__(nextYear){
   return true;
 }
 
-function __pickExerciseYearFromSettings__(){
+function __openSettingsYearModal__(){
+  const modal = document.getElementById("settingsYearModal");
+  const input = document.getElementById("settingsYearInput");
+  if (!modal || !input) return;
   const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  const raw = window.prompt("Anno di esercizio", current);
-  if (raw === null) return;
-  const clean = String(raw || "").trim();
+  input.value = current;
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+  try{ refreshFloatingLabels(); }catch(_){ }
+  try{ input.focus({ preventScroll:true }); }catch(_){ try{ input.focus(); }catch(__){ } }
+  try{ input.select(); }catch(_){ }
+}
+
+function __closeSettingsYearModal__(){
+  const modal = document.getElementById("settingsYearModal");
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function __saveSettingsYearModal__(){
+  const input = document.getElementById("settingsYearInput");
+  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const clean = String(input?.value || "").trim();
   const n = Number(clean);
   if (!Number.isInteger(n) || n < 2000 || n > 2100){
     toast("Anno non valido");
     return;
   }
-  if (String(n) === current) return;
-  __applyExerciseYearChange__(String(n));
-  toast("Anno esercizio aggiornato");
+  if (String(n) !== current){
+    __applyExerciseYearChange__(String(n));
+    toast("Anno esercizio aggiornato");
+  }
+  __closeSettingsYearModal__();
+}
+
+function __pickExerciseYearFromSettings__(){
+  __openSettingsYearModal__();
 }
 
 // =========================
@@ -5277,6 +5302,20 @@ function __closeSettingsConfigModal__(){
   modal.setAttribute("aria-hidden", "true");
 }
 
+function __openSettingsBackupModal__(){
+  const modal = document.getElementById("settingsBackupModal");
+  if (!modal) return;
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function __closeSettingsBackupModal__(){
+  const modal = document.getElementById("settingsBackupModal");
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
+}
+
 async function loadImpostazioniPage({ force = false } = {}) {
   await ensureSettingsLoaded({ force, showLoader: true });
   try {
@@ -5871,7 +5910,7 @@ function setupImpostazioni() {
   if (back) back.addEventListener("click", () => showPage("home"));
 
   const save = document.getElementById("settingsSaveBtn");
-  if (save) bindFastTap(save, () => { __pickExerciseYearFromSettings__(); });
+  if (save) bindFastTap(save, () => { __openSettingsYearModal__(); });
 
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
@@ -5887,7 +5926,7 @@ function setupImpostazioni() {
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
   try{
     const dbBtn = document.getElementById("settingsDbBtn");
-    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { await __openDbPopup__("admin"); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
+    if (dbBtn) bindFastTap(dbBtn, async () => { try{ if (__isAdmin__()) { __openSettingsBackupModal__(); } }catch(e){ try{ toast("Errore backup", "orange"); }catch(_){ } } });
     const rosterBtn = document.getElementById("settingsExportRosterBtn");
     if (rosterBtn) bindFastTap(rosterBtn, async () => {
       try{
@@ -5977,6 +6016,57 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (cfgModal && !cfgModal.__boundClose){
     cfgModal.__boundClose = true;
     cfgModal.addEventListener("click", (e) => { if (e.target === cfgModal) __closeSettingsConfigModal__(); });
+  }
+
+  const yearClose = document.getElementById("settingsYearClose");
+  if (yearClose) bindFastTap(yearClose, __closeSettingsYearModal__);
+  const yearCancel = document.getElementById("settingsYearCancel");
+  if (yearCancel) bindFastTap(yearCancel, __closeSettingsYearModal__);
+  const yearSave = document.getElementById("settingsYearSave");
+  if (yearSave) bindFastTap(yearSave, __saveSettingsYearModal__);
+  const yearModal = document.getElementById("settingsYearModal");
+  if (yearModal && !yearModal.__boundClose){
+    yearModal.__boundClose = true;
+    yearModal.addEventListener("click", (e) => { if (e.target === yearModal) __closeSettingsYearModal__(); });
+  }
+  const yearInput = document.getElementById("settingsYearInput");
+  if (yearInput && !yearInput.__boundEnter){
+    yearInput.__boundEnter = true;
+    yearInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        __saveSettingsYearModal__();
+      }
+    });
+  }
+
+  const backupClose = document.getElementById("settingsBackupClose");
+  if (backupClose) bindFastTap(backupClose, __closeSettingsBackupModal__);
+  const backupCancel = document.getElementById("settingsBackupCancel");
+  if (backupCancel) bindFastTap(backupCancel, __closeSettingsBackupModal__);
+  const backupImport = document.getElementById("settingsBackupImport");
+  if (backupImport) bindFastTap(backupImport, async () => {
+    try{
+      __closeSettingsBackupModal__();
+      await __dbImport__("admin");
+    }catch(e){
+      try{ toast("Errore backup", "orange"); }catch(_){ }
+    }
+  });
+  const backupExport = document.getElementById("settingsBackupExport");
+  if (backupExport) bindFastTap(backupExport, async () => {
+    try{
+      __closeSettingsBackupModal__();
+      let w = null; try{ w = window.open("", "_blank"); }catch(_){ w = null; }
+      await __dbExport__("admin", w);
+    }catch(e){
+      try{ toast("Errore backup", "orange"); }catch(_){ }
+    }
+  });
+  const backupModal = document.getElementById("settingsBackupModal");
+  if (backupModal && !backupModal.__boundClose){
+    backupModal.__boundClose = true;
+    backupModal.addEventListener("click", (e) => { if (e.target === backupModal) __closeSettingsBackupModal__(); });
   }
 
 
