@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.204";
+const BUILD_VERSION = "2.206";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16628,7 +16628,7 @@ try{
     try{
       getLaundryCatalogFromSettings().forEach((item) => {
         const code = __normalizeLaundryCode__(item?.abbreviazione);
-        const title = String(item?.titolo || '').trim();
+        const title = __laundryDisplayTitle__(item, String(item?.titolo || '').trim());
         if (code && title) map[code] = title;
       });
     }catch(_){ }
