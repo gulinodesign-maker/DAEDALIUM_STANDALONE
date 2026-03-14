@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.214";
+const BUILD_VERSION = "2.217";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16460,14 +16460,20 @@ try{
       try{ cleanGrid.style.gridTemplateRows = `var(--cg-head-h, 50px) repeat(${Math.max(1, count + 1)}, var(--cg-row-h, 50px))`; }catch(_){ }
       try{ cleanGrid.style.gridTemplateColumns = `var(--cg-corner, 40px) repeat(${Math.max(1, cols.length)}, minmax(0, 1fr))`; }catch(_){ }
       const parts = [];
+      const laundryCatalogMap = __laundryCatalogMapByCode__(getLaundryCatalogFromSettings());
       parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
-      cols.forEach((col) => { parts.push(`<div class="c cell head">${col}</div>`); });
+      cols.forEach((col) => {
+        const item = laundryCatalogMap.get(__normalizeLaundryCode__(col));
+        const color = __normalizeLaundryColor__(item?.colore || 'blue');
+        const title = String(item?.titolo || col).trim() || col;
+        parts.push(`<div class="c cell head laundry-head color-${color}" data-col="${col}" title="${__escapeHtmlBasic__(title)}">${col}</div>`);
+      });
       for (let r = 1; r <= count; r++) {
-        parts.push(`<div class="c cell room r${r}">${r}</div>`);
-        cols.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="${r}"></div>`); });
+        parts.push(`<div class="c cell room r${r} room-${r}">${r}</div>`);
+        cols.forEach((col) => { parts.push(`<div class="c cell slot room-${r}" data-col="${col}" data-room="${r}"></div>`); });
       }
-      parts.push('<div class="c cell room rres">RES</div>');
-      cols.forEach((col) => { parts.push(`<div class="c cell slot" data-col="${col}" data-room="RES"></div>`); });
+      parts.push('<div class="c cell room rres room-res">RES</div>');
+      cols.forEach((col) => { parts.push(`<div class="c cell slot room-res" data-col="${col}" data-room="RES"></div>`); });
       cleanGrid.innerHTML = parts.join('');
       try{ __bindResetAllCorner(document.getElementById("cleanResetAll")); }catch(_){ }
       try{ if (typeof cleanGridHandlersBound !== 'undefined') cleanGridHandlersBound = false; }catch(_){ }
