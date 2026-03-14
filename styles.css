@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.202");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.202");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
