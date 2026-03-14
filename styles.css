@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.214");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.214");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -10747,3 +10747,56 @@ body[data-role="operatore"] #page-home .home-grid{
     gap: 12px !important;
   }
 }
+
+
+/* dDAE_2.212 — Operatore audio a destra, logout modal uniforme, celle pulizie colorate */
+#page-opsettings .settings-title-row.settings-title-row-operator{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  width:100% !important;
+}
+#page-opsettings .settings-title-row.settings-title-row-operator .settings-title{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+#page-opsettings .settings-audio-header.settings-audio-header-operator{
+  margin-left:auto !important;
+  justify-content:flex-end !important;
+  flex:0 0 auto !important;
+}
+#confirmYesNoModal .modal-card{
+  max-width:min(360px, calc(100vw - 32px)) !important;
+}
+#confirmYesNoModal .modal-actions{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:12px !important;
+}
+#confirmYesNoYes,
+#confirmYesNoNo{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:48px !important;
+  border-radius:14px !important;
+  font-weight:800 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+#confirmYesNoYes{
+  background:rgba(52,168,83,0.80) !important;
+  color:#fff !important;
+}
+#confirmYesNoNo{
+  background:rgba(220,68,55,0.80) !important;
+  color:#fff !important;
+}
+#page-pulizie .clean-grid .cell.slot[data-col="MAT"]{ background:rgba(216,239,252,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="SIN"]{ background:rgba(199,230,251,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="FED"]{ background:rgba(182,221,248,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="TDO"]{ background:rgba(255,227,199,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="TFA"]{ background:rgba(255,216,178,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="TBI"]{ background:rgba(255,204,156,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="TAP"]{ background:rgba(190,196,206,0.35) !important; }
+#page-pulizie .clean-grid .cell.slot[data-col="TPI"]{ background:rgba(230,232,236,0.35) !important; }
