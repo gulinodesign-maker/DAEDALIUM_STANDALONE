@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.220";
+const BUILD_VERSION = "2.222";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6504,9 +6504,9 @@ function __operatoreColorHex__(color){
 function __operatoreColorGradient__(color){
   const parsed = __parseOperatoreColorToken__(color, 'blue');
   const solid = __OPERATORI_BASE_HEX__[parsed.base] || __OPERATORI_BASE_HEX__.blue;
-  if (parsed.variant === 'g2') return `linear-gradient(135deg, ${__darkenHex__(solid, 0.12)} 0%, ${solid} 52%, ${__lightenHex__(solid, 0.18)} 100%)`;
-  if (parsed.variant === 'g3') return `linear-gradient(135deg, ${__lightenHex__(solid, 0.26)} 0%, ${solid} 48%, ${__darkenHex__(solid, 0.10)} 100%)`;
-  return `linear-gradient(135deg, ${__lightenHex__(solid, 0.18)} 0%, ${solid} 58%, ${__darkenHex__(solid, 0.06)} 100%)`;
+  if (parsed.variant === 'g2') return `linear-gradient(135deg, ${__darkenHex__(solid, 0.30)} 0%, ${__darkenHex__(solid, 0.12)} 34%, ${__lightenHex__(solid, 0.08)} 62%, ${__lightenHex__(solid, 0.26)} 100%)`;
+  if (parsed.variant === 'g3') return `linear-gradient(180deg, ${__lightenHex__(solid, 0.30)} 0%, ${__lightenHex__(solid, 0.12)} 28%, ${solid} 52%, ${__darkenHex__(solid, 0.18)} 76%, ${__darkenHex__(solid, 0.34)} 100%)`;
+  return `linear-gradient(135deg, ${__lightenHex__(solid, 0.34)} 0%, ${__lightenHex__(solid, 0.14)} 32%, ${solid} 56%, ${__darkenHex__(solid, 0.20)} 100%)`;
 }
 function __colorVariantLabel__(variant){
   if (variant === 'g2') return 'Gradiente 2';
@@ -6904,7 +6904,7 @@ function __decorateColorButton__(btn, token){
   btn.dataset.variant = parsed.variant;
   btn.dataset.colorToken = parsed.token;
   btn.style.background = __operatoreColorGradient__(parsed.token);
-  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || parsed.base} - ${__colorVariantLabel__(parsed.variant)}. Tap multiplo per cambiare gradiente`);
+  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || parsed.base} - ${__colorVariantLabel__(parsed.variant)}. Multitap per cambiare gradiente`);
   let badge = btn.querySelector('.operatori-color-variant-badge');
   if (!badge){
     badge = document.createElement('span');
