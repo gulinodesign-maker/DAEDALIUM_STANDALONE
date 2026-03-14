@@ -9049,7 +9049,8 @@ body[data-page^="stat"] #homeSyncBar{
 
 
 /* dDAE_2.115 - Impostazioni: audio + build subito sotto griglia 2x3 */
-#page-impostazioni .settings-page-reference{align-items:stretch !important;}
+#page-impostazioni .settings-page-reference,
+#page-opsettings .settings-page-reference{align-items:stretch !important;}
 #page-impostazioni .settings-actions.settings-actions-reference{margin:56px auto 0 auto !important;}
 #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{width:min(360px,100%) !important; margin:118px auto 0 auto !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:flex-start !important; gap:10px !important;}
 #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid .settings-audio-wrap{width:100% !important; display:flex !important; justify-content:center !important; align-items:center !important; margin:0 !important; order:1 !important;}
@@ -10577,4 +10578,116 @@ body[data-role="operatore"] #page-home .home-grid{
 #settingsYearModal .settings-popup-actions .btn,
 #settingsBackupModal .settings-backup-actions .btn{
   justify-content:center !important;
+}
+
+
+/* dDAE_2.198 — Impostazioni dedicate operatore */
+#page-opsettings .settings-page-reference{
+  min-height: calc(100dvh - 68px - var(--safe-top) - 24px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+#page-opsettings .settings-account-name{
+  width: min(360px, 96vw) !important;
+  margin: 20px auto 0 auto !important;
+  text-align: center !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  justify-content: center !important;
+  gap: 14px 14px !important;
+  width: min(240px, 84vw) !important;
+  margin: 92px auto 0 auto !important;
+  align-items: stretch !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  max-width: 108px !important;
+  height: clamp(83px, 23.4vw, 108px) !important;
+  min-width: 0 !important;
+  min-height: clamp(83px, 23.4vw, 108px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 30px !important;
+  padding: 14px 8px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  box-shadow: none !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  width: 40px !important;
+  height: 40px !important;
+  opacity: 1 !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-label{
+  font-size: 13px !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  color: #ffffff !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ background: rgba(214,193,160,0.80) !important; border-color: rgba(214,193,160,0.24) !important; }
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ background: rgba(127,123,242,0.80) !important; border-color: rgba(127,123,242,0.24) !important; }
+#page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid{
+  width: min(360px, 96vw) !important;
+  margin: auto auto 0 auto !important;
+  padding-top: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+#page-opsettings .settings-btn-logout-pill{
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 56px !important;
+  height: 56px !important;
+  border-radius: 999px !important;
+  padding: 0 22px !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  background: rgba(201,119,43,0.80) !important;
+  border: 1px solid rgba(201,119,43,0.24) !important;
+  box-shadow: none !important;
+}
+#page-opsettings .settings-btn-logout-pill .ui-ico{
+  width: 24px !important;
+  height: 24px !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  font-size: 17px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  color: #ffffff !important;
+}
+#page-opsettings .settings-build{
+  width: 100% !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  opacity: 0.48 !important;
+}
+@media (max-width: 390px){
+  #page-opsettings .settings-account-name,
+  #page-opsettings .settings-actions.settings-actions-reference,
+  #page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid{
+    width: min(320px, 94vw) !important;
+  }
+  #page-opsettings .settings-actions.settings-actions-reference{
+    width: min(220px, 78vw) !important;
+    gap: 12px !important;
+  }
 }

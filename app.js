@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.197";
+const BUILD_VERSION = "2.198";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3024,7 +3024,6 @@ function applyRoleMode(){
       "goOspite",
       "goTassaSoggiorno",
       "goStatistiche",
-      "homeSettingsTop",
       "goOrePuliziaHome",
             // icone/shortcuts ospiti duplicati (se presenti)
       "goOspiti",
@@ -3319,11 +3318,9 @@ function updateSettingsTabs(){
 
 function updateSettingsAccountName(){
   try{
-    const el = document.getElementById("settingsAccountName");
-    if (!el) return;
     const s = state.session || {};
     const raw = String(s.accountName || s.username || s.user || s.nome || s.name || s.email || "").trim();
-    el.textContent = raw || "—";
+    ["settingsAccountName","opSettingsAccountName"].forEach((id)=>{ const el = document.getElementById(id); if (el) el.textContent = raw || "—"; });
   }catch(_){ }
 }
 
@@ -3331,7 +3328,7 @@ function updateSettingsAccountName(){
 // Mostra la build a runtime (se il JS è vecchio, lo vedi subito)
 (function syncBuildLabel(){
   try{
-    ["buildText","settingsBuildText"].forEach((id) => {
+    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
     });
@@ -7315,6 +7312,27 @@ function setupImpostazioni() {
   if (channelGo) bindFastTap(channelGo, () => { hideLauncher(); showPage("channel"); });
   const languageBtn = document.getElementById("settingsLanguageBtn");
   if (languageBtn) bindFastTap(languageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
+  const opLanguageBtn = document.getElementById("opSettingsLanguageBtn");
+  if (opLanguageBtn) bindFastTap(opLanguageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
+  const opCodeBtn = document.getElementById("opSettingsCodeBtn");
+  if (opCodeBtn) bindFastTap(opCodeBtn, async () => {
+    try{ await __qrScanAndLink__(); }catch(e){
+      try{ toast(String((e && e.message) ? e.message : "Errore codice"), "orange"); }catch(_){ }
+      try{ console.error("Operator code error:", e); }catch(_){ }
+    }
+  });
+  const opLogoutPageBtn = document.getElementById("opSettingsLogoutBtn");
+  if (opLogoutPageBtn) bindFastTap(opLogoutPageBtn, async () => {
+    let ok = false;
+    try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
+    if (!ok) return;
+    try{ clearSession(); }catch(_){ }
+    try{ state.session = null; }catch(_){ }
+    try{ applyRoleMode(); }catch(_){ }
+    try{ __resetInMemoryData__(); }catch(_){ }
+    try{ invalidateApiCache(); }catch(_){ }
+    try{ showPage("auth"); }catch(_){ }
+  });
 
 
   // DB Import/Export (LOCAL) - nuovo accesso unico dal pulsante Database (icona verde)
@@ -8336,7 +8354,7 @@ const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.cl
     if (lav){ hideLauncher(); showPage("lavanderia"); return; }
 
     const imp = e.target.closest && e.target.closest("#goImpostazioni");
-    if (imp){ hideLauncher(); showPage("impostazioni"); return; }
+    if (imp){ hideLauncher(); showPage((state.session && isOperatoreSession(state.session)) ? "opsettings" : "impostazioni"); return; }
 
     const g = e.target.closest && e.target.closest("#goStatistiche");
     if (g){ hideLauncher(); showPage("statistiche"); return; }
@@ -8482,7 +8500,7 @@ function showPage(page){
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
     if (state.session && isOperatoreSession(state.session)){
-      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statpiscina","laundrycatalog"]);
+      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statpiscina","laundrycatalog","opsettings"]);
       if (!allowed.has(page)) page = "pulizie";
     }
   }catch(_){ }
@@ -8504,7 +8522,7 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || String(page || "").startsWith("stat");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -8528,9 +8546,9 @@ state.page = page;
   }
 
   // Impostazioni: aggiorna tabs (account + anno)
-  if (page === "impostazioni"){
+  if (page === "impostazioni" || page === "opsettings"){
     try{ updateSettingsTabs(); }catch(_){ }
-    try{ loadImpostazioniPage({ force:true }); }catch(_){ }
+    if (page === "impostazioni"){ try{ loadImpostazioniPage({ force:true }); }catch(_){ } }
   }
   if (page === "operatori"){
     try{ loadOperatoriPage(); }catch(_){ }
@@ -8570,9 +8588,15 @@ state.page = page;
     const isAuth = (page === "auth");
     const isOp = !!(state.session && isOperatoreSession(state.session));
     if (hb2) hb2.hidden = isHome || isAuth;
-    if (hs2) hs2.hidden = (!isHome) || isOp;
+    if (hs2){
+      hs2.hidden = !isHome;
+      hs2.classList.remove("icon-btn-whiteorange");
+      hs2.classList.add("icon-btn-whiteblue");
+    }
     if (authImportTop) authImportTop.hidden = !isAuth;
     if (leds2) leds2.hidden = (page !== "home") || isOp;
+    try{ const opImpTop = document.getElementById("opImportRosterTop"); if (opImpTop) opImpTop.hidden = true; }catch(_){ }
+    try{ const opLogoutTopBtn = document.getElementById("opLogoutTop"); if (opLogoutTopBtn) opLogoutTopBtn.hidden = true; }catch(_){ }
 
     // HOME: refresh totale dati in background (non blocca UI)
     try{ if (isHome){ try{ updateProdottiHomeBlink(); }catch(_){ } refreshAllDataInBackground(); } }catch(_){}
@@ -9039,7 +9063,7 @@ if (goCalendarioTopOspiti){
   // HOME: Impostazioni (top)
   const hsTop = document.getElementById("homeSettingsTop");
   if (hsTop){
-    bindFastTap(hsTop, () => { hideLauncher(); showPage("impostazioni"); });
+    bindFastTap(hsTop, () => { hideLauncher(); showPage((state.session && isOperatoreSession(state.session)) ? "opsettings" : "impostazioni"); });
   }
 
   // HOME: icona Calendario (tap-safe su iOS PWA)
