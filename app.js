@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.207";
+const BUILD_VERSION = "2.208";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2028,6 +2028,7 @@ async function __fbImportAdmin__(opts){
           });
           remoteImp.forEach((row) => {
             const k = pickKey(row) || `__remote_${byKey.size}`;
+            if ((state?.session && isOperatoreSession(state.session)) && k === "app_language") return;
             const prev = byKey.get(k);
             if (!prev){ byKey.set(k, row); return; }
             const up = pickU(prev);
@@ -2524,6 +2525,7 @@ async function __dbImport__(kind){
         try{ updateYearPill(); }catch(_){ }
         try{ __applyContext__({ force:true }); }catch(_){ }
         try{ applyRoleMode(); }catch(_){ }
+  try{ __hydrateAppLanguageFromSettings__(); }catch(_){ }
         try{
           const __targetAfterImport__ = (state.session && isOperatoreSession(state.session)) ? "pulizie" : "home";
           __writeRestoreState({ page: __targetAfterImport__ });
@@ -3964,6 +3966,26 @@ function toast(msg, kind){
 
 
 const __I18N_STORAGE_KEY__ = "ddae:app-language";
+function __getAppLanguageStorageKey__(){
+  try{
+    const base = __I18N_STORAGE_KEY__;
+    const sess = state?.session || null;
+    if (sess && isOperatoreSession(sess)){
+      const user = String(sess?.username || sess?.user_id || "operator").trim().toLowerCase().replace(/[^a-z0-9_\-]+/g, "_");
+      return `${base}:operator:${user || "default"}`;
+    }
+    return `${base}:admin`;
+  }catch(_){ return __I18N_STORAGE_KEY__; }
+}
+function __getSharedAppLanguageFromSettings__(fallback = "it"){
+  try{
+    const fromSettings = getSettingText ? String(getSettingText("app_language", fallback) || "").trim().toLowerCase() : String(fallback || "it").trim().toLowerCase();
+    return __I18N_LOCALES__[fromSettings] ? fromSettings : String(fallback || "it").trim().toLowerCase();
+  }catch(_){ return String(fallback || "it").trim().toLowerCase(); }
+}
+function __canPersistSharedAppLanguage__(){
+  try{ return !!(state?.session?.user_id) && !isOperatoreSession(state.session); }catch(_){ return false; }
+}
 const __I18N_LOCALES__ = { it:"it-IT", en:"en-GB", fr:"fr-FR", de:"de-DE", es:"es-ES" };
 let __appLanguage__ = "it";
 let __applyingLanguage__ = false;
@@ -5332,9 +5354,43 @@ function __translateTree__(root){ try{ if(!root || __applyingLanguage__) return;
 function __applyAppLanguageToDom__(){ try{ document.documentElement.lang=__getAppLanguage__(); }catch(_){} __refreshMonthNamesCache__(); __translateTree__(document.body); try{ document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>btn.classList.toggle("is-selected", String(btn?.dataset?.lang || "")===__getAppLanguage__())); }catch(_){} }
 window.__applyAppLanguageToDom__ = __applyAppLanguageToDom__;
 function __ensureLanguageObserver__(){ try{ if(__languageObserver__ || !document.body) return; __languageObserver__ = new MutationObserver((mutations)=>{ if(__applyingLanguage__) return; mutations.forEach((m)=>{ if(m.type==="characterData"){ __translateTextNode__(m.target); return; } if(m.type==="attributes"){ __translateElementAttributes__(m.target); return; } if(m.type==="childList"){ m.addedNodes.forEach((node)=>{ if(node.nodeType===Node.TEXT_NODE) __translateTextNode__(node); else if(node.nodeType===Node.ELEMENT_NODE) __translateTree__(node); }); } }); }); __languageObserver__.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["aria-label","placeholder","title"] }); }catch(_){} }
-async function __persistAppLanguage__(lang){ try{ localStorage.setItem(__I18N_STORAGE_KEY__, String(lang || "it")); }catch(_){} try{ if(state && state.settings && state.settings.byKey) state.settings.byKey.app_language={ key:"app_language", value:String(lang || "it") }; }catch(_){} try{ if(state && state.session && state.session.user_id) await api("impostazioni", { method:"POST", body:{ app_language:String(lang || "it") }, showLoader:false }); }catch(_){} }
+async function __persistAppLanguage__(lang){
+  const next = String(lang || "it");
+  try{ localStorage.setItem(__getAppLanguageStorageKey__(), next); }catch(_){}
+  if (__canPersistSharedAppLanguage__()){
+    try{ if(state && state.settings && state.settings.byKey) state.settings.byKey.app_language={ key:"app_language", value:next }; }catch(_){}
+    try{ await api("impostazioni", { method:"POST", body:{ app_language:next }, showLoader:false }); }catch(_){}
+  }
+}
 async function __setAppLanguage__(lang, { persist = true, silent = false } = {}){ const next=__I18N_LOCALES__[String(lang || "").trim().toLowerCase()] ? String(lang || "").trim().toLowerCase() : "it"; __appLanguage__=next; if(persist) await __persistAppLanguage__(next); __applyAppLanguageToDom__(); try{ setLaundryLabels_(); }catch(_){} try{ __laundryUpdatePriceHints__(); }catch(_){} try{ const host=document.getElementById("laundryPricesList"); if(host && host.dataset.ready==="1") host.dataset.ready="0"; }catch(_){} try{ if(state?.page==="laundrycatalog") await renderLaundryCatalogPage(); }catch(_){} try{ if(state?.page==="lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){} try{ window.dispatchEvent(new CustomEvent("ddae:language-change", { detail:{ lang:next } })); }catch(_){} if(!silent){ try{ toast("Lingua aggiornata", "blue"); }catch(_){} } }
-async function __hydrateAppLanguageFromSettings__(){ let next="it"; try{ const local=String(localStorage.getItem(__I18N_STORAGE_KEY__) || "").trim().toLowerCase(); if(__I18N_LOCALES__[local]) next=local; }catch(_){} try{ const fromSettings=getSettingText ? String(getSettingText("app_language", next) || "").trim().toLowerCase() : next; if(__I18N_LOCALES__[fromSettings]) next=fromSettings; }catch(_){} __appLanguage__=next; __applyAppLanguageToDom__(); }
+async function __hydrateAppLanguageFromSettings__(){
+  let next="it";
+  const isOp = !!(state?.session && isOperatoreSession(state.session));
+  const activeKey = __getAppLanguageStorageKey__();
+  try{
+    const local=String(localStorage.getItem(activeKey) || "").trim().toLowerCase();
+    if(__I18N_LOCALES__[local]) next=local;
+  }catch(_){}
+  if (isOp){
+    if (!__I18N_LOCALES__[next]) next = "it";
+    if (next === "it") {
+      try{
+        const legacy = String(localStorage.getItem(__I18N_STORAGE_KEY__) || "").trim().toLowerCase();
+        if(__I18N_LOCALES__[legacy]) next = legacy;
+      }catch(_){}
+    }
+    if (next === "it") {
+      const shared = __getSharedAppLanguageFromSettings__(next);
+      if(__I18N_LOCALES__[shared]) next = shared;
+    }
+  }else{
+    const shared = __getSharedAppLanguageFromSettings__(next);
+    if(__I18N_LOCALES__[shared]) next = shared;
+  }
+  __appLanguage__=next;
+  try{ localStorage.setItem(activeKey, next); }catch(_){}
+  __applyAppLanguageToDom__();
+}
 function __openLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=false; modal.setAttribute("aria-hidden","false"); __applyAppLanguageToDom__(); }
 function __closeLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=true; modal.setAttribute("aria-hidden","true"); }
 function setupLanguageModal(){ const modal=document.getElementById("languageModal"); if(!modal || modal.dataset.bound==="1") return; modal.dataset.bound="1"; const closeBtn=document.getElementById("languageModalClose"); const closeFooterBtn=document.getElementById("languageModalCloseBtn"); if(closeBtn) bindFastTap(closeBtn, __closeLanguageModal__); if(closeFooterBtn) bindFastTap(closeFooterBtn, __closeLanguageModal__); modal.addEventListener("click",(ev)=>{ try{ if(ev.target===modal) __closeLanguageModal__(); }catch(_){} }); document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>bindFastTap(btn, async()=>{ try{ await __setAppLanguage__(btn.dataset.lang || "it"); __closeLanguageModal__(); }catch(_){} })); }
@@ -7340,6 +7396,8 @@ function setupImpostazioni() {
   if (languageBtn) bindFastTap(languageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
   const opLanguageBtn = document.getElementById("opSettingsLanguageBtn");
   if (opLanguageBtn) bindFastTap(opLanguageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
+  const opLangBtn = document.getElementById("opSettingsLanguageBtn");
+  if (opLangBtn && !opLangBtn.__boundLangTap){ opLangBtn.__boundLangTap = true; bindFastTap(opLangBtn, () => { try{ __openLanguageModal__(); }catch(_){ } }); }
   const opCodeBtn = document.getElementById("opSettingsCodeBtn");
   if (opCodeBtn) bindFastTap(opCodeBtn, async () => {
     try{ await __qrScanAndLink__(); }catch(e){
@@ -7847,6 +7905,7 @@ function setupAuth(){
     try{ updateYearPill(); }catch(_ ){}
     try{ __applyContext__({ force:true }); }catch(_ ){}
     try{ applyRoleMode(); }catch(_ ){}
+    try{ __hydrateAppLanguageFromSettings__(); }catch(_ ){}
     try{ if (window.__syncCleanOperators__) window.__syncCleanOperators__(); }catch(_ ){}
     showPage(isOperatoreSession(state.session) ? "pulizie" : "home");
   };
