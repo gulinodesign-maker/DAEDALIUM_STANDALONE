@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.222";
+const BUILD_VERSION = "2.223";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6451,67 +6451,42 @@ function getOperatorNamesFromSettings() {
 
 
 
-const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand","teal","slate","olive"];
-const __COLOR_VARIANT_KEYS__ = ["g1","g2","g3"];
-const __OPERATORI_BASE_HEX__ = {
-  blue: '#58688E',
-  orange: '#CE8449',
-  green: '#5D8E6B',
-  red: '#BC5D6B',
-  purple: '#A776C9',
-  sand: '#C49A7F',
-  teal: '#6E9FA4',
-  slate: '#7A94C4',
-  olive: '#D9B82B'
+const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand"];
+const __OPERATORI_COLOR_SHADE_COUNT__ = 3;
+const __OPERATORI_COLOR_DEFAULT_SHADE__ = 2;
+const __OPERATORI_COLOR_TONES__ = {
+  blue:   ["#aebce8", "#6f84c8", "#3f5db1"],
+  orange: ["#ead08a", "#d8ad4e", "#b8861f"],
+  green:  ["#a8ccb3", "#74aa87", "#45845f"],
+  red:    ["#e2a1ab", "#c87a89", "#ab586b"],
+  purple: ["#c5b4e7", "#9a84d1", "#6f56af"],
+  sand:   ["#ddcfb7", "#bea27c", "#927451"],
 };
 
-function __clampColor__(n){ return Math.max(0, Math.min(255, Math.round(Number(n) || 0))); }
-function __hexToRgb__(hex){
-  const raw = String(hex || '').replace('#','').trim();
-  const norm = raw.length === 3 ? raw.split('').map(ch => ch + ch).join('') : raw.padEnd(6, '0').slice(0,6);
-  return { r: parseInt(norm.slice(0,2),16), g: parseInt(norm.slice(2,4),16), b: parseInt(norm.slice(4,6),16) };
+function __parseOperatoreColorSpec__(value){
+  const raw = String(value || "").trim().toLowerCase();
+  const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-3]))?$/i);
+  const base = (m && __OPERATORI_COLOR_KEYS__.includes(String(m[1] || '').toLowerCase())) ? String(m[1]).toLowerCase() : 'blue';
+  const shade = Math.min(__OPERATORI_COLOR_SHADE_COUNT__, Math.max(1, parseInt((m && m[2]) || String(__OPERATORI_COLOR_DEFAULT_SHADE__), 10) || __OPERATORI_COLOR_DEFAULT_SHADE__));
+  return { base, shade, spec: `${base}-${shade}` };
 }
-function __rgbToHex__(r,g,b){
-  return '#' + [r,g,b].map(v => __clampColor__(v).toString(16).padStart(2,'0')).join('').toUpperCase();
-}
-function __mixHex__(hex, mixHex, weight){
-  const a = __hexToRgb__(hex); const b = __hexToRgb__(mixHex); const w = Math.max(0, Math.min(1, Number(weight) || 0));
-  return __rgbToHex__(a.r + (b.r - a.r) * w, a.g + (b.g - a.g) * w, a.b + (b.b - a.b) * w);
-}
-function __lightenHex__(hex, amount){ return __mixHex__(hex, '#FFFFFF', amount); }
-function __darkenHex__(hex, amount){ return __mixHex__(hex, '#000000', amount); }
-function __parseOperatoreColorToken__(value, fallback = 'blue'){
-  const raw = String(value || '').trim().toLowerCase();
-  const m = raw.match(/^([a-z]+)(?:-(g[123]))?$/);
-  let base = m && __OPERATORI_COLOR_KEYS__.includes(m[1]) ? m[1] : String(fallback || 'blue').trim().toLowerCase();
-  if (!__OPERATORI_COLOR_KEYS__.includes(base)) base = 'blue';
-  const variant = (m && m[2] && __COLOR_VARIANT_KEYS__.includes(m[2])) ? m[2] : 'g1';
-  return { base, variant, token: `${base}-${variant}` };
-}
+
 function __normalizeOperatoreColor__(value){
-  return __parseOperatoreColorToken__(value, 'blue').token;
+  return __parseOperatoreColorSpec__(value).spec;
 }
-function __operatoreColorBase__(value, fallback = 'blue'){
-  return __parseOperatoreColorToken__(value, fallback).base;
+
+function __operatoreColorBase__(value){
+  return __parseOperatoreColorSpec__(value).base;
 }
-function __operatoreColorVariant__(value, fallback = 'blue'){
-  return __parseOperatoreColorToken__(value, fallback).variant;
+
+function __operatoreColorShade__(value){
+  return __parseOperatoreColorSpec__(value).shade;
 }
+
 function __operatoreColorHex__(color){
-  const base = __operatoreColorBase__(color, 'blue');
-  return __OPERATORI_BASE_HEX__[base] || __OPERATORI_BASE_HEX__.blue;
-}
-function __operatoreColorGradient__(color){
-  const parsed = __parseOperatoreColorToken__(color, 'blue');
-  const solid = __OPERATORI_BASE_HEX__[parsed.base] || __OPERATORI_BASE_HEX__.blue;
-  if (parsed.variant === 'g2') return `linear-gradient(135deg, ${__darkenHex__(solid, 0.30)} 0%, ${__darkenHex__(solid, 0.12)} 34%, ${__lightenHex__(solid, 0.08)} 62%, ${__lightenHex__(solid, 0.26)} 100%)`;
-  if (parsed.variant === 'g3') return `linear-gradient(180deg, ${__lightenHex__(solid, 0.30)} 0%, ${__lightenHex__(solid, 0.12)} 28%, ${solid} 52%, ${__darkenHex__(solid, 0.18)} 76%, ${__darkenHex__(solid, 0.34)} 100%)`;
-  return `linear-gradient(135deg, ${__lightenHex__(solid, 0.34)} 0%, ${__lightenHex__(solid, 0.14)} 32%, ${solid} 56%, ${__darkenHex__(solid, 0.20)} 100%)`;
-}
-function __colorVariantLabel__(variant){
-  if (variant === 'g2') return 'Gradiente 2';
-  if (variant === 'g3') return 'Gradiente 3';
-  return 'Gradiente 1';
+  const { base, shade } = __parseOperatoreColorSpec__(color);
+  const tones = __OPERATORI_COLOR_TONES__[base] || __OPERATORI_COLOR_TONES__.blue;
+  return tones[Math.max(0, Math.min(tones.length - 1, shade - 1))] || tones[1] || '#6f84c8';
 }
 
 function __normalizeOperatoreNameKey__(value){
@@ -6586,7 +6561,8 @@ function getOperatoreBenzinaByName(name, fallbackValue = 0){
 
 
 function __normalizeChannelColor__(color){
-  return __parseOperatoreColorToken__(color, 'orange').token;
+  const raw = String(color || '').trim().toLowerCase();
+  return __OPERATORI_COLOR_KEYS__.includes(raw) ? raw : 'orange';
 }
 
 function __channelInitialFromName__(name){
@@ -6890,165 +6866,10 @@ async function saveImpostazioniPage() {
   toast("Impostazioni salvate");
 }
 
-const __colorVariantUi = {
-  open: false,
-  targetGridId: '',
-  base: 'blue',
-  currentToken: 'blue-g1',
-  applyToken: null,
-};
-
-function __decorateColorButton__(btn, token){
-  if (!btn) return;
-  const parsed = __parseOperatoreColorToken__(token || btn.dataset.color || 'blue', btn.dataset.color || 'blue');
-  btn.dataset.variant = parsed.variant;
-  btn.dataset.colorToken = parsed.token;
-  btn.style.background = __operatoreColorGradient__(parsed.token);
-  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || parsed.base} - ${__colorVariantLabel__(parsed.variant)}. Multitap per cambiare gradiente`);
-  let badge = btn.querySelector('.operatori-color-variant-badge');
-  if (!badge){
-    badge = document.createElement('span');
-    badge.className = 'operatori-color-variant-badge';
-    badge.setAttribute('aria-hidden', 'true');
-    btn.appendChild(badge);
-  }
-  badge.textContent = parsed.variant === 'g2' ? '2' : (parsed.variant === 'g3' ? '3' : '1');
-}
-
-function __refreshColorGridSelection__(gridId, colorToken, fallbackBase){
-  const grid = document.getElementById(gridId);
-  if (!grid) return;
-  const parsed = __parseOperatoreColorToken__(colorToken || fallbackBase || 'blue', fallbackBase || 'blue');
-  grid.querySelectorAll('.operatori-color-option').forEach((btn) => {
-    const base = String(btn.dataset.color || '').trim().toLowerCase();
-    const isSelected = base === parsed.base;
-    btn.classList.toggle('is-selected', isSelected);
-    __decorateColorButton__(btn, isSelected ? parsed.token : `${base}-g1`);
-  });
-}
-
-function __applyColorTokenStyles__(root = document){
-  try{
-    const scope = root && root.querySelectorAll ? root : document;
-    scope.querySelectorAll('.operatori-tag, .guest-channel-dot, .operatori-color-option, .color-variant-option').forEach((el) => {
-      let token = '';
-      if (el.classList.contains('operatori-color-option')) token = `${el.dataset.color || 'blue'}-${el.dataset.variant || 'g1'}`;
-      else if (el.classList.contains('color-variant-option')) token = el.dataset.token || 'blue-g1';
-      else {
-        const cls = Array.from(el.classList).find((c) => c.startsWith('color-')) || '';
-        token = cls ? cls.replace(/^color-/, '') : (el.dataset.colorToken || 'blue-g1');
-      }
-      token = __normalizeOperatoreColor__(token || 'blue');
-      el.dataset.colorToken = token;
-      el.style.background = __operatoreColorGradient__(token);
-      if (el.classList.contains('guest-channel-dot')) el.style.color = '#fff';
-    });
-    scope.querySelectorAll('#page-pulizie .clean-grid .cell.head.laundry-head').forEach((el) => {
-      const cls = Array.from(el.classList).find((c) => c.startsWith('color-')) || '';
-      const token = __normalizeOperatoreColor__(cls ? cls.replace(/^color-/, '') : 'blue');
-      el.style.setProperty('--laundry-head-bg', __operatoreColorGradient__(token));
-    });
-  }catch(_){ }
-}
-
-function __observeColorTokenStyles__(){
-  try{
-    if (window.__colorTokenObserverStarted__) return;
-    window.__colorTokenObserverStarted__ = true;
-    const run = (node) => { try{ __applyColorTokenStyles__(node && node.nodeType === 1 ? node : document); }catch(_){ } };
-    const obs = new MutationObserver((mutations) => {
-      mutations.forEach((m) => {
-        (m.addedNodes || []).forEach((node) => run(node));
-      });
-    });
-    obs.observe(document.body, { childList:true, subtree:true });
-    run(document);
-  }catch(_){ }
-}
-
-function __openColorVariantModal__(gridId, baseColor, currentToken, applyToken){
-  const modal = document.getElementById('colorVariantModal');
-  const title = document.getElementById('colorVariantTitle');
-  const hint = document.getElementById('colorVariantHint');
-  const grid = document.getElementById('colorVariantGrid');
-  if (!modal || !grid) return;
-  const parsed = __parseOperatoreColorToken__(currentToken || baseColor || 'blue', baseColor || 'blue');
-  __colorVariantUi.open = true;
-  __colorVariantUi.targetGridId = gridId || '';
-  __colorVariantUi.base = parsed.base;
-  __colorVariantUi.currentToken = parsed.token;
-  __colorVariantUi.applyToken = (typeof applyToken === 'function') ? applyToken : null;
-  if (title) title.textContent = 'Gradienti colore';
-  if (hint) hint.textContent = 'Seleziona una delle tre varianti del colore tenuto premuto';
-  grid.querySelectorAll('.color-variant-option').forEach((btn) => {
-    const variant = btn.dataset.variant || 'g1';
-    const token = `${parsed.base}-${variant}`;
-    btn.dataset.token = token;
-    btn.dataset.label = __colorVariantLabel__(variant);
-    btn.classList.toggle('is-selected', token === parsed.token);
-    btn.style.background = __operatoreColorGradient__(token);
-  });
-  modal.hidden = false;
-  modal.setAttribute('aria-hidden', 'false');
-  __applyColorTokenStyles__(modal);
-}
-
-function __closeColorVariantModal__(){
-  const modal = document.getElementById('colorVariantModal');
-  if (!modal) return;
-  modal.hidden = true;
-  modal.setAttribute('aria-hidden', 'true');
-  __colorVariantUi.open = false;
-}
-
-function __bindColorGrid__(gridId, onSelect, fallbackColor){
-  const grid = document.getElementById(gridId);
-  if (!grid || grid.dataset.boundColorGrid === '1') return;
-  grid.dataset.boundColorGrid = '1';
-  const nextVariant = (variant) => {
-    if (variant === 'g1') return 'g2';
-    if (variant === 'g2') return 'g3';
-    return 'g1';
-  };
-  grid.addEventListener('click', (ev) => {
-    const btn = ev.target.closest('.operatori-color-option');
-    if (!btn) return;
-    const base = String(btn.dataset.color || fallbackColor || 'blue').trim().toLowerCase() || 'blue';
-    const currentToken = __normalizeOperatoreColor__(btn.dataset.colorToken || `${base}-${btn.dataset.variant || 'g1'}` || base);
-    const parsed = __parseOperatoreColorToken__(currentToken, base);
-    const isSelected = btn.classList.contains('is-selected');
-    const nextToken = isSelected ? `${base}-${nextVariant(parsed.variant)}` : `${base}-g1`;
-    try{ onSelect(nextToken); }catch(_){ }
-  });
-}
-
-function __setupColorVariantModal__(){
-  const closeBtn = document.getElementById('colorVariantClose');
-  if (closeBtn && !closeBtn.dataset.boundVariantClose){
-    closeBtn.dataset.boundVariantClose = '1';
-    bindFastTap(closeBtn, __closeColorVariantModal__);
-  }
-  const cancelBtn = document.getElementById('colorVariantCancel');
-  if (cancelBtn && !cancelBtn.dataset.boundVariantCancel){
-    cancelBtn.dataset.boundVariantCancel = '1';
-    bindFastTap(cancelBtn, __closeColorVariantModal__);
-  }
-  const grid = document.getElementById('colorVariantGrid');
-  if (grid && !grid.dataset.boundVariantGrid){
-    grid.dataset.boundVariantGrid = '1';
-    grid.addEventListener('click', (ev) => {
-      const btn = ev.target.closest('.color-variant-option');
-      if (!btn) return;
-      const token = btn.dataset.token || `${__colorVariantUi.base || 'blue'}-g1`;
-      try{ if (typeof __colorVariantUi.applyToken === 'function') __colorVariantUi.applyToken(token); }catch(_){ }
-      __closeColorVariantModal__();
-    });
-  }
-}
-
 const __operatoriPageUi = {
-  color: "blue-g1",
+  color: "blue-2",
   editingId: "",
+  tones: {},
 };
 
 function __operatoriFormatMoney__(value){
@@ -7057,10 +6878,44 @@ function __operatoriFormatMoney__(value){
   return `€ ${safe.toFixed(2)}`;
 }
 
+function __initColorToneMap__(ui, fallbackBase = 'blue'){
+  try{
+    if (!ui.tones || typeof ui.tones !== 'object') ui.tones = {};
+    __OPERATORI_COLOR_KEYS__.forEach((base) => {
+      ui.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+    });
+    const parsed = __parseOperatoreColorSpec__(ui.color || `${fallbackBase}-${__OPERATORI_COLOR_DEFAULT_SHADE__}`);
+    ui.tones[parsed.base] = parsed.shade;
+    ui.color = parsed.spec;
+  }catch(_){ }
+}
+
+function __updateColorButtonGrid__(selector, ui){
+  try{
+    const selected = __parseOperatoreColorSpec__(ui.color || 'blue-2');
+    document.querySelectorAll(`${selector} .operatori-color-option`).forEach((btn) => {
+      const base = String(btn.dataset.color || 'blue').trim().toLowerCase();
+      const shade = Math.min(3, Math.max(1, parseInt(ui?.tones?.[base] || __OPERATORI_COLOR_DEFAULT_SHADE__, 10) || __OPERATORI_COLOR_DEFAULT_SHADE__));
+      const hex = __operatoreColorHex__(`${base}-${shade}`);
+      btn.classList.toggle('is-selected', base === selected.base);
+      btn.dataset.shade = String(shade);
+      btn.dataset.spec = `${base}-${shade}`;
+      btn.style.background = hex;
+      btn.textContent = String(shade);
+    });
+  }catch(_){ }
+}
+
+
 function __operatoriSetSelectedColor__(color){
-  __operatoriPageUi.color = __normalizeOperatoreColor__(color);
-  __refreshColorGridSelection__('operatoriColorGrid', __operatoriPageUi.color, 'blue');
-  __applyColorTokenStyles__(document.getElementById('operatoriEditorModal') || document);
+  const parsed = __parseOperatoreColorSpec__(color || 'blue-2');
+  __operatoriPageUi.color = parsed.spec;
+  if (!__operatoriPageUi.tones || typeof __operatoriPageUi.tones !== 'object') __operatoriPageUi.tones = {};
+  __OPERATORI_COLOR_KEYS__.forEach((base) => {
+    if (!__operatoriPageUi.tones[base]) __operatoriPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+  });
+  __operatoriPageUi.tones[parsed.base] = parsed.shade;
+  __updateColorButtonGrid__('#operatoriColorGrid', __operatoriPageUi);
 }
 
 function __operatoriOpenModal__(item){
@@ -7079,8 +6934,9 @@ function __operatoriOpenModal__(item){
   if (nomeEl) nomeEl.value = current?.nome ? String(current.nome) : '';
   if (tariffaEl) tariffaEl.value = current && isFinite(Number(current.tariffa)) ? String(Number(current.tariffa)) : '';
   if (benzinaEl) benzinaEl.value = current && isFinite(Number(current.benzina)) ? String(Number(current.benzina)) : '';
+  if (!__operatoriPageUi.tones || !Object.keys(__operatoriPageUi.tones).length) __initColorToneMap__(__operatoriPageUi, 'blue');
   if (delBtn) delBtn.hidden = !current;
-  __operatoriSetSelectedColor__(current?.colore || 'blue');
+  __operatoriSetSelectedColor__(current?.colore || 'blue-2');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -7097,7 +6953,8 @@ function __operatoriCloseModal__(){
     if (el) el.value = '';
   });
   __operatoriPageUi.editingId = '';
-  __operatoriSetSelectedColor__('blue');
+  __initColorToneMap__(__operatoriPageUi, 'blue');
+  __operatoriSetSelectedColor__('blue-2');
 }
 
 async function renderOperatoriPage(){
@@ -7136,10 +6993,10 @@ async function renderOperatoriPage(){
       </div>
     </article>
   `).join('');
-  try{ __applyColorTokenStyles__(listEl); }catch(_){ }
 }
 
 async function loadOperatoriPage(){
+  __initColorToneMap__(__operatoriPageUi, 'blue');
   await renderOperatoriPage();
 }
 
@@ -7155,7 +7012,20 @@ function setupOperatoriPage(){
   const cancelBtn = document.getElementById('operatoriEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __operatoriCloseModal__);
 
-  try{ __bindColorGrid__('operatoriColorGrid', __operatoriSetSelectedColor__, 'blue'); }catch(_){ }
+  try{
+    document.querySelectorAll('#operatoriColorGrid .operatori-color-option').forEach(btn => {
+      bindFastTap(btn, () => {
+        const base = String(btn.dataset.color || 'blue').trim().toLowerCase();
+        const current = __parseOperatoreColorSpec__(__operatoriPageUi.color || 'blue-2');
+        if (!__operatoriPageUi.tones || typeof __operatoriPageUi.tones !== 'object') __operatoriPageUi.tones = {};
+        if (!__operatoriPageUi.tones[base]) __operatoriPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+        if (current.base === base) {
+          __operatoriPageUi.tones[base] = (__operatoriPageUi.tones[base] % __OPERATORI_COLOR_SHADE_COUNT__) + 1;
+        }
+        __operatoriSetSelectedColor__(`${base}-${__operatoriPageUi.tones[base]}`);
+      });
+    });
+  }catch(_){ }
 
   const saveBtn = document.getElementById('operatoriEditorSave');
   if (saveBtn) bindFastTap(saveBtn, async () => {
@@ -7230,8 +7100,9 @@ function setupOperatoriPage(){
 
 
 const __channelPageUi = {
-  color: "orange-g1",
+  color: "orange-2",
   editingId: "",
+  tones: {},
 };
 
 function __channelFormatPct__(value){
@@ -7241,9 +7112,14 @@ function __channelFormatPct__(value){
 }
 
 function __channelSetSelectedColor__(color){
-  __channelPageUi.color = __normalizeChannelColor__(color);
-  __refreshColorGridSelection__('channelColorGrid', __channelPageUi.color, 'orange');
-  __applyColorTokenStyles__(document.getElementById('channelEditorModal') || document);
+  const parsed = __parseOperatoreColorSpec__(color || 'orange-2');
+  __channelPageUi.color = parsed.spec;
+  if (!__channelPageUi.tones || typeof __channelPageUi.tones !== 'object') __channelPageUi.tones = {};
+  __OPERATORI_COLOR_KEYS__.forEach((base) => {
+    if (!__channelPageUi.tones[base]) __channelPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+  });
+  __channelPageUi.tones[parsed.base] = parsed.shade;
+  __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
 }
 
 function __channelOpenModal__(item){
@@ -7262,8 +7138,9 @@ function __channelOpenModal__(item){
   if (nomeEl) nomeEl.value = current?.nome ? String(current.nome) : '';
   if (commEl) commEl.value = current && isFinite(Number(current.commissione)) ? String(Number(current.commissione)) : '';
   if (iniEl) iniEl.value = current?.iniziale ? String(current.iniziale).slice(0,1).toUpperCase() : '';
+  if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
-  __channelSetSelectedColor__(current?.colore || 'orange');
+  __channelSetSelectedColor__(current?.colore || 'orange-2');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -7279,7 +7156,8 @@ function __channelCloseModal__(){
     if (el) el.value = '';
   });
   __channelPageUi.editingId = '';
-  __channelSetSelectedColor__('orange');
+  __initColorToneMap__(__channelPageUi, 'orange');
+  __channelSetSelectedColor__('orange-2');
 }
 
 async function renderChannelPage(){
@@ -7314,10 +7192,10 @@ async function renderChannelPage(){
       </div>
     </article>
   `).join('');
-  try{ __applyColorTokenStyles__(listEl); }catch(_){ }
 }
 
 async function loadChannelPage(){
+  __initColorToneMap__(__channelPageUi, 'orange');
   await renderChannelPage();
 }
 
@@ -7330,7 +7208,20 @@ function setupChannelPage(){
   if (closeBtn) bindFastTap(closeBtn, __channelCloseModal__);
   const cancelBtn = document.getElementById('channelEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
-  try{ __bindColorGrid__('channelColorGrid', __channelSetSelectedColor__, 'orange'); }catch(_){ }
+  try{
+    document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
+      bindFastTap(btn, () => {
+        const base = String(btn.dataset.color || 'orange').trim().toLowerCase();
+        const current = __parseOperatoreColorSpec__(__channelPageUi.color || 'orange-2');
+        if (!__channelPageUi.tones || typeof __channelPageUi.tones !== 'object') __channelPageUi.tones = {};
+        if (!__channelPageUi.tones[base]) __channelPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+        if (current.base === base) {
+          __channelPageUi.tones[base] = (__channelPageUi.tones[base] % __OPERATORI_COLOR_SHADE_COUNT__) + 1;
+        }
+        __channelSetSelectedColor__(`${base}-${__channelPageUi.tones[base]}`);
+      });
+    });
+  }catch(_){ }
   const saveBtn = document.getElementById('channelEditorSave');
   if (saveBtn) bindFastTap(saveBtn, async () => {
     try{
@@ -7405,14 +7296,20 @@ function __applyHomeIconGradients__(){
 }
 
 const __laundryCatalogPageUi = {
-  color: "blue-g1",
+  color: "blue-2",
   editingId: "",
+  tones: {},
 };
 
 function __laundryCatalogSetSelectedColor__(color){
-  __laundryCatalogPageUi.color = __normalizeLaundryColor__(color);
-  __refreshColorGridSelection__('laundryCatalogColorGrid', __laundryCatalogPageUi.color, 'blue');
-  __applyColorTokenStyles__(document.getElementById('laundryCatalogEditorModal') || document);
+  const parsed = __parseOperatoreColorSpec__(color || 'blue-2');
+  __laundryCatalogPageUi.color = parsed.spec;
+  if (!__laundryCatalogPageUi.tones || typeof __laundryCatalogPageUi.tones !== 'object') __laundryCatalogPageUi.tones = {};
+  __OPERATORI_COLOR_KEYS__.forEach((base) => {
+    if (!__laundryCatalogPageUi.tones[base]) __laundryCatalogPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+  });
+  __laundryCatalogPageUi.tones[parsed.base] = parsed.shade;
+  __updateColorButtonGrid__('#laundryCatalogColorGrid', __laundryCatalogPageUi);
 }
 
 function __laundryCatalogOpenModal__(item){
@@ -7431,8 +7328,9 @@ function __laundryCatalogOpenModal__(item){
   if (titleEl) titleEl.value = current?.titolo ? String(current.titolo) : ''; // editor keeps base title
   if (codeEl) codeEl.value = current?.abbreviazione ? String(current.abbreviazione) : '';
   if (priceEl) priceEl.value = current && isFinite(Number(current.prezzo)) ? String(Number(current.prezzo)) : '';
+  if (!__laundryCatalogPageUi.tones || !Object.keys(__laundryCatalogPageUi.tones).length) __initColorToneMap__(__laundryCatalogPageUi, 'blue');
   if (delBtn) delBtn.hidden = !current;
-  __laundryCatalogSetSelectedColor__(current?.colore || 'blue');
+  __laundryCatalogSetSelectedColor__(current?.colore || 'blue-2');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -7448,7 +7346,8 @@ function __laundryCatalogCloseModal__(){
     if (el) el.value = '';
   });
   __laundryCatalogPageUi.editingId = '';
-  __laundryCatalogSetSelectedColor__('blue');
+  __initColorToneMap__(__laundryCatalogPageUi, 'blue');
+  __laundryCatalogSetSelectedColor__('blue-2');
 }
 
 async function renderLaundryCatalogPage(){
@@ -7487,10 +7386,10 @@ async function renderLaundryCatalogPage(){
       </div>
     </article>
   `).join('');
-  try{ __applyColorTokenStyles__(listEl); }catch(_){ }
 }
 
 async function loadLaundryCatalogPage(){
+  __initColorToneMap__(__laundryCatalogPageUi, 'blue');
   await renderLaundryCatalogPage();
 }
 
@@ -7503,7 +7402,20 @@ function setupLaundryCatalogPage(){
   if (closeBtn) bindFastTap(closeBtn, __laundryCatalogCloseModal__);
   const cancelBtn = document.getElementById('laundryCatalogEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __laundryCatalogCloseModal__);
-  try{ __bindColorGrid__('laundryCatalogColorGrid', __laundryCatalogSetSelectedColor__, 'blue'); }catch(_){ }
+  try{
+    document.querySelectorAll('#laundryCatalogColorGrid .operatori-color-option').forEach((btn) => {
+      bindFastTap(btn, () => {
+        const base = String(btn.dataset.color || 'blue').trim().toLowerCase();
+        const current = __parseOperatoreColorSpec__(__laundryCatalogPageUi.color || 'blue-2');
+        if (!__laundryCatalogPageUi.tones || typeof __laundryCatalogPageUi.tones !== 'object') __laundryCatalogPageUi.tones = {};
+        if (!__laundryCatalogPageUi.tones[base]) __laundryCatalogPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
+        if (current.base === base) {
+          __laundryCatalogPageUi.tones[base] = (__laundryCatalogPageUi.tones[base] % __OPERATORI_COLOR_SHADE_COUNT__) + 1;
+        }
+        __laundryCatalogSetSelectedColor__(`${base}-${__laundryCatalogPageUi.tones[base]}`);
+      });
+    });
+  }catch(_){ }
   const saveBtn = document.getElementById('laundryCatalogEditorSave');
   if (saveBtn) bindFastTap(saveBtn, async () => {
     try{
@@ -9178,9 +9090,6 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
   // Palette icone (launcher)
   applyIconPalette();
-  
-  try{ __observeColorTokenStyles__(); }catch(_){ }
-  try{ __applyColorTokenStyles__(document); }catch(_){ }
 
 
 }
