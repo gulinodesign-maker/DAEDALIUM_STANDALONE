@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.226";
+const BUILD_VERSION = "2.227";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6561,7 +6561,8 @@ function getOperatoreBenzinaByName(name, fallbackValue = 0){
 
 
 function __normalizeChannelColor__(color){
-  return __parseOperatoreColorSpec__(color || 'orange-2').spec;
+  const raw = String(color || '').trim().toLowerCase();
+  return __OPERATORI_COLOR_KEYS__.includes(raw) ? raw : 'orange';
 }
 
 function __channelInitialFromName__(name){
@@ -6581,7 +6582,7 @@ function getChannelCatalogFromSettings(){
       nome: String(item?.nome || item?.name || '').trim(),
       commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? item?.percentuale ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
       iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
-      colore: __normalizeChannelColor__(item?.colore ?? item?.color ?? item?.channel_colore ?? item?.channelColor),
+      colore: __normalizeChannelColor__(item?.colore),
     })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
   }catch(_){
     return [];
@@ -6594,7 +6595,7 @@ async function saveChannelCatalogToSettings(list){
     nome: String(item?.nome || '').trim(),
     commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
     iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
-    colore: __normalizeChannelColor__(item?.colore ?? item?.color ?? item?.channel_colore ?? item?.channelColor),
+    colore: __normalizeChannelColor__(item?.colore),
   })).filter(item => item.nome);
   await api("impostazioni", { method:"POST", body:{ channel_catalogo: clean }, showLoader:true });
   await ensureSettingsLoaded({ force:true, showLoader:false });
