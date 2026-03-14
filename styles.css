@@ -10898,7 +10898,7 @@ body[data-role="operatore"] #page-home .home-grid{
 #page-pulizie .clean-grid .cell.slot.room-res::before{ background: rgba(120,120,120,1) !important; opacity:.25 !important; }
 
 
-/* dDAE_2.225 — popup editor: Annulla azzurro + tap iOS affidabile */
+/* dDAE_2.226 — popup editor: Annulla azzurro + tap iOS affidabile */
 #laundryCatalogEditorCancel.btn,
 #operatoriEditorCancel.btn,
 #channelEditorCancel.btn{
