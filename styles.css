@@ -6014,6 +6014,11 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   position: static;
 }
 
+/* dDAE_2.197 — Home grid: più spazio verticale tra le righe */
+#page-home .home-grid{
+  row-gap: 20px !important;
+}
+
 
 /* ============================
    IMPOSTAZIONI: tabs (Account + Anno) e azioni (Salva/Ricarica/Logout)
@@ -10461,4 +10466,115 @@ body[data-role="operatore"] #page-home .home-grid{
   #settingsConfigModal .settings-popup-body{
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+}
+
+
+/* dDAE_2.196 — popup lingua */
+.language-modal-card{
+  width: calc(100% - 28px);
+  max-width: 460px;
+}
+.language-modal-hint{
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(15,23,42,0.72);
+}
+.language-grid{
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.language-option{
+  min-height: 62px;
+  border-radius: 18px;
+  border: 2px solid rgba(77,156,197,0.16);
+  background: rgba(255,255,255,0.98);
+  color: var(--ico-blue-night);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  font-weight: 900;
+  font-size: 15px;
+}
+.language-option .language-flag{
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(77,156,197,0.14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+}
+.language-option .language-name{
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  text-align: left;
+}
+.language-option.is-selected{
+  border-color: rgba(77,156,197,0.90);
+  box-shadow: 0 0 0 3px rgba(77,156,197,0.16);
+}
+.language-option:active{
+  transform: translateY(1px);
+}
+
+
+/* dDAE_2.196 — popup azioni uniformate senza tasto X */
+.operatori-editor-close{
+  display:none !important;
+}
+.editor-modal-actions,
+.settings-popup-actions,
+.settings-backup-actions{
+  width:100%;
+  gap:12px !important;
+  margin-top:16px !important;
+  align-items:stretch;
+}
+.editor-modal-actions{
+  display:grid !important;
+  grid-auto-flow:column;
+  grid-auto-columns:1fr;
+}
+.editor-modal-actions > .btn,
+.settings-popup-actions .btn,
+.settings-backup-actions .btn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:72px !important;
+  height:72px !important;
+  border-radius:24px !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.editor-modal-actions > .btn.ghost,
+.settings-popup-actions .btn.ghost,
+#settingsBackupCancel.btn{
+  background:rgba(205,72,72,0.75) !important;
+  border-color:rgba(205,72,72,0.75) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+.editor-modal-actions > .btn.primary,
+.settings-popup-actions .btn.primary,
+#settingsBackupImport.btn,
+#settingsBackupExport.btn{
+  background:rgba(72,170,96,0.75) !important;
+  border-color:rgba(72,170,96,0.75) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#settingsConfigModal .settings-popup-actions .btn,
+#settingsYearModal .settings-popup-actions .btn,
+#settingsBackupModal .settings-backup-actions .btn{
+  justify-content:center !important;
 }
