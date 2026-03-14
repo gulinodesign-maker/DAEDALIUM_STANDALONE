@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.210";
+const BUILD_VERSION = "2.211";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2793,8 +2793,10 @@ function __setAudioPref(v){
   __audioEnabled = !!v;
   try{ localStorage.setItem(AUDIO_PREF_KEY, __audioEnabled ? "1" : "0"); }catch(_){}
   try{
-    const t = document.getElementById("audioToggle");
-    if (t) t.checked = __audioEnabled;
+    ["audioToggle", "opAudioToggle"].forEach((id) => {
+      const t = document.getElementById(id);
+      if (t) t.checked = __audioEnabled;
+    });
   }catch(_){}
 }
 function __ensureAudioCtx(){
@@ -2916,17 +2918,19 @@ function __sfxSave(){
 function setupAudioUI(){
   __loadAudioPref();
 
-  // Aggancia toggle in Impostazioni (se presente)
+  // Aggancia toggle audio in Impostazioni admin + operatore
   try{
-    const t = document.getElementById("audioToggle");
-    if (t){
+    ["audioToggle", "opAudioToggle"].forEach((id) => {
+      const t = document.getElementById(id);
+      if (!t || t.dataset.audioBound === "1") return;
+      t.dataset.audioBound = "1";
       t.checked = __audioEnabled;
       t.addEventListener("change", () => {
         __ensureAudioCtx(); // unlock su gesto utente
         __setAudioPref(!!t.checked);
         if (__audioEnabled) __sfxTap();
       }, { passive:true });
-    }
+    });
   }catch(_){}
 
   // iOS: sblocca/resume AudioContext sul primo gesto (anche senza suono)
