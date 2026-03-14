@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.199";
+const BUILD_VERSION = "2.200";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17949,12 +17949,7 @@ function __calendarGuestDisplayName__(info, span){
     if (!fullName) return String((info && info.initials) || '').trim();
 
     const safeSpan = Math.max(1, Number(span || 1) || 1);
-    const compact = `${fullName.charAt(0).toUpperCase()}...`;
-    const normalizedLen = fullName.replace(/\s+/g, '').length;
-
-    if (safeSpan <= 1) return compact;
-    if (safeSpan === 2 && normalizedLen > 10) return compact;
-    if (safeSpan === 3 && normalizedLen > 18) return compact;
+    if (safeSpan <= 1) return `${fullName.charAt(0).toUpperCase()}...`;
     return fullName;
   }catch(_){
     return String((info && info.initials) || '').trim();

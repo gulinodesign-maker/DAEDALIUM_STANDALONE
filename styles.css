@@ -3173,6 +3173,7 @@ body[data-page="ospiti"] .guest-card .actions {
   word-break: normal;
   overflow-wrap: normal;
   display: block;
+  max-width: 100%;
 }
 #page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   align-items: center;
