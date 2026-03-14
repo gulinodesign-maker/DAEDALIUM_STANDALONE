@@ -6902,15 +6902,17 @@ function __decorateColorButton__(btn, token){
   if (!btn) return;
   const parsed = __parseOperatoreColorToken__(token || btn.dataset.color || 'blue', btn.dataset.color || 'blue');
   btn.dataset.variant = parsed.variant;
+  btn.dataset.colorToken = parsed.token;
   btn.style.background = __operatoreColorGradient__(parsed.token);
-  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || parsed.base} - ${__colorVariantLabel__(parsed.variant)}`);
-  if (!btn.querySelector('.operatori-color-press-hint')){
-    const hint = document.createElement('span');
-    hint.className = 'operatori-color-press-hint';
-    hint.setAttribute('aria-hidden', 'true');
-    hint.textContent = '⋯';
-    btn.appendChild(hint);
+  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || parsed.base} - ${__colorVariantLabel__(parsed.variant)}. Tap multiplo per cambiare gradiente`);
+  let badge = btn.querySelector('.operatori-color-variant-badge');
+  if (!badge){
+    badge = document.createElement('span');
+    badge.className = 'operatori-color-variant-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    btn.appendChild(badge);
   }
+  badge.textContent = parsed.variant === 'g2' ? '2' : (parsed.variant === 'g3' ? '3' : '1');
 }
 
 function __refreshColorGridSelection__(gridId, colorToken, fallbackBase){
@@ -7003,41 +7005,20 @@ function __bindColorGrid__(gridId, onSelect, fallbackColor){
   const grid = document.getElementById(gridId);
   if (!grid || grid.dataset.boundColorGrid === '1') return;
   grid.dataset.boundColorGrid = '1';
-  let timer = null;
-  let targetBtn = null;
-  let fired = false;
-  const clear = () => { if (timer) clearTimeout(timer); timer = null; targetBtn = null; };
-  const start = (btn) => {
-    clear();
-    fired = false;
-    targetBtn = btn;
-    timer = setTimeout(() => {
-      if (!targetBtn) return;
-      fired = true;
-      targetBtn.dataset.longPressFired = '1';
-      const base = targetBtn.dataset.color || fallbackColor || 'blue';
-      const token = `${base}-${targetBtn.dataset.variant || 'g1'}`;
-      __openColorVariantModal__(gridId, base, token, (nextToken) => { try{ onSelect(nextToken); }catch(_){ } });
-    }, 420);
+  const nextVariant = (variant) => {
+    if (variant === 'g1') return 'g2';
+    if (variant === 'g2') return 'g3';
+    return 'g1';
   };
-  grid.addEventListener('pointerdown', (ev) => {
-    const btn = ev.target.closest('.operatori-color-option');
-    if (!btn) return;
-    start(btn);
-  });
-  ['pointerup','pointerleave','pointercancel'].forEach((evt) => {
-    grid.addEventListener(evt, () => { clear(); setTimeout(() => { fired = false; }, 0); });
-  });
   grid.addEventListener('click', (ev) => {
     const btn = ev.target.closest('.operatori-color-option');
     if (!btn) return;
-    if (btn.dataset.longPressFired === '1' || fired){
-      btn.dataset.longPressFired = '';
-      ev.preventDefault();
-      ev.stopPropagation();
-      return;
-    }
-    try{ onSelect(`${btn.dataset.color || fallbackColor || 'blue'}-${btn.dataset.variant || 'g1'}`); }catch(_){ }
+    const base = String(btn.dataset.color || fallbackColor || 'blue').trim().toLowerCase() || 'blue';
+    const currentToken = __normalizeOperatoreColor__(btn.dataset.colorToken || `${base}-${btn.dataset.variant || 'g1'}` || base);
+    const parsed = __parseOperatoreColorToken__(currentToken, base);
+    const isSelected = btn.classList.contains('is-selected');
+    const nextToken = isSelected ? `${base}-${nextVariant(parsed.variant)}` : `${base}-g1`;
+    try{ onSelect(nextToken); }catch(_){ }
   });
 }
 
@@ -9197,7 +9178,7 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
   // Palette icone (launcher)
   applyIconPalette();
-  try{ __setupColorVariantModal__(); }catch(_){ }
+  
   try{ __observeColorTokenStyles__(); }catch(_){ }
   try{ __applyColorTokenStyles__(document); }catch(_){ }
 
