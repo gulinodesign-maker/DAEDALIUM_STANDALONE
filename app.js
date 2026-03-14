@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.200";
+const BUILD_VERSION = "2.201";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3312,6 +3312,8 @@ function updateSettingsTabs(){
     }
     const yearPill = document.getElementById("settingsYearPill");
     if (yearPill) yearPill.textContent = yLabel;
+    const opYearPill = document.getElementById("opSettingsYearPill");
+    if (opYearPill) opYearPill.textContent = yLabel;
   }catch(_){ }
   try{ updateSettingsAccountName(); }catch(_){ }
 }
@@ -7483,7 +7485,10 @@ const cfg = document.getElementById("settingsConfigBtn");
 
 
   const logout = document.getElementById("settingsLogoutBtn");
-  if (logout) logout.addEventListener("click", () => {
+  if (logout) bindFastTap(logout, async () => {
+    let ok = false;
+    try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
+    if (!ok) return;
     try{ clearSession(); }catch(_){ }
     try{ state.session = null; }catch(_){ }
     try{ applyRoleMode(); }catch(_){ }
@@ -8624,23 +8629,15 @@ state.page = page;
     guestBackTop.hidden = (page !== "ospite");
   }
 
-  // Logout top (solo HOME operatore)
+  // HOME operatore: top bar con solo il tasto Impostazioni
   try{
     const opLogout = document.getElementById("opLogoutTop");
-    if (opLogout){
-      const isOp = !!(state.session && isOperatoreSession(state.session));
-      opLogout.hidden = !(isOp && page === "home");
-    }
+    if (opLogout) opLogout.hidden = true;
   }catch(_){ }
 
-
-// Import Roster Operatori top (solo HOME operatore)
   try{
     const opImp = document.getElementById("opImportRosterTop");
-    if (opImp){
-      const isOp = !!(state.session && isOperatoreSession(state.session));
-      opImp.hidden = !(isOp && page === "home");
-    }
+    if (opImp) opImp.hidden = true;
   }catch(_){ }
 
   // Top tools (solo Pulizie) — lavanderia + ore lavoro accanto al tasto Home

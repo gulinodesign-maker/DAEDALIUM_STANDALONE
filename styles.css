@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.187");
+    url("./assets/bg-daedalium.png?v=dDAE_2.201");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.187");
+    url("./assets/bg-daedalium.png?v=dDAE_2.201");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -10603,7 +10603,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
-/* dDAE_2.198 — Impostazioni dedicate operatore */
+/* dDAE_2.201 — Impostazioni operatore allineate al design admin */
 #page-opsettings .settings-page-reference{
   min-height: calc(100dvh - 68px - var(--safe-top) - 24px) !important;
   display: flex !important;
@@ -10615,13 +10615,30 @@ body[data-role="operatore"] #page-home .home-grid{
   margin: 20px auto 0 auto !important;
   text-align: center !important;
 }
+#page-opsettings .settings-year-pill{
+  width: min(360px, 96vw) !important;
+  margin: 20px auto 0 auto !important;
+  min-height: 48px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.80) !important;
+  border: 1px solid rgba(77,156,197,0.18) !important;
+  color: #4d9cc5 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
 #page-opsettings .settings-actions.settings-actions-reference{
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   justify-content: center !important;
   gap: 14px 14px !important;
   width: min(240px, 84vw) !important;
-  margin: 92px auto 0 auto !important;
+  margin: 80px auto 0 auto !important;
   align-items: stretch !important;
 }
 #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
@@ -10655,7 +10672,7 @@ body[data-role="operatore"] #page-home .home-grid{
   text-overflow: clip !important;
   color: #ffffff !important;
 }
-#page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ background: rgba(214,193,160,0.80) !important; border-color: rgba(214,193,160,0.24) !important; }
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ background: rgba(77,156,197,0.80) !important; border-color: rgba(77,156,197,0.24) !important; }
 #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ background: rgba(127,123,242,0.80) !important; border-color: rgba(127,123,242,0.24) !important; }
 #page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid{
   width: min(360px, 96vw) !important;
@@ -10704,7 +10721,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 @media (max-width: 390px){
   #page-opsettings .settings-account-name,
-  #page-opsettings .settings-actions.settings-actions-reference,
+  #page-opsettings .settings-year-pill,
   #page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid{
     width: min(320px, 94vw) !important;
   }
