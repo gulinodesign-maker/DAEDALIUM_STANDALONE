@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.215";
+const BUILD_VERSION = "2.214";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5396,9 +5396,21 @@ async function __hydrateAppLanguageFromSettings__(){
 }
 let __languageModalReadyAt__ = 0;
 let __languageModalSuppressUntil__ = 0;
-function __openLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; __languageModalReadyAt__ = Date.now() + 260; modal.hidden=false; modal.setAttribute("aria-hidden","false"); __applyAppLanguageToDom__(); }
-function __closeLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=true; modal.setAttribute("aria-hidden","true"); __languageModalReadyAt__ = 0; __languageModalSuppressUntil__ = Date.now() + 500; }
-function setupLanguageModal(){ const modal=document.getElementById("languageModal"); if(!modal || modal.dataset.bound==="1") return; modal.dataset.bound="1"; const closeBtn=document.getElementById("languageModalClose"); const closeFooterBtn=document.getElementById("languageModalCloseBtn"); const card=modal.querySelector?.(".language-modal-card"); if(closeBtn) bindFastTap(closeBtn, __closeLanguageModal__); if(closeFooterBtn) bindFastTap(closeFooterBtn, __closeLanguageModal__); if(card){ ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt)=>{ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(_){} },{ passive:false }); }catch(_){ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} } }); } modal.addEventListener("click",(ev)=>{ try{ if(ev.target===modal) __closeLanguageModal__(); }catch(_){} }); document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>bindFastTap(btn, async()=>{ try{ if(Date.now() < __languageModalReadyAt__) return; __languageModalSuppressUntil__ = Date.now() + 700; await __setAppLanguage__(btn.dataset.lang || "it"); setTimeout(()=>{ try{ __closeLanguageModal__(); }catch(_){} }, 80); }catch(_){} })); }
+function __languageModalGhostTapActive__(){ try{ return Date.now() < (__languageModalSuppressUntil__ || 0); }catch(_){ return false; } }
+function __languageModalSwallowGhostTap__(ev){
+  try{
+    if (!__languageModalGhostTapActive__()) return;
+    const modal = document.getElementById("languageModal");
+    const insideModal = !!(modal && !modal.hidden && ev && ev.target && modal.contains(ev.target));
+    if (insideModal) return;
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
+function __openLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; __languageModalReadyAt__ = Date.now() + 260; __languageModalSuppressUntil__ = 0; modal.hidden=false; modal.setAttribute("aria-hidden","false"); __applyAppLanguageToDom__(); }
+function __closeLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=true; modal.setAttribute("aria-hidden","true"); __languageModalReadyAt__ = 0; __languageModalSuppressUntil__ = Date.now() + 700; }
+function setupLanguageModal(){ const modal=document.getElementById("languageModal"); if(!modal || modal.dataset.bound==="1") return; modal.dataset.bound="1"; const closeBtn=document.getElementById("languageModalClose"); const closeFooterBtn=document.getElementById("languageModalCloseBtn"); const card=modal.querySelector?.(".language-modal-card"); if(closeBtn) bindFastTap(closeBtn, __closeLanguageModal__); if(closeFooterBtn) bindFastTap(closeFooterBtn, __closeLanguageModal__); if(card){ ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt)=>{ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(_){} },{ passive:false }); }catch(_){ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} } }); } ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt)=>{ try{ document.addEventListener(evt, __languageModalSwallowGhostTap__, true); }catch(_){ } }); modal.addEventListener("click",(ev)=>{ try{ if(ev.target===modal) __closeLanguageModal__(); }catch(_){} }); document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>bindFastTap(btn, async()=>{ try{ if(Date.now() < __languageModalReadyAt__) return; __languageModalSuppressUntil__ = Date.now() + 900; try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){} await __setAppLanguage__(btn.dataset.lang || "it"); setTimeout(()=>{ try{ __closeLanguageModal__(); }catch(_){} }, 80); }catch(_){} })); }
 try{ const __nativeConfirm__=(typeof window!=="undefined" && typeof window.confirm==="function") ? window.confirm.bind(window) : null; const __nativeAlert__=(typeof window!=="undefined" && typeof window.alert==="function") ? window.alert.bind(window) : null; if(__nativeConfirm__) window.confirm=(message)=>__nativeConfirm__(__translateText__(message)); if(__nativeAlert__) window.alert=(message)=>__nativeAlert__(__translateText__(message)); }catch(_){}
 try{ if(typeof window!=="undefined") window.addEventListener("DOMContentLoaded", ()=>{ try{ __ensureLanguageObserver__(); }catch(_){} try{ __hydrateAppLanguageFromSettings__(); }catch(_){} }); }catch(_){}
 __refreshMonthNamesCache__();
@@ -7405,7 +7417,7 @@ function setupImpostazioni() {
   if (opLangBtn && !opLangBtn.__boundLangTap){ opLangBtn.__boundLangTap = true; bindFastTap(opLangBtn, () => { try{ __openLanguageModal__(); }catch(_){ } }); }
   const opCodeBtn = document.getElementById("opSettingsCodeBtn");
   if (opCodeBtn) bindFastTap(opCodeBtn, async () => {
-    try{ if (Date.now() < (__languageModalSuppressUntil__ || 0)) return; }catch(_){ }
+    try{ if (__languageModalGhostTapActive__()) return; }catch(_){ }
     try{ await __qrScanAndLink__(); }catch(e){
       try{ toast(String((e && e.message) ? e.message : "Errore codice"), "orange"); }catch(_){ }
       try{ console.error("Operator code error:", e); }catch(_){ }
