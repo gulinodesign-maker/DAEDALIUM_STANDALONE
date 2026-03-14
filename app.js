@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.217";
+const BUILD_VERSION = "2.218";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8320,6 +8320,33 @@ function bindFastTap(el, fn){
     catch(_){ el.addEventListener(evt, handler); }
   }
 }
+
+function __forceCloseEditorModal__(btnId){
+  try{
+    if (btnId === 'laundryCatalogEditorCancel') return __laundryCatalogCloseModal__();
+    if (btnId === 'operatoriEditorCancel') return __operatoriCloseModal__();
+    if (btnId === 'channelEditorCancel') return __channelCloseModal__();
+  }catch(_){ }
+}
+
+(function __bindEditorCancelDelegation__(){
+  if (typeof document === 'undefined') return;
+  try{ if (window.__editorCancelDelegationBound) return; window.__editorCancelDelegationBound = true; }catch(_){ }
+  const selector = '#laundryCatalogEditorCancel,#operatoriEditorCancel,#channelEditorCancel';
+  const handler = (e) => {
+    const btn = e.target && e.target.closest ? e.target.closest(selector) : null;
+    if (!btn) return;
+    try{ e.preventDefault(); }catch(_){ }
+    try{ e.stopPropagation(); }catch(_){ }
+    try{ e.stopImmediatePropagation(); }catch(_){ }
+    try{ __sfxTap(); }catch(_){ }
+    try{ __forceCloseEditorModal__(btn.id); }catch(_){ }
+    return false;
+  };
+  try{ document.addEventListener('pointerup', handler, true); }catch(_){ }
+  try{ document.addEventListener('touchend', handler, true); }catch(_){ }
+  try{ document.addEventListener('click', handler, true); }catch(_){ }
+})();
 
 
 /* dDAE_1.020 — iOS hardening: Home icons always tappable (fallback binding) */

@@ -10836,3 +10836,14 @@ body[data-role="operatore"] #page-home .home-grid{
 #page-pulizie .clean-grid .cell.slot.room-11::before{ background: var(--room11) !important; opacity:.25 !important; }
 #page-pulizie .clean-grid .cell.slot.room-12::before{ background: var(--room12) !important; opacity:.25 !important; }
 #page-pulizie .clean-grid .cell.slot.room-res::before{ background: rgba(120,120,120,1) !important; opacity:.25 !important; }
+
+
+/* dDAE_2.218 — popup editor: Annulla azzurro + tap iOS affidabile */
+#laundryCatalogEditorCancel.btn,
+#operatoriEditorCancel.btn,
+#channelEditorCancel.btn{
+  background: rgba(111,183,214,0.80) !important;
+  border-color: rgba(111,183,214,0.80) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
