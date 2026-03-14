@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.223";
+const BUILD_VERSION = "2.224";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6455,12 +6455,12 @@ const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand"]
 const __OPERATORI_COLOR_SHADE_COUNT__ = 3;
 const __OPERATORI_COLOR_DEFAULT_SHADE__ = 2;
 const __OPERATORI_COLOR_TONES__ = {
-  blue:   ["#aebce8", "#6f84c8", "#3f5db1"],
-  orange: ["#ead08a", "#d8ad4e", "#b8861f"],
-  green:  ["#a8ccb3", "#74aa87", "#45845f"],
-  red:    ["#e2a1ab", "#c87a89", "#ab586b"],
-  purple: ["#c5b4e7", "#9a84d1", "#6f56af"],
-  sand:   ["#ddcfb7", "#bea27c", "#927451"],
+  blue:   ["#c7d6ff", "#6f8cff", "#2348c8"],
+  orange: ["#ffd7a8", "#f5a247", "#bf6200"],
+  green:  ["#c3ecd0", "#56b97b", "#1f7a48"],
+  red:    ["#f5bcc4", "#df6e81", "#a62e46"],
+  purple: ["#dcc9ff", "#9670ee", "#5b30b8"],
+  sand:   ["#ead8bf", "#c59b62", "#8e6028"],
 };
 
 function __parseOperatoreColorSpec__(value){

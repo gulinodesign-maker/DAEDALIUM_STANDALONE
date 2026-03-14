@@ -8749,29 +8749,29 @@ color: var(--mcol,#ff3b30);
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12), inset 0 0 0 1px rgba(255,255,255,0.26);
 }
 .operatori-tag.color-blue,
-.operatori-tag.color-blue-2{ background:#6f84c8; }
-.operatori-tag.color-blue-1{ background:#aebce8; }
-.operatori-tag.color-blue-3{ background:#3f5db1; }
+.operatori-tag.color-blue-2{ background:#6f8cff; }
+.operatori-tag.color-blue-1{ background:#c7d6ff; }
+.operatori-tag.color-blue-3{ background:#2348c8; }
 .operatori-tag.color-orange,
-.operatori-tag.color-orange-2{ background:#d8ad4e; }
-.operatori-tag.color-orange-1{ background:#ead08a; }
-.operatori-tag.color-orange-3{ background:#b8861f; }
+.operatori-tag.color-orange-2{ background:#f5a247; }
+.operatori-tag.color-orange-1{ background:#ffd7a8; }
+.operatori-tag.color-orange-3{ background:#bf6200; }
 .operatori-tag.color-green,
-.operatori-tag.color-green-2{ background:#74aa87; }
-.operatori-tag.color-green-1{ background:#a8ccb3; }
-.operatori-tag.color-green-3{ background:#45845f; }
+.operatori-tag.color-green-2{ background:#56b97b; }
+.operatori-tag.color-green-1{ background:#c3ecd0; }
+.operatori-tag.color-green-3{ background:#1f7a48; }
 .operatori-tag.color-red,
-.operatori-tag.color-red-2{ background:#c87a89; }
-.operatori-tag.color-red-1{ background:#e2a1ab; }
-.operatori-tag.color-red-3{ background:#ab586b; }
+.operatori-tag.color-red-2{ background:#df6e81; }
+.operatori-tag.color-red-1{ background:#f5bcc4; }
+.operatori-tag.color-red-3{ background:#a62e46; }
 .operatori-tag.color-purple,
-.operatori-tag.color-purple-2{ background:#9a84d1; }
-.operatori-tag.color-purple-1{ background:#c5b4e7; }
-.operatori-tag.color-purple-3{ background:#6f56af; }
+.operatori-tag.color-purple-2{ background:#9670ee; }
+.operatori-tag.color-purple-1{ background:#dcc9ff; }
+.operatori-tag.color-purple-3{ background:#5b30b8; }
 .operatori-tag.color-sand,
-.operatori-tag.color-sand-2{ background:#bea27c; }
-.operatori-tag.color-sand-1{ background:#ddcfb7; }
-.operatori-tag.color-sand-3{ background:#927451; }
+.operatori-tag.color-sand-2{ background:#c59b62; }
+.operatori-tag.color-sand-1{ background:#ead8bf; }
+.operatori-tag.color-sand-3{ background:#8e6028; }
 @media (max-width: 420px){
   .settings-tax-cap-top{ font-size:11px; }
   .settings-tax-cap-value{ font-size:20px; }
