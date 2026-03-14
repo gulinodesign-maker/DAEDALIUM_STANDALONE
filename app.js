@@ -485,8 +485,8 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const numKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze"];
-    numKeys.forEach((k)=>{
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language"];
+    valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
     });
