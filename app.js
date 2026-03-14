@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.218";
+const BUILD_VERSION = "2.219";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6451,7 +6451,7 @@ function getOperatorNamesFromSettings() {
 
 
 
-const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand"];
+const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand","teal","slate","olive"];
 
 function __normalizeOperatoreColor__(value){
   const key = String(value || "blue").trim().toLowerCase();
@@ -6461,13 +6461,16 @@ function __normalizeOperatoreColor__(value){
 
 function __operatoreColorHex__(color){
   switch(__normalizeOperatoreColor__(color)){
-    case 'orange': return '#f29c50';
-    case 'green': return '#4caf7d';
-    case 'red': return '#e25d4b';
-    case 'purple': return '#8f78d4';
-    case 'sand': return '#d6b276';
+    case 'orange': return '#d8a13d';
+    case 'green': return '#5f9d7a';
+    case 'red': return '#c96f7c';
+    case 'purple': return '#8c74c8';
+    case 'sand': return '#b89a76';
+    case 'teal': return '#4fa6a6';
+    case 'slate': return '#7382a8';
+    case 'olive': return '#93a34e';
     case 'blue':
-    default: return '#6fb7d6';
+    default: return '#5f76b6';
   }
 }
 
