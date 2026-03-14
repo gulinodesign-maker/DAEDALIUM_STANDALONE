@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.201";
+const BUILD_VERSION = "2.202";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9060,7 +9060,20 @@ if (goCalendarioTopOspiti){
   // HOME: Impostazioni (top)
   const hsTop = document.getElementById("homeSettingsTop");
   if (hsTop){
-    bindFastTap(hsTop, () => { hideLauncher(); showPage((state.session && isOperatoreSession(state.session)) ? "opsettings" : "impostazioni"); });
+    const goHomeSettings = (ev) => {
+      try{ if (ev){ ev.preventDefault(); ev.stopPropagation(); } }catch(_){ }
+      try{ hsTop.disabled = false; }catch(_){ }
+      try{ hsTop.style.pointerEvents = "auto"; }catch(_){ }
+      hideLauncher();
+      showPage((state.session && isOperatoreSession(state.session)) ? "opsettings" : "impostazioni");
+    };
+    bindFastTap(hsTop, goHomeSettings);
+    if (!hsTop.__settingsStrongBound){
+      hsTop.__settingsStrongBound = true;
+      ["click","touchend","pointerup"].forEach((evtName) => {
+        try{ hsTop.addEventListener(evtName, goHomeSettings, { passive:false, capture:true }); }catch(_){ try{ hsTop.addEventListener(evtName, goHomeSettings, true); }catch(__){} }
+      });
+    }
   }
 
   // HOME: icona Calendario (tap-safe su iOS PWA)
