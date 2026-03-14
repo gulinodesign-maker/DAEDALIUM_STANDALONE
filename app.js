@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.198";
+const BUILD_VERSION = "2.199";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8612,10 +8612,10 @@ state.page = page;
   // Top back button (Ore pulizia + Calendario)
   const backBtnTop = $("#backBtnTop");
   if (backBtnTop){
-    backBtnTop.hidden = !(page === "calendario" || page === "operatori" || page === "channel" || page === "laundrycatalog");
+    backBtnTop.hidden = !(page === "operatori" || page === "channel" || page === "laundrycatalog");
     backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori" || page === "channel" || page === "laundrycatalog");
-    backBtnTop.classList.toggle("icon-btn-whiteorange", page !== "operatori" && page !== "channel" && page !== "laundrycatalog");
-    try{ backBtnTop.setAttribute("aria-label", (page === "operatori" || page === "channel" || page === "laundrycatalog") ? "Torna a Impostazioni" : "Indietro"); }catch(_){ }
+    backBtnTop.classList.toggle("icon-btn-whiteorange", false);
+    try{ backBtnTop.setAttribute("aria-label", "Torna a Impostazioni"); }catch(_){ }
   }
 
   // Top guest list button (solo scheda Ospite) — torna alla lista ospiti accanto al tasto Home
@@ -17941,6 +17941,26 @@ function scrollCalendarMonthToDayLeft(dayIndex){
   }catch(_){ }
 }
 
+function __calendarGuestDisplayName__(info, span){
+  try{
+    const g = findCalendarGuestById(info && info.guestId);
+    const raw = collapseSpaces(String((g?.nome || g?.name || g?.Nome || g?.NOME || g?.guestName || '')).trim());
+    const fullName = raw || collapseSpaces(String(info?.fullName || '').trim());
+    if (!fullName) return String((info && info.initials) || '').trim();
+
+    const safeSpan = Math.max(1, Number(span || 1) || 1);
+    const compact = `${fullName.charAt(0).toUpperCase()}...`;
+    const normalizedLen = fullName.replace(/\s+/g, '').length;
+
+    if (safeSpan <= 1) return compact;
+    if (safeSpan === 2 && normalizedLen > 10) return compact;
+    if (safeSpan === 3 && normalizedLen > 18) return compact;
+    return fullName;
+  }catch(_){
+    return String((info && info.initials) || '').trim();
+  }
+}
+
 function renderCalendarioMonth(){
   const grid = document.getElementById("calGridMonth");
   const gridWeek = document.getElementById("calGrid");
@@ -18101,10 +18121,12 @@ const openGuest = () => {
         const inner = document.createElement("div");
         inner.className = "cal-cell-inner";
 
-        const fullName = collapseSpaces(String((findCalendarGuestById(info.guestId)?.nome || findCalendarGuestById(info.guestId)?.name || findCalendarGuestById(info.guestId)?.Nome || findCalendarGuestById(info.guestId)?.NOME || '')).trim());
         const label = document.createElement("div");
-        label.className = (span >= 3 && fullName.length >= 3) ? "cal-fullname" : "cal-initials";
-        label.textContent = (span >= 3 && fullName.length >= 3) ? fullName : info.initials;
+        label.className = "cal-fullname";
+        const displayName = __calendarGuestDisplayName__(info, span);
+        label.textContent = displayName;
+        label.title = __calendarGuestDisplayName__(info, 99);
+        if (/\.\.\.$/.test(displayName)) label.classList.add("is-compact");
         inner.appendChild(label);
 
         const dots = document.createElement("div");

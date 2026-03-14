@@ -3153,13 +3153,26 @@ body[data-page="ospiti"] .guest-card .actions {
 }
 #page-calendario .calendar-event-bar .cal-fullname{
   color: rgba(15,23,42,0.96);
-  font-weight: 800;
-  font-size: clamp(12px, 1.6vw, 18px);
-  line-height: 1;
-  white-space: nowrap;
+  font-weight: 700;
+  font-size: clamp(10px, 1.15vw, 14px);
+  line-height: 1.1;
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   max-width: 100%;
+  text-align: center;
+}
+#page-calendario .calendar-event-bar .cal-fullname.is-compact{
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  display: block;
 }
 #page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   align-items: center;
@@ -3197,8 +3210,8 @@ body[data-page="ospiti"] .guest-card .actions {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 4px;
-  gap: 4px;
+  padding: 4px 3px;
+  gap: 3px;
 }
 #page-calendario.is-month-view .calendar-event-bar .cal-dots{
   margin: 0 auto;
@@ -3231,6 +3244,14 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-calendario .calendar-event-bar .cal-flag{
   cursor: pointer;
   pointer-events: auto;
+}
+
+@media (orientation: landscape){
+  #page-calendario .calendar-event-bar .cal-fullname{
+    font-size: clamp(9px, 0.95vw, 12px);
+    font-weight: 600;
+    line-height: 1.05;
+  }
 }
 
 /* Le barre prenotazione ereditano --room-bg dalla riga/cella della stanza (stesso identico colore delle celle) */
