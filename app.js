@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.209";
+const BUILD_VERSION = "2.210";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5367,21 +5367,20 @@ async function __hydrateAppLanguageFromSettings__(){
   let next="it";
   const isOp = !!(state?.session && isOperatoreSession(state.session));
   const activeKey = __getAppLanguageStorageKey__();
+  let hasScopedLocal = false;
   try{
-    const local=String(localStorage.getItem(activeKey) || "").trim().toLowerCase();
+    const rawLocal = localStorage.getItem(activeKey);
+    hasScopedLocal = rawLocal !== null && rawLocal !== undefined && String(rawLocal).trim() !== "";
+    const local=String(rawLocal || "").trim().toLowerCase();
     if(__I18N_LOCALES__[local]) next=local;
   }catch(_){}
   if (isOp){
-    if (!__I18N_LOCALES__[next]) next = "it";
-    if (next === "it") {
+    if (!hasScopedLocal){
       try{
         const legacy = String(localStorage.getItem(__I18N_STORAGE_KEY__) || "").trim().toLowerCase();
         if(__I18N_LOCALES__[legacy]) next = legacy;
       }catch(_){}
-    }
-    if (next === "it") {
-      const shared = __getSharedAppLanguageFromSettings__(next);
-      if(__I18N_LOCALES__[shared]) next = shared;
+      if (!__I18N_LOCALES__[next]) next = "it";
     }
   }else{
     const shared = __getSharedAppLanguageFromSettings__(next);
