@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.230";
+const BUILD_VERSION = "2.231";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6598,8 +6598,7 @@ function getOperatoreBenzinaByName(name, fallbackValue = 0){
 
 
 function __normalizeChannelColor__(color){
-  const raw = String(color || '').trim().toLowerCase();
-  return __OPERATORI_COLOR_KEYS__.includes(raw) ? raw : 'orange';
+  return __normalizeOperatoreColor__(color || 'orange-2');
 }
 
 function __channelInitialFromName__(name){
