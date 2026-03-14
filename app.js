@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.202";
+const BUILD_VERSION = "2.203";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3303,17 +3303,15 @@ function updateSettingsTabs(){
   try{
     const y = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear() || "").trim();
     const yLabel = y || "—";
+    const s = state.session || {};
+    const raw = (s.accountName || s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
+    const userLabel = raw ? raw : "—";
     const el = document.getElementById("settingsAccountYearTab");
-    if (el){
-      const s = state.session || {};
-      const raw = (s.username || s.user || s.nome || s.name || s.email || "").toString().trim();
-      const userLabel = raw ? raw : "—";
-      el.textContent = `${userLabel} - ${yLabel}`;
-    }
+    if (el) el.textContent = `${userLabel} - ${yLabel}`;
     const yearPill = document.getElementById("settingsYearPill");
     if (yearPill) yearPill.textContent = yLabel;
     const opYearPill = document.getElementById("opSettingsYearPill");
-    if (opYearPill) opYearPill.textContent = yLabel;
+    if (opYearPill) opYearPill.textContent = userLabel;
   }catch(_){ }
   try{ updateSettingsAccountName(); }catch(_){ }
 }

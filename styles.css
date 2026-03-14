@@ -10603,6 +10603,23 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
+/* dDAE_2.203 — Operatore: nome solo nella pill + tasti quadrati/smussati */
+#page-opsettings .settings-account-name{
+  display: none !important;
+}
+#page-opsettings .settings-year-pill{
+  margin: 20px auto 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-language,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{
+  width: 100% !important;
+  max-width: 108px !important;
+  height: clamp(83px, 23.4vw, 108px) !important;
+  min-height: clamp(83px, 23.4vw, 108px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 30px !important;
+}
+
 /* dDAE_2.202 — Impostazioni operatore allineate al design admin */
 #page-opsettings .settings-page-reference{
   min-height: calc(100dvh - 68px - var(--safe-top) - 24px) !important;
