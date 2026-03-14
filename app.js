@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.203";
+const BUILD_VERSION = "2.204";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5333,7 +5333,7 @@ function __applyAppLanguageToDom__(){ try{ document.documentElement.lang=__getAp
 window.__applyAppLanguageToDom__ = __applyAppLanguageToDom__;
 function __ensureLanguageObserver__(){ try{ if(__languageObserver__ || !document.body) return; __languageObserver__ = new MutationObserver((mutations)=>{ if(__applyingLanguage__) return; mutations.forEach((m)=>{ if(m.type==="characterData"){ __translateTextNode__(m.target); return; } if(m.type==="attributes"){ __translateElementAttributes__(m.target); return; } if(m.type==="childList"){ m.addedNodes.forEach((node)=>{ if(node.nodeType===Node.TEXT_NODE) __translateTextNode__(node); else if(node.nodeType===Node.ELEMENT_NODE) __translateTree__(node); }); } }); }); __languageObserver__.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["aria-label","placeholder","title"] }); }catch(_){} }
 async function __persistAppLanguage__(lang){ try{ localStorage.setItem(__I18N_STORAGE_KEY__, String(lang || "it")); }catch(_){} try{ if(state && state.settings && state.settings.byKey) state.settings.byKey.app_language={ key:"app_language", value:String(lang || "it") }; }catch(_){} try{ if(state && state.session && state.session.user_id) await api("impostazioni", { method:"POST", body:{ app_language:String(lang || "it") }, showLoader:false }); }catch(_){} }
-async function __setAppLanguage__(lang, { persist = true, silent = false } = {}){ const next=__I18N_LOCALES__[String(lang || "").trim().toLowerCase()] ? String(lang || "").trim().toLowerCase() : "it"; __appLanguage__=next; if(persist) await __persistAppLanguage__(next); __applyAppLanguageToDom__(); try{ window.dispatchEvent(new CustomEvent("ddae:language-change", { detail:{ lang:next } })); }catch(_){} if(!silent){ try{ toast("Lingua aggiornata", "blue"); }catch(_){} } }
+async function __setAppLanguage__(lang, { persist = true, silent = false } = {}){ const next=__I18N_LOCALES__[String(lang || "").trim().toLowerCase()] ? String(lang || "").trim().toLowerCase() : "it"; __appLanguage__=next; if(persist) await __persistAppLanguage__(next); __applyAppLanguageToDom__(); try{ setLaundryLabels_(); }catch(_){} try{ __laundryUpdatePriceHints__(); }catch(_){} try{ const host=document.getElementById("laundryPricesList"); if(host && host.dataset.ready==="1") host.dataset.ready="0"; }catch(_){} try{ if(state?.page==="laundrycatalog") await renderLaundryCatalogPage(); }catch(_){} try{ if(state?.page==="lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){} try{ window.dispatchEvent(new CustomEvent("ddae:language-change", { detail:{ lang:next } })); }catch(_){} if(!silent){ try{ toast("Lingua aggiornata", "blue"); }catch(_){} } }
 async function __hydrateAppLanguageFromSettings__(){ let next="it"; try{ const local=String(localStorage.getItem(__I18N_STORAGE_KEY__) || "").trim().toLowerCase(); if(__I18N_LOCALES__[local]) next=local; }catch(_){} try{ const fromSettings=getSettingText ? String(getSettingText("app_language", next) || "").trim().toLowerCase() : next; if(__I18N_LOCALES__[fromSettings]) next=fromSettings; }catch(_){} __appLanguage__=next; __applyAppLanguageToDom__(); }
 function __openLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=false; modal.setAttribute("aria-hidden","false"); __applyAppLanguageToDom__(); }
 function __closeLanguageModal__(){ const modal=document.getElementById("languageModal"); if(!modal) return; modal.hidden=true; modal.setAttribute("aria-hidden","true"); }
@@ -6108,6 +6108,32 @@ const __LAUNDRY_DEFAULT_COMPONENTS__ = [
   { id: "lc-tap", titolo: "Tappeto", abbreviazione: "TAP", prezzo: 0, colore: "sand" },
   { id: "lc-tpi", titolo: "Telo Piscina", abbreviazione: "TPI", prezzo: 0, colore: "purple" },
 ];
+
+const __LAUNDRY_COMPONENT_TRANSLATIONS__ = {
+  MAT: { it: "Lenzuolo Matrimoniale", en: "Double Bed Sheet", fr: "Drap Double", de: "Doppelbettlaken", es: "Sábana Matrimonial" },
+  SIN: { it: "Lenzuolo Singolo", en: "Single Bed Sheet", fr: "Drap Simple", de: "Einzelbettlaken", es: "Sábana Individual" },
+  FED: { it: "Federe", en: "Pillowcases", fr: "Taies d'oreiller", de: "Kissenbezüge", es: "Fundas de Almohada" },
+  TDO: { it: "Telo Doccia", en: "Bath Towel", fr: "Serviette de Douche", de: "Duschtuch", es: "Toalla de Ducha" },
+  TFA: { it: "Telo Faccia", en: "Face Towel", fr: "Serviette Visage", de: "Handtuch", es: "Toalla de Cara" },
+  TBI: { it: "Telo Bidet", en: "Bidet Towel", fr: "Serviette Bidet", de: "Bidettuch", es: "Toalla de Bidé" },
+  TAP: { it: "Tappeto", en: "Bath Mat", fr: "Tapis de Bain", de: "Badematte", es: "Alfombra de Baño" },
+  TPI: { it: "Telo Piscina", en: "Pool Towel", fr: "Serviette Piscine", de: "Poolhandtuch", es: "Toalla de Piscina" },
+};
+
+function __laundryDisplayTitle__(itemOrCode, fallbackTitle = ""){
+  const code = __normalizeLaundryCode__(typeof itemOrCode === 'string' ? itemOrCode : (itemOrCode?.abbreviazione ?? itemOrCode?.code));
+  const base = String(typeof itemOrCode === 'string' ? fallbackTitle : (itemOrCode?.titolo ?? itemOrCode?.nome ?? itemOrCode?.label ?? itemOrCode?.title ?? fallbackTitle) || '').trim();
+  const lang = __getAppLanguage__();
+  const translated = code && __LAUNDRY_COMPONENT_TRANSLATIONS__[code] ? String(__LAUNDRY_COMPONENT_TRANSLATIONS__[code]?.[lang] || __LAUNDRY_COMPONENT_TRANSLATIONS__[code]?.it || '').trim() : '';
+  if (translated) return translated;
+  if (base){
+    try{
+      const next = __translateText__(base);
+      return String(next || base).trim() || base;
+    }catch(_){ return base; }
+  }
+  return code || '';
+}
 
 const __LAUNDRY_RESERVED_KEYS__ = new Set([
   "id","startdate","start_date","enddate","end_date","from","to","createdat","created_at","updatedat","updated_at","deletedat","deleted_at","isdeleted","is_deleted","deleted","totalcost","laundryprices","laundry_prices","laundrycatalog","laundry_catalog"
@@ -7146,7 +7172,7 @@ function __laundryCatalogOpenModal__(item){
   const delBtn = document.getElementById('laundryCatalogEditorDelete');
   if (title) title.textContent = current ? 'Modifica componente lavanderia' : 'Nuovo componente lavanderia';
   if (idEl) idEl.value = current?.id ? String(current.id) : '';
-  if (titleEl) titleEl.value = current?.titolo ? String(current.titolo) : '';
+  if (titleEl) titleEl.value = current?.titolo ? String(current.titolo) : ''; // editor keeps base title
   if (codeEl) codeEl.value = current?.abbreviazione ? String(current.abbreviazione) : '';
   if (priceEl) priceEl.value = current && isFinite(Number(current.prezzo)) ? String(Number(current.prezzo)) : '';
   if (delBtn) delBtn.hidden = !current;
@@ -7186,7 +7212,7 @@ async function renderLaundryCatalogPage(){
       <div class="operatori-item-top">
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}"></span>
-          <div class="operatori-name">${String(item.titolo || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
+          <div class="operatori-name">${String(__laundryDisplayTitle__(item, item?.titolo || '') || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
           <button aria-label="Modifica componente lavanderia" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
@@ -18385,7 +18411,7 @@ function getLaundryLabelByCode(code, source){
   if (!safe) return '';
   const defs = source ? __getLaundryCatalogForRecord__(source) : getLaundryCatalogFromSettings();
   const hit = defs.find(item => String(item?.abbreviazione || '') === safe);
-  return String(hit?.titolo || safe).trim() || safe;
+  return __laundryDisplayTitle__(hit || safe, safe) || safe;
 }
 
 function __laundryDefsFromSource__(source){
@@ -18465,7 +18491,7 @@ function setLaundryLabels_(){
     getLaundryCatalogFromSettings().forEach((item) => {
       const code = String(item?.abbreviazione || '').trim();
       const el = document.getElementById("laundryLbl" + code);
-      if (el) el.textContent = String(item?.titolo || code).trim() || code;
+      if (el) el.textContent = __laundryDisplayTitle__(item, code) || code;
     });
   }catch(_){ }
 }
@@ -18486,7 +18512,7 @@ function __laundryUpdatePriceHints__(){
       const tile = document.querySelector(`#laundryGrid .laundry-tile[data-key="${code}"]`);
       if (!tile) return;
       const n = Number(prices?.[code] || 0) || 0;
-      tile.setAttribute('title', `Costo ${String(item?.titolo || code).trim()}: ${__laundryMoneyFmt__(n)}`);
+      tile.setAttribute('title', `Costo ${__laundryDisplayTitle__(item, code) || code}: ${__laundryMoneyFmt__(n)}`);
       tile.dataset.unitPrice = String(n.toFixed(2));
     });
   }catch(_){ }
@@ -18521,7 +18547,7 @@ function __ensureLaundryPricesModalBuilt__(){
   if (!host || host.dataset.ready === '1') return;
   host.innerHTML = getLaundryCatalogFromSettings().map((item) => {
     const k = String(item?.abbreviazione || '').trim();
-    const label = String(item?.titolo || k).trim() || k;
+    const label = __laundryDisplayTitle__(item, k) || k;
     return `<label class="laundry-price-row"><div class="laundry-price-copy"><div class="laundry-price-title">${label}</div><div class="laundry-price-code">${k}</div></div><input class="laundry-price-input" data-key="${k}" inputmode="decimal" min="0" step="0.01" type="number" /></label>`;
   }).join('');
   host.dataset.ready = '1';
@@ -18568,7 +18594,7 @@ async function __saveLaundryPricesModal__(){
     const n = Number(raw);
     if (!isFinite(n) || n < 0){
       if (input && typeof input.focus === 'function') input.focus();
-      throw new Error(`Prezzo non valido per ${String(item?.titolo || k).trim() || k}`);
+      throw new Error(`Prezzo non valido per ${__laundryDisplayTitle__(item, k) || k}`);
     }
     next[k] = Math.round(n * 100) / 100;
   }
@@ -18675,7 +18701,7 @@ function renderLaundry_(item){
   if (tbody){
     tbody.innerHTML = defs.map((def) => {
       const code = String(def?.abbreviazione || '').trim();
-      const label = String(def?.titolo || code).trim() || code;
+      const label = __laundryDisplayTitle__(def, code) || code;
       const qty = Number(safeItem?.[code] || 0) || 0;
       const resi = Number(safeItem?.[`${code}_resi`] || 0) || 0;
       const unit = Number(pricesForView?.[code] ?? def?.prezzo ?? 0) || 0;
@@ -18705,7 +18731,7 @@ function __buildLaundryDetailShareText__(raw){
     const subtotal = Math.round(qty * unit * 100) / 100;
     imponibile += subtotal;
     const qtyText = resi > 0 ? `${qty} (${resi})` : `${qty}`;
-    return `- ${String(def?.titolo || k).trim() || k} (${k}): ${qtyText} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
+    return `- ${__laundryDisplayTitle__(def, k) || k} (${k}): ${qtyText} x ${__laundryMoneyFmt__(unit)} = ${__laundryMoneyFmt__(subtotal)}`;
   });
   imponibile = Math.round(imponibile * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
@@ -18749,7 +18775,7 @@ async function __laundryDetailImageBlob__(raw){
     const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
     const unit = Math.max(0, Number(prices?.[k] ?? def?.prezzo ?? 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
-    return { key:k, label: String(def?.titolo || k).trim() || k, qty, resi, unit, subtotal };
+    return { key:k, label: __laundryDisplayTitle__(def, k) || k, qty, resi, unit, subtotal };
   });
   const imponibile = Math.round(rows.reduce((acc, row) => acc + row.subtotal, 0) * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
@@ -18931,7 +18957,7 @@ function __openLaundryDetailModal__(raw){
     const unit = Math.max(0, Number(prices?.[k] ?? def?.prezzo ?? 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
     imponibile += subtotal;
-    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-badges"><div class="laundry-detail-code"><span class="laundry-detail-codeValue">${qty}</span><span class="laundry-detail-codeLabel">usati</span></div><div class="laundry-detail-code laundry-detail-code--secondary"><span class="laundry-detail-codeValue">${resi}</span><span class="laundry-detail-codeLabel">resi</span></div></div><div class="laundry-detail-copy"><div class="laundry-detail-label">${String(def?.titolo || k).trim() || k}</div><div class="laundry-detail-meta">${__laundryMoneyFmt__(unit)} / pezzo</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
+    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-badges"><div class="laundry-detail-code"><span class="laundry-detail-codeValue">${qty}</span><span class="laundry-detail-codeLabel">usati</span></div><div class="laundry-detail-code laundry-detail-code--secondary"><span class="laundry-detail-codeValue">${resi}</span><span class="laundry-detail-codeLabel">resi</span></div></div><div class="laundry-detail-copy"><div class="laundry-detail-label">${__laundryDisplayTitle__(def, k) || k}</div><div class="laundry-detail-meta">${__laundryMoneyFmt__(unit)} / pezzo</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
   }).join('');
   imponibile = Math.round(imponibile * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
