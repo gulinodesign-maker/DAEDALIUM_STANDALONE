@@ -4479,8 +4479,32 @@ grid-template-rows: 34px repeat(7, 54px);
 /* Pulizie: indicatore "SALVATO" (BORDO rosso) sulle celle che arrivano dal DB per quel giorno */
 .clean-grid .cell.slot.is-saved{
   /* box-shadow inset per non alterare le dimensioni della griglia */
-  box-shadow: inset 0 0 0 3px rgba(220,0,0,.85);
+  box-shadow: inset 0 0 0 3px var(--laundry-save-color, rgba(220,0,0,.85));
 }
+#page-pulizie .clean-grid .cell.slot.color-blue,
+#page-pulizie .clean-grid .cell.slot.color-blue-2{ --laundry-save-color:rgba(111,132,200,.92); }
+#page-pulizie .clean-grid .cell.slot.color-blue-1{ --laundry-save-color:rgba(174,188,232,.96); }
+#page-pulizie .clean-grid .cell.slot.color-blue-3{ --laundry-save-color:rgba(63,93,177,.92); }
+#page-pulizie .clean-grid .cell.slot.color-orange,
+#page-pulizie .clean-grid .cell.slot.color-orange-2{ --laundry-save-color:rgba(216,173,78,.92); }
+#page-pulizie .clean-grid .cell.slot.color-orange-1{ --laundry-save-color:rgba(234,208,138,.96); }
+#page-pulizie .clean-grid .cell.slot.color-orange-3{ --laundry-save-color:rgba(184,134,31,.92); }
+#page-pulizie .clean-grid .cell.slot.color-green,
+#page-pulizie .clean-grid .cell.slot.color-green-2{ --laundry-save-color:rgba(116,170,135,.92); }
+#page-pulizie .clean-grid .cell.slot.color-green-1{ --laundry-save-color:rgba(168,204,179,.96); }
+#page-pulizie .clean-grid .cell.slot.color-green-3{ --laundry-save-color:rgba(69,132,95,.92); }
+#page-pulizie .clean-grid .cell.slot.color-red,
+#page-pulizie .clean-grid .cell.slot.color-red-2{ --laundry-save-color:rgba(200,122,137,.92); }
+#page-pulizie .clean-grid .cell.slot.color-red-1{ --laundry-save-color:rgba(226,161,171,.96); }
+#page-pulizie .clean-grid .cell.slot.color-red-3{ --laundry-save-color:rgba(171,88,107,.92); }
+#page-pulizie .clean-grid .cell.slot.color-purple,
+#page-pulizie .clean-grid .cell.slot.color-purple-2{ --laundry-save-color:rgba(154,132,209,.92); }
+#page-pulizie .clean-grid .cell.slot.color-purple-1{ --laundry-save-color:rgba(197,180,231,.96); }
+#page-pulizie .clean-grid .cell.slot.color-purple-3{ --laundry-save-color:rgba(111,86,175,.92); }
+#page-pulizie .clean-grid .cell.slot.color-sand,
+#page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save-color:rgba(190,162,124,.92); }
+#page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color:rgba(221,207,183,.96); }
+#page-pulizie .clean-grid .cell.slot.color-sand-3{ --laundry-save-color:rgba(146,116,81,.92); }
 
 
 /* Pulizie: responsive fit smartphone (griglia sempre tutta visibile) */

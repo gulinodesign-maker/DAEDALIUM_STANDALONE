@@ -16589,10 +16589,18 @@ try{
       });
       for (let r = 1; r <= count; r++) {
         parts.push(`<div class="c cell room r${r} room-${r}">${r}</div>`);
-        cols.forEach((col) => { parts.push(`<div class="c cell slot room-${r}" data-col="${col}" data-room="${r}"></div>`); });
+        cols.forEach((col) => {
+          const item = laundryCatalogMap.get(__normalizeLaundryCode__(col));
+          const color = __normalizeLaundryColor__(item?.colore || 'blue');
+          parts.push(`<div class="c cell slot room-${r} color-${color}" data-col="${col}" data-room="${r}"></div>`);
+        });
       }
       parts.push('<div class="c cell room rres room-res">RES</div>');
-      cols.forEach((col) => { parts.push(`<div class="c cell slot room-res" data-col="${col}" data-room="RES"></div>`); });
+      cols.forEach((col) => {
+        const item = laundryCatalogMap.get(__normalizeLaundryCode__(col));
+        const color = __normalizeLaundryColor__(item?.colore || 'blue');
+        parts.push(`<div class="c cell slot room-res color-${color}" data-col="${col}" data-room="RES"></div>`);
+      });
       cleanGrid.innerHTML = parts.join('');
       try{ __bindResetAllCorner(document.getElementById("cleanResetAll")); }catch(_){ }
       try{ if (typeof cleanGridHandlersBound !== 'undefined') cleanGridHandlersBound = false; }catch(_){ }
