@@ -9785,13 +9785,23 @@ body[data-role="operatore"] #page-home .home-main{
   gap: 10px;
 }
 .laundry-detail-row{
+  --laundry-report-row-bg: rgba(77,156,197,0.10);
+  --laundry-report-row-border: rgba(77,156,197,0.22);
+  --laundry-report-badge-primary-bg: #4d9cc5;
+  --laundry-report-badge-primary-text: #ffffff;
+  --laundry-report-badge-secondary-bg: #88c8e8;
+  --laundry-report-badge-secondary-text: #0b1f3a;
+  --laundry-report-label: #0b1f3a;
+  --laundry-report-meta: rgba(11,31,58,0.65);
+  --laundry-report-price: #0b1f3a;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 12px;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(77,156,197,0.10);
+  background: var(--laundry-report-row-bg);
+  border: 1px solid var(--laundry-report-row-border);
 }
 .laundry-detail-rowLeft{
   display:flex;
@@ -9805,24 +9815,24 @@ body[data-role="operatore"] #page-home .home-main{
   border-radius: 14px;
   display:grid;
   place-items:center;
-  background: #4d9cc5;
-  color: #fff;
+  background: var(--laundry-report-badge-primary-bg);
+  color: var(--laundry-report-badge-primary-text);
   font-weight: 900;
   letter-spacing: .04em;
   flex: 0 0 44px;
 }
 .laundry-detail-label{
   font-weight: 900;
-  color: #0b1f3a;
+  color: var(--laundry-report-label);
 }
 .laundry-detail-meta{
   margin-top: 2px;
   font-size: 13px;
-  color: rgba(11,31,58,0.65);
+  color: var(--laundry-report-meta);
 }
 .laundry-detail-price{
   font-weight: 950;
-  color: #0b1f3a;
+  color: var(--laundry-report-price);
   white-space: nowrap;
 }
 .laundry-detail-totals{
@@ -10014,8 +10024,8 @@ body[data-role="operatore"] #page-home .home-main{
   letter-spacing: 0 !important;
 }
 #laundryDetailModal .laundry-detail-code--secondary{
-  background: #88c8e8 !important;
-  color: #0b1f3a !important;
+  background: var(--laundry-report-badge-secondary-bg) !important;
+  color: var(--laundry-report-badge-secondary-text) !important;
 }
 #laundryDetailModal .laundry-detail-codeValue{
   display: block;
@@ -10933,7 +10943,7 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
-/* dDAE_2.229 — Backup: tasto Esporta azzurro */
+/* dDAE_2.230 — Backup: tasto Esporta azzurro */
 #settingsBackupExport.btn{
   background: rgba(77,156,197,0.80) !important;
   border-color: rgba(77,156,197,0.80) !important;

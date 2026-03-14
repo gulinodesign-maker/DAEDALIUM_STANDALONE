@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.229";
+const BUILD_VERSION = "2.230";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6329,7 +6329,6 @@ function __laundryCatalogMapByCode__(catalog){
 function __detectLaundryCodesFromRecord__(it){
   const set = new Set();
   try{ getLaundryComponentCodes().forEach(code => { if (code) set.add(code); }); }catch(_){ }
-  try{ __LAUNDRY_DEFAULT_COMPONENTS__.forEach(item => set.add(__normalizeLaundryCode__(item.abbreviazione))); }catch(_){ }
   Object.keys(it || {}).forEach((rawKey) => {
     const lowered = String(rawKey || '').trim().toLowerCase();
     if (!lowered || __LAUNDRY_RESERVED_KEYS__.has(lowered)) return;
@@ -6338,7 +6337,12 @@ function __detectLaundryCodesFromRecord__(it){
     else if (/_r$/i.test(rawKey)) candidate = lowered.slice(0, -2);
     else if (/r$/i.test(rawKey) && lowered.length > 1) candidate = lowered.slice(0, -1);
     const code = __normalizeLaundryCode__(candidate);
-    if (code) set.add(code);
+    if (!code) return;
+    const rawVal = it?.[rawKey];
+    const numeric = Number(rawVal);
+    if (isFinite(numeric) && Math.abs(numeric) <= 0) return;
+    if (!String(rawVal ?? '').trim()) return;
+    set.add(code);
   });
   return Array.from(set).filter(Boolean);
 }
@@ -6347,18 +6351,21 @@ function __getLaundryCatalogForRecord__(it){
   const settingsCatalog = getLaundryCatalogFromSettings();
   const settingsMap = __laundryCatalogMapByCode__(settingsCatalog);
   const snapshot = __sanitizeLaundryCatalogList__(Array.isArray(it?.laundryCatalog) ? it.laundryCatalog : (Array.isArray(it?.laundry_catalog) ? it.laundry_catalog : []), { fallbackToDefault: false });
-  const map = __laundryCatalogMapByCode__(snapshot.length ? snapshot : settingsCatalog);
+  const snapshotMap = __laundryCatalogMapByCode__(snapshot);
+  const sourceList = snapshot.length ? snapshot : settingsCatalog;
+  const map = __laundryCatalogMapByCode__(sourceList);
   const extras = __detectLaundryCodesFromRecord__(it);
   extras.forEach((code, idx) => {
     if (map.has(code)) return;
+    const fromSnapshot = snapshotMap.get(code);
     const fromSettings = settingsMap.get(code);
-    const fromLegacy = __LAUNDRY_DEFAULT_COMPONENTS__.find(item => __normalizeLaundryCode__(item.abbreviazione) === code);
+    const source = fromSnapshot || fromSettings || null;
     map.set(code, {
-      id: String(fromSettings?.id || fromLegacy?.id || `lc-extra-${idx}`),
-      titolo: String(fromSettings?.titolo || fromLegacy?.titolo || code).trim() || code,
+      id: String(source?.id || `lc-extra-${idx}`),
+      titolo: String(source?.titolo || code).trim() || code,
       abbreviazione: code,
-      prezzo: (() => { const n = Number(fromSettings?.prezzo ?? fromLegacy?.prezzo ?? 0); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
-      colore: __normalizeLaundryColor__(fromSettings?.colore || fromLegacy?.colore || 'blue'),
+      prezzo: (() => { const n = Number(source?.prezzo ?? 0); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
+      colore: __normalizeLaundryColor__(source?.colore || 'blue'),
     });
   });
   const ordered = [];
@@ -6369,7 +6376,7 @@ function __getLaundryCatalogForRecord__(it){
       ordered.push(map.get(code));
     });
   };
-  pushFrom(snapshot.length ? snapshot : settingsCatalog);
+  pushFrom(sourceList);
   Array.from(map.keys()).forEach((code) => {
     if (!ordered.some(row => row.abbreviazione === code)) ordered.push(map.get(code));
   });
@@ -6487,6 +6494,36 @@ function __operatoreColorHex__(color){
   const { base, shade } = __parseOperatoreColorSpec__(color);
   const tones = __OPERATORI_COLOR_TONES__[base] || __OPERATORI_COLOR_TONES__.blue;
   return tones[Math.max(0, Math.min(tones.length - 1, shade - 1))] || tones[1] || '#6f84c8';
+}
+
+function __laundryColorTokens__(value){
+  const spec = __normalizeLaundryColor__(value || 'blue');
+  const parsed = __parseOperatoreColorSpec__(spec);
+  const main = __operatoreColorHex__(spec);
+  const light = __operatoreColorHex__(`${parsed.base}-1`);
+  const dark = __operatoreColorHex__(`${parsed.base}-3`);
+  return {
+    spec,
+    base: parsed.base,
+    shade: parsed.shade,
+    rowBg: hexToRgba(main, 0.10),
+    rowBorder: hexToRgba(main, 0.22),
+    badgePrimaryBg: main,
+    badgePrimaryText: '#ffffff',
+    badgeSecondaryBg: light,
+    badgeSecondaryText: '#0b1f3a',
+    label: dark,
+    meta: hexToRgba(dark, 0.72),
+    price: dark,
+  };
+}
+
+function __laundryEscapeAttr__(value){
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
 }
 
 function __normalizeOperatoreNameKey__(value){
@@ -18985,7 +19022,7 @@ async function __laundryDetailImageBlob__(raw){
     const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
     const unit = Math.max(0, Number(prices?.[k] ?? def?.prezzo ?? 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
-    return { key:k, label: __laundryDisplayTitle__(def, k) || k, qty, resi, unit, subtotal };
+    return { key:k, label: __laundryDisplayTitle__(def, k) || k, qty, resi, unit, subtotal, colors: __laundryColorTokens__(def?.colore || 'blue') };
   });
   const imponibile = Math.round(rows.reduce((acc, row) => acc + row.subtotal, 0) * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
@@ -19037,41 +19074,45 @@ async function __laundryDetailImageBlob__(raw){
   const rowX = cardX + 32;
   const rowW = cardW - 64;
   rows.forEach((row) => {
+    const colors = row?.colors || __laundryColorTokens__('blue');
     __laundryRoundRect__(ctx, rowX, y, rowW, rowHeight, 34);
-    ctx.fillStyle = 'rgba(77,156,197,0.10)';
+    ctx.fillStyle = colors.rowBg;
     ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = colors.rowBorder;
+    ctx.stroke();
 
     const boxY = y + 14;
     __laundryRoundRect__(ctx, rowX + 18, boxY, 92, 92, 24);
-    ctx.fillStyle = '#4d9cc5';
+    ctx.fillStyle = colors.badgePrimaryBg;
     ctx.fill();
     __laundryRoundRect__(ctx, rowX + 128, boxY, 92, 92, 24);
-    ctx.fillStyle = '#88c8e8';
+    ctx.fillStyle = colors.badgeSecondaryBg;
     ctx.fill();
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = colors.badgePrimaryText;
     ctx.textAlign = 'center';
     ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText(String(row.qty), rowX + 64, y + 56);
     ctx.font = '900 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText('USATI', rowX + 64, y + 88);
 
-    ctx.fillStyle = '#0b1f3a';
+    ctx.fillStyle = colors.badgeSecondaryText;
     ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText(String(row.resi), rowX + 174, y + 56);
     ctx.font = '900 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText('RESI', rowX + 174, y + 88);
 
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#0b1f3a';
+    ctx.fillStyle = colors.label;
     ctx.font = '900 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText(row.label, rowX + 250, y + 58);
-    ctx.fillStyle = 'rgba(11,31,58,0.68)';
+    ctx.fillStyle = colors.meta;
     ctx.font = '700 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText(`${__laundryMoneyFmt__(row.unit)} / pezzo`, rowX + 250, y + 94);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#0b1f3a';
+    ctx.fillStyle = colors.price;
     ctx.font = '900 30px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
     ctx.fillText(__laundryMoneyFmt__(row.subtotal), rowX + rowW - 32, y + 74);
 
@@ -19166,8 +19207,20 @@ function __openLaundryDetailModal__(raw){
     const resi = Math.max(0, Number(item?.[`${k}_resi`] || 0) || 0);
     const unit = Math.max(0, Number(prices?.[k] ?? def?.prezzo ?? 0) || 0);
     const subtotal = Math.round(qty * unit * 100) / 100;
+    const colors = __laundryColorTokens__(def?.colore || 'blue');
     imponibile += subtotal;
-    return `<div class="laundry-detail-row"><div class="laundry-detail-rowLeft"><div class="laundry-detail-badges"><div class="laundry-detail-code"><span class="laundry-detail-codeValue">${qty}</span><span class="laundry-detail-codeLabel">usati</span></div><div class="laundry-detail-code laundry-detail-code--secondary"><span class="laundry-detail-codeValue">${resi}</span><span class="laundry-detail-codeLabel">resi</span></div></div><div class="laundry-detail-copy"><div class="laundry-detail-label">${__laundryDisplayTitle__(def, k) || k}</div><div class="laundry-detail-meta">${__laundryMoneyFmt__(unit)} / pezzo</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
+    const style = [
+      `--laundry-report-row-bg:${colors.rowBg}`,
+      `--laundry-report-row-border:${colors.rowBorder}`,
+      `--laundry-report-badge-primary-bg:${colors.badgePrimaryBg}`,
+      `--laundry-report-badge-primary-text:${colors.badgePrimaryText}`,
+      `--laundry-report-badge-secondary-bg:${colors.badgeSecondaryBg}`,
+      `--laundry-report-badge-secondary-text:${colors.badgeSecondaryText}`,
+      `--laundry-report-label:${colors.label}`,
+      `--laundry-report-meta:${colors.meta}`,
+      `--laundry-report-price:${colors.price}`
+    ].join(';');
+    return `<div class="laundry-detail-row" style="${__laundryEscapeAttr__(style)}"><div class="laundry-detail-rowLeft"><div class="laundry-detail-badges"><div class="laundry-detail-code"><span class="laundry-detail-codeValue">${qty}</span><span class="laundry-detail-codeLabel">usati</span></div><div class="laundry-detail-code laundry-detail-code--secondary"><span class="laundry-detail-codeValue">${resi}</span><span class="laundry-detail-codeLabel">resi</span></div></div><div class="laundry-detail-copy"><div class="laundry-detail-label">${escapeHtml(__laundryDisplayTitle__(def, k) || k)}</div><div class="laundry-detail-meta">${__laundryMoneyFmt__(unit)} / pezzo</div></div></div><div class="laundry-detail-price">${__laundryMoneyFmt__(subtotal)}</div></div>`;
   }).join('');
   imponibile = Math.round(imponibile * 100) / 100;
   const ivato = Math.round(imponibile * 1.22 * 100) / 100;
