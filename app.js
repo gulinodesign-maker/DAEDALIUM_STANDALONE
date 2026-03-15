@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.252";
+const BUILD_VERSION = "2.253";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9765,34 +9765,36 @@ function setupGuestListControls(){
       const nextBy = String(btn.dataset.sortBy || "").trim();
       if (!nextBy) return;
 
+      const sameButton = String(state.guestSortBy || "") === nextBy;
       const now = Date.now();
-      const sameButton = lastSortTapBy === nextBy;
-      const isDoubleTap = sameButton && ((now - lastSortTapTs) <= SORT_DOUBLE_TAP_MS);
+      const repeatedTap = sameButton || (lastSortTapBy === nextBy && ((now - lastSortTapTs) <= SORT_DOUBLE_TAP_MS));
       lastSortTapBy = nextBy;
       lastSortTapTs = now;
 
-      const sortChanged = state.guestSortBy !== nextBy;
-      state.guestSortBy = nextBy;
-      try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
-      syncSortSelect();
-      paintSortButtons();
-
-      if (isDoubleTap) {
+      if (sameButton && repeatedTap) {
         toggleGuestSortDir();
         return;
       }
 
-      if (sortChanged) {
-        renderGuestCards();
-      }
+      state.guestSortBy = nextBy;
+      state.guestSortDir = "asc";
+      try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
+      try { localStorage.setItem("dDAE_guestSortDir", state.guestSortDir); } catch(_){}
+      syncSortSelect();
+      paintSortButtons();
+      paintDir();
+      renderGuestCards();
     });
   });
 
   sortSel.addEventListener("change", () => {
     state.guestSortBy = sortSel.value;
+    state.guestSortDir = "asc";
     try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
+    try { localStorage.setItem("dDAE_guestSortDir", state.guestSortDir); } catch(_){}
     syncSortSelect();
     paintSortButtons();
+    paintDir();
     renderGuestCards();
   });
 
@@ -16571,7 +16573,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.252')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.253')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
