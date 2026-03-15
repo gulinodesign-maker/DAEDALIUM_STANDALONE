@@ -8,22 +8,85 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.235" rel="stylesheet"/>
-<link href="./manifest.json?v=2.235" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.235" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.235" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.235" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.235" rel="icon" sizes="16x16" type="image/png"/>
+<link href="./styles.css?v=2.236" rel="stylesheet"/>
+<link href="./manifest.json?v=2.236" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.236" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.236" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.236" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.236" rel="icon" sizes="16x16" type="image/png"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<script>
+window.APP_VERSION = "2.236";
+(function(){
+  const LOCAL_BUILD = "dDAE_2.236";
+  const normalize = (v) => String(v || '').trim();
+  const setBuildLabels = (v) => {
+    const val = normalize(v) || LOCAL_BUILD;
+    const apply = () => {
+      ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', apply, { once:true });
+    } else {
+      apply();
+    }
+  };
+  setBuildLabels(LOCAL_BUILD);
+  const newerThanLocal = (remote) => {
+    const clean = (v) => normalize(v).replace(/^dDAE_/i, '');
+    const a = clean(remote).split('.').map((n) => parseInt(n, 10) || 0);
+    const b = clean(LOCAL_BUILD).split('.').map((n) => parseInt(n, 10) || 0);
+    const len = Math.max(a.length, b.length);
+    for (let i = 0; i < len; i++) {
+      const av = a[i] || 0;
+      const bv = b[i] || 0;
+      if (av > bv) return true;
+      if (av < bv) return false;
+    }
+    return false;
+  };
+  const forceReload = async (remote) => {
+    if (window.__ddaeBootReloading) return;
+    window.__ddaeBootReloading = true;
+    const target = './index.html?v=' + encodeURIComponent(remote) + '&r=' + Date.now();
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister().catch(() => {})));
+      }
+    } catch (_) {}
+    try {
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k).catch(() => {})));
+      }
+    } catch (_) {}
+    try { sessionStorage.setItem('dDAE_last_forced_build', normalize(remote)); } catch (_) {}
+    window.location.replace(target);
+  };
+  fetch('./version.json?ts=' + Date.now(), { cache:'no-store' })
+    .then((res) => res.ok ? res.json() : null)
+    .then((data) => {
+      const remote = normalize(data && (data.build || data.version || data.ver));
+      if (!remote) return;
+      setBuildLabels(remote);
+      if (newerThanLocal(remote)) forceReload(remote);
+    })
+    .catch(() => {});
+})();
+</script>
 </head>
 <body>
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.235"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.236"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -134,7 +197,7 @@
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.235"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.236"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -329,7 +392,7 @@
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.235</div></div></section>
+<div class="build" id="buildText">dDAE_2.236</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -751,7 +814,7 @@
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
-<div class="build settings-build" id="settingsBuildText">dDAE_2.235</div>
+<div class="build settings-build" id="settingsBuildText">dDAE_2.236</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -793,7 +856,7 @@
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
-<div class="build settings-build" id="opSettingsBuildText">dDAE_2.235</div>
+<div class="build settings-build" id="opSettingsBuildText">dDAE_2.236</div>
 </div>
 </div></section>
 <section class="page" hidden="" id="page-tassa">
@@ -1419,8 +1482,8 @@
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.235"></script>
-<script defer="" src="./app.js?v=2.235"></script>
+<script defer="" src="./config.js?v=2.236"></script>
+<script defer="" src="./app.js?v=2.236"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">

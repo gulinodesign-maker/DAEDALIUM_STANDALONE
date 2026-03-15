@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.235";
+const BUILD_VERSION = "2.236";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3348,34 +3348,51 @@ function updateSettingsAccountName(){
 
   }catch(_){}
 })();
+try{
+  const forcedBuild = String(sessionStorage.getItem("dDAE_last_forced_build") || "").trim();
+  if (forcedBuild) {
+    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = forcedBuild;
+    });
+  }
+}catch(_){ }
 // Aggiornamento "hard" anti-cache iOS:
 // Legge ./version.json (sempre no-store) e se il build remoto è diverso
 // svuota cache, deregistra SW e ricarica con cache-bust.
 async function hardUpdateCheck(){
   try{
+    if (window.__ddaeHardUpdating) return;
     const res = await fetch(`./version.json?ts=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
     if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
 
+    window.__ddaeHardUpdating = true;
+    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = remote;
+    });
+
     try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
 
     try{
       if ("serviceWorker" in navigator){
         const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister()));
+        await Promise.all(regs.map(r => r.unregister().catch(() => {})));
       }
     }catch(_){}
 
     try{
       if (window.caches){
         const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
+        await Promise.all(keys.map(k => caches.delete(k).catch(() => {})));
       }
     }catch(_){}
 
-    location.href = `./?v=${encodeURIComponent(remote)}&r=${Date.now()}`;
+    try{ sessionStorage.setItem("dDAE_last_forced_build", remote); }catch(_){}
+    window.location.replace(`./index.html?v=${encodeURIComponent(remote)}&r=${Date.now()}`);
   }catch(_){}
 }
 // ===== Performance mode (iOS/Safari PWA) =====
@@ -16317,7 +16334,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.235')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.236')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
