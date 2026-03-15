@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.247";
+const BUILD_VERSION = "2.248";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3147,8 +3147,8 @@ function __applyExerciseYearChange__(nextYear){
 }
 
 const __SETTINGS_YEAR_WHEEL_ROW__ = 60;
+const __SETTINGS_YEAR_WHEEL_PAD_ROWS__ = 2;
 let __settingsYearWheelTimer__ = null;
-let __settingsYearWheelCloseTimer__ = null;
 let __settingsYearWheelApplying__ = false;
 
 function __getSettingsYearValues__(){
@@ -3162,7 +3162,8 @@ function __populateSettingsYearPicker__(selectedYear){
   if (!wheel) return;
   const years = __getSettingsYearValues__();
   const selected = String(selectedYear || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  wheel.innerHTML = years.map((year) => `<div class="settings-year-wheel-item${year === selected ? ' is-selected' : ''}" data-year="${year}" role="option" aria-selected="${year === selected ? 'true' : 'false'}">${year}</div>`).join("");
+  const pad = '<div class="settings-year-wheel-spacer" aria-hidden="true"></div>'.repeat(__SETTINGS_YEAR_WHEEL_PAD_ROWS__);
+  wheel.innerHTML = pad + years.map((year) => `<div class="settings-year-wheel-item${year === selected ? ' is-selected' : ''}" data-year="${year}" role="option" aria-selected="${year === selected ? 'true' : 'false'}">${year}</div>`).join("") + pad;
 }
 
 function __highlightSettingsYearWheel__(year){
@@ -3180,7 +3181,8 @@ function __getSettingsYearWheelValue__(){
   const wheel = document.getElementById("settingsYearWheel");
   if (!wheel) return String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const years = __getSettingsYearValues__();
-  const index = Math.max(0, Math.min(years.length - 1, Math.round(wheel.scrollTop / __SETTINGS_YEAR_WHEEL_ROW__)));
+  const rawIndex = Math.round((wheel.scrollTop || 0) / __SETTINGS_YEAR_WHEEL_ROW__);
+  const index = Math.max(0, Math.min(years.length - 1, rawIndex));
   return years[index] || years[0];
 }
 
@@ -3190,27 +3192,23 @@ function __scrollSettingsYearWheelTo__(year, behavior){
   const years = __getSettingsYearValues__();
   const target = String(year || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const index = Math.max(0, years.indexOf(target));
-  try{ wheel.scrollTo({ top: index * __SETTINGS_YEAR_WHEEL_ROW__, behavior: behavior || 'auto' }); }
-  catch(_){ wheel.scrollTop = index * __SETTINGS_YEAR_WHEEL_ROW__; }
+  const top = index * __SETTINGS_YEAR_WHEEL_ROW__;
+  try{ wheel.scrollTo({ top, behavior: behavior || 'auto' }); }
+  catch(_){ wheel.scrollTop = top; }
   __highlightSettingsYearWheel__(target);
 }
 
 function __applySettingsYearWheelSelection__(opts){
   if (__settingsYearWheelApplying__) return;
   __settingsYearWheelApplying__ = true;
-  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const next = __getSettingsYearWheelValue__();
+  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   __highlightSettingsYearWheel__(next);
-  __scrollSettingsYearWheelTo__(next, 'smooth');
+  __scrollSettingsYearWheelTo__(next, (opts && opts.snapOnly) ? 'auto' : 'smooth');
   if (next && next !== current){
     try{ __applyExerciseYearChange__(String(next)); }catch(_){ }
-    try{ toast("Anno esercizio aggiornato"); }catch(_){ }
   }
-  try{ clearTimeout(__settingsYearWheelCloseTimer__); }catch(_){ }
-  __settingsYearWheelCloseTimer__ = setTimeout(() => {
-    __settingsYearWheelApplying__ = false;
-    if (!(opts && opts.keepOpen)) __closeSettingsYearModal__();
-  }, 170);
+  requestAnimationFrame(() => { __settingsYearWheelApplying__ = false; });
 }
 
 function __openSettingsYearModal__(){
@@ -3222,7 +3220,6 @@ function __openSettingsYearModal__(){
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
   __settingsYearWheelApplying__ = false;
-  try{ clearTimeout(__settingsYearWheelCloseTimer__); }catch(_){ }
   requestAnimationFrame(() => {
     __scrollSettingsYearWheelTo__(current, 'auto');
     try{ wheel.focus({ preventScroll:true }); }catch(_){ try{ wheel.focus(); }catch(__){ } }
@@ -3232,12 +3229,14 @@ function __openSettingsYearModal__(){
 function __closeSettingsYearModal__(){
   const modal = document.getElementById("settingsYearModal");
   if (!modal) return;
+  try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
   modal.hidden = true;
   modal.setAttribute("aria-hidden", "true");
 }
 
 function __saveSettingsYearModal__(){
-  __applySettingsYearWheelSelection__();
+  __applySettingsYearWheelSelection__({ snapOnly:true });
+  __closeSettingsYearModal__();
 }
 
 function __pickExerciseYearFromSettings__(){
@@ -7789,7 +7788,7 @@ const cfg = document.getElementById("settingsConfigBtn");
       try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
       const liveYear = __getSettingsYearWheelValue__();
       __highlightSettingsYearWheel__(liveYear);
-      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ keepOpen:false }); }, 110);
+      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ snapOnly:true }); }, 140);
     }, { passive:true });
     yearWheel.addEventListener("click", (e) => {
       const item = e.target && e.target.closest ? e.target.closest('.settings-year-wheel-item') : null;
@@ -7797,8 +7796,12 @@ const cfg = document.getElementById("settingsConfigBtn");
       const year = item.getAttribute('data-year');
       __scrollSettingsYearWheelTo__(year, 'smooth');
       try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
-      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ keepOpen:false }); }, 120);
+      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ snapOnly:false }); }, 150);
     });
+    yearWheel.addEventListener("touchend", () => {
+      try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
+      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ snapOnly:false }); }, 170);
+    }, { passive:true });
     yearWheel.addEventListener("keydown", (e) => {
       if (e.key === "Escape"){
         e.preventDefault();
@@ -7808,7 +7811,28 @@ const cfg = document.getElementById("settingsConfigBtn");
       if (e.key === "Enter"){
         e.preventDefault();
         __saveSettingsYearModal__();
+        return;
       }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp"){
+        e.preventDefault();
+        const years = __getSettingsYearValues__();
+        const current = __getSettingsYearWheelValue__();
+        let index = years.indexOf(current);
+        if (index < 0) index = 0;
+        if (e.key === "ArrowDown") index = Math.min(years.length - 1, index + 1);
+        else index = Math.max(0, index - 1);
+        const year = years[index];
+        __scrollSettingsYearWheelTo__(year, 'smooth');
+        try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
+        __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ snapOnly:false }); }, 150);
+      }
+    });
+  }
+  const yearCard = document.querySelector('#settingsYearModal .settings-year-wheel-card');
+  if (yearCard && !yearCard.__boundContain){
+    yearCard.__boundContain = true;
+    ['click','touchstart','touchend','pointerdown','pointerup'].forEach((evt) => {
+      yearCard.addEventListener(evt, (e) => { try{ e.stopPropagation(); }catch(_){ } }, { passive:false });
     });
   }
 
@@ -16472,7 +16496,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.247')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.248')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
