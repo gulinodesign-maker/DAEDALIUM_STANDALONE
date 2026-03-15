@@ -9109,7 +9109,7 @@ color: var(--mcol,#ff3b30);
   text-overflow: ellipsis;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background:#8fcbe8 !important; border-color: rgba(143,203,232,0.24) !important; }
-#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(36,122,224,0.80) !important; border-color: rgba(36,122,224,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background:#4fcd66 !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ background:#7f7bf2 !important; border-color: rgba(127,123,242,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background:#e85454 !important; border-color: rgba(232,84,84,0.24) !important; }
@@ -10429,7 +10429,7 @@ body[data-role="operatore"] #page-home .home-grid{
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background: rgba(143,203,232,0.80) !important; border-color: rgba(143,203,232,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background: rgba(79,205,102,0.80) !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ background: rgba(255,204,0,0.80) !important; border-color: rgba(255,204,0,0.28) !important; }
-#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(36,122,224,0.80) !important; border-color: rgba(36,122,224,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ background: rgba(242,156,80,0.80) !important; border-color: rgba(242,156,80,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ background: rgba(214,193,160,0.80) !important; border-color: rgba(214,193,160,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ background: rgba(232,84,84,0.80) !important; border-color: rgba(232,84,84,0.24) !important; }
@@ -10455,8 +10455,8 @@ body[data-role="operatore"] #page-home .home-grid{
   flex-direction: row !important;
   justify-content: center !important;
   gap: 10px !important;
-  background: rgba(201,119,43,0.80) !important;
-  border: 1px solid rgba(201,119,43,0.24) !important;
+  background: rgba(213,68,68,0.80) !important;
+  border: 1px solid rgba(213,68,68,0.24) !important;
   box-shadow: none !important;
 }
 #page-impostazioni .settings-btn-logout-pill .ui-ico{
@@ -10840,8 +10840,8 @@ body[data-role="operatore"] #page-home .home-grid{
   flex-direction: row !important;
   justify-content: center !important;
   gap: 10px !important;
-  background: rgba(201,119,43,0.80) !important;
-  border: 1px solid rgba(201,119,43,0.24) !important;
+  background: rgba(213,68,68,0.80) !important;
+  border: 1px solid rgba(213,68,68,0.24) !important;
   box-shadow: none !important;
 }
 #page-opsettings .settings-btn-logout-pill .ui-ico{
@@ -11113,4 +11113,88 @@ body[data-role="operatore"] #page-home .home-main-label{
   left:16px;
   background:#ffffff;
   padding:0 8px;
+}
+
+
+/* dDAE_2.247 — picker anno a ruota stile iOS senza pulsanti */
+#settingsYearModal.settings-year-wheel-modal{
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  padding:16px 14px calc(var(--safe-bottom) + 14px) !important;
+}
+#settingsYearModal.settings-year-wheel-modal[hidden]{
+  display:none !important;
+}
+.settings-year-wheel-card{
+  width:min(420px, calc(100vw - 28px)) !important;
+  margin:0 !important;
+  padding:18px 16px !important;
+  border-radius:28px !important;
+  background:rgba(255,255,255,0.98) !important;
+  box-shadow:none !important;
+}
+.settings-year-wheel-shell{
+  position:relative;
+  height:252px;
+  overflow:hidden;
+}
+.settings-year-wheel{
+  position:relative;
+  height:252px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:y mandatory;
+  scrollbar-width:none;
+  padding:96px 0;
+}
+.settings-year-wheel::-webkit-scrollbar{
+  display:none;
+}
+.settings-year-wheel-item{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  line-height:1;
+  font-weight:900;
+  color:rgba(15,23,42,0.34);
+  scroll-snap-align:center;
+  user-select:none;
+  -webkit-user-select:none;
+  transition:transform .12s ease, color .12s ease, opacity .12s ease;
+}
+.settings-year-wheel-item.is-selected{
+  color:#1f2d4d;
+  transform:scale(1.02);
+}
+.settings-year-wheel-highlight{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:60px;
+  transform:translateY(-50%);
+  border-radius:20px;
+  border:1px solid rgba(77,156,197,0.16);
+  background:rgba(77,156,197,0.08);
+  pointer-events:none;
+}
+.settings-year-wheel-fade{
+  position:absolute;
+  left:0;
+  right:0;
+  height:74px;
+  pointer-events:none;
+  z-index:2;
+}
+.settings-year-wheel-fade-top{
+  top:0;
+  background:linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(255,255,255,0));
+}
+.settings-year-wheel-fade-bottom{
+  bottom:0;
+  background:linear-gradient(to top, rgba(255,255,255,0.98), rgba(255,255,255,0));
 }

@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.246";
+const BUILD_VERSION = "2.247";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3146,33 +3146,87 @@ function __applyExerciseYearChange__(nextYear){
   return true;
 }
 
-function __populateSettingsYearPicker__(selectedYear){
-  const input = document.getElementById("settingsYearInput");
-  if (!input) return;
-  const selected = String(selectedYear || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  const currentYear = new Date().getFullYear();
-  const startYear = 2000;
-  const endYear = 2100;
+const __SETTINGS_YEAR_WHEEL_ROW__ = 60;
+let __settingsYearWheelTimer__ = null;
+let __settingsYearWheelCloseTimer__ = null;
+let __settingsYearWheelApplying__ = false;
+
+function __getSettingsYearValues__(){
   const years = [];
-  for (let y = endYear; y >= startYear; y -= 1) years.push(String(y));
-  input.innerHTML = years.map((year) => `<option value="${year}">${year}</option>`).join("");
-  input.value = years.includes(selected) ? selected : String(currentYear);
+  for (let y = 2100; y >= 2000; y -= 1) years.push(String(y));
+  return years;
+}
+
+function __populateSettingsYearPicker__(selectedYear){
+  const wheel = document.getElementById("settingsYearWheel");
+  if (!wheel) return;
+  const years = __getSettingsYearValues__();
+  const selected = String(selectedYear || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  wheel.innerHTML = years.map((year) => `<div class="settings-year-wheel-item${year === selected ? ' is-selected' : ''}" data-year="${year}" role="option" aria-selected="${year === selected ? 'true' : 'false'}">${year}</div>`).join("");
+}
+
+function __highlightSettingsYearWheel__(year){
+  const wheel = document.getElementById("settingsYearWheel");
+  if (!wheel) return;
+  const target = String(year || "").trim();
+  wheel.querySelectorAll('.settings-year-wheel-item').forEach((item) => {
+    const on = item.getAttribute('data-year') === target;
+    item.classList.toggle('is-selected', on);
+    item.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+function __getSettingsYearWheelValue__(){
+  const wheel = document.getElementById("settingsYearWheel");
+  if (!wheel) return String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const years = __getSettingsYearValues__();
+  const index = Math.max(0, Math.min(years.length - 1, Math.round(wheel.scrollTop / __SETTINGS_YEAR_WHEEL_ROW__)));
+  return years[index] || years[0];
+}
+
+function __scrollSettingsYearWheelTo__(year, behavior){
+  const wheel = document.getElementById("settingsYearWheel");
+  if (!wheel) return;
+  const years = __getSettingsYearValues__();
+  const target = String(year || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const index = Math.max(0, years.indexOf(target));
+  try{ wheel.scrollTo({ top: index * __SETTINGS_YEAR_WHEEL_ROW__, behavior: behavior || 'auto' }); }
+  catch(_){ wheel.scrollTop = index * __SETTINGS_YEAR_WHEEL_ROW__; }
+  __highlightSettingsYearWheel__(target);
+}
+
+function __applySettingsYearWheelSelection__(opts){
+  if (__settingsYearWheelApplying__) return;
+  __settingsYearWheelApplying__ = true;
+  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const next = __getSettingsYearWheelValue__();
+  __highlightSettingsYearWheel__(next);
+  __scrollSettingsYearWheelTo__(next, 'smooth');
+  if (next && next !== current){
+    try{ __applyExerciseYearChange__(String(next)); }catch(_){ }
+    try{ toast("Anno esercizio aggiornato"); }catch(_){ }
+  }
+  try{ clearTimeout(__settingsYearWheelCloseTimer__); }catch(_){ }
+  __settingsYearWheelCloseTimer__ = setTimeout(() => {
+    __settingsYearWheelApplying__ = false;
+    if (!(opts && opts.keepOpen)) __closeSettingsYearModal__();
+  }, 170);
 }
 
 function __openSettingsYearModal__(){
   const modal = document.getElementById("settingsYearModal");
-  const input = document.getElementById("settingsYearInput");
-  if (!modal || !input) return;
+  const wheel = document.getElementById("settingsYearWheel");
+  if (!modal || !wheel) return;
   const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   __populateSettingsYearPicker__(current);
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
-  try{ refreshFloatingLabels(); }catch(_){ }
-  try{ input.focus({ preventScroll:true }); }catch(_){ try{ input.focus(); }catch(__){ } }
-  try{
-    const active = input.options[input.selectedIndex];
-    if (active && typeof active.scrollIntoView === "function") active.scrollIntoView({ block:"center" });
-  }catch(_){ }
+  __settingsYearWheelApplying__ = false;
+  try{ clearTimeout(__settingsYearWheelCloseTimer__); }catch(_){ }
+  requestAnimationFrame(() => {
+    __scrollSettingsYearWheelTo__(current, 'auto');
+    try{ wheel.focus({ preventScroll:true }); }catch(_){ try{ wheel.focus(); }catch(__){ } }
+  });
 }
 
 function __closeSettingsYearModal__(){
@@ -3183,19 +3237,7 @@ function __closeSettingsYearModal__(){
 }
 
 function __saveSettingsYearModal__(){
-  const input = document.getElementById("settingsYearInput");
-  const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  const clean = String(input?.value || "").trim();
-  const n = Number(clean);
-  if (!Number.isInteger(n) || n < 2000 || n > 2100){
-    toast("Anno non valido");
-    return;
-  }
-  if (String(n) !== current){
-    __applyExerciseYearChange__(String(n));
-    toast("Anno esercizio aggiornato");
-  }
-  __closeSettingsYearModal__();
+  __applySettingsYearWheelSelection__();
 }
 
 function __pickExerciseYearFromSettings__(){
@@ -7735,21 +7777,34 @@ const cfg = document.getElementById("settingsConfigBtn");
     cfgModal.addEventListener("click", (e) => { if (e.target === cfgModal) __closeSettingsConfigModal__(); });
   }
 
-  const yearClose = document.getElementById("settingsYearClose");
-  if (yearClose) bindFastTap(yearClose, __closeSettingsYearModal__);
-  const yearCancel = document.getElementById("settingsYearCancel");
-  if (yearCancel) bindFastTap(yearCancel, __closeSettingsYearModal__);
-  const yearSave = document.getElementById("settingsYearSave");
-  if (yearSave) bindFastTap(yearSave, __saveSettingsYearModal__);
   const yearModal = document.getElementById("settingsYearModal");
   if (yearModal && !yearModal.__boundClose){
     yearModal.__boundClose = true;
     yearModal.addEventListener("click", (e) => { if (e.target === yearModal) __closeSettingsYearModal__(); });
   }
-  const yearInput = document.getElementById("settingsYearInput");
-  if (yearInput && !yearInput.__boundEnter){
-    yearInput.__boundEnter = true;
-    yearInput.addEventListener("keydown", (e) => {
+  const yearWheel = document.getElementById("settingsYearWheel");
+  if (yearWheel && !yearWheel.__boundWheel){
+    yearWheel.__boundWheel = true;
+    yearWheel.addEventListener("scroll", () => {
+      try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
+      const liveYear = __getSettingsYearWheelValue__();
+      __highlightSettingsYearWheel__(liveYear);
+      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ keepOpen:false }); }, 110);
+    }, { passive:true });
+    yearWheel.addEventListener("click", (e) => {
+      const item = e.target && e.target.closest ? e.target.closest('.settings-year-wheel-item') : null;
+      if (!item) return;
+      const year = item.getAttribute('data-year');
+      __scrollSettingsYearWheelTo__(year, 'smooth');
+      try{ clearTimeout(__settingsYearWheelTimer__); }catch(_){ }
+      __settingsYearWheelTimer__ = setTimeout(() => { __applySettingsYearWheelSelection__({ keepOpen:false }); }, 120);
+    });
+    yearWheel.addEventListener("keydown", (e) => {
+      if (e.key === "Escape"){
+        e.preventDefault();
+        __closeSettingsYearModal__();
+        return;
+      }
       if (e.key === "Enter"){
         e.preventDefault();
         __saveSettingsYearModal__();
@@ -16417,7 +16472,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.246')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.247')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
