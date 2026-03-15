@@ -6276,7 +6276,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  border: 1px solid rgba(15,23,42,0.14);
+  border: 1px solid rgba(255,255,255,0.24);
   padding: 0;
   display:inline-flex;
   align-items:center;
@@ -6284,22 +6284,23 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   appearance: none;
   -webkit-appearance: none;
   background-clip: padding-box;
-  background: rgba(255,255,255,0.80);
+  opacity: 0.80;
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
 .piscina-action-btn .ui-ico,
 .piscina-action-btn .ui-ico *{
-  stroke: var(--ico-sky) !important;
+  stroke: #ffffff !important;
   fill: none !important;
 }
 .piscina-action-btn:active{
   transform: translateY(0.5px);
 }
-.piscina-action-sim{ background: rgba(255,255,255,0.80); }
-.piscina-action-sim2{ background: rgba(255,255,255,0.80); }
-.piscina-action-report{ background: rgba(255,255,255,0.80); }
+.piscina-action-sim{ background: #4d9cc5; }
+.piscina-action-sim2{ background: #2b7cb4; }
+.piscina-action-report{ background: #22c55e; }
+.piscina-action-close{ background: #ef4444; }
 
 .stats-subtitle{
   font-weight: 900;

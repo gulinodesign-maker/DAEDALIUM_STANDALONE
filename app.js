@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.231";
+const BUILD_VERSION = "2.232";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16111,170 +16111,292 @@ function __piscinaValuesForMonth(viewMonth){
   return out;
 }
 
-function piscinaPrintCurrentMonth(){
-  const viewMonth = piscinaGetViewMonth();
+function __piscinaMonthStats__(monthItems){
+  const nums = (field) => monthItems.map(x => x.row ? Number(x.row[field]) : null).filter(v => v !== null && !isNaN(v));
+  const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+b,0) / arr.length) : null;
+  return {
+    totalDays: monthItems.length,
+    filledDays: monthItems.filter(x => !!x.row).length,
+    cloroLiberoAvg: avg(nums("cloro_attivo_libero")),
+    cloroCombAvg: avg(nums("cloro_attivo_combinato")),
+    phAvg: avg(nums("ph")),
+    tempAvg: avg(nums("temp_acqua")),
+  };
+}
+
+function __piscinaFmtVal__(x, digits=2, unit=""){
+  if (x === null || x === undefined || Number.isNaN(Number(x))) return "—";
+  return `${Number(x).toFixed(digits)}${unit}`;
+}
+
+function __piscinaPdfFileName__(viewMonth){
+  const y = viewMonth.getFullYear();
+  const m = String(viewMonth.getMonth() + 1).padStart(2, "0");
+  return `report-piscina-${y}-${m}.pdf`;
+}
+
+function __piscinaLoadImage__(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function __piscinaBase64ToBytes__(base64){
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function __piscinaPdfFromJpegDataUrl__(jpegDataUrl, imgWidth, imgHeight){
+  const base64 = String(jpegDataUrl || '').split(',')[1] || '';
+  const imgBytes = __piscinaBase64ToBytes__(base64);
+  const pageW = 595.28;
+  const pageH = 841.89;
+  const enc = new TextEncoder();
+  const chunks = [];
+  let offset = 0;
+  const offsets = [0];
+
+  const pushText = (txt) => {
+    const bytes = enc.encode(txt);
+    chunks.push(bytes);
+    offset += bytes.length;
+  };
+  const pushBytes = (bytes) => {
+    chunks.push(bytes);
+    offset += bytes.length;
+  };
+
+  pushText(`%PDF-1.4
+%ÿÿÿÿ
+`);
+
+  const addObj = (id, bodyParts) => {
+    offsets[id] = offset;
+    pushText(`${id} 0 obj
+`);
+    bodyParts.forEach((part) => {
+      if (typeof part === 'string') pushText(part);
+      else pushBytes(part);
+    });
+    pushText(`
+endobj
+`);
+  };
+
+  addObj(1, [`<< /Type /Catalog /Pages 2 0 R >>
+`]);
+  addObj(2, [`<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+`]);
+  addObj(3, [`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>
+`]);
+  addObj(4, [
+    `<< /Type /XObject /Subtype /Image /Width ${imgWidth} /Height ${imgHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>
+stream
+`,
+    imgBytes,
+    `
+endstream
+`
+  ]);
+  const content = `q
+${pageW.toFixed(2)} 0 0 ${pageH.toFixed(2)} 0 0 cm
+/Im0 Do
+Q
+`;
+  addObj(5, [`<< /Length ${content.length} >>
+stream
+${content}endstream
+`]);
+
+  const xrefOffset = offset;
+  pushText(`xref
+0 6
+0000000000 65535 f 
+`);
+  for (let i = 1; i <= 5; i += 1) pushText(`${String(offsets[i]).padStart(10, '0')} 00000 n 
+`);
+  pushText(`trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+${xrefOffset}
+%%EOF`);
+
+  return new Blob(chunks, { type: 'application/pdf' });
+}
+
+async function __piscinaReportCanvas__(viewMonth){
   const monthItems = __piscinaValuesForMonth(viewMonth);
+  const rows = monthItems.filter(x => !!x.row);
+  if (!rows.length) throw new Error('Nessun report nel mese selezionato');
 
-  const rows = monthItems.filter(x=>!!x.row).map(x=>x.row);
-  if (!rows.length){ toast("Nessun report nel mese selezionato"); return; }
+  const stats = __piscinaMonthStats__(monthItems);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1240;
+  canvas.height = 1754;
+  const ctx = canvas.getContext('2d', { alpha:false });
+  if (!ctx) throw new Error('Canvas non disponibile');
 
-  // Costruisci serie per grafici
-  const series = {
-    cloroL: monthItems.map(x=>x.row ? Number(x.row.cloro_attivo_libero) : null),
-    cloroC: monthItems.map(x=>x.row ? Number(x.row.cloro_attivo_combinato) : null),
-    ph: monthItems.map(x=>x.row ? Number(x.row.ph) : null),
-    temp: monthItems.map(x=>x.row ? Number(x.row.temp_acqua) : null),
-  };
-
-  const minmax = (arr)=>{
-    const v = arr.filter(x=>x!==null && !isNaN(x));
-    if (!v.length) return {min:0,max:1};
-    return { min: Math.min(...v), max: Math.max(...v) };
-  };
-
-  const spark = (arr, colorVar="--p1")=>{
-    const w=228, h=18, pad=2;
-    const mm=minmax(arr);
-    const span = (mm.max-mm.min) || 1;
-    let pts=[];
-    const n=arr.length;
-    for (let i=0;i<n;i++){
-      const v=arr[i];
-      if (v===null || isNaN(v)){ continue; }
-      const x = pad + (i/(n-1))*(w-2*pad);
-      const y = pad + (1-((v-mm.min)/span))*(h-2*pad);
-      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-    }
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="${w}" height="${h}" rx="8" ry="8" style="fill: var(--card); stroke: var(--border);"/>
-      <polyline points="${pts.join(" ")}" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke: var(${colorVar});"/>
-    </svg>`;
-  };
-
-  const fmt = (x, unit="")=>{
-    if (x===null || x===undefined || isNaN(Number(x))) return "—";
-    return `${x}${unit}`;
-  };
-
+  const W = canvas.width;
+  const H = canvas.height;
+  const pad = 54;
+  const contentW = W - pad * 2;
+  const rowH = 34;
+  const tableTop = 560;
+  const colDay = 92;
+  const colW = (contentW - colDay) / 4;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const __base = (()=>{
-    try{
-      const u = String(location && location.href || "").split("#")[0].split("?")[0];
-      const i = u.lastIndexOf("/");
-      return (i>=0) ? u.slice(0, i+1) : "./";
-    }catch(_){ return "./"; }
-  })();
-  const html = `<!doctype html>
-  <html lang="it"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><base href="${__base}"/>
-  <title>Report Piscina - ${monthTitle}</title>
-  <style>
-    :root{
-      --p1:#2B7CB4;
-      --p2:#4D9CC5;
-      --p3:#6FB7D6;
-      --p4:#96BFC7;
-      --p5:#BFBEA9;
-      --p6:#D6B286;
-      --p7:#CF9458;
-      --p8:#C9772B;
-      --text:#0f172a;
-      --border: rgba(15,23,42,0.12);
-      --muted: rgba(15,23,42,0.72);
-      --card: rgba(255,255,255,0.94);
-      --headbg: rgba(77,156,197,0.18);
-      --bg:#ffffff;
-    }
-    *{ box-sizing:border-box; }
-    body{ font-family: -apple-system,BlinkMacSystemFont,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin: 0; color: var(--text); background:var(--bg); }
-    .page{ padding: 14px; }
-    .hdr{ display:flex; align-items:center; gap:12px; margin:0 0 10px 0; }
-    .logo{ width:56px; height:auto; border-radius:8px; flex:0 0 auto; }
-    .htxt{ flex:1; min-width:0; }
-    h1{ font-size: 18px; margin:0 0 6px 0; color: var(--p1); }
-    .sub{ font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.232')}`;
 
-    .brandbar{ display:flex; width:100%; height:8px; border-radius: 999px; overflow:hidden; margin: 0 0 10px 0; border: 1px solid var(--border); }
-    .brandbar span{ flex:1; }
-    .brandbar .c1{ background: var(--p1); }
-    .brandbar .c2{ background: var(--p2); }
-    .brandbar .c3{ background: var(--p3); }
-    .brandbar .c4{ background: var(--p4); }
-    .brandbar .c5{ background: var(--p5); }
-    .brandbar .c6{ background: var(--p6); }
-    .brandbar .c7{ background: var(--p7); }
-    .brandbar .c8{ background: var(--p8); }
-    .grid{ display:flex; flex-direction:column; gap: 8px; }
-    .card{ border: 1px solid var(--border); border-radius: 14px; padding: 10px; background: var(--card); }
-    .row{ display:flex; justify-content:space-between; align-items:center; gap: 10px; margin: 5px 0; font-size: 11px; }
-    .k{ font-weight: 800; }
-    .v{ font-weight: 900; }
-    table{ width:100%; border-collapse: collapse; font-size: 9px; }
-    th,td{ border-bottom: 1px solid var(--border); padding: 3px 4px; text-align:left; vertical-align:top; }
-    thead th{ background: var(--headbg); }
-    th{ font-weight: 900; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    @page{ size: A4; margin: 10mm; }
-    @media print{
-      html, body{
-        margin: 0;
-        background:#fff;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .page{ padding: 0; }
-      svg{ max-width: 100%; height: auto; }
-      .card{ break-inside: avoid; page-break-inside: avoid; }
-      table, thead, tbody, tr, td, th{ break-inside: avoid; page-break-inside: avoid; }
-    }
-</style></head><body><div class="page">
-    <div class="hdr">
-      <img class="logo" src="./assets/logo.jpg" alt="Daedalium"/>
-      <div class="htxt">
-        <h1>Report Piscina — ${monthTitle}</h1>
-        <div class="sub"></div>
-      </div>
-    </div>
-    <div class="brandbar" aria-hidden="true"><span class="c1"></span><span class="c2"></span><span class="c3"></span><span class="c4"></span><span class="c5"></span><span class="c6"></span><span class="c7"></span><span class="c8"></span></div>
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
 
-    <div class="grid">
-      <div class="card">
-        <div class="row"><span class="k">Cloro attivo libero</span><span class="v">${spark(series.cloroL,"--p1")}</span></div>
-        <div class="row"><span class="k">Cloro attivo combinato</span><span class="v">${spark(series.cloroC,"--p8")}</span></div>
-        <div class="row"><span class="k">pH</span><span class="v">${spark(series.ph,"--p4")}</span></div>
-        <div class="row"><span class="k">Temperatura acqua</span><span class="v">${spark(series.temp,"--p6")}</span></div>
-      </div>
-
-      <div class="card">
-        <table>
-          <thead><tr><th>Giorno</th><th>Cloro libero</th><th>Cloro comb.</th><th>pH</th><th>Temp</th></tr></thead>
-          <tbody>
-          ${monthItems.map(x=>{
-            if (!x.row) return `<tr><td>${x.day}</td><td colspan="4" style="color:rgba(15,23,42,0.45)">—</td></tr>`;
-            const r=x.row;
-            return `<tr>
-              <td class="mono">${x.day}</td>
-              <td>${fmt(r.cloro_attivo_libero," ppm")}</td>
-              <td>${fmt(r.cloro_attivo_combinato," ppm")}</td>
-              <td>${fmt(r.ph,"")}</td>
-              <td>${fmt(r.temp_acqua," °C")}</td>
-</tr>`;
-          }).join("")}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-    <script>setTimeout(()=>{ try{ window.focus(); }catch(e){} }, 100);</script>
-  </body></html>`;
-
-  const w = window.open("", "_blank");
-  if (!w){ toast("Popup bloccato: abilita finestre per stampare"); return; }
   try{
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-    setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 450);
-  }catch(_){ try{ w.close(); }catch(__){} }
+    const logo = await __piscinaLoadImage__(logoSrc);
+    ctx.save();
+    ctx.beginPath();
+    const ls = 84;
+    const lx = pad;
+    const ly = pad;
+    ctx.moveTo(lx + 18, ly);
+    ctx.arcTo(lx + ls, ly, lx + ls, ly + ls, 18);
+    ctx.arcTo(lx + ls, ly + ls, lx, ly + ls, 18);
+    ctx.arcTo(lx, ly + ls, lx, ly, 18);
+    ctx.arcTo(lx, ly, lx + ls, ly, 18);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(logo, lx, ly, ls, ls);
+    ctx.restore();
+  }catch(_){ }
+
+  const colors = ['#2B7CB4','#4D9CC5','#6FB7D6','#96BFC7','#BFBEA9','#D6B286','#CF9458','#C9772B'];
+  const barX = pad + 104;
+  const barY = pad + 18;
+  const barW = contentW - 104;
+  const segW = barW / colors.length;
+  colors.forEach((c, i) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(barX + segW * i, barY, segW + 1, 12);
+  });
+
+  ctx.fillStyle = '#2B7CB4';
+  ctx.font = '900 40px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Report Piscina', pad + 104, pad + 72);
+  ctx.fillStyle = '#0f172a';
+  ctx.font = '700 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(monthTitle, pad + 104, pad + 106);
+  ctx.fillStyle = 'rgba(15,23,42,0.62)';
+  ctx.font = '500 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(`Build ${(window.APP_VERSION || 'dDAE_2.232')} · PDF condivisibile`, pad, 168);
+
+  const cardY = 204;
+  const cardGap = 18;
+  const cardH = 120;
+  const cardW = (contentW - cardGap) / 2;
+  const drawCard = (x, y, title, lines, fill='#f7fbfe') => {
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = 'rgba(15,23,42,0.10)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, x, y, cardW, cardH, 22);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#2B7CB4';
+    ctx.font = '800 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(title, x + 20, y + 34);
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 19px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    lines.forEach((line, idx) => {
+      ctx.fillText(line, x + 20, y + 68 + (idx * 24));
+    });
+  };
+  drawCard(pad, cardY, 'Riepilogo', [
+    `Giorni nel mese: ${stats.totalDays}`,
+    `Report presenti: ${stats.filledDays}`,
+    `Periodo: ${monthTitle}`
+  ]);
+  drawCard(pad + cardW + cardGap, cardY, 'Valori medi', [
+    `Cloro libero: ${__piscinaFmtVal__(stats.cloroLiberoAvg, 2, ' ppm')}`,
+    `Cloro combinato: ${__piscinaFmtVal__(stats.cloroCombAvg, 2, ' ppm')}`,
+    `pH / Temp: ${__piscinaFmtVal__(stats.phAvg, 2, '')} · ${__piscinaFmtVal__(stats.tempAvg, 1, ' °C')}`
+  ], '#fefaf5');
+
+  ctx.fillStyle = '#2B7CB4';
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Dettaglio giornaliero', pad, tableTop - 20);
+
+  const headers = ['Giorno', 'Cloro libero', 'Cloro comb.', 'pH', 'Temp'];
+  const headerXs = [pad, pad + colDay, pad + colDay + colW, pad + colDay + (colW * 2), pad + colDay + (colW * 3)];
+  ctx.fillStyle = 'rgba(77,156,197,0.18)';
+  roundRect(ctx, pad, tableTop, contentW, rowH, 14);
+  ctx.fill();
+  ctx.fillStyle = '#0f172a';
+  ctx.font = '800 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  headers.forEach((h, idx) => ctx.fillText(h, headerXs[idx] + 12, tableTop + 22));
+
+  monthItems.forEach((item, idx) => {
+    const y = tableTop + rowH + (idx * rowH);
+    ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : 'rgba(77,156,197,0.05)';
+    roundRect(ctx, pad, y, contentW, rowH, 0);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(15,23,42,0.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, y + rowH);
+    ctx.lineTo(pad + contentW, y + rowH);
+    ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    const row = item.row || {};
+    const vals = [
+      String(item.day),
+      item.row ? __piscinaFmtVal__(row.cloro_attivo_libero, 2, ' ppm') : '—',
+      item.row ? __piscinaFmtVal__(row.cloro_attivo_combinato, 2, ' ppm') : '—',
+      item.row ? __piscinaFmtVal__(row.ph, 2, '') : '—',
+      item.row ? __piscinaFmtVal__(row.temp_acqua, 1, ' °C') : '—',
+    ];
+    vals.forEach((v, i) => ctx.fillText(v, headerXs[i] + 12, y + 22));
+  });
+
+  ctx.fillStyle = 'rgba(15,23,42,0.55)';
+  ctx.font = '500 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(`Generato il ${new Date().toLocaleString('it-IT')}`, pad, H - 34);
+  return canvas;
+}
+
+async function piscinaShareCurrentMonthPdf(){
+  const viewMonth = piscinaGetViewMonth();
+  const filename = __piscinaPdfFileName__(viewMonth);
+  const canvas = await __piscinaReportCanvas__(viewMonth);
+  const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  const pdfBlob = __piscinaPdfFromJpegDataUrl__(jpegDataUrl, canvas.width, canvas.height);
+  const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+  try{
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      await navigator.share({ title: `Report piscina ${__fmtMonthYear(viewMonth)}`, files:[file] });
+      return true;
+    }
+  }catch(err){
+    if (err && err.name === 'AbortError') return false;
+  }
+
+  const url = URL.createObjectURL(pdfBlob);
+  try{
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    try{ a.click(); }catch(_){ }
+    try{ document.body.removeChild(a); }catch(_){ }
+    toast('PDF report pronto', 'blue');
+    return true;
+  } finally {
+    setTimeout(() => { try{ URL.revokeObjectURL(url); }catch(_){ } }, 2000);
+  }
 }
 
 async function piscinaCreateReportForDay(dayKey, { origine="auto19" } = {}){
@@ -16375,7 +16497,8 @@ function setupPiscina(){
   const grid = document.getElementById("piscinaGrid");
   const close = document.getElementById("piscinaModalClose");
   const modal = document.getElementById("piscinaModal");
-  const printBtn = document.getElementById("piscinaPrintBtn");
+  const shareBtn = document.getElementById("piscinaShareBtn");
+  const closeReportBtn = document.getElementById("piscinaCloseBtn");
 
   if (prev) bindFastTap(prev, ()=>{ const vm = piscinaGetViewMonth(); piscinaSetViewMonth(new Date(vm.getFullYear(), vm.getMonth()-1, 1)); renderPiscinaCalendar(); });
   if (next) bindFastTap(next, ()=>{ const vm = piscinaGetViewMonth(); piscinaSetViewMonth(new Date(vm.getFullYear(), vm.getMonth()+1, 1)); renderPiscinaCalendar(); });
@@ -16394,7 +16517,8 @@ function setupPiscina(){
   if (modal){
     modal.addEventListener("click", (e)=>{ if (e.target === modal) piscinaCloseModal(); });
   }
-  if (printBtn) bindFastTap(printBtn, ()=>piscinaPrintCurrentMonth());
+  if (shareBtn) bindFastTap(shareBtn, async ()=>{ try{ await piscinaShareCurrentMonthPdf(); }catch(e){ toast(e?.message || "Errore PDF"); } });
+  if (closeReportBtn) bindFastTap(closeReportBtn, ()=>{ try{ showPage("statistiche"); }catch(_){ } });
 
   // scheduler robusto: quando l'app è aperta o torna attiva
   try{
