@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.232";
+const BUILD_VERSION = "2.233";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16243,14 +16243,126 @@ async function __piscinaReportCanvas__(viewMonth){
 
   const W = canvas.width;
   const H = canvas.height;
-  const pad = 54;
+  const pad = 44;
   const contentW = W - pad * 2;
-  const rowH = 34;
-  const tableTop = 560;
-  const colDay = 92;
-  const colW = (contentW - colDay) / 4;
+  const rowCount = monthItems.length;
+  const footerY = H - 28;
+  const tableBottomMax = H - 92;
+  const tableTop = 688;
+  const headerH = 32;
+  const rowH = Math.max(22, Math.min(30, Math.floor((tableBottomMax - (tableTop + headerH)) / Math.max(1, rowCount))));
+  const tableH = headerH + (rowH * rowCount);
+  const chartAreaY = 330;
+  const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.232')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.233')}`;
+  const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
+  const tableHeaderFont = rowH <= 23 ? 13 : 14;
+  const colDay = 76;
+  const remainingW = contentW - colDay;
+  const colRatios = [1.15, 1.15, 0.75, 0.95];
+  const ratioSum = colRatios.reduce((a, b) => a + b, 0);
+  const colWidths = colRatios.map(v => remainingW * (v / ratioSum));
+  const headerXs = [pad, pad + colDay];
+  for (let i = 1; i < colWidths.length; i += 1) headerXs.push(headerXs[1] + colWidths.slice(0, i).reduce((a, b) => a + b, 0));
+
+  const drawTextFit = (text, x, y, maxWidth, opts={}) => {
+    const { font='600 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color='#0f172a', align='left' } = opts;
+    ctx.save();
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.textAlign = align;
+    let out = String(text == null ? '' : text);
+    while (out.length > 1 && ctx.measureText(out).width > maxWidth) out = out.slice(0, -1);
+    if (out !== text && out.length > 1) out = out.slice(0, -1) + '…';
+    ctx.fillText(out, x, y, maxWidth);
+    ctx.restore();
+  };
+
+  const drawSeriesCard = (x, y, w, h, title, values, opts={}) => {
+    const color = opts.color || '#2B7CB4';
+    const digits = opts.digits ?? 2;
+    const unit = opts.unit || '';
+    const nums = values.map(v => Number(v)).filter(v => Number.isFinite(v));
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = 'rgba(15,23,42,0.10)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, x, y, w, h, 20);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = '800 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    ctx.fillText(title, x + 16, y + 26);
+
+    const info = nums.length
+      ? `${Math.min(...nums).toFixed(digits)} / ${Math.max(...nums).toFixed(digits)}${unit}`
+      : 'n.d.';
+    ctx.fillStyle = 'rgba(15,23,42,0.64)';
+    ctx.font = '600 12px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    drawTextFit(info, x + w - 16, y + 26, 120, { font:'600 12px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'rgba(15,23,42,0.64)', align:'right' });
+
+    const chartX = x + 14;
+    const chartY = y + 42;
+    const chartW = w - 28;
+    const chartH = h - 64;
+
+    ctx.strokeStyle = 'rgba(15,23,42,0.08)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 2; i += 1) {
+      const gy = chartY + (chartH * i / 2);
+      ctx.beginPath();
+      ctx.moveTo(chartX, gy);
+      ctx.lineTo(chartX + chartW, gy);
+      ctx.stroke();
+    }
+
+    if (!nums.length) {
+      ctx.fillStyle = 'rgba(15,23,42,0.42)';
+      ctx.font = '600 13px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+      ctx.fillText('Nessun dato', x + 16, y + h - 16);
+      return;
+    }
+
+    let min = Math.min(...nums);
+    let max = Math.max(...nums);
+    if (min === max) { min -= 1; max += 1; }
+    const points = [];
+    monthItems.forEach((item, idx) => {
+      const raw = item.row ? Number(item.row[opts.key]) : NaN;
+      if (!Number.isFinite(raw)) return;
+      const px = chartX + (idx / Math.max(1, rowCount - 1)) * chartW;
+      const py = chartY + chartH - ((raw - min) / (max - min)) * chartH;
+      points.push([px, py, raw]);
+    });
+
+    if (points.length === 1) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(points[0][0], points[0][1], 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (points.length > 1) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        if (!i) ctx.moveTo(p[0], p[1]);
+        else ctx.lineTo(p[0], p[1]);
+      });
+      ctx.stroke();
+      ctx.fillStyle = color;
+      points.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 2.7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    const lastVal = nums[nums.length - 1];
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '800 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    drawTextFit(`Ultimo: ${lastVal.toFixed(digits)}${unit}`, x + 16, y + h - 14, w - 32, { font:'800 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'#0f172a' });
+  };
 
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, W, H);
@@ -16259,7 +16371,7 @@ async function __piscinaReportCanvas__(viewMonth){
     const logo = await __piscinaLoadImage__(logoSrc);
     ctx.save();
     ctx.beginPath();
-    const ls = 84;
+    const ls = 76;
     const lx = pad;
     const ly = pad;
     ctx.moveTo(lx + 18, ly);
@@ -16274,99 +16386,115 @@ async function __piscinaReportCanvas__(viewMonth){
   }catch(_){ }
 
   const colors = ['#2B7CB4','#4D9CC5','#6FB7D6','#96BFC7','#BFBEA9','#D6B286','#CF9458','#C9772B'];
-  const barX = pad + 104;
+  const barX = pad + 96;
   const barY = pad + 18;
-  const barW = contentW - 104;
+  const barW = contentW - 96;
   const segW = barW / colors.length;
   colors.forEach((c, i) => {
     ctx.fillStyle = c;
-    ctx.fillRect(barX + segW * i, barY, segW + 1, 12);
+    ctx.fillRect(barX + segW * i, barY, segW + 1, 10);
   });
 
   ctx.fillStyle = '#2B7CB4';
-  ctx.font = '900 40px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText('Report Piscina', pad + 104, pad + 72);
+  ctx.font = '900 36px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Report Piscina', pad + 96, pad + 64);
   ctx.fillStyle = '#0f172a';
-  ctx.font = '700 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText(monthTitle, pad + 104, pad + 106);
+  ctx.font = '700 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(monthTitle, pad + 96, pad + 95);
   ctx.fillStyle = 'rgba(15,23,42,0.62)';
-  ctx.font = '500 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText(`Build ${(window.APP_VERSION || 'dDAE_2.232')} · PDF condivisibile`, pad, 168);
+  ctx.font = '500 17px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText(`Build ${(window.APP_VERSION || 'dDAE_2.233')} · PDF condivisibile`, pad, 150);
 
-  const cardY = 204;
-  const cardGap = 18;
-  const cardH = 120;
-  const cardW = (contentW - cardGap) / 2;
-  const drawCard = (x, y, title, lines, fill='#f7fbfe') => {
-    ctx.fillStyle = fill;
-    ctx.strokeStyle = 'rgba(15,23,42,0.10)';
+  const cardsY = 180;
+  const cardGap = 16;
+  const cardW = (contentW - cardGap * 3) / 4;
+  const cardH = 108;
+  const summaryCards = [
+    { title:'Mese', value:`${stats.filledDays}/${stats.totalDays}`, sub:'report presenti', fill:'#f7fbfe' },
+    { title:'Cloro libero', value:__piscinaFmtVal__(stats.cloroLiberoAvg, 2), sub:'media ppm', fill:'#f2f8fc' },
+    { title:'Cloro comb.', value:__piscinaFmtVal__(stats.cloroCombAvg, 2), sub:'media ppm', fill:'#fefaf5' },
+    { title:'pH · Temp', value:`${__piscinaFmtVal__(stats.phAvg, 2)} · ${__piscinaFmtVal__(stats.tempAvg, 1)}`, sub:'media mese', fill:'#f8f7fd' }
+  ];
+  summaryCards.forEach((card, idx) => {
+    const x = pad + idx * (cardW + cardGap);
+    ctx.fillStyle = card.fill;
+    ctx.strokeStyle = 'rgba(15,23,42,0.09)';
     ctx.lineWidth = 2;
-    roundRect(ctx, x, y, cardW, cardH, 22);
+    roundRect(ctx, x, cardsY, cardW, cardH, 20);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = '#2B7CB4';
-    ctx.font = '800 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-    ctx.fillText(title, x + 20, y + 34);
+    ctx.font = '800 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    drawTextFit(card.title, x + 16, cardsY + 26, cardW - 32, { font:'800 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'#2B7CB4' });
     ctx.fillStyle = '#0f172a';
-    ctx.font = '700 19px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-    lines.forEach((line, idx) => {
-      ctx.fillText(line, x + 20, y + 68 + (idx * 24));
-    });
-  };
-  drawCard(pad, cardY, 'Riepilogo', [
-    `Giorni nel mese: ${stats.totalDays}`,
-    `Report presenti: ${stats.filledDays}`,
-    `Periodo: ${monthTitle}`
-  ]);
-  drawCard(pad + cardW + cardGap, cardY, 'Valori medi', [
-    `Cloro libero: ${__piscinaFmtVal__(stats.cloroLiberoAvg, 2, ' ppm')}`,
-    `Cloro combinato: ${__piscinaFmtVal__(stats.cloroCombAvg, 2, ' ppm')}`,
-    `pH / Temp: ${__piscinaFmtVal__(stats.phAvg, 2, '')} · ${__piscinaFmtVal__(stats.tempAvg, 1, ' °C')}`
-  ], '#fefaf5');
+    ctx.font = '900 26px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    drawTextFit(card.value, x + 16, cardsY + 60, cardW - 32, { font:'900 26px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'#0f172a' });
+    ctx.fillStyle = 'rgba(15,23,42,0.62)';
+    ctx.font = '700 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+    drawTextFit(card.sub, x + 16, cardsY + 84, cardW - 32, { font:'700 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'rgba(15,23,42,0.62)' });
+  });
 
   ctx.fillStyle = '#2B7CB4';
-  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText('Dettaglio giornaliero', pad, tableTop - 20);
+  ctx.font = '900 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Andamento compatto', pad, chartAreaY - 12);
 
-  const headers = ['Giorno', 'Cloro libero', 'Cloro comb.', 'pH', 'Temp'];
-  const headerXs = [pad, pad + colDay, pad + colDay + colW, pad + colDay + (colW * 2), pad + colDay + (colW * 3)];
+  const chartGap = 16;
+  const chartW = (contentW - chartGap) / 2;
+  const chartH = 132;
+  drawSeriesCard(pad, chartAreaY, chartW, chartH, 'Cloro libero', rows.map(x => x.row?.cloro_attivo_libero), { color:'#2B7CB4', digits:2, unit:' ppm', key:'cloro_attivo_libero' });
+  drawSeriesCard(pad + chartW + chartGap, chartAreaY, chartW, chartH, 'Cloro combinato', rows.map(x => x.row?.cloro_attivo_combinato), { color:'#C9772B', digits:2, unit:' ppm', key:'cloro_attivo_combinato' });
+  drawSeriesCard(pad, chartAreaY + chartH + chartGap, chartW, chartH, 'pH', rows.map(x => x.row?.ph), { color:'#6B5CE7', digits:2, unit:'', key:'ph' });
+  drawSeriesCard(pad + chartW + chartGap, chartAreaY + chartH + chartGap, chartW, chartH, 'Temperatura', rows.map(x => x.row?.temp_acqua), { color:'#17A673', digits:1, unit:' °C', key:'temp_acqua' });
+
+  ctx.fillStyle = '#2B7CB4';
+  ctx.font = '900 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  ctx.fillText('Dettaglio giornaliero', pad, tableTop - 14);
+
   ctx.fillStyle = 'rgba(77,156,197,0.18)';
-  roundRect(ctx, pad, tableTop, contentW, rowH, 14);
+  roundRect(ctx, pad, tableTop, contentW, headerH, 14);
   ctx.fill();
-  ctx.fillStyle = '#0f172a';
-  ctx.font = '800 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  headers.forEach((h, idx) => ctx.fillText(h, headerXs[idx] + 12, tableTop + 22));
+
+  const headers = ['G', 'Cloro lib.', 'Cloro comb.', 'pH', 'Temp'];
+  const colBoxes = [colDay, ...colWidths];
+  headers.forEach((h, idx) => {
+    const x = headerXs[idx] + 10;
+    const maxWidth = colBoxes[idx] - 20;
+    drawTextFit(h, x, tableTop + 21, maxWidth, { font:`800 ${tableHeaderFont}px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif`, color:'#0f172a' });
+  });
 
   monthItems.forEach((item, idx) => {
-    const y = tableTop + rowH + (idx * rowH);
+    const y = tableTop + headerH + (idx * rowH);
     ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : 'rgba(77,156,197,0.05)';
-    roundRect(ctx, pad, y, contentW, rowH, 0);
-    ctx.fill();
+    ctx.fillRect(pad, y, contentW, rowH);
     ctx.strokeStyle = 'rgba(15,23,42,0.06)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(pad, y + rowH);
     ctx.lineTo(pad + contentW, y + rowH);
     ctx.stroke();
-    ctx.fillStyle = '#0f172a';
-    ctx.font = '700 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+
     const row = item.row || {};
     const vals = [
-      String(item.day),
-      item.row ? __piscinaFmtVal__(row.cloro_attivo_libero, 2, ' ppm') : '—',
-      item.row ? __piscinaFmtVal__(row.cloro_attivo_combinato, 2, ' ppm') : '—',
+      String(item.day).padStart(2, '0'),
+      item.row ? __piscinaFmtVal__(row.cloro_attivo_libero, 2, '') : '—',
+      item.row ? __piscinaFmtVal__(row.cloro_attivo_combinato, 2, '') : '—',
       item.row ? __piscinaFmtVal__(row.ph, 2, '') : '—',
-      item.row ? __piscinaFmtVal__(row.temp_acqua, 1, ' °C') : '—',
+      item.row ? __piscinaFmtVal__(row.temp_acqua, 1, '°') : '—',
     ];
-    vals.forEach((v, i) => ctx.fillText(v, headerXs[i] + 12, y + 22));
+    vals.forEach((v, i) => {
+      const x = headerXs[i] + 10;
+      const maxWidth = colBoxes[i] - 20;
+      drawTextFit(v, x, y + Math.max(15, rowH - 7), maxWidth, { font:`700 ${tableFont}px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif`, color:'#0f172a' });
+    });
   });
 
   ctx.fillStyle = 'rgba(15,23,42,0.55)';
-  ctx.font = '500 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText(`Generato il ${new Date().toLocaleString('it-IT')}`, pad, H - 34);
+  ctx.font = '500 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
+  const generated = `Generato il ${new Date().toLocaleString('it-IT')}`;
+  const note = rows.length === rowCount ? '· tutti i giorni valorizzati' : `· giorni senza dato: ${rowCount - rows.length}`;
+  drawTextFit(`${generated} ${note}`, pad, footerY, contentW, { font:'500 15px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif', color:'rgba(15,23,42,0.55)' });
   return canvas;
 }
-
 async function piscinaShareCurrentMonthPdf(){
   const viewMonth = piscinaGetViewMonth();
   const filename = __piscinaPdfFileName__(viewMonth);
