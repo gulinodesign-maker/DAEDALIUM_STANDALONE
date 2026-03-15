@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.241";
+const BUILD_VERSION = "2.242";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6687,7 +6687,7 @@ function populateGuestChannelOptions(selectedId = null){
   if (!sel) return;
   const current = (selectedId == null) ? String(sel.value || '').trim() : String(selectedId || '').trim();
   const items = getChannelCatalogFromSettings();
-  sel.innerHTML = `<option value="">Seleziona…</option>` + items.map(item => `<option value="${String(item.id).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</option>`).join('');
+  sel.innerHTML = `<option value="">Seleziona…</option>` + items.map(item => `<option data-no-i18n="1" value="${String(item.id).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</option>`).join('');
   if (current && items.some(item => String(item.id) === current)) sel.value = current;
 }
 
@@ -7250,7 +7250,7 @@ async function renderChannelPage(){
       <div class="operatori-item-top">
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
-          <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
+          <div class="operatori-name" data-no-i18n="1">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
         </div>
         <div class="operatori-item-actions">
           <button aria-label="Modifica channel" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
@@ -14830,7 +14830,7 @@ function renderGuestCards(){
           </div>
         </div>
         <div class="guest-meta-right" aria-label="Stato">
-          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
+          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline" data-no-i18n="1"><span class="guest-channel-dot color-${channelBadge.color}" data-no-i18n="1" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
@@ -16379,7 +16379,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.241')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.242')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
