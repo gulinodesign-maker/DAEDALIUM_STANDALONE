@@ -10979,3 +10979,27 @@ body[data-role="operatore"] #page-home .home-grid{
 .piscina-edit-input:focus{
   border-color: rgba(74,159,214,0.85);
 }
+
+
+/* dDAE_2.237 — Home operatore: più aria fra le 4 icone */
+body[data-role="operatore"] #page-home .home-grid{
+  width: min(360px, 94vw) !important;
+  gap: 18px 22px !important;
+  justify-items: center !important;
+  align-items: start !important;
+}
+body[data-role="operatore"] #page-home .home-main{
+  width: 100% !important;
+  max-width: 150px !important;
+  gap: 10px !important;
+}
+body[data-role="operatore"] #page-home .home-main-label{
+  text-align: center !important;
+  line-height: 1.1 !important;
+}
+@media (max-width: 520px){
+  body[data-role="operatore"] #page-home .home-grid{
+    width: min(336px, 94vw) !important;
+    gap: 16px 18px !important;
+  }
+}

@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.236";
+const BUILD_VERSION = "2.237";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3061,7 +3061,8 @@ function applyRoleMode(){
 
 function __parseBuildVersion(v){
   try{
-    const m = String(v||'').match(/dDAE_(\d+)\.(\d+)/);
+    const raw = String(v||'').trim();
+    const m = raw.match(/(?:dDAE_)?(\d+)\.(\d+)/i);
     if(!m) return null;
     return {maj:Number(m[1]), min:Number(m[2])};
   }catch(_){ return null; }
@@ -3367,7 +3368,14 @@ async function hardUpdateCheck(){
     if (!res.ok) return;
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
-    if (!remote || !__isRemoteNewer(remote, BUILD_VERSION)) return;
+    if (!remote){
+      try{ sessionStorage.removeItem("dDAE_last_forced_build"); }catch(_){ }
+      return;
+    }
+    if (!__isRemoteNewer(remote, BUILD_VERSION)) {
+      try{ sessionStorage.removeItem("dDAE_last_forced_build"); }catch(_){ }
+      return;
+    }
 
     window.__ddaeHardUpdating = true;
     ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
@@ -16334,7 +16342,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.236')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.237')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
