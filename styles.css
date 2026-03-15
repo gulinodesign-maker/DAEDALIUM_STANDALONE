@@ -9559,6 +9559,8 @@ body[data-page^="stat"] #homeSyncBar{
 .settings-btn-laundrycatalog{ background:#7c6fd6 !important; border-color: rgba(124,111,214,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ background:#7c6fd6 !important; border-color: rgba(124,111,214,0.24) !important; }
 .channel-tag-letter{ color:#fff; font-size:12px; font-weight:900; line-height:1; }
+.channel-item .operatori-tag{ width:28px; height:28px; flex:0 0 28px; display:inline-flex; align-items:center; justify-content:center; }
+.channel-item .channel-tag-letter{ display:block; font-size:15px; line-height:1; text-align:center; }
 .channel-metrics-single .operatori-metric{ width:100%; }
 .guest-channel-inline{ display:inline-flex; align-items:center; margin-top:0; flex:0 0 auto; }
 .guest-channel-dot{ width:24px; height:24px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:12px; line-height:1; }
