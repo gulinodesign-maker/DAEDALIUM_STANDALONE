@@ -3089,35 +3089,6 @@ function __isRemoteNewer(remote, local){
 
 const __SESSION_KEY = "dDAE_session_v2";
 const __YEAR_KEY = "dDAE_exerciseYear";
-const __DARKMODE_KEY = "dDAE_darkMode_pending";
-
-function loadPendingDarkMode(){
-  try{ return localStorage.getItem(__DARKMODE_KEY) === "1"; } catch(_){ return false; }
-}
-
-function savePendingDarkMode(on){
-  try{ localStorage.setItem(__DARKMODE_KEY, on ? "1" : "0"); } catch(_){ }
-}
-
-function updateSettingsDarkModeButton(){
-  try{
-    const btn = document.getElementById("settingsSaveBtn");
-    if (!btn) return;
-    const on = !!loadPendingDarkMode();
-    btn.setAttribute("aria-pressed", on ? "true" : "false");
-    btn.classList.toggle("is-active", on);
-    const label = btn.querySelector(".settings-btn-label");
-    if (label) label.textContent = "Dark Mode";
-  }catch(_){ }
-}
-
-function __togglePendingDarkMode__(){
-  const next = !loadPendingDarkMode();
-  savePendingDarkMode(next);
-  updateSettingsDarkModeButton();
-  toast(next ? "Dark mode pronta per l'attivazione futura" : "Dark mode disattivata");
-}
-
 
 function loadSession(){
   try{
@@ -3213,17 +3184,6 @@ function __saveSettingsYearModal__(){
 
 function __pickExerciseYearFromSettings__(){
   __openSettingsYearModal__();
-}
-
-function __changeExerciseYearByStep__(step){
-  const current = Number(String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear()).trim());
-  const safeCurrent = Number.isInteger(current) ? current : new Date().getFullYear();
-  const delta = Number(step) > 0 ? 1 : -1;
-  const next = Math.max(2000, Math.min(2100, safeCurrent + delta));
-  if (next === safeCurrent) return false;
-  __applyExerciseYearChange__(String(next));
-  toast(`Anno esercizio ${next}`);
-  return true;
 }
 
 // =========================
@@ -3364,13 +3324,9 @@ function updateSettingsTabs(){
     const el = document.getElementById("settingsAccountYearTab");
     if (el) el.textContent = `${userLabel} - ${yLabel}`;
     const yearPill = document.getElementById("settingsYearPill");
-    if (yearPill){
-      yearPill.textContent = yLabel;
-      yearPill.setAttribute("aria-valuenow", String(parseInt(yLabel, 10) || ""));
-      yearPill.setAttribute("aria-valuetext", yLabel);
-    }
+    if (yearPill) yearPill.textContent = yLabel;
     const opYearPill = document.getElementById("opSettingsYearPill");
-    if (opYearPill) opYearPill.textContent = yLabel;
+    if (opYearPill) opYearPill.textContent = userLabel;
   }catch(_){ }
   try{ updateSettingsAccountName(); }catch(_){ }
 }
@@ -7617,44 +7573,7 @@ function setupImpostazioni() {
   if (back) back.addEventListener("click", () => showPage("home"));
 
   const save = document.getElementById("settingsSaveBtn");
-  if (save) bindFastTap(save, () => { __togglePendingDarkMode__(); });
-  try{ updateSettingsDarkModeButton(); }catch(_){ }
-
-  const yearPill = document.getElementById("settingsYearPill");
-  if (yearPill && !yearPill.__yearScrollBound){
-    yearPill.__yearScrollBound = true;
-    let touchStartY = null;
-    let wheelLock = false;
-    bindFastTap(yearPill, () => { try{ yearPill.focus({ preventScroll:true }); }catch(_){ try{ yearPill.focus(); }catch(__){ } } });
-    yearPill.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      if (wheelLock) return;
-      const delta = Number(e.deltaY || 0);
-      if (!delta) return;
-      wheelLock = true;
-      __changeExerciseYearByStep__(delta > 0 ? -1 : 1);
-      setTimeout(() => { wheelLock = false; }, 140);
-    }, { passive:false });
-    yearPill.addEventListener("touchstart", (e) => {
-      const t = e.touches && e.touches[0];
-      touchStartY = t ? t.clientY : null;
-    }, { passive:true });
-    yearPill.addEventListener("touchmove", (e) => {
-      if (touchStartY === null) return;
-      const t = e.touches && e.touches[0];
-      if (!t) return;
-      const diff = t.clientY - touchStartY;
-      if (Math.abs(diff) < 18) return;
-      e.preventDefault();
-      __changeExerciseYearByStep__(diff < 0 ? 1 : -1);
-      touchStartY = t.clientY;
-    }, { passive:false });
-    yearPill.addEventListener("touchend", () => { touchStartY = null; }, { passive:true });
-    yearPill.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowUp"){ e.preventDefault(); __changeExerciseYearByStep__(1); }
-      else if (e.key === "ArrowDown"){ e.preventDefault(); __changeExerciseYearByStep__(-1); }
-    });
-  }
+  if (save) bindFastTap(save, () => { __openSettingsYearModal__(); });
 
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
