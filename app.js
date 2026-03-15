@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.245";
+const BUILD_VERSION = "2.246";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3146,17 +3146,33 @@ function __applyExerciseYearChange__(nextYear){
   return true;
 }
 
+function __populateSettingsYearPicker__(selectedYear){
+  const input = document.getElementById("settingsYearInput");
+  if (!input) return;
+  const selected = String(selectedYear || state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const currentYear = new Date().getFullYear();
+  const startYear = 2000;
+  const endYear = 2100;
+  const years = [];
+  for (let y = endYear; y >= startYear; y -= 1) years.push(String(y));
+  input.innerHTML = years.map((year) => `<option value="${year}">${year}</option>`).join("");
+  input.value = years.includes(selected) ? selected : String(currentYear);
+}
+
 function __openSettingsYearModal__(){
   const modal = document.getElementById("settingsYearModal");
   const input = document.getElementById("settingsYearInput");
   if (!modal || !input) return;
   const current = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  input.value = current;
+  __populateSettingsYearPicker__(current);
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
   try{ refreshFloatingLabels(); }catch(_){ }
   try{ input.focus({ preventScroll:true }); }catch(_){ try{ input.focus(); }catch(__){ } }
-  try{ input.select(); }catch(_){ }
+  try{
+    const active = input.options[input.selectedIndex];
+    if (active && typeof active.scrollIntoView === "function") active.scrollIntoView({ block:"center" });
+  }catch(_){ }
 }
 
 function __closeSettingsYearModal__(){
@@ -7573,7 +7589,21 @@ function setupImpostazioni() {
   if (back) back.addEventListener("click", () => showPage("home"));
 
   const save = document.getElementById("settingsSaveBtn");
-  if (save) bindFastTap(save, () => { __openSettingsYearModal__(); });
+  if (save) bindFastTap(save, () => {
+    try{ toast("Dark Mode disponibile prossimamente"); }catch(_){ }
+  });
+
+  const settingsYearPill = document.getElementById("settingsYearPill");
+  if (settingsYearPill && !settingsYearPill.__boundYearTap){
+    settingsYearPill.__boundYearTap = true;
+    bindFastTap(settingsYearPill, () => { __openSettingsYearModal__(); });
+    settingsYearPill.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        __openSettingsYearModal__();
+      }
+    });
+  }
 
 
   const operatoriGo = document.getElementById("settingsOperatoriBtn");
@@ -16387,7 +16417,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.241')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.246')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;

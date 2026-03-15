@@ -11056,3 +11056,61 @@ body[data-role="operatore"] #page-home .home-main-label{
     gap: 16px 18px !important;
   }
 }
+
+
+/* dDAE_2.246 - settings year pill + dark mode */
+#page-impostazioni .settings-year-pill{
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#page-impostazioni .settings-year-pill:focus-visible{
+  outline:2px solid rgba(77,156,197,0.80);
+  outline-offset:3px;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark{
+  background: rgba(0,0,0,0.80) !important;
+  border-color: rgba(0,0,0,0.24) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{
+  background: rgba(0,122,255,0.80) !important;
+  border-color: rgba(0,122,255,0.24) !important;
+}
+#page-impostazioni .settings-btn-logout-pill,
+#page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(255,59,48,0.80) !important;
+  border-color: rgba(255,59,48,0.24) !important;
+}
+#settingsYearModal .field.float{
+  position:relative;
+}
+#settingsYearModal #settingsYearInput{
+  width:100%;
+  min-height:220px;
+  border-radius:22px;
+  border:1px solid rgba(77,156,197,0.22);
+  background: rgba(255,255,255,0.96);
+  color:#1b2733;
+  padding:16px 14px;
+  font-size:22px;
+  font-weight:800;
+  line-height:1.35;
+  outline:none;
+  box-sizing:border-box;
+  appearance:none;
+  -webkit-appearance:none;
+}
+#settingsYearModal #settingsYearInput option{
+  padding:10px 8px;
+  border-radius:14px;
+}
+#settingsYearModal #settingsYearInput option:checked{
+  background:#4d9cc5;
+  color:#ffffff;
+}
+#settingsYearModal .field.float label{
+  top:-12px;
+  left:16px;
+  background:#ffffff;
+  padding:0 8px;
+}
