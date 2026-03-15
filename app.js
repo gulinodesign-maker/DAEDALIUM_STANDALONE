@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.237";
+const BUILD_VERSION = "2.238";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9278,10 +9278,6 @@ const btnNewGuestTop = $("#btnNewGuestTop");
 if (btnNewGuestTop){
   btnNewGuestTop.addEventListener("click", () => { enterGuestCreateMode(); showPage("ospite"); });
 }
-const goCalendarioTopOspiti = $("#goCalendarioTopOspiti");
-if (goCalendarioTopOspiti){
-  bindFastTap(goCalendarioTopOspiti, () => showPage("calendario"));
-}
 
 
 
@@ -16342,7 +16338,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.237')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.238')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
