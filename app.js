@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.239";
+const BUILD_VERSION = "2.240";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4092,6 +4092,18 @@ const __I18N_PHRASES__ = {
     "fr": "Nom",
     "de": "Name",
     "es": "Nombre"
+  },
+  "Inserimento": {
+    "en": "Entry",
+    "fr": "Insertion",
+    "de": "Eingabe",
+    "es": "Inserción"
+  },
+  "Arrivo": {
+    "en": "Arrival",
+    "fr": "Arrivée",
+    "de": "Ankunft",
+    "es": "Llegada"
   },
   "Telefono": {
     "en": "Phone",
@@ -9541,6 +9553,7 @@ function setupGuestListControls(){
       const active = String(btn.dataset.sortBy || "") === String(state.guestSortBy || "");
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
+      try { __translateTree__(btn); } catch(_) {}
     });
   };
 
@@ -9559,6 +9572,7 @@ function setupGuestListControls(){
     if (!todayBtn) return;
     todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
     todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
+    try { __translateTree__(todayBtn); } catch(_) {}
   };
 
   syncSortSelect();
@@ -16365,7 +16379,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.239')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.240')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
