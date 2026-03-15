@@ -6271,7 +6271,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   flex-wrap: nowrap;
 }
 
-/* Piscina inline actions (in-page): solid colors, 80% opacity, icona azzurra */
+/* Piscina inline actions (in-page): solid colors, 80% opacity */
 .piscina-action-btn{
   width: 38px;
   height: 38px;
@@ -6300,7 +6300,6 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 .piscina-action-sim{ background: #4d9cc5; }
 .piscina-action-sim2{ background: #2b7cb4; }
 .piscina-action-report{ background: #22c55e; }
-.piscina-action-close{ background: #ef4444; }
 
 .stats-subtitle{
   font-weight: 900;

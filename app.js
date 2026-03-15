@@ -16403,7 +16403,6 @@ async function __piscinaReportCanvas__(viewMonth){
   ctx.fillText(monthTitle, pad + 96, pad + 95);
   ctx.fillStyle = 'rgba(15,23,42,0.62)';
   ctx.font = '500 17px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif';
-  ctx.fillText(`Build ${(window.APP_VERSION || 'dDAE_2.233')} · PDF condivisibile`, pad, 150);
 
   const cardsY = 180;
   const cardGap = 16;
