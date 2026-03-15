@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.238";
+const BUILD_VERSION = "2.239";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9524,6 +9524,7 @@ function setupGuestListControls(){
   const sortSel = $("#guestSortBy");
   const dirBtn = $("#guestSortDir");
   const todayBtn = $("#guestToday");
+  const sortButtons = Array.from(document.querySelectorAll(".gf-sort-btn[data-sort-by]"));
   if (!sortSel) return;
 
   const savedBy = localStorage.getItem("dDAE_guestSortBy");
@@ -9531,7 +9532,17 @@ function setupGuestListControls(){
   state.guestSortBy = savedBy || state.guestSortBy || "arrivo";
   state.guestSortDir = savedDir || state.guestSortDir || "asc";
 
-  try { sortSel.value = state.guestSortBy; } catch(_) {}
+  const syncSortSelect = () => {
+    try { sortSel.value = state.guestSortBy; } catch(_) {}
+  };
+
+  const paintSortButtons = () => {
+    sortButtons.forEach((btn) => {
+      const active = String(btn.dataset.sortBy || "") === String(state.guestSortBy || "");
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  };
 
   const paintDir = () => {
     if (!dirBtn) return;
@@ -9540,7 +9551,7 @@ function setupGuestListControls(){
     dirBtn.setAttribute("aria-pressed", asc ? "false" : "true");
   };
   paintDir();
-  // Filtro rapido: Oggi (arrivo = oggi)
+
   const savedToday = localStorage.getItem("dDAE_guestTodayOnly");
   state.guestTodayOnly = (savedToday === "1") ? true : (savedToday === "0") ? false : (state.guestTodayOnly || false);
 
@@ -9549,6 +9560,9 @@ function setupGuestListControls(){
     todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
     todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
   };
+
+  syncSortSelect();
+  paintSortButtons();
   paintToday();
 
   if (todayBtn){
@@ -9560,10 +9574,23 @@ function setupGuestListControls(){
     });
   }
 
+  sortButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const nextBy = String(btn.dataset.sortBy || "").trim();
+      if (!nextBy) return;
+      state.guestSortBy = nextBy;
+      try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
+      syncSortSelect();
+      paintSortButtons();
+      renderGuestCards();
+    });
+  });
 
   sortSel.addEventListener("change", () => {
     state.guestSortBy = sortSel.value;
     try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
+    syncSortSelect();
+    paintSortButtons();
     renderGuestCards();
   });
 
@@ -16338,7 +16365,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.238')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.239')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
