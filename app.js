@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.251";
+const BUILD_VERSION = "2.252";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9716,6 +9716,10 @@ function setupGuestListControls(){
     try { sortSel.value = state.guestSortBy; } catch(_) {}
   };
 
+  let lastSortTapBy = "";
+  let lastSortTapTs = 0;
+  const SORT_DOUBLE_TAP_MS = 360;
+
   const paintSortButtons = () => {
     sortButtons.forEach((btn) => {
       const active = String(btn.dataset.sortBy || "") === String(state.guestSortBy || "");
@@ -9760,11 +9764,27 @@ function setupGuestListControls(){
     btn.addEventListener("click", () => {
       const nextBy = String(btn.dataset.sortBy || "").trim();
       if (!nextBy) return;
+
+      const now = Date.now();
+      const sameButton = lastSortTapBy === nextBy;
+      const isDoubleTap = sameButton && ((now - lastSortTapTs) <= SORT_DOUBLE_TAP_MS);
+      lastSortTapBy = nextBy;
+      lastSortTapTs = now;
+
+      const sortChanged = state.guestSortBy !== nextBy;
       state.guestSortBy = nextBy;
       try { localStorage.setItem("dDAE_guestSortBy", state.guestSortBy); } catch(_){}
       syncSortSelect();
       paintSortButtons();
-      renderGuestCards();
+
+      if (isDoubleTap) {
+        toggleGuestSortDir();
+        return;
+      }
+
+      if (sortChanged) {
+        renderGuestCards();
+      }
     });
   });
 
@@ -9776,12 +9796,16 @@ function setupGuestListControls(){
     renderGuestCards();
   });
 
+  const toggleGuestSortDir = () => {
+    state.guestSortDir = (state.guestSortDir === "desc") ? "asc" : "desc";
+    try { localStorage.setItem("dDAE_guestSortDir", state.guestSortDir); } catch(_){}
+    paintDir();
+    renderGuestCards();
+  };
+
   if (dirBtn){
     dirBtn.addEventListener("click", () => {
-      state.guestSortDir = (state.guestSortDir === "desc") ? "asc" : "desc";
-      try { localStorage.setItem("dDAE_guestSortDir", state.guestSortDir); } catch(_){}
-      paintDir();
-      renderGuestCards();
+      toggleGuestSortDir();
     });
   }
 
@@ -16547,7 +16571,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.251')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.252')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
