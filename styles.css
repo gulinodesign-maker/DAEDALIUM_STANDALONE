@@ -9069,6 +9069,16 @@ color: var(--mcol,#ff3b30);
 #page-impostazioni .settings-account-name{
   display:none !important;
 }
+#page-impostazioni .settings-year-pill.settings-year-pill-scroll{
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  cursor: ns-resize !important;
+}
+#page-impostazioni .settings-year-pill.settings-year-pill-scroll:focus-visible{
+  outline: 2px solid rgba(77,156,197,0.30) !important;
+  outline-offset: 2px !important;
+}
 #page-impostazioni .settings-actions.settings-actions-reference{
   display:grid !important;
   grid-template-columns: repeat(2, minmax(clamp(83px, 23.4vw, 153px), clamp(83px, 23.4vw, 153px))) !important;
@@ -10427,6 +10437,7 @@ body[data-role="operatore"] #page-home .home-grid{
   color: #ffffff !important;
 }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save{ background: rgba(143,203,232,0.80) !important; border-color: rgba(143,203,232,0.24) !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-darkmode.is-active{ background: rgba(77,156,197,0.80) !important; border-color: rgba(77,156,197,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ background: rgba(79,205,102,0.80) !important; border-color: rgba(79,205,102,0.24) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ background: rgba(255,204,0,0.80) !important; border-color: rgba(255,204,0,0.28) !important; }
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ background: rgba(43,43,47,0.80) !important; border-color: rgba(43,43,47,0.20) !important; }
