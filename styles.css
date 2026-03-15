@@ -10950,3 +10950,32 @@ body[data-role="operatore"] #page-home .home-grid{
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
+
+
+.piscina-field-input{
+  align-items:center;
+}
+.piscina-edit-wrap{
+  min-width: 132px;
+  max-width: 160px;
+  flex: 0 0 auto;
+}
+.piscina-edit-input{
+  width:100%;
+  height:42px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:#ffffff;
+  color: var(--ico-blue-night);
+  font-weight:900;
+  font-size:17px;
+  text-align:right;
+  padding: 0 12px;
+  outline:none;
+  box-shadow:none;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.piscina-edit-input:focus{
+  border-color: rgba(74,159,214,0.85);
+}

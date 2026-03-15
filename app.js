@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.233";
+const BUILD_VERSION = "2.235";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9472,15 +9472,7 @@ if (goCalendarioTopOspiti){
   const btnPiscinaSimToday = $("#piscinaSimTodayBtn");
   if (btnPiscinaSimToday){
     bindFastTap(btnPiscinaSimToday, () => {
-      (async ()=>{
-        try{
-          const dayKey = __isoDayLocal(new Date());
-          await piscinaCreateReportForDay(dayKey, { origine:"manual" });
-          piscinaOpenModal(dayKey);
-        }catch(e){
-          toast(e?.message || "Errore");
-        }
-      })();
+      try{ piscinaOpenEditTodayModal(); }catch(e){ toast(e?.message || "Errore"); }
     });
   }
 
@@ -16083,12 +16075,82 @@ function piscinaOpenModal(dayKey){
   set("pmCloroComb", (r.cloro_attivo_combinato ?? "—") + " ppm");
   set("pmPh", (r.ph ?? "—"));
   set("pmTemp", (r.temp_acqua ?? "—") + " °C");
-  const meta = [];
-  if (r.timestamp_report) meta.push(String(r.timestamp_report));
-  if (r.origine) meta.push(String(r.origine));
-  set("pmMeta", meta.length ? meta.join(" · ") : "—");
-
   try{ modal.hidden = false; }catch(_){ modal.style.display = "block"; }
+}
+
+function piscinaTodayDayKey(){
+  const d = new Date();
+  return isoDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()));
+}
+
+function piscinaOpenEditTodayModal(){
+  const modal = document.getElementById("piscinaEditModal");
+  if (!modal) return;
+  const title = document.getElementById("piscinaEditTitle");
+  const dayKey = piscinaTodayDayKey();
+  const row = piscinaGetRowByDayKey(dayKey);
+  const base = row || piscinaSimulateForDay(new Date(dayKey + "T00:00:00"));
+  try{ if (title) title.textContent = `Report piscina — ${__fmtItDateLong(new Date(dayKey+"T00:00:00"))}`; }catch(_){ }
+  const setVal = (id, v)=>{ const el = document.getElementById(id); if (el) el.value = (v ?? '') === '' ? '' : String(v); };
+  setVal("peCloroLibero", base?.cloro_attivo_libero ?? '');
+  setVal("peCloroComb", base?.cloro_attivo_combinato ?? '');
+  setVal("pePh", base?.ph ?? '');
+  setVal("peTemp", base?.temp_acqua ?? '');
+  try{ modal.hidden = false; }catch(_){ modal.style.display = "block"; }
+}
+
+function piscinaCloseEditModal(){
+  const modal = document.getElementById("piscinaEditModal");
+  if (!modal) return;
+  try{ modal.hidden = true; }catch(_){ modal.style.display = "none"; }
+}
+
+async function piscinaSaveTodayManual(){
+  const dayKey = piscinaTodayDayKey();
+  const d = new Date(dayKey + "T00:00:00");
+  if (isNaN(d)) throw new Error("Data non valida");
+  const parseField = (id, label)=>{
+    const el = document.getElementById(id);
+    const raw = String(el?.value ?? '').trim().replace(',', '.');
+    const val = Number(raw);
+    if (!raw || !isFinite(val)) throw new Error(`${label} non valido`);
+    return val;
+  };
+  const cloroLibero = parseField("peCloroLibero", "Cloro attivo libero");
+  const cloroComb = parseField("peCloroComb", "Cloro attivo combinato");
+  const ph = parseField("pePh", "pH");
+  const temp = parseField("peTemp", "Temperatura acqua");
+  const ts = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0, 0, 0).toISOString();
+  const nowIso = new Date().toISOString();
+  const existing = piscinaGetRowByDayKey(dayKey);
+  const payload = {
+    timestamp_report: ts,
+    origine: "manual",
+    cloro_attivo_libero: cloroLibero,
+    cloro_attivo_combinato: cloroComb,
+    ph,
+    temp_acqua: temp,
+    updatedAt: nowIso,
+  };
+  const s = piscinaEnsureState();
+  if (existing && existing.id) {
+    await api(PISCINA_ACTION, { method:"PUT", body: Object.assign({ id:String(existing.id) }, payload), showLoader:false });
+    Object.assign(existing, payload);
+  } else {
+    const created = Object.assign({
+      id: genId("piscina"),
+      createdAt: nowIso,
+    }, payload);
+    await api(PISCINA_ACTION, { method:"POST", body: created, showLoader:false });
+    s.rows = Array.isArray(s.rows) ? s.rows : [];
+    s.rows.push(Object.assign({}, created));
+  }
+  s.fetchedAt = Date.now();
+  piscinaIndexRows();
+  renderPiscinaCalendar();
+  piscinaCloseEditModal();
+  toast("Report piscina salvato", "blue");
+  return true;
 }
 
 function piscinaCloseModal(){
@@ -16255,7 +16317,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.233')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.235')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
@@ -16625,7 +16687,9 @@ function setupPiscina(){
   const close = document.getElementById("piscinaModalClose");
   const modal = document.getElementById("piscinaModal");
   const shareBtn = document.getElementById("piscinaShareBtn");
-  const closeReportBtn = document.getElementById("piscinaCloseBtn");
+  const editModal = document.getElementById("piscinaEditModal");
+  const editCancelBtn = document.getElementById("piscinaEditCancel");
+  const editSaveBtn = document.getElementById("piscinaEditSave");
 
   if (prev) bindFastTap(prev, ()=>{ const vm = piscinaGetViewMonth(); piscinaSetViewMonth(new Date(vm.getFullYear(), vm.getMonth()-1, 1)); renderPiscinaCalendar(); });
   if (next) bindFastTap(next, ()=>{ const vm = piscinaGetViewMonth(); piscinaSetViewMonth(new Date(vm.getFullYear(), vm.getMonth()+1, 1)); renderPiscinaCalendar(); });
@@ -16644,8 +16708,12 @@ function setupPiscina(){
   if (modal){
     modal.addEventListener("click", (e)=>{ if (e.target === modal) piscinaCloseModal(); });
   }
+  if (editModal){
+    editModal.addEventListener("click", (e)=>{ if (e.target === editModal) piscinaCloseEditModal(); });
+  }
   if (shareBtn) bindFastTap(shareBtn, async ()=>{ try{ await piscinaShareCurrentMonthPdf(); }catch(e){ toast(e?.message || "Errore PDF"); } });
-  if (closeReportBtn) bindFastTap(closeReportBtn, ()=>{ try{ showPage("statistiche"); }catch(_){ } });
+  if (editCancelBtn) bindFastTap(editCancelBtn, ()=>piscinaCloseEditModal());
+  if (editSaveBtn) bindFastTap(editSaveBtn, async ()=>{ try{ await piscinaSaveTodayManual(); }catch(e){ toast(e?.message || "Errore salvataggio"); } });
 
   // scheduler robusto: quando l'app è aperta o torna attiva
   try{
