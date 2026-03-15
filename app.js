@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.243";
+const BUILD_VERSION = "2.244";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2717,7 +2717,10 @@ async function __dbExport__(kind, preopenWin){
     const accountTag = __safeFileName__(accountName || "nome_account");
     const filename = `${dt}_${accountTag}.json`;
 
-    // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, forziamo il download da lì
+    let usedPreopenDownload = false;
+
+    // iOS/Safari: se abbiamo una finestra aperta nel gesto utente, usiamo solo quella
+    // per evitare un secondo popup/secondo tentativo di download dopo il salvataggio.
     if (preopenWin && typeof preopenWin === "object"){
       try{
         const doc = preopenWin.document;
@@ -2733,30 +2736,35 @@ async function __dbExport__(kind, preopenWin){
           </script>
         </body></html>`);
         doc.close();
-      }catch(_){ }
+        usedPreopenDownload = true;
+        setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){ } }, 2000);
+        try{ toast("Backup creato", "green"); }catch(_){ }
+      }catch(_){ usedPreopenDownload = false; }
     }
 
-    // iOS/PWA: per garantire il download serve un gesto utente *dopo* che il file è pronto.
-    // Mostra una conferma con pulsante 'Salva' e avvia il download solo su tap.
-    let doSave = true;
-    try{
-      const choice = await __confirmTwoActions__(`${label}: backup pronto`, "Salva", "Chiudi");
-      doSave = (choice === "yes");
-    }catch(_){ doSave = true; }
+    if (!usedPreopenDownload){
+      // Fallback: se non stiamo usando la finestra pre-aperta, chiediamo conferma finale
+      // e avviamo il download solo sul tap "Salva".
+      let doSave = true;
+      try{
+        const choice = await __confirmTwoActions__(`${label}: backup pronto`, "Salva", "Chiudi");
+        doSave = (choice === "yes");
+      }catch(_){ doSave = true; }
 
-    if (doSave){
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      try{ a.click(); }catch(_){ }
-      setTimeout(()=>{
-        try{ document.body.removeChild(a); }catch(_){ }
+      if (doSave){
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        try{ a.click(); }catch(_){ }
+        setTimeout(()=>{
+          try{ document.body.removeChild(a); }catch(_){ }
+          try{ URL.revokeObjectURL(url); }catch(_){ }
+        }, 800);
+        try{ toast("Backup creato", "green"); }catch(_){ }
+      } else {
         try{ URL.revokeObjectURL(url); }catch(_){ }
-      }, 800);
-      try{ toast("Backup creato", "green"); }catch(_){ }
-    } else {
-      try{ URL.revokeObjectURL(url); }catch(_){ }
+      }
     }
 
   }catch(e){
@@ -5142,84 +5150,6 @@ const __I18N_WORD_MAPS__ = {
     "pulizia": "cleaning",
     "Totale": "Total",
     "totali": "totals",
-    "latte": "milk",
-    "acqua": "water",
-    "acqua naturale": "still water",
-    "acqua frizzante": "sparkling water",
-    "pane": "bread",
-    "burro": "butter",
-    "marmellata": "jam",
-    "yogurt": "yogurt",
-    "biscotti": "biscuits",
-    "cereali": "cereals",
-    "caffe": "coffee",
-    "caffè": "coffee",
-    "te": "tea",
-    "tè": "tea",
-    "zucchero": "sugar",
-    "sale": "salt",
-    "pepe": "pepper",
-    "olio": "oil",
-    "aceto": "vinegar",
-    "pasta": "pasta",
-    "riso": "rice",
-    "farina": "flour",
-    "uova": "eggs",
-    "formaggio": "cheese",
-    "prosciutto": "ham",
-    "salame": "salami",
-    "frutta": "fruit",
-    "verdura": "vegetables",
-    "mela": "apple",
-    "mele": "apples",
-    "banana": "banana",
-    "banane": "bananas",
-    "arancia": "orange",
-    "arance": "oranges",
-    "limone": "lemon",
-    "limoni": "lemons",
-    "pomodoro": "tomato",
-    "pomodori": "tomatoes",
-    "insalata": "salad",
-    "patate": "potatoes",
-    "cipolla": "onion",
-    "cipolle": "onions",
-    "aglio": "garlic",
-    "succo": "juice",
-    "succhi": "juices",
-    "cornetto": "croissant",
-    "cornetti": "croissants",
-    "brioche": "brioche",
-    "fette biscottate": "rusks",
-    "detersivo": "detergent",
-    "detersivi": "detergents",
-    "sapone": "soap",
-    "spugna": "sponge",
-    "spugne": "sponges",
-    "carta": "paper",
-    "carta igienica": "toilet paper",
-    "tovagliolo": "napkin",
-    "tovaglioli": "napkins",
-    "sacco": "bag",
-    "sacchi": "bags",
-    "sacchetto": "bag",
-    "sacchetti": "bags",
-    "pattumiera": "bin",
-    "candeggina": "bleach",
-    "ammoniaca": "ammonia",
-    "sgrassatore": "degreaser",
-    "disinfettante": "disinfectant",
-    "guanti": "gloves",
-    "panno": "cloth",
-    "panni": "cloths",
-    "straccio": "rag",
-    "stracci": "rags",
-    "asciugamano": "towel",
-    "asciugamani": "towels",
-    "shampoo": "shampoo",
-    "bagnoschiuma": "body wash",
-    "piatti": "dishes",
-    "bicchieri": "glasses",
     "Totali": "Totals"
   },
   "fr": {
@@ -5297,84 +5227,6 @@ const __I18N_WORD_MAPS__ = {
     "pulizia": "ménage",
     "Totale": "Total",
     "totali": "totaux",
-    "latte": "lait",
-    "acqua": "eau",
-    "acqua naturale": "eau plate",
-    "acqua frizzante": "eau gazeuse",
-    "pane": "pain",
-    "burro": "beurre",
-    "marmellata": "confiture",
-    "yogurt": "yaourt",
-    "biscotti": "biscuits",
-    "cereali": "céréales",
-    "caffe": "café",
-    "caffè": "café",
-    "te": "thé",
-    "tè": "thé",
-    "zucchero": "sucre",
-    "sale": "sel",
-    "pepe": "poivre",
-    "olio": "huile",
-    "aceto": "vinaigre",
-    "pasta": "pâtes",
-    "riso": "riz",
-    "farina": "farine",
-    "uova": "œufs",
-    "formaggio": "fromage",
-    "prosciutto": "jambon",
-    "salame": "salami",
-    "frutta": "fruits",
-    "verdura": "légumes",
-    "mela": "pomme",
-    "mele": "pommes",
-    "banana": "banane",
-    "banane": "bananes",
-    "arancia": "orange",
-    "arance": "oranges",
-    "limone": "citron",
-    "limoni": "citrons",
-    "pomodoro": "tomate",
-    "pomodori": "tomates",
-    "insalata": "salade",
-    "patate": "pommes de terre",
-    "cipolla": "oignon",
-    "cipolle": "oignons",
-    "aglio": "ail",
-    "succo": "jus",
-    "succhi": "jus",
-    "cornetto": "croissant",
-    "cornetti": "croissants",
-    "brioche": "brioche",
-    "fette biscottate": "biscottes",
-    "detersivo": "détergent",
-    "detersivi": "détergents",
-    "sapone": "savon",
-    "spugna": "éponge",
-    "spugne": "éponges",
-    "carta": "papier",
-    "carta igienica": "papier toilette",
-    "tovagliolo": "serviette",
-    "tovaglioli": "serviettes",
-    "sacco": "sac",
-    "sacchi": "sacs",
-    "sacchetto": "sachet",
-    "sacchetti": "sachets",
-    "pattumiera": "poubelle",
-    "candeggina": "eau de javel",
-    "ammoniaca": "ammoniaque",
-    "sgrassatore": "dégraissant",
-    "disinfettante": "désinfectant",
-    "guanti": "gants",
-    "panno": "chiffon",
-    "panni": "chiffons",
-    "straccio": "serpillière",
-    "stracci": "serpillières",
-    "asciugamano": "serviette",
-    "asciugamani": "serviettes",
-    "shampoo": "shampooing",
-    "bagnoschiuma": "gel douche",
-    "piatti": "vaisselle",
-    "bicchieri": "verres",
     "Totali": "Totaux"
   },
   "de": {
@@ -5452,84 +5304,6 @@ const __I18N_WORD_MAPS__ = {
     "pulizia": "Reinigung",
     "Totale": "Gesamt",
     "totali": "Summen",
-    "latte": "Milch",
-    "acqua": "Wasser",
-    "acqua naturale": "stilles Wasser",
-    "acqua frizzante": "Sprudelwasser",
-    "pane": "Brot",
-    "burro": "Butter",
-    "marmellata": "Marmelade",
-    "yogurt": "Joghurt",
-    "biscotti": "Kekse",
-    "cereali": "Müsli",
-    "caffe": "Kaffee",
-    "caffè": "Kaffee",
-    "te": "Tee",
-    "tè": "Tee",
-    "zucchero": "Zucker",
-    "sale": "Salz",
-    "pepe": "Pfeffer",
-    "olio": "Öl",
-    "aceto": "Essig",
-    "pasta": "Nudeln",
-    "riso": "Reis",
-    "farina": "Mehl",
-    "uova": "Eier",
-    "formaggio": "Käse",
-    "prosciutto": "Schinken",
-    "salame": "Salami",
-    "frutta": "Obst",
-    "verdura": "Gemüse",
-    "mela": "Apfel",
-    "mele": "Äpfel",
-    "banana": "Banane",
-    "banane": "Bananen",
-    "arancia": "Orange",
-    "arance": "Orangen",
-    "limone": "Zitrone",
-    "limoni": "Zitronen",
-    "pomodoro": "Tomate",
-    "pomodori": "Tomaten",
-    "insalata": "Salat",
-    "patate": "Kartoffeln",
-    "cipolla": "Zwiebel",
-    "cipolle": "Zwiebeln",
-    "aglio": "Knoblauch",
-    "succo": "Saft",
-    "succhi": "Säfte",
-    "cornetto": "Croissant",
-    "cornetti": "Croissants",
-    "brioche": "Brioche",
-    "fette biscottate": "Zwieback",
-    "detersivo": "Reinigungsmittel",
-    "detersivi": "Reinigungsmittel",
-    "sapone": "Seife",
-    "spugna": "Schwamm",
-    "spugne": "Schwämme",
-    "carta": "Papier",
-    "carta igienica": "Toilettenpapier",
-    "tovagliolo": "Serviette",
-    "tovaglioli": "Servietten",
-    "sacco": "Sack",
-    "sacchi": "Säcke",
-    "sacchetto": "Beutel",
-    "sacchetti": "Beutel",
-    "pattumiera": "Mülleimer",
-    "candeggina": "Bleiche",
-    "ammoniaca": "Ammoniak",
-    "sgrassatore": "Entfetter",
-    "disinfettante": "Desinfektionsmittel",
-    "guanti": "Handschuhe",
-    "panno": "Tuch",
-    "panni": "Tücher",
-    "straccio": "Lappen",
-    "stracci": "Lappen",
-    "asciugamano": "Handtuch",
-    "asciugamani": "Handtücher",
-    "shampoo": "Shampoo",
-    "bagnoschiuma": "Duschgel",
-    "piatti": "Geschirr",
-    "bicchieri": "Gläser",
     "Totali": "Summen"
   },
   "es": {
@@ -5607,84 +5381,6 @@ const __I18N_WORD_MAPS__ = {
     "pulizia": "limpieza",
     "Totale": "Total",
     "totali": "totales",
-    "latte": "leche",
-    "acqua": "agua",
-    "acqua naturale": "agua sin gas",
-    "acqua frizzante": "agua con gas",
-    "pane": "pan",
-    "burro": "mantequilla",
-    "marmellata": "mermelada",
-    "yogurt": "yogur",
-    "biscotti": "galletas",
-    "cereali": "cereales",
-    "caffe": "café",
-    "caffè": "café",
-    "te": "té",
-    "tè": "té",
-    "zucchero": "azúcar",
-    "sale": "sal",
-    "pepe": "pimienta",
-    "olio": "aceite",
-    "aceto": "vinagre",
-    "pasta": "pasta",
-    "riso": "arroz",
-    "farina": "harina",
-    "uova": "huevos",
-    "formaggio": "queso",
-    "prosciutto": "jamón",
-    "salame": "salami",
-    "frutta": "fruta",
-    "verdura": "verduras",
-    "mela": "manzana",
-    "mele": "manzanas",
-    "banana": "plátano",
-    "banane": "plátanos",
-    "arancia": "naranja",
-    "arance": "naranjas",
-    "limone": "limón",
-    "limoni": "limones",
-    "pomodoro": "tomate",
-    "pomodori": "tomates",
-    "insalata": "ensalada",
-    "patate": "patatas",
-    "cipolla": "cebolla",
-    "cipolle": "cebollas",
-    "aglio": "ajo",
-    "succo": "zumo",
-    "succhi": "zumos",
-    "cornetto": "cruasán",
-    "cornetti": "cruasanes",
-    "brioche": "brioche",
-    "fette biscottate": "tostadas",
-    "detersivo": "detergente",
-    "detersivi": "detergentes",
-    "sapone": "jabón",
-    "spugna": "esponja",
-    "spugne": "esponjas",
-    "carta": "papel",
-    "carta igienica": "papel higiénico",
-    "tovagliolo": "servilleta",
-    "tovaglioli": "servilletas",
-    "sacco": "bolsa",
-    "sacchi": "bolsas",
-    "sacchetto": "bolsita",
-    "sacchetti": "bolsitas",
-    "pattumiera": "papelera",
-    "candeggina": "lejía",
-    "ammoniaca": "amoniaco",
-    "sgrassatore": "desengrasante",
-    "disinfettante": "desinfectante",
-    "guanti": "guantes",
-    "panno": "paño",
-    "panni": "paños",
-    "straccio": "trapo",
-    "stracci": "trapos",
-    "asciugamano": "toalla",
-    "asciugamani": "toallas",
-    "shampoo": "champú",
-    "bagnoschiuma": "gel de ducha",
-    "piatti": "platos",
-    "bicchieri": "vasos",
     "Totali": "Totales"
   }
 };
@@ -6999,7 +6695,7 @@ function populateGuestChannelOptions(selectedId = null){
   if (!sel) return;
   const current = (selectedId == null) ? String(sel.value || '').trim() : String(selectedId || '').trim();
   const items = getChannelCatalogFromSettings();
-  sel.innerHTML = `<option value="">Seleziona…</option>` + items.map(item => `<option data-no-i18n="1" value="${String(item.id).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</option>`).join('');
+  sel.innerHTML = `<option value="">Seleziona…</option>` + items.map(item => `<option value="${String(item.id).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</option>`).join('');
   if (current && items.some(item => String(item.id) === current)) sel.value = current;
 }
 
@@ -7562,7 +7258,7 @@ async function renderChannelPage(){
       <div class="operatori-item-top">
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
-          <div class="operatori-name" data-no-i18n="1">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
+          <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
         </div>
         <div class="operatori-item-actions">
           <button aria-label="Modifica channel" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
@@ -15142,7 +14838,7 @@ function renderGuestCards(){
           </div>
         </div>
         <div class="guest-meta-right" aria-label="Stato">
-          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline" data-no-i18n="1"><span class="guest-channel-dot color-${channelBadge.color}" data-no-i18n="1" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
+          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
@@ -16691,7 +16387,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.242')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.241')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
