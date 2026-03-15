@@ -11188,18 +11188,28 @@ body[data-role="operatore"] #page-home .home-main-label{
   pointer-events:none;
 }
 .settings-year-wheel-item{
+  width:100%;
+  min-width:100%;
+  margin:0 auto;
+  padding:0;
+  box-sizing:border-box;
+  text-align:center;
   font-size:35px;
   line-height:1;
   font-weight:900;
-  letter-spacing:-0.03em;
+  letter-spacing:0;
+  font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:"tnum" 1, "lnum" 1;
   color:rgba(15,23,42,0.28);
   user-select:none;
   -webkit-user-select:none;
-  transition:transform .16s ease, color .16s ease, opacity .16s ease;
+  transform:none !important;
+  text-indent:0;
+  transition:color .16s ease, opacity .16s ease;
 }
 .settings-year-wheel-item.is-selected{
   color:#132238;
-  transform:scale(1.03);
+  transform:none !important;
 }
 .settings-year-wheel-highlight{
   position:absolute;

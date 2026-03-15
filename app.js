@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.248";
+const BUILD_VERSION = "2.249";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16496,7 +16496,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.248')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.249')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
