@@ -11244,10 +11244,32 @@ body[data-role="operatore"] #page-home .home-main-label{
 /* dDAE_2.250 - Dark Mode + operatore griglia 1x3 */
 body.ddae-dark{
   color: #e5edf8 !important;
-  background-color: #0f172a !important;
+  background-color: #0b1220 !important;
+  background-image: none !important;
+}
+body.ddae-dark[data-page="home"],
+body.ddae-dark[data-page]{
+  background-color: #0b1220 !important;
+  background-image: none !important;
 }
 body.ddae-dark::before{
-  background: rgba(2,6,23,0.62) !important;
+  background: #0b1220 !important;
+}
+body.ddae-dark .app-shell,
+body.ddae-dark main,
+body.ddae-dark .page,
+body.ddae-dark .page-wrap,
+body.ddae-dark .page-content,
+body.ddae-dark .content,
+body.ddae-dark .content-wrap,
+body.ddae-dark .home-screen,
+body.ddae-dark .home-grid-wrap,
+body.ddae-dark .home-grid,
+body.ddae-dark .home-section,
+body.ddae-dark .auth-page,
+body.ddae-dark .auth-card-wrap{
+  background: transparent !important;
+  background-image: none !important;
 }
 body.ddae-dark .topbar{
   background: rgba(15,23,42,0.92) !important;
