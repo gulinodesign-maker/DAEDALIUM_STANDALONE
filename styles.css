@@ -11239,3 +11239,194 @@ body[data-role="operatore"] #page-home .home-main-label{
   bottom:0;
   background:linear-gradient(to top, rgba(248,250,252,0.98), rgba(248,250,252,0));
 }
+
+
+/* dDAE_2.250 - Dark Mode + operatore griglia 1x3 */
+body.ddae-dark{
+  color: #e5edf8 !important;
+  background-color: #0f172a !important;
+}
+body.ddae-dark::before{
+  background: rgba(2,6,23,0.62) !important;
+}
+body.ddae-dark .topbar{
+  background: rgba(15,23,42,0.92) !important;
+}
+body.ddae-dark .topbar-year,
+body.ddae-dark .settings-title,
+body.ddae-dark .settings-account-name,
+body.ddae-dark .page-title,
+body.ddae-dark .kpi-label,
+body.ddae-dark .kpi-value,
+body.ddae-dark .label,
+body.ddae-dark .muted,
+body.ddae-dark .build,
+body.ddae-dark .field label,
+body.ddae-dark .settings-audio-label,
+body.ddae-dark .settings-btn-label,
+body.ddae-dark .operatori-editor-title,
+body.ddae-dark .operatori-editor-subtitle,
+body.ddae-dark .calendar-title,
+body.ddae-dark .month-title,
+body.ddae-dark .section-title,
+body.ddae-dark h1,
+body.ddae-dark h2,
+body.ddae-dark h3,
+body.ddae-dark p,
+body.ddae-dark span,
+body.ddae-dark div,
+body.ddae-dark td,
+body.ddae-dark th{
+  color: #e5edf8;
+}
+body.ddae-dark .card,
+body.ddae-dark .kpi-card,
+body.ddae-dark .catrow,
+body.ddae-dark .legrow,
+body.ddae-dark .modal-card,
+body.ddae-dark .panel,
+body.ddae-dark .glass,
+body.ddae-dark .settings-page,
+body.ddae-dark .operatori-editor-card,
+body.ddae-dark .calendar-page,
+body.ddae-dark .sheet,
+body.ddae-dark .menu-sheet,
+body.ddae-dark .tabbar,
+body.ddae-dark .home-card,
+body.ddae-dark .guest-card,
+body.ddae-dark .tax-summary,
+body.ddae-dark .tax-table-wrap,
+body.ddae-dark .stat-box,
+body.ddae-dark .lavanderia-card,
+body.ddae-dark .prodotti-card{
+  background: rgba(15,23,42,0.88) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+  color: #e5edf8 !important;
+}
+body.ddae-dark input,
+body.ddae-dark select,
+body.ddae-dark textarea,
+body.ddae-dark .input,
+body.ddae-dark .field input,
+body.ddae-dark .field select,
+body.ddae-dark .field textarea{
+  background: rgba(2,6,23,0.86) !important;
+  color: #e5edf8 !important;
+  border-color: rgba(148,163,184,0.28) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark input::placeholder,
+body.ddae-dark textarea::placeholder{
+  color: rgba(226,232,240,0.56) !important;
+}
+body.ddae-dark .settings-year-pill,
+body.ddae-dark .pill,
+body.ddae-dark .top-pill,
+body.ddae-dark .chip,
+body.ddae-dark .badge,
+body.ddae-dark .segmented,
+body.ddae-dark .seg-btn,
+body.ddae-dark .switch,
+body.ddae-dark .toast,
+body.ddae-dark table,
+body.ddae-dark .table-wrap,
+body.ddae-dark .list-row,
+body.ddae-dark .row,
+body.ddae-dark .line,
+body.ddae-dark .divider{
+  border-color: rgba(148,163,184,0.22) !important;
+}
+body.ddae-dark .settings-year-pill,
+body.ddae-dark .pill,
+body.ddae-dark .top-pill,
+body.ddae-dark .chip,
+body.ddae-dark .badge,
+body.ddae-dark .seg-btn,
+body.ddae-dark .toast,
+body.ddae-dark .calendar-toolbar,
+body.ddae-dark .calendar-grid,
+body.ddae-dark .calendar-cell,
+body.ddae-dark .list-row,
+body.ddae-dark .row,
+body.ddae-dark .line,
+body.ddae-dark .divider,
+body.ddae-dark .settings-divider{
+  background-color: rgba(15,23,42,0.82) !important;
+  color: #e5edf8 !important;
+}
+body.ddae-dark .btn.ghost,
+body.ddae-dark .btn.secondary,
+body.ddae-dark .icon-btn:not(.icon-btn-whiteorange):not(.icon-btn-whiteblue):not(.icon-btn-whitegreen),
+body.ddae-dark .calendar-nav-btn{
+  background: rgba(30,41,59,0.80) !important;
+  color: #ffffff !important;
+  border-color: rgba(148,163,184,0.20) !important;
+}
+body.ddae-dark .btn.ghost .ui-ico,
+body.ddae-dark .btn.secondary .ui-ico,
+body.ddae-dark .calendar-nav-btn .ui-ico{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+body.ddae-dark .slider{
+  background: rgba(71,85,105,0.90) !important;
+}
+body.ddae-dark .slider:before{
+  background: #ffffff !important;
+}
+body.ddae-dark .settings-actions .settings-btn.is-active,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark.is-active,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark.is-active{
+  outline: 2px solid rgba(255,255,255,0.90) !important;
+  outline-offset: 2px !important;
+}
+body.ddae-dark .settings-actions .settings-btn,
+body.ddae-dark .settings-btn-logout-pill,
+body.ddae-dark .btn.primary,
+body.ddae-dark .btn.danger,
+body.ddae-dark .btn.success,
+body.ddae-dark .btn.warning{
+  color: #ffffff !important;
+}
+body.ddae-dark .settings-actions .settings-btn .ui-ico,
+body.ddae-dark .settings-btn-logout-pill .ui-ico,
+body.ddae-dark .btn.primary .ui-ico,
+body.ddae-dark .btn.danger .ui-ico,
+body.ddae-dark .btn.success .ui-ico,
+body.ddae-dark .btn.warning .ui-ico{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference{
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  width: min(360px, 96vw) !important;
+  margin: 80px auto 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn{
+  max-width: none !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{
+  background: rgba(0,0,0,0.80) !important;
+  border-color: rgba(0,0,0,0.24) !important;
+}
+@media (max-width: 390px){
+  #page-opsettings .settings-actions.settings-actions-reference{
+    width: min(330px, 94vw) !important;
+    gap: 10px !important;
+  }
+  #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
+    min-height: clamp(74px, 24vw, 96px) !important;
+    height: clamp(74px, 24vw, 96px) !important;
+    border-radius: 24px !important;
+    padding: 12px 6px 10px !important;
+    gap: 8px !important;
+  }
+  #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+    width: 34px !important;
+    height: 34px !important;
+  }
+  #page-opsettings .settings-actions.settings-actions-reference .settings-btn-label{
+    font-size: 12px !important;
+  }
+}

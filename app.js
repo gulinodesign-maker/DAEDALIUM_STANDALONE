@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.167
  */
-const BUILD_VERSION = "2.249";
+const BUILD_VERSION = "2.250";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7624,15 +7624,66 @@ function setupLaundryCatalogPage(){
   });
 }
 
+const __DARK_MODE_KEY__ = "dDAE_dark_mode";
+
+function __isDarkModeEnabled__(){
+  try{
+    return localStorage.getItem(__DARK_MODE_KEY__) === "1";
+  }catch(_){
+    return false;
+  }
+}
+
+function __updateThemeMeta__(isDark){
+  try{
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', isDark ? '#0f172a' : '#ffffff');
+  }catch(_){ }
+}
+
+function __syncDarkModeButtons__(){
+  const enabled = __isDarkModeEnabled__();
+  ["settingsSaveBtn","opSettingsDarkBtn"].forEach((id) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    btn.classList.toggle('is-active', enabled);
+    const label = btn.querySelector('.settings-btn-label');
+    if (label) label.textContent = 'Dark Mode';
+    btn.title = enabled ? 'Dark Mode attiva' : 'Dark Mode disattivata';
+  });
+}
+
+function __applyDarkMode__(enabled){
+  try{
+    document.body.classList.toggle('ddae-dark', !!enabled);
+    document.documentElement.classList.toggle('ddae-dark', !!enabled);
+  }catch(_){ }
+  try{ __updateThemeMeta__(!!enabled); }catch(_){ }
+  try{ __syncDarkModeButtons__(); }catch(_){ }
+}
+
+function __setDarkMode__(enabled){
+  try{ localStorage.setItem(__DARK_MODE_KEY__, enabled ? '1' : '0'); }catch(_){ }
+  __applyDarkMode__(!!enabled);
+}
+
+function __toggleDarkMode__(){
+  const next = !__isDarkModeEnabled__();
+  __setDarkMode__(next);
+  try{ toast(next ? 'Dark Mode attivata' : 'Dark Mode disattivata'); }catch(_){ }
+}
+
 function setupImpostazioni() {
   try{ setupLanguageModal(); }catch(_){ }
   const back = document.getElementById("settingsBackBtn");
   if (back) back.addEventListener("click", () => showPage("home"));
 
   const save = document.getElementById("settingsSaveBtn");
-  if (save) bindFastTap(save, () => {
-    try{ toast("Dark Mode disponibile prossimamente"); }catch(_){ }
-  });
+  if (save) bindFastTap(save, () => { __toggleDarkMode__(); });
+  const opDarkBtn = document.getElementById("opSettingsDarkBtn");
+  if (opDarkBtn) bindFastTap(opDarkBtn, () => { __toggleDarkMode__(); });
+  try{ __syncDarkModeButtons__(); }catch(_){ }
 
   const settingsYearPill = document.getElementById("settingsYearPill");
   if (settingsYearPill && !settingsYearPill.__boundYearTap){
@@ -16496,7 +16547,7 @@ async function __piscinaReportCanvas__(viewMonth){
   const chartAreaY = 330;
   const chartAreaH = 288;
   const monthTitle = __fmtMonthYear(viewMonth);
-  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.249')}`;
+  const logoSrc = `./assets/logo.jpg?v=${(window.APP_VERSION || '2.250')}`;
   const tableFont = rowH <= 23 ? 12 : rowH <= 25 ? 13 : 14;
   const tableHeaderFont = rowH <= 23 ? 13 : 14;
   const colDay = 76;
@@ -16908,6 +16959,7 @@ function setupPiscina(){
 async function init(){
   // Perf mode: deve girare DOPO che body esiste e DOPO init delle costanti
   applyPerfMode();
+  try{ __applyDarkMode__(__isDarkModeEnabled__()); }catch(_){ }
   try{ setupAudioUI(); }catch(_){ }
   const __restore = __readRestoreState();
   // Session + anno
