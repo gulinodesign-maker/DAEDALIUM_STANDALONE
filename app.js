@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.167
+ * Build: 2.264
  */
-const BUILD_VERSION = "2.261";
+const BUILD_VERSION = "2.264";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3413,19 +3413,27 @@ function updateSettingsAccountName(){
     }catch(_){}
 
   }catch(_){}
+  try{
+    const pendingBuild = String(sessionStorage.getItem("dDAE_pending_build") || "").trim();
+    if (pendingBuild && !__isRemoteNewer(pendingBuild, BUILD_VERSION) && !__isRemoteNewer(BUILD_VERSION, pendingBuild)) {
+      sessionStorage.removeItem("dDAE_pending_build");
+      sessionStorage.removeItem("dDAE_update_attempt_build");
+      sessionStorage.removeItem("dDAE_update_attempt_at");
+    }
+  }catch(_){ }
 })();
 try{
-  const forcedBuild = String(sessionStorage.getItem("dDAE_last_forced_build") || "").trim();
-  if (forcedBuild) {
+  const pendingBuild = String(sessionStorage.getItem("dDAE_pending_build") || "").trim();
+  if (pendingBuild) {
     ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.textContent = forcedBuild;
+      if (el) el.textContent = pendingBuild;
     });
   }
 }catch(_){ }
-// Aggiornamento "hard" anti-cache iOS:
-// Legge ./version.json (sempre no-store) e se il build remoto è diverso
-// svuota cache, deregistra SW e ricarica con cache-bust.
+// Aggiornamento build iOS: niente purge aggressivo di cache/SW.
+// Se esiste una build remota più nuova, chiediamo l'update del SW e facciamo al massimo
+// un solo reload con cache-bust per build, evitando loop/toast invasivi.
 async function hardUpdateCheck(){
   try{
     if (window.__ddaeHardUpdating) return;
@@ -3434,39 +3442,49 @@ async function hardUpdateCheck(){
     const data = await res.json();
     const remote = String((data && (data.build || data.version || data.ver)) || "").trim();
     if (!remote){
-      try{ sessionStorage.removeItem("dDAE_last_forced_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_pending_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_update_attempt_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_update_attempt_at"); }catch(_){ }
       return;
     }
     if (!__isRemoteNewer(remote, BUILD_VERSION)) {
-      try{ sessionStorage.removeItem("dDAE_last_forced_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_pending_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_update_attempt_build"); }catch(_){ }
+      try{ sessionStorage.removeItem("dDAE_update_attempt_at"); }catch(_){ }
       return;
     }
 
-    window.__ddaeHardUpdating = true;
-    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = remote;
-    });
+    const lastBuild = String(sessionStorage.getItem("dDAE_update_attempt_build") || "").trim();
+    const lastAt = parseInt(String(sessionStorage.getItem("dDAE_update_attempt_at") || "0"), 10) || 0;
+    const tooSoon = (lastBuild === remote) && ((Date.now() - lastAt) < 15000);
+    if (tooSoon) return;
 
-    try{ toast(`Aggiornamento ${remote}…`); } catch(_) {}
+    window.__ddaeHardUpdating = true;
+    try{ sessionStorage.setItem("dDAE_pending_build", remote); }catch(_){ }
+    try{ sessionStorage.setItem("dDAE_update_attempt_build", remote); }catch(_){ }
+    try{ sessionStorage.setItem("dDAE_update_attempt_at", String(Date.now())); }catch(_){ }
 
     try{
       if ("serviceWorker" in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister().catch(() => {})));
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg){
+          try{ await reg.update(); }catch(_){ }
+          try{ if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" }); }catch(_){ }
+        }
       }
-    }catch(_){}
+    }catch(_){ }
 
-    try{
-      if (window.caches){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k).catch(() => {})));
-      }
-    }catch(_){}
+    const target = `./index.html?v=${encodeURIComponent(remote)}&r=${Date.now()}`;
+    const href = String(location.href || "");
+    if (!href.includes(`v=${encodeURIComponent(remote)}`)) {
+      window.location.replace(target);
+      return;
+    }
 
-    try{ sessionStorage.setItem("dDAE_last_forced_build", remote); }catch(_){}
-    window.location.replace(`./index.html?v=${encodeURIComponent(remote)}&r=${Date.now()}`);
-  }catch(_){}
+    window.__ddaeHardUpdating = false;
+  }catch(_){
+    window.__ddaeHardUpdating = false;
+  }
 }
 // ===== Performance mode (iOS/Safari PWA) =====
 const IS_IOS = (() => {
