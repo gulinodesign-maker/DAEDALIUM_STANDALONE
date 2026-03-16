@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.278
+ * Build: 2.279
  */
-const BUILD_VERSION = "2.278";
+const BUILD_VERSION = "2.279";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17210,7 +17210,7 @@ try{
       try{ cleanGrid.style.gridTemplateColumns = `var(--cg-corner, 40px) repeat(${Math.max(1, cols.length)}, minmax(0, 1fr))`; }catch(_){ }
       const parts = [];
       const laundryCatalogMap = __laundryCatalogMapByCode__(getLaundryCatalogFromSettings());
-      parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M6 6l1 14h10l1-14"></path><path d="M9 10v6"></path><path d="M12 10v6"></path><path d="M15 10v6"></path><path d="M8 6l1-2h6l1 2"></path></svg></div>');
+      parts.push('<div aria-label="Reset pulizie" class="c cell head corner clean-reset-corner" id="cleanResetAll" role="button" tabindex="0"><svg aria-hidden="true" class="cr-icon" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></div>');
       cols.forEach((col) => {
         const item = laundryCatalogMap.get(__normalizeLaundryCode__(col));
         const color = __normalizeLaundryColor__(item?.colore || 'blue');
@@ -20929,7 +20929,7 @@ async function initOrePuliziaPage(){
 (async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
 
 
-/* dDAE_2.278 — Reset biancheria: icona X bianca in dark mode */
+/* dDAE_2.279 — Reset biancheria: icona X bianca in dark mode */
 function __applyLaundryResetCloseIcon__(){
   try{
     const btn = document.getElementById("cleanResetLaundry");
