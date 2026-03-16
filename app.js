@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.294
+ * Build: 2.295
  */
-const BUILD_VERSION = "2.294";
+const BUILD_VERSION = "2.295";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18690,11 +18690,15 @@ function __fitCalendarioMonthLandscape(){
       }
     }catch(_){}
 
+    const sharedSizeHost = document.getElementById("calDaysWrap") || grid.parentElement || wrap;
+
     // Pulisci override se non landscape
     if (!isLandscape){
       try{ grid.style.removeProperty("--cal-cell-h"); }catch(_){}
       try{ grid.style.removeProperty("--cal-pill-h"); }catch(_){}
       try{ grid.style.removeProperty("grid-template-columns"); }catch(_){}
+      try{ if (sharedSizeHost){ sharedSizeHost.style.removeProperty("--cal-cell-h"); sharedSizeHost.style.removeProperty("--cal-pill-h"); } }catch(_){}
+      try{ if (wrap){ wrap.style.removeProperty("--cal-cell-h"); wrap.style.removeProperty("--cal-pill-h"); } }catch(_){}
       // Ripristina template dinamico standard (var day width) se possibile
       try{
         const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
@@ -18760,6 +18764,14 @@ let pillH = Math.floor(cellH * 0.38);
       grid.style.gridTemplateColumns = `repeat(${daysCount}, minmax(${dayW}px, 1fr))`;
       grid.style.setProperty("--cal-cell-h", `${cellH}px`);
       grid.style.setProperty("--cal-pill-h", `${pillH}px`);
+      if (sharedSizeHost){
+        sharedSizeHost.style.setProperty("--cal-cell-h", `${cellH}px`);
+        sharedSizeHost.style.setProperty("--cal-pill-h", `${pillH}px`);
+      }
+      if (wrap){
+        wrap.style.setProperty("--cal-cell-h", `${cellH}px`);
+        wrap.style.setProperty("--cal-pill-h", `${pillH}px`);
+      }
     }catch(_){}
   }catch(_){}
 }
