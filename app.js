@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.287
+ * Build: 2.292
  */
-const BUILD_VERSION = "2.291";
+const BUILD_VERSION = "2.292";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18459,7 +18459,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_2.291 — Calendario: focus giorno corrente corretto + colonna stanze contrasto */
+/* dDAE_2.290 — Calendario: focus giorno corrente corretto + colonna stanze contrasto */
 function ensureCalendarFixedRailStructure(){
   const page = document.getElementById("page-calendario");
   if (!page) return {};
