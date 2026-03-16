@@ -3103,7 +3103,6 @@ body[data-page="ospiti"] .guest-card .actions {
   color: rgba(15,23,42,0.70);
   }
 #page-calendario .cal-cell{
-  position: relative;
   border-radius: 13px;
   border: 0.5px solid rgba(15,23,42,0.12);
   background: rgba(255,255,255,0.66);
@@ -3206,13 +3205,6 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   box-shadow: none;
 }
 #page-calendario.is-month-view .calendar-event-bar{
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  align-items: stretch;
-  justify-content: stretch;
   /* Deve apparire identica a una cella vuota della stessa stanza (stesso fondo stanza) */
   background: transparent;
   border: 0.5px solid rgba(15,23,42,0.12);
@@ -3237,19 +3229,6 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 }
 #page-calendario.is-month-view .calendar-event-bar .cal-dots{
   margin: 0 auto;
-}
-#page-calendario.is-month-view .cal-cell.has-booking-span-bg .cal-cell-inner,
-#page-calendario.is-month-view .cal-cell.has-booking-span-bg .cal-flags{
-  display: none !important;
-}
-#page-calendario.is-month-view .cal-cell.has-booking-span-bg{
-  pointer-events: none;
-}
-#page-calendario.is-month-view .calendar-event-bar .cal-flags{
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  z-index: 2;
 }
 
 #page-calendario .calendar-event-bar{
