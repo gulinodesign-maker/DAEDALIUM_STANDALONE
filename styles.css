@@ -10677,6 +10677,33 @@ body[data-role="operatore"] #page-home .home-grid{
   transform: translateY(1px);
 }
 
+body.ddae-dark .language-modal-card{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+}
+body.ddae-dark .language-modal-hint{
+  color: rgba(226,232,240,0.82) !important;
+}
+body.ddae-dark .language-option{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+body.ddae-dark .language-option .language-flag{
+  background: rgba(88,183,244,0.14) !important;
+}
+body.ddae-dark .language-option .language-name{
+  color: #ffffff !important;
+}
+body.ddae-dark .language-option.is-selected{
+  border-color: rgba(88,183,244,0.92) !important;
+  box-shadow: 0 0 0 3px rgba(88,183,244,0.18) !important;
+}
+body.ddae-dark .language-option:active{
+  background: rgba(30,41,59,0.98) !important;
+}
+
 
 /* dDAE_2.196 — popup azioni uniformate senza tasto X */
 .operatori-editor-close{
@@ -11792,7 +11819,7 @@ body.ddae-dark #page-lavanderia .laundry-range::after{
 }
 
 
-/* dDAE_2.260 — Dark mode: sfondi più scuri per Home / Statistiche / Ore Pulizia */
+/* dDAE_2.261 — Dark mode: sfondi più scuri per Home / Statistiche / Ore Pulizia */
 body.ddae-dark #page-home .home-main-glyph,
 body.ddae-dark #page-home .home-icon .glyph,
 body.ddae-dark #page-statistiche .home-main-glyph,
