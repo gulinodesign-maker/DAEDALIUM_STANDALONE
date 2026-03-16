@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.296
+ * Build: 2.297
  */
-const BUILD_VERSION = "2.296";
+const BUILD_VERSION = "2.297";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18977,7 +18977,13 @@ function renderCalendarioMonth(){
   }
 
   grid.appendChild(frag);
-  try{ requestAnimationFrame(() => { try{ syncCalendarRoomRailHeights(); }catch(_){ } }); }catch(_){ }
+  try{
+    requestAnimationFrame(() => {
+      try{ __fitCalendarioMonthLandscape(); }catch(_){ }
+      try{ syncCalendarRoomRailHeights(); }catch(_){ }
+      try{ requestAnimationFrame(() => { try{ syncCalendarRoomRailHeights(); }catch(_){ } }); }catch(_){ }
+    });
+  }catch(_){ }
 }
 
 function buildMonthOccupancy(monthStart, daysCount){
