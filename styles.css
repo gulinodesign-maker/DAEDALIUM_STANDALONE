@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.207");
+    url("./assets/bg-daedalium.png?v=dDAE_2.254");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.207");
+    url("./assets/bg-daedalium.png?v=dDAE_2.254");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -11451,4 +11451,123 @@ body.ddae-dark .btn.warning .ui-ico{
   #page-opsettings .settings-actions.settings-actions-reference .settings-btn-label{
     font-size: 12px !important;
   }
+}
+
+
+/* dDAE_2.254 — Dark mode contrast and visibility fixes */
+body.ddae-dark .topbar .icon-btn{
+  background: rgba(15,23,42,0.94) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .backchev,
+body.ddae-dark .topbar .hamburger,
+body.ddae-dark .topbar .hamburger::before,
+body.ddae-dark .topbar .hamburger::after{
+  color: var(--ico-sky) !important;
+  stroke: var(--ico-sky) !important;
+  border-top-color: var(--ico-sky) !important;
+  background: var(--ico-sky) !important;
+}
+
+body.ddae-dark .topbar h1,
+body.ddae-dark .brand h1,
+body.ddae-dark .topbar-year,
+body.ddae-dark .settings-title,
+body.ddae-dark .page-title,
+body.ddae-dark .section-title,
+body.ddae-dark .prodotti-title,
+body.ddae-dark .stats-title,
+body.ddae-dark .stats-subtitle,
+body.ddae-dark .db-menu-title,
+body.ddae-dark .clean-info-title,
+body.ddae-dark .tax-result-title,
+body.ddae-dark .laundry-detail-title,
+body.ddae-dark .operatori-editor-title,
+body.ddae-dark .operatori-editor-subtitle,
+body.ddae-dark .app-section-head h2,
+body.ddae-dark #page-calendario .app-section-head-row > .page-title,
+body.ddae-dark #page-pulizie .clean-topbar > .page-title,
+body.ddae-dark #page-impostazioni .settings-title,
+body.ddae-dark #page-opsettings .settings-title,
+body.ddae-dark #page-home .home-main-label,
+body.ddae-dark #page-statistiche .home-main-label,
+body.ddae-dark .stats-page .home-main-label,
+body.ddae-dark .home-main-label.small,
+body.ddae-dark .stats-graph-card-title,
+body.ddae-dark .settings-btn-label,
+body.ddae-dark .operatori-name,
+body.ddae-dark .operatori-metric-label,
+body.ddae-dark .operatori-metric-value,
+body.ddae-dark .operatori-empty,
+body.ddae-dark .stat-name,
+body.ddae-dark .services-list-title{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+body.ddae-dark #page-home .home-main-glyph,
+body.ddae-dark #page-statistiche .home-main-glyph,
+body.ddae-dark .stats-page .home-main-glyph{
+  background: rgba(226,232,240,0.12) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{
+  background: rgba(15,23,42,0.92) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+body.ddae-dark .operatori-item,
+body.ddae-dark .operatori-empty,
+body.ddae-dark .operatori-metric{
+  background: rgba(15,23,42,0.88) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+}
+
+body.ddae-dark #page-pulizie #cleanToday,
+body.ddae-dark #page-pulizie .clean-nav .btn,
+body.ddae-dark #page-pulizie .clean-top-left .btn,
+body.ddae-dark #page-pulizie .clean-top-actions .btn,
+body.ddae-dark #page-ospiti .gf-chip-btn,
+body.ddae-dark #page-ospiti #guestToday,
+body.ddae-dark #page-ospiti #guestSortByInserimento,
+body.ddae-dark #page-ospiti #guestSortByArrivo,
+body.ddae-dark #page-ospiti #guestSortByNome{
+  background: rgba(30,41,59,0.88) !important;
+  background-color: rgba(30,41,59,0.88) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-pulizie #cleanToday .ui-ico,
+body.ddae-dark #page-pulizie .clean-nav .btn .ui-ico,
+body.ddae-dark #page-pulizie .clean-top-left .btn .ui-ico,
+body.ddae-dark #page-pulizie .clean-top-actions .btn .ui-ico{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+body.ddae-dark .loading-text,
+body.ddae-dark .loading-card,
+body.ddae-dark .loading-hourglass,
+body.ddae-dark .build{
+  color: #ffffff !important;
 }
