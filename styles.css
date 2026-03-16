@@ -11995,3 +11995,87 @@ body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand,
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save-color: rgba(190,162,124,0.98); }
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color: rgba(221,207,183,1); }
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-3{ --laundry-save-color: rgba(146,116,81,0.98); }
+
+/* dDAE_2.265 — Ore Pulizia Mensili: ottimizzazione dark mode iPhone */
+body.ddae-dark #page-orepulizia .opcal-wrap{
+  color: #f8fafc;
+}
+body.ddae-dark #page-orepulizia .opcal-pageTitle{
+  color: rgba(255,255,255,0.96) !important;
+  border-bottom-color: rgba(148,163,184,0.24) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-group-hd{
+  background: transparent !important;
+}
+body.ddae-dark #page-orepulizia .opcal-filter select{
+  background: rgba(15,23,42,0.96) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  appearance: none;
+  -webkit-appearance: none;
+}
+body.ddae-dark #page-orepulizia .opcal-filter select option{
+  background: #0f172a;
+  color: #f8fafc;
+}
+body.ddae-dark #page-orepulizia .opcal-stat{
+  border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-orepulizia .opcal-stat--blue{
+  background: rgba(30,58,95,0.92) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-stat--beige{
+  background: rgba(69,43,29,0.92) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-statLabel{
+  color: rgba(255,255,255,0.84) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-stat--blue .opcal-statValue{
+  color: #7dd3fc !important;
+}
+body.ddae-dark #page-orepulizia .opcal-stat--beige .opcal-statValue{
+  color: #fdba74 !important;
+}
+body.ddae-dark #page-orepulizia .opcal-weekday{
+  color: rgba(255,255,255,0.88) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-cell{
+  background: rgba(226,232,240,0.74) !important;
+  border: 1px solid rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-orepulizia .opcal-cell.is-empty{
+  background: transparent !important;
+  border-color: transparent !important;
+}
+body.ddae-dark #page-orepulizia .opcal-day{
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15,23,42,0.88) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(148,163,184,0.18);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+body.ddae-dark #page-orepulizia .opcal-hours{
+  color: #0f172a !important;
+  font-weight: 900;
+}
+@supports (-webkit-touch-callout: none){
+  body.ddae-dark #page-orepulizia .opcal-filter select{
+    background-color: rgba(15,23,42,0.96) !important;
+    background-image: none !important;
+  }
+}
