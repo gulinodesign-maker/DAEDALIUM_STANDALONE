@@ -11956,3 +11956,42 @@ body.ddae-dark #page-ospite .guest-add-booking{
   border-color: rgba(148,163,184,0.24) !important;
   color: #ffffff !important;
 }
+
+
+/* dDAE_2.263 - Pulizie dark mode: bordo celle salvate + tasto Oggi */
+body.ddae-dark #page-pulizie #cleanToday{
+  background: rgba(30,41,59,0.92) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.is-saved{
+  box-shadow: inset 0 0 0 3px var(--laundry-save-color, rgba(220,0,0,0.92)) !important;
+}
+
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-blue,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-blue-2{ --laundry-save-color: rgba(111,132,200,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-blue-1{ --laundry-save-color: rgba(174,188,232,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-blue-3{ --laundry-save-color: rgba(63,93,177,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-orange,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-orange-2{ --laundry-save-color: rgba(216,173,78,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-orange-1{ --laundry-save-color: rgba(234,208,138,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-orange-3{ --laundry-save-color: rgba(184,134,31,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-green,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-green-2{ --laundry-save-color: rgba(116,170,135,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-green-1{ --laundry-save-color: rgba(168,204,179,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-green-3{ --laundry-save-color: rgba(69,132,95,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-red,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-red-2{ --laundry-save-color: rgba(200,122,137,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-red-1{ --laundry-save-color: rgba(226,161,171,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-red-3{ --laundry-save-color: rgba(171,88,107,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-purple,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-purple-2{ --laundry-save-color: rgba(154,132,209,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-purple-1{ --laundry-save-color: rgba(197,180,231,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-purple-3{ --laundry-save-color: rgba(111,86,175,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save-color: rgba(190,162,124,0.98); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color: rgba(221,207,183,1); }
+body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-3{ --laundry-save-color: rgba(146,116,81,0.98); }
