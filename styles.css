@@ -3072,16 +3072,23 @@ body[data-page="ospiti"] .guest-card .actions {
   margin-bottom: 0px;
 }
 
-/* dDAE_1.020 — Calendario: durante lo scroll orizzontale blocca SOLO la colonna numeri stanze */
+/* dDAE_2.287 — Calendario: colonna stanze fissa nativa */
 #page-calendario .cal-pill.room{
-  position: relative;
+  position: sticky;
+  left: 0;
   z-index: 30;
   width: var(--cal-room-w);
   min-width: var(--cal-room-w);
   box-sizing: border-box;
   background: rgba(255,255,255,0.98);
-  transform: translateX(0px);
-  will-change: transform;
+  transform: none;
+  will-change: auto;
+}
+
+#page-calendario .cal-cell.cal-corner{
+  position: sticky;
+  left: 0;
+  z-index: 31;
 }
 
 #page-calendario .cal-day-abbrev{
@@ -3362,7 +3369,7 @@ body[data-page="ospiti"] .guest-card .actions {
   opacity:.92;
 }
 
-.cal-grid-wrap{ width:100%; overflow-x:hidden; -webkit-overflow-scrolling: touch; padding: 0 5px 2px; box-sizing: border-box; }
+.cal-grid-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling: touch; padding: 0 5px 2px; box-sizing: border-box; }
 
 
 .cal-grid{
@@ -3560,7 +3567,8 @@ body[data-page="ospiti"] .guest-card .actions {
   justify-content:center;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,.10);
-  position: relative;
+  position: sticky;
+  left: 0;
   overflow:hidden;
 
   /* La base colore stanza viene da .room-X (var(--room-bg)) */

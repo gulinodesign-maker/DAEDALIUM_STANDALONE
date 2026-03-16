@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.286
+ * Build: 2.287
  */
-const BUILD_VERSION = "2.286";
+const BUILD_VERSION = "2.287";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3357,16 +3357,15 @@ function __setTopbarCenterLabel__(){
 }
 
 function updateYearPill(){
-  const y = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear() || "").trim();
-  ["yearPill", "homeYearPill"].forEach((id) => {
-    const pill = document.getElementById(id);
-    if (!pill) return;
+  const y = state.exerciseYear;
+  const pill = document.getElementById("yearPill");
+  if (pill){
     if (!y){ pill.hidden = true; }
     else{
       pill.textContent = `${y}`;
       pill.hidden = false;
     }
-  });
+  }
 
   // Topbar: anno (default) o mese (solo Calendario)
   try{ __setTopbarCenterLabel__(); }catch(_){ }
@@ -18460,62 +18459,27 @@ function renderCalendario(){
 }
 
 
-/* dDAE_1.020 — Calendario: blocca SOLO la colonna numeri stanze durante lo scroll orizzontale (fix iOS) */
+/* dDAE_2.287 — Calendario: colonna stanze fissa nativa con sticky CSS */
 function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
-
-  // Se già bindato, aggiorna subito
-  if (wrap.__roomFreezeUpdate){
-    try{ wrap.__roomFreezeUpdate(); }catch(_){}
-    return;
-  }
-
-  let raf = 0;
-  const update = ()=>{
-    raf = 0;
-    const x = (wrap && typeof wrap.scrollLeft === "number") ? wrap.scrollLeft : 0;
-    const rooms = wrap.querySelectorAll(".cal-pill.room");
-    rooms.forEach(el=>{
-      try{ el.style.transform = `translateX(${x}px)`; }catch(_){}
-    });
-  };
-
-  const onScroll = ()=>{
-    if (raf) return;
-    raf = requestAnimationFrame(update);
-  };
-
-  wrap.__roomFreezeUpdate = update;
-
-  try{ wrap.addEventListener("scroll", onScroll, { passive: true }); }catch(_){ wrap.addEventListener("scroll", onScroll); }
-  try{ window.addEventListener("resize", onScroll, { passive: true }); }catch(_){ window.addEventListener("resize", onScroll); }
-  try{ window.addEventListener("orientationchange", onScroll, { passive: true }); }catch(_){ window.addEventListener("orientationchange", onScroll); }
-
-  // Prima applicazione
-  update();
+  try{ wrap.classList.add("cal-room-sticky-native"); }catch(_){}
 }
 
 function applyCalRoomFreeze(mode){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
-
   ensureCalRoomFreezeBound();
-
-  if (mode !== "month"){
-    // In settimana non deve restare alcun offset residuo
-    try{ wrap.scrollLeft = 0; }catch(_){}
-    try{
-      const rooms = wrap.querySelectorAll(".cal-pill.room");
-      rooms.forEach(el=>{
-        try{ el.style.transform = "translateX(0px)"; }catch(_){}
-      });
-    }catch(_){}
-    return;
-  }
-
-  // In mese: applica offset in base allo scroll attuale
-  try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){}
+  try{
+    wrap.querySelectorAll(".cal-pill.room").forEach((el) => {
+      try{ el.style.removeProperty("transform"); }catch(_){}
+    });
+  }catch(_){}
+  try{
+    wrap.querySelectorAll(".cal-cell.cal-corner").forEach((el) => {
+      try{ el.style.removeProperty("transform"); }catch(_){}
+    });
+  }catch(_){}
 }
 
 function renderCalendarioWeek(){
