@@ -3072,16 +3072,23 @@ body[data-page="ospiti"] .guest-card .actions {
   margin-bottom: 0px;
 }
 
-/* dDAE_1.020 — Calendario: durante lo scroll orizzontale blocca SOLO la colonna numeri stanze */
+/* dDAE_2.287 — Calendario: colonna stanze fissa nativa */
 #page-calendario .cal-pill.room{
-  position: relative;
+  position: sticky;
+  left: 0;
   z-index: 30;
   width: var(--cal-room-w);
   min-width: var(--cal-room-w);
   box-sizing: border-box;
   background: rgba(255,255,255,0.98);
-  transform: translateX(0px);
-  will-change: transform;
+  transform: none;
+  will-change: auto;
+}
+
+#page-calendario .cal-cell.cal-corner{
+  position: sticky;
+  left: 0;
+  z-index: 31;
 }
 
 #page-calendario .cal-day-abbrev{
@@ -3142,14 +3149,20 @@ body[data-page="ospiti"] .guest-card .actions {
 }
 
 #page-calendario .cal-cell.is-today-col::before{
-  opacity: .825;
+  opacity: 1;
+  filter: saturate(1.12) brightness(1.08);
 }
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
   opacity: 1;
+  filter: saturate(1.12) brightness(1.08);
 }
 #page-calendario .cal-cell.cal-head.is-today-col{
-  background: rgba(240,240,240,0.98);
+  background: rgba(240,240,240,1);
+  box-shadow: inset 0 0 0 999px rgba(255,255,255,0.30);
+}
+body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
+  box-shadow: inset 0 0 0 999px rgba(255,255,255,0.12);
 }
 #page-calendario .calendar-event-bar .cal-fullname{
   color: rgba(15,23,42,0.96);
@@ -3362,7 +3375,7 @@ body[data-page="ospiti"] .guest-card .actions {
   opacity:.92;
 }
 
-.cal-grid-wrap{ width:100%; overflow-x:hidden; -webkit-overflow-scrolling: touch; padding: 0 5px 2px; box-sizing: border-box; }
+.cal-grid-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling: touch; padding: 0 5px 2px; box-sizing: border-box; }
 
 
 .cal-grid{
@@ -3560,7 +3573,8 @@ body[data-page="ospiti"] .guest-card .actions {
   justify-content:center;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,.10);
-  position: relative;
+  position: sticky;
+  left: 0;
   overflow:hidden;
 
   /* La base colore stanza viene da .room-X (var(--room-bg)) */
@@ -12638,18 +12652,115 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 }
 
 
-/* dDAE_2.291 — Calendario: cella ST coerente con il tema */
-#page-calendario .cal-cell.cal-head.cal-corner{
-  background: rgba(240,240,240,0.90) !important;
-  border-color: rgba(15,23,42,0.12) !important;
+/* dDAE_2.290 — Calendario: contrasto stanze + focus giorno corrente + logout operatore rosso */
+#page-calendario .cal-grid-wrap{
+  display: grid !important;
+  grid-template-columns: var(--cal-room-w) minmax(0,1fr) !important;
+  column-gap: var(--cal-gap) !important;
+  align-items: start;
+  overflow: hidden !important;
 }
-#page-calendario .cal-cell.cal-head.cal-corner .cal-corner-text{
-  color: rgba(15,23,42,0.82) !important;
+#page-calendario .cal-room-rail{
+  grid-column: 1;
+  display: grid;
+  grid-auto-rows: var(--cal-cell-h);
+  gap: var(--cal-gap);
+  width: var(--cal-room-w);
+  min-width: var(--cal-room-w);
+  position: relative;
+  z-index: 20;
 }
-body.ddae-dark #page-calendario .cal-cell.cal-head.cal-corner{
-  background: rgba(15,23,42,0.96) !important;
-  border-color: rgba(148,163,184,0.22) !important;
+#page-calendario .cal-room-rail-head{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width: var(--cal-room-w);
+  width: var(--cal-room-w);
+  border-radius: 13px;
+  border: 0.5px solid rgba(15,23,42,0.12);
+  background: rgba(240,240,240,0.90);
+  color: rgba(15,23,42,0.72);
+  font-weight: 700;
+  letter-spacing: .08em;
 }
-body.ddae-dark #page-calendario .cal-cell.cal-head.cal-corner .cal-corner-text{
+#page-calendario .cal-room-rail-pill{
+  position: relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width: var(--cal-room-w);
+  width: var(--cal-room-w);
+  height: var(--cal-cell-h);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: transparent;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  font-weight: 500;
+  color: var(--ico-sky-light);
+}
+#page-calendario .cal-room-rail-pill::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-color: var(--room-bg, rgba(255,255,255,.08));
+  filter: saturate(1.05);
+}
+#page-calendario .cal-room-rail-pill .cal-room-num{ position: relative; z-index: 1; }
+#page-calendario .cal-room-rail-pill{
+  color: #000000;
+}
+#page-calendario .cal-room-rail-pill .cal-room-num{
+  color: #000000 !important;
+}
+body.ddae-dark #page-calendario .cal-room-rail-pill{
   color: #ffffff !important;
+}
+body.ddae-dark #page-calendario .cal-room-rail-pill .cal-room-num{
+  color: #ffffff !important;
+}
+#page-opsettings .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(220,38,38,0.80) !important;
+  border-color: rgba(220,38,38,0.34) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+#page-opsettings .settings-btn-logout-pill .ui-ico,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-calendario .cal-days-wrap{
+  grid-column: 2;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+#page-calendario #calGrid,
+#page-calendario #calGridMonth{
+  width: max-content !important;
+  min-width: 100%;
+}
+#page-calendario #calGrid{
+  grid-template-columns: repeat(7, var(--cal-day-w)) !important;
+}
+#page-calendario .cal-grid-month{
+  width: max-content !important;
+  min-width: 100%;
+}
+#page-calendario .cal-pill.room,
+#page-calendario .cal-cell.cal-corner{
+  display: none !important;
+}
+#page-calendario.is-month-view .cal-days-wrap{
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+@media (orientation: landscape){
+  #page-calendario.is-month-view .cal-days-wrap{
+    overflow-x: hidden !important;
+  }
 }
