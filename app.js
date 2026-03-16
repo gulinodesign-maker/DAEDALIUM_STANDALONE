@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.267
+ * Build: 2.269
  */
-const BUILD_VERSION = "2.267";
+const BUILD_VERSION = "2.269";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
