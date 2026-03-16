@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.295
+ * Build: 2.296
  */
-const BUILD_VERSION = "2.295";
+const BUILD_VERSION = "2.296";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18663,6 +18663,40 @@ function renderCalendarioWeek(){
 
 
 
+
+function syncCalendarRoomRailHeights(){
+  try{
+    const rail = document.getElementById("calRoomRail");
+    const grid = document.getElementById("calGridMonth");
+    const page = document.getElementById("page-calendario");
+    if (!rail || !grid || !page || grid.hidden) return;
+
+    const head = grid.querySelector('.cal-cell.cal-head');
+    if (!head) return;
+
+    const rows = [];
+    const headH = Math.round(head.getBoundingClientRect().height || head.offsetHeight || 0);
+    if (headH <= 0) return;
+    rows.push(`${headH}px`);
+
+    const roomsCount = getConfiguredRoomsCount(6);
+    for (let r = 1; r <= roomsCount; r++){
+      const cell = grid.querySelector(`.cal-cell[data-room="${r}"]`);
+      const h = Math.round(cell?.getBoundingClientRect().height || cell?.offsetHeight || headH || 0);
+      rows.push(`${Math.max(1, h)}px`);
+    }
+
+    rail.style.gridTemplateRows = rows.join(' ');
+
+    const headEl = rail.querySelector('.cal-room-rail-head');
+    if (headEl) headEl.style.height = rows[0];
+    for (let r = 1; r <= roomsCount; r++){
+      const pill = rail.querySelector(`.cal-room-rail-pill.room-${r}`);
+      if (pill) pill.style.height = rows[r] || '';
+    }
+  }catch(_){ }
+}
+
 function __fitCalendarioMonthLandscape(){
   try{
     if (!state || state.page !== "calendario") return;
@@ -18690,15 +18724,13 @@ function __fitCalendarioMonthLandscape(){
       }
     }catch(_){}
 
-    const sharedSizeHost = document.getElementById("calDaysWrap") || grid.parentElement || wrap;
-
     // Pulisci override se non landscape
     if (!isLandscape){
       try{ grid.style.removeProperty("--cal-cell-h"); }catch(_){}
       try{ grid.style.removeProperty("--cal-pill-h"); }catch(_){}
       try{ grid.style.removeProperty("grid-template-columns"); }catch(_){}
-      try{ if (sharedSizeHost){ sharedSizeHost.style.removeProperty("--cal-cell-h"); sharedSizeHost.style.removeProperty("--cal-pill-h"); } }catch(_){}
-      try{ if (wrap){ wrap.style.removeProperty("--cal-cell-h"); wrap.style.removeProperty("--cal-pill-h"); } }catch(_){}
+      try{ wrap.style.removeProperty("--cal-cell-h"); }catch(_){}
+      try{ wrap.style.removeProperty("--cal-pill-h"); }catch(_){}
       // Ripristina template dinamico standard (var day width) se possibile
       try{
         const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
@@ -18764,14 +18796,8 @@ let pillH = Math.floor(cellH * 0.38);
       grid.style.gridTemplateColumns = `repeat(${daysCount}, minmax(${dayW}px, 1fr))`;
       grid.style.setProperty("--cal-cell-h", `${cellH}px`);
       grid.style.setProperty("--cal-pill-h", `${pillH}px`);
-      if (sharedSizeHost){
-        sharedSizeHost.style.setProperty("--cal-cell-h", `${cellH}px`);
-        sharedSizeHost.style.setProperty("--cal-pill-h", `${pillH}px`);
-      }
-      if (wrap){
-        wrap.style.setProperty("--cal-cell-h", `${cellH}px`);
-        wrap.style.setProperty("--cal-pill-h", `${pillH}px`);
-      }
+      wrap.style.setProperty("--cal-cell-h", `${cellH}px`);
+      wrap.style.setProperty("--cal-pill-h", `${pillH}px`);
     }catch(_){}
   }catch(_){}
 }
@@ -18951,6 +18977,7 @@ function renderCalendarioMonth(){
   }
 
   grid.appendChild(frag);
+  try{ requestAnimationFrame(() => { try{ syncCalendarRoomRailHeights(); }catch(_){ } }); }catch(_){ }
 }
 
 function buildMonthOccupancy(monthStart, daysCount){
