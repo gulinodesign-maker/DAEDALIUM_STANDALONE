@@ -12462,3 +12462,54 @@ body.ddae-dark .clean-reset-btn--laundry .cr-icon{
   stroke:#ffffff !important;
   color:#ffffff !important;
 }
+
+
+/* dDAE_2.281 — Dark mode pallini stanze + pill anno home */
+body.ddae-dark #page-ospite .room-dot,
+body.ddae-dark #page-ospite .mg-pill .room-dot,
+body.ddae-dark #page-ospite #roomsPicker .room-dot{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.32) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-ospite .room-dot.selected,
+body.ddae-dark #page-ospite .mg-pill .room-dot.selected,
+body.ddae-dark #page-ospite #roomsPicker .room-dot.selected{
+  background: var(--blue) !important;
+  border-color: rgba(96,165,250,0.70) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.34) !important;
+}
+body.ddae-dark #page-ospite .room-dot:disabled{
+  opacity: 0.92 !important;
+}
+#page-home .home-year-pill{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  min-height: 38px;
+  margin: 0 auto 10px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(43,124,180,0.22);
+  background: rgba(255,255,255,0.80);
+  color: var(--ico-sky);
+  -webkit-text-fill-color: var(--ico-sky);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  box-shadow: none;
+}
+body.ddae-dark #page-home .home-year-pill{
+  background: rgba(15,23,42,0.94);
+  border-color: rgba(148,163,184,0.28);
+  color: #93c5fd;
+  -webkit-text-fill-color: #93c5fd;
+}
