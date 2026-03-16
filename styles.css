@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.254");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1012,7 +1012,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.254");
+    url("./assets/bg-daedalium.png?v=dDAE_2.207");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -11454,120 +11454,205 @@ body.ddae-dark .btn.warning .ui-ico{
 }
 
 
-/* dDAE_2.254 — Dark mode contrast and visibility fixes */
+/* dDAE_2.255 - Dark mode contrast pass */
 body.ddae-dark .topbar .icon-btn{
-  background: rgba(15,23,42,0.94) !important;
-  border-color: rgba(148,163,184,0.22) !important;
+  background: rgba(15,23,42,0.92) !important;
+  border: 1px solid rgba(148,163,184,0.22) !important;
   box-shadow: none !important;
 }
 body.ddae-dark .topbar .icon-btn .ui-ico,
-body.ddae-dark .topbar .icon-btn .ui-ico *,
-body.ddae-dark .topbar .icon-btn .backchev,
-body.ddae-dark .topbar .hamburger,
-body.ddae-dark .topbar .hamburger::before,
-body.ddae-dark .topbar .hamburger::after{
-  color: var(--ico-sky) !important;
-  stroke: var(--ico-sky) !important;
-  border-top-color: var(--ico-sky) !important;
-  background: var(--ico-sky) !important;
+body.ddae-dark .topbar .icon-btn .ui-ico *{
+  stroke: #58b7f4 !important;
+  color: #58b7f4 !important;
+  fill: none !important;
 }
-
-body.ddae-dark .topbar h1,
-body.ddae-dark .brand h1,
-body.ddae-dark .topbar-year,
-body.ddae-dark .settings-title,
-body.ddae-dark .page-title,
-body.ddae-dark .section-title,
-body.ddae-dark .prodotti-title,
-body.ddae-dark .stats-title,
-body.ddae-dark .stats-subtitle,
-body.ddae-dark .db-menu-title,
-body.ddae-dark .clean-info-title,
-body.ddae-dark .tax-result-title,
-body.ddae-dark .laundry-detail-title,
-body.ddae-dark .operatori-editor-title,
-body.ddae-dark .operatori-editor-subtitle,
-body.ddae-dark .app-section-head h2,
-body.ddae-dark #page-calendario .app-section-head-row > .page-title,
-body.ddae-dark #page-pulizie .clean-topbar > .page-title,
-body.ddae-dark #page-impostazioni .settings-title,
-body.ddae-dark #page-opsettings .settings-title,
-body.ddae-dark #page-home .home-main-label,
-body.ddae-dark #page-statistiche .home-main-label,
-body.ddae-dark .stats-page .home-main-label,
-body.ddae-dark .home-main-label.small,
-body.ddae-dark .stats-graph-card-title,
-body.ddae-dark .settings-btn-label,
-body.ddae-dark .operatori-name,
-body.ddae-dark .operatori-metric-label,
-body.ddae-dark .operatori-metric-value,
-body.ddae-dark .operatori-empty,
-body.ddae-dark .stat-name,
-body.ddae-dark .services-list-title{
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-shadow: none !important;
-}
-
-body.ddae-dark #page-home .home-main-glyph,
-body.ddae-dark #page-statistiche .home-main-glyph,
-body.ddae-dark .stats-page .home-main-glyph{
-  background: rgba(226,232,240,0.12) !important;
+body.ddae-dark .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .icon-btn.icon-btn-whiteorange,
+body.ddae-dark .icon-btn.icon-btn-whitegreen,
+body.ddae-dark .icon-btn.icon-btn-whiteblack{
+  background: rgba(30,41,59,0.90) !important;
   border-color: rgba(148,163,184,0.24) !important;
   box-shadow: none !important;
 }
-
+body.ddae-dark .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .icon-btn.icon-btn-whiteblue .ui-ico *{
+  stroke: #58b7f4 !important;
+  color: #58b7f4 !important;
+  fill: none !important;
+}
+body.ddae-dark .icon-btn.icon-btn-whiteorange .ui-ico,
+body.ddae-dark .icon-btn.icon-btn-whiteorange .ui-ico *{
+  stroke: #f3b15a !important;
+  color: #f3b15a !important;
+  fill: none !important;
+}
+body.ddae-dark .icon-btn.icon-btn-whitegreen .ui-ico,
+body.ddae-dark .icon-btn.icon-btn-whitegreen .ui-ico *{
+  stroke: #4ade80 !important;
+  color: #4ade80 !important;
+  fill: none !important;
+}
+body.ddae-dark .icon-btn.icon-btn-whiteblack .ui-ico,
+body.ddae-dark .icon-btn.icon-btn-whiteblack .ui-ico *{
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+  fill: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill,
+body.ddae-dark .settings-year-wheel-card,
+body.ddae-dark .settings-year-wheel-shell{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark .settings-year-wheel-title,
+body.ddae-dark .settings-year-wheel-item,
+body.ddae-dark .settings-year-wheel-item.is-selected,
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill{
+  color: #f8fafc !important;
+}
+body.ddae-dark .settings-year-wheel-item{ color: rgba(226,232,240,0.42) !important; }
+body.ddae-dark .settings-year-wheel-item.is-selected{ color: #ffffff !important; }
+body.ddae-dark .settings-year-wheel-grabber{ background: rgba(148,163,184,0.36) !important; }
+body.ddae-dark .settings-year-wheel-highlight{
+  background: rgba(88,183,244,0.12) !important;
+  border-color: rgba(88,183,244,0.28) !important;
+}
+body.ddae-dark .settings-year-wheel-fade-top{
+  background: linear-gradient(to bottom, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
+}
+body.ddae-dark .settings-year-wheel-fade-bottom{
+  background: linear-gradient(to top, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
+}
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill{
-  background: rgba(15,23,42,0.92) !important;
-  border-color: rgba(148,163,184,0.24) !important;
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.20) !important;
   box-shadow: none !important;
 }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-dark{ color: #8fcbe8 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #4fcd66 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffcc00 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f29c50 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #d6c1a0 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #f06a6a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ color: #9b8cff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ color: #58b7f4 !important; }
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico{
-  color: #ffffff !important;
-  stroke: #ffffff !important;
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico{
+  stroke: currentColor !important;
+  color: currentColor !important;
 }
-
-body.ddae-dark .operatori-item,
-body.ddae-dark .operatori-empty,
-body.ddae-dark .operatori-metric{
-  background: rgba(15,23,42,0.88) !important;
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-label,
+body.ddae-dark .settings-build{ color: #ffffff !important; opacity: 0.74 !important; }
+body.ddae-dark .cal-nav-btn,
+body.ddae-dark .cal-pill,
+body.ddae-dark .cal-cell,
+body.ddae-dark .piscina-cell,
+body.ddae-dark .opcal-day,
+body.ddae-dark .clean-grid .cell,
+body.ddae-dark .calendar-grid .calendar-cell{
+  background: rgba(15,23,42,0.92) !important;
   border-color: rgba(148,163,184,0.22) !important;
   box-shadow: none !important;
+  color: #f8fafc !important;
 }
-
-body.ddae-dark #page-pulizie #cleanToday,
-body.ddae-dark #page-pulizie .clean-nav .btn,
-body.ddae-dark #page-pulizie .clean-top-left .btn,
-body.ddae-dark #page-pulizie .clean-top-actions .btn,
-body.ddae-dark #page-ospiti .gf-chip-btn,
+body.ddae-dark .cal-pill.day,
+body.ddae-dark .clean-grid .cell.head,
+body.ddae-dark .clean-grid .cell.corner,
+body.ddae-dark .calendar-page .app-section-head,
+body.ddae-dark .calendar-page .app-section-head-row{
+  background: transparent !important;
+  color: #ffffff !important;
+}
+body.ddae-dark .cal-day-abbrev,
+body.ddae-dark .cal-day-num,
+body.ddae-dark .piscina-day,
+body.ddae-dark .month-title,
+body.ddae-dark .cal-week-title,
+body.ddae-dark .clean-grid .cell.head,
+body.ddae-dark .clean-grid .cell.room,
+body.ddae-dark .clean-grid .cell.corner,
+body.ddae-dark .opcal-day,
+body.ddae-dark .app-section-head--calendar h2,
+body.ddae-dark .app-section-head--calendar .page-title{
+  color: #ffffff !important;
+}
+body.ddae-dark .piscina-cell[disabled]{ opacity: 0.55 !important; }
+body.ddae-dark #page-pulizie #cleanTodayBtn,
 body.ddae-dark #page-ospiti #guestToday,
-body.ddae-dark #page-ospiti #guestSortByInserimento,
-body.ddae-dark #page-ospiti #guestSortByArrivo,
-body.ddae-dark #page-ospiti #guestSortByNome{
-  background: rgba(30,41,59,0.88) !important;
-  background-color: rgba(30,41,59,0.88) !important;
+body.ddae-dark #page-ospiti #guestSortBy,
+body.ddae-dark #page-ospiti #guestSortDir,
+body.ddae-dark .gf-sort-btn,
+body.ddae-dark .pay-pill,
+body.ddae-dark .top-pill,
+body.ddae-dark .pill,
+body.ddae-dark .seg-btn{
+  background: rgba(30,41,59,0.92) !important;
+  border-color: rgba(148,163,184,0.24) !important;
   color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+}
+body.ddae-dark #page-statgen .stat-row,
+body.ddae-dark #page-statspese .stat-row,
+body.ddae-dark .kpi-card,
+body.ddae-dark .catrow,
+body.ddae-dark .stats-graph-card,
+body.ddae-dark .stats-card,
+body.ddae-dark .stat-box,
+body.ddae-dark .guest-card,
+body.ddae-dark .lavanderia-card,
+body.ddae-dark .prodotti-card{
+  background: rgba(30,41,59,0.94) !important;
   border-color: rgba(148,163,184,0.22) !important;
   box-shadow: none !important;
 }
-body.ddae-dark #page-pulizie #cleanToday .ui-ico,
-body.ddae-dark #page-pulizie .clean-nav .btn .ui-ico,
-body.ddae-dark #page-pulizie .clean-top-left .btn .ui-ico,
-body.ddae-dark #page-pulizie .clean-top-actions .btn .ui-ico{
+body.ddae-dark #page-statgen .stat-row::before,
+body.ddae-dark #page-statspese .stat-row::before{ opacity: 1 !important; }
+body.ddae-dark #page-statgen .stat-name,
+body.ddae-dark #page-statgen .stat-val,
+body.ddae-dark #page-statspese .stat-name,
+body.ddae-dark #page-statspese .stat-val,
+body.ddae-dark .kpi-label,
+body.ddae-dark .kpi-value,
+body.ddae-dark .catname,
+body.ddae-dark .catgrid,
+body.ddae-dark .stats-title,
+body.ddae-dark .stats-graph-card-title,
+body.ddae-dark .stats-graph-note,
+body.ddae-dark .stats-graph-legend,
+body.ddae-dark .settings-backup-note,
+body.ddae-dark .guest-name-text,
+body.ddae-dark .guest-arrivo,
+body.ddae-dark .guest-contact,
+body.ddae-dark .page-title,
+body.ddae-dark .settings-title,
+body.ddae-dark .prodotti-title,
+body.ddae-dark .section-title,
+body.ddae-dark .build,
+body.ddae-dark .home-main-label,
+body.ddae-dark .home-main-sub,
+body.ddae-dark .home-section-title,
+body.ddae-dark .home-card-title,
+body.ddae-dark .home-card-subtitle,
+body.ddae-dark .settings-btn-label,
+body.ddae-dark .operatori-editor-subtitle{
   color: #ffffff !important;
-  stroke: #ffffff !important;
+  opacity: 1 !important;
 }
-
-body.ddae-dark .loading-text,
-body.ddae-dark .loading-card,
-body.ddae-dark .loading-hourglass,
-body.ddae-dark .build{
-  color: #ffffff !important;
+body.ddae-dark .stats-graph-card canvas{ filter: none !important; }
+body.ddae-dark #page-grafici .stats-graph-card,
+body.ddae-dark #page-grafici .stats-graph-canvas{ background: transparent !important; }
+body.ddae-dark #page-impostazioni .settings-divider,
+body.ddae-dark .stats-divider{ background: rgba(148,163,184,0.22) !important; }
+body.ddae-dark .settings-actions .settings-btn.is-active,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark.is-active,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark.is-active{
+  outline: 2px solid rgba(255,255,255,0.92) !important;
 }
