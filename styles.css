@@ -11790,3 +11790,32 @@ body.ddae-dark #page-lavanderia .laundry-range::after{
   background: rgba(255,255,255,0.92) !important;
   opacity: 1 !important;
 }
+
+
+/* dDAE_2.260 — Dark mode: sfondi più scuri per Home / Statistiche / Ore Pulizia */
+body.ddae-dark #page-home .home-main-glyph,
+body.ddae-dark #page-home .home-icon .glyph,
+body.ddae-dark #page-statistiche .home-main-glyph,
+body.ddae-dark #page-statistiche .stats-page .home-main-glyph{
+  background: rgba(22, 28, 36, 0.88) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+body.ddae-dark #page-pulizie .clean-hour-dot{
+  background: rgba(22, 28, 36, 0.88) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.24) !important;
+}
+
+body.ddae-dark #page-pulizie .clean-hour-dot.is-zero{
+  background: rgba(20, 24, 31, 0.92) !important;
+}
+
+body.ddae-dark #page-home .home-main,
+body.ddae-dark #page-statistiche .home-main{
+  box-shadow: none !important;
+  background: transparent !important;
+}
