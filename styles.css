@@ -11996,7 +11996,7 @@ body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color: rgba(221,207,183,1); }
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-3{ --laundry-save-color: rgba(146,116,81,0.98); }
 
-/* dDAE_2.265 — Ore Pulizia Mensili: ottimizzazione dark mode iPhone */
+/* dDAE_2.266 — Ore Pulizia Mensili: ottimizzazione dark mode iPhone */
 body.ddae-dark #page-orepulizia .opcal-wrap{
   color: #f8fafc;
 }
@@ -12078,4 +12078,29 @@ body.ddae-dark #page-orepulizia .opcal-hours{
     background-color: rgba(15,23,42,0.96) !important;
     background-image: none !important;
   }
+}
+
+
+/* dDAE_2.266 — Calendario dark mode: nomi ospiti e icone navigazione bianchi */
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario.is-month-view .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname.is-compact{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-calendario .cal-nav-btn,
+body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-calendario .cal-nav-btn .ui-ico,
+body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn .ui-ico,
+body.ddae-dark #page-calendario .cal-nav-btn svg,
+body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn svg{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+body.ddae-dark #page-calendario .cal-nav-btn .ui-ico path,
+body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn .ui-ico path,
+body.ddae-dark #page-calendario .cal-nav-btn svg path,
+body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn svg path{
+  stroke: #ffffff !important;
 }
