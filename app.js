@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.286
+ * Build: 2.287
  */
-const BUILD_VERSION = "2.286";
+const BUILD_VERSION = "2.287";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3366,6 +3366,19 @@ function __syncCurrentYearIndicators__(){
   }catch(_){ }
 }
 
+function __ensureCurrentYearAutoSync__(){
+  try{
+    if (window.__ddaeCurrentYearSyncBound) return;
+    window.__ddaeCurrentYearSyncBound = true;
+    const syncNow = ()=>{ try{ __syncCurrentYearIndicators__(); }catch(_){ } };
+    syncNow();
+    try{ setInterval(syncNow, 60000); }catch(_){ }
+    try{ window.addEventListener("focus", syncNow); }catch(_){ }
+    try{ window.addEventListener("pageshow", syncNow); }catch(_){ }
+    try{ document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) syncNow(); }); }catch(_){ }
+  }catch(_){ }
+}
+
 function updateYearPill(){
   const y = state.exerciseYear;
   const pill = document.getElementById("yearPill");
@@ -3378,6 +3391,7 @@ function updateYearPill(){
   }
 
   try{ __syncCurrentYearIndicators__(); }catch(_){ }
+  try{ __ensureCurrentYearAutoSync__(); }catch(_){ }
 
   // Topbar: anno (default) o mese (solo Calendario)
   try{ __setTopbarCenterLabel__(); }catch(_){ }
@@ -17025,6 +17039,7 @@ async function init(){
   state.exerciseYear = loadExerciseYear();
   updateYearPill();
   try{ __syncCurrentYearIndicators__(); }catch(_){ }
+  try{ __ensureCurrentYearAutoSync__(); }catch(_){ }
 
   // Imposta una pagina di default (poi showPage verrà chiamata UNA sola volta)
   document.body.dataset.page = (state.session && state.session.user_id) ? "home" : "auth";
@@ -18489,10 +18504,12 @@ function ensureCalRoomFreezeBound(){
   }
 
   const update = ()=>{
+    const x = Math.max(0, Number(wrap.scrollLeft) || 0);
     const pinned = wrap.querySelectorAll(".cal-pill.room, .cal-cell.cal-corner");
     pinned.forEach((el)=>{
-      try{ el.style.transform = "translateX(0px)"; }catch(_){ }
+      try{ el.style.transform = `translateX(${x}px)`; }catch(_){ }
       try{ el.style.left = "0px"; }catch(_){ }
+      try{ el.style.willChange = "transform"; }catch(_){ }
     });
   };
 
