@@ -12127,3 +12127,60 @@ body.ddae-dark #page-statmensili .month-val,
 body.ddae-dark #page-statmensili .month-occ{
   color: var(--mcol,#6fb7d6) !important;
 }
+
+
+/* dDAE_2.270 — Tassa di soggiorno dark mode completo */
+body.ddae-dark #page-tassa .card{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-tassa .card .hd{
+  background: transparent !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.92) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+body.ddae-dark #page-tassa .card .bd{
+  background: transparent !important;
+}
+body.ddae-dark #page-tassa .btn.tax-year-pill{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.30) !important;
+  color: #8fcbe8 !important;
+  -webkit-text-fill-color: #8fcbe8 !important;
+}
+body.ddae-dark #page-tassa .tax-total{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.26) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-tassa .tax-total-label{
+  color: rgba(226,232,240,0.82) !important;
+}
+body.ddae-dark #page-tassa .tax-total-value{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-tassa .tax-result-card{
+  box-shadow: 0 12px 28px rgba(0,0,0,0.24) !important;
+}
+body.ddae-dark #page-tassa .tax-result-paying{
+  background: rgba(77,156,197,0.24) !important;
+  border-color: rgba(77,156,197,0.34) !important;
+}
+body.ddae-dark #page-tassa .tax-result-kids{
+  background: rgba(100,116,139,0.24) !important;
+  border-color: rgba(148,163,184,0.28) !important;
+}
+body.ddae-dark #page-tassa .tax-result-reduced{
+  background: rgba(201,119,43,0.24) !important;
+  border-color: rgba(201,119,43,0.34) !important;
+}
+body.ddae-dark #page-tassa .tax-result-title,
+body.ddae-dark #page-tassa .tax-result-value{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-tassa .tax-result-sub{
+  color: rgba(226,232,240,0.86) !important;
+}
