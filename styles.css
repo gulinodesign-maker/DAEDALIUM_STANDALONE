@@ -11819,3 +11819,13 @@ body.ddae-dark #page-statistiche .home-main{
   box-shadow: none !important;
   background: transparent !important;
 }
+
+
+/* dDAE_2.261 - Dark mode settings title + audio label white */
+body.ddae-dark #page-impostazioni .settings-title-row .settings-title,
+body.ddae-dark #page-opsettings .settings-title-row.settings-title-row-operator .settings-title,
+body.ddae-dark #page-impostazioni .settings-audio-header .settings-audio-label,
+body.ddae-dark #page-opsettings .settings-audio-header.settings-audio-header-operator .settings-audio-label{
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
