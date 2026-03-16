@@ -11856,3 +11856,103 @@ body.ddae-dark #page-opsettings .settings-audio-header.settings-audio-header-ope
   color: #ffffff !important;
   opacity: 1 !important;
 }
+
+
+/* dDAE_2.262 - Dark mode guest form/view/edit cards */
+body.ddae-dark #page-ospite .guest-form-card,
+body.ddae-dark #page-ospite .guest-form-card.is-create,
+body.ddae-dark #page-ospite .guest-form-card.is-edit,
+body.ddae-dark #page-ospite .guest-form-card.is-view{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+}
+
+body.ddae-dark #page-ospite .guest-form-card .hd,
+body.ddae-dark #page-ospite .guest-form-card .bd,
+body.ddae-dark #page-ospite .form-stack,
+body.ddae-dark #page-ospite #guestMulti,
+body.ddae-dark #page-ospite .guest-booking-block,
+body.ddae-dark #page-ospite .guest-notes-card,
+body.ddae-dark #page-ospite .guest-notes-toggle,
+body.ddae-dark #page-ospite .guest-booking-dates-pill,
+body.ddae-dark #page-ospite .stay-pill,
+body.ddae-dark #page-ospite .rooms-readonly-wrap{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+}
+
+body.ddae-dark #page-ospite .guest-booking-block{
+  background: rgba(30,41,59,0.94) !important;
+}
+
+body.ddae-dark #page-ospite .guest-booking-block.is-active{
+  box-shadow: inset 0 0 0 2px rgba(88,183,244,0.45) !important;
+}
+
+body.ddae-dark #page-ospite #guestNotes,
+body.ddae-dark #page-ospite textarea,
+body.ddae-dark #page-ospite input,
+body.ddae-dark #page-ospite select,
+body.ddae-dark #page-ospite .field input,
+body.ddae-dark #page-ospite .field select,
+body.ddae-dark #page-ospite .field textarea,
+body.ddae-dark #page-ospite .guest-booking-dates-pill{
+  background: rgba(2,6,23,0.96) !important;
+  color: #ffffff !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.ddae-dark #page-ospite input::placeholder,
+body.ddae-dark #page-ospite textarea::placeholder,
+body.ddae-dark #page-ospite select,
+body.ddae-dark #page-ospite option{
+  color: rgba(226,232,240,0.72) !important;
+}
+
+body.ddae-dark #page-ospite .field label,
+body.ddae-dark #page-ospite .field.float > label,
+body.ddae-dark #page-ospite .guest-notes-card-title,
+body.ddae-dark #page-ospite .guest-notes-toggle,
+body.ddae-dark #page-ospite .guest-notes-toggle-label,
+body.ddae-dark #page-ospite .guest-booking-staytext,
+body.ddae-dark #page-ospite .guest-booking-people,
+body.ddae-dark #page-ospite .guest-booking-dates,
+body.ddae-dark #page-ospite .guest-multi-title,
+body.ddae-dark #page-ospite .stay-pill,
+body.ddae-dark #page-ospite .stay-pill__sep,
+body.ddae-dark #page-ospite .stay-pill__n,
+body.ddae-dark #page-ospite .stay-pill__t,
+body.ddae-dark #page-ospite .room-dot,
+body.ddae-dark #page-ospite .page-title,
+body.ddae-dark #page-ospite h2,
+body.ddae-dark #page-ospite span,
+body.ddae-dark #page-ospite div{
+  color: #ffffff !important;
+}
+
+body.ddae-dark #page-ospite .guest-notes-toggle{
+  min-height: 52px;
+}
+
+body.ddae-dark #page-ospite .stay-pill,
+body.ddae-dark #page-ospite .rooms-readonly-wrap{
+  background: rgba(30,41,59,0.94) !important;
+}
+
+body.ddae-dark #page-ospite .rooms-readonly-wrap{
+  padding: 12px 14px !important;
+  border: 1px solid rgba(148,163,184,0.24) !important;
+  border-radius: 24px !important;
+}
+
+body.ddae-dark #page-ospite .guest-hd-actions .icon-round-btn,
+body.ddae-dark #page-ospite .guest-booking-actions .icon-round-btn,
+body.ddae-dark #page-ospite .guest-booking-actions .mini-btn,
+body.ddae-dark #page-ospite .guest-add-booking{
+  background: rgba(30,41,59,0.94) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #ffffff !important;
+}
