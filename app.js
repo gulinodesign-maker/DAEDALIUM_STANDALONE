@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.285
+ * Build: 2.286
  */
-const BUILD_VERSION = "2.285";
+const BUILD_VERSION = "2.286";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3356,6 +3356,16 @@ function __setTopbarCenterLabel__(){
   }catch(_){ }
 }
 
+function __syncCurrentYearIndicators__(){
+  try{
+    const currentYear = String(new Date().getFullYear());
+    ["homeYearPill"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = currentYear;
+    });
+  }catch(_){ }
+}
+
 function updateYearPill(){
   const y = state.exerciseYear;
   const pill = document.getElementById("yearPill");
@@ -3366,6 +3376,8 @@ function updateYearPill(){
       pill.hidden = false;
     }
   }
+
+  try{ __syncCurrentYearIndicators__(); }catch(_){ }
 
   // Topbar: anno (default) o mese (solo Calendario)
   try{ __setTopbarCenterLabel__(); }catch(_){ }
@@ -17012,12 +17024,19 @@ async function init(){
   state.session = loadSession();
   state.exerciseYear = loadExerciseYear();
   updateYearPill();
+  try{ __syncCurrentYearIndicators__(); }catch(_){ }
 
   // Imposta una pagina di default (poi showPage verrà chiamata UNA sola volta)
   document.body.dataset.page = (state.session && state.session.user_id) ? "home" : "auth";
   setupHeader();
   setupAuth();
   setupHome();
+  try{
+    const __syncCurrentYearOnWake__ = ()=>{ try{ __syncCurrentYearIndicators__(); }catch(_){ } };
+    window.addEventListener("focus", __syncCurrentYearOnWake__);
+    window.addEventListener("pageshow", __syncCurrentYearOnWake__);
+    document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) __syncCurrentYearOnWake__(); });
+  }catch(_){ }
   // Check ricevute mancanti (solo a riavvio)
   try{ setTimeout(()=>{ try{ checkReceiptsOnStartup(); }catch(_){ } }, 120); }catch(_){ }
 
@@ -18464,34 +18483,25 @@ function ensureCalRoomFreezeBound(){
   const wrap = document.querySelector("#page-calendario .cal-grid-wrap");
   if (!wrap) return;
 
-  // Se già bindato, aggiorna subito
   if (wrap.__roomFreezeUpdate){
-    try{ wrap.__roomFreezeUpdate(); }catch(_){}
+    try{ wrap.__roomFreezeUpdate(); }catch(_){ }
     return;
   }
 
-  let raf = 0;
   const update = ()=>{
-    raf = 0;
-    const x = (wrap && typeof wrap.scrollLeft === "number") ? wrap.scrollLeft : 0;
-    const rooms = wrap.querySelectorAll(".cal-pill.room");
-    rooms.forEach(el=>{
-      try{ el.style.transform = `translateX(${x}px)`; }catch(_){}
+    const pinned = wrap.querySelectorAll(".cal-pill.room, .cal-cell.cal-corner");
+    pinned.forEach((el)=>{
+      try{ el.style.transform = "translateX(0px)"; }catch(_){ }
+      try{ el.style.left = "0px"; }catch(_){ }
     });
-  };
-
-  const onScroll = ()=>{
-    if (raf) return;
-    raf = requestAnimationFrame(update);
   };
 
   wrap.__roomFreezeUpdate = update;
 
-  try{ wrap.addEventListener("scroll", onScroll, { passive: true }); }catch(_){ wrap.addEventListener("scroll", onScroll); }
-  try{ window.addEventListener("resize", onScroll, { passive: true }); }catch(_){ window.addEventListener("resize", onScroll); }
-  try{ window.addEventListener("orientationchange", onScroll, { passive: true }); }catch(_){ window.addEventListener("orientationchange", onScroll); }
+  try{ wrap.addEventListener("scroll", update, { passive: true }); }catch(_){ wrap.addEventListener("scroll", update); }
+  try{ window.addEventListener("resize", update, { passive: true }); }catch(_){ window.addEventListener("resize", update); }
+  try{ window.addEventListener("orientationchange", update, { passive: true }); }catch(_){ window.addEventListener("orientationchange", update); }
 
-  // Prima applicazione
   update();
 }
 
