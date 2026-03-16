@@ -12106,7 +12106,7 @@ body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn svg path{
 }
 
 
-/* dDAE_2.267 — Lavanderia dark mode: card scure + report con colori tag */
+/* dDAE_2.268 — Lavanderia dark mode: card scure + report a colori anche nel modal */
 body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item{
   background: rgba(15,23,42,0.96) !important;
   border-color: rgba(148,163,184,0.26) !important;
@@ -12117,24 +12117,24 @@ body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item > div:first-ch
 body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item *:not(.laundry-del):not(.x):not(.spinner){
   color: #ffffff !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-row{
+body.ddae-dark #laundryDetailModal .laundry-detail-row{
   background: var(--laundry-report-row-bg, rgba(30,41,59,0.94)) !important;
   border-color: var(--laundry-report-row-border, rgba(148,163,184,0.22)) !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-code{
+body.ddae-dark #laundryDetailModal .laundry-detail-code{
   background: var(--laundry-report-badge-primary-bg, #4d9cc5) !important;
   color: var(--laundry-report-badge-primary-text, #ffffff) !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-code.laundry-detail-code--secondary{
+body.ddae-dark #laundryDetailModal .laundry-detail-code.laundry-detail-code--secondary{
   background: var(--laundry-report-badge-secondary-bg, rgba(136,200,232,0.88)) !important;
   color: var(--laundry-report-badge-secondary-text, #0b1f3a) !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-label{
+body.ddae-dark #laundryDetailModal .laundry-detail-label{
   color: var(--laundry-report-label, #ffffff) !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-meta{
+body.ddae-dark #laundryDetailModal .laundry-detail-meta{
   color: var(--laundry-report-meta, rgba(226,232,240,0.78)) !important;
 }
-body.ddae-dark #page-lavanderia .laundry-detail-price{
+body.ddae-dark #laundryDetailModal .laundry-detail-price{
   color: var(--laundry-report-price, #ffffff) !important;
 }
