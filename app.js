@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.297
+ * Build: 2.300
  */
-const BUILD_VERSION = "2.297";
+const BUILD_VERSION = "2.300";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9856,6 +9856,28 @@ function guestIdOf(g){
   return String(g?.id ?? g?.ID ?? g?.ospite_id ?? g?.ospiteId ?? g?.guest_id ?? g?.guestId ?? "").trim();
 }
 
+function findCalendarGuestById(id){
+  try{
+    const needle = String(id ?? '').trim();
+    if (!needle) return null;
+
+    const sources = [
+      state?.calendar?.guests,
+      state?.guestRows,
+      state?.guests,
+      state?.ospitiRows,
+      state?.ospiti
+    ];
+
+    for (const src of sources){
+      if (!Array.isArray(src) || !src.length) continue;
+      const hit = src.find((g) => guestIdOf(g) === needle);
+      if (hit) return hit;
+    }
+  }catch(_){ }
+  return null;
+}
+
 function parseDateTs(v){
   const s = String(v ?? "").trim();
   if (!s) return null;
@@ -18880,6 +18902,7 @@ function renderCalendarioMonth(){
 
   const occ = buildMonthOccupancy(monthStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
+  const todayCol = getCalendarTodayColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -18887,7 +18910,7 @@ function renderCalendarioMonth(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
-    if (getCalendarTodayColumnIndex(anchor) === (i + 1)) dayPill.classList.add('is-today-col');
+    if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
     ab.className = "cal-day-abbrev";
@@ -18915,7 +18938,7 @@ function renderCalendarioMonth(){
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
 
-      if (getCalendarTodayColumnIndex(anchor) === (i + 1)) cell.classList.add('is-today-col');
+      if (todayCol === (i + 1)) cell.classList.add('is-today-col');
 
       if (!info) {
         cell.addEventListener("click", (ev)=>{
@@ -18927,10 +18950,22 @@ function renderCalendarioMonth(){
             cell.classList.toggle("empty-selected");
           }catch(_){ }
         });
-      }
-
-      if (info) {
+      } else {
         cell.classList.add("has-booking");
+
+        const prevInfo = (i > 0) ? occ.get(`${isoDate(days[i - 1])}:${r}`) : null;
+        const nextInfo = (i < (daysCount - 1)) ? occ.get(`${isoDate(days[i + 1])}:${r}`) : null;
+        const samePrev = !!(prevInfo && String(prevInfo.guestId || '') === String(info.guestId || ''));
+        const sameNext = !!(nextInfo && String(nextInfo.guestId || '') === String(info.guestId || ''));
+
+        if (!samePrev && !sameNext) cell.classList.add('booking-seg-single');
+        else if (!samePrev) cell.classList.add('booking-seg-start');
+        else if (!sameNext) cell.classList.add('booking-seg-end');
+        else cell.classList.add('booking-seg-middle');
+
+        if (samePrev || sameNext) cell.classList.add('booking-seg-joined');
+        if (samePrev) cell.classList.add('booking-join-left');
+        if (sameNext) cell.classList.add('booking-join-right');
 
         try{
           const flags = document.createElement("div");
@@ -18943,22 +18978,21 @@ function renderCalendarioMonth(){
 
         const inner = document.createElement("div");
         inner.className = "cal-cell-inner";
+        if (samePrev) inner.classList.add('is-continued');
 
         const ini = document.createElement("div");
         ini.className = "cal-initials";
-        ini.textContent = (info.initials && String(info.initials).trim())
-          ? String(info.initials).trim()
-          : ((()=>{ const __g = findCalendarGuestById(info.guestId); return initialsFromName(__g?.nome || __g?.name || __g?.Nome || __g?.NOME || __g?.guestName || ""); })());
+        ini.textContent = String(info.initials || '').trim() || initialsFromName((findCalendarGuestById(info.guestId)?.nome) || "");
         inner.appendChild(ini);
 
         const dots = document.createElement("div");
         dots.className = "cal-dots";
-        for (const t of info.dots.slice(0, 4)) {
+        for (const t of (Array.isArray(info.dots) ? info.dots : []).slice(0, 4)) {
           const s = document.createElement("span");
           s.className = `bed-dot ${t === "m" ? "bed-dot-m" : t === "s" ? "bed-dot-s" : "bed-dot-c"}`;
           dots.appendChild(s);
         }
-        inner.appendChild(dots);
+        if (dots.childNodes.length) inner.appendChild(dots);
         cell.appendChild(inner);
 
         cell.addEventListener("click", (ev) => {
