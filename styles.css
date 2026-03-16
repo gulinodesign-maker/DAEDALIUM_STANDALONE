@@ -11454,7 +11454,7 @@ body.ddae-dark .btn.warning .ui-ico{
 }
 
 
-/* dDAE_2.255 - Dark mode contrast pass */
+/* dDAE_2.256 - Dark mode contrast pass */
 body.ddae-dark .topbar .icon-btn{
   background: rgba(15,23,42,0.92) !important;
   border: 1px solid rgba(148,163,184,0.22) !important;
@@ -11655,4 +11655,38 @@ body.ddae-dark .settings-actions .settings-btn.is-active,
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark.is-active,
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark.is-active{
   outline: 2px solid rgba(255,255,255,0.92) !important;
+}
+
+
+/* dDAE_2.256 - Dark mode titles + underline fix */
+body.ddae-dark .page-title,
+body.ddae-dark .settings-title,
+body.ddae-dark .prodotti-title,
+body.ddae-dark .section-title,
+body.ddae-dark .app-section-head h2,
+body.ddae-dark #page-calendario .app-section-head-row > .page-title,
+body.ddae-dark #page-pulizie .clean-topbar > .page-title,
+body.ddae-dark #page-tassa .card > .hd > .page-title,
+body.ddae-dark #page-inserisci .card > .hd > .page-title,
+body.ddae-dark #page-operatori .card > .hd > .page-title,
+body.ddae-dark #page-spese .card > .hd > .page-title,
+body.ddae-dark #page-lavanderia .card > .hd > .page-title,
+body.ddae-dark #page-ospiti .guest-cards-card > .hd > .page-title{
+  color: #ffffff !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-divider,
+body.ddae-dark .stats-divider,
+body.ddae-dark .prodotti-divider,
+body.ddae-dark .app-section-head,
+body.ddae-dark #page-tassa .card .hd,
+body.ddae-dark #page-impostazioni .card .hd .page-title::after{
+  border-color: rgba(255,255,255,0.88) !important;
+  background: rgba(255,255,255,0.88) !important;
+}
+
+body.ddae-dark #page-ospiti #guestToday.is-active{
+  background: rgba(255, 59, 48, 0.80) !important;
+  border-color: rgba(255, 59, 48, 0.88) !important;
+  color: #ffffff !important;
 }
