@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.298
+ * Build: 2.299
  */
-const BUILD_VERSION = "2.298";
+const BUILD_VERSION = "2.299";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9854,6 +9854,28 @@ function setupGuestListControls(){
 
 function guestIdOf(g){
   return String(g?.id ?? g?.ID ?? g?.ospite_id ?? g?.ospiteId ?? g?.guest_id ?? g?.guestId ?? "").trim();
+}
+
+function findCalendarGuestById(id){
+  try{
+    const needle = String(id ?? '').trim();
+    if (!needle) return null;
+
+    const sources = [
+      state?.calendar?.guests,
+      state?.guestRows,
+      state?.guests,
+      state?.ospitiRows,
+      state?.ospiti
+    ];
+
+    for (const src of sources){
+      if (!Array.isArray(src) || !src.length) continue;
+      const hit = src.find((g) => guestIdOf(g) === needle);
+      if (hit) return hit;
+    }
+  }catch(_){ }
+  return null;
 }
 
 function parseDateTs(v){
