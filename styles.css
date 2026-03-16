@@ -12513,3 +12513,86 @@ body.ddae-dark #page-home .home-year-pill{
   color: #93c5fd;
   -webkit-text-fill-color: #93c5fd;
 }
+
+
+/* dDAE_2.282 — Home year spacing + settings buttons white/color + dark room dots */
+#page-home .home-year-pill{
+  margin: 0 auto 60px !important;
+}
+
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+#page-impostazioni .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill{
+  background: #ffffff !important;
+  border-color: rgba(15,23,42,0.12) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+#page-impostazioni .settings-btn-logout-pill .ui-ico,
+#page-opsettings .settings-btn-logout-pill .ui-ico{
+  stroke: currentColor !important;
+  color: currentColor !important;
+  fill: none !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-label,
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: currentColor !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-dark{ color: #8fcbe8 !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #4fcd66 !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffcc00 !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f29c50 !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #7c6fd6 !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #f06a6a !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ color: #9b8cff !important; }
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ color: #58b7f4 !important; }
+#page-impostazioni .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill{ color: #d89a58 !important; }
+
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.20) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+body.ddae-dark #page-ospite .room-dot{
+  background: rgba(15,23,42,0.92) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #e5edf8 !important;
+  -webkit-text-fill-color: #e5edf8 !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-ospite .room-dot.occupied{
+  background: rgba(69,10,10,0.92) !important;
+  border-color: rgba(248,113,113,0.38) !important;
+  color: #fecaca !important;
+  -webkit-text-fill-color: #fecaca !important;
+}
+body.ddae-dark #page-ospite .room-dot.selected,
+body.ddae-dark #page-ospite .mg-pill .room-dot.selected,
+body.ddae-dark #page-ospite #roomsPicker .room-dot.selected{
+  background: var(--blue) !important;
+  border-color: rgba(96,165,250,0.70) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
