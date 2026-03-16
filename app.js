@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.293
+ * Build: 2.294
  */
-const BUILD_VERSION = "2.293";
+const BUILD_VERSION = "2.294";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3357,15 +3357,19 @@ function __setTopbarCenterLabel__(){
 }
 
 function updateYearPill(){
-  const y = state.exerciseYear;
-  const pill = document.getElementById("yearPill");
-  if (pill){
+  const y = String(state.exerciseYear || loadExerciseYear() || "").trim();
+  const pills = [
+    document.getElementById("yearPill"),
+    document.getElementById("homeYearPill")
+  ].filter(Boolean);
+
+  pills.forEach((pill) => {
     if (!y){ pill.hidden = true; }
     else{
-      pill.textContent = `${y}`;
+      pill.textContent = y;
       pill.hidden = false;
     }
-  }
+  });
 
   // Topbar: anno (default) o mese (solo Calendario)
   try{ __setTopbarCenterLabel__(); }catch(_){ }
