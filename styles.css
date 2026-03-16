@@ -3149,7 +3149,7 @@ body[data-page="ospiti"] .guest-card .actions {
 }
 
 #page-calendario .cal-cell.is-today-col::before{
-  opacity: .825;
+  opacity: 1;
 }
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
@@ -12646,7 +12646,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 }
 
 
-/* dDAE_2.288 — Calendario: vera colonna fissa separata dalla griglia scrollabile */
+/* dDAE_2.289 — Calendario: vera colonna fissa + contrasto stanze */
 #page-calendario .cal-grid-wrap{
   display: grid !important;
   grid-template-columns: var(--cal-room-w) minmax(0,1fr) !important;
@@ -12701,6 +12701,23 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   filter: saturate(1.05);
 }
 #page-calendario .cal-room-rail-pill .cal-room-num{ position: relative; z-index: 1; }
+#page-calendario .cal-room-rail-pill{
+  color: #000000;
+}
+body.ddae-dark #page-calendario .cal-room-rail-pill{
+  color: #ffffff !important;
+}
+#page-opsettings .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(220,38,38,0.80) !important;
+  border-color: rgba(220,38,38,0.24) !important;
+  color: #ffffff !important;
+}
+#page-opsettings .settings-btn-logout-pill .ui-ico,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
 #page-calendario .cal-days-wrap{
   grid-column: 2;
   min-width: 0;

@@ -18459,7 +18459,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_2.288 — Calendario: colonna stanze davvero fissa con rail separata */
+/* dDAE_2.289 — Calendario: colonna stanze fissa + focus giorno corrente corretto */
 function ensureCalendarFixedRailStructure(){
   const page = document.getElementById("page-calendario");
   if (!page) return {};
@@ -18778,7 +18778,13 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${dayIndex}"]`);
     if (!head) return;
     const headLeft = head.offsetLeft || 0;
-    const target = Math.max(0, headLeft);
+    const cellWidth = head.offsetWidth || 0;
+    let gap = 0;
+    try{
+      const st = getComputedStyle(grid);
+      gap = parseFloat(st.columnGap || st.gap || '0') || 0;
+    }catch(_){ }
+    const target = Math.max(0, headLeft + cellWidth + gap);
     try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
     try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
   }catch(_){ }
