@@ -12425,3 +12425,22 @@ body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   color: var(--mcol, var(--statbg, #6fb7d6)) !important;
 }
+
+
+/* dDAE_2.278 — Statistiche: card Spese alte come Generali + reset biancheria dark/X */
+#page-statspese .stat-row{
+  padding: 16px 18px !important;
+  min-height: 84px !important;
+}
+body.ddae-dark #cleanResetLaundry,
+body.ddae-dark .clean-reset-btn--laundry{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+body.ddae-dark #cleanResetLaundry .ui-ico,
+body.ddae-dark #cleanResetLaundry .cr-icon,
+body.ddae-dark .clean-reset-btn--laundry .ui-ico,
+body.ddae-dark .clean-reset-btn--laundry .cr-icon{
+  stroke:#ffffff !important;
+  color:#ffffff !important;
+}

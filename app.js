@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.277
+ * Build: 2.278
  */
-const BUILD_VERSION = "2.277";
+const BUILD_VERSION = "2.278";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -20927,3 +20927,39 @@ async function initOrePuliziaPage(){
 }
 
 (async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
+
+
+/* dDAE_2.278 — Reset biancheria: icona X bianca in dark mode */
+function __applyLaundryResetCloseIcon__(){
+  try{
+    const btn = document.getElementById("cleanResetLaundry");
+    if (!btn) return false;
+    btn.classList.add('clean-reset-btn--laundry');
+    const svg = btn.querySelector('svg');
+    if (svg){
+      svg.setAttribute('viewBox','0 0 24 24');
+      svg.innerHTML = '<path d="M6 6l12 12"></path><path d="M18 6L6 18"></path>';
+      svg.classList.add('ui-ico');
+      try{ svg.style.stroke = '#ffffff'; svg.style.color = '#ffffff'; svg.style.fill = 'none'; }catch(_){ }
+    }
+    return true;
+  }catch(_){ return false; }
+}
+(function __bindLaundryResetCloseIconWatcher__(){
+  const run = ()=>{ try{ __applyLaundryResetCloseIcon__(); }catch(_){ } };
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', run, { once:true });
+  } else {
+    setTimeout(run, 0);
+  }
+  try{
+    const mo = new MutationObserver(()=>{ if (__applyLaundryResetCloseIcon__()) { try{ mo.disconnect(); }catch(_){ } } });
+    mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
+    setTimeout(()=>{ try{ mo.disconnect(); }catch(_){ } }, 15000);
+  }catch(_){ }
+  window.addEventListener('pageshow', run);
+  document.addEventListener('click', (e)=>{
+    const t = e && e.target && e.target.closest ? e.target.closest('#goPulizie, #goLavanderia, #topLaundryBtn, #cleanPrev, #cleanNext, #cleanToday') : null;
+    if (t) setTimeout(run, 0);
+  }, true);
+})();
