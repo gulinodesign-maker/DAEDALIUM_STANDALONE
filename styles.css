@@ -12201,3 +12201,71 @@ body.ddae-dark #page-orepulizia .opcal-hours{
   color: #93c5fd !important;
   text-shadow: none !important;
 }
+
+
+/* dDAE_2.272 — Dark mode: pallini stanze non selezionati + card report lavanderia */
+body.ddae-dark #page-ospiti .room-dot-badge.is-empty,
+body.ddae-dark #page-ospiti .rooms-dots .room-dot-badge.is-empty{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.30) !important;
+  color: #e5eef8 !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item,
+body.ddae-dark #page-lavanderia .laundry-history-wrap .item{
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.26) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
+  color: #f8fbff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item > div:first-child,
+body.ddae-dark #page-lavanderia .laundry-history-wrap .item > div:first-child,
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item strong,
+body.ddae-dark #page-lavanderia .laundry-history-wrap .item strong{
+  color: #ffffff !important;
+}
+
+body.ddae-dark .laundry-detail-card,
+body.ddae-dark #laundryDetailModal .laundry-detail-card{
+  background: rgba(15,23,42,0.98) !important;
+  border: 1px solid rgba(148,163,184,0.26) !important;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.36) !important;
+}
+body.ddae-dark .laundry-detail-title,
+body.ddae-dark #laundryDetailModal .laundry-detail-title{
+  color: #ffffff !important;
+}
+body.ddae-dark .laundry-detail-sub,
+body.ddae-dark #laundryDetailModal .laundry-detail-sub{
+  color: rgba(226,232,240,0.82) !important;
+}
+body.ddae-dark .laundry-detail-row,
+body.ddae-dark #laundryDetailModal .laundry-detail-row{
+  --laundry-report-row-bg: rgba(30,41,59,0.96) !important;
+  --laundry-report-row-border: rgba(148,163,184,0.22) !important;
+  --laundry-report-label: #ffffff !important;
+  --laundry-report-meta: rgba(226,232,240,0.78) !important;
+  --laundry-report-price: #ffffff !important;
+}
+
+
+/* dDAE_2.273 — Dark mode: X di chiusura bianca nei grafici */
+body.ddae-dark .stat-modal-close{
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.26) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
+}
+body.ddae-dark #statGraphModalClose.icon-btn{
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.26) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.30) !important;
+}
+body.ddae-dark #statGraphModalClose .ui-ico,
+body.ddae-dark #statGraphModalClose .ui-ico path,
+body.ddae-dark #statGraphModalClose svg path{
+  stroke: #ffffff !important;
+}
