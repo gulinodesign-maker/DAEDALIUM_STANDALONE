@@ -11996,7 +11996,7 @@ body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color: rgba(221,207,183,1); }
 body.ddae-dark #page-pulizie .clean-grid .cell.slot.color-sand-3{ --laundry-save-color: rgba(146,116,81,0.98); }
 
-/* dDAE_2.266 — Ore Pulizia Mensili: ottimizzazione dark mode iPhone */
+/* dDAE_2.267 — Ore Pulizia Mensili: ottimizzazione dark mode iPhone */
 body.ddae-dark #page-orepulizia .opcal-wrap{
   color: #f8fafc;
 }
@@ -12081,7 +12081,7 @@ body.ddae-dark #page-orepulizia .opcal-hours{
 }
 
 
-/* dDAE_2.266 — Calendario dark mode: nomi ospiti e icone navigazione bianchi */
+/* dDAE_2.267 — Calendario dark mode: nomi ospiti e icone navigazione bianchi */
 body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname,
 body.ddae-dark #page-calendario.is-month-view .calendar-event-bar .cal-fullname,
 body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname.is-compact{
@@ -12103,4 +12103,38 @@ body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn .ui-ico path,
 body.ddae-dark #page-calendario .cal-nav-btn svg path,
 body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn svg path{
   stroke: #ffffff !important;
+}
+
+
+/* dDAE_2.267 — Lavanderia dark mode: card scure + report con colori tag */
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.26) !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item > div:first-child,
+body.ddae-dark #page-lavanderia .laundry-history-wrap--solo .item *:not(.laundry-del):not(.x):not(.spinner){
+  color: #ffffff !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-row{
+  background: var(--laundry-report-row-bg, rgba(30,41,59,0.94)) !important;
+  border-color: var(--laundry-report-row-border, rgba(148,163,184,0.22)) !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-code{
+  background: var(--laundry-report-badge-primary-bg, #4d9cc5) !important;
+  color: var(--laundry-report-badge-primary-text, #ffffff) !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-code.laundry-detail-code--secondary{
+  background: var(--laundry-report-badge-secondary-bg, rgba(136,200,232,0.88)) !important;
+  color: var(--laundry-report-badge-secondary-text, #0b1f3a) !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-label{
+  color: var(--laundry-report-label, #ffffff) !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-meta{
+  color: var(--laundry-report-meta, rgba(226,232,240,0.78)) !important;
+}
+body.ddae-dark #page-lavanderia .laundry-detail-price{
+  color: var(--laundry-report-price, #ffffff) !important;
 }
