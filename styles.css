@@ -12515,7 +12515,7 @@ body.ddae-dark #page-home .home-year-pill{
 }
 
 
-/* dDAE_2.283 — Home year spacing + settings buttons white/color + dark room dots */
+/* dDAE_2.282 — Home year spacing + settings buttons white/color + dark room dots */
 #page-home .home-year-pill{
   margin: 0 auto 60px !important;
 }
@@ -12597,12 +12597,9 @@ body.ddae-dark #page-ospite #roomsPicker .room-dot.selected{
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* dDAE_2.283 — Home block 50px higher */
-#page-home .home-page{
-  padding-top: 0 !important;
-  transform: translateY(-50px);
-}
-#page-home .build{
-  margin-top: 100px !important;
-}
 
+/* dDAE_2.283 — Home block 40px higher */
+#page-home .home-year-pill,
+#page-home .home-grid{
+  transform: translateY(-40px) !important;
+}
