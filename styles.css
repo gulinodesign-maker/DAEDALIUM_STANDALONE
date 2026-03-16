@@ -12184,3 +12184,20 @@ body.ddae-dark #page-tassa .tax-result-value{
 body.ddae-dark #page-tassa .tax-result-sub{
   color: rgba(226,232,240,0.86) !important;
 }
+
+
+/* dDAE_2.271 — Ore Pulizia Mensili: celle dark mode reali */
+body.ddae-dark #page-orepulizia .opcal-cell:not(.is-empty){
+  background: rgba(15,23,42,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.26) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+}
+body.ddae-dark #page-orepulizia .opcal-day{
+  background: rgba(30,41,59,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #ffffff !important;
+}
+body.ddae-dark #page-orepulizia .opcal-hours{
+  color: #93c5fd !important;
+  text-shadow: none !important;
+}
