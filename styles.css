@@ -12269,3 +12269,130 @@ body.ddae-dark #statGraphModalClose .ui-ico path,
 body.ddae-dark #statGraphModalClose svg path{
   stroke: #ffffff !important;
 }
+
+
+/* dDAE_2.274 — Statistiche: card Generali e Spese uguali a Report Mensili */
+#page-statgen .stat-row,
+#page-statspese .stat-row{
+  border: 0 !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,0.60) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 22px rgba(15,23,42,0.12) !important;
+  padding: 14px 16px !important;
+}
+#page-statgen .stat-row::before,
+#page-statspese .stat-row::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+}
+#page-statgen .stat-row::after,
+#page-statspese .stat-row::after{
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 21px;
+  border: 1px solid rgba(255,255,255,0.30);
+  pointer-events: none;
+}
+#page-statgen .stat-row > *,
+#page-statspese .stat-row > *{
+  position: relative;
+  z-index: 1;
+}
+#page-statgen .stat-row .stat-name,
+#page-statgen .stat-row .stat-val,
+#page-statspese .stat-row .stat-name,
+#page-statspese .stat-row .stat-val{
+  color: var(--mcol, var(--statfg, var(--ico-blue-night))) !important;
+}
+body.ddae-dark #page-statgen .stat-row,
+body.ddae-dark #page-statspese .stat-row{
+  background: rgba(12, 23, 46, 0.96) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statgen .stat-row::after,
+body.ddae-dark #page-statspese .stat-row::after{
+  border-color: rgba(148,163,184,0.28) !important;
+}
+body.ddae-dark #page-statgen .stat-row .stat-name,
+body.ddae-dark #page-statgen .stat-row .stat-val,
+body.ddae-dark #page-statspese .stat-row .stat-name,
+body.ddae-dark #page-statspese .stat-row .stat-val{
+  color: var(--mcol, #6fb7d6) !important;
+}
+
+
+/* dDAE_2.275 — Statistiche: Generali senza icone, testo a sinistra, colori come Mensili */
+#page-statgen .stat-row{
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  padding: 16px 18px !important;
+  min-height: 0 !important;
+}
+#page-statgen .stat-ico-wrap{
+  display: none !important;
+}
+#page-statgen .stat-name,
+#page-statgen .stat-val,
+#page-statspese .stat-name,
+#page-statspese .stat-val{
+  width: 100% !important;
+  text-align: left !important;
+  color: var(--mcol, #ff3b30) !important;
+}
+#page-statgen .stat-val,
+#page-statspese .stat-val{
+  margin-top: 2px !important;
+}
+body.ddae-dark #page-statgen .stat-name,
+body.ddae-dark #page-statgen .stat-val,
+body.ddae-dark #page-statspese .stat-name,
+body.ddae-dark #page-statspese .stat-val{
+  color: var(--mcol, #6fb7d6) !important;
+}
+
+
+/* dDAE_2.276 — Statistiche: label a sinistra, importo a destra, colori come Mensili */
+#page-statgen .stat-row,
+#page-statspese .stat-row{
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#page-statgen .stat-ico-wrap{
+  display: none !important;
+}
+#page-statgen .stat-row{
+  padding: 16px 18px !important;
+  min-height: 0 !important;
+}
+#page-statgen .stat-name,
+#page-statspese .stat-name{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  text-align: left !important;
+  color: var(--mcol, var(--statbg, #ff3b30)) !important;
+}
+#page-statgen .stat-val,
+#page-statspese .stat-val{
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: max-content !important;
+  margin-top: 0 !important;
+  text-align: right !important;
+  color: var(--mcol, var(--statbg, #ff3b30)) !important;
+}
+body.ddae-dark #page-statgen .stat-name,
+body.ddae-dark #page-statspese .stat-name,
+body.ddae-dark #page-statgen .stat-val,
+body.ddae-dark #page-statspese .stat-val{
+  color: var(--mcol, var(--statbg, #6fb7d6)) !important;
+}
