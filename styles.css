@@ -12138,6 +12138,26 @@ body.ddae-dark #page-calendario .cal-nav-inline .cal-nav-btn svg path{
 }
 
 
+
+
+/* dDAE_2.291 — Calendario dark mode: testata ST e testo celle ospiti bianchi */
+body.ddae-dark #page-calendario .cal-room-rail-head,
+body.ddae-dark #page-calendario .cal-room-rail-head .cal-corner-text{
+  background: rgba(15,23,42,0.96) !important;
+  color: #ffffff !important;
+  border-color: rgba(148,163,184,0.24) !important;
+}
+body.ddae-dark #page-calendario .calendar-event-bar,
+body.ddae-dark #page-calendario.is-month-view .calendar-event-bar,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-cell-inner,
+body.ddae-dark #page-calendario.is-month-view .calendar-event-bar .cal-cell-inner,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario.is-month-view .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname.is-compact,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-initials{
+  color: #ffffff !important;
+}
+
 /* dDAE_2.269 — Statistiche Mensili: card dark mode coerenti */
 body.ddae-dark #page-statmensili .month-row{
   background: rgba(12, 23, 46, 0.96) !important;
@@ -12652,7 +12672,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 }
 
 
-/* dDAE_2.290 — Calendario: contrasto stanze + focus giorno corrente + logout operatore rosso */
+/* dDAE_2.291 — Calendario: contrasto stanze + focus giorno corrente + logout operatore rosso */
 #page-calendario .cal-grid-wrap{
   display: grid !important;
   grid-template-columns: var(--cal-room-w) minmax(0,1fr) !important;
