@@ -12396,3 +12396,32 @@ body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-val{
   color: var(--mcol, var(--statbg, #6fb7d6)) !important;
 }
+
+
+/* dDAE_2.277 — Statistiche: colori testi/card come Mensili (palette figura) */
+#page-statgen .stat-row:nth-child(1),
+#page-statspese .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
+#page-statgen .stat-row:nth-child(2),
+#page-statspese .stat-row:nth-child(2){ --mcol: var(--p2) !important; }
+#page-statgen .stat-row:nth-child(3),
+#page-statspese .stat-row:nth-child(3){ --mcol: var(--p5) !important; }
+#page-statgen .stat-row:nth-child(4),
+#page-statspese .stat-row:nth-child(4){ --mcol: var(--p6) !important; }
+#page-statgen .stat-row:nth-child(5),
+#page-statspese .stat-row:nth-child(5){ --mcol: var(--p7) !important; }
+#page-statgen .stat-row:nth-child(6),
+#page-statspese .stat-row:nth-child(6){ --mcol: var(--p8) !important; }
+#page-statgen .stat-row:nth-child(7){ --mcol: var(--p1) !important; }
+
+#page-statgen .stat-name,
+#page-statgen .stat-val,
+#page-statspese .stat-name,
+#page-statspese .stat-val{
+  color: var(--mcol, var(--statbg, #2B7CB4)) !important;
+}
+body.ddae-dark #page-statgen .stat-name,
+body.ddae-dark #page-statgen .stat-val,
+body.ddae-dark #page-statspese .stat-name,
+body.ddae-dark #page-statspese .stat-val{
+  color: var(--mcol, var(--statbg, #6fb7d6)) !important;
+}
