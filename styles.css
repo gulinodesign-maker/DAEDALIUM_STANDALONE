@@ -11690,3 +11690,103 @@ body.ddae-dark #page-ospiti #guestToday.is-active{
   border-color: rgba(255, 59, 48, 0.88) !important;
   color: #ffffff !important;
 }
+
+
+/* dDAE_2.257 - Dark mode page separators + sync line */
+body.ddae-dark #page-impostazioni .settings-divider,
+body.ddae-dark .stats-divider,
+body.ddae-dark .prodotti-divider,
+body.ddae-dark .sync-footer-line,
+body.ddae-dark #page-impostazioni .card .hd .page-title::after{
+  border-color: rgba(255,255,255,0.92) !important;
+  background: rgba(255,255,255,0.92) !important;
+}
+
+body.ddae-dark #page-tassa .card .hd,
+body.ddae-dark #page-inserisci .card > .hd,
+body.ddae-dark #page-operatori .card > .hd,
+body.ddae-dark #page-spese .card > .hd,
+body.ddae-dark #page-lavanderia .card > .hd,
+body.ddae-dark #page-ospiti .guest-cards-card > .hd,
+body.ddae-dark #page-calendario .app-section-head,
+body.ddae-dark #page-pulizie .hd.app-section-head,
+body.ddae-dark #page-pulizie .clean-topbar{
+  border-color: rgba(255,255,255,0.92) !important;
+}
+
+body.ddae-dark #page-calendario .app-section-head,
+body.ddae-dark #page-calendario .app-section-head-row,
+body.ddae-dark #page-pulizie .hd.app-section-head,
+body.ddae-dark #page-pulizie .clean-topbar{
+  background: transparent !important;
+}
+
+/* dDAE_2.258 - Dark mode header separators stay white without white blocks */
+
+
+/* dDAE_2.259 - Dark mode readability for operatori, channel e lavanderia */
+body.ddae-dark .operatori-empty,
+body.ddae-dark .operatori-item,
+body.ddae-dark .laundry-period,
+body.ddae-dark .laundry-range-field,
+body.ddae-dark .laundry-reportChip,
+body.ddae-dark .laundry-tile,
+body.ddae-dark .laundry-detail-card,
+body.ddae-dark .laundry-detail-totalRow{
+  box-shadow: none !important;
+}
+
+body.ddae-dark .operatori-empty,
+body.ddae-dark .operatori-item,
+body.ddae-dark .laundry-period,
+body.ddae-dark .laundry-range-field,
+body.ddae-dark .laundry-reportChip,
+body.ddae-dark .laundry-detail-card{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.26) !important;
+}
+
+body.ddae-dark .operatori-metric,
+body.ddae-dark .laundry-tile,
+body.ddae-dark .laundry-detail-row{
+  background: rgba(30,41,59,0.94) !important;
+  border-color: rgba(148,163,184,0.22) !important;
+}
+
+body.ddae-dark .operatori-name,
+body.ddae-dark .operatori-metric-value,
+body.ddae-dark .laundry-dateText,
+body.ddae-dark .laundry-value,
+body.ddae-dark .laundry-label,
+body.ddae-dark .laundry-code,
+body.ddae-dark .laundry-detail-title,
+body.ddae-dark .laundry-detail-sub,
+body.ddae-dark .laundry-detail-label,
+body.ddae-dark .laundry-detail-price{
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+body.ddae-dark .operatori-metric-label,
+body.ddae-dark .laundry-detail-meta,
+body.ddae-dark .laundry-detail-kicker{
+  color: rgba(226,232,240,0.78) !important;
+  opacity: 1 !important;
+}
+
+body.ddae-dark .laundry-detail-row{
+  --laundry-report-row-bg: rgba(30,41,59,0.94) !important;
+  --laundry-report-row-border: rgba(148,163,184,0.22) !important;
+  --laundry-report-badge-primary-bg: #4d9cc5 !important;
+  --laundry-report-badge-primary-text: #ffffff !important;
+  --laundry-report-badge-secondary-bg: rgba(136,200,232,0.88) !important;
+  --laundry-report-badge-secondary-text: #0b1f3a !important;
+  --laundry-report-label: #ffffff !important;
+  --laundry-report-meta: rgba(226,232,240,0.78) !important;
+  --laundry-report-price: #ffffff !important;
+}
+
+body.ddae-dark #page-lavanderia .laundry-range::after{
+  background: rgba(255,255,255,0.92) !important;
+  opacity: 1 !important;
+}
