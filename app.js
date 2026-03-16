@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.284
+ * Build: 2.285
  */
-const BUILD_VERSION = "2.284";
+const BUILD_VERSION = "2.285";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2794,8 +2794,10 @@ let __audioCtx = null;
 let __lastTapSfxAt = 0;
 
 function __loadAudioPref(){
-  try{ __audioEnabled = (localStorage.getItem(AUDIO_PREF_KEY) === "1"); }
-  catch(_){ __audioEnabled = false; }
+  try{
+    const stored = localStorage.getItem(AUDIO_PREF_KEY);
+    __audioEnabled = (stored === null) ? true : (stored === "1");
+  }catch(_){ __audioEnabled = true; }
 }
 function __setAudioPref(v){
   __audioEnabled = !!v;

@@ -12603,3 +12603,36 @@ body.ddae-dark #page-ospite #roomsPicker .room-dot.selected{
 #page-home .home-grid{
   transform: translateY(-40px) !important;
 }
+
+
+/* dDAE_2.285 — Settings dark icon + logout white bold */
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{
+  color: #000000 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark .ui-ico,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark .ui-ico,
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark .settings-btn-label,
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark .settings-btn-label{
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{
+  color: #ffffff !important;
+}
+#page-impostazioni .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill{
+  color: #ffffff !important;
+}
+#page-impostazioni .settings-btn-logout-pill .ui-ico,
+#page-opsettings .settings-btn-logout-pill .ui-ico,
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  font-weight: 900 !important;
+}
