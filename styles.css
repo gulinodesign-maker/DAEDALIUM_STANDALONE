@@ -3150,13 +3150,19 @@ body[data-page="ospiti"] .guest-card .actions {
 
 #page-calendario .cal-cell.is-today-col::before{
   opacity: 1;
+  filter: saturate(1.12) brightness(1.08);
 }
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
   opacity: 1;
+  filter: saturate(1.12) brightness(1.08);
 }
 #page-calendario .cal-cell.cal-head.is-today-col{
-  background: rgba(240,240,240,0.98);
+  background: rgba(240,240,240,1);
+  box-shadow: inset 0 0 0 999px rgba(255,255,255,0.30);
+}
+body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
+  box-shadow: inset 0 0 0 999px rgba(255,255,255,0.12);
 }
 #page-calendario .calendar-event-bar .cal-fullname{
   color: rgba(15,23,42,0.96);
@@ -12646,7 +12652,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 }
 
 
-/* dDAE_2.289 — Calendario: vera colonna fissa + contrasto stanze */
+/* dDAE_2.290 — Calendario: contrasto stanze + focus giorno corrente + logout operatore rosso */
 #page-calendario .cal-grid-wrap{
   display: grid !important;
   grid-template-columns: var(--cal-room-w) minmax(0,1fr) !important;
@@ -12704,14 +12710,21 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 #page-calendario .cal-room-rail-pill{
   color: #000000;
 }
+#page-calendario .cal-room-rail-pill .cal-room-num{
+  color: #000000 !important;
+}
 body.ddae-dark #page-calendario .cal-room-rail-pill{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-calendario .cal-room-rail-pill .cal-room-num{
   color: #ffffff !important;
 }
 #page-opsettings .settings-btn-logout-pill,
 #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
   background: rgba(220,38,38,0.80) !important;
-  border-color: rgba(220,38,38,0.24) !important;
+  border-color: rgba(220,38,38,0.34) !important;
   color: #ffffff !important;
+  box-shadow: none !important;
 }
 #page-opsettings .settings-btn-logout-pill .ui-ico,
 #page-opsettings .settings-btn-logout-pill .settings-btn-label{

@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.287
  */
-const BUILD_VERSION = "2.287";
+const BUILD_VERSION = "2.290";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18459,7 +18459,7 @@ function renderCalendario(){
 }
 
 
-/* dDAE_2.289 — Calendario: colonna stanze fissa + focus giorno corrente corretto */
+/* dDAE_2.290 — Calendario: focus giorno corrente corretto + colonna stanze contrasto */
 function ensureCalendarFixedRailStructure(){
   const page = document.getElementById("page-calendario");
   if (!page) return {};
@@ -18784,7 +18784,8 @@ function scrollCalendarMonthToDayLeft(dayIndex){
       const st = getComputedStyle(grid);
       gap = parseFloat(st.columnGap || st.gap || '0') || 0;
     }catch(_){ }
-    const target = Math.max(0, headLeft + cellWidth + gap);
+    const twoCellsBack = (cellWidth + gap) * 2;
+    const target = Math.max(0, headLeft - twoCellsBack);
     try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
     try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
   }catch(_){ }
