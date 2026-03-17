@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.305
+ * Build: 2.306
  */
-const BUILD_VERSION = "2.305";
+const BUILD_VERSION = "2.306";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4097,6 +4097,32 @@ function computeTopGuestAlerts(guests){
   });
   return { left, right };
 }
+let __topGuestDualPhase = 0;
+let __topGuestDualTimer = null;
+function paintTopGuestDualLed(side){
+  const el = document.getElementById(side === 'right' ? 'dbLedWrite' : 'dbLedRead');
+  if (!el) return;
+  el.classList.remove('is-black','is-sky','is-yellow','is-red','is-blink');
+  if (side === 'left'){
+    el.classList.add(__topGuestDualPhase ? 'is-sky' : 'is-black');
+  }else{
+    el.classList.add(__topGuestDualPhase ? 'is-red' : 'is-yellow');
+  }
+}
+function syncTopGuestDualTimer(){
+  const leftDual = !!document.getElementById('dbLedRead')?.classList.contains('is-dual-left');
+  const rightDual = !!document.getElementById('dbLedWrite')?.classList.contains('is-dual-right');
+  if (!(leftDual || rightDual)){
+    if (__topGuestDualTimer){ clearInterval(__topGuestDualTimer); __topGuestDualTimer = null; }
+    return;
+  }
+  if (__topGuestDualTimer) return;
+  __topGuestDualTimer = setInterval(() => {
+    __topGuestDualPhase = __topGuestDualPhase ? 0 : 1;
+    try{ if (document.getElementById('dbLedRead')?.classList.contains('is-dual-left')) paintTopGuestDualLed('left'); }catch(_){ }
+    try{ if (document.getElementById('dbLedWrite')?.classList.contains('is-dual-right')) paintTopGuestDualLed('right'); }catch(_){ }
+  }, 700);
+}
 function applyTopGuestAlertLed(side){
   const el = document.getElementById(side === 'right' ? 'dbLedWrite' : 'dbLedRead');
   if (!el) return;
@@ -4109,19 +4135,27 @@ function applyTopGuestAlertLed(side){
   if (!items.length){
     el.classList.add('is-off');
     el.setAttribute('aria-label', side === 'left' ? 'Nessun alert registrazioni ospiti' : 'Nessun alert pagamenti ospiti');
+    syncTopGuestDualTimer();
     return;
   }
   if (side === 'left'){
-    if (hasBlack && hasSky){ el.classList.add('is-dual-left'); }
+    if (hasBlack && hasSky){
+      el.classList.add('is-dual-left');
+      paintTopGuestDualLed('left');
+    }
     else if (hasBlack){ el.classList.add('is-black','is-blink'); }
     else { el.classList.add('is-sky','is-blink'); }
     el.setAttribute('aria-label', `Alert registrazioni ospiti (${items.length})`);
   }else{
-    if (hasYellow && hasRed){ el.classList.add('is-dual-right'); }
+    if (hasYellow && hasRed){
+      el.classList.add('is-dual-right');
+      paintTopGuestDualLed('right');
+    }
     else if (hasRed){ el.classList.add('is-red','is-blink'); }
     else { el.classList.add('is-yellow','is-blink'); }
     el.setAttribute('aria-label', `Alert pagamenti ospiti (${items.length})`);
   }
+  syncTopGuestDualTimer();
 }
 function updateTopGuestAlertLeds(){
   try{ applyTopGuestAlertLed('left'); }catch(_){ }
