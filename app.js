@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.303
+ * Build: 2.304
  */
-const BUILD_VERSION = "2.303";
+const BUILD_VERSION = "2.304";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3897,6 +3897,9 @@ const state = {
   pendingReceipts: [],
   pendingReceiptsGuests: [],
   pendingReceiptsCount: 0,
+  guestAlerts: { left: [], right: [] },
+  guestAlertCounts: { left: 0, right: 0 },
+  guestAlertModalSide: "left",
 
   guestEditId: null,
   guestMode: "create",
@@ -3961,39 +3964,261 @@ const loadingState = {
 };
 
 
-// ===== Sync LED (read/write) =====
-const __syncState = { reads: 0, writes: 0 };
+// ===== Alert LED ospiti (topbar) =====
+const __guestAlertState = { timer: null, lastTick: 0 };
 
-function __syncLedUpdate(){
-  const elRead = document.getElementById("dbLedRead");
-  const elWrite = document.getElementById("dbLedWrite");
+function _guestAlertDismissKey(side){
+  const uid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : 'anon';
+  const year = (state && state.exerciseYear) ? String(state.exerciseYear) : 'year';
+  return `dDAE_guest_alert_dismissed_${uid}_${year}_${side}`;
+}
+function _readGuestAlertDismissed(side){
+  try{
+    const raw = localStorage.getItem(_guestAlertDismissKey(side));
+    const arr = JSON.parse(raw || '[]');
+    return Array.isArray(arr) ? new Set(arr.map(x => String(x || '').trim()).filter(Boolean)) : new Set();
+  }catch(_){ return new Set(); }
+}
+function _writeGuestAlertDismissed(side, set){
+  try{ localStorage.setItem(_guestAlertDismissKey(side), JSON.stringify(Array.from(set || []))); }catch(_){ }
+}
+function dismissGuestAlert(side, guestId){
+  const id = String(guestId || '').trim();
+  if (!id) return;
+  const set = _readGuestAlertDismissed(side);
+  set.add(id);
+  _writeGuestAlertDismissed(side, set);
+  try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+}
+function clearDismissedGuestAlert(side, guestId){
+  const id = String(guestId || '').trim();
+  if (!id) return;
+  const set = _readGuestAlertDismissed(side);
+  if (set.delete(id)) _writeGuestAlertDismissed(side, set);
+}
+function _guestStayFinancials(g){
+  const total = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.total ?? g?.importo_booking ?? 0);
+  const services = money(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? 0);
+  const dep = money(g?.acconto_importo ?? g?.accontoImporto ?? g?.deposit ?? 0);
+  const saldo = money(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
+  const remaining = (total + services) - dep - saldo;
+  return { total, services, dep, saldo, remaining };
+}
+function _guestReceiptMissingNow(g){
+  const missing = [];
+  const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? 0);
+  const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? '');
+  if (dep > 0 && _isElectronicTypeStr_(depType) && !_isRicevutaFlag(g, 'acconto')) missing.push('Acconto elettronico senza ricevuta');
+  const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
+  const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? '');
+  if (saldo > 0 && _isElectronicTypeStr_(saldoType) && !_isRicevutaFlag(g, 'saldo')) missing.push('Saldo elettronico senza ricevuta');
+  return missing;
+}
+function computeTopGuestAlerts(guests){
+  const now = Date.now();
+  const twelveHoursMs = 12 * 60 * 60 * 1000;
+  const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+  const leftDismissed = _readGuestAlertDismissed('left');
+  const rightDismissed = _readGuestAlertDismissed('right');
+  const left = [];
+  const right = [];
+  const src = Array.isArray(guests) ? guests : [];
+  for (const g of src){
+    const guestId = guestIdOf(g);
+    if (!guestId) continue;
+    const rawName = g?.nome ?? g?.name ?? '';
+    const name = collapseSpaces(String(rawName || '').trim()) || 'Prenotazione';
+    const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+    const checkOutTs = parseDateTs(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
+    const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
+    const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
 
-  const w = __syncState.writes|0;
-  const r = __syncState.reads|0;
+    if (checkInTs && now >= (checkInTs + twelveHoursMs)){
+      const missingPs = !psReg;
+      const missingIstat = !istatReg;
+      if (missingPs || missingIstat){
+        if (!leftDismissed.has(guestId)){
+          left.push({
+            id: guestId,
+            name,
+            guest: g,
+            details: [
+              missingPs ? 'Registrazione Polizia mancante' : '',
+              missingIstat ? 'Registrazione ISTAT mancante' : ''
+            ].filter(Boolean),
+            mode: (missingPs && missingIstat) ? 'dual' : (missingPs ? 'black' : 'sky'),
+            tags: [
+              missingPs ? { label: 'Polizia', cls: 'tag-black' } : null,
+              missingIstat ? { label: 'ISTAT', cls: 'tag-sky' } : null
+            ].filter(Boolean),
+            checkInTs,
+            checkOutTs
+          });
+        }
+      }else{
+        clearDismissedGuestAlert('left', guestId);
+      }
+    }else if (psReg && istatReg){
+      clearDismissedGuestAlert('left', guestId);
+    }
 
-  if (elRead) elRead.classList.toggle("is-on", r > 0);
-  if (elWrite) elWrite.classList.toggle("is-on", w > 0);
-
-  // Compat (se esiste ancora in vecchi markup)
-  const legacy = document.getElementById("syncLed");
-  if (legacy){
-    const mode = (w>0) ? "write" : (r>0 ? "read" : "off");
-    legacy.setAttribute("data-sync", mode);
+    const fin = _guestStayFinancials(g);
+    const receiptMissing = _guestReceiptMissingNow(g);
+    const dueSoon = !!(checkOutTs && (checkOutTs - now) <= twentyFourHoursMs && (checkOutTs - now) >= 0 && isFinite(fin.remaining) && fin.remaining > 0.0001);
+    const receiptAlert = receiptMissing.length > 0;
+    if (dueSoon || receiptAlert){
+      if (!rightDismissed.has(guestId)){
+        right.push({
+          id: guestId,
+          name,
+          guest: g,
+          details: [
+            dueSoon ? 'Check-out entro 24 ore con pagamento mancante' : '',
+            ...receiptMissing
+          ].filter(Boolean),
+          mode: (dueSoon && receiptAlert) ? 'dual' : (receiptAlert ? 'red' : 'yellow'),
+          tags: [
+            dueSoon ? { label: 'Pagamento', cls: 'tag-yellow' } : null,
+            receiptAlert ? { label: 'Ricevuta', cls: 'tag-red' } : null
+          ].filter(Boolean),
+          checkInTs,
+          checkOutTs
+        });
+      }
+    }else{
+      clearDismissedGuestAlert('right', guestId);
+    }
+  }
+  left.sort((a,b) => (a.checkInTs || 0) - (b.checkInTs || 0));
+  right.sort((a,b) => {
+    const ta = (a.checkOutTs == null) ? 1e18 : Number(a.checkOutTs);
+    const tb = (b.checkOutTs == null) ? 1e18 : Number(b.checkOutTs);
+    return ta - tb;
+  });
+  return { left, right };
+}
+function applyTopGuestAlertLed(side){
+  const el = document.getElementById(side === 'right' ? 'dbLedWrite' : 'dbLedRead');
+  if (!el) return;
+  const items = (state.guestAlerts && Array.isArray(state.guestAlerts[side])) ? state.guestAlerts[side] : [];
+  const hasBlack = items.some(x => x.mode === 'black' || x.mode === 'dual');
+  const hasSky = items.some(x => x.mode === 'sky' || x.mode === 'dual');
+  const hasYellow = items.some(x => x.mode === 'yellow' || x.mode === 'dual');
+  const hasRed = items.some(x => x.mode === 'red' || x.mode === 'dual');
+  el.classList.remove('is-off','is-black','is-sky','is-yellow','is-red','is-blink','is-dual-left','is-dual-right');
+  if (!items.length){
+    el.classList.add('is-off');
+    el.setAttribute('aria-label', side === 'left' ? 'Nessun alert registrazioni ospiti' : 'Nessun alert pagamenti ospiti');
+    return;
+  }
+  if (side === 'left'){
+    if (hasBlack && hasSky){ el.classList.add('is-dual-left'); }
+    else if (hasBlack){ el.classList.add('is-black','is-blink'); }
+    else { el.classList.add('is-sky','is-blink'); }
+    el.setAttribute('aria-label', `Alert registrazioni ospiti (${items.length})`);
+  }else{
+    if (hasYellow && hasRed){ el.classList.add('is-dual-right'); }
+    else if (hasRed){ el.classList.add('is-red','is-blink'); }
+    else { el.classList.add('is-yellow','is-blink'); }
+    el.setAttribute('aria-label', `Alert pagamenti ospiti (${items.length})`);
   }
 }
-
-function __syncLedBegin(method){
-  const m = String(method||"GET").toUpperCase();
-  if (m === "GET") __syncState.reads += 1;
-  else __syncState.writes += 1;
-  __syncLedUpdate();
+function updateTopGuestAlertLeds(){
+  try{ applyTopGuestAlertLed('left'); }catch(_){ }
+  try{ applyTopGuestAlertLed('right'); }catch(_){ }
 }
-function __syncLedEnd(method){
-  const m = String(method||"GET").toUpperCase();
-  if (m === "GET") __syncState.reads = Math.max(0, (__syncState.reads|0) - 1);
-  else __syncState.writes = Math.max(0, (__syncState.writes|0) - 1);
-  __syncLedUpdate();
+function openGuestAlertModal(side){
+  const modal = document.getElementById('guestAlertModal');
+  const title = document.getElementById('guestAlertTitle');
+  const list = document.getElementById('guestAlertList');
+  if (!modal || !title || !list) return;
+  state.guestAlertModalSide = (side === 'right') ? 'right' : 'left';
+  const items = (state.guestAlerts && Array.isArray(state.guestAlerts[state.guestAlertModalSide])) ? state.guestAlerts[state.guestAlertModalSide] : [];
+  title.textContent = state.guestAlertModalSide === 'right' ? `Alert pagamenti (${items.length})` : `Alert registrazioni (${items.length})`;
+  list.innerHTML = '';
+  if (!items.length){
+    const empty = document.createElement('div');
+    empty.className = 'guest-alert-empty';
+    empty.textContent = 'Nessun ospite in alert.';
+    list.appendChild(empty);
+  } else {
+    items.forEach((it) => {
+      const card = document.createElement('div');
+      card.className = 'guest-alert-card';
+      const tagsHtml = (it.tags || []).map(tag => `<span class="guest-alert-tag ${escapeHtml(tag.cls || '')}">${escapeHtml(tag.label || '')}</span>`).join('');
+      const details = (it.details || []).map(x => escapeHtml(x)).join(' · ');
+      const range = formatRangeCompactIT(it.guest?.check_in ?? it.guest?.checkIn ?? '', it.guest?.check_out ?? it.guest?.checkOut ?? '');
+      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(it.name)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>`;
+      const closeBtn = card.querySelector('.guest-alert-dismiss');
+      if (closeBtn) bindFastTap(closeBtn, () => dismissGuestAlert(state.guestAlertModalSide, it.id));
+      list.appendChild(card);
+    });
+  }
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
 }
+function closeGuestAlertModal(){
+  const modal = document.getElementById('guestAlertModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+}
+async function refreshTopGuestAlerts(opts){
+  opts = opts || {};
+  try{
+    if (!(state.session && state.session.user_id)) {
+      state.guestAlerts = { left: [], right: [] };
+      state.guestAlertCounts = { left: 0, right: 0 };
+      updateTopGuestAlertLeds();
+      if (!opts.keepModal) closeGuestAlertModal();
+      return;
+    }
+    let rows = [];
+    try{
+      if (!opts.force){
+        const cached = Array.isArray(state.ospiti) && state.ospiti.length ? state.ospiti : (Array.isArray(state.guests) && state.guests.length ? state.guests : null);
+        if (cached) rows = cached;
+      }
+      if (!rows.length){
+        const data = await cachedGet('ospiti', {}, { showLoader:false, ttlMs: opts.force ? 0 : 45000, swrMs: 120000, force: !!opts.force });
+        rows = Array.isArray(data) ? data : [];
+      }
+    }catch(_){ rows = []; }
+    const alerts = computeTopGuestAlerts(rows);
+    state.guestAlerts = alerts;
+    state.guestAlertCounts = { left: alerts.left.length, right: alerts.right.length };
+    updateTopGuestAlertLeds();
+    if (!opts.keepModal){
+      try{
+        const modal = document.getElementById('guestAlertModal');
+        if (modal && !modal.hidden) openGuestAlertModal(state.guestAlertModalSide || 'left');
+      }catch(_){ }
+    } else {
+      try{
+        const modal = document.getElementById('guestAlertModal');
+        if (modal && !modal.hidden) openGuestAlertModal(state.guestAlertModalSide || 'left');
+      }catch(_){ }
+    }
+  }catch(e){ console.error(e); }
+}
+function scheduleTopGuestAlertsRefresh(){
+  try{
+    if (__guestAlertState.timer) return;
+    const tick = () => {
+      const now = Date.now();
+      if ((now - (__guestAlertState.lastTick || 0)) < 20000) return;
+      __guestAlertState.lastTick = now;
+      try{ refreshTopGuestAlerts({ force:false, keepModal:true }); }catch(_){ }
+    };
+    __guestAlertState.timer = setInterval(tick, 60000);
+    window.addEventListener('focus', tick);
+    document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) tick(); });
+    setTimeout(tick, 450);
+  }catch(_){ }
+}
+function __syncLedUpdate(){}
+function __syncLedBegin(method){}
+function __syncLedEnd(method){}
 
 function showLoading(){
   // Loader overlay disabilitato: usiamo LED sync in topbar
@@ -9098,6 +9323,7 @@ state.page = page;
 
   // HOME: ricevute indicator
   try{ updateHomeReceiptsIndicator(); }catch(_){ }
+  try{ refreshTopGuestAlerts({ force:false, keepModal:true }); }catch(_){ }
 
   // Top back button (Ore pulizia + Calendario)
   const backBtnTop = $("#backBtnTop");
@@ -9379,6 +9605,15 @@ function setupHeader(){
   if (recClose) bindFastTap(recClose, () => closeReceiptDueModal());
   const recModal = document.getElementById("receiptDueModal");
   if (recModal) recModal.addEventListener("click", (e)=>{ if (e.target === recModal) closeReceiptDueModal(); });
+
+  const guestLedLeft = document.getElementById("dbLedRead");
+  if (guestLedLeft) bindFastTap(guestLedLeft, () => openGuestAlertModal('left'));
+  const guestLedRight = document.getElementById("dbLedWrite");
+  if (guestLedRight) bindFastTap(guestLedRight, () => openGuestAlertModal('right'));
+  const guestAlertClose = document.getElementById("guestAlertClose");
+  if (guestAlertClose) bindFastTap(guestAlertClose, () => closeGuestAlertModal());
+  const guestAlertModal = document.getElementById("guestAlertModal");
+  if (guestAlertModal) guestAlertModal.addEventListener("click", (e)=>{ if (e.target === guestAlertModal) closeGuestAlertModal(); });
 
   // AMMINISTRATORE: popup dati + grafico
   const btnAdminInputsTop = document.getElementById("btnAdminInputsTop");
@@ -14136,6 +14371,15 @@ function setupOspite(){
   const recModal = document.getElementById("receiptDueModal");
   if (recModal) recModal.addEventListener("click", (e)=>{ if (e.target === recModal) closeReceiptDueModal(); });
 
+  const guestLedLeft = document.getElementById("dbLedRead");
+  if (guestLedLeft) bindFastTap(guestLedLeft, () => openGuestAlertModal('left'));
+  const guestLedRight = document.getElementById("dbLedWrite");
+  if (guestLedRight) bindFastTap(guestLedRight, () => openGuestAlertModal('right'));
+  const guestAlertClose = document.getElementById("guestAlertClose");
+  if (guestAlertClose) bindFastTap(guestAlertClose, () => closeGuestAlertModal());
+  const guestAlertModal = document.getElementById("guestAlertModal");
+  if (guestAlertModal) guestAlertModal.addEventListener("click", (e)=>{ if (e.target === guestAlertModal) closeGuestAlertModal(); });
+
   // AMMINISTRATORE: popup dati + grafico
   const btnAdminInputsTop = document.getElementById("btnAdminInputsTop");
   if (btnAdminInputsTop) bindFastTap(btnAdminInputsTop, () => { openAdminInputsModal(); });
@@ -14274,6 +14518,7 @@ function setupOspite(){
             }
             toast("Ospite eliminato");
             invalidateApiCache("ospiti|");
+    try{ refreshTopGuestAlerts({ force:true }); }catch(_){ }
             invalidateApiCache("stanze|");
             try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; } }catch(_){ }
 
@@ -14308,6 +14553,7 @@ function setupOspite(){
           await api("ospiti", { method:"DELETE", params:{ id: delId }});
           toast("Prenotazione eliminata");
           invalidateApiCache("ospiti|");
+    try{ refreshTopGuestAlerts({ force:true }); }catch(_){ }
           invalidateApiCache("stanze|");
           try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; } }catch(_){ }
 
@@ -17046,6 +17292,8 @@ async function init(){
   setupHome();
   // Check ricevute mancanti (solo a riavvio)
   try{ setTimeout(()=>{ try{ checkReceiptsOnStartup(); }catch(_){ } }, 120); }catch(_){ }
+  try{ scheduleTopGuestAlertsRefresh(); }catch(_){ }
+  try{ setTimeout(()=>{ try{ refreshTopGuestAlerts({ force:true }); }catch(_){ } }, 180); }catch(_){ }
 
   try{ applyRoleMode(); }catch(_){ }
   setupCalendario();
@@ -20291,6 +20539,7 @@ function attachDeleteOspite(card, ospite){
     await api("ospiti", { method:"DELETE", params:{ id: ospite.id } });
     toast("Ospite eliminato");
     invalidateApiCache("ospiti|");
+    try{ refreshTopGuestAlerts({ force:true }); }catch(_){ }
     invalidateApiCache("stanze|");
     try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; } }catch(_){ }
     await loadOspiti({ ...(state.period || {}), force:true });
