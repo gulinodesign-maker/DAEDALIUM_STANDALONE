@@ -13148,14 +13148,23 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   line-clamp:4;
 }
 .calendar-cell-zoom .cal-dots{
+  position:absolute;
   top:10px;
   left:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  width:auto;
+  height:auto;
+  z-index:4;
 }
 .calendar-cell-zoom .cal-dots .bed-dot{
+  position:static;
   width:10px;
   height:10px;
 }
 .calendar-cell-zoom .cal-channel-tag{
+  position:absolute;
   top:10px;
   right:10px;
   width:24px;
@@ -13163,13 +13172,17 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   min-width:24px;
   min-height:24px;
   font-size:12px;
+  z-index:4;
 }
 .calendar-cell-zoom .cal-flags{
   position:absolute;
   right:10px;
   bottom:10px;
   display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
   gap:4px;
+  z-index:4;
 }
 .calendar-cell-zoom-empty{
   position:relative;
@@ -13229,7 +13242,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
 }
 
 
-/* dDAE_2.315 - Calendario: tap = zoom della stessa cella, non popup */
+/* dDAE_2.316 - Calendario: tap = zoom della stessa cella, non popup */
 .calendar-cell-zoom-layer{
   position:fixed;
   inset:0;
@@ -13284,6 +13297,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   line-clamp:6;
 }
 .calendar-cell-zoom-stage .calendar-cell-zoom .cal-channel-tag{
+  position:absolute;
   top:14px;
   right:14px;
   width:42px;
@@ -13294,6 +13308,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   font-weight:900;
 }
 .calendar-cell-zoom-stage .calendar-cell-zoom .cal-flags{
+  position:absolute;
   right:14px;
   bottom:14px;
   gap:8px;
@@ -13308,6 +13323,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   border-radius:14px;
 }
 .calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots{
+  position:absolute;
   left:14px;
   top:14px;
   bottom:auto;
