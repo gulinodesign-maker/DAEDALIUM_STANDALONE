@@ -13229,7 +13229,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
 }
 
 
-/* dDAE_2.314 - Calendario: tap = zoom della stessa cella, non popup */
+/* dDAE_2.315 - Calendario: tap = zoom della stessa cella, non popup */
 .calendar-cell-zoom-layer{
   position:fixed;
   inset:0;
@@ -13309,8 +13309,8 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
 }
 .calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots{
   left:14px;
-  bottom:14px;
-  top:auto;
+  top:14px;
+  bottom:auto;
   gap:8px;
   align-items:center;
 }
