@@ -3371,10 +3371,18 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 }
 
 @media (orientation: landscape){
-  #page-calendario .calendar-event-bar .cal-fullname{
-    font-size: clamp(9px, 0.95vw, 12px);
-    font-weight: 600;
-    line-height: 1.05;
+  #page-calendario .calendar-event-bar .cal-fullname,
+  #page-calendario .cal-fullname{
+    font-size: clamp(7px, 0.68vw, 9px);
+    font-weight: 400;
+    line-height: 1;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  #page-calendario .cal-cell.has-booking .cal-cell-inner,
+  #page-calendario .calendar-event-bar .cal-cell-inner{
+    padding: 4px 3px;
+    gap: 2px;
   }
 }
 
