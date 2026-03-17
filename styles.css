@@ -13360,7 +13360,7 @@ body.calendar-cell-zoom-open{
 }
 
 
-/* dDAE_2.318 - Dark mode: calendario zoom cell + op settings without overlay */
+/* dDAE_2.319 - Dark mode: calendario zoom cell + op settings without overlay + operator modal text */
 body.ddae-dark .calendar-cell-zoom-backdrop{
   background: rgba(2,6,23,0.38) !important;
 }
@@ -13389,4 +13389,39 @@ body.ddae-dark #page-opsettings .settings-page-reference,
 body.ddae-dark #page-opsettings .settings-page-operator-dedicated{
   background: transparent !important;
   background-image: none !important;
+}
+body.ddae-dark #page-opsettings::before,
+body.ddae-dark #page-opsettings::after,
+body.ddae-dark #page-opsettings .settings-page::before,
+body.ddae-dark #page-opsettings .settings-page::after,
+body.ddae-dark #page-opsettings .settings-page-reference::before,
+body.ddae-dark #page-opsettings .settings-page-reference::after,
+body.ddae-dark #page-opsettings .settings-page-operator-dedicated::before,
+body.ddae-dark #page-opsettings .settings-page-operator-dedicated::after{
+  display: none !important;
+}
+body.ddae-dark #calendarCellModal .calendar-cell-modal-card,
+body.ddae-dark #calendarCellModal .calendar-cell-detail-row,
+body.ddae-dark #calendarCellModal .calendar-cell-status{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 18px 42px rgba(2,6,23,0.42) !important;
+}
+body.ddae-dark #calendarCellModal .calendar-cell-modal-title,
+body.ddae-dark #calendarCellModal .calendar-cell-modal-subtitle,
+body.ddae-dark #calendarCellModal .calendar-cell-detail-label,
+body.ddae-dark #calendarCellModal .calendar-cell-detail-row strong,
+body.ddae-dark #calendarCellModal .calendar-cell-status,
+body.ddae-dark #calendarCellModal .calendar-cell-modal-grid,
+body.ddae-dark #calendarCellModal .calendar-cell-modal-grid *{
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+body.ddae-dark #calendarCellModal .calendar-cell-detail-label{
+  color: rgba(248,250,252,0.78) !important;
+  -webkit-text-fill-color: rgba(248,250,252,0.78) !important;
+}
+body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
+  background: rgba(43,124,180,0.28) !important;
 }
