@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.313";
+const BUILD_VERSION = "2.314";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -19201,33 +19201,100 @@ function buildCalendarCellPayload(info, room, dateIso){
   };
 }
 
-function renderCalendarCellModalPreview(payload){
-  const preview = document.getElementById('calendarCellModalPreview');
-  if (!preview) return;
-  if (!payload || payload.isEmpty){
-    preview.innerHTML = `
-      <div class="calendar-cell-zoom is-empty room-${escapeHtml(payload?.room || '')}">
+function buildCalendarCellZoomMarkup(payload){
+  const data = payload || {};
+  if (!data || data.isEmpty){
+    return `
+      <div class="calendar-cell-zoom is-empty room-${escapeHtml(data?.room || '')}">
         <div class="calendar-cell-zoom-empty">Nessuna prenotazione</div>
       </div>`;
-    return;
   }
   const dots = [];
-  for (let i = 0; i < (payload.beds.lettoM || 0); i++) dots.push('<span class="bed-dot bed-dot-m"></span>');
-  for (let i = 0; i < (payload.beds.lettoS || 0); i++) dots.push('<span class="bed-dot bed-dot-s"></span>');
-  for (let i = 0; i < (payload.beds.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
-  const flags = payload.mgc.filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
-  const channel = payload.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(payload.channelColor || 'orange')}">${escapeHtml(payload.channelInitial.slice(0,1).toUpperCase())}</span>` : '';
-  preview.innerHTML = `
-    <div class="calendar-cell-zoom room-${escapeHtml(payload.room || '')} ${payload.isEmpty ? 'is-empty' : 'has-booking'}">
+  for (let i = 0; i < (data.beds?.lettoM || 0); i++) dots.push('<span class="bed-dot bed-dot-m"></span>');
+  for (let i = 0; i < (data.beds?.lettoS || 0); i++) dots.push('<span class="bed-dot bed-dot-s"></span>');
+  for (let i = 0; i < (data.beds?.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
+  const flags = (Array.isArray(data.mgc) ? data.mgc : []).filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
+  const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
+  return `
+    <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
       <div class="cal-cell-inner">
-        <div class="cal-fullname is-span-cell">${escapeHtml(payload.guestName || '')}</div>
+        <div class="cal-fullname is-span-cell">${escapeHtml(data.guestName || '')}</div>
         <div class="cal-dots">${dots.join('')}</div>
       </div>
     </div>`;
 }
 
+function renderCalendarCellModalPreview(payload){
+  const preview = document.getElementById('calendarCellModalPreview');
+  if (!preview) return;
+  preview.innerHTML = buildCalendarCellZoomMarkup(payload);
+}
+
+function ensureCalendarCellZoomLayer(){
+  let layer = document.getElementById('calendarCellZoomLayer');
+  if (layer) return layer;
+  layer = document.createElement('div');
+  layer.id = 'calendarCellZoomLayer';
+  layer.className = 'calendar-cell-zoom-layer';
+  layer.hidden = true;
+  layer.setAttribute('aria-hidden', 'true');
+  layer.innerHTML = '<div class="calendar-cell-zoom-backdrop"></div><div class="calendar-cell-zoom-stage" id="calendarCellZoomStage"></div>';
+  document.body.appendChild(layer);
+  layer.addEventListener('click', (ev) => {
+    try{
+      const stage = document.getElementById('calendarCellZoomStage');
+      if (ev.target === layer || ev.target === layer.querySelector('.calendar-cell-zoom-backdrop') || (stage && !stage.contains(ev.target))) {
+        closeCalendarCellZoom();
+      }
+    }catch(_){ }
+  });
+  return layer;
+}
+
+function openCalendarCellZoom(cell, payload){
+  const layer = ensureCalendarCellZoomLayer();
+  const stage = document.getElementById('calendarCellZoomStage');
+  if (!layer || !stage) return;
+  try{ closeCalendarCellModal(); }catch(_){ }
+  try{
+    document.querySelectorAll('.cal-cell.is-zoom-source').forEach((el) => el.classList.remove('is-zoom-source'));
+    if (cell) cell.classList.add('is-zoom-source');
+  }catch(_){ }
+  stage.innerHTML = buildCalendarCellZoomMarkup(payload);
+  try{
+    const zoomCard = stage.querySelector('.calendar-cell-zoom');
+    if (zoomCard){
+      const room = String(payload?.room || '').trim();
+      if (room) zoomCard.classList.add(`room-${room}`);
+    }
+  }catch(_){ }
+  layer.hidden = false;
+  layer.setAttribute('aria-hidden', 'false');
+  try{ document.body.classList.add('calendar-cell-zoom-open'); }catch(_){ }
+  requestAnimationFrame(() => {
+    try{ layer.classList.add('is-open'); }catch(_){ }
+  });
+}
+
+function closeCalendarCellZoom(){
+  const layer = document.getElementById('calendarCellZoomLayer');
+  if (!layer) return;
+  try{ layer.classList.remove('is-open'); }catch(_){ }
+  layer.setAttribute('aria-hidden', 'true');
+  try{ document.body.classList.remove('calendar-cell-zoom-open'); }catch(_){ }
+  try{ document.querySelectorAll('.cal-cell.is-zoom-source').forEach((el) => el.classList.remove('is-zoom-source')); }catch(_){ }
+  setTimeout(() => {
+    try{
+      const stage = document.getElementById('calendarCellZoomStage');
+      if (stage) stage.innerHTML = '';
+      layer.hidden = true;
+    }catch(_){ }
+  }, 180);
+}
+
 function openCalendarCellModal(payload, mode){
+  try{ closeCalendarCellZoom(); }catch(_){ }
   const modal = document.getElementById('calendarCellModal');
   const title = document.getElementById('calendarCellModalTitle');
   const subtitle = document.getElementById('calendarCellModalSubtitle');
@@ -19288,6 +19355,13 @@ function ensureCalendarCellModalBound(){
   modal.addEventListener('click', (ev) => {
     try{ if (ev.target === modal) closeCalendarCellModal(); }catch(_){ }
   });
+  try{
+    document.addEventListener('keydown', (ev) => {
+      if (String(ev.key || '') !== 'Escape') return;
+      try{ closeCalendarCellModal(); }catch(_){ }
+      try{ closeCalendarCellZoom(); }catch(_){ }
+    });
+  }catch(_){ }
 }
 
 function bindCalendarCellActions(cell, options){
@@ -19334,7 +19408,7 @@ function bindCalendarCellActions(cell, options){
       return;
     }
     const payload = buildCalendarCellPayload(info, room, dateIso);
-    openCalendarCellModal(payload, 'zoom');
+    openCalendarCellZoom(cell, payload);
   };
   try{ cell.addEventListener('pointerdown', startHold, { passive:true }); }catch(_){ cell.addEventListener('pointerdown', startHold); }
   ['pointerup','pointerleave','pointercancel'].forEach((evt) => {
