@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.304
+ * Build: 2.305
  */
-const BUILD_VERSION = "2.304";
+const BUILD_VERSION = "2.305";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4014,9 +4014,19 @@ function _guestReceiptMissingNow(g){
   if (saldo > 0 && _isElectronicTypeStr_(saldoType) && !_isRicevutaFlag(g, 'saldo')) missing.push('Saldo elettronico senza ricevuta');
   return missing;
 }
+function _guestRegistrationAlertStartTs(g){
+  const raw = g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '';
+  const iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : '';
+  if (iso){
+    const noon = Date.parse(`${iso}T12:00:00`);
+    if (Number.isFinite(noon)) return noon;
+  }
+  const fallback = parseDateTs(raw);
+  if (Number.isFinite(fallback)) return fallback + (12 * 60 * 60 * 1000);
+  return null;
+}
 function computeTopGuestAlerts(guests){
   const now = Date.now();
-  const twelveHoursMs = 12 * 60 * 60 * 1000;
   const twentyFourHoursMs = 24 * 60 * 60 * 1000;
   const leftDismissed = _readGuestAlertDismissed('left');
   const rightDismissed = _readGuestAlertDismissed('right');
@@ -4029,11 +4039,12 @@ function computeTopGuestAlerts(guests){
     const rawName = g?.nome ?? g?.name ?? '';
     const name = collapseSpaces(String(rawName || '').trim()) || 'Prenotazione';
     const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+    const registrationAlertTs = _guestRegistrationAlertStartTs(g);
     const checkOutTs = parseDateTs(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
     const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
     const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
 
-    if (checkInTs && now >= (checkInTs + twelveHoursMs)){
+    if (registrationAlertTs && now >= registrationAlertTs){
       const missingPs = !psReg;
       const missingIstat = !istatReg;
       if (missingPs || missingIstat){
