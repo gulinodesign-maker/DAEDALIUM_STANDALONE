@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.316";
+const BUILD_VERSION = "2.317";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -19299,17 +19299,21 @@ function openCalendarCellModal(payload, mode){
   const title = document.getElementById('calendarCellModalTitle');
   const subtitle = document.getElementById('calendarCellModalSubtitle');
   const content = document.getElementById('calendarCellModalContent');
+  const preview = document.getElementById('calendarCellModalPreview');
   if (!modal || !title || !subtitle || !content) return;
 
   const isOperatorMode = String(mode || '').toLowerCase() === 'operator-detail';
   title.textContent = payload && !payload.isEmpty ? payload.guestName : `Stanza ${payload?.room || ''}`;
   subtitle.textContent = `Stanza ${payload?.room || ''} • ${payload?.dateLabel || ''}`;
-  renderCalendarCellModalPreview(payload || {});
+  if (preview) preview.hidden = !!isOperatorMode;
+  if (!isOperatorMode) renderCalendarCellModalPreview(payload || {});
+  else if (preview) preview.innerHTML = '';
 
   if (!payload || payload.isEmpty){
     content.innerHTML = `<div class="calendar-cell-modal-grid"><div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Prenotazione</span><strong>Assente</strong></div></div>`;
   }else if (isOperatorMode){
-    const mgcRows = payload.mgc.map(item => `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${item.short}</span><strong>${item.label}${item.on ? ' attiva' : ' non attiva'}</strong></div>`).join('');
+    const activeMgc = Array.isArray(payload.mgc) ? payload.mgc.filter(item => !!item.on) : [];
+    const mgcRows = activeMgc.map(item => `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${item.short}</span><strong>${item.label}</strong></div>`).join('');
     content.innerHTML = `
       <div class="calendar-cell-modal-grid">
         ${mgcRows}

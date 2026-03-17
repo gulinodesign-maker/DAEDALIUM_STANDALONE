@@ -13171,6 +13171,13 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   height:24px;
   min-width:24px;
   min-height:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+  line-height:1;
   font-size:12px;
   z-index:4;
 }
@@ -13242,7 +13249,7 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
 }
 
 
-/* dDAE_2.316 - Calendario: tap = zoom della stessa cella, non popup */
+/* dDAE_2.317 - Calendario: tap = zoom della stessa cella, non popup */
 .calendar-cell-zoom-layer{
   position:fixed;
   inset:0;
@@ -13304,6 +13311,13 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   height:42px;
   min-width:42px;
   min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+  line-height:1;
   font-size:22px;
   font-weight:900;
 }
