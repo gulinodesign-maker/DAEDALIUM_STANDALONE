@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.302
+ * Build: 2.303
  */
-const BUILD_VERSION = "2.302";
+const BUILD_VERSION = "2.303";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18652,11 +18652,10 @@ function renderCalendarioWeek(){
         const inner = document.createElement("div");
         inner.className = "cal-cell-inner";
 
-        const ini = document.createElement("div");
-        ini.className = "cal-initials";
-        const __ini = (info.initials && String(info.initials).trim()) ? String(info.initials).trim() : ((()=>{ const __g = findCalendarGuestById(info.guestId); return initialsFromName(__g?.nome || __g?.name || __g?.Nome || __g?.NOME || __g?.guestName || ""); })());
-        ini.textContent = __ini;
-        inner.appendChild(ini);
+        const full = document.createElement("div");
+        full.className = "cal-fullname is-single-cell";
+        full.textContent = __calendarGuestDisplayName__(info, 1);
+        inner.appendChild(full);
 
         const dots = document.createElement("div");
         dots.className = "cal-dots";
@@ -18895,9 +18894,6 @@ function __calendarGuestDisplayName__(info, span){
     const raw = collapseSpaces(String((g?.nome || g?.name || g?.Nome || g?.NOME || g?.guestName || '')).trim());
     const fullName = raw || collapseSpaces(String(info?.fullName || '').trim());
     if (!fullName) return String((info && info.initials) || '').trim();
-
-    const safeSpan = Math.max(1, Number(span || 1) || 1);
-    if (safeSpan <= 1) return `${fullName.charAt(0).toUpperCase()}...`;
     return fullName;
   }catch(_){
     return String((info && info.initials) || '').trim();
@@ -19023,10 +19019,10 @@ function renderCalendarioMonth(){
       const inner = document.createElement("div");
       inner.className = "cal-cell-inner";
 
-      const ini = document.createElement("div");
-      ini.className = "cal-initials";
-      ini.textContent = String(info.initials || '').trim() || initialsFromName((findCalendarGuestById(info.guestId)?.nome) || "");
-      inner.appendChild(ini);
+      const full = document.createElement("div");
+      full.className = `cal-fullname ${span <= 1 ? "is-single-cell" : "is-span-cell"}`;
+      full.textContent = __calendarGuestDisplayName__(info, span);
+      inner.appendChild(full);
 
       const dots = document.createElement("div");
       dots.className = "cal-dots";

@@ -3331,6 +3331,37 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   text-shadow: none;
   color: rgba(15,23,42,0.86);
 }
+#page-calendario .cal-fullname{
+  color: rgba(15,23,42,0.92);
+  font-weight: 800;
+  font-size: clamp(10px, 1.7vw, 13px);
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+#page-calendario .cal-fullname.is-single-cell{
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+#page-calendario .cal-fullname.is-span-cell{
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+#page-calendario .cal-cell.has-booking .cal-cell-inner{
+  justify-content: center;
+}
+#page-calendario .cal-cell.has-booking .cal-fullname + .cal-dots{
+  margin-top: 4px;
+}
 #page-calendario .cal-dots{ width: 18px; }
 #page-calendario .cal-dots .bed-dot{
   width: 7px;
@@ -3520,6 +3551,16 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   letter-spacing:.04em;
   text-transform:uppercase;
   text-shadow: 0 1px 10px rgba(0,0,0,.28);
+}
+
+.cal-fullname{
+  font-weight:800;
+  font-size:12px;
+  line-height:1.05;
+  text-align:center;
+  white-space:normal;
+  word-break:break-word;
+  overflow-wrap:anywhere;
 }
 
 .cal-dots{
