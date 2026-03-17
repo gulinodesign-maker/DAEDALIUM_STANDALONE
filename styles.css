@@ -13358,3 +13358,35 @@ body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
 body.calendar-cell-zoom-open{
   overflow:hidden;
 }
+
+
+/* dDAE_2.318 - Dark mode: calendario zoom cell + op settings without overlay */
+body.ddae-dark .calendar-cell-zoom-backdrop{
+  background: rgba(2,6,23,0.38) !important;
+}
+body.ddae-dark .calendar-cell-zoom,
+body.ddae-dark .calendar-cell-zoom-stage .calendar-cell-zoom{
+  background: rgba(15,23,42,0.96) !important;
+  border-color: rgba(148,163,184,0.24) !important;
+  box-shadow: 0 18px 42px rgba(2,6,23,0.42) !important;
+  color: #f8fafc !important;
+}
+body.ddae-dark .calendar-cell-zoom::before,
+body.ddae-dark .calendar-cell-zoom-stage .calendar-cell-zoom::before{
+  opacity: .44 !important;
+}
+body.ddae-dark .calendar-cell-zoom .cal-cell-inner,
+body.ddae-dark .calendar-cell-zoom .cal-fullname,
+body.ddae-dark .calendar-cell-zoom .cal-channel-tag,
+body.ddae-dark .calendar-cell-zoom .cal-flag,
+body.ddae-dark .calendar-cell-zoom-empty{
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+body.ddae-dark #page-opsettings,
+body.ddae-dark #page-opsettings .settings-page,
+body.ddae-dark #page-opsettings .settings-page-reference,
+body.ddae-dark #page-opsettings .settings-page-operator-dedicated{
+  background: transparent !important;
+  background-image: none !important;
+}
