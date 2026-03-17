@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.312";
+const BUILD_VERSION = "2.313";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18755,6 +18755,7 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
 function renderCalendario(){
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [] };
   const mode = "month";
+  try{ ensureCalendarCellModalBound(); }catch(_){ }
 
   try{ __setTopbarCenterLabel__(); }catch(_){}
 
@@ -18896,17 +18897,7 @@ function renderCalendarioWeek(){
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       const info = occ.get(`${dIso}:${r}`);
-      if (!info) {
-        cell.addEventListener("click", (ev)=>{
-          try { ev.preventDefault(); } catch (_) {}
-          try { ev.stopPropagation(); } catch (_) {}
-          try{
-            const prev = grid.querySelector(".cal-cell.empty-selected");
-            if (prev && prev !== cell) prev.classList.remove("empty-selected");
-            cell.classList.toggle("empty-selected");
-          }catch(_){ }
-        });
-      }
+      bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
         try{
@@ -18949,16 +18940,6 @@ function renderCalendarioWeek(){
         inner.appendChild(dots);
         cell.appendChild(inner);
 
-        cell.addEventListener("click", (ev) => {
-          try{ const prev = grid.querySelector(".cal-cell.empty-selected"); if (prev) prev.classList.remove("empty-selected"); }catch(_){ }
-          try { ev.preventDefault(); } catch (_) {}
-          try { ev.stopPropagation(); } catch (_) {}
-
-          const ospite = findCalendarGuestById(info.guestId);
-          if (!ospite) return;
-          enterGuestViewMode(ospite);
-          showPage("ospite");
-        });
       }
 
       frag.appendChild(cell);
@@ -19181,6 +19162,188 @@ function __calendarGuestDisplayName__(info, span){
   }
 }
 
+function getCalendarRoomBedSummary(guestId, room){
+  const key = `${String(guestId || '').trim()}:${String(room || '').trim()}`;
+  const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m:0, letto_s:0, culla:0 };
+  const lettoM = Number(info.letto_m || 0) || 0;
+  const lettoS = Number(info.letto_s || 0) || 0;
+  const culla = Number(info.culla || 0) || 0;
+  const items = [];
+  if (lettoM > 0) items.push(`${lettoM} matrimoniale${lettoM > 1 ? 'i' : ''}`);
+  if (lettoS > 0) items.push(`${lettoS} singolo${lettoS > 1 ? 'i' : ''}`);
+  if (culla > 0) items.push(`${culla} culla${culla > 1 ? 'e' : ''}`);
+  return { lettoM, lettoS, culla, text: items.join(', ') || 'Nessun letto configurato' };
+}
+
+function buildCalendarCellPayload(info, room, dateIso){
+  const guest = info ? findCalendarGuestById(info.guestId) : null;
+  const channelBadge = guest ? getGuestChannelBadgeData(guest) : { color:'orange', initial:'', name:'' };
+  const beds = info ? getCalendarRoomBedSummary(info.guestId, room) : { lettoM:0, lettoS:0, culla:0, text:'Nessun letto configurato' };
+  const dateLabel = formatFullDateIT(new Date(`${dateIso}T00:00:00`)) || String(dateIso || '');
+  const rangeLabel = guest ? (formatRangeCompactIT(guest.check_in || guest.checkIn || '', guest.check_out || guest.checkOut || '') || '') : '';
+  return {
+    isEmpty: !info,
+    room: String(room || ''),
+    dateIso: String(dateIso || ''),
+    dateLabel,
+    guest,
+    guestName: guest ? __calendarGuestDisplayName__({ guestId: guestIdOf(guest) }, 1) : 'Nessuna prenotazione',
+    channelName: String(channelBadge?.name || guest?.channel_nome || guest?.channelName || '').trim(),
+    channelInitial: String(channelBadge?.initial || info?.channelInitial || '').trim(),
+    channelColor: String(channelBadge?.color || info?.channelColor || 'orange').trim(),
+    beds,
+    mgc: [
+      { short:'M', label:'Matrimonio', on: !!(info && info.mOn) },
+      { short:'G', label:'Glutine', on: !!(info && info.gOn) },
+      { short:'C', label:'Colazione', on: !!(info && info.cOn) }
+    ],
+    rangeLabel
+  };
+}
+
+function renderCalendarCellModalPreview(payload){
+  const preview = document.getElementById('calendarCellModalPreview');
+  if (!preview) return;
+  if (!payload || payload.isEmpty){
+    preview.innerHTML = `
+      <div class="calendar-cell-zoom is-empty room-${escapeHtml(payload?.room || '')}">
+        <div class="calendar-cell-zoom-empty">Nessuna prenotazione</div>
+      </div>`;
+    return;
+  }
+  const dots = [];
+  for (let i = 0; i < (payload.beds.lettoM || 0); i++) dots.push('<span class="bed-dot bed-dot-m"></span>');
+  for (let i = 0; i < (payload.beds.lettoS || 0); i++) dots.push('<span class="bed-dot bed-dot-s"></span>');
+  for (let i = 0; i < (payload.beds.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
+  const flags = payload.mgc.filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
+  const channel = payload.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(payload.channelColor || 'orange')}">${escapeHtml(payload.channelInitial.slice(0,1).toUpperCase())}</span>` : '';
+  preview.innerHTML = `
+    <div class="calendar-cell-zoom room-${escapeHtml(payload.room || '')} ${payload.isEmpty ? 'is-empty' : 'has-booking'}">
+      <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
+      <div class="cal-cell-inner">
+        <div class="cal-fullname is-span-cell">${escapeHtml(payload.guestName || '')}</div>
+        <div class="cal-dots">${dots.join('')}</div>
+      </div>
+    </div>`;
+}
+
+function openCalendarCellModal(payload, mode){
+  const modal = document.getElementById('calendarCellModal');
+  const title = document.getElementById('calendarCellModalTitle');
+  const subtitle = document.getElementById('calendarCellModalSubtitle');
+  const content = document.getElementById('calendarCellModalContent');
+  if (!modal || !title || !subtitle || !content) return;
+
+  const isOperatorMode = String(mode || '').toLowerCase() === 'operator-detail';
+  title.textContent = payload && !payload.isEmpty ? payload.guestName : `Stanza ${payload?.room || ''}`;
+  subtitle.textContent = `Stanza ${payload?.room || ''} • ${payload?.dateLabel || ''}`;
+  renderCalendarCellModalPreview(payload || {});
+
+  if (!payload || payload.isEmpty){
+    content.innerHTML = `<div class="calendar-cell-modal-grid"><div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Prenotazione</span><strong>Assente</strong></div></div>`;
+  }else if (isOperatorMode){
+    const mgcRows = payload.mgc.map(item => `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${item.short}</span><strong>${item.label}${item.on ? ' attiva' : ' non attiva'}</strong></div>`).join('');
+    content.innerHTML = `
+      <div class="calendar-cell-modal-grid">
+        ${mgcRows}
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Channel</span><strong>${escapeHtml(payload.channelName || 'Non impostato')}</strong></div>
+      </div>`;
+  }else{
+    const badges = payload.mgc.map(item => `<span class="calendar-cell-status ${item.on ? 'is-on' : ''}">${item.label}</span>`).join('');
+    content.innerHTML = `
+      <div class="calendar-cell-modal-grid">
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Periodo</span><strong>${escapeHtml(payload.rangeLabel || payload.dateLabel || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Channel</span><strong>${escapeHtml(payload.channelName || 'Non impostato')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>
+      </div>
+      <div class="calendar-cell-status-list">${badges}</div>`;
+  }
+
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  try{ document.body.classList.add('modal-open'); }catch(_){ }
+  requestAnimationFrame(() => {
+    try{ modal.classList.add('is-open'); }catch(_){ }
+  });
+}
+
+function closeCalendarCellModal(){
+  const modal = document.getElementById('calendarCellModal');
+  if (!modal) return;
+  try{ modal.classList.remove('is-open'); }catch(_){ }
+  modal.setAttribute('aria-hidden', 'true');
+  try{ document.body.classList.remove('modal-open'); }catch(_){ }
+  setTimeout(() => {
+    try{ modal.hidden = true; }catch(_){ }
+  }, 160);
+}
+
+function ensureCalendarCellModalBound(){
+  const modal = document.getElementById('calendarCellModal');
+  const closeBtn = document.getElementById('calendarCellModalClose');
+  if (!modal || modal.dataset.bound === '1') return;
+  modal.dataset.bound = '1';
+  if (closeBtn) bindFastTap(closeBtn, closeCalendarCellModal);
+  modal.addEventListener('click', (ev) => {
+    try{ if (ev.target === modal) closeCalendarCellModal(); }catch(_){ }
+  });
+}
+
+function bindCalendarCellActions(cell, options){
+  if (!cell || cell.dataset.calendarCellBound === '1') return;
+  cell.dataset.calendarCellBound = '1';
+  const room = options?.room;
+  const dateIso = options?.dateIso;
+  const info = options?.info || null;
+  let holdTimer = null;
+  let holdTriggered = false;
+  const clearHold = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = null;
+    }
+  };
+  const startHold = () => {
+    clearHold();
+    holdTriggered = false;
+    holdTimer = setTimeout(() => {
+      holdTimer = null;
+      holdTriggered = true;
+      if (!info) return;
+      const payload = buildCalendarCellPayload(info, room, dateIso);
+      if (__isAdmin__()) {
+        const ospite = payload.guest;
+        if (!ospite) return;
+        enterGuestViewMode(ospite);
+        showPage('ospite');
+        return;
+      }
+      openCalendarCellModal(payload, 'operator-detail');
+    }, 500);
+  };
+  const endHold = () => {
+    clearHold();
+    setTimeout(() => { holdTriggered = false; }, 0);
+  };
+  const onClick = (ev) => {
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    if (holdTriggered) {
+      holdTriggered = false;
+      return;
+    }
+    const payload = buildCalendarCellPayload(info, room, dateIso);
+    openCalendarCellModal(payload, 'zoom');
+  };
+  try{ cell.addEventListener('pointerdown', startHold, { passive:true }); }catch(_){ cell.addEventListener('pointerdown', startHold); }
+  ['pointerup','pointerleave','pointercancel'].forEach((evt) => {
+    try{ cell.addEventListener(evt, endHold, { passive:true }); }catch(_){ cell.addEventListener(evt, endHold); }
+  });
+  cell.addEventListener('contextmenu', (ev) => { try{ ev.preventDefault(); }catch(_){ } });
+  cell.addEventListener('click', onClick);
+}
+
 function renderCalendarioMonth(){
   const parts = ensureCalendarFixedRailStructure();
   const grid = parts.gridMonth || document.getElementById("calGridMonth");
@@ -19250,15 +19413,7 @@ function renderCalendarioMonth(){
         cell.dataset.date = dIso;
         cell.dataset.room = String(r);
         if (todayCol === (i + 1)) cell.classList.add('is-today-col');
-        cell.addEventListener("click", (ev)=>{
-          try { ev.preventDefault(); } catch (_) {}
-          try { ev.stopPropagation(); } catch (_) {}
-          try{
-            const prev = grid.querySelector(".cal-cell.empty-selected");
-            if (prev && prev !== cell) prev.classList.remove("empty-selected");
-            cell.classList.toggle("empty-selected");
-          }catch(_){ }
-        });
+        bindCalendarCellActions(cell, { room:r, dateIso:dIso, info:null });
         frag.appendChild(cell);
         i += 1;
         continue;
@@ -19324,15 +19479,7 @@ function renderCalendarioMonth(){
       if (dots.childNodes.length) inner.appendChild(dots);
       cell.appendChild(inner);
 
-      cell.addEventListener("click", (ev) => {
-        try{ const prev = grid.querySelector(".cal-cell.empty-selected"); if (prev) prev.classList.remove("empty-selected"); }catch(_){ }
-        try { ev.preventDefault(); } catch (_) {}
-        try { ev.stopPropagation(); } catch (_) {}
-        const ospite = findCalendarGuestById(info.guestId);
-        if (!ospite) return;
-        enterGuestViewMode(ospite);
-        showPage("ospite");
-      });
+      bindCalendarCellActions(cell, { room:r, dateIso:dIso, info });
 
       frag.appendChild(cell);
       i += span;
