@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.310");
+    url("./assets/bg-daedalium.png?v=dDAE_2.311");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1064,7 +1064,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.310");
+    url("./assets/bg-daedalium.png?v=dDAE_2.311");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -3408,19 +3408,34 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   -webkit-line-clamp: 3;
   line-clamp: 3;
 }
+/* dDAE_2.311 - Calendario: pallini letto sugli spigoli per liberare spazio nome ospite */
 #page-calendario .cal-cell.has-booking .cal-cell-inner{
+  position: relative;
   justify-content: center;
+  padding: 6px;
 }
 #page-calendario .cal-cell.has-booking .cal-fullname + .cal-dots{
-  margin-top: 4px;
+  margin-top: 0;
 }
-#page-calendario .cal-dots{ width: 18px; }
+#page-calendario .cal-dots{
+  position: absolute;
+  inset: 4px;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+}
 #page-calendario .cal-dots .bed-dot{
+  position: absolute;
   width: 7px;
   height: 7px;
-  border-radius: 4px;
+  border-radius: 999px;
   opacity: .92;
 }
+#page-calendario .cal-dots .bed-dot:nth-child(1){ top: 0; left: 0; }
+#page-calendario .cal-dots .bed-dot:nth-child(2){ top: 0; right: 0; }
+#page-calendario .cal-dots .bed-dot:nth-child(3){ bottom: 0; left: 0; }
+#page-calendario .cal-dots .bed-dot:nth-child(4){ bottom: 0; right: 0; }
 :root{
   /* Responsive: si adatta a iPhone/iPad senza zoom. Rimane scrollabile solo se serve. */
   --cal-pill-h: clamp(28px, 4.8vw, 38px);
@@ -3594,6 +3609,7 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   justify-content:center;
   gap:4px;
   padding:6px 4px;
+  position: relative;
 }
 
 .cal-initials{
@@ -3616,12 +3632,7 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 }
 
 .cal-dots{
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap:2px;
-  width:16px;
-  align-content:center;
-  justify-items:center;
+  display:block;
 }
 
 .cal-dots .bed-dot{
@@ -3650,9 +3661,9 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   text-transform:uppercase;
   border:1px solid rgba(15,23,42,0.10);
 }
-.cal-flag-m{ top:3px; left:3px; background: rgba(50,173,230,0.95); color: #fff; }
-.cal-flag-c{ top:3px; right:3px; background: rgba(11,42,91,0.95); color: #fff; }
-.cal-flag-g{ bottom:3px; right:3px; background: rgba(255,204,0,0.95); color: var(--ico-blue-night); }
+.cal-flag-m{ top:3px; left:12px; background: rgba(50,173,230,0.95); color: #fff; }
+.cal-flag-c{ top:3px; right:12px; background: rgba(11,42,91,0.95); color: #fff; }
+.cal-flag-g{ bottom:3px; right:12px; background: rgba(255,204,0,0.95); color: var(--ico-blue-night); }
 
 
 .cal-cell.empty-selected{
@@ -11532,7 +11543,7 @@ body[data-role="operatore"] #page-home .home-main-label{
 body.ddae-dark{
   color: #e5edf8 !important;
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.310") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.311") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -11541,7 +11552,7 @@ body.ddae-dark{
 body.ddae-dark[data-page="home"],
 body.ddae-dark[data-page]{
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.310") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.311") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -11952,7 +11963,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   outline: 2px solid rgba(255,255,255,0.92) !important;
 }
 
-/* dDAE_2.310 - Dark mode settings page keeps wallpaper visible */
+/* dDAE_2.311 - Dark mode settings page keeps wallpaper visible */
 body.ddae-dark #page-impostazioni .settings-page,
 body.ddae-dark #page-impostazioni .settings-page-reference{
   background: transparent !important;
