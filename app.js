@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.301
+ * Build: 2.302
  */
-const BUILD_VERSION = "2.301";
+const BUILD_VERSION = "2.302";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18397,23 +18397,28 @@ function setupCalendario(){
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
-  // Landscape-fit: ridimensiona la griglia mensile per rientrare a schermo (solo in vista mese)
+  // Landscape-fit: ridimensiona subito anche su iOS al cambio orientamento / viewport
   try{
     if (!window.__ddaeCalMonthFitBound){
       window.__ddaeCalMonthFitBound = true;
-      let __t = null;
-      window.addEventListener("resize", () => {
-        try{
-          if (__t) clearTimeout(__t);
-          __t = setTimeout(() => {
-            try{
-              if (state && state.page === "calendario" && state.calendar && state.calendar.viewMode === "month"){
-                requestAnimationFrame(()=>{ try{ __fitCalendarioMonthLandscape(); }catch(_){ } });
-              }
-            }catch(_){ }
-          }, 120);
-        }catch(_){ }
-      }, { passive:true });
+      const __refreshCalendarLayout = () => {
+        try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
+      };
+      window.addEventListener("resize", __refreshCalendarLayout, { passive:true });
+      window.addEventListener("orientationchange", __refreshCalendarLayout, { passive:true });
+      window.addEventListener("pageshow", __refreshCalendarLayout, { passive:true });
+      try{
+        if (window.visualViewport){
+          window.visualViewport.addEventListener("resize", __refreshCalendarLayout, { passive:true });
+        }
+      }catch(_){ }
+      try{
+        const mq = window.matchMedia ? window.matchMedia("(orientation: landscape)") : null;
+        if (mq){
+          if (typeof mq.addEventListener === 'function') mq.addEventListener('change', __refreshCalendarLayout);
+          else if (typeof mq.addListener === 'function') mq.addListener(__refreshCalendarLayout);
+        }
+      }catch(_){ }
     }
   }catch(_){ }
 }
@@ -18691,7 +18696,8 @@ function syncCalendarRoomRailHeights(){
     const rail = document.getElementById("calRoomRail");
     const grid = document.getElementById("calGridMonth");
     const page = document.getElementById("page-calendario");
-    if (!rail || !grid || !page || grid.hidden) return;
+    const wrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
+    if (!rail || !grid || !page || !wrap || grid.hidden) return;
 
     const head = grid.querySelector('.cal-cell.cal-head');
     if (!head) return;
@@ -18709,6 +18715,8 @@ function syncCalendarRoomRailHeights(){
     }
 
     rail.style.gridTemplateRows = rows.join(' ');
+    rail.style.setProperty('--cal-cell-h', rows[1] || `${headH}px`);
+    wrap.style.setProperty('--cal-cell-h', rows[1] || `${headH}px`);
 
     const headEl = rail.querySelector('.cal-room-rail-head');
     if (headEl) headEl.style.height = rows[0];
@@ -18718,6 +18726,32 @@ function syncCalendarRoomRailHeights(){
     }
   }catch(_){ }
 }
+
+function __runCalendarioLayoutRefreshPass__(){
+  try{
+    if (!state || state.page !== 'calendario') return;
+    if (!state.calendar || state.calendar.viewMode !== 'month') return;
+    __fitCalendarioMonthLandscape();
+    syncCalendarRoomRailHeights();
+  }catch(_){ }
+}
+
+const __scheduleCalendarioLayoutRefresh = (() => {
+  let t1 = null;
+  let t2 = null;
+  let t3 = null;
+  return function(){
+    try{ if (t1) clearTimeout(t1); }catch(_){ }
+    try{ if (t2) clearTimeout(t2); }catch(_){ }
+    try{ if (t3) clearTimeout(t3); }catch(_){ }
+    const fire = () => {
+      try{ requestAnimationFrame(() => { try{ __runCalendarioLayoutRefreshPass__(); }catch(_){ } }); }catch(_){ }
+    };
+    t1 = setTimeout(fire, 0);
+    t2 = setTimeout(fire, 120);
+    t3 = setTimeout(fire, 280);
+  };
+})();
 
 function __fitCalendarioMonthLandscape(){
   try{
@@ -19020,13 +19054,7 @@ function renderCalendarioMonth(){
   }
 
   grid.appendChild(frag);
-  try{
-    requestAnimationFrame(() => {
-      try{ __fitCalendarioMonthLandscape(); }catch(_){ }
-      try{ syncCalendarRoomRailHeights(); }catch(_){ }
-      try{ requestAnimationFrame(() => { try{ syncCalendarRoomRailHeights(); }catch(_){ } }); }catch(_){ }
-    });
-  }catch(_){ }
+  try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
 }
 
 function buildMonthOccupancy(monthStart, daysCount){
