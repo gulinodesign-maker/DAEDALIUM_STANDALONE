@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.311");
+    url("./assets/bg-daedalium.png?v=dDAE_2.312");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1064,7 +1064,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.311");
+    url("./assets/bg-daedalium.png?v=dDAE_2.312");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -3408,34 +3408,59 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   -webkit-line-clamp: 3;
   line-clamp: 3;
 }
-/* dDAE_2.311 - Calendario: pallini letto sugli spigoli per liberare spazio nome ospite */
+/* dDAE_2.312 - Calendario: letti in alto a sinistra, channel in alto a destra, tag M/G/C in basso a destra */
 #page-calendario .cal-cell.has-booking .cal-cell-inner{
   position: relative;
   justify-content: center;
-  padding: 6px;
+  padding: 18px 8px 18px 8px;
 }
 #page-calendario .cal-cell.has-booking .cal-fullname + .cal-dots{
   margin-top: 0;
 }
 #page-calendario .cal-dots{
   position: absolute;
-  inset: 4px;
+  top: 5px;
+  left: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   width: auto;
-  height: auto;
+  height: 8px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
 }
 #page-calendario .cal-dots .bed-dot{
-  position: absolute;
+  position: static;
   width: 7px;
   height: 7px;
   border-radius: 999px;
   opacity: .92;
 }
-#page-calendario .cal-dots .bed-dot:nth-child(1){ top: 0; left: 0; }
-#page-calendario .cal-dots .bed-dot:nth-child(2){ top: 0; right: 0; }
-#page-calendario .cal-dots .bed-dot:nth-child(3){ bottom: 0; left: 0; }
-#page-calendario .cal-dots .bed-dot:nth-child(4){ bottom: 0; right: 0; }
+#page-calendario .cal-corner-chrome{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+#page-calendario .cal-channel-tag{
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: none;
+}
 :root{
   /* Responsive: si adatta a iPhone/iPad senza zoom. Rimane scrollabile solo se serve. */
   --cal-pill-h: clamp(28px, 4.8vw, 38px);
@@ -3641,14 +3666,19 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   border-radius:50%;
 }
 
-/* Calendario: flags m/c/g negli angoli cella (flat) */
+/* Calendario: tag M/G/C in basso a destra della cella */
 .cal-flags{
   position:absolute;
-  inset:0;
+  right:4px;
+  bottom:4px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:3px;
   pointer-events:none;
 }
 .cal-flag{
-  position:absolute;
+  position:static;
   width:16px;
   height:16px;
   border-radius:6px;
@@ -3661,9 +3691,9 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   text-transform:uppercase;
   border:1px solid rgba(15,23,42,0.10);
 }
-.cal-flag-m{ top:3px; left:12px; background: rgba(50,173,230,0.95); color: #fff; }
-.cal-flag-c{ top:3px; right:12px; background: rgba(11,42,91,0.95); color: #fff; }
-.cal-flag-g{ bottom:3px; right:12px; background: rgba(255,204,0,0.95); color: var(--ico-blue-night); }
+.cal-flag-m{ background: rgba(50,173,230,0.95); color: #fff; }
+.cal-flag-g{ background: rgba(255,204,0,0.95); color: var(--ico-blue-night); }
+.cal-flag-c{ background: rgba(11,42,91,0.95); color: #fff; }
 
 
 .cal-cell.empty-selected{
@@ -11543,7 +11573,7 @@ body[data-role="operatore"] #page-home .home-main-label{
 body.ddae-dark{
   color: #e5edf8 !important;
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.311") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.312") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -11552,7 +11582,7 @@ body.ddae-dark{
 body.ddae-dark[data-page="home"],
 body.ddae-dark[data-page]{
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.311") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.312") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -11963,7 +11993,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   outline: 2px solid rgba(255,255,255,0.92) !important;
 }
 
-/* dDAE_2.311 - Dark mode settings page keeps wallpaper visible */
+/* dDAE_2.312 - Dark mode settings page keeps wallpaper visible */
 body.ddae-dark #page-impostazioni .settings-page,
 body.ddae-dark #page-impostazioni .settings-page-reference{
   background: transparent !important;

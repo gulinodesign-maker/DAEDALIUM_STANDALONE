@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.306";
+const BUILD_VERSION = "2.312";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18910,29 +18910,24 @@ function renderCalendarioWeek(){
       if (info) {
         cell.classList.add("has-booking");
         try{
+          const chrome = document.createElement("div");
+          chrome.className = "cal-corner-chrome";
+
+          if (info.channelInitial){
+            const ch = document.createElement("span");
+            ch.className = `cal-channel-tag operatori-tag color-${info.channelColor || "orange"}`;
+            ch.textContent = String(info.channelInitial).slice(0,1).toUpperCase();
+            chrome.appendChild(ch);
+          }
+
           const flags = document.createElement("div");
           flags.className = "cal-flags";
+          if (info.mOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-m"; f.textContent = "M"; flags.appendChild(f); }
+          if (info.gOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-g"; f.textContent = "G"; flags.appendChild(f); }
+          if (info.cOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-c"; f.textContent = "C"; flags.appendChild(f); }
+          if (flags.childNodes.length) chrome.appendChild(flags);
 
-          if (info.mOn){
-            const f = document.createElement("span");
-            f.className = "cal-flag cal-flag-m";
-            f.textContent = "m";
-            flags.appendChild(f);
-          }
-          if (info.cOn){
-            const f = document.createElement("span");
-            f.className = "cal-flag cal-flag-c";
-            f.textContent = "c";
-            flags.appendChild(f);
-          }
-          if (info.gOn){
-            const f = document.createElement("span");
-            f.className = "cal-flag cal-flag-g";
-            f.textContent = "g";
-            flags.appendChild(f);
-          }
-
-          if (flags.childNodes.length) cell.appendChild(flags);
+          if (chrome.childNodes.length) cell.appendChild(chrome);
         }catch(_){ }
 
         const inner = document.createElement("div");
@@ -19294,12 +19289,21 @@ function renderCalendarioMonth(){
       else cell.classList.add('booking-span-merged');
 
       try{
+        const chrome = document.createElement("div");
+        chrome.className = "cal-corner-chrome";
+        if (info.channelInitial){
+          const ch = document.createElement("span");
+          ch.className = `cal-channel-tag operatori-tag color-${info.channelColor || "orange"}`;
+          ch.textContent = String(info.channelInitial).slice(0,1).toUpperCase();
+          chrome.appendChild(ch);
+        }
         const flags = document.createElement("div");
         flags.className = "cal-flags";
-        if (info.mOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-m"; f.textContent = "m"; flags.appendChild(f); }
-        if (info.cOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-c"; f.textContent = "c"; flags.appendChild(f); }
-        if (info.gOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-g"; f.textContent = "g"; flags.appendChild(f); }
-        if (flags.childNodes.length) cell.appendChild(flags);
+        if (info.mOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-m"; f.textContent = "M"; flags.appendChild(f); }
+        if (info.gOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-g"; f.textContent = "G"; flags.appendChild(f); }
+        if (info.cOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-c"; f.textContent = "C"; flags.appendChild(f); }
+        if (flags.childNodes.length) chrome.appendChild(flags);
+        if (chrome.childNodes.length) cell.appendChild(chrome);
       }catch(_){ }
 
       const inner = document.createElement("div");
@@ -19381,7 +19385,7 @@ function buildMonthOccupancy(monthStart, daysCount){
 
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(g.channel_iniziale || g.channelInitial || __channelInitialFromName__(g.channel_nome || g.channelName || '') || '').trim().slice(0,1).toUpperCase(), channelColor: __normalizeChannelColor__(g.channel_colore || g.channelColor || 'orange') });
       }
     }
   }
@@ -19433,7 +19437,7 @@ function buildWeekOccupancy(weekStart){
 
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(g.channel_iniziale || g.channelInitial || __channelInitialFromName__(g.channel_nome || g.channelName || '') || '').trim().slice(0,1).toUpperCase(), channelColor: __normalizeChannelColor__(g.channel_colore || g.channelColor || 'orange') });
       }
     }
   }
