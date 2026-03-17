@@ -69,9 +69,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.306
+ * Build: 2.305
  */
-const BUILD_VERSION = "2.306";
+const BUILD_VERSION = "2.305";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4014,61 +4014,9 @@ function _guestReceiptMissingNow(g){
   if (saldo > 0 && _isElectronicTypeStr_(saldoType) && !_isRicevutaFlag(g, 'saldo')) missing.push('Saldo elettronico senza ricevuta');
   return missing;
 }
-function _guestDateToISOForAlerts(raw){
-  const s = collapseSpaces(String(raw ?? '').trim().toLowerCase());
-  if (!s) return '';
-  const viaShared = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(s) : '';
-  if (viaShared) return viaShared;
-
-  const mDash = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-  if (mDash){
-    const dd = String(mDash[1]).padStart(2,'0');
-    const mm = String(mDash[2]).padStart(2,'0');
-    const yy = mDash[3];
-    return `${yy}-${mm}-${dd}`;
-  }
-
-  const months = {
-    gennaio:'01', gen:'01',
-    febbraio:'02', feb:'02',
-    marzo:'03', mar:'03',
-    aprile:'04', apr:'04',
-    maggio:'05', mag:'05',
-    giugno:'06', giu:'06',
-    luglio:'07', lug:'07',
-    agosto:'08', ago:'08',
-    settembre:'09', set:'09', sett:'09',
-    ottobre:'10', ott:'10',
-    novembre:'11', nov:'11',
-    dicembre:'12', dic:'12'
-  };
-  const mText = s.match(/^(\d{1,2})\s+([a-zàéìòù]+)\s+(\d{4})$/i);
-  if (mText){
-    const dd = String(mText[1]).padStart(2,'0');
-    const mm = months[mText[2]] || '';
-    const yy = mText[3];
-    if (mm) return `${yy}-${mm}-${dd}`;
-  }
-
-  return '';
-}
-function _guestRegistrationAlertStartTs(g){
-  const raw = g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '';
-  const iso = _guestDateToISOForAlerts(raw);
-  if (iso){
-    const noon = Date.parse(`${iso}T12:00:00`);
-    if (Number.isFinite(noon)) return noon;
-  }
-  const fallback = parseDateTs(raw);
-  if (Number.isFinite(fallback)){
-    const dt = new Date(fallback);
-    dt.setHours(12,0,0,0);
-    return dt.getTime();
-  }
-  return null;
-}
 function computeTopGuestAlerts(guests){
   const now = Date.now();
+  const twelveHoursMs = 12 * 60 * 60 * 1000;
   const twentyFourHoursMs = 24 * 60 * 60 * 1000;
   const leftDismissed = _readGuestAlertDismissed('left');
   const rightDismissed = _readGuestAlertDismissed('right');
@@ -4081,12 +4029,11 @@ function computeTopGuestAlerts(guests){
     const rawName = g?.nome ?? g?.name ?? '';
     const name = collapseSpaces(String(rawName || '').trim()) || 'Prenotazione';
     const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-    const registrationAlertTs = _guestRegistrationAlertStartTs(g);
     const checkOutTs = parseDateTs(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
     const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
     const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
 
-    if (registrationAlertTs && now >= registrationAlertTs){
+    if (checkInTs && now >= (checkInTs + twelveHoursMs)){
       const missingPs = !psReg;
       const missingIstat = !istatReg;
       if (missingPs || missingIstat){
@@ -14390,16 +14337,20 @@ if (!name) return toast("Inserisci il nome");
   try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; } }catch(_){ }
 
   if (instantGoList){
-    // Sei già in lista: aggiorna appena possibile senza bloccare la UI
+    // Sei già in lista: aggiorna subito lista e LED top bar senza bloccare la UI.
     try{
-      loadOspiti({ ...(state.period || {}), force:true }).catch(e => toast(e.message));
+      loadOspiti({ ...(state.period || {}), force:true })
+        .then(()=>{ try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ } })
+        .catch(e => toast(e.message));
     }catch(_){ }
+    try{ setTimeout(()=>{ try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ } }, 120); }catch(_){ }
     try{ __sfxSave(); }catch(_){ }
   toast(isEdit ? "Modifiche salvate" : "Ospite creato");
     return;
   }
 
   await loadOspiti({ ...(state.period || {}), force:true });
+  try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
   try{ __sfxSave(); }catch(_){ }
   toast(isEdit ? "Modifiche salvate" : "Ospite creato");
 
@@ -20647,7 +20598,7 @@ let __tassaBound = false;
 
 function __parseDateFlexibleToISO(unknown){
   // Ritorna ISO YYYY-MM-DD oppure "" se non parsabile
-  const s = collapseSpaces(String(unknown || "").trim().toLowerCase());
+  const s = String(unknown || "").trim();
   if (!s) return "";
   // ISO date (YYYY-MM-DD) or ISO datetime
   const mIso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -20659,36 +20610,6 @@ function __parseDateFlexibleToISO(unknown){
     const mm = String(mIt[2]).padStart(2,"0");
     const yy = mIt[3];
     return `${yy}-${mm}-${dd}`;
-  }
-  // dd-mm-yyyy
-  const mDash = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-  if (mDash){
-    const dd = String(mDash[1]).padStart(2,"0");
-    const mm = String(mDash[2]).padStart(2,"0");
-    const yy = mDash[3];
-    return `${yy}-${mm}-${dd}`;
-  }
-  // dd mese yyyy (italiano)
-  const months = {
-    gennaio:'01', gen:'01',
-    febbraio:'02', feb:'02',
-    marzo:'03', mar:'03',
-    aprile:'04', apr:'04',
-    maggio:'05', mag:'05',
-    giugno:'06', giu:'06',
-    luglio:'07', lug:'07',
-    agosto:'08', ago:'08',
-    settembre:'09', set:'09', sett:'09',
-    ottobre:'10', ott:'10',
-    novembre:'11', nov:'11',
-    dicembre:'12', dic:'12'
-  };
-  const mText = s.match(/^(\d{1,2})\s+([a-zàéìòù]+)\s+(\d{4})$/i);
-  if (mText){
-    const dd = String(mText[1]).padStart(2,"0");
-    const mm = months[mText[2]] || "";
-    const yy = mText[3];
-    if (mm) return `${yy}-${mm}-${dd}`;
   }
   return "";
 }
