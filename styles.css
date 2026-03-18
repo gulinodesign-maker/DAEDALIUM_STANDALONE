@@ -14632,3 +14632,72 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   stroke: #ef4444 !important;
   -webkit-text-fill-color: #ef4444 !important;
 }
+
+
+/* dDAE_2.331 — Stanze card ospite contenute nel riquadro */
+#page-ospite .rooms-readonly-wrap{
+  display:block !important;
+  width:100%;
+  max-width:100%;
+  overflow:hidden !important;
+}
+#page-ospite .rooms-stack{
+  display:flex;
+  width:100%;
+  max-width:100%;
+  flex-wrap:wrap !important;
+  justify-content:flex-start !important;
+  align-items:flex-start !important;
+  gap:10px 12px;
+  overflow:hidden;
+}
+#page-ospite .room-row{
+  max-width:100%;
+  flex:0 1 auto;
+}
+
+/* dDAE_2.331 — Pallini stanze impostazioni in righe da 6 */
+#roomSettingsDots{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0, 54px));
+  justify-content:flex-start;
+  gap:14px;
+}
+@media (max-width:390px){
+  #roomSettingsDots{
+    grid-template-columns:repeat(6, minmax(0, 50px));
+  }
+}
+
+/* dDAE_2.331 — Popup letti coerente con palette dinamica */
+#roomConfigModal .dots{
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+#roomConfigModal .dot{
+  width:22px;
+  height:22px;
+  border-width:2px;
+  background:transparent !important;
+}
+#roomConfigModal .dot.on{
+  opacity:1;
+}
+
+/* dDAE_2.331 — Calendario: testo stanza leggibile sui nuovi colori */
+#page-calendario .cal-room-rail-pill .cal-room-num{
+  color: var(--room-fg, #0b1f3a) !important;
+}
+.room-1{ --room-bg: var(--room1); --room-fg: var(--room1-fg, #0b1f3a); }
+.room-2{ --room-bg: var(--room2); --room-fg: var(--room2-fg, #0b1f3a); }
+.room-3{ --room-bg: var(--room3); --room-fg: var(--room3-fg, #0b1f3a); }
+.room-4{ --room-bg: var(--room4); --room-fg: var(--room4-fg, #0b1f3a); }
+.room-5{ --room-bg: var(--room5); --room-fg: var(--room5-fg, #0b1f3a); }
+.room-6{ --room-bg: var(--room6); --room-fg: var(--room6-fg, #0b1f3a); }
+.room-7{ --room-bg: var(--room7); --room-fg: var(--room7-fg, #0b1f3a); }
+.room-8{ --room-bg: var(--room8); --room-fg: var(--room8-fg, #0b1f3a); }
+.room-9{ --room-bg: var(--room9); --room-fg: var(--room9-fg, #0b1f3a); }
+.room-10{ --room-bg: var(--room10); --room-fg: var(--room10-fg, #0b1f3a); }
+.room-11{ --room-bg: var(--room11); --room-fg: var(--room11-fg, #0b1f3a); }
+.room-12{ --room-bg: var(--room12); --room-fg: var(--room12-fg, #0b1f3a); }

@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.330";
+const BUILD_VERSION = "2.331";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6176,7 +6176,7 @@ function calcTouristTax(ospite, nights){
 function buildNightsDotHTML(nights){
   const n = Math.max(0, parseInt(nights, 10) || 0);
   if (!n) return ``;
-  return `<span class="nights-dot" aria-label="Notti">${n}</span>`;
+  return `<span class="nights-dot" aria-label="Notti" style="${__roomsUiBadgeStyle__(getRoomsUiConfig().nights || 'indigo-4')}">${n}</span>`;
 }
 
 function updateGuestTaxTotalPill(){
@@ -13322,6 +13322,14 @@ function __applyRoomsUiConfig__(){
     setVar('--ddae-bed-m', cfg.beds.matrimoniale);
     setVar('--ddae-bed-s', cfg.beds.singolo);
     setVar('--ddae-bed-c', cfg.beds.culla);
+    for (let i = 1; i <= 12; i++) {
+      const spec = cfg.rooms?.[String(i)] || 'blue-4';
+      const main = __operatoreColorHex__(spec);
+      root.style.setProperty(`--room${i}`, hexToRgba(main, 0.55));
+      root.style.setProperty(`--room${i}-solid`, hexToRgba(main, 0.95));
+      root.style.setProperty(`--room${i}-border`, hexToRgba(main, 0.55));
+      root.style.setProperty(`--room${i}-fg`, __roomsUiTextColor__(spec, false));
+    }
   }catch(_){ }
 }
 
@@ -13419,6 +13427,7 @@ function renderRoomSettingsPage(){
       const parts = [];
       for (let i = 1; i <= count; i++) parts.push(`<button aria-label="Colore stanza ${i}" class="room-settings-color-dot" data-room-color="${i}" style="${__roomsUiButtonStyle__(cfg.rooms?.[String(i)] || 'blue-4', true)}" type="button">${i}</button>`);
       dots.innerHTML = parts.join('');
+      dots.style.setProperty('--room-settings-cols', String(Math.min(6, Math.max(1, count || 1))));
     }
   }catch(_){ }
 }
@@ -20958,14 +20967,24 @@ state.lettiPerStanza = state.lettiPerStanza || {};
 let __rc_room = null;
 
 function __rc_renderToggle(el, on){
-  el.innerHTML = `<span class="dot ${on?'on':''}"></span>`;
+  const key = String(el?.id || '').trim();
+  const cfg = getRoomsUiConfig();
+  const spec = key === 'rc_matrimoniale'
+    ? (cfg.beds?.matrimoniale || 'red-4')
+    : key === 'rc_culla'
+      ? (cfg.beds?.culla || 'yellow-4')
+      : (cfg.beds?.singolo || 'blue-4');
+  el.innerHTML = `<span class="dot ${on?'on':''}" style="${__roomsUiButtonStyle__(spec, true)}"></span>`;
   el.onclick = ()=> el.firstElementChild.classList.toggle('on');
 }
 function __rc_renderSingoli(el, n){
   el.innerHTML = '';
+  const spec = getRoomsUiConfig().beds?.singolo || 'blue-4';
+  const style = __roomsUiButtonStyle__(spec, true);
   for(let i=1;i<=3;i++){
     const s=document.createElement('span');
     s.className='dot'+(i<=n?' on':'');
+    s.setAttribute('style', style);
     s.onclick=()=>{
       [...el.children].forEach((c,ix)=>c.classList.toggle('on', ix < i));
     };
