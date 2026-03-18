@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.346";
+const BUILD_VERSION = "2.347";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6995,10 +6995,11 @@ function __applySettingsLauncherIconColors__(){
       const hex = __launcherIconResolveHex__(id, '#4d9cc5');
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
-        svg.style.color = hex;
+        svg.style.setProperty('color', hex, 'important');
+        svg.style.setProperty('stroke', hex, 'important');
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-          node.style.stroke = 'currentColor';
-          node.style.fill = 'none';
+          node.style.setProperty('stroke', hex, 'important');
+          node.style.setProperty('fill', 'none', 'important');
         });
       }
     });
@@ -7032,10 +7033,11 @@ function __launcherIconApplyToButton__(btn){
     if (btn.closest('#page-impostazioni')){
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
-        svg.style.color = hex;
+        svg.style.setProperty('color', hex, 'important');
+        svg.style.setProperty('stroke', hex, 'important');
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-          node.style.stroke = 'currentColor';
-          node.style.fill = 'none';
+          node.style.setProperty('stroke', hex, 'important');
+          node.style.setProperty('fill', 'none', 'important');
         });
       }
     }
@@ -9305,7 +9307,7 @@ function bindHomeStrongTap(){
       try{ showPage(page); }catch(_){}
     };
 
-    // dDAE_2.346: il tap breve deve navigare, ma la pressione lunga deve poter aprire il popup colore
+    // dDAE_2.347: il tap breve deve navigare, ma la pressione lunga deve poter aprire il popup colore
     // senza far partire la pagina dedicata gia su pointerdown/touchstart.
     const opts = { passive:false };
     try{ el.addEventListener("click", handler, opts); }catch(_){ try{ el.addEventListener("click", handler); }catch(__){} }
