@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.325";
+const BUILD_VERSION = "2.326";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6855,25 +6855,25 @@ function getOperatorNamesFromSettings() {
 
 
 const __OPERATORI_COLOR_KEYS__ = ["red","orange","yellow","green","mint","blue","indigo","pink","beige","acid"];
-const __OPERATORI_COLOR_SHADE_COUNT__ = 4;
-const __OPERATORI_COLOR_DEFAULT_SHADE__ = 3;
+const __OPERATORI_COLOR_SHADE_COUNT__ = 6;
+const __OPERATORI_COLOR_DEFAULT_SHADE__ = 4;
 const __OPERATORI_COLOR_TONES__ = {
-  red:    ["#ffd6d3", "#ffaca5", "#ff6f61", "#d9342b"],
-  orange: ["#ffe0bf", "#ffc27a", "#ff9f33", "#d97706"],
-  yellow: ["#fff4b3", "#ffe47a", "#ffd43b", "#d4a600"],
-  green:  ["#d9f7df", "#9fe7af", "#52c96a", "#218838"],
-  mint:   ["#cffff8", "#8ff0e8", "#26d9c7", "#0f9b8e"],
-  blue:   ["#cfe4ff", "#8cbcff", "#3d8bfd", "#0a58ca"],
-  indigo: ["#ddd9ff", "#b4a8ff", "#7c6ff2", "#5145cd"],
-  pink:   ["#ffd6e4", "#ff9fc0", "#ff5f93", "#d6336c"],
-  beige:  ["#f7ead8", "#ead1ad", "#d8b98b", "#b08968"],
-  acid:   ["#f2ffb3", "#ddff66", "#bfff00", "#86b300"],
+  red:    ["#fff1ef", "#ffd6d3", "#ffaca5", "#ff6f61", "#e24a3f", "#b92a23"],
+  orange: ["#fff0dd", "#ffe0bf", "#ffc27a", "#ff9f33", "#e07f13", "#b96100"],
+  yellow: ["#fff9d9", "#fff4b3", "#ffe47a", "#ffd43b", "#e0b800", "#b38f00"],
+  green:  ["#eefbf1", "#d9f7df", "#9fe7af", "#52c96a", "#2f9e44", "#1b6f31"],
+  mint:   ["#effffc", "#cffff8", "#8ff0e8", "#26d9c7", "#13b8a6", "#0b7f74"],
+  blue:   ["#eef6ff", "#cfe4ff", "#8cbcff", "#3d8bfd", "#1f6fe5", "#0a58ca"],
+  indigo: ["#f0efff", "#ddd9ff", "#b4a8ff", "#7c6ff2", "#6357dc", "#4338b8"],
+  pink:   ["#fff0f5", "#ffd6e4", "#ff9fc0", "#ff5f93", "#e04377", "#b92b58"],
+  beige:  ["#fff7ef", "#f7ead8", "#ead1ad", "#d8b98b", "#c49a65", "#9c754c"],
+  acid:   ["#fbffd9", "#f2ffb3", "#ddff66", "#bfff00", "#98cc00", "#6f9900"],
 };
 
 function __parseOperatoreColorSpec__(value){
   const raw = String(value || "").trim().toLowerCase();
   const legacyBaseMap = { purple:'indigo', sand:'beige', lime:'acid', acidgreen:'acid', greenacid:'acid' };
-  const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-4]))?$/i);
+  const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-6]))?$/i);
   const requestedBase = m ? String(m[1] || '').toLowerCase() : '';
   const normalizedBase = legacyBaseMap[requestedBase] || requestedBase;
   const base = __OPERATORI_COLOR_KEYS__.includes(normalizedBase) ? normalizedBase : 'blue';

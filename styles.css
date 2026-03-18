@@ -9144,7 +9144,7 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 }
 .tag-color-grid{
   display:grid;
-  grid-template-columns:repeat(4, minmax(0, 1fr));
+  grid-template-columns:repeat(6, minmax(0, 1fr));
   gap:10px;
 }
 .tag-color-option{
@@ -13539,7 +13539,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   -webkit-text-fill-color:#ffffff !important;
 }
 
-/* dDAE_2.325 — Tag button indaco nei popup operatore/channel/lavanderia */
+/* dDAE_2.326 — Tag button indaco nei popup operatore/channel/lavanderia */
 #operatoriEditorTagColor.btn,
 #channelEditorTagColor.btn,
 #laundryCatalogEditorTagColor.btn{
@@ -13550,7 +13550,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   font-weight: 800 !important;
 }
 
-/* dDAE_2.325 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
+/* dDAE_2.326 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
 #page-ospiti .guest-meta-right .nights-dot{
   background: rgba(88,86,214,0.95) !important;
   border-color: rgba(88,86,214,0.35) !important;
@@ -13565,7 +13565,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   font-weight: 800 !important;
 }
 
-/* dDAE_2.325 — Card ospite: stanze sempre a sinistra sulla stessa riga, letti verticali e centrati */
+/* dDAE_2.326 — Card ospite: stanze sempre a sinistra sulla stessa riga, letti verticali e centrati */
 #page-ospite .rooms-readonly-wrap{
   justify-content: flex-start !important;
   flex-wrap: nowrap !important;
@@ -13586,7 +13586,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 }
 
 
-/* dDAE_2.325 — tag palette solid colors for iOS + extra beige/acid rows */
+/* dDAE_2.326 — tag palette solid colors for iOS + extra beige/acid rows */
 .tag-color-option{ appearance:none; -webkit-appearance:none; background-clip:padding-box; }
 .tag-color-option[data-spec="red-1"],
 .operatori-tag.color-red-1,
@@ -13839,7 +13839,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 .guest-channel-dot.color-sand-4, .operatori-tag.color-sand-4{ background:#b08968 !important; background-color:#b08968 !important; }
 
 
-/* dDAE_2.325 — corrected solid palette bindings */
+/* dDAE_2.326 — corrected solid palette bindings */
 #page-pulizie .clean-grid .cell.slot.color-red-1{ --laundry-save-color:#ffd6d3 !important; }
 #page-pulizie .clean-grid .cell.head.laundry-head.color-red-1{ --laundry-head-bg:#ffd6d3 !important; }
 #page-pulizie .clean-grid .cell.slot.color-red-2{ --laundry-save-color:#ffaca5 !important; }
@@ -13960,3 +13960,337 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 #page-pulizie .clean-grid .cell.slot.color-sand-1{ --laundry-save-color:#f7ead8 !important; }
 #page-pulizie .clean-grid .cell.slot.color-sand-2{ --laundry-save-color:#ead1ad !important; }
 #page-pulizie .clean-grid .cell.slot.color-sand-4{ --laundry-save-color:#b08968 !important; }
+
+
+/* dDAE_2.326 — tag palette expanded to 6 tones per row */
+ .tag-color-grid{ grid-template-columns:repeat(6, minmax(0, 1fr)); }
+.tag-color-option[data-spec="red-1"],
+.operatori-tag.color-red-1,
+.guest-channel-dot.color-red-1{ background:#fff1ef !important; background-color:#fff1ef !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-1{ --laundry-save-color:#fff1ef !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-1{ --laundry-head-bg:#fff1ef !important; }
+.tag-color-option[data-spec="red-2"],
+.operatori-tag.color-red-2,
+.guest-channel-dot.color-red-2{ background:#ffd6d3 !important; background-color:#ffd6d3 !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-2{ --laundry-save-color:#ffd6d3 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-2{ --laundry-head-bg:#ffd6d3 !important; }
+.tag-color-option[data-spec="red-3"],
+.operatori-tag.color-red-3,
+.guest-channel-dot.color-red-3{ background:#ffaca5 !important; background-color:#ffaca5 !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-3{ --laundry-save-color:#ffaca5 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-3{ --laundry-head-bg:#ffaca5 !important; }
+.tag-color-option[data-spec="red-4"],
+.operatori-tag.color-red-4,
+.guest-channel-dot.color-red-4{ background:#ff6f61 !important; background-color:#ff6f61 !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-4{ --laundry-save-color:#ff6f61 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-4{ --laundry-head-bg:#ff6f61 !important; }
+.tag-color-option[data-spec="red-5"],
+.operatori-tag.color-red-5,
+.guest-channel-dot.color-red-5{ background:#e24a3f !important; background-color:#e24a3f !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-5{ --laundry-save-color:#e24a3f !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-5{ --laundry-head-bg:#e24a3f !important; }
+.tag-color-option[data-spec="red-6"],
+.operatori-tag.color-red-6,
+.guest-channel-dot.color-red-6{ background:#b92a23 !important; background-color:#b92a23 !important; }
+#page-pulizie .clean-grid .cell.slot.color-red-6{ --laundry-save-color:#b92a23 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red-6{ --laundry-head-bg:#b92a23 !important; }
+.operatori-tag.color-red, .guest-channel-dot.color-red{ background:#ff6f61 !important; background-color:#ff6f61 !important; }
+#page-pulizie .clean-grid .cell.slot.color-red{ --laundry-save-color:#ff6f61 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-red{ --laundry-head-bg:#ff6f61 !important; }
+.tag-color-option[data-spec="orange-1"],
+.operatori-tag.color-orange-1,
+.guest-channel-dot.color-orange-1{ background:#fff0dd !important; background-color:#fff0dd !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-1{ --laundry-save-color:#fff0dd !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-1{ --laundry-head-bg:#fff0dd !important; }
+.tag-color-option[data-spec="orange-2"],
+.operatori-tag.color-orange-2,
+.guest-channel-dot.color-orange-2{ background:#ffe0bf !important; background-color:#ffe0bf !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-2{ --laundry-save-color:#ffe0bf !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-2{ --laundry-head-bg:#ffe0bf !important; }
+.tag-color-option[data-spec="orange-3"],
+.operatori-tag.color-orange-3,
+.guest-channel-dot.color-orange-3{ background:#ffc27a !important; background-color:#ffc27a !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-3{ --laundry-save-color:#ffc27a !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-3{ --laundry-head-bg:#ffc27a !important; }
+.tag-color-option[data-spec="orange-4"],
+.operatori-tag.color-orange-4,
+.guest-channel-dot.color-orange-4{ background:#ff9f33 !important; background-color:#ff9f33 !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-4{ --laundry-save-color:#ff9f33 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-4{ --laundry-head-bg:#ff9f33 !important; }
+.tag-color-option[data-spec="orange-5"],
+.operatori-tag.color-orange-5,
+.guest-channel-dot.color-orange-5{ background:#e07f13 !important; background-color:#e07f13 !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-5{ --laundry-save-color:#e07f13 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-5{ --laundry-head-bg:#e07f13 !important; }
+.tag-color-option[data-spec="orange-6"],
+.operatori-tag.color-orange-6,
+.guest-channel-dot.color-orange-6{ background:#b96100 !important; background-color:#b96100 !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange-6{ --laundry-save-color:#b96100 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange-6{ --laundry-head-bg:#b96100 !important; }
+.operatori-tag.color-orange, .guest-channel-dot.color-orange{ background:#ff9f33 !important; background-color:#ff9f33 !important; }
+#page-pulizie .clean-grid .cell.slot.color-orange{ --laundry-save-color:#ff9f33 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-orange{ --laundry-head-bg:#ff9f33 !important; }
+.tag-color-option[data-spec="yellow-1"],
+.operatori-tag.color-yellow-1,
+.guest-channel-dot.color-yellow-1{ background:#fff9d9 !important; background-color:#fff9d9 !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-1{ --laundry-save-color:#fff9d9 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-1{ --laundry-head-bg:#fff9d9 !important; }
+.tag-color-option[data-spec="yellow-2"],
+.operatori-tag.color-yellow-2,
+.guest-channel-dot.color-yellow-2{ background:#fff4b3 !important; background-color:#fff4b3 !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-2{ --laundry-save-color:#fff4b3 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-2{ --laundry-head-bg:#fff4b3 !important; }
+.tag-color-option[data-spec="yellow-3"],
+.operatori-tag.color-yellow-3,
+.guest-channel-dot.color-yellow-3{ background:#ffe47a !important; background-color:#ffe47a !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-3{ --laundry-save-color:#ffe47a !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-3{ --laundry-head-bg:#ffe47a !important; }
+.tag-color-option[data-spec="yellow-4"],
+.operatori-tag.color-yellow-4,
+.guest-channel-dot.color-yellow-4{ background:#ffd43b !important; background-color:#ffd43b !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-4{ --laundry-save-color:#ffd43b !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-4{ --laundry-head-bg:#ffd43b !important; }
+.tag-color-option[data-spec="yellow-5"],
+.operatori-tag.color-yellow-5,
+.guest-channel-dot.color-yellow-5{ background:#e0b800 !important; background-color:#e0b800 !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-5{ --laundry-save-color:#e0b800 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-5{ --laundry-head-bg:#e0b800 !important; }
+.tag-color-option[data-spec="yellow-6"],
+.operatori-tag.color-yellow-6,
+.guest-channel-dot.color-yellow-6{ background:#b38f00 !important; background-color:#b38f00 !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow-6{ --laundry-save-color:#b38f00 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow-6{ --laundry-head-bg:#b38f00 !important; }
+.operatori-tag.color-yellow, .guest-channel-dot.color-yellow{ background:#ffd43b !important; background-color:#ffd43b !important; }
+#page-pulizie .clean-grid .cell.slot.color-yellow{ --laundry-save-color:#ffd43b !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-yellow{ --laundry-head-bg:#ffd43b !important; }
+.tag-color-option[data-spec="green-1"],
+.operatori-tag.color-green-1,
+.guest-channel-dot.color-green-1{ background:#eefbf1 !important; background-color:#eefbf1 !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-1{ --laundry-save-color:#eefbf1 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-1{ --laundry-head-bg:#eefbf1 !important; }
+.tag-color-option[data-spec="green-2"],
+.operatori-tag.color-green-2,
+.guest-channel-dot.color-green-2{ background:#d9f7df !important; background-color:#d9f7df !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-2{ --laundry-save-color:#d9f7df !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-2{ --laundry-head-bg:#d9f7df !important; }
+.tag-color-option[data-spec="green-3"],
+.operatori-tag.color-green-3,
+.guest-channel-dot.color-green-3{ background:#9fe7af !important; background-color:#9fe7af !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-3{ --laundry-save-color:#9fe7af !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-3{ --laundry-head-bg:#9fe7af !important; }
+.tag-color-option[data-spec="green-4"],
+.operatori-tag.color-green-4,
+.guest-channel-dot.color-green-4{ background:#52c96a !important; background-color:#52c96a !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-4{ --laundry-save-color:#52c96a !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-4{ --laundry-head-bg:#52c96a !important; }
+.tag-color-option[data-spec="green-5"],
+.operatori-tag.color-green-5,
+.guest-channel-dot.color-green-5{ background:#2f9e44 !important; background-color:#2f9e44 !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-5{ --laundry-save-color:#2f9e44 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-5{ --laundry-head-bg:#2f9e44 !important; }
+.tag-color-option[data-spec="green-6"],
+.operatori-tag.color-green-6,
+.guest-channel-dot.color-green-6{ background:#1b6f31 !important; background-color:#1b6f31 !important; }
+#page-pulizie .clean-grid .cell.slot.color-green-6{ --laundry-save-color:#1b6f31 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green-6{ --laundry-head-bg:#1b6f31 !important; }
+.operatori-tag.color-green, .guest-channel-dot.color-green{ background:#52c96a !important; background-color:#52c96a !important; }
+#page-pulizie .clean-grid .cell.slot.color-green{ --laundry-save-color:#52c96a !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-green{ --laundry-head-bg:#52c96a !important; }
+.tag-color-option[data-spec="mint-1"],
+.operatori-tag.color-mint-1,
+.guest-channel-dot.color-mint-1{ background:#effffc !important; background-color:#effffc !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-1{ --laundry-save-color:#effffc !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-1{ --laundry-head-bg:#effffc !important; }
+.tag-color-option[data-spec="mint-2"],
+.operatori-tag.color-mint-2,
+.guest-channel-dot.color-mint-2{ background:#cffff8 !important; background-color:#cffff8 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-2{ --laundry-save-color:#cffff8 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-2{ --laundry-head-bg:#cffff8 !important; }
+.tag-color-option[data-spec="mint-3"],
+.operatori-tag.color-mint-3,
+.guest-channel-dot.color-mint-3{ background:#8ff0e8 !important; background-color:#8ff0e8 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-3{ --laundry-save-color:#8ff0e8 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-3{ --laundry-head-bg:#8ff0e8 !important; }
+.tag-color-option[data-spec="mint-4"],
+.operatori-tag.color-mint-4,
+.guest-channel-dot.color-mint-4{ background:#26d9c7 !important; background-color:#26d9c7 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-4{ --laundry-save-color:#26d9c7 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-4{ --laundry-head-bg:#26d9c7 !important; }
+.tag-color-option[data-spec="mint-5"],
+.operatori-tag.color-mint-5,
+.guest-channel-dot.color-mint-5{ background:#13b8a6 !important; background-color:#13b8a6 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-5{ --laundry-save-color:#13b8a6 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-5{ --laundry-head-bg:#13b8a6 !important; }
+.tag-color-option[data-spec="mint-6"],
+.operatori-tag.color-mint-6,
+.guest-channel-dot.color-mint-6{ background:#0b7f74 !important; background-color:#0b7f74 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint-6{ --laundry-save-color:#0b7f74 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint-6{ --laundry-head-bg:#0b7f74 !important; }
+.operatori-tag.color-mint, .guest-channel-dot.color-mint{ background:#26d9c7 !important; background-color:#26d9c7 !important; }
+#page-pulizie .clean-grid .cell.slot.color-mint{ --laundry-save-color:#26d9c7 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-mint{ --laundry-head-bg:#26d9c7 !important; }
+.tag-color-option[data-spec="blue-1"],
+.operatori-tag.color-blue-1,
+.guest-channel-dot.color-blue-1{ background:#eef6ff !important; background-color:#eef6ff !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-1{ --laundry-save-color:#eef6ff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-1{ --laundry-head-bg:#eef6ff !important; }
+.tag-color-option[data-spec="blue-2"],
+.operatori-tag.color-blue-2,
+.guest-channel-dot.color-blue-2{ background:#cfe4ff !important; background-color:#cfe4ff !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-2{ --laundry-save-color:#cfe4ff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-2{ --laundry-head-bg:#cfe4ff !important; }
+.tag-color-option[data-spec="blue-3"],
+.operatori-tag.color-blue-3,
+.guest-channel-dot.color-blue-3{ background:#8cbcff !important; background-color:#8cbcff !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-3{ --laundry-save-color:#8cbcff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-3{ --laundry-head-bg:#8cbcff !important; }
+.tag-color-option[data-spec="blue-4"],
+.operatori-tag.color-blue-4,
+.guest-channel-dot.color-blue-4{ background:#3d8bfd !important; background-color:#3d8bfd !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-4{ --laundry-save-color:#3d8bfd !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-4{ --laundry-head-bg:#3d8bfd !important; }
+.tag-color-option[data-spec="blue-5"],
+.operatori-tag.color-blue-5,
+.guest-channel-dot.color-blue-5{ background:#1f6fe5 !important; background-color:#1f6fe5 !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-5{ --laundry-save-color:#1f6fe5 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-5{ --laundry-head-bg:#1f6fe5 !important; }
+.tag-color-option[data-spec="blue-6"],
+.operatori-tag.color-blue-6,
+.guest-channel-dot.color-blue-6{ background:#0a58ca !important; background-color:#0a58ca !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue-6{ --laundry-save-color:#0a58ca !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue-6{ --laundry-head-bg:#0a58ca !important; }
+.operatori-tag.color-blue, .guest-channel-dot.color-blue{ background:#3d8bfd !important; background-color:#3d8bfd !important; }
+#page-pulizie .clean-grid .cell.slot.color-blue{ --laundry-save-color:#3d8bfd !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-blue{ --laundry-head-bg:#3d8bfd !important; }
+.tag-color-option[data-spec="indigo-1"],
+.operatori-tag.color-indigo-1,
+.guest-channel-dot.color-indigo-1{ background:#f0efff !important; background-color:#f0efff !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-1{ --laundry-save-color:#f0efff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-1{ --laundry-head-bg:#f0efff !important; }
+.tag-color-option[data-spec="indigo-2"],
+.operatori-tag.color-indigo-2,
+.guest-channel-dot.color-indigo-2{ background:#ddd9ff !important; background-color:#ddd9ff !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-2{ --laundry-save-color:#ddd9ff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-2{ --laundry-head-bg:#ddd9ff !important; }
+.tag-color-option[data-spec="indigo-3"],
+.operatori-tag.color-indigo-3,
+.guest-channel-dot.color-indigo-3{ background:#b4a8ff !important; background-color:#b4a8ff !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-3{ --laundry-save-color:#b4a8ff !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-3{ --laundry-head-bg:#b4a8ff !important; }
+.tag-color-option[data-spec="indigo-4"],
+.operatori-tag.color-indigo-4,
+.guest-channel-dot.color-indigo-4{ background:#7c6ff2 !important; background-color:#7c6ff2 !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-4{ --laundry-save-color:#7c6ff2 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-4{ --laundry-head-bg:#7c6ff2 !important; }
+.tag-color-option[data-spec="indigo-5"],
+.operatori-tag.color-indigo-5,
+.guest-channel-dot.color-indigo-5{ background:#6357dc !important; background-color:#6357dc !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-5{ --laundry-save-color:#6357dc !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-5{ --laundry-head-bg:#6357dc !important; }
+.tag-color-option[data-spec="indigo-6"],
+.operatori-tag.color-indigo-6,
+.guest-channel-dot.color-indigo-6{ background:#4338b8 !important; background-color:#4338b8 !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo-6{ --laundry-save-color:#4338b8 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo-6{ --laundry-head-bg:#4338b8 !important; }
+.operatori-tag.color-indigo, .guest-channel-dot.color-indigo{ background:#7c6ff2 !important; background-color:#7c6ff2 !important; }
+#page-pulizie .clean-grid .cell.slot.color-indigo{ --laundry-save-color:#7c6ff2 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-indigo{ --laundry-head-bg:#7c6ff2 !important; }
+.tag-color-option[data-spec="pink-1"],
+.operatori-tag.color-pink-1,
+.guest-channel-dot.color-pink-1{ background:#fff0f5 !important; background-color:#fff0f5 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-1{ --laundry-save-color:#fff0f5 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-1{ --laundry-head-bg:#fff0f5 !important; }
+.tag-color-option[data-spec="pink-2"],
+.operatori-tag.color-pink-2,
+.guest-channel-dot.color-pink-2{ background:#ffd6e4 !important; background-color:#ffd6e4 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-2{ --laundry-save-color:#ffd6e4 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-2{ --laundry-head-bg:#ffd6e4 !important; }
+.tag-color-option[data-spec="pink-3"],
+.operatori-tag.color-pink-3,
+.guest-channel-dot.color-pink-3{ background:#ff9fc0 !important; background-color:#ff9fc0 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-3{ --laundry-save-color:#ff9fc0 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-3{ --laundry-head-bg:#ff9fc0 !important; }
+.tag-color-option[data-spec="pink-4"],
+.operatori-tag.color-pink-4,
+.guest-channel-dot.color-pink-4{ background:#ff5f93 !important; background-color:#ff5f93 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-4{ --laundry-save-color:#ff5f93 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-4{ --laundry-head-bg:#ff5f93 !important; }
+.tag-color-option[data-spec="pink-5"],
+.operatori-tag.color-pink-5,
+.guest-channel-dot.color-pink-5{ background:#e04377 !important; background-color:#e04377 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-5{ --laundry-save-color:#e04377 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-5{ --laundry-head-bg:#e04377 !important; }
+.tag-color-option[data-spec="pink-6"],
+.operatori-tag.color-pink-6,
+.guest-channel-dot.color-pink-6{ background:#b92b58 !important; background-color:#b92b58 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink-6{ --laundry-save-color:#b92b58 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink-6{ --laundry-head-bg:#b92b58 !important; }
+.operatori-tag.color-pink, .guest-channel-dot.color-pink{ background:#ff5f93 !important; background-color:#ff5f93 !important; }
+#page-pulizie .clean-grid .cell.slot.color-pink{ --laundry-save-color:#ff5f93 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-pink{ --laundry-head-bg:#ff5f93 !important; }
+.tag-color-option[data-spec="beige-1"],
+.operatori-tag.color-beige-1,
+.guest-channel-dot.color-beige-1{ background:#fff7ef !important; background-color:#fff7ef !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-1{ --laundry-save-color:#fff7ef !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-1{ --laundry-head-bg:#fff7ef !important; }
+.tag-color-option[data-spec="beige-2"],
+.operatori-tag.color-beige-2,
+.guest-channel-dot.color-beige-2{ background:#f7ead8 !important; background-color:#f7ead8 !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-2{ --laundry-save-color:#f7ead8 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-2{ --laundry-head-bg:#f7ead8 !important; }
+.tag-color-option[data-spec="beige-3"],
+.operatori-tag.color-beige-3,
+.guest-channel-dot.color-beige-3{ background:#ead1ad !important; background-color:#ead1ad !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-3{ --laundry-save-color:#ead1ad !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-3{ --laundry-head-bg:#ead1ad !important; }
+.tag-color-option[data-spec="beige-4"],
+.operatori-tag.color-beige-4,
+.guest-channel-dot.color-beige-4{ background:#d8b98b !important; background-color:#d8b98b !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-4{ --laundry-save-color:#d8b98b !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-4{ --laundry-head-bg:#d8b98b !important; }
+.tag-color-option[data-spec="beige-5"],
+.operatori-tag.color-beige-5,
+.guest-channel-dot.color-beige-5{ background:#c49a65 !important; background-color:#c49a65 !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-5{ --laundry-save-color:#c49a65 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-5{ --laundry-head-bg:#c49a65 !important; }
+.tag-color-option[data-spec="beige-6"],
+.operatori-tag.color-beige-6,
+.guest-channel-dot.color-beige-6{ background:#9c754c !important; background-color:#9c754c !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige-6{ --laundry-save-color:#9c754c !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige-6{ --laundry-head-bg:#9c754c !important; }
+.operatori-tag.color-beige, .guest-channel-dot.color-beige{ background:#d8b98b !important; background-color:#d8b98b !important; }
+#page-pulizie .clean-grid .cell.slot.color-beige{ --laundry-save-color:#d8b98b !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-beige{ --laundry-head-bg:#d8b98b !important; }
+.tag-color-option[data-spec="acid-1"],
+.operatori-tag.color-acid-1,
+.guest-channel-dot.color-acid-1{ background:#fbffd9 !important; background-color:#fbffd9 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-1{ --laundry-save-color:#fbffd9 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-1{ --laundry-head-bg:#fbffd9 !important; }
+.tag-color-option[data-spec="acid-2"],
+.operatori-tag.color-acid-2,
+.guest-channel-dot.color-acid-2{ background:#f2ffb3 !important; background-color:#f2ffb3 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-2{ --laundry-save-color:#f2ffb3 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-2{ --laundry-head-bg:#f2ffb3 !important; }
+.tag-color-option[data-spec="acid-3"],
+.operatori-tag.color-acid-3,
+.guest-channel-dot.color-acid-3{ background:#ddff66 !important; background-color:#ddff66 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-3{ --laundry-save-color:#ddff66 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-3{ --laundry-head-bg:#ddff66 !important; }
+.tag-color-option[data-spec="acid-4"],
+.operatori-tag.color-acid-4,
+.guest-channel-dot.color-acid-4{ background:#bfff00 !important; background-color:#bfff00 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-4{ --laundry-save-color:#bfff00 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-4{ --laundry-head-bg:#bfff00 !important; }
+.tag-color-option[data-spec="acid-5"],
+.operatori-tag.color-acid-5,
+.guest-channel-dot.color-acid-5{ background:#98cc00 !important; background-color:#98cc00 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-5{ --laundry-save-color:#98cc00 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-5{ --laundry-head-bg:#98cc00 !important; }
+.tag-color-option[data-spec="acid-6"],
+.operatori-tag.color-acid-6,
+.guest-channel-dot.color-acid-6{ background:#6f9900 !important; background-color:#6f9900 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid-6{ --laundry-save-color:#6f9900 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid-6{ --laundry-head-bg:#6f9900 !important; }
+.operatori-tag.color-acid, .guest-channel-dot.color-acid{ background:#bfff00 !important; background-color:#bfff00 !important; }
+#page-pulizie .clean-grid .cell.slot.color-acid{ --laundry-save-color:#bfff00 !important; }
+#page-pulizie .clean-grid .cell.head.laundry-head.color-acid{ --laundry-head-bg:#bfff00 !important; }
