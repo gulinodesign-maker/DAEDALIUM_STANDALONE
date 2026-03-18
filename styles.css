@@ -13538,3 +13538,49 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   color:#ffffff !important;
   -webkit-text-fill-color:#ffffff !important;
 }
+
+/* dDAE_2.324 — Tag button indaco nei popup operatore/channel/lavanderia */
+#operatoriEditorTagColor.btn,
+#channelEditorTagColor.btn,
+#laundryCatalogEditorTagColor.btn{
+  background: rgba(88,86,214,0.80) !important;
+  border-color: rgba(88,86,214,0.80) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  font-weight: 800 !important;
+}
+
+/* dDAE_2.324 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
+#page-ospiti .guest-meta-right .nights-dot{
+  background: rgba(88,86,214,0.95) !important;
+  border-color: rgba(88,86,214,0.35) !important;
+  font-weight: 800 !important;
+}
+#page-ospiti .guest-meta-right .guest-channel-dot,
+#page-ospiti .guest-meta-right .marriage-dot,
+#page-ospiti .guest-meta-right .g-dot,
+#page-ospiti .guest-meta-right .c-dot,
+#page-ospiti .guest-meta-right .nights-dot,
+.room-dot-badge{
+  font-weight: 800 !important;
+}
+
+/* dDAE_2.324 — Card ospite: stanze sempre a sinistra sulla stessa riga, letti verticali e centrati */
+#page-ospite .rooms-readonly-wrap{
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+}
+#page-ospite .rooms-stack{
+  width: 100%;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
+#page-ospite .room-row{
+  flex: 0 0 auto;
+  align-items: center !important;
+}
+#page-ospite .bed-dots{
+  justify-content: center;
+}
