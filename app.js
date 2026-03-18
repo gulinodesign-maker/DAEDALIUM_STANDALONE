@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.343";
+const BUILD_VERSION = "2.346";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7068,6 +7068,8 @@ function __bindLauncherIconLongPress__(btn){
     let holdTimer = null;
     let holdTriggered = false;
     let suppressUntil = 0;
+    let startX = 0;
+    let startY = 0;
     const clearHold = () => {
       try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
       holdTimer = null;
@@ -7082,6 +7084,10 @@ function __bindLauncherIconLongPress__(btn){
       try{ ev?.preventDefault?.(); }catch(_){ }
       try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
       try{ ev?.stopPropagation?.(); }catch(_){ }
+    };
+    const currentPoint = (ev) => {
+      const t = ev?.touches?.[0] || ev?.changedTouches?.[0] || ev;
+      return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
     };
     const getReturnPage = () => {
       try{
@@ -7102,40 +7108,64 @@ function __bindLauncherIconLongPress__(btn){
       clearHold();
       holdTriggered = false;
       suppressUntil = 0;
+      const pt = currentPoint(ev);
+      startX = pt.x;
+      startY = pt.y;
+      blockEvent(ev);
       holdTimer = setTimeout(() => {
         holdTriggered = true;
-        setSuppress(1400);
-        blockEvent(ev);
+        setSuppress(1800);
+        try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         __tagColorPopupOpen__('launcher-icon', __launcherIconSpecFor__(btn.id), (spec) => {
           __launcherIconSaveColor__(btn.id, spec);
-          setSuppress(1400);
+          setSuppress(1800);
           keepCurrentLauncherPage();
         });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
-    const endHold = (ev) => {
+    const cancelHold = (ev) => {
       clearHold();
       if (holdTriggered || isSuppressed()){
-        setSuppress(1400);
+        setSuppress(1800);
+        blockEvent(ev);
+      }
+    };
+    const endHold = (ev) => {
+      const fired = holdTriggered || isSuppressed();
+      clearHold();
+      if (fired){
+        holdTriggered = false;
+        setSuppress(1800);
         blockEvent(ev);
         return;
       }
       setTimeout(() => { holdTriggered = false; }, 0);
     };
+    const moveHold = (ev) => {
+      if (!holdTimer) return;
+      const pt = currentPoint(ev);
+      if (Math.abs(pt.x - startX) > 12 || Math.abs(pt.y - startY) > 12){
+        clearHold();
+      }
+    };
     const swallowIfSuppressed = (ev) => {
       if (!holdTriggered && !isSuppressed()) return;
-      setSuppress(1200);
+      setSuppress(1600);
       blockEvent(ev);
     };
     btn.addEventListener('pointerdown', startHold, { passive:false, capture:true });
     btn.addEventListener('touchstart', startHold, { passive:false, capture:true });
     btn.addEventListener('pointerup', endHold, { passive:false, capture:true });
     btn.addEventListener('touchend', endHold, { passive:false, capture:true });
-    btn.addEventListener('pointerleave', endHold, { passive:false, capture:true });
-    btn.addEventListener('pointercancel', endHold, { passive:false, capture:true });
-    btn.addEventListener('touchcancel', endHold, { passive:false, capture:true });
+    btn.addEventListener('pointerleave', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('pointercancel', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('pointermove', moveHold, { passive:true, capture:true });
+    btn.addEventListener('touchmove', moveHold, { passive:true, capture:true });
     btn.addEventListener('click', swallowIfSuppressed, true);
-    btn.addEventListener('contextmenu', (ev) => { if (holdTriggered || isSuppressed()) blockEvent(ev); });
+    btn.addEventListener('contextmenu', (ev) => { if (holdTriggered || isSuppressed()) blockEvent(ev); }, true);
+    btn.addEventListener('selectstart', (ev) => { blockEvent(ev); return false; }, true);
+    btn.addEventListener('dragstart', (ev) => { blockEvent(ev); return false; }, true);
   }catch(_){ }
 }
 
@@ -9275,11 +9305,9 @@ function bindHomeStrongTap(){
       try{ showPage(page); }catch(_){}
     };
 
-    // per evitare che un overlay "invisibile" o una mancata emissione di click blocchi il tap,
-    // ascolta anche gli eventi touch/pointer in anticipo.
+    // dDAE_2.346: il tap breve deve navigare, ma la pressione lunga deve poter aprire il popup colore
+    // senza far partire la pagina dedicata gia su pointerdown/touchstart.
     const opts = { passive:false };
-    try{ el.addEventListener("pointerdown", handler, opts); }catch(_){ try{ el.addEventListener("pointerdown", handler); }catch(__){} }
-    try{ el.addEventListener("touchstart", handler, opts); }catch(_){ try{ el.addEventListener("touchstart", handler); }catch(__){} }
     try{ el.addEventListener("click", handler, opts); }catch(_){ try{ el.addEventListener("click", handler); }catch(__){} }
   };
 

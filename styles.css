@@ -14920,3 +14920,15 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
   color: #ffffff !important;
 }
 
+
+
+/* dDAE_2.346 — launcher long press: no text selection / callout on iOS */
+#page-home .home-main,
+#page-statistiche .home-main,
+#page-impostazioni .settings-btn,
+#page-home #homeYearPill{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color: transparent;
+}
