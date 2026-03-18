@@ -13747,8 +13747,10 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 
 /* dDAE_2.327 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
 #page-ospiti .guest-meta-right .nights-dot{
-  background: rgba(88,86,214,0.95) !important;
-  border-color: rgba(88,86,214,0.35) !important;
+  background: var(--ddae-room-nights-bg, rgba(75,0,130,0.95)) !important;
+  color: var(--ddae-room-nights-fg, rgba(255,255,255,0.98)) !important;
+  -webkit-text-fill-color: var(--ddae-room-nights-fg, rgba(255,255,255,0.98)) !important;
+  border-color: var(--ddae-room-nights-border, rgba(255,255,255,0.18)) !important;
   font-weight: 800 !important;
 }
 #page-ospiti .guest-meta-right .guest-channel-dot,
