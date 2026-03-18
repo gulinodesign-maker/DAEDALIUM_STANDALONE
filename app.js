@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.322";
+const BUILD_VERSION = "2.323";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6854,22 +6854,27 @@ function getOperatorNamesFromSettings() {
 
 
 
-const __OPERATORI_COLOR_KEYS__ = ["blue","orange","green","red","purple","sand"];
-const __OPERATORI_COLOR_SHADE_COUNT__ = 3;
-const __OPERATORI_COLOR_DEFAULT_SHADE__ = 2;
+const __OPERATORI_COLOR_KEYS__ = ["red","orange","yellow","green","mint","blue","indigo","pink"];
+const __OPERATORI_COLOR_SHADE_COUNT__ = 4;
+const __OPERATORI_COLOR_DEFAULT_SHADE__ = 3;
 const __OPERATORI_COLOR_TONES__ = {
-  blue:   ["#c7d6ff", "#6f8cff", "#2348c8"],
-  orange: ["#ffd7a8", "#f5a247", "#bf6200"],
-  green:  ["#c3ecd0", "#56b97b", "#1f7a48"],
-  red:    ["#f5bcc4", "#df6e81", "#a62e46"],
-  purple: ["#dcc9ff", "#9670ee", "#5b30b8"],
-  sand:   ["#ead8bf", "#c59b62", "#8e6028"],
+  red:    ["rgba(255,59,48,0.20)", "rgba(255,59,48,0.40)", "rgba(255,59,48,0.60)", "rgba(255,59,48,0.80)"],
+  orange: ["rgba(255,149,0,0.20)", "rgba(255,149,0,0.40)", "rgba(255,149,0,0.60)", "rgba(255,149,0,0.80)"],
+  yellow: ["rgba(255,204,0,0.20)", "rgba(255,204,0,0.40)", "rgba(255,204,0,0.60)", "rgba(255,204,0,0.80)"],
+  green:  ["rgba(52,199,89,0.20)", "rgba(52,199,89,0.40)", "rgba(52,199,89,0.60)", "rgba(52,199,89,0.80)"],
+  mint:   ["rgba(0,199,190,0.20)", "rgba(0,199,190,0.40)", "rgba(0,199,190,0.60)", "rgba(0,199,190,0.80)"],
+  blue:   ["rgba(0,122,255,0.20)", "rgba(0,122,255,0.40)", "rgba(0,122,255,0.60)", "rgba(0,122,255,0.80)"],
+  indigo: ["rgba(88,86,214,0.20)", "rgba(88,86,214,0.40)", "rgba(88,86,214,0.60)", "rgba(88,86,214,0.80)"],
+  pink:   ["rgba(255,45,85,0.20)", "rgba(255,45,85,0.40)", "rgba(255,45,85,0.60)", "rgba(255,45,85,0.80)"],
 };
 
 function __parseOperatoreColorSpec__(value){
   const raw = String(value || "").trim().toLowerCase();
-  const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-3]))?$/i);
-  const base = (m && __OPERATORI_COLOR_KEYS__.includes(String(m[1] || '').toLowerCase())) ? String(m[1]).toLowerCase() : 'blue';
+  const legacyBaseMap = { purple:'indigo', sand:'orange' };
+  const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-4]))?$/i);
+  const requestedBase = m ? String(m[1] || '').toLowerCase() : '';
+  const normalizedBase = legacyBaseMap[requestedBase] || requestedBase;
+  const base = __OPERATORI_COLOR_KEYS__.includes(normalizedBase) ? normalizedBase : 'blue';
   const shade = Math.min(__OPERATORI_COLOR_SHADE_COUNT__, Math.max(1, parseInt((m && m[2]) || String(__OPERATORI_COLOR_DEFAULT_SHADE__), 10) || __OPERATORI_COLOR_DEFAULT_SHADE__));
   return { base, shade, spec: `${base}-${shade}` };
 }
@@ -7327,7 +7332,7 @@ function __updateColorButtonGrid__(selector, ui){
     const selected = __parseOperatoreColorSpec__(ui.color || 'blue-2');
     document.querySelectorAll(`${selector} .operatori-color-option`).forEach((btn) => {
       const base = String(btn.dataset.color || 'blue').trim().toLowerCase();
-      const shade = Math.min(3, Math.max(1, parseInt(ui?.tones?.[base] || __OPERATORI_COLOR_DEFAULT_SHADE__, 10) || __OPERATORI_COLOR_DEFAULT_SHADE__));
+      const shade = Math.min(__OPERATORI_COLOR_SHADE_COUNT__, Math.max(1, parseInt(ui?.tones?.[base] || __OPERATORI_COLOR_DEFAULT_SHADE__, 10) || __OPERATORI_COLOR_DEFAULT_SHADE__));
       const hex = __operatoreColorHex__(`${base}-${shade}`);
       btn.classList.toggle('is-selected', base === selected.base);
       btn.dataset.shade = String(shade);
@@ -7348,6 +7353,47 @@ function __operatoriSetSelectedColor__(color){
   });
   __operatoriPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#operatoriColorGrid', __operatoriPageUi);
+}
+
+const __tagColorPopupState__ = { target: "", onSelect: null };
+
+function __tagColorPopupOpen__(target, currentColor, onSelect){
+  const modal = document.getElementById('tagColorModal');
+  const grid = document.getElementById('tagColorGrid');
+  if (!modal || !grid) return;
+  __tagColorPopupState__.target = String(target || '').trim();
+  __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
+  const selected = __parseOperatoreColorSpec__(currentColor || 'blue-3').spec;
+  grid.querySelectorAll('.tag-color-option').forEach((btn) => {
+    const spec = __parseOperatoreColorSpec__(btn.dataset.spec || '').spec;
+    btn.classList.toggle('is-selected', spec === selected);
+  });
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function __tagColorPopupClose__(){
+  const modal = document.getElementById('tagColorModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+  __tagColorPopupState__.target = '';
+  __tagColorPopupState__.onSelect = null;
+}
+
+function __openTagColorPickerFor__(target){
+  const key = String(target || '').trim().toLowerCase();
+  if (key === 'operatore'){
+    __tagColorPopupOpen__('operatore', __operatoriPageUi.color || 'blue-3', (spec) => { __operatoriSetSelectedColor__(spec); });
+    return;
+  }
+  if (key === 'channel'){
+    __tagColorPopupOpen__('channel', __channelPageUi.color || 'orange-3', (spec) => { __channelSetSelectedColor__(spec); });
+    return;
+  }
+  if (key === 'lavanderia'){
+    __tagColorPopupOpen__('lavanderia', __laundryCatalogPageUi.color || 'blue-3', (spec) => { __laundryCatalogSetSelectedColor__(spec); });
+  }
 }
 
 function __operatoriOpenModal__(item){
@@ -7443,6 +7489,8 @@ function setupOperatoriPage(){
   if (closeBtn) bindFastTap(closeBtn, __operatoriCloseModal__);
   const cancelBtn = document.getElementById('operatoriEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __operatoriCloseModal__);
+  const colorBtn = document.getElementById('operatoriEditorTagColor');
+  if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('operatore'); });
 
   try{
     document.querySelectorAll('#operatoriColorGrid .operatori-color-option').forEach(btn => {
@@ -7640,6 +7688,8 @@ function setupChannelPage(){
   if (closeBtn) bindFastTap(closeBtn, __channelCloseModal__);
   const cancelBtn = document.getElementById('channelEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
+  const colorBtn = document.getElementById('channelEditorTagColor');
+  if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('channel'); });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
       bindFastTap(btn, () => {
@@ -7713,6 +7763,22 @@ function setupChannelPage(){
     }
     __channelOpenModal__(item);
   });
+}
+
+function setupTagColorPopup(){
+  const closeBtn = document.getElementById('tagColorModalClose');
+  if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
+  try{
+    document.querySelectorAll('#tagColorGrid .tag-color-option').forEach((btn) => {
+      bindFastTap(btn, () => {
+        const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
+        if (typeof __tagColorPopupState__.onSelect === 'function') {
+          try{ __tagColorPopupState__.onSelect(spec); }catch(_){ }
+        }
+        __tagColorPopupClose__();
+      });
+    });
+  }catch(_){ }
 }
 
 function __applyHomeIconGradients__(){
@@ -7834,6 +7900,8 @@ function setupLaundryCatalogPage(){
   if (closeBtn) bindFastTap(closeBtn, __laundryCatalogCloseModal__);
   const cancelBtn = document.getElementById('laundryCatalogEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __laundryCatalogCloseModal__);
+  const colorBtn = document.getElementById('laundryCatalogEditorTagColor');
+  if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('lavanderia'); });
   try{
     document.querySelectorAll('#laundryCatalogColorGrid .operatori-color-option').forEach((btn) => {
       bindFastTap(btn, () => {
@@ -17351,6 +17419,7 @@ async function init(){
   setupImpostazioni();
   setupOperatoriPage();
   setupChannelPage();
+  setupTagColorPopup();
   setupLaundryCatalogPage();
 setupPiscina();
 setupProdotti();
