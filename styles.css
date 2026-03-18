@@ -14866,3 +14866,48 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
     gap:7px;
   }
 }
+
+
+/* dDAE_2.335 — Lavanderia detail popup readable in dark mode */
+body.ddae-dark .laundry-detail-card,
+body.ddae-dark #laundryDetailModal .laundry-detail-card{
+  background: #f6fbff !important;
+  border: 1px solid rgba(77,156,197,0.18) !important;
+  box-shadow: 0 22px 60px rgba(11,31,58,0.18) !important;
+}
+body.ddae-dark .laundry-detail-kicker,
+body.ddae-dark #laundryDetailModal .laundry-detail-kicker{
+  color: #4d9cc5 !important;
+  opacity: 1 !important;
+}
+body.ddae-dark .laundry-detail-title,
+body.ddae-dark #laundryDetailModal .laundry-detail-title,
+body.ddae-dark .laundry-detail-sub,
+body.ddae-dark #laundryDetailModal .laundry-detail-sub,
+body.ddae-dark .laundry-detail-label,
+body.ddae-dark #laundryDetailModal .laundry-detail-label,
+body.ddae-dark .laundry-detail-meta,
+body.ddae-dark #laundryDetailModal .laundry-detail-meta,
+body.ddae-dark .laundry-detail-price,
+body.ddae-dark #laundryDetailModal .laundry-detail-price{
+  color: #0b1f3a !important;
+  opacity: 1 !important;
+}
+body.ddae-dark .laundry-detail-row,
+body.ddae-dark #laundryDetailModal .laundry-detail-row{
+  --laundry-report-row-bg: rgba(77,156,197,0.10) !important;
+  --laundry-report-row-border: rgba(77,156,197,0.22) !important;
+  --laundry-report-badge-primary-bg: #4d9cc5 !important;
+  --laundry-report-badge-primary-text: #ffffff !important;
+  --laundry-report-badge-secondary-bg: #88c8e8 !important;
+  --laundry-report-badge-secondary-text: #0b1f3a !important;
+  --laundry-report-label: #0b1f3a !important;
+  --laundry-report-meta: rgba(11,31,58,0.72) !important;
+  --laundry-report-price: #0b1f3a !important;
+  background: var(--laundry-report-row-bg) !important;
+  border-color: var(--laundry-report-row-border) !important;
+}
+body.ddae-dark .laundry-detail-totalRow,
+body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
+  color: #ffffff !important;
+}
