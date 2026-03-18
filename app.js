@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.321";
+const BUILD_VERSION = "2.322";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15343,6 +15343,7 @@ function renderGuestCards(){
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
+    const stayNights = calcStayNights(first);
 
     const arrivoText = formatArrivalDayIT(first.check_in || first.checkIn || "") || "—";
 
@@ -15367,6 +15368,7 @@ function renderGuestCards(){
         <div class="guest-meta-right" aria-label="Stato">
           ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
+          ${buildNightsDotHTML(stayNights)}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
           <span class="guest-led ${led.cls}" aria-label="${led.label}" title="${led.label}"></span>
