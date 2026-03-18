@@ -6925,7 +6925,7 @@ const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
-  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
+  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni','homeYearPill'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -6951,7 +6951,8 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatSpese: 'orange-4',
   goStatPrenotazioni: 'orange-3',
   goStatPiscina: 'beige-5',
-  goStatCancellazioni: 'gray-4'
+  goStatCancellazioni: 'gray-4',
+  homeYearPill: 'sky-4'
 };
 
 function __launcherIconColorMapRead__(){
@@ -7008,6 +7009,12 @@ function __launcherIconApplyToButton__(btn){
   try{
     if (!btn || !btn.id) return;
     const hex = __launcherIconResolveHex__(btn.id, '#4d9cc5');
+    if (btn.id === 'homeYearPill'){
+      btn.style.color = hex;
+      btn.style.webkitTextFillColor = hex;
+      btn.style.borderColor = hex;
+      return;
+    }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
       const glyph = btn.querySelector('.home-main-glyph');
       if (glyph) glyph.style.color = hex;
@@ -7060,38 +7067,55 @@ function __bindLauncherIconLongPress__(btn){
     btn.dataset.colorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
-    let suppressClick = false;
+    let suppressActivation = false;
     const clearHold = () => {
       try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
       holdTimer = null;
+    };
+    const blockEvent = (ev) => {
+      try{ ev?.preventDefault?.(); }catch(_){ }
+      try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
+      try{ ev?.stopPropagation?.(); }catch(_){ }
     };
     const startHold = (ev) => {
       if (btn.disabled || btn.hidden) return;
       clearHold();
       holdTriggered = false;
+      suppressActivation = false;
+      blockEvent(ev);
       holdTimer = setTimeout(() => {
         holdTriggered = true;
-        suppressClick = true;
-        try{ ev?.preventDefault?.(); }catch(_){ }
+        suppressActivation = true;
         __tagColorPopupOpen__('launcher-icon', __launcherIconSpecFor__(btn.id), (spec) => {
           __launcherIconSaveColor__(btn.id, spec);
+          try{ hideLauncher(); }catch(_){ }
+          try{ showPage('home'); }catch(_){ }
         });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
-    const endHold = () => {
+    const endHold = (ev) => {
       clearHold();
+      if (suppressActivation || holdTriggered){
+        blockEvent(ev);
+        setTimeout(() => { holdTriggered = false; suppressActivation = false; }, 0);
+        return;
+      }
       setTimeout(() => { holdTriggered = false; }, 0);
     };
-    btn.addEventListener('pointerdown', startHold, { passive:false });
-    btn.addEventListener('pointerup', endHold, { passive:true });
-    btn.addEventListener('pointerleave', endHold, { passive:true });
-    btn.addEventListener('pointercancel', endHold, { passive:true });
-    btn.addEventListener('contextmenu', (ev) => { try{ ev.preventDefault(); }catch(_){ } });
-    btn.addEventListener('click', (ev) => {
-      if (!suppressClick) return;
-      try{ ev.preventDefault(); ev.stopImmediatePropagation(); ev.stopPropagation(); }catch(_){ }
-      suppressClick = false;
-    }, true);
+    const swallowIfSuppressed = (ev) => {
+      if (!suppressActivation && !holdTriggered) return;
+      blockEvent(ev);
+      setTimeout(() => { holdTriggered = false; suppressActivation = false; }, 0);
+    };
+    btn.addEventListener('pointerdown', startHold, { passive:false, capture:true });
+    btn.addEventListener('touchstart', startHold, { passive:false, capture:true });
+    btn.addEventListener('pointerup', endHold, { passive:false, capture:true });
+    btn.addEventListener('touchend', endHold, { passive:false, capture:true });
+    btn.addEventListener('pointerleave', endHold, { passive:false, capture:true });
+    btn.addEventListener('pointercancel', endHold, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', endHold, { passive:false, capture:true });
+    btn.addEventListener('click', swallowIfSuppressed, true);
+    btn.addEventListener('contextmenu', (ev) => { blockEvent(ev); });
   }catch(_){ }
 }
 
