@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.320";
+const BUILD_VERSION = "2.321";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5979,6 +5979,17 @@ function formatLongDateIT(value){
   const dt = new Date(y, (m-1), d);
   if (isNaN(dt)) return "";
   return __capitalizeLocale__(dt.toLocaleDateString(__getCurrentLocale__(), { day: "numeric", month: "long", year: "numeric" }));
+}
+
+function formatArrivalDayIT(value){
+  const iso = formatISODateLocal(value);
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return "";
+  const [y,m,d] = iso.split("-").map(n=>parseInt(n,10));
+  const dt = new Date(y, (m-1), d);
+  if (isNaN(dt)) return "";
+  const weekday = __capitalizeLocale__(dt.toLocaleDateString('it-IT', { weekday: 'long' }));
+  const dayMonth = __capitalizeLocale__(dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }));
+  return `${weekday} ${dayMonth}`;
 }
 
 function formatRangeCompactIT(checkInValue, checkOutValue){
@@ -15333,7 +15344,7 @@ function renderGuestCards(){
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
 
-    const arrivoText = formatLongDateIT(first.check_in || first.checkIn || "") || "—";
+    const arrivoText = formatArrivalDayIT(first.check_in || first.checkIn || "") || "—";
 
     const tel = escapeHtml(String(first?.telefono ?? first?.tel ?? first?.phone ?? "").trim());
     const em = escapeHtml(String(first?.email ?? first?.mail ?? "").trim());

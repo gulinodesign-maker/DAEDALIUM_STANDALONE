@@ -61,7 +61,7 @@ body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.320");
+    url("./assets/bg-daedalium.png?v=dDAE_2.321");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1064,7 +1064,7 @@ body[data-page="calendario"] .toast{
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
   background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.320");
+    url("./assets/bg-daedalium.png?v=dDAE_2.321");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -11573,7 +11573,7 @@ body[data-role="operatore"] #page-home .home-main-label{
 body.ddae-dark{
   color: #e5edf8 !important;
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.320") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.321") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -11582,7 +11582,7 @@ body.ddae-dark{
 body.ddae-dark[data-page="home"],
 body.ddae-dark[data-page]{
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.320") !important;
+  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.321") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
