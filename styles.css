@@ -10230,11 +10230,11 @@ body[data-role="operatore"] #page-home .home-main{
   margin: 0;
   font-size: 24px;
   line-height: 1.05;
-  color: #0b1f3a;
+  color: #000000;
 }
 .laundry-detail-sub{
   margin-top: 6px;
-  color: rgba(11,31,58,0.72);
+  color: rgba(0,0,0,0.72);
   font-weight: 700;
 }
 .laundry-detail-list{
@@ -10249,9 +10249,9 @@ body[data-role="operatore"] #page-home .home-main{
   --laundry-report-badge-primary-text: #ffffff;
   --laundry-report-badge-secondary-bg: #88c8e8;
   --laundry-report-badge-secondary-text: #0b1f3a;
-  --laundry-report-label: #0b1f3a;
-  --laundry-report-meta: rgba(11,31,58,0.65);
-  --laundry-report-price: #0b1f3a;
+  --laundry-report-label: #000000;
+  --laundry-report-meta: rgba(0,0,0,0.72);
+  --laundry-report-price: #000000;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -14870,16 +14870,16 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 
 
-/* dDAE_2.335 — Lavanderia detail popup readable in dark mode */
+/* dDAE_2.337 — Lavanderia detail popup: black text in light mode, real dark mode in dark appearance */
 body.ddae-dark .laundry-detail-card,
 body.ddae-dark #laundryDetailModal .laundry-detail-card{
-  background: #f6fbff !important;
-  border: 1px solid rgba(77,156,197,0.18) !important;
-  box-shadow: 0 22px 60px rgba(11,31,58,0.18) !important;
+  background: #0f172a !important;
+  border: 1px solid rgba(148,163,184,0.28) !important;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.42) !important;
 }
 body.ddae-dark .laundry-detail-kicker,
 body.ddae-dark #laundryDetailModal .laundry-detail-kicker{
-  color: #4d9cc5 !important;
+  color: #7dd3fc !important;
   opacity: 1 !important;
 }
 body.ddae-dark .laundry-detail-title,
@@ -14888,24 +14888,27 @@ body.ddae-dark .laundry-detail-sub,
 body.ddae-dark #laundryDetailModal .laundry-detail-sub,
 body.ddae-dark .laundry-detail-label,
 body.ddae-dark #laundryDetailModal .laundry-detail-label,
-body.ddae-dark .laundry-detail-meta,
-body.ddae-dark #laundryDetailModal .laundry-detail-meta,
 body.ddae-dark .laundry-detail-price,
 body.ddae-dark #laundryDetailModal .laundry-detail-price{
-  color: #0b1f3a !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+body.ddae-dark .laundry-detail-meta,
+body.ddae-dark #laundryDetailModal .laundry-detail-meta{
+  color: rgba(226,232,240,0.82) !important;
   opacity: 1 !important;
 }
 body.ddae-dark .laundry-detail-row,
 body.ddae-dark #laundryDetailModal .laundry-detail-row{
-  --laundry-report-row-bg: rgba(77,156,197,0.10) !important;
-  --laundry-report-row-border: rgba(77,156,197,0.22) !important;
+  --laundry-report-row-bg: rgba(255,255,255,0.04) !important;
+  --laundry-report-row-border: rgba(148,163,184,0.24) !important;
   --laundry-report-badge-primary-bg: #4d9cc5 !important;
   --laundry-report-badge-primary-text: #ffffff !important;
-  --laundry-report-badge-secondary-bg: #88c8e8 !important;
+  --laundry-report-badge-secondary-bg: rgba(186,230,253,0.94) !important;
   --laundry-report-badge-secondary-text: #0b1f3a !important;
-  --laundry-report-label: #0b1f3a !important;
-  --laundry-report-meta: rgba(11,31,58,0.72) !important;
-  --laundry-report-price: #0b1f3a !important;
+  --laundry-report-label: #ffffff !important;
+  --laundry-report-meta: rgba(226,232,240,0.82) !important;
+  --laundry-report-price: #ffffff !important;
   background: var(--laundry-report-row-bg) !important;
   border-color: var(--laundry-report-row-border) !important;
 }
@@ -14913,3 +14916,4 @@ body.ddae-dark .laundry-detail-totalRow,
 body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
   color: #ffffff !important;
 }
+

@@ -6907,7 +6907,7 @@ function __laundryColorTokens__(value){
   const parsed = __parseOperatoreColorSpec__(spec);
   const main = __operatoreColorHex__(spec);
   const light = __operatoreColorHex__(`${parsed.base}-1`);
-  const dark = __operatoreColorHex__(`${parsed.base}-3`);
+  const baseText = '#000000';
   return {
     spec,
     base: parsed.base,
@@ -6918,9 +6918,9 @@ function __laundryColorTokens__(value){
     badgePrimaryText: '#ffffff',
     badgeSecondaryBg: light,
     badgeSecondaryText: '#0b1f3a',
-    label: dark,
-    meta: hexToRgba(dark, 0.72),
-    price: dark,
+    label: baseText,
+    meta: 'rgba(0,0,0,0.72)',
+    price: baseText,
   };
 }
 
