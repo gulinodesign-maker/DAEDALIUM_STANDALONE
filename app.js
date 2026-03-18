@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.347";
+const BUILD_VERSION = "2.348";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6993,6 +6993,13 @@ function __applySettingsLauncherIconColors__(){
       const btn = document.getElementById(id);
       if (!btn) return;
       const hex = __launcherIconResolveHex__(id, '#4d9cc5');
+      btn.style.setProperty('color', hex, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', hex, 'important');
+      const label = btn.querySelector('.settings-btn-label');
+      if (label){
+        label.style.setProperty('color', hex, 'important');
+        label.style.setProperty('-webkit-text-fill-color', hex, 'important');
+      }
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
