@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.329";
+const BUILD_VERSION = "2.330";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -485,7 +485,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -7152,6 +7152,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     try{ updateSettingsRoomsButtonLabel(); }catch(_){ }
     try{ ensureRoomsPickerButtons(); }catch(_){ }
     try{ populateGuestChannelOptions(); }catch(_){ }
+    try{ __applyRoomsUiConfig__(); }catch(_){ }
     try{ __hydrateAppLanguageFromSettings__(); }catch(_){ }
     try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
     try{ if (state && state.page === "lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){ }
@@ -8128,53 +8129,10 @@ const cfg = document.getElementById("settingsConfigBtn");
   }
   if (roomsBtn && !roomsBtn.__boundRoomsTap){
     roomsBtn.__boundRoomsTap = true;
-    let __roomsPressTimer = null;
-    let __roomsLongFired = false;
-    let __roomsTouchAt = 0;
-    const __roomsClearPress = () => {
-      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
-      __roomsPressTimer = null;
-      __roomsLongFired = false;
-    };
-    const __roomsSaveValue = async (next) => {
-      try{
-        const current = getConfiguredRoomsCount(6);
-        if (Number(next) === Number(current)) { updateSettingsRoomsButtonLabel(); return; }
-        await saveRoomsCountSetting(next);
-      }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
-    };
-    const __roomsTap = async () => {
-      try{ __sfxTap(); }catch(_){ }
-      const current = getConfiguredRoomsCount(6);
-      const next = (current >= 12) ? 1 : (current + 1);
-      await __roomsSaveValue(next);
-    };
-    const __roomsLong = async () => {
-      try{ __sfxGlass(); }catch(_){ }
-      __roomsLongFired = true;
-      await __roomsSaveValue(0);
-    };
-    roomsBtn.addEventListener('touchstart', (e) => {
-      __roomsTouchAt = Date.now();
-      __roomsClearPress();
-      __roomsPressTimer = setTimeout(() => { __roomsLong(); }, 500);
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('touchend', async (e) => {
-      try{ if (__roomsPressTimer) clearTimeout(__roomsPressTimer); }catch(_){ }
-      if (!__roomsLongFired) await __roomsTap();
-      __roomsClearPress();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('touchcancel', (e) => {
-      __roomsClearPress();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, { passive:false, capture:true });
-    roomsBtn.addEventListener('click', async (e) => {
-      if (Date.now() - __roomsTouchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
-      await __roomsTap();
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    }, true);
+    bindFastTap(roomsBtn, () => {
+      try{ hideLauncher(); }catch(_){ }
+      try{ showPage("roomsettings"); }catch(_){ }
+    });
   }
 
   const cfgClose = document.getElementById("settingsConfigClose");
@@ -9352,7 +9310,7 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || String(page || "").startsWith("stat");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || (page === "roomsettings") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -9388,6 +9346,9 @@ state.page = page;
   }
   if (page === "laundrycatalog"){
     try{ loadLaundryCatalogPage(); }catch(_){ }
+  }
+  if (page === "roomsettings"){
+    try{ renderRoomSettingsPage(); }catch(_){ }
   }
 
   // Sotto-viste della pagina Spese (lista ↔ grafico+riepilogo)
@@ -9443,8 +9404,8 @@ state.page = page;
   // Top back button (Ore pulizia + Calendario)
   const backBtnTop = $("#backBtnTop");
   if (backBtnTop){
-    backBtnTop.hidden = !(page === "operatori" || page === "channel" || page === "laundrycatalog");
-    backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori" || page === "channel" || page === "laundrycatalog");
+    backBtnTop.hidden = !(page === "operatori" || page === "channel" || page === "laundrycatalog" || page === "roomsettings");
+    backBtnTop.classList.toggle("icon-btn-whiteblue", page === "operatori" || page === "channel" || page === "laundrycatalog" || page === "roomsettings");
     backBtnTop.classList.toggle("icon-btn-whiteorange", false);
     try{ backBtnTop.setAttribute("aria-label", "Torna a Impostazioni"); }catch(_){ }
   }
@@ -9766,7 +9727,7 @@ function setupHeader(){
   const bb = $("#backBtnTop");
   if (bb) bb.addEventListener("click", () => {
     if (state.page === "orepulizia") { showPage("pulizie"); return; }
-    if (state.page === "operatori" || state.page === "channel" || state.page === "laundrycatalog") { showPage("impostazioni"); return; }
+    if (state.page === "operatori" || state.page === "channel" || state.page === "laundrycatalog" || state.page === "roomsettings") { showPage("impostazioni"); return; }
     if (state.page === "calendario") {
       if (state.session && isOperatoreSession(state.session)) { showPage("pulizie"); return; }
       showPage("ospiti");
@@ -13274,10 +13235,264 @@ function updateSettingsRoomsButtonLabel(){
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
-    if (label) label.textContent = `Stanze ${n}`;
-    el.setAttribute('aria-label', `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`);
-    el.title = `Numero stanze: ${n}. Tap per avanzare, pressione lunga per azzerare`;
+    if (label) label.textContent = `Stanze`;
+    el.setAttribute('aria-label', `Stanze. Numero attuale: ${n}`);
+    el.title = `Stanze. Numero attuale: ${n}`;
   }catch(_){ }
+}
+
+const __ROOMS_UI_DEFAULT_ROOM_COLORS__ = ["blue-4","mint-3","beige-3","beige-4","orange-4","orange-5","red-4","pink-4","indigo-3","indigo-4","blue-3","mint-4"];
+
+function __buildDefaultRoomsUiConfig__(){
+  const rooms = {};
+  for (let i = 1; i <= 12; i++) rooms[String(i)] = __ROOMS_UI_DEFAULT_ROOM_COLORS__[i - 1] || 'blue-4';
+  return {
+    nights: 'indigo-4',
+    options: { m: 'blue-4', g: 'yellow-4', c: 'indigo-6' },
+    beds: { matrimoniale: 'red-4', singolo: 'blue-4', culla: 'yellow-4' },
+    rooms,
+  };
+}
+
+function __sanitizeRoomsUiConfig__(input){
+  const base = __buildDefaultRoomsUiConfig__();
+  const src = (input && typeof input === 'object') ? input : {};
+  const out = {
+    nights: __normalizeOperatoreColor__(src?.nights || base.nights),
+    options: {
+      m: __normalizeOperatoreColor__(src?.options?.m || src?.mgc?.m || base.options.m),
+      g: __normalizeOperatoreColor__(src?.options?.g || src?.mgc?.g || base.options.g),
+      c: __normalizeOperatoreColor__(src?.options?.c || src?.mgc?.c || base.options.c),
+    },
+    beds: {
+      matrimoniale: __normalizeOperatoreColor__(src?.beds?.matrimoniale || src?.beds?.m || base.beds.matrimoniale),
+      singolo: __normalizeOperatoreColor__(src?.beds?.singolo || src?.beds?.s || base.beds.singolo),
+      culla: __normalizeOperatoreColor__(src?.beds?.culla || src?.beds?.c || base.beds.culla),
+    },
+    rooms: {},
+  };
+  for (let i = 1; i <= 12; i++) out.rooms[String(i)] = __normalizeOperatoreColor__(src?.rooms?.[String(i)] || src?.rooms?.[i] || base.rooms[String(i)]);
+  return out;
+}
+
+function getRoomsUiConfig(){
+  try{
+    const raw = getSettingText('stanze_ui', '');
+    if (!String(raw || '').trim()) return __sanitizeRoomsUiConfig__(null);
+    return __sanitizeRoomsUiConfig__(JSON.parse(String(raw || '{}')));
+  }catch(_){
+    return __sanitizeRoomsUiConfig__(null);
+  }
+}
+
+function __roomsUiTextColor__(spec, preferWhite = false){
+  if (preferWhite) return '#ffffff';
+  try{
+    const parsed = __parseOperatoreColorSpec__(spec || 'blue-4');
+    if ((['yellow','beige','acid','mint'].includes(parsed.base) && parsed.shade <= 4) || (parsed.base === 'orange' && parsed.shade <= 2)) return '#0b1f3a';
+  }catch(_){ }
+  return '#ffffff';
+}
+
+function __roomsUiButtonStyle__(spec, preferWhite = true){
+  const main = __operatoreColorHex__(spec || 'blue-4');
+  return `background:${hexToRgba(main, 0.80)};border-color:${hexToRgba(main, 0.80)};color:${__roomsUiTextColor__(spec, preferWhite)};`;
+}
+
+function __roomsUiBadgeStyle__(spec){
+  const main = __operatoreColorHex__(spec || 'blue-4');
+  return `background:${hexToRgba(main, 0.92)};border-color:${hexToRgba(main, 0.55)};color:${__roomsUiTextColor__(spec, false)};`;
+}
+
+function __applyRoomsUiConfig__(){
+  try{
+    const root = document.documentElement;
+    if (!root) return;
+    const cfg = getRoomsUiConfig();
+    const setVar = (prefix, spec) => {
+      const main = __operatoreColorHex__(spec || 'blue-4');
+      root.style.setProperty(`${prefix}-bg`, hexToRgba(main, 0.95));
+      root.style.setProperty(`${prefix}-border`, hexToRgba(main, 0.55));
+      root.style.setProperty(`${prefix}-fg`, __roomsUiTextColor__(spec, false));
+    };
+    setVar('--ddae-room-nights', cfg.nights);
+    setVar('--ddae-room-m', cfg.options.m);
+    setVar('--ddae-room-g', cfg.options.g);
+    setVar('--ddae-room-c', cfg.options.c);
+    setVar('--ddae-bed-m', cfg.beds.matrimoniale);
+    setVar('--ddae-bed-s', cfg.beds.singolo);
+    setVar('--ddae-bed-c', cfg.beds.culla);
+  }catch(_){ }
+}
+
+async function saveRoomsUiConfigToSettings(config, { showToast = false } = {}){
+  const clean = __sanitizeRoomsUiConfig__(config);
+  const raw = JSON.stringify(clean);
+  await api('impostazioni', { method:'POST', body:{ stanze_ui: raw }, showLoader:true });
+  try{
+    state.settings = state.settings || {};
+    state.settings.byKey = state.settings.byKey || {};
+    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:raw, val:raw, Value:raw };
+  }catch(_){ }
+  await ensureSettingsLoaded({ force:true, showLoader:false });
+  try{ __applyRoomsUiConfig__(); }catch(_){ }
+  try{ renderRoomSettingsPage(); }catch(_){ }
+  try{ if (state?.page === 'ospiti') loadOspiti({ ...(state.period || {}), force:true }).catch(()=>{}); }catch(_){ }
+  try{ if (state?.page === 'ospite' && state?.guestMode === 'view' && state?.guestViewItem) renderRoomsReadOnly(state.guestViewItem); }catch(_){ }
+  if (showToast) try{ toast('Colori stanze aggiornati'); }catch(_){ }
+  return clean;
+}
+
+function __openRoomSettingsColorPicker__(target){
+  const key = String(target || '').trim().toLowerCase();
+  const cfg = getRoomsUiConfig();
+  let current = cfg.nights;
+  if (/^room:\d+$/.test(key)){
+    const n = key.split(':')[1];
+    current = cfg.rooms?.[String(n)] || current;
+  } else if (key === 'nights'){
+    current = cfg.nights;
+  } else if (key === 'option:m'){
+    current = cfg.options?.m || current;
+  } else if (key === 'option:g'){
+    current = cfg.options?.g || current;
+  } else if (key === 'option:c'){
+    current = cfg.options?.c || current;
+  } else if (key === 'bed:matrimoniale'){
+    current = cfg.beds?.matrimoniale || current;
+  } else if (key === 'bed:singolo'){
+    current = cfg.beds?.singolo || current;
+  } else if (key === 'bed:culla'){
+    current = cfg.beds?.culla || current;
+  }
+  __tagColorPopupOpen__('roomsettings', current, async(spec) => {
+    try{
+      const next = getRoomsUiConfig();
+      if (/^room:\d+$/.test(key)){
+        const n = key.split(':')[1];
+        next.rooms[String(n)] = spec;
+      } else if (key === 'nights'){
+        next.nights = spec;
+      } else if (key === 'option:m'){
+        next.options.m = spec;
+      } else if (key === 'option:g'){
+        next.options.g = spec;
+      } else if (key === 'option:c'){
+        next.options.c = spec;
+      } else if (key === 'bed:matrimoniale'){
+        next.beds.matrimoniale = spec;
+      } else if (key === 'bed:singolo'){
+        next.beds.singolo = spec;
+      } else if (key === 'bed:culla'){
+        next.beds.culla = spec;
+      }
+      await saveRoomsUiConfigToSettings(next, { showToast:true });
+    }catch(e){ try{ toast(e?.message || 'Errore colori stanze'); }catch(_){ } }
+  });
+}
+
+function renderRoomSettingsPage(){
+  try{
+    const cfg = getRoomsUiConfig();
+    const count = getConfiguredRoomsCount(6);
+    const countBtn = document.getElementById('roomSettingsCountBtn');
+    if (countBtn){
+      countBtn.textContent = String(count);
+      countBtn.setAttribute('aria-label', `Numero stanze: ${count}. Tap per avanzare, pressione lunga per azzerare`);
+      countBtn.title = `Numero stanze: ${count}. Tap per avanzare, pressione lunga per azzerare`;
+    }
+    const applyBtn = (id, spec, label) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = label;
+      el.setAttribute('style', __roomsUiButtonStyle__(spec, true));
+    };
+    applyBtn('roomSettingsNightsBtn', cfg.nights, 'N');
+    applyBtn('roomSettingsMBtn', cfg.options?.m, 'M');
+    applyBtn('roomSettingsGBtn', cfg.options?.g, 'G');
+    applyBtn('roomSettingsCBtn', cfg.options?.c, 'C');
+    applyBtn('roomSettingsBedMBtn', cfg.beds?.matrimoniale, 'M');
+    applyBtn('roomSettingsBedSBtn', cfg.beds?.singolo, 'S');
+    applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
+    const dots = document.getElementById('roomSettingsDots');
+    if (dots){
+      const parts = [];
+      for (let i = 1; i <= count; i++) parts.push(`<button aria-label="Colore stanza ${i}" class="room-settings-color-dot" data-room-color="${i}" style="${__roomsUiButtonStyle__(cfg.rooms?.[String(i)] || 'blue-4', true)}" type="button">${i}</button>`);
+      dots.innerHTML = parts.join('');
+    }
+  }catch(_){ }
+}
+
+function setupRoomSettingsPage(){
+  const countBtn = document.getElementById('roomSettingsCountBtn');
+  if (countBtn && !countBtn.__boundRoomsConfigTap){
+    countBtn.__boundRoomsConfigTap = true;
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+      holdTriggered = false;
+    };
+    const saveValue = async (next) => {
+      try{
+        const current = getConfiguredRoomsCount(6);
+        if (Number(next) === Number(current)) { renderRoomSettingsPage(); return; }
+        await saveRoomsCountSetting(next);
+        renderRoomSettingsPage();
+      }catch(e){ try{ toast(e?.message || 'Errore numero stanze'); }catch(_){ } }
+    };
+    const doTap = async () => {
+      try{ __sfxTap(); }catch(_){ }
+      const current = getConfiguredRoomsCount(6);
+      const next = (current >= 12) ? 1 : (current + 1);
+      await saveValue(next);
+    };
+    const doLong = async () => {
+      try{ __sfxGlass(); }catch(_){ }
+      holdTriggered = true;
+      await saveValue(0);
+    };
+    countBtn.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
+      clearHold();
+      holdTimer = setTimeout(() => { doLong(); }, 500);
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    countBtn.addEventListener('touchend', async (e) => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      if (!holdTriggered) await doTap();
+      clearHold();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    countBtn.addEventListener('touchcancel', (e) => {
+      clearHold();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    countBtn.addEventListener('click', async (e) => {
+      if (Date.now() - touchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
+      await doTap();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, true);
+  }
+  const dotsWrap = document.getElementById('roomSettingsDots');
+  if (dotsWrap && !dotsWrap.__boundRoomColorTap){
+    dotsWrap.__boundRoomColorTap = true;
+    dotsWrap.addEventListener('click', (ev) => {
+      const btn = ev.target && ev.target.closest ? ev.target.closest('button[data-room-color]') : null;
+      if (!btn) return;
+      const room = String(btn.getAttribute('data-room-color') || '').trim();
+      if (!room) return;
+      __openRoomSettingsColorPicker__(`room:${room}`);
+    });
+  }
+  [['roomSettingsNightsBtn','nights'],['roomSettingsMBtn','option:m'],['roomSettingsGBtn','option:g'],['roomSettingsCBtn','option:c'],['roomSettingsBedMBtn','bed:matrimoniale'],['roomSettingsBedSBtn','bed:singolo'],['roomSettingsBedCBtn','bed:culla']].forEach(([id, target]) => {
+    const el = document.getElementById(id);
+    if (!el || el.__boundRoomSettingsColorTap) return;
+    el.__boundRoomSettingsColorTap = true;
+    bindFastTap(el, () => { __openRoomSettingsColorPicker__(target); });
+  });
 }
 
 function ensureRoomsPickerButtons(){
@@ -13320,6 +13535,7 @@ async function saveRoomsCountSetting(nextCount){
     const current = state.guestMode === 'view' ? state.guestViewItem : state.guestEditSourceItem;
     if (current) renderRoomsReadOnly?.(current);
   } }catch(_){ }
+  try{ renderRoomSettingsPage(); }catch(_){ }
   toast('Numero stanze aggiornato');
 }
 
@@ -13422,7 +13638,7 @@ function buildRoomsStackHTML(guestId, roomsArr){
     if (culla > 0) dots += `<span class="bed-dot bed-dot-c" aria-label="Culla"></span>`;
 
     return `<div class="room-row">
-      <span class="room-dot-badge room-${n}">${n}</span>
+      <span class="room-dot-badge room-${n}" style="${__roomsUiBadgeStyle__(getRoomsUiConfig().rooms?.[String(n)] || 'blue-4')}">${n}</span>
       <div class="bed-dots" aria-label="Letti">${dots || `<span class="bed-dot bed-dot-empty" aria-label="Nessun letto"></span>`}</div>
     </div>`;
   }).join("") + `</div>`;
@@ -17419,9 +17635,11 @@ async function init(){
   try{ applyRoleMode(); }catch(_){ }
   setupCalendario();
   setupImpostazioni();
+  try{ __applyRoomsUiConfig__(); }catch(_){ }
   setupOperatoriPage();
   setupChannelPage();
   setupTagColorPopup();
+  setupRoomSettingsPage();
   setupLaundryCatalogPage();
 setupPiscina();
 setupProdotti();

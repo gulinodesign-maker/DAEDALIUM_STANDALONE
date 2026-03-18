@@ -11026,6 +11026,201 @@ body[data-role="operatore"] #page-home .home-grid{
 }
 
 
+
+
+/* dDAE_2.330 — Pagina Stanze */
+.room-settings-shell{
+  padding-top: 14px;
+}
+.room-settings-panel{
+  background: rgba(255,255,255,0.94);
+  border: 1px solid rgba(15,23,42,0.12);
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.room-settings-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.room-settings-title-block{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.room-settings-title{
+  font-size:20px;
+  line-height:1.05;
+  font-weight:900;
+  color: var(--ico-blue-night);
+}
+.room-settings-subtitle{
+  font-size:12px;
+  line-height:1.35;
+  font-weight:700;
+  color: rgba(15,23,42,0.58);
+}
+.room-settings-count-btn,
+.room-settings-color-dot{
+  border:1px solid rgba(15,23,42,0.12);
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.room-settings-count-btn{
+  width:78px;
+  min-width:78px;
+  height:78px;
+  border-radius:24px;
+  background: rgba(77,156,197,0.80);
+  color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  font-weight:900;
+  line-height:1;
+  padding:0;
+}
+.room-settings-section{
+  border-top:1px solid rgba(15,23,42,0.12);
+  padding-top:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.room-settings-section-title{
+  font-size:17px;
+  line-height:1.1;
+  font-weight:900;
+  color: var(--ico-blue-night);
+}
+.room-settings-inline{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+.room-settings-dots{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:14px;
+}
+.room-settings-dots-three{
+  justify-content:flex-start;
+}
+.room-settings-color-dot{
+  width:54px;
+  min-width:54px;
+  height:54px;
+  border-radius:999px;
+  background: rgba(77,156,197,0.80);
+  color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  line-height:1;
+  padding:0;
+  text-transform:uppercase;
+}
+.room-settings-color-dot-tag{
+  width:58px;
+  min-width:58px;
+  height:58px;
+  font-size:22px;
+}
+@media (max-width: 390px){
+  .room-settings-panel{ padding:14px; }
+  .room-settings-top{ align-items:flex-start; }
+  .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
+  .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
+  .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
+}
+body.ddae-dark .room-settings-panel{
+  background: rgba(15,23,42,0.96);
+  border-color: rgba(148,163,184,0.22);
+}
+body.ddae-dark .room-settings-title,
+body.ddae-dark .room-settings-section-title{
+  color:#ffffff;
+}
+body.ddae-dark .room-settings-subtitle{
+  color: rgba(226,232,240,0.70);
+}
+body.ddae-dark .room-settings-section{
+  border-top-color: rgba(148,163,184,0.18);
+}
+
+/* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
+#languageModal .operatori-editor-close{
+  display:inline-flex !important;
+  width:44px;
+  min-width:44px;
+  height:44px;
+  border-radius:14px;
+  align-items:center;
+  justify-content:center;
+  background: rgba(220,38,38,0.80) !important;
+  border:1px solid rgba(220,38,38,0.80) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  box-shadow:none !important;
+  font-size:24px !important;
+  line-height:1 !important;
+  padding:0 !important;
+}
+#languageModal .operatori-editor-close:active{
+  transform: scale(0.98);
+}
+
+/* dDAE_2.330 — Colori dinamici stanze/opzioni/letti */
+.nights-dot{
+  background: var(--ddae-room-nights-bg, rgba(75,0,130,0.95));
+  color: var(--ddae-room-nights-fg, rgba(255,255,255,0.98));
+  border-color: var(--ddae-room-nights-border, rgba(255,255,255,0.18));
+}
+.guest-form-card.is-view .nights-dot{
+  background: var(--ddae-room-nights-bg, rgba(75,0,130,0.95));
+}
+.marriage-dot,
+#page-ospite .room-dot-marriage.selected{
+  background: var(--ddae-room-m-bg, rgba(50,173,230,0.95)) !important;
+  color: var(--ddae-room-m-fg, rgba(255,255,255,0.98)) !important;
+  border-color: var(--ddae-room-m-border, rgba(255,255,255,0.18)) !important;
+}
+.g-dot,
+#page-ospite .room-dot-group.selected{
+  background: var(--ddae-room-g-bg, rgba(255,204,0,0.95)) !important;
+  color: var(--ddae-room-g-fg, var(--ico-blue-night)) !important;
+  border-color: var(--ddae-room-g-border, rgba(255,204,0,0.95)) !important;
+  box-shadow: none !important;
+}
+.c-dot,
+#page-ospite .room-dot-colc.selected{
+  background: var(--ddae-room-c-bg, rgba(11,42,91,0.95)) !important;
+  color: var(--ddae-room-c-fg, rgba(255,255,255,0.98)) !important;
+  border-color: var(--ddae-room-c-border, rgba(255,255,255,0.18)) !important;
+}
+.bed-dot-m{
+  background: var(--ddae-bed-m-bg, rgba(255,59,48,0.95)) !important;
+  border-color: var(--ddae-bed-m-border, rgba(255,59,48,0.55)) !important;
+}
+.bed-dot-s{
+  background: var(--ddae-bed-s-bg, rgba(50,173,230,0.95)) !important;
+  border-color: var(--ddae-bed-s-border, rgba(50,173,230,0.55)) !important;
+}
+.bed-dot.bed-dot-c,
+.bed-dot-c{
+  background: var(--ddae-bed-c-bg, rgba(255, 210, 0, 1)) !important;
+  border-color: var(--ddae-bed-c-border, rgba(255,210,0,0.55)) !important;
+}
+
 /* dDAE_2.196 — popup lingua */
 .language-modal-card{
   width: calc(100% - 28px);
@@ -14419,7 +14614,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 
 
-/* dDAE_2.329 — logout dark mode without white background */
+/* dDAE_2.330 — logout dark mode without white background */
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill,
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
