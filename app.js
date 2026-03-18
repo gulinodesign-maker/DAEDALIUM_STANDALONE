@@ -44,10 +44,15 @@ function applyIconPalette(){
       goStatCancellazioni: "#D9CCC0"
     };
     document.querySelectorAll('#page-home .home-main').forEach((btn) => {
-      const c = HOME_ICON_COLORS[btn.id] || "#4D9CC5";
+      const c = (typeof __launcherIconResolveHex__ === 'function')
+        ? __launcherIconResolveHex__(btn.id, HOME_ICON_COLORS[btn.id] || "#4D9CC5")
+        : (HOME_ICON_COLORS[btn.id] || "#4D9CC5");
       btn.style.setProperty('--ico-color', c);
+      const glyph = btn.querySelector('.home-main-glyph');
+      if (glyph) glyph.style.color = c;
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
+        svg.style.color = c;
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
           node.style.stroke = 'currentColor';
           node.style.fill = 'none';
@@ -55,9 +60,22 @@ function applyIconPalette(){
       }
     });
     document.querySelectorAll('#page-statistiche .home-main').forEach((btn) => {
-      const c = statsIconColors[btn.id] || "#4D9CC5";
+      const c = (typeof __launcherIconResolveHex__ === 'function')
+        ? __launcherIconResolveHex__(btn.id, statsIconColors[btn.id] || "#4D9CC5")
+        : (statsIconColors[btn.id] || "#4D9CC5");
       btn.style.setProperty('--ico-color', c);
+      const glyph = btn.querySelector('.home-main-glyph');
+      if (glyph) glyph.style.color = c;
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.color = c;
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
+        });
+      }
     });
+    if (typeof __applySettingsLauncherIconColors__ === 'function') __applySettingsLauncherIconColors__();
   }catch(_){ }
 }
 
@@ -71,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.342";
+const BUILD_VERSION = "2.343";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6900,6 +6918,191 @@ function __operatoreColorHex__(color){
   const { base, shade } = __parseOperatoreColorSpec__(color);
   const tones = __OPERATORI_COLOR_TONES__[base] || __OPERATORI_COLOR_TONES__.blue;
   return tones[Math.max(0, Math.min(tones.length - 1, shade - 1))] || tones[1] || '#6f84c8';
+}
+
+const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v1';
+const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
+const __LAUNCHER_ICON_TARGET_IDS__ = [
+  'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
+  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
+];
+const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
+  goOspite: 'blue-6',
+  goCalendario: 'blue-5',
+  openLauncher: 'sky-4',
+  goTassaSoggiorno: 'sky-3',
+  goPulizie: 'orange-4',
+  goLavanderia: 'orange-3',
+  goOrePuliziaHome: 'beige-5',
+  goStatistiche: 'beige-4',
+  goProdotti: 'gray-3',
+  settingsSaveBtn: 'sky-3',
+  settingsDbBtn: 'green-4',
+  settingsRoomsBtn: 'yellow-4',
+  settingsOperatoriBtn: 'blue-4',
+  settingsChannelBtn: 'orange-4',
+  settingsLaundryCatalogBtn: 'indigo-4',
+  settingsConfigBtn: 'red-4',
+  settingsExportRosterBtn: 'violet-4',
+  settingsLanguageBtn: 'sky-4',
+  goStatGen: 'blue-5',
+  goStatMensili: 'sky-5',
+  goStatSpese: 'orange-4',
+  goStatPrenotazioni: 'orange-3',
+  goStatPiscina: 'beige-5',
+  goStatCancellazioni: 'gray-4'
+};
+
+function __launcherIconColorMapRead__(){
+  try{
+    const raw = localStorage.getItem(__LAUNCHER_ICON_COLOR_STORAGE_KEY__);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __launcherIconColorMapWrite__(map){
+  try{ localStorage.setItem(__LAUNCHER_ICON_COLOR_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __launcherIconSpecFor__(id){
+  const key = String(id || '').trim();
+  if (!key) return 'blue-4';
+  const map = __launcherIconColorMapRead__();
+  return __parseOperatoreColorSpec__(map[key] || __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4').spec;
+}
+
+function __launcherIconResolveHex__(id, fallbackHex){
+  const key = String(id || '').trim();
+  if (!key) return fallbackHex || __operatoreColorHex__('blue-4');
+  try{
+    return __operatoreColorHex__(__launcherIconSpecFor__(key)) || fallbackHex || __operatoreColorHex__('blue-4');
+  }catch(_){
+    return fallbackHex || __operatoreColorHex__('blue-4');
+  }
+}
+
+function __applySettingsLauncherIconColors__(){
+  try{
+    [
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn'
+    ].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const hex = __launcherIconResolveHex__(id, '#4d9cc5');
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.color = hex;
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
+        });
+      }
+    });
+  }catch(_){ }
+}
+
+function __launcherIconApplyToButton__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const hex = __launcherIconResolveHex__(btn.id, '#4d9cc5');
+    if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
+      const glyph = btn.querySelector('.home-main-glyph');
+      if (glyph) glyph.style.color = hex;
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.color = hex;
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
+        });
+      }
+      btn.style.setProperty('--ico-color', hex);
+      return;
+    }
+    if (btn.closest('#page-impostazioni')){
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.color = hex;
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
+        });
+      }
+    }
+  }catch(_){ }
+}
+
+function __launcherIconApplyAll__(){
+  try{
+    __LAUNCHER_ICON_TARGET_IDS__.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) __launcherIconApplyToButton__(btn);
+    });
+  }catch(_){ }
+}
+
+function __launcherIconSaveColor__(id, spec){
+  const key = String(id || '').trim();
+  if (!key) return;
+  const map = __launcherIconColorMapRead__();
+  map[key] = __parseOperatoreColorSpec__(spec || 'blue-4').spec;
+  __launcherIconColorMapWrite__(map);
+  const btn = document.getElementById(key);
+  if (btn) __launcherIconApplyToButton__(btn);
+}
+
+function __bindLauncherIconLongPress__(btn){
+  try{
+    if (!btn || btn.dataset.colorHoldBound === '1') return;
+    btn.dataset.colorHoldBound = '1';
+    let holdTimer = null;
+    let holdTriggered = false;
+    let suppressClick = false;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+    };
+    const startHold = (ev) => {
+      if (btn.disabled || btn.hidden) return;
+      clearHold();
+      holdTriggered = false;
+      holdTimer = setTimeout(() => {
+        holdTriggered = true;
+        suppressClick = true;
+        try{ ev?.preventDefault?.(); }catch(_){ }
+        __tagColorPopupOpen__('launcher-icon', __launcherIconSpecFor__(btn.id), (spec) => {
+          __launcherIconSaveColor__(btn.id, spec);
+        });
+      }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
+    };
+    const endHold = () => {
+      clearHold();
+      setTimeout(() => { holdTriggered = false; }, 0);
+    };
+    btn.addEventListener('pointerdown', startHold, { passive:false });
+    btn.addEventListener('pointerup', endHold, { passive:true });
+    btn.addEventListener('pointerleave', endHold, { passive:true });
+    btn.addEventListener('pointercancel', endHold, { passive:true });
+    btn.addEventListener('contextmenu', (ev) => { try{ ev.preventDefault(); }catch(_){ } });
+    btn.addEventListener('click', (ev) => {
+      if (!suppressClick) return;
+      try{ ev.preventDefault(); ev.stopImmediatePropagation(); ev.stopPropagation(); }catch(_){ }
+      suppressClick = false;
+    }, true);
+  }catch(_){ }
+}
+
+function setupLauncherIconLongPressPalette(){
+  try{
+    __LAUNCHER_ICON_TARGET_IDS__.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) __bindLauncherIconLongPress__(btn);
+    });
+    __launcherIconApplyAll__();
+  }catch(_){ }
 }
 
 function __laundryColorTokens__(value){
@@ -21762,6 +21965,20 @@ async function initOrePuliziaPage(){
 
 (async ()=>{ try{ await init(); } catch(e){ console.error(e); try{ toast(e.message||"Errore"); }catch(_){ } } })();
 
+(function __setupLauncherIconPaletteBindings__(){
+  const run = ()=>{
+    try{ setupLauncherIconLongPressPalette(); }catch(_){ }
+    try{ __launcherIconApplyAll__(); }catch(_){ }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
+  else setTimeout(run, 0);
+  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
+  try{
+    const mo = new MutationObserver(() => { run(); });
+    mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
+    setTimeout(() => { try{ mo.disconnect(); }catch(_){ } }, 15000);
+  }catch(_){ }
+})();
 
 /* dDAE_2.280 — Reset biancheria: icona X bianca in dark mode */
 function __applyLaundryResetCloseIcon__(){
