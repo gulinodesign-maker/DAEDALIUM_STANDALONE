@@ -14634,7 +14634,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 
 
-/* dDAE_2.333 — Stanze card ospite contenute nel riquadro */
+/* dDAE_2.334 — Stanze card ospite contenute nel riquadro */
 #page-ospite .rooms-readonly-wrap{
   display:block !important;
   width:100%;
@@ -14656,7 +14656,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   flex:0 1 auto;
 }
 
-/* dDAE_2.333 — Pallini stanze impostazioni in righe da 6 */
+/* dDAE_2.334 — Pallini stanze impostazioni in righe da 6 */
 #roomSettingsDots{
   display:grid !important;
   grid-template-columns:repeat(6, minmax(0, 54px));
@@ -14669,7 +14669,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   }
 }
 
-/* dDAE_2.333 — Popup letti coerente con palette dinamica */
+/* dDAE_2.334 — Popup letti coerente con palette dinamica */
 #roomConfigModal .dots{
   gap:12px;
   flex-wrap:wrap;
@@ -14685,7 +14685,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   opacity:1;
 }
 
-/* dDAE_2.333 — Calendario: testo stanza leggibile sui nuovi colori */
+/* dDAE_2.334 — Calendario: testo stanza leggibile sui nuovi colori */
 #page-calendario .cal-room-rail-pill .cal-room-num{
   color: var(--room-fg, #0b1f3a) !important;
 }
@@ -14703,7 +14703,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 .room-12{ --room-bg: var(--room12); --room-fg: var(--room12-fg, #0b1f3a); }
 
 
-/* dDAE_2.333 — Tag palette extended with gray, violet and sky + acid below yellow */
+/* dDAE_2.334 — Tag palette extended with gray, violet and sky + acid below yellow */
 
 .tag-color-option[data-spec="gray-1"],
 .operatori-tag.color-gray-1,
@@ -14805,7 +14805,15 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #page-pulizie .clean-grid .cell.slot.color-sky{ --laundry-save-color:#5bbcff !important; }
 #page-pulizie .clean-grid .cell.head.laundry-head.color-sky{ --laundry-head-bg:#5bbcff !important; }
 
-/* dDAE_2.333 — Tag palette stays fully within the iOS viewport */
+/* dDAE_2.334 — Tag palette popup above the top bar */
+#tagColorModal{
+  z-index: 6500 !important;
+}
+#tagColorModal[hidden]{
+  display:none !important;
+}
+
+/* dDAE_2.334 — Tag palette stays fully within the iOS viewport */
 #tagColorModal{
   padding:
     max(10px, env(safe-area-inset-top))
