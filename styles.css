@@ -14870,7 +14870,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 
 
-/* dDAE_2.337 — Lavanderia detail popup: black text in light mode, real dark mode in dark appearance */
+/* dDAE_2.338 — Lavanderia detail popup: black text in light mode, real dark mode in dark appearance */
 body.ddae-dark .laundry-detail-card,
 body.ddae-dark #laundryDetailModal .laundry-detail-card{
   background: #0f172a !important;
