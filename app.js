@@ -7067,45 +7067,65 @@ function __bindLauncherIconLongPress__(btn){
     btn.dataset.colorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
-    let suppressActivation = false;
+    let suppressUntil = 0;
     const clearHold = () => {
       try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
       holdTimer = null;
+    };
+    const setSuppress = (ms = 900) => {
+      suppressUntil = Date.now() + Math.max(0, Number(ms) || 0);
+    };
+    const isSuppressed = () => {
+      try{ return Date.now() < suppressUntil; }catch(_){ return false; }
     };
     const blockEvent = (ev) => {
       try{ ev?.preventDefault?.(); }catch(_){ }
       try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
       try{ ev?.stopPropagation?.(); }catch(_){ }
     };
+    const getReturnPage = () => {
+      try{
+        if (btn.closest('#page-impostazioni')) return 'impostazioni';
+        if (btn.closest('#page-statistiche')) return 'statistiche';
+      }catch(_){ }
+      return 'home';
+    };
+    const keepCurrentLauncherPage = () => {
+      const targetPage = getReturnPage();
+      try{ showPage(targetPage); }catch(_){ }
+      if (targetPage !== 'home'){
+        try{ hideLauncher(); }catch(_){ }
+      }
+    };
     const startHold = (ev) => {
       if (btn.disabled || btn.hidden) return;
       clearHold();
       holdTriggered = false;
-      suppressActivation = false;
-      blockEvent(ev);
+      suppressUntil = 0;
       holdTimer = setTimeout(() => {
         holdTriggered = true;
-        suppressActivation = true;
+        setSuppress(1400);
+        blockEvent(ev);
         __tagColorPopupOpen__('launcher-icon', __launcherIconSpecFor__(btn.id), (spec) => {
           __launcherIconSaveColor__(btn.id, spec);
-          try{ hideLauncher(); }catch(_){ }
-          try{ showPage('home'); }catch(_){ }
+          setSuppress(1400);
+          keepCurrentLauncherPage();
         });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const endHold = (ev) => {
       clearHold();
-      if (suppressActivation || holdTriggered){
+      if (holdTriggered || isSuppressed()){
+        setSuppress(1400);
         blockEvent(ev);
-        setTimeout(() => { holdTriggered = false; suppressActivation = false; }, 0);
         return;
       }
       setTimeout(() => { holdTriggered = false; }, 0);
     };
     const swallowIfSuppressed = (ev) => {
-      if (!suppressActivation && !holdTriggered) return;
+      if (!holdTriggered && !isSuppressed()) return;
+      setSuppress(1200);
       blockEvent(ev);
-      setTimeout(() => { holdTriggered = false; suppressActivation = false; }, 0);
     };
     btn.addEventListener('pointerdown', startHold, { passive:false, capture:true });
     btn.addEventListener('touchstart', startHold, { passive:false, capture:true });
@@ -7115,7 +7135,7 @@ function __bindLauncherIconLongPress__(btn){
     btn.addEventListener('pointercancel', endHold, { passive:false, capture:true });
     btn.addEventListener('touchcancel', endHold, { passive:false, capture:true });
     btn.addEventListener('click', swallowIfSuppressed, true);
-    btn.addEventListener('contextmenu', (ev) => { blockEvent(ev); });
+    btn.addEventListener('contextmenu', (ev) => { if (holdTriggered || isSuppressed()) blockEvent(ev); });
   }catch(_){ }
 }
 
