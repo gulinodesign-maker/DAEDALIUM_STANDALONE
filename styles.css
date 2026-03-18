@@ -13539,7 +13539,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   -webkit-text-fill-color:#ffffff !important;
 }
 
-/* dDAE_2.326 — Tag button indaco nei popup operatore/channel/lavanderia */
+/* dDAE_2.327 — Tag button indaco nei popup operatore/channel/lavanderia */
 #operatoriEditorTagColor.btn,
 #channelEditorTagColor.btn,
 #laundryCatalogEditorTagColor.btn{
@@ -13550,7 +13550,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   font-weight: 800 !important;
 }
 
-/* dDAE_2.326 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
+/* dDAE_2.327 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
 #page-ospiti .guest-meta-right .nights-dot{
   background: rgba(88,86,214,0.95) !important;
   border-color: rgba(88,86,214,0.35) !important;
@@ -13565,7 +13565,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   font-weight: 800 !important;
 }
 
-/* dDAE_2.326 — Card ospite: stanze sempre a sinistra sulla stessa riga, letti verticali e centrati */
+/* dDAE_2.327 — Card ospite: stanze sempre a sinistra sulla stessa riga, letti verticali e centrati */
 #page-ospite .rooms-readonly-wrap{
   justify-content: flex-start !important;
   flex-wrap: nowrap !important;
@@ -13586,7 +13586,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 }
 
 
-/* dDAE_2.326 — tag palette solid colors for iOS + extra beige/acid rows */
+/* dDAE_2.327 — tag palette solid colors for iOS + extra beige/acid rows */
 .tag-color-option{ appearance:none; -webkit-appearance:none; background-clip:padding-box; }
 .tag-color-option[data-spec="red-1"],
 .operatori-tag.color-red-1,
@@ -13839,7 +13839,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 .guest-channel-dot.color-sand-4, .operatori-tag.color-sand-4{ background:#b08968 !important; background-color:#b08968 !important; }
 
 
-/* dDAE_2.326 — corrected solid palette bindings */
+/* dDAE_2.327 — corrected solid palette bindings */
 #page-pulizie .clean-grid .cell.slot.color-red-1{ --laundry-save-color:#ffd6d3 !important; }
 #page-pulizie .clean-grid .cell.head.laundry-head.color-red-1{ --laundry-head-bg:#ffd6d3 !important; }
 #page-pulizie .clean-grid .cell.slot.color-red-2{ --laundry-save-color:#ffaca5 !important; }
@@ -13962,7 +13962,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 #page-pulizie .clean-grid .cell.slot.color-sand-4{ --laundry-save-color:#b08968 !important; }
 
 
-/* dDAE_2.326 — tag palette expanded to 6 tones per row */
+/* dDAE_2.327 — tag palette expanded to 6 tones per row */
  .tag-color-grid{ grid-template-columns:repeat(6, minmax(0, 1fr)); }
 .tag-color-option[data-spec="red-1"],
 .operatori-tag.color-red-1,
@@ -14294,3 +14294,146 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
 .operatori-tag.color-acid, .guest-channel-dot.color-acid{ background:#bfff00 !important; background-color:#bfff00 !important; }
 #page-pulizie .clean-grid .cell.slot.color-acid{ --laundry-save-color:#bfff00 !important; }
 #page-pulizie .clean-grid .cell.head.laundry-head.color-acid{ --laundry-head-bg:#bfff00 !important; }
+
+
+/* dDAE_2.327 — Impostazioni 3x3 perfettamente quadrata + logout bianco/rosso + home year bold + spese dark mode */
+#page-impostazioni .settings-actions.settings-actions-reference{
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  width: min(360px, calc(100vw - 32px)) !important;
+  gap: 16px !important;
+  align-items: stretch !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+}
+@media (max-width: 390px){
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    width: min(330px, calc(100vw - 24px)) !important;
+    gap: 12px !important;
+  }
+}
+
+#page-impostazioni .settings-btn-logout-pill,
+#page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
+  background: #ffffff !important;
+  border: 1px solid rgba(220,38,38,0.22) !important;
+  color: #dc2626 !important;
+}
+#page-impostazioni .settings-btn-logout-pill .ui-ico,
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label{
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid rgba(248,113,113,0.34) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+#page-home .home-year-pill{
+  font-weight: 800 !important;
+}
+
+body.ddae-dark #page-spese .item,
+body.ddae-dark #page-spese .item.spesa-bg{
+  background: rgba(15,23,42,0.92) !important;
+  border: 1px solid rgba(148,163,184,0.20) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.34) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-spese .item.spesa-bg::before{
+  opacity: 0.18 !important;
+}
+body.ddae-dark #page-spese .item.spesa-bg::after{
+  opacity: 0.08 !important;
+  mix-blend-mode: normal !important;
+  background: rgba(255,255,255,0.04) !important;
+}
+body.ddae-dark #page-spese .spesa-line,
+body.ddae-dark #page-spese .spesa-imp,
+body.ddae-dark #page-spese .spesa-date,
+body.ddae-dark #page-spese .spesa-motivo,
+body.ddae-dark #page-spese .item-title,
+body.ddae-dark #page-spese .item-sub{
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+body.ddae-dark #page-spese .spesa-date,
+body.ddae-dark #page-spese .spesa-sep,
+body.ddae-dark #page-spese .item-sub{
+  opacity: 0.78 !important;
+}
+body.ddae-dark #page-spese .delbtn.delbtn-x{
+  background: rgba(220,38,38,0.96) !important;
+  border-color: rgba(248,113,113,0.46) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+}
+
+
+/* dDAE_2.328 — logout dark mode refined on both settings pages */
+#page-impostazioni .settings-btn-logout-pill,
+#page-opsettings .settings-btn-logout-pill,
+#page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+#page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: #ffffff !important;
+  border: 1px solid rgba(220,38,38,0.22) !important;
+  color: #dc2626 !important;
+  box-shadow: none !important;
+}
+#page-impostazioni .settings-btn-logout-pill .ui-ico,
+#page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+#page-opsettings .settings-btn-logout-pill .ui-ico,
+#page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(255,255,255,0.96) !important;
+  border: 1px solid rgba(248,113,113,0.36) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.22) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+}
+
+
+/* dDAE_2.329 — logout dark mode without white background */
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(8,18,38,0.92) !important;
+  border: 1px solid rgba(239,68,68,0.34) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+}
