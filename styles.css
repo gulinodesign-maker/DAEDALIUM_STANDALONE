@@ -9554,6 +9554,7 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 }
 body[data-page="impostazioni"] #homeSyncBar,
 body[data-page="operatori"] #homeSyncBar,
+body[data-page="ospite"] #homeSyncBar,
 body[data-page^="stat"] #homeSyncBar{
   display:none !important;
 }
