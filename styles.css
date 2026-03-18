@@ -9556,7 +9556,6 @@ body[data-page="impostazioni"] #homeSyncBar,
 body[data-page="operatori"] #homeSyncBar,
 body[data-page="ospite"] #homeSyncBar,
 body[data-page="tassa"] #homeSyncBar,
-body[data-page="pulizie"] #homeSyncBar,
 body[data-page="orepulizia"] #homeSyncBar,
 body[data-page^="stat"] #homeSyncBar{
   display:none !important;
