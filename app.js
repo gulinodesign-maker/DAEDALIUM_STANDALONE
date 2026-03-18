@@ -71,7 +71,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.331";
+const BUILD_VERSION = "2.332";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6854,25 +6854,28 @@ function getOperatorNamesFromSettings() {
 
 
 
-const __OPERATORI_COLOR_KEYS__ = ["red","orange","yellow","green","mint","blue","indigo","pink","beige","acid"];
+const __OPERATORI_COLOR_KEYS__ = ["red","orange","yellow","acid","green","mint","sky","blue","gray","indigo","violet","pink","beige"];
 const __OPERATORI_COLOR_SHADE_COUNT__ = 6;
 const __OPERATORI_COLOR_DEFAULT_SHADE__ = 4;
 const __OPERATORI_COLOR_TONES__ = {
   red:    ["#fff1ef", "#ffd6d3", "#ffaca5", "#ff6f61", "#e24a3f", "#b92a23"],
   orange: ["#fff0dd", "#ffe0bf", "#ffc27a", "#ff9f33", "#e07f13", "#b96100"],
   yellow: ["#fff9d9", "#fff4b3", "#ffe47a", "#ffd43b", "#e0b800", "#b38f00"],
+  acid:   ["#fbffd9", "#f2ffb3", "#ddff66", "#bfff00", "#98cc00", "#6f9900"],
   green:  ["#eefbf1", "#d9f7df", "#9fe7af", "#52c96a", "#2f9e44", "#1b6f31"],
   mint:   ["#effffc", "#cffff8", "#8ff0e8", "#26d9c7", "#13b8a6", "#0b7f74"],
+  sky:    ["#eef8ff", "#d7ecff", "#9dd8ff", "#5bbcff", "#2695e8", "#1769aa"],
   blue:   ["#eef6ff", "#cfe4ff", "#8cbcff", "#3d8bfd", "#1f6fe5", "#0a58ca"],
+  gray:   ["#f4f5f7", "#e4e7ec", "#cfd4dc", "#98a2b3", "#667085", "#475467"],
   indigo: ["#f0efff", "#ddd9ff", "#b4a8ff", "#7c6ff2", "#6357dc", "#4338b8"],
+  violet: ["#f7f0ff", "#e9dbff", "#cfb3ff", "#a678ff", "#7a46d1", "#5a2ea6"],
   pink:   ["#fff0f5", "#ffd6e4", "#ff9fc0", "#ff5f93", "#e04377", "#b92b58"],
   beige:  ["#fff7ef", "#f7ead8", "#ead1ad", "#d8b98b", "#c49a65", "#9c754c"],
-  acid:   ["#fbffd9", "#f2ffb3", "#ddff66", "#bfff00", "#98cc00", "#6f9900"],
 };
 
 function __parseOperatoreColorSpec__(value){
   const raw = String(value || "").trim().toLowerCase();
-  const legacyBaseMap = { purple:'indigo', sand:'beige', lime:'acid', acidgreen:'acid', greenacid:'acid' };
+  const legacyBaseMap = { purple:'indigo', sand:'beige', lime:'acid', acidgreen:'acid', greenacid:'acid', grey:'gray' };
   const m = raw.match(/^([a-z]+)(?:[-_: ]?([1-6]))?$/i);
   const requestedBase = m ? String(m[1] || '').toLowerCase() : '';
   const normalizedBase = legacyBaseMap[requestedBase] || requestedBase;
@@ -13289,7 +13292,7 @@ function __roomsUiTextColor__(spec, preferWhite = false){
   if (preferWhite) return '#ffffff';
   try{
     const parsed = __parseOperatoreColorSpec__(spec || 'blue-4');
-    if ((['yellow','beige','acid','mint'].includes(parsed.base) && parsed.shade <= 4) || (parsed.base === 'orange' && parsed.shade <= 2)) return '#0b1f3a';
+    if ((['yellow','beige','acid','mint','sky','gray','violet'].includes(parsed.base) && parsed.shade <= 4) || (parsed.base === 'orange' && parsed.shade <= 2)) return '#0b1f3a';
   }catch(_){ }
   return '#ffffff';
 }
