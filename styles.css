@@ -11293,6 +11293,65 @@ body.ddae-dark .room-settings-section{
 body.ddae-dark .room-settings-style-btn{
   border-color: rgba(148,163,184,0.22);
 }
+.room-settings-slots{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:14px;
+}
+.room-settings-slot-btn{
+  position:relative;
+  min-height:88px;
+  aspect-ratio:1 / 1;
+  border-radius:24px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:#ffffff;
+  color: var(--ico-blue-night);
+  -webkit-text-fill-color: var(--ico-blue-night);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  font-weight:900;
+  line-height:1;
+  padding:0;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.room-settings-slot-btn::after{
+  content:"";
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.14);
+}
+.room-settings-slot-btn.is-saved::after{
+  background:rgba(52,199,89,0.92);
+}
+.room-settings-slot-btn:active{
+  transform:scale(0.985);
+}
+@media (max-width: 390px){
+  .room-settings-slot-btn{
+    min-height:76px;
+    border-radius:22px;
+    font-size:26px;
+  }
+}
+body.ddae-dark .room-settings-slot-btn{
+  background:#0b1528;
+  border-color: rgba(148,163,184,0.22);
+  color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+}
+body.ddae-dark .room-settings-slot-btn::after{
+  background:rgba(148,163,184,0.34);
+}
+body.ddae-dark .room-settings-slot-btn.is-saved::after{
+  background:rgba(52,199,89,0.92);
+}
 
 /* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
 #languageModal .operatori-editor-close{
@@ -15293,4 +15352,22 @@ body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+}
+
+
+/* dDAE_2.382 — Design slots + home 3x3 centrata */
+#page-home .home-page{
+  width:100% !important;
+  align-items:center !important;
+}
+#page-home .home-grid{
+  width:min(520px, calc(100vw - 24px)) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  transform:none !important;
+}
+#page-home .home-year-pill{
+  align-self:center !important;
 }
