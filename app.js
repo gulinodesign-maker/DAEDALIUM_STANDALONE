@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.375
+ * Build: 2.376
  */
-const BUILD_VERSION = "2.375";
+const BUILD_VERSION = "2.376";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7944,12 +7944,27 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
+  __tagColorPopupState__.confirmed = false;
   __tagColorPopupRefreshSelection__();
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = Date.now() + 500;
   __tagColorPopupSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
+}
+
+
+function __tagColorPopupConfirm__(){
+  try{
+    const cb = __tagColorPopupState__.onSelect;
+    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), colors: { ...(__tagColorPopupState__.colors || {}) } };
+    __tagColorPopupState__.confirmed = true;
+    if (typeof cb === 'function'){
+      try{ cb(payload); }catch(_){ }
+    }
+    try{ toast('Colore aggiornato'); }catch(_){ }
+  }catch(_){ }
+  __tagColorPopupClose__();
 }
 
 function __tagColorPopupClose__(){
@@ -7963,6 +7978,7 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.target = '';
   __tagColorPopupState__.onSelect = null;
   __tagColorPopupState__.mode = 'fg';
+  __tagColorPopupState__.confirmed = false;
   __tagColorPopupState__.supportsBg = false;
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.supportsFg = true;
@@ -8386,6 +8402,7 @@ function setupTagColorPopup(){
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
+  const confirmBtn = document.getElementById('tagColorModalConfirm');
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -8394,6 +8411,7 @@ function setupTagColorPopup(){
     }
   }catch(_){ }
   if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
+  if (confirmBtn) bindFastTap(confirmBtn, __tagColorPopupConfirm__);
   if (card){
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
@@ -8419,10 +8437,6 @@ function setupTagColorPopup(){
         else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
-        if (typeof __tagColorPopupState__.onSelect === 'function') {
-          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
-        }
-        try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {

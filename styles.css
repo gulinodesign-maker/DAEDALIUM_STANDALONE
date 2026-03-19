@@ -9200,6 +9200,12 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   gap:12px;
   padding:0 0 10px 0;
 }
+.tag-color-modal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
 .tag-color-modal-body{
   padding-top:2px;
 }
@@ -9250,20 +9256,27 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   border-color: rgba(15,23,42,0.88);
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12), inset 0 0 0 1px rgba(255,255,255,0.30);
 }
-.tag-color-modal-close{
+.tag-color-modal-close,
+.tag-color-modal-confirm{
   width:42px;
   height:42px;
   min-width:42px;
   border:none;
   border-radius:999px;
-  background:#d73c3c !important;
   color:#ffffff !important;
   display:grid;
   place-items:center;
   padding:0;
   box-shadow:none;
 }
-.tag-color-modal-close span{
+.tag-color-modal-close{
+  background:#d73c3c !important;
+}
+.tag-color-modal-confirm{
+  background:#4d9cc5 !important;
+}
+.tag-color-modal-close span,
+.tag-color-modal-confirm span{
   display:block;
   font-size:24px;
   font-weight:900;
@@ -14953,6 +14966,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 #tagColorModal .tag-color-option,
 #tagColorModal .tag-color-modal-close,
+#tagColorModal .tag-color-modal-confirm,
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
 }
