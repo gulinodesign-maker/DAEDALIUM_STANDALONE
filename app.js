@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.359";
+const BUILD_VERSION = "2.361";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11490,6 +11490,113 @@ function __applyGraphCustomColors__(graphKey, slices){
   return arr;
 }
 
+function __statCardTextColorStoreKey__(pageKey){
+  const year = String(state && (state.exerciseYear || (typeof loadExerciseYear === "function" && loadExerciseYear())) || new Date().getFullYear());
+  return `ddae_stat_card_text_${year}_${String(pageKey || "generic")}`;
+}
+
+function __loadStatCardTextColorMap__(pageKey){
+  try{
+    const raw = localStorage.getItem(__statCardTextColorStoreKey__(pageKey));
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveStatCardTextColorMap__(pageKey, map){
+  try{ localStorage.setItem(__statCardTextColorStoreKey__(pageKey), JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __getStatCardTextColorHex__(pageKey, cardKey, fallback){
+  try{
+    const map = __loadStatCardTextColorMap__(pageKey);
+    const saved = map[String(cardKey || '')];
+    if (saved) return __graphColorValueToHex__(saved, fallback || '#2B7CB4');
+  }catch(_){ }
+  return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4');
+}
+
+function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
+  if (!el) return;
+  try{
+    const hex = __getStatCardTextColorHex__(pageKey, cardKey, fallback || '#2B7CB4');
+    el.style.setProperty('--cardtext', hex);
+  }catch(_){ }
+}
+
+function __refreshStatCardsPage__(pageKey){
+  try{
+    if (pageKey === 'statgen') return renderStatGen();
+    if (pageKey === 'statspese') return renderStatSpese();
+    if (pageKey === 'statmensili') return renderStatMensili();
+  }catch(_){ }
+}
+
+function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone){
+  const selectedSpec = __closestGraphColorSpec__(currentColor || '#2B7CB4');
+  __tagColorPopupOpen__('stat-card-text', selectedSpec, (spec) => {
+    const normalized = __parseOperatoreColorSpec__(spec || selectedSpec).spec;
+    const safeKey = String(cardKey || '').trim();
+    const map = __loadStatCardTextColorMap__(pageKey);
+    if (safeKey) map[safeKey] = normalized;
+    __saveStatCardTextColorMap__(pageKey, map);
+    if (pageKey === 'statmensili' && safeKey){
+      try{
+        const graphMap = __loadGraphColorMap__('occupazione-mensile');
+        graphMap[safeKey] = normalized;
+        __saveGraphColorMap__('occupazione-mensile', graphMap);
+      }catch(_){ }
+      try{ __refreshStatGraphPreviews__(); }catch(_){ }
+    }
+    const nextHex = __graphColorValueToHex__(normalized, currentColor || '#2B7CB4');
+    if (typeof onDone === 'function') onDone(nextHex);
+    __refreshStatCardsPage__(pageKey);
+  });
+}
+
+function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
+  if (!el || el.dataset.statCardColorBound === '1') return;
+  el.dataset.statCardColorBound = '1';
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    timer = setTimeout(()=>{
+      fired = true;
+      try{ el.classList.add('is-pressing'); }catch(_){ }
+      try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+      const current = getComputedStyle(el).getPropertyValue('--cardtext') || fallback || '#2B7CB4';
+      __openStatCardTextColorPicker__(pageKey, cardKey, current, (hex)=>{
+        try{ if (hex) el.style.setProperty('--cardtext', hex); }catch(_){ }
+        try{ el.classList.remove('is-pressing'); }catch(_){ }
+      });
+    }, 500);
+  };
+  const stop = (e)=>{
+    clear();
+    if (fired){
+      try{ if (e && e.preventDefault) e.preventDefault(); }catch(_){ }
+      try{ if (e && e.stopPropagation) e.stopPropagation(); }catch(_){ }
+      setTimeout(()=>{ fired = false; try{ el.classList.remove('is-pressing'); }catch(_){ } }, 0);
+      return;
+    }
+    try{ el.classList.remove('is-pressing'); }catch(_){ }
+  };
+  const swallowClick = (e)=>{
+    if (!fired) return;
+    try{ e.preventDefault(); }catch(_){ }
+    try{ e.stopPropagation(); }catch(_){ }
+    fired = false;
+  };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ el.addEventListener('click', swallowClick, true); }catch(_){ }
+  try{ el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); }); }catch(_){ }
+}
+
 function __refreshStatGraphPreviews__(){
   try{
     if ((state && state.page) !== 'grafici') return;
@@ -11634,11 +11741,16 @@ function __ensureStatGraphPopupBound__(){
 function __occupazioneMensileSlices__(mensili){
   const vals = Array.isArray(mensili && mensili.occPctByMonth) ? mensili.occPctByMonth : [];
   const colors = __mensiliPalette12();
-  return new Array(12).fill(0).map((_,i)=>({
-    label: String(__MONTHS_IT[i] || `Mese ${i+1}`),
-    value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
-    color: colors[i % colors.length] || "#2b7cb4"
-  }));
+  return new Array(12).fill(0).map((_,i)=>{
+    const label = String(__MONTHS_IT[i] || `Mese ${i+1}`);
+    const fallback = colors[i % colors.length] || "#2b7cb4";
+    const syncedColor = __getStatCardTextColorHex__('statmensili', label, fallback);
+    return {
+      label,
+      value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
+      color: syncedColor
+    };
+  });
 }
 
 function __operatorGraphColors__(){
@@ -11992,6 +12104,19 @@ function renderStatGen(){
   set("sgIva", s.ivaDaVersare);
   set("sgGuadagno", s.guadagnoTotale);
   set("sgCassa", s.giacenzaCassa);
+
+  try{
+    const rows = Array.from(document.querySelectorAll('#page-statgen .stat-row'));
+    const keys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
+    rows.forEach((row, idx)=>{
+      const cardKey = String(row.dataset.statCardKey || keys[idx] || `statgen-${idx+1}`);
+      row.dataset.statCardKey = cardKey;
+      const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
+      __applyStatCardTextColor__(row, 'statgen', cardKey, fallback);
+      __bindStatCardColorLongPress__(row, 'statgen', cardKey, fallback);
+      row.title = 'Pressione lunga per cambiare colore testo';
+    });
+  }catch(_){ }
 }
 
 
@@ -12280,6 +12405,14 @@ function renderStatMensili(){
     wrap.appendChild(row);
     const fill = row.querySelector(".month-fill");
     if (fill) fills.push({ el: fill, pct });
+    try{
+      const cardKey = String(__MONTHS_IT[i] || ("Mese " + (i+1))).trim();
+      row.dataset.statCardKey = cardKey;
+      const fallback = colors[i] || '#2B7CB4';
+      __applyStatCardTextColor__(row, 'statmensili', cardKey, fallback);
+      __bindStatCardColorLongPress__(row, 'statmensili', cardKey, fallback);
+      row.title = 'Pressione lunga per cambiare colore testo';
+    }catch(_){ }
   }
 
   // animazione riempimento
@@ -13206,6 +13339,18 @@ function renderStatSpese(){
   set("ssIva10", s.iva10);
   set("ssIva4", s.iva4);
   __syncStatSpeseCardColors__();
+  try{
+    const rows = Array.from(document.querySelectorAll('#page-statspese .stat-row'));
+    const keys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
+    rows.forEach((row, idx)=>{
+      const cardKey = String(row.dataset.statCardKey || row.id || keys[idx] || `statspese-${idx+1}`);
+      row.dataset.statCardKey = cardKey;
+      const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
+      __applyStatCardTextColor__(row, 'statspese', cardKey, fallback);
+      __bindStatCardColorLongPress__(row, 'statspese', cardKey, fallback);
+      row.title = 'Pressione lunga per cambiare colore testo';
+    });
+  }catch(_){ }
 
   // Dettaglio elenco spese (visibile in Statistiche → Spese)
   const list = document.getElementById("statSpeseList");

@@ -6879,7 +6879,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   line-height: 1;
   white-space: nowrap;
     text-align: right;
-color: var(--mcol,#ff3b30);
+color: var(--cardtext, var(--mcol,#ff3b30));
 }
 .month-stack{
   display:flex;
@@ -6923,6 +6923,13 @@ color: var(--mcol,#ff3b30);
 }
 
 .month-row > *{ position:relative; z-index:1; }
+.month-row.is-pressing,
+#page-statgen .stat-row.is-pressing,
+#page-statspese .stat-row.is-pressing{
+  transform: scale(0.985);
+  box-shadow: 0 0 0 2px rgba(143,203,232,0.24), 0 10px 24px rgba(15,23,42,0.18) !important;
+}
+
 
 .month-head{
   display:flex;
@@ -6936,14 +6943,14 @@ color: var(--mcol,#ff3b30);
   font-weight:950;
   font-size:18px;
   line-height:1.1;
-  color: var(--mcol,#ff3b30);
+  color: var(--cardtext, var(--mcol,#ff3b30));
 }
 
 .month-val{
   font-weight:950;
   font-size:18px;
   white-space:nowrap;
-  color: var(--mcol,#ff3b30);
+  color: var(--cardtext, var(--mcol,#ff3b30));
 }
 
 .month-bar{
@@ -12780,7 +12787,7 @@ body.ddae-dark #page-statmensili .month-fill{
 body.ddae-dark #page-statmensili .month-name,
 body.ddae-dark #page-statmensili .month-val,
 body.ddae-dark #page-statmensili .month-occ{
-  color: var(--mcol,#6fb7d6) !important;
+  color: var(--cardtext, var(--mcol,#6fb7d6)) !important;
 }
 
 
@@ -13049,7 +13056,7 @@ body.ddae-dark #page-statgen .stat-name,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-val{
-  color: var(--mcol, var(--statbg, #6fb7d6)) !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
 
 
@@ -13072,13 +13079,13 @@ body.ddae-dark #page-statspese .stat-val{
 #page-statgen .stat-val,
 #page-statspese .stat-name,
 #page-statspese .stat-val{
-  color: var(--mcol, var(--statbg, #2B7CB4)) !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
 }
 body.ddae-dark #page-statgen .stat-name,
 body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
-  color: var(--mcol, var(--statbg, #6fb7d6)) !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
 
 
