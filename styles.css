@@ -15015,3 +15015,16 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 @media (max-width:380px){.stats-graphs-grid{gap:12px;padding:6px 4px 10px;}.stats-graph-card{padding:12px 8px 10px;border-radius:22px;}.stats-graph-canvas{min-height:162px;}}
 
 /* dDAE_2.358 — Grafici anteprima sincronizzati con colori personalizzati; celle piscina grigie 25% */
+
+
+/* dDAE_2.363 — Stat cards long press: no text selection/callout on iOS */
+#page-statgen .stat-row,
+#page-statspese .stat-row,
+#page-statmensili .month-row,
+#page-statgen .stat-row *,
+#page-statspese .stat-row *,
+#page-statmensili .month-row *{
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+}

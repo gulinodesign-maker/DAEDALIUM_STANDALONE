@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.362";
+const BUILD_VERSION = "2.363";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11574,41 +11574,56 @@ function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
   let timer = null;
   let fired = false;
   const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const clearSelection = ()=>{
+    try{
+      const sel = window.getSelection && window.getSelection();
+      if (sel && sel.removeAllRanges) sel.removeAllRanges();
+    }catch(_){ }
+  };
+  const blockEvent = (e)=>{
+    try{ if (e && e.preventDefault) e.preventDefault(); }catch(_){ }
+    try{ if (e && e.stopPropagation) e.stopPropagation(); }catch(_){ }
+    clearSelection();
+    return false;
+  };
   const start = (e)=>{
     try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
     fired = false;
     clear();
+    clearSelection();
     timer = setTimeout(()=>{
       fired = true;
       try{ el.classList.add('is-pressing'); }catch(_){ }
       try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+      clearSelection();
       const current = getComputedStyle(el).getPropertyValue('--cardtext') || fallback || '#2B7CB4';
       __openStatCardTextColorPicker__(pageKey, cardKey, current, (hex)=>{
         try{ if (hex) el.style.setProperty('--cardtext', hex); }catch(_){ }
         try{ el.classList.remove('is-pressing'); }catch(_){ }
+        clearSelection();
       });
     }, 500);
   };
   const stop = (e)=>{
     clear();
     if (fired){
-      try{ if (e && e.preventDefault) e.preventDefault(); }catch(_){ }
-      try{ if (e && e.stopPropagation) e.stopPropagation(); }catch(_){ }
-      setTimeout(()=>{ fired = false; try{ el.classList.remove('is-pressing'); }catch(_){ } }, 0);
+      blockEvent(e);
+      setTimeout(()=>{ fired = false; try{ el.classList.remove('is-pressing'); }catch(_){ } clearSelection(); }, 0);
       return;
     }
     try{ el.classList.remove('is-pressing'); }catch(_){ }
+    clearSelection();
   };
   const swallowClick = (e)=>{
     if (!fired) return;
-    try{ e.preventDefault(); }catch(_){ }
-    try{ e.stopPropagation(); }catch(_){ }
+    blockEvent(e);
     fired = false;
   };
   ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:true }); }catch(_){ } });
-  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
   try{ el.addEventListener('click', swallowClick, true); }catch(_){ }
-  try{ el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); }); }catch(_){ }
+  try{ el.addEventListener('contextmenu', (e)=>{ blockEvent(e); }, true); }catch(_){ }
+  try{ el.addEventListener('selectstart', (e)=>{ blockEvent(e); }, true); }catch(_){ }
 }
 
 function __refreshStatGraphPreviews__(){
