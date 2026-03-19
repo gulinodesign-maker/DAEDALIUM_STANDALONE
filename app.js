@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.376
+ * Build: 2.377
  */
-const BUILD_VERSION = "2.376";
+const BUILD_VERSION = "2.377";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8515,10 +8515,13 @@ function __bindTagColorModeLongPress__(btn, onTap){
     timer = setTimeout(() => {
       triggered = true;
       block(ev);
-      __tagOpacityPopoverOpen__();
+      try{ btn.dataset.longPressReady = '1'; }catch(_){ }
     }, __TAG_COLOR_MODE_LONGPRESS_DELAY__);
   };
-  const cancel = () => clear();
+  const cancel = () => {
+    clear();
+    try{ delete btn.dataset.longPressReady; }catch(_){ }
+  };
   const move = (ev) => {
     if (!timer) return;
     const pt = pointOf(ev);
@@ -8530,9 +8533,14 @@ function __bindTagColorModeLongPress__(btn, onTap){
     if (didLongPress){
       block(ev);
       triggered = false;
+      try{ delete btn.dataset.longPressReady; }catch(_){ }
+      setTimeout(() => {
+        try{ __tagOpacityPopoverOpen__(); }catch(_){ }
+      }, 0);
       return;
     }
     triggered = false;
+    try{ delete btn.dataset.longPressReady; }catch(_){ }
     if (typeof onTap === 'function') onTap();
     block(ev);
   };
