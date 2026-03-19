@@ -14949,7 +14949,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 }
 #tagColorModal .tag-color-grid{
   width:100%;
-  gap:6px;
+  gap:var(--tag-color-gap, 4px);
 }
 #tagColorModal .tag-color-option,
 #tagColorModal .tag-color-modal-close,
@@ -14957,61 +14957,34 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   touch-action:manipulation;
 }
 #tagColorModal .tag-color-modebar{
-  gap:8px;
-  margin-bottom:8px;
+  gap:6px;
+  margin-bottom:6px;
 }
 #tagColorModal .tag-color-mode-btn{
-  min-height:40px;
-  padding:9px 12px;
+  min-height:var(--tag-color-mode-height, 36px);
+  padding:7px 12px;
 }
 #tagColorModal .tag-color-option{
-  height:36px;
-  min-height:36px;
-  border-radius:14px;
+  height:var(--tag-color-cell-height, 30px);
+  min-height:var(--tag-color-cell-height, 30px);
+  border-radius:var(--tag-color-cell-radius, 12px);
 }
-@media (max-height:900px){
-  #tagColorModal .tag-color-option{
-    height:34px;
-    min-height:34px;
-    border-radius:13px;
+@media (max-width:430px){
+  #tagColorModal{
+    padding: max(6px, env(safe-area-inset-top)) 10px max(6px, env(safe-area-inset-bottom)) 10px;
   }
-  #tagColorModal .tag-color-grid{
-    gap:5px;
+  #tagColorModal .tag-color-modal-card{
+    width:min(420px, calc(100vw - 20px));
   }
+}
+@media (max-height:760px){
   #tagColorModal .tag-color-modebar{
-    margin-bottom:6px;
-  }
-}
-@media (max-height:820px){
-  #tagColorModal .tag-color-option{
-    height:32px;
-    min-height:32px;
-    border-radius:12px;
-  }
-  #tagColorModal .tag-color-grid{
     gap:4px;
-  }
-  #tagColorModal .tag-color-mode-btn{
-    min-height:36px;
-    padding:7px 10px;
-  }
-}
-@media (max-height:740px){
-  #tagColorModal .tag-color-option{
-    height:30px;
-    min-height:30px;
-    border-radius:11px;
-  }
-  #tagColorModal .tag-color-grid{
-    gap:4px;
-  }
-  #tagColorModal .tag-color-modebar{
-    gap:6px;
     margin-bottom:4px;
   }
   #tagColorModal .tag-color-mode-btn{
-    min-height:34px;
-    padding:6px 9px;
+    padding:6px 10px;
+    font-size:14px;
   }
 }
 
