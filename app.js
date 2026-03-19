@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.377
+ * Build: 2.378
  */
-const BUILD_VERSION = "2.377";
+const BUILD_VERSION = "2.378";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7258,8 +7258,11 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      const resolvedBorder = visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
+      const isDarkSettings = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+      const resolvedBg = isDarkSettings ? 'rgba(8,18,38,0.80)' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+      const resolvedBorder = isDarkSettings
+        ? (visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : 'rgba(148,163,184,0.26)')
+        : (visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
