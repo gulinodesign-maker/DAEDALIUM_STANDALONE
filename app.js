@@ -13117,6 +13117,45 @@ function buildReportFromSpese(items){
 }
 
 
+function __speseGraphSlicesBase__(){
+  return [
+    { key:"CONTANTI", label: categoriaLabel("CONTANTI"), value:Number((state && state.statSpese && state.statSpese.contanti) || 0), color:(COLORS.CONTANTI || "#2b7cb4") },
+    { key:"TASSA_SOGGIORNO", label: categoriaLabel("TASSA_SOGGIORNO"), value:Number((state && state.statSpese && state.statSpese.tassaSoggiorno) || 0), color:(COLORS.TASSA_SOGGIORNO || "#d8bd97") },
+    { key:"IVA_22", label: categoriaLabel("IVA_22"), value:Number((state && state.statSpese && state.statSpese.iva22) || 0), color:(COLORS.IVA_22 || "#c9772b") },
+    { key:"IVA_10", label: categoriaLabel("IVA_10"), value:Number((state && state.statSpese && state.statSpese.iva10) || 0), color:(COLORS.IVA_10 || "#7ac0db") },
+    { key:"IVA_4", label: categoriaLabel("IVA_4"), value:Number((state && state.statSpese && state.statSpese.iva4) || 0), color:(COLORS.IVA_4 || "#1f2937") },
+  ];
+}
+
+function __speseGraphSlicesCustom__(){
+  return __applyGraphCustomColors__('spese', __speseGraphSlicesBase__());
+}
+
+function __syncStatSpeseCardColors__(){
+  const rows = {
+    CONTANTI: document.getElementById('ssRowContanti'),
+    TASSA_SOGGIORNO: document.getElementById('ssRowTassa'),
+    IVA_22: document.getElementById('ssRowIva22'),
+    IVA_10: document.getElementById('ssRowIva10'),
+    IVA_4: document.getElementById('ssRowIva4')
+  };
+  const custom = __speseGraphSlicesCustom__();
+  custom.forEach((slice)=>{
+    const row = rows[String(slice && slice.key || '')];
+    if (!row) return;
+    const hex = __graphColorValueToHex__(slice && slice.color, '#2B7CB4');
+    row.style.setProperty('--statbg', hex);
+    try{
+      const parsed = parseInt(hex.slice(1), 16);
+      const r = (parsed >> 16) & 255, g = (parsed >> 8) & 255, b = parsed & 255;
+      const luminance = (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+      row.style.setProperty('--statfg', luminance > 0.72 ? 'rgba(15,23,42,0.92)' : '#ffffff');
+    }catch(_){
+      row.style.setProperty('--statfg', '#ffffff');
+    }
+  });
+}
+
 function renderStatSpese(){
   const s = computeStatSpese();
   state.statSpese = s;
@@ -13133,6 +13172,7 @@ function renderStatSpese(){
   set("ssIva22", s.iva22);
   set("ssIva10", s.iva10);
   set("ssIva4", s.iva4);
+  __syncStatSpeseCardColors__();
 
   // Dettaglio elenco spese (visibile in Statistiche → Spese)
   const list = document.getElementById("statSpeseList");
@@ -13203,13 +13243,11 @@ function openStatSpesePieModal(){
   m.setAttribute("aria-hidden", "false");
 
   const s = state.statSpese || computeStatSpese();
-  const slices = [
-    { key:"CONTANTI", label: categoriaLabel("CONTANTI"), value:s.contanti, color:(COLORS.CONTANTI || "#2b7cb4") },
-    { key:"TASSA_SOGGIORNO", label: categoriaLabel("TASSA_SOGGIORNO"), value:s.tassaSoggiorno, color:(COLORS.TASSA_SOGGIORNO || "#d8bd97") },
-    { key:"IVA_22", label: categoriaLabel("IVA_22"), value:s.iva22, color:(COLORS.IVA_22 || "#c9772b") },
-    { key:"IVA_10", label: categoriaLabel("IVA_10"), value:s.iva10, color:(COLORS.IVA_10 || "#7ac0db") },
-    { key:"IVA_4", label: categoriaLabel("IVA_4"), value:s.iva4, color:(COLORS.IVA_4 || "#1f2937") },
-  ];
+  state.statSpese = s;
+  const slices = __speseGraphSlicesCustom__().map((slice)=>({
+    ...slice,
+    value: ({ CONTANTI:s.contanti, TASSA_SOGGIORNO:s.tassaSoggiorno, IVA_22:s.iva22, IVA_10:s.iva10, IVA_4:s.iva4 }[slice.key] ?? slice.value ?? 0)
+  }));
 
   drawPie("statSpesePieCanvas", slices);
 
