@@ -14847,6 +14847,11 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #tagColorModal .tag-color-grid{
   width:100%;
 }
+#tagColorModal .tag-color-option,
+#tagColorModal .tag-color-modal-close,
+#tagColorModal .tag-color-modal-card{
+  touch-action:manipulation;
+}
 @media (max-height:900px){
   #tagColorModal .tag-color-option{
     height:48px;

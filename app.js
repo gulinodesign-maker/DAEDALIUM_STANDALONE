@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.350";
+const BUILD_VERSION = "2.351";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7648,6 +7648,22 @@ function __operatoriSetSelectedColor__(color){
 }
 
 const __tagColorPopupState__ = { target: "", onSelect: null };
+let __tagColorPopupReadyAt__ = 0;
+let __tagColorPopupSuppressUntil__ = 0;
+function __tagColorPopupGhostTapActive__(){
+  try{ return Date.now() < (__tagColorPopupSuppressUntil__ || 0); }catch(_){ return false; }
+}
+function __tagColorPopupSwallowGhostTap__(ev){
+  try{
+    if (!__tagColorPopupGhostTapActive__()) return;
+    const modal = document.getElementById('tagColorModal');
+    const insideModal = !!(modal && !modal.hidden && ev && ev.target && modal.contains(ev.target));
+    if (insideModal) return;
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
 
 function __tagColorPopupOpen__(target, currentColor, onSelect){
   const modal = document.getElementById('tagColorModal');
@@ -7660,6 +7676,8 @@ function __tagColorPopupOpen__(target, currentColor, onSelect){
     const spec = __parseOperatoreColorSpec__(btn.dataset.spec || '').spec;
     btn.classList.toggle('is-selected', spec === selected);
   });
+  __tagColorPopupReadyAt__ = Date.now() + 260;
+  __tagColorPopupSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
 }
@@ -7671,6 +7689,8 @@ function __tagColorPopupClose__(){
   modal.setAttribute('aria-hidden', 'true');
   __tagColorPopupState__.target = '';
   __tagColorPopupState__.onSelect = null;
+  __tagColorPopupReadyAt__ = 0;
+  __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
 
 function __openTagColorPickerFor__(target){
@@ -8058,16 +8078,37 @@ function setupChannelPage(){
 }
 
 function setupTagColorPopup(){
+  const modal = document.getElementById('tagColorModal');
+  if (!modal || modal.dataset.bound === '1') return;
+  modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
+  const card = modal.querySelector?.('.tag-color-modal-card');
   if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
+  if (card){
+    ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+      try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
+      catch(_){ try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} }
+    });
+  }
+  ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+    try{ document.addEventListener(evt, __tagColorPopupSwallowGhostTap__, true); }catch(_){ }
+  });
+  try{
+    modal.addEventListener('click', (ev) => {
+      try{ if (ev.target === modal) __tagColorPopupClose__(); }catch(_){ }
+    });
+  }catch(_){ }
   try{
     document.querySelectorAll('#tagColorGrid .tag-color-option').forEach((btn) => {
       bindFastTap(btn, () => {
+        if (Date.now() < __tagColorPopupReadyAt__) return;
+        __tagColorPopupSuppressUntil__ = Date.now() + 900;
+        try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
         if (typeof __tagColorPopupState__.onSelect === 'function') {
           try{ __tagColorPopupState__.onSelect(spec); }catch(_){ }
         }
-        __tagColorPopupClose__();
+        setTimeout(() => { try{ __tagColorPopupClose__(); }catch(_){ } }, 80);
       });
     });
   }catch(_){ }
