@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.353";
+const BUILD_VERSION = "2.354";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11438,6 +11438,33 @@ function __normalizeHexColor__(value, fallback){
   return String(fallback || "#2B7CB4").toUpperCase();
 }
 
+function __graphColorValueToHex__(value, fallback){
+  const raw = String(value || '').trim();
+  if (!raw) return __normalizeHexColor__(fallback, '#2B7CB4');
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) return raw.toUpperCase();
+  try{ return __operatoreColorHex__(__parseOperatoreColorSpec__(raw).spec) || __normalizeHexColor__(fallback, '#2B7CB4'); }catch(_){ }
+  return __normalizeHexColor__(fallback, '#2B7CB4');
+}
+
+function __closestGraphColorSpec__(value){
+  const target = __graphColorValueToHex__(value, '#2B7CB4').toUpperCase();
+  let bestSpec = 'blue-4';
+  let bestDist = Number.POSITIVE_INFINITY;
+  try{
+    (__OPERATORI_COLOR_KEYS__ || []).forEach((base) => {
+      for (let shade = 1; shade <= __OPERATORI_COLOR_SHADE_COUNT__; shade++){
+        const spec = `${base}-${shade}`;
+        const hex = __graphColorValueToHex__(spec, '#2B7CB4');
+        const r1 = parseInt(target.slice(1,3), 16), g1 = parseInt(target.slice(3,5), 16), b1 = parseInt(target.slice(5,7), 16);
+        const r2 = parseInt(hex.slice(1,3), 16), g2 = parseInt(hex.slice(3,5), 16), b2 = parseInt(hex.slice(5,7), 16);
+        const dist = Math.pow(r1-r2,2) + Math.pow(g1-g2,2) + Math.pow(b1-b2,2);
+        if (dist < bestDist){ bestDist = dist; bestSpec = spec; }
+      }
+    });
+  }catch(_){ }
+  return bestSpec;
+}
+
 function __loadGraphColorMap__(graphKey){
   try{
     const raw = localStorage.getItem(__graphColorStoreKey__(graphKey));
@@ -11455,47 +11482,21 @@ function __applyGraphCustomColors__(graphKey, slices){
   const map = __loadGraphColorMap__(graphKey);
   arr.forEach((sl)=>{
     const key = String(sl && sl.label || '');
-    if (key && map[key]) sl.color = __normalizeHexColor__(map[key], sl.color);
-    else sl.color = __normalizeHexColor__(sl && sl.color, '#2B7CB4');
+    if (key && map[key]) sl.color = __graphColorValueToHex__(map[key], sl.color);
+    else sl.color = __graphColorValueToHex__(sl && sl.color, '#2B7CB4');
   });
   return arr;
 }
 
 function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
-  let picker = document.getElementById('statGraphColorPicker');
-  if (!picker){
-    picker = document.createElement('input');
-    picker.type = 'color';
-    picker.id = 'statGraphColorPicker';
-    picker.style.position = 'fixed';
-    picker.style.opacity = '0';
-    picker.style.pointerEvents = 'none';
-    picker.style.width = '1px';
-    picker.style.height = '1px';
-    picker.style.left = '-100px';
-    picker.style.top = '-100px';
-    document.body.appendChild(picker);
-  }
-  const initial = __normalizeHexColor__(currentColor, '#2B7CB4');
-  picker.value = initial;
-  const finish = ()=>{
-    const chosen = __normalizeHexColor__(picker.value, initial);
+  const selectedSpec = __closestGraphColorSpec__(currentColor);
+  __tagColorPopupOpen__('stat-graph', selectedSpec, (spec) => {
+    const normalized = __parseOperatoreColorSpec__(spec || selectedSpec).spec;
     const map = __loadGraphColorMap__(graphKey);
-    map[String(label || '')] = chosen;
+    map[String(label || '')] = normalized;
     __saveGraphColorMap__(graphKey, map);
-    if (typeof onDone === 'function') onDone(chosen);
-    picker.oninput = null;
-    picker.onchange = null;
-    picker.onblur = null;
-  };
-  picker.oninput = finish;
-  picker.onchange = finish;
-  picker.onblur = ()=>{
-    picker.oninput = null;
-    picker.onchange = null;
-    picker.onblur = null;
-  };
-  try{ picker.click(); }catch(_){ }
+    if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
+  });
 }
 
 function __bindGraphLegendLongPress__(row, payload, slice){

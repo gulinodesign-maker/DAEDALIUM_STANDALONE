@@ -8915,11 +8915,32 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 .stats-graphs-page .stats-graph-note{display:none !important;}
 .stats-graphs-page .stats-graph-card.is-tappable{cursor:pointer;}
 .stats-graphs-page .stats-graph-card.is-tappable:active{transform:scale(.985);}
-.stat-graph-modal-card{width:min(92vw,420px);padding:0;overflow:hidden;}
+
+.stats-graph-card{background:rgba(255,255,255,0.72);border:1px solid rgba(15,23,42,0.08);border-radius:22px;padding:12px 8px 10px;}
+.stats-graph-card-title{min-height:36px;}
+.stats-graph-canvas canvas{filter:drop-shadow(0 6px 18px rgba(15,23,42,0.08));}
+.stats-graphs-page .stats-graph-card.is-tappable:hover{transform:translateY(-1px);}
+#statGraphModal{align-items:flex-start;padding-top:calc(var(--safe-top) + 74px);padding-bottom:max(18px, env(safe-area-inset-bottom));overflow-y:auto;}
+.stat-graph-modal-card{width:min(92vw,420px);max-height:calc(100dvh - var(--safe-top) - 92px);margin:0 auto 16px;border-radius:24px;background:rgba(255,255,255,0.98);border:1px solid rgba(15,23,42,0.08);}
 .stat-graph-modal-body{padding:14px;display:flex;flex-direction:column;gap:10px;}
 .stat-graph-modal-detail{font-size:12px;line-height:1.35;color:rgba(15,23,42,0.68);text-align:center;}
 .stat-graph-modal-canvas{padding-top:2px;}
-.stat-graph-modal-legend{max-height:38vh;overflow:auto;padding-right:2px;}
+.stat-graph-modal-legend{max-height:34vh;overflow:auto;padding-right:2px;}
+.stat-graph-modal-legend .legrow{user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;border:1px solid rgba(15,23,42,0.06);}
+.stat-graph-modal-legend .legrow.is-color-editable::after{content:"0,5s";font-size:10px;font-weight:800;letter-spacing:.02em;color:rgba(43,124,180,0.72);margin-left:auto;padding-left:8px;}
+.stat-graph-modal-legend .legrow.is-pressing{transform:scale(0.985);box-shadow:0 0 0 2px rgba(43,124,180,0.18) inset;border-color:rgba(43,124,180,0.34);}
+body.ddae-dark .stats-graph-card{background:rgba(15,23,42,0.52);border-color:rgba(148,163,184,0.18);}
+body.ddae-dark .stats-graph-card-title,
+body.ddae-dark .stats-graph-note,
+body.ddae-dark .stat-graph-modal-detail{color:rgba(226,232,240,0.86) !important;}
+body.ddae-dark .stats-graph-legend .legrow,
+body.ddae-dark .stat-graph-modal-card,
+body.ddae-dark .stat-graph-modal-legend .legrow{background:rgba(15,23,42,0.94) !important;border-color:rgba(148,163,184,0.18) !important;}
+body.ddae-dark .stats-graph-legend .legname,
+body.ddae-dark .stats-graph-legend .legright,
+body.ddae-dark .stat-graph-modal-legend .legname,
+body.ddae-dark .stat-graph-modal-legend .legright{color:#e5eef7 !important;}
+body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:rgba(143,203,232,0.88);}
 
 
 /* dDAE_2.088 — Statistiche: griglia davvero centrata nella pagina */
@@ -14939,7 +14960,7 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 }
 
 
-/* dDAE_2.352 — Statistiche: grafici e popup migliorati */
+/* dDAE_2.354 — Statistiche: grafici e popup migliorati */
 .stats-graphs-grid{gap:14px;padding:8px 6px 12px;}
 .stats-graph-card{background:rgba(255,255,255,0.72);border:1px solid rgba(15,23,42,0.08);box-shadow:0 10px 24px rgba(15,23,42,0.08);padding:12px 10px 10px;border-radius:24px;}
 .stats-graph-card-title{min-height:34px;margin-bottom:10px;font-size:13px;letter-spacing:.1px;}
