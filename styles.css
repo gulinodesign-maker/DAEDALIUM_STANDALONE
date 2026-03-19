@@ -14965,8 +14965,8 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   padding:7px 12px;
 }
 #tagColorModal .tag-color-option{
-  height:var(--tag-color-cell-height, 30px);
-  min-height:var(--tag-color-cell-height, 30px);
+  height:var(--tag-color-cell-height, 39px);
+  min-height:var(--tag-color-cell-height, 39px);
   border-radius:var(--tag-color-cell-radius, 12px);
 }
 @media (max-width:430px){
