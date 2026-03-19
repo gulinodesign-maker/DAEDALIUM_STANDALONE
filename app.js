@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.351";
+const BUILD_VERSION = "2.352";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9368,6 +9368,7 @@ function bindHomeStrongTap(){
   go("goPulizie", "pulizie");
   go("goLavanderia", "lavanderia");
   go("goStatistiche", "statistiche");
+  go("goStatPiscina", "statpiscina");
   go("openLauncher", "spese", { before: ()=>{ try{ setSpeseView("list"); }catch(_){} } });
 }
 
@@ -10283,6 +10284,8 @@ if (btnNewGuestTop){
   if (s5){ bindFastTap(s5, () => { hideLauncher(); showPage("statazienda"); }); }
   const s6 = $("#goStatAmministratore");
   if (s6){ bindFastTap(s6, () => { hideLauncher(); showPage("statamministratore"); }); }
+  const s7 = $("#goStatPiscina");
+  if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("statpiscina"); }); }
   const s8 = $("#goStatCancellazioni");
   if (s8){ bindFastTap(s8, () => { hideLauncher(); showPage("statcancellazioni"); }); }
 // STATGEN: topbar tools
@@ -11417,15 +11420,18 @@ function roundRect(ctx, x, y, w, h, r){
 }
 
 
-function __renderLegendRows__(containerId, slices, valueFormatter){
+function __renderLegendRows__(containerId, slices, valueFormatter, opts){
   const leg = document.getElementById(containerId);
   if (!leg) return;
   const fmt = (typeof valueFormatter === "function") ? valueFormatter : ((v)=>String(v));
+  const options = opts || {};
+  const mode = String(options.mode || "share").toLowerCase();
   const total = (Array.isArray(slices) ? slices : []).reduce((a,x)=>a+Math.max(0, Number((x && x.value) || 0)), 0);
   leg.innerHTML = "";
   (Array.isArray(slices) ? slices : []).forEach((sl)=>{
     const v = Math.max(0, Number((sl && sl.value) || 0));
     const pct = total > 0 ? (v / total * 100) : 0;
+    const right = (mode === "absolute") ? fmt(v) : `${pct.toFixed(1)}% · ${fmt(v)}`;
     const row = document.createElement("div");
     row.className = "legrow";
     row.innerHTML = `
@@ -11433,7 +11439,7 @@ function __renderLegendRows__(containerId, slices, valueFormatter){
         <div class="dot" style="background:${sl.color}"></div>
         <div class="legname">${escapeHtml(sl.label)}</div>
       </div>
-      <div class="legright">${pct.toFixed(1)}% · ${fmt(v)}</div>
+      <div class="legright">${right}</div>
     `;
     leg.appendChild(row);
   });
@@ -11472,16 +11478,26 @@ function __openStatGraphPopup__(payload){
   const titleEl = document.getElementById("statGraphModalTitle");
   const detailEl = document.getElementById("statGraphModalDetail");
   const legendEl = document.getElementById("statGraphModalLegend");
+  const canvasWrap = document.querySelector("#statGraphModal .stat-graph-modal-canvas");
   if (titleEl) titleEl.textContent = String(payload.title || "Grafico");
   if (detailEl) detailEl.textContent = String(payload.detail || "");
-  __renderLegendRows__("statGraphModalLegend", Array.isArray(payload.slices) ? payload.slices : [], payload.valueFormatter);
-  drawPie("statGraphModalCanvas", Array.isArray(payload.slices) ? payload.slices : [], {
-    centerTitle: payload.centerTitle != null ? payload.centerTitle : "Totale",
-    centerFormatter: (typeof payload.centerFormatter === "function") ? payload.centerFormatter : euro,
-    showCenter: true,
-    maxSize: 340,
-    minSize: 180
-  });
+  if (legendEl) __renderLegendRows__("statGraphModalLegend", Array.isArray(payload.slices) ? payload.slices : [], payload.valueFormatter, { mode: payload.legendMode || "share" });
+  if (canvasWrap){
+    try{ canvasWrap.classList.toggle("is-bars", String(payload.chartType || "").toLowerCase() === "bars"); }catch(_){ }
+  }
+  if (String(payload.chartType || "").toLowerCase() === "bars"){
+    drawMonthlyPctBars("statGraphModalCanvas", Array.isArray(payload.pctValues) ? payload.pctValues : [], payload.colors || __mensiliPalette12(), {
+      labels: (__MONTHS_IT || []).map(m=>String(m || "").slice(0,1).toUpperCase())
+    });
+  } else {
+    drawPie("statGraphModalCanvas", Array.isArray(payload.slices) ? payload.slices : [], {
+      centerTitle: payload.centerTitle != null ? payload.centerTitle : "Totale",
+      centerFormatter: (typeof payload.centerFormatter === "function") ? payload.centerFormatter : euro,
+      showCenter: true,
+      maxSize: 340,
+      minSize: 180
+    });
+  }
   modal.hidden = false;
   try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
 }
@@ -11509,7 +11525,7 @@ function __occupazioneMensileSlices__(mensili){
     label: String(__MONTHS_IT[i] || `Mese ${i+1}`),
     value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
     color: colors[i % colors.length] || "#2b7cb4"
-  })).filter(x=>x.value > 0);
+  }));
 }
 
 function __operatorGraphColors__(){
@@ -11590,8 +11606,9 @@ function renderStatGrafici(operatoriRows){
     { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
   ];
   const occSlices = __occupazioneMensileSlices__(mensili);
+  const occAvg = occSlices.length ? (occSlices.reduce((a,x)=>a + (Number(x.value || 0) || 0), 0) / occSlices.length) : 0;
 
-  drawPie("statGrafOccCanvas", occSlices.length ? occSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Occup.", centerFormatter: (n)=>`${Number(n || 0).toFixed(1)}%`, showCenter: false, maxSize: 170, minSize: 120 });
+  drawMonthlyPctBars("statGrafOccCanvas", mensili.occPctByMonth || [], __mensiliPalette12(), { labels: (__MONTHS_IT || []).map(m=>String(m || "").slice(0,1).toUpperCase()) });
   drawPie("statGrafRicevuteCanvas", ricevuteSlices, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
   drawPie("statGrafBookingCanvas", bookingSlices, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
   drawPie("statGrafCancCanvas", cancSlices, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
@@ -11600,12 +11617,17 @@ function renderStatGrafici(operatoriRows){
 
   __bindStatGraphPopup__("statGrafOccCanvas", {
     title: "Occupazione mensile",
-    detail: `Anno solare ${year} · percentuale media mensile di occupazione`,
+    detail: `Anno solare ${year} · valori mensili allineati alla pagina Mensili`,
     slices: occSlices,
-    valueFormatter: (v)=>`${Number(v || 0).toFixed(1)}%`,
-    centerTitle: "Media",
-    centerFormatter: (n)=>`${Number(n || 0).toFixed(1)}%`
+    pctValues: mensili.occPctByMonth || [],
+    colors: __mensiliPalette12(),
+    chartType: "bars",
+    legendMode: "absolute",
+    valueFormatter: (v)=>`${Number(v || 0).toFixed(0)}%`
   });
+  const occNote = document.getElementById("statGrafOccNote");
+  if (occNote) occNote.textContent = `Anno ${year} · media ${occAvg.toFixed(1)}%`;
+
   __bindStatGraphPopup__("statGrafRicevuteCanvas", {
     title: "Con ricevuta / Senza ricevuta",
     detail: `Anno solare ${year} · distribuzione degli incassi`,

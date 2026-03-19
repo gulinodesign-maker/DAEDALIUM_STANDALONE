@@ -14937,3 +14937,25 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
   -webkit-touch-callout:none;
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* dDAE_2.352 — Statistiche: grafici e popup migliorati */
+.stats-graphs-grid{gap:14px;padding:8px 6px 12px;}
+.stats-graph-card{background:rgba(255,255,255,0.72);border:1px solid rgba(15,23,42,0.08);box-shadow:0 10px 24px rgba(15,23,42,0.08);padding:12px 10px 10px;border-radius:24px;}
+.stats-graph-card-title{min-height:34px;margin-bottom:10px;font-size:13px;letter-spacing:.1px;}
+.stats-graph-canvas{min-height:178px;padding:4px 0;}
+.stats-graph-canvas canvas{display:block;max-width:100%;}
+.stats-graphs-page .stats-graph-card.is-tappable{transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;}
+.stats-graphs-page .stats-graph-card.is-tappable:active{transform:scale(.985);box-shadow:0 8px 18px rgba(15,23,42,0.10);}
+.stat-graph-modal-card{width:min(92vw,440px);max-height:calc(100dvh - var(--safe-top) - 92px);overflow:auto;border-radius:24px;border:1px solid rgba(15,23,42,0.08);box-shadow:0 18px 42px rgba(15,23,42,0.18);}
+.stat-graph-modal-body{padding:16px;gap:12px;}
+.stat-graph-modal-detail{font-size:12px;line-height:1.4;color:rgba(15,23,42,0.68);text-align:center;}
+.stat-graph-modal-canvas{padding:4px 0 2px;}
+.stat-graph-modal-canvas.is-bars canvas{width:min(360px,80vw) !important;height:180px !important;}
+.stat-graph-modal-legend{max-height:min(34dvh,280px);overflow:auto;padding-right:2px;}
+.stats-graph-legend .legrow, .stat-graph-modal-legend .legrow{padding:10px 11px;border-radius:16px;background:rgba(255,255,255,0.92);border:1px solid rgba(15,23,42,0.05);}
+.stats-graph-legend .legname, .stat-graph-modal-legend .legname{font-size:12px;font-weight:800;color:rgba(15,23,42,0.84);}
+.stats-graph-legend .legright, .stat-graph-modal-legend .legright{font-size:12px;font-weight:800;color:rgba(15,23,42,0.72);}
+#statGraphModal, #statPieModal, #statMensiliPieModal, #statSpesePieModal, #adminChartModal{align-items:flex-start;padding:calc(74px + var(--safe-top)) 14px 18px;overflow:auto;}
+#statGraphModal .modal-card, #statPieModal .modal-card, #statMensiliPieModal .modal-card, #statSpesePieModal .modal-card, #adminChartModal .modal-card{margin:0 auto;max-height:calc(100dvh - var(--safe-top) - 92px);overflow:auto;}
+@media (max-width:380px){.stats-graphs-grid{gap:12px;padding:6px 4px 10px;}.stats-graph-card{padding:12px 8px 10px;border-radius:22px;}.stats-graph-canvas{min-height:162px;}}
