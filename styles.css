@@ -9200,12 +9200,18 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   gap:12px;
   padding:0 0 10px 0;
 }
+.tag-color-modal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
 .tag-color-modal-body{
   padding-top:2px;
 }
 .tag-color-modebar{
   display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
+  grid-template-columns:repeat(3, minmax(0, 1fr));
   gap:10px;
   padding:2px 0 12px 0;
 }
@@ -9250,19 +9256,27 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   border-color: rgba(15,23,42,0.88);
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12), inset 0 0 0 1px rgba(255,255,255,0.30);
 }
+.tag-color-modal-confirm,
 .tag-color-modal-close{
   width:42px;
   height:42px;
   min-width:42px;
   border:none;
   border-radius:999px;
-  background:#d73c3c !important;
   color:#ffffff !important;
   display:grid;
   place-items:center;
   padding:0;
   box-shadow:none;
+  opacity:1 !important;
 }
+.tag-color-modal-confirm{
+  background:#4d9cc5 !important;
+}
+.tag-color-modal-close{
+  background:#d73c3c !important;
+}
+.tag-color-modal-confirm span,
 .tag-color-modal-close span{
   display:block;
   font-size:24px;
@@ -11122,7 +11136,7 @@ body[data-role="operatore"] #page-home .home-grid{
 
 
 
-/* dDAE_2.330 — Pagina Stanze */
+/* dDAE_2.376 — Pagina Design */
 .room-settings-shell{
   padding-top: 14px;
 }
@@ -11198,6 +11212,31 @@ body[data-role="operatore"] #page-home .home-grid{
   align-items:center;
   justify-content:flex-start;
 }
+.room-settings-inline-style{
+  justify-content:flex-start;
+}
+.room-settings-subtitle-section{
+  margin-top: -4px;
+}
+.room-settings-style-btn{
+  width: 58px;
+  min-width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  border:1px solid rgba(15,23,42,0.12);
+  background: rgba(77,156,197,0.80);
+  color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  line-height:1;
+  padding:0 16px;
+  text-transform:uppercase;
+  box-shadow:none;
+  backdrop-filter:none;
+}
 .room-settings-dots{
   display:flex;
   flex-wrap:wrap;
@@ -11235,6 +11274,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
+  .room-settings-style-btn{ width:54px; min-width:54px; height:54px; font-size:18px; }
 }
 body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
@@ -11249,6 +11289,9 @@ body.ddae-dark .room-settings-subtitle{
 }
 body.ddae-dark .room-settings-section{
   border-top-color: rgba(148,163,184,0.18);
+}
+body.ddae-dark .room-settings-style-btn{
+  border-color: rgba(148,163,184,0.22);
 }
 
 /* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
@@ -14952,6 +14995,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   gap:var(--tag-color-gap, 4px);
 }
 #tagColorModal .tag-color-option,
+#tagColorModal .tag-color-modal-confirm,
 #tagColorModal .tag-color-modal-close,
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
@@ -15139,4 +15183,193 @@ body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
+
+
+/* dDAE_2.380 — Impostazioni: dark mode stile home */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(8,18,38,0.80) !important;
+  background-color: rgba(8,18,38,0.80) !important;
+  border: 1px solid rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark{ color: #8fcbe8 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #4fcd66 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffcc00 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f29c50 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #d6c1a0 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #f06a6a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ color: #9b8cff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{ color: #58b7f4 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  color: currentColor !important;
+  stroke: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill{
+  color: #ef4444 !important;
+  border-color: rgba(239,68,68,0.34) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+}
+
+
+/* dDAE_2.380 — Impostazioni dark mode come tasti home */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: #0b1528 !important;
+  background-color: #0b1528 !important;
+  border: 1px solid rgba(83, 104, 134, 0.42) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 24px rgba(3,10,24,0.20) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico *{
+  color: currentColor !important;
+  stroke: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{ color: #3da0ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #9fe870 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffd34d !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f4a955 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #ffd08b !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #d4a574 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ color: #dcc49a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ color: #8ed0ff !important; }
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{ color: #ef8f4a !important; }
+
+
+/* dDAE_2.381 — Impostazioni dark: i custom design non sovrascrivono la resa dark */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{
+  background: #0b1528 !important;
+  background-color: #0b1528 !important;
+  border-color: rgba(83,104,134,0.42) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 24px rgba(3,10,24,0.20) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+
+/* dDAE_2.384 - Design slots */
+.room-settings-slots{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:14px;
+}
+.room-settings-slot-btn{
+  position:relative;
+  min-height:88px;
+  aspect-ratio:1 / 1;
+  border-radius:24px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:#ffffff;
+  color: var(--ico-blue-night);
+  -webkit-text-fill-color: var(--ico-blue-night);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  font-weight:900;
+  line-height:1;
+  padding:0;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.room-settings-slot-btn::after{
+  content:"";
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.14);
+}
+.room-settings-slot-btn.is-saved::after{
+  background:rgba(52,199,89,0.92);
+}
+.room-settings-slot-btn:active{
+  transform:scale(0.985);
+}
+@media (max-width: 390px){
+  .room-settings-slot-btn{
+    min-height:76px;
+    border-radius:22px;
+    font-size:26px;
+  }
+}
+body.ddae-dark .room-settings-slot-btn{
+  background:#0b1528;
+  border-color: rgba(148,163,184,0.22);
+  color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+}
+body.ddae-dark .room-settings-slot-btn::after{
+  background:rgba(148,163,184,0.34);
+}
+body.ddae-dark .room-settings-slot-btn.is-saved::after{
+  background:rgba(52,199,89,0.92);
+}
+
+/* dDAE_2.384 - Home 3x3 centrata */
+#page-home .home-page{
+  width:100% !important;
+  align-items:center !important;
+}
+#page-home .home-grid{
+  width:min(520px, calc(100vw - 24px)) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  transform:none !important;
+}
+#page-home .home-year-pill{
+  align-self:center !important;
 }
