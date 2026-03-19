@@ -15171,7 +15171,7 @@ body.ddae-dark #page-statspese .stat-val{
 }
 
 
-/* dDAE_2.378 — Impostazioni: dark mode reale sui tasti */
+/* dDAE_2.379 — Impostazioni: dark mode stile home */
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
@@ -15210,3 +15210,53 @@ body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label{
   stroke: #ef4444 !important;
   -webkit-text-fill-color: #ef4444 !important;
 }
+
+
+/* dDAE_2.379 — Impostazioni dark mode come tasti home */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: #0b1528 !important;
+  background-color: #0b1528 !important;
+  border: 1px solid rgba(83, 104, 134, 0.42) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 24px rgba(3,10,24,0.20) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico *{
+  color: currentColor !important;
+  stroke: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{ color: #3da0ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #9fe870 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffd34d !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f4a955 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #ffd08b !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #d4a574 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{ color: #dcc49a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ color: #8ed0ff !important; }
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{ color: #ef8f4a !important; }
