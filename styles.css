@@ -9205,7 +9205,7 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 .tag-color-modebar{
   display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(2, minmax(0, 1fr));
   gap:10px;
   padding:2px 0 12px 0;
 }

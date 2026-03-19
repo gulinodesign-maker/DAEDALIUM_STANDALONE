@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.375
+ * Build: 2.374
  */
-const BUILD_VERSION = "2.375";
+const BUILD_VERSION = "2.374";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -290,7 +290,7 @@ function __filterSpeseByCardDateRange__(rows, fromISO, toISO){
     const d = __spesaCardDateISO__(r);
     if (!d) return false;
     return d >= from && d <= to;
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current && typeof current === 'object' ? current.bg : current) || 'blue-4' });
+  });
 }
 
 
@@ -6754,7 +6754,6 @@ function __sanitizeLaundryCatalogList__(list, { fallbackToDefault = true } = {})
       prezzo: isFinite(priceNum) && priceNum >= 0 ? Math.round(priceNum * 100) / 100 : 0,
       colore: __normalizeLaundryColor__(item?.colore ?? item?.color ?? legacy?.colore ?? 'blue'),
       coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor ?? legacy?.coloreTesto ?? ''),
-      coloreBordo: __normalizeOptionalOperatoreColor__(item?.coloreBordo ?? item?.borderColor ?? legacy?.coloreBordo ?? ''),
     });
     seen.add(code);
   });
@@ -6793,7 +6792,6 @@ function __laundryCatalogMapByCode__(catalog){
       prezzo: (() => { const n = Number(String(item?.prezzo ?? item?.price ?? item?.unitPrice ?? 0).replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
       colore: __normalizeLaundryColor__(item?.colore ?? item?.color ?? 'blue'),
       coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor ?? ''),
-      coloreBordo: __normalizeOptionalOperatoreColor__(item?.coloreBordo ?? item?.borderColor ?? ''),
     });
   });
   return map;
@@ -7005,10 +7003,8 @@ function __tagColorInlineStyle__(bgSpec, fgSpec, opts){
   const main = __operatoreColorHex__(bg);
   const bgOpacity = isFinite(Number(options.opacity)) ? Math.max(0, Math.min(1, Number(options.opacity))) : 0.80;
   const borderOpacity = isFinite(Number(options.borderOpacity)) ? Math.max(0, Math.min(1, Number(options.borderOpacity))) : bgOpacity;
-  const borderSpec = __normalizeOptionalOperatoreColor__(options.border || options.borderSpec || options.borderColor || '');
-  const borderHex = __operatoreColorHex__(borderSpec || bg);
   const fg = __tagColorTextHex__(bg, fgSpec, !!options.preferWhiteText);
-  return `background:${hexToRgba(main, bgOpacity)};background-color:${hexToRgba(main, bgOpacity)};border-width:1px;border-style:solid;border-color:${hexToRgba(borderHex, borderOpacity)};color:${fg};-webkit-text-fill-color:${fg};`;
+  return `background:${hexToRgba(main, bgOpacity)};background-color:${hexToRgba(main, bgOpacity)};border-color:${hexToRgba(main, borderOpacity)};color:${fg};-webkit-text-fill-color:${fg};`;
 }
 
 function __tagColorPairFromValue__(input, fallbackBg){
@@ -7017,12 +7013,11 @@ function __tagColorPairFromValue__(input, fallbackBg){
     return {
       bg: __normalizeOperatoreColor__(input.bg || input.background || input.colore || input.color || fallback),
       fg: __normalizeOptionalOperatoreColor__(input.fg || input.foreground || input.text || input.icon || input.coloreTesto || input.textColor || ''),
-      border: __normalizeOptionalOperatoreColor__(input.border || input.borderColor || input.coloreBordo || input.stroke || ''),
     };
   }
   const raw = String(input || '').trim();
-  if (!raw) return { bg: fallback, fg: '', border: '' };
-  return { bg: __normalizeOperatoreColor__(raw), fg: '', border: '' };
+  if (!raw) return { bg: fallback, fg: '' };
+  return { bg: __normalizeOperatoreColor__(raw), fg: '' };
 }
 
 function __launcherVisualNormalize__(value, fallbackFg){
@@ -7031,18 +7026,17 @@ function __launcherVisualNormalize__(value, fallbackFg){
     return {
       fg: __normalizeOperatoreColor__(value.fg || value.foreground || value.color || fallback),
       bg: __normalizeOptionalOperatoreColor__(value.bg || value.background || ''),
-      border: __normalizeOptionalOperatoreColor__(value.border || value.borderColor || value.stroke || ''),
     };
   }
   const raw = String(value || '').trim();
-  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '', border: '' };
+  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '' };
 }
 
-function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec, borderSpec){
+function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
   try{
     const btn = document.getElementById(id);
     if (!btn) return;
-    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:borderSpec || '' }));
+    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }));
   }catch(_){ }
 }
 
@@ -7167,8 +7161,7 @@ function __launcherIconApplyToButton__(btn){
     if (btn.id === 'homeYearPill'){
       btn.style.color = hex;
       btn.style.webkitTextFillColor = hex;
-      const borderHex = visual.border ? __operatoreColorHex__(visual.border) : (bgHex || hex);
-      btn.style.borderColor = borderHex ? hexToRgba(borderHex, 0.80) : hex;
+      btn.style.borderColor = bgHex ? hexToRgba(bgHex, 0.80) : hex;
       btn.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
       btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
       return;
@@ -7180,8 +7173,7 @@ function __launcherIconApplyToButton__(btn){
         glyph.style.webkitTextFillColor = hex;
         glyph.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
         glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
-        const borderHex = visual.border ? __operatoreColorHex__(visual.border) : bgHex;
-        glyph.style.borderColor = borderHex ? hexToRgba(borderHex, 0.80) : '';
+        glyph.style.borderColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
         glyph.style.backdropFilter = bgHex ? 'none' : '';
         glyph.style.webkitBackdropFilter = bgHex ? 'none' : '';
       }
@@ -7198,7 +7190,7 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      const resolvedBorder = visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
+      const resolvedBorder = bgHex ? hexToRgba(bgHex, 0.24) : '';
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
@@ -7236,12 +7228,11 @@ function __launcherIconApplyAll__(){
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
   const key = String(id || '').trim();
   if (!key) return;
-  const rawMode = String(mode || 'fg').trim().toLowerCase();
-  const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
+  const normalizedMode = String(mode || 'fg').trim().toLowerCase() === 'bg' ? 'bg' : 'fg';
   const map = __launcherIconColorMapRead__();
   const current = __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
-  current[normalizedMode] = normalizedMode === 'bg' ? __normalizeOperatoreColor__(spec || current.bg || 'blue-4') : __normalizeOperatoreColor__(spec || current[normalizedMode] || current.fg || 'blue-4');
-  map[key] = { fg: current.fg, bg: current.bg || '', border: current.border || '' };
+  current[normalizedMode] = normalizedMode === 'bg' ? __normalizeOperatoreColor__(spec || current.bg || 'blue-4') : __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
+  map[key] = { fg: current.fg, bg: current.bg || '' };
   __launcherIconColorMapWrite__(map);
   const btn = document.getElementById(key);
   if (btn) __launcherIconApplyToButton__(btn);
@@ -7304,11 +7295,11 @@ function __bindLauncherIconLongPress__(btn){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const inSettingsPage = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
         __tagColorPopupOpen__('launcher-icon', __launcherIconVisualFor__(btn.id), (payload) => {
-          const nextSpec = payload?.spec || payload?.colors?.[payload?.mode || 'fg'] || __launcherIconSpecFor__(btn.id);
+          const nextSpec = payload?.spec || payload?.colors?.fg || __launcherIconSpecFor__(btn.id);
           __launcherIconSaveColor__(btn.id, nextSpec, payload?.mode || 'fg');
           setSuppress(1800);
           keepCurrentLauncherPage();
-        }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
+        }, { supportsBg:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const cancelHold = (ev) => {
@@ -7496,7 +7487,6 @@ function getChannelCatalogFromSettings(){
       iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
       colore: __normalizeChannelColor__(item?.colore),
       coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
-      coloreBordo: __normalizeChannelTextColor__(item?.coloreBordo ?? item?.borderColor),
     })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
   }catch(_){
     return [];
@@ -7511,7 +7501,6 @@ async function saveChannelCatalogToSettings(list){
     iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
     colore: __normalizeChannelColor__(item?.colore),
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
-    coloreBordo: __normalizeChannelTextColor__(item?.coloreBordo ?? item?.borderColor),
   })).filter(item => item.nome);
   await api("impostazioni", { method:"POST", body:{ channel_catalogo: clean }, showLoader:true });
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -7545,7 +7534,6 @@ function applySelectedChannelToGuestForm(channelId, { preserveManual=false } = {
   try{ state.guestChannelColor = item ? String(item.colore) : ''; }catch(_){ }
   try{ state.guestChannelTextColor = item ? String(item.coloreTesto || '') : ''; }catch(_){ }
   try{ state.guestChannelInitial = item ? String(item.iniziale || __channelInitialFromName__(item.nome)) : ''; }catch(_){ }
-  try{ state.guestChannelBorderColor = item ? String(item.coloreBordo || '') : ''; }catch(_){ }
   try{ state.guestChannelCommissionPct = item ? Number(item.commissione || 0) : 0; }catch(_){ }
   try{ recalcGuestCommission(); }catch(_){ }
   if (!preserveManual){ try{ refreshFloatingLabels(); }catch(_){ } }
@@ -7556,10 +7544,9 @@ function getGuestChannelBadgeData(item){
   const catalogItem = id ? getChannelCatalogItemById(id) : null;
   const color = __normalizeChannelColor__(catalogItem?.colore || item?.channel_colore || item?.channelColor || 'orange');
   const textColor = __normalizeChannelTextColor__(catalogItem?.coloreTesto || item?.channel_colore_testo || item?.channelColorText || '');
-  const borderColor = __normalizeChannelTextColor__(catalogItem?.coloreBordo || item?.channel_colore_bordo || item?.channelBorderColor || '');
   const initial = String(catalogItem?.iniziale || item?.channel_iniziale || item?.channelInitial || __channelInitialFromName__(catalogItem?.nome || item?.channel_nome || item?.channelName || '')).trim().slice(0,1).toUpperCase() || 'C';
   const name = String(catalogItem?.nome || item?.channel_nome || item?.channelName || '').trim();
-  return { color, textColor, borderColor, style: __tagColorInlineStyle__(color, textColor, { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:borderColor }), initial, name };
+  return { color, textColor, style: __tagColorInlineStyle__(color, textColor, { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }), initial, name };
 }
 
 function __operatoriCatalogDefaultFromLegacy__(){
@@ -7590,7 +7577,6 @@ function getOperatoriCatalogFromSettings(){
       benzina: (() => { const n = Number(String(item?.benzina ?? "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
       colore: __normalizeOperatoreColor__(item?.colore),
       coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor),
-      coloreBordo: __normalizeOptionalOperatoreColor__(item?.coloreBordo ?? item?.borderColor),
     })).filter(item => item.nome);
   }catch(_){
     return __operatoriCatalogDefaultFromLegacy__();
@@ -7605,7 +7591,6 @@ async function saveOperatoriCatalogToSettings(list){
     benzina: (() => { const n = Number(String(item?.benzina ?? "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
     colore: __normalizeOperatoreColor__(item?.colore),
     coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor),
-    coloreBordo: __normalizeOptionalOperatoreColor__(item?.coloreBordo ?? item?.borderColor),
   })).filter(item => item.nome);
   const firstThree = clean.slice(0, 3).map(item => item.nome);
   await api("impostazioni", {
@@ -7794,7 +7779,6 @@ async function saveImpostazioniPage() {
 const __operatoriPageUi = {
   color: "blue-2",
   textColor: "",
-  borderColor: "",
   editingId: "",
   tones: {},
 };
@@ -7843,15 +7827,15 @@ function __operatoriSetSelectedColor__(color){
   });
   __operatoriPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#operatoriColorGrid', __operatoriPageUi);
-  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
 function __operatoriSetSelectedTextColor__(color){
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, colors:{ bg:'blue-4', fg:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -7873,25 +7857,18 @@ function __tagColorPopupSwallowGhostTap__(ev){
 function __tagColorPopupSelectedSpec__(){
   const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
-  if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
   return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4');
 }
 
 function __tagColorPopupRefreshModeButtons__(){
   const bar = document.getElementById('tagColorModeBar');
   if (!bar) return;
-  const modes = [
-    { key:'bg', enabled: !!__tagColorPopupState__.supportsBg },
-    { key:'border', enabled: !!__tagColorPopupState__.supportsBorder },
-    { key:'fg', enabled: !!__tagColorPopupState__.supportsFg },
-  ];
-  const visibleCount = modes.filter(item => item.enabled).length;
-  bar.hidden = visibleCount <= 1;
+  const dual = !!(__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg);
+  bar.hidden = !dual;
   bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
-    const meta = modes.find(item => item.key === mode);
-    const enabled = !!meta?.enabled;
-    btn.hidden = visibleCount <= 1 || !enabled;
+    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : !!__tagColorPopupState__.supportsFg;
+    btn.hidden = !dual || !enabled;
     btn.disabled = !enabled;
     btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
   });
@@ -7945,12 +7922,12 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
   __tagColorPopupState__.supportsBg = !!opts.supportsBg;
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
-  __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.colors = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
-  const hasManyModes = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1;
-  const requestedMode = String(opts.defaultMode || (hasManyModes ? __tagColorPopupLastDualMode__ : (__tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg'))) || 'fg').trim().toLowerCase();
-  const fallbackMode = __tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg');
-  __tagColorPopupState__.mode = (requestedMode === 'bg' && __tagColorPopupState__.supportsBg) ? 'bg' : ((requestedMode === 'border' && __tagColorPopupState__.supportsBorder) ? 'border' : ((requestedMode === 'fg' && __tagColorPopupState__.supportsFg) ? 'fg' : fallbackMode));
+  const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : 'fg') || 'fg').trim().toLowerCase();
+  __tagColorPopupState__.mode = (requestedMode === 'bg' && __tagColorPopupState__.supportsBg) ? 'bg' : 'fg';
+  if (__tagColorPopupState__.mode === 'fg' && !__tagColorPopupState__.supportsFg && __tagColorPopupState__.supportsBg) {
+    __tagColorPopupState__.mode = 'bg';
+  }
   __tagColorPopupRefreshSelection__();
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = Date.now() + 500;
@@ -7964,16 +7941,15 @@ function __tagColorPopupClose__(){
   if (!modal) return;
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
-  if ([__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1) {
-    __tagColorPopupLastDualMode__ = ['bg','border','fg'].includes(__tagColorPopupState__.mode) ? __tagColorPopupState__.mode : 'bg';
+  if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
+    __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
   __tagColorPopupState__.target = '';
   __tagColorPopupState__.onSelect = null;
   __tagColorPopupState__.mode = 'fg';
   __tagColorPopupState__.supportsBg = false;
   __tagColorPopupState__.supportsFg = true;
-  __tagColorPopupState__.supportsBorder = false;
-  __tagColorPopupState__.colors = { bg:'blue-4', fg:'', border:'' };
+  __tagColorPopupState__.colors = { bg:'blue-4', fg:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -7981,27 +7957,24 @@ function __tagColorPopupClose__(){
 function __openTagColorPickerFor__(target){
   const key = String(target || '').trim().toLowerCase();
   if (key === 'operatore'){
-    __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '', border: __operatoriPageUi.borderColor || '' }, (payload) => {
+    __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __operatoriSetSelectedColor__(payload?.spec || __operatoriPageUi.color || 'blue-3');
-      else if ((payload?.mode || 'bg') === 'border') __operatoriSetSelectedBorderColor__(payload?.spec || __operatoriPageUi.borderColor || __operatoriPageUi.color || 'blue-3');
       else __operatoriSetSelectedTextColor__(payload?.spec || __operatoriPageUi.textColor || __operatoriPageUi.color || 'blue-3');
-    }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
+    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
     return;
   }
   if (key === 'channel'){
-    __tagColorPopupOpen__('channel', { bg: __channelPageUi.color || 'orange-3', fg: __channelPageUi.textColor || '', border: __channelPageUi.borderColor || '' }, (payload) => {
+    __tagColorPopupOpen__('channel', { bg: __channelPageUi.color || 'orange-3', fg: __channelPageUi.textColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __channelSetSelectedColor__(payload?.spec || __channelPageUi.color || 'orange-3');
-      else if ((payload?.mode || 'bg') === 'border') __channelSetSelectedBorderColor__(payload?.spec || __channelPageUi.borderColor || __channelPageUi.color || 'orange-3');
       else __channelSetSelectedTextColor__(payload?.spec || __channelPageUi.textColor || __channelPageUi.color || 'orange-3');
-    }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:'orange-3' });
+    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'orange-3' });
     return;
   }
   if (key === 'lavanderia'){
-    __tagColorPopupOpen__('lavanderia', { bg: __laundryCatalogPageUi.color || 'blue-3', fg: __laundryCatalogPageUi.textColor || '', border: __laundryCatalogPageUi.borderColor || '' }, (payload) => {
+    __tagColorPopupOpen__('lavanderia', { bg: __laundryCatalogPageUi.color || 'blue-3', fg: __laundryCatalogPageUi.textColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __laundryCatalogSetSelectedColor__(payload?.spec || __laundryCatalogPageUi.color || 'blue-3');
-      else if ((payload?.mode || 'bg') === 'border') __laundryCatalogSetSelectedBorderColor__(payload?.spec || __laundryCatalogPageUi.borderColor || __laundryCatalogPageUi.color || 'blue-3');
       else __laundryCatalogSetSelectedTextColor__(payload?.spec || __laundryCatalogPageUi.textColor || __laundryCatalogPageUi.color || 'blue-3');
-    }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
+    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
   }
 }
 
@@ -8024,10 +7997,8 @@ function __operatoriOpenModal__(item){
   if (!__operatoriPageUi.tones || !Object.keys(__operatoriPageUi.tones).length) __initColorToneMap__(__operatoriPageUi, 'blue');
   if (delBtn) delBtn.hidden = !current;
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
-  __operatoriPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
   __operatoriSetSelectedColor__(current?.colore || 'blue-2');
   __operatoriSetSelectedTextColor__(__operatoriPageUi.textColor || '');
-  __operatoriSetSelectedBorderColor__(__operatoriPageUi.borderColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8045,11 +8016,9 @@ function __operatoriCloseModal__(){
   });
   __operatoriPageUi.editingId = '';
   __operatoriPageUi.textColor = '';
-  __operatoriPageUi.borderColor = '';
   __initColorToneMap__(__operatoriPageUi, 'blue');
   __operatoriSetSelectedColor__('blue-2');
   __operatoriSetSelectedTextColor__('');
-  __operatoriSetSelectedBorderColor__('');
 }
 
 async function renderOperatoriPage(){
@@ -8068,7 +8037,7 @@ async function renderOperatoriPage(){
     <article class="operatori-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -8144,7 +8113,6 @@ function setupOperatoriPage(){
         benzina: Math.round(benzina * 100) / 100,
         colore: __operatoriPageUi.color || 'blue',
         coloreTesto: __operatoriPageUi.textColor || '',
-        coloreBordo: __operatoriPageUi.borderColor || '',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -8220,12 +8188,12 @@ function __channelSetSelectedColor__(color){
   });
   __channelPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
 }
 
 function __channelSetSelectedTextColor__(color){
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
 }
 
 function __channelOpenModal__(item){
@@ -8247,10 +8215,8 @@ function __channelOpenModal__(item){
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
-  __channelPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
   __channelSetSelectedColor__(current?.colore || 'orange-2');
   __channelSetSelectedTextColor__(__channelPageUi.textColor || '');
-  __channelSetSelectedBorderColor__(__channelPageUi.borderColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8267,11 +8233,9 @@ function __channelCloseModal__(){
   });
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
-  __channelPageUi.borderColor = '';
   __initColorToneMap__(__channelPageUi, 'orange');
   __channelSetSelectedColor__('orange-2');
   __channelSetSelectedTextColor__('');
-  __channelSetSelectedBorderColor__('');
 }
 
 async function renderChannelPage(){
@@ -8290,7 +8254,7 @@ async function renderChannelPage(){
     <article class="operatori-item channel-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -8356,7 +8320,6 @@ function setupChannelPage(){
         iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
-        coloreBordo: __channelPageUi.borderColor || '',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -8436,7 +8399,6 @@ function setupTagColorPopup(){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
         if (__tagColorPopupState__.mode === 'bg') __tagColorPopupState__.colors.bg = spec;
-        else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
         if (typeof __tagColorPopupState__.onSelect === 'function') {
@@ -8447,13 +8409,11 @@ function setupTagColorPopup(){
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
       bindFastTap(btn, () => {
-        const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
-        const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
+        const mode = String(btn.dataset.mode || '').trim().toLowerCase() === 'bg' ? 'bg' : 'fg';
         if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
-        if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
         if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
         __tagColorPopupState__.mode = mode;
-        if ([__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1) __tagColorPopupLastDualMode__ = mode;
+        if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) __tagColorPopupLastDualMode__ = mode;
         __tagColorPopupRefreshSelection__();
         try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
       });
@@ -8489,12 +8449,12 @@ function __laundryCatalogSetSelectedColor__(color){
   });
   __laundryCatalogPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#laundryCatalogColorGrid', __laundryCatalogPageUi);
-  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
 }
 
 function __laundryCatalogSetSelectedTextColor__(color){
   __laundryCatalogPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '');
+  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
 }
 
 function __laundryCatalogOpenModal__(item){
@@ -8516,10 +8476,8 @@ function __laundryCatalogOpenModal__(item){
   if (!__laundryCatalogPageUi.tones || !Object.keys(__laundryCatalogPageUi.tones).length) __initColorToneMap__(__laundryCatalogPageUi, 'blue');
   if (delBtn) delBtn.hidden = !current;
   __laundryCatalogPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
-  __laundryCatalogPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
   __laundryCatalogSetSelectedColor__(current?.colore || 'blue-2');
   __laundryCatalogSetSelectedTextColor__(__laundryCatalogPageUi.textColor || '');
-  __laundryCatalogSetSelectedBorderColor__(__laundryCatalogPageUi.borderColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8536,11 +8494,9 @@ function __laundryCatalogCloseModal__(){
   });
   __laundryCatalogPageUi.editingId = '';
   __laundryCatalogPageUi.textColor = '';
-  __laundryCatalogPageUi.borderColor = '';
   __initColorToneMap__(__laundryCatalogPageUi, 'blue');
   __laundryCatalogSetSelectedColor__('blue-2');
   __laundryCatalogSetSelectedTextColor__('');
-  __laundryCatalogSetSelectedBorderColor__('');
 }
 
 async function renderLaundryCatalogPage(){
@@ -8559,7 +8515,7 @@ async function renderLaundryCatalogPage(){
     <article class="operatori-item laundry-component-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"></span>
           <div class="operatori-name">${String(__laundryDisplayTitle__(item, item?.titolo || '') || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -11881,7 +11837,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
   const current = __loadStatCardColorMap__(pageKey);
   Object.keys(map || {}).forEach((key) => {
     const prev = __tagColorPairFromValue__(current[key], map[key] || 'blue-4');
-    current[key] = { bg: prev.bg, fg: map[key] || prev.fg || '', border: prev.border || '' };
+    current[key] = { bg: prev.bg, fg: map[key] || prev.fg || '' };
   });
   __saveStatCardColorMap__(pageKey, current);
 }
@@ -11907,7 +11863,6 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || '#2B7CB4');
     const bgHex = __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
     const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
-    const borderHex = __graphColorValueToHex__(pair.border || pair.bg || bgHex, bgHex);
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
@@ -11915,10 +11870,10 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
     if (el.classList && el.classList.contains('month-row')){
       el.style.setProperty('background', hexToRgba(bgHex, 0.18), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.26)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.26)}`, 'important');
     } else {
       el.style.setProperty('background', hexToRgba(bgHex, 0.10), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.22)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.22)}`, 'important');
     }
     try{
       el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap').forEach((node)=>{
@@ -11927,7 +11882,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
             node.style.setProperty('background', hexToRgba(bgHex, 0.80), 'important');
-            node.style.setProperty('border-color', hexToRgba(borderHex, 0.30), 'important');
+            node.style.setProperty('border-color', hexToRgba(bgHex, 0.30), 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {
@@ -11955,10 +11910,9 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const safeKey = String(cardKey || '').trim();
     const pair = __tagColorPairFromValue__(map[safeKey] || currentPair, currentPair.bg || '#2B7CB4');
     const normalized = __parseOperatoreColorSpec__(payload?.spec || currentPair.bg || '#2B7CB4').spec;
-    if ((payload?.mode || 'bg') === 'border') pair.border = normalized;
-    else if ((payload?.mode || 'bg') === 'bg') pair.bg = normalized;
+    if ((payload?.mode || 'bg') === 'bg') pair.bg = normalized;
     else pair.fg = normalized;
-    if (safeKey) map[safeKey] = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+    if (safeKey) map[safeKey] = { bg: pair.bg, fg: pair.fg || '' };
     __saveStatCardColorMap__(pageKey, map);
     if (pageKey === 'statmensili' && safeKey){
       try{
@@ -11971,7 +11925,7 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const nextHex = __graphColorValueToHex__(pair.bg, currentColor || '#2B7CB4');
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
+  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
 }
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
@@ -14426,15 +14380,13 @@ function __roomsUiTextColor__(spec, fallback, preferWhite = false){
 function __roomsUiButtonStyle__(spec, preferWhite = true){
   const pair = __roomsUiColorPair__(spec, 'blue-4');
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
-  const border = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
-  return `background:${hexToRgba(main, 0.80)};border-color:${hexToRgba(border, 0.80)};color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
+  return `background:${hexToRgba(main, 0.80)};border-color:${hexToRgba(main, 0.80)};color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
 }
 
 function __roomsUiBadgeStyle__(spec){
   const pair = __roomsUiColorPair__(spec, 'blue-4');
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
-  const border = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
-  return `background:${hexToRgba(main, 0.92)};border-color:${hexToRgba(border, 0.55)};color:${__roomsUiTextColor__(pair)};`;
+  return `background:${hexToRgba(main, 0.92)};border-color:${hexToRgba(main, 0.55)};color:${__roomsUiTextColor__(pair)};`;
 }
 
 function __applyRoomsUiConfig__(){
@@ -14446,7 +14398,7 @@ function __applyRoomsUiConfig__(){
       const pair = __roomsUiColorPair__(spec, 'blue-4');
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
       root.style.setProperty(`${prefix}-bg`, hexToRgba(main, 0.95));
-      root.style.setProperty(`${prefix}-border`, hexToRgba(__operatoreColorHex__(pair.border || pair.bg || 'blue-4'), 0.55));
+      root.style.setProperty(`${prefix}-border`, hexToRgba(main, 0.55));
       root.style.setProperty(`${prefix}-fg`, __roomsUiTextColor__(pair));
     };
     setVar('--ddae-room-nights', cfg.nights);
@@ -14461,7 +14413,7 @@ function __applyRoomsUiConfig__(){
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
       root.style.setProperty(`--room${i}`, hexToRgba(main, 0.55));
       root.style.setProperty(`--room${i}-solid`, hexToRgba(main, 0.95));
-      root.style.setProperty(`--room${i}-border`, hexToRgba(__operatoreColorHex__(pair.border || pair.bg || 'blue-4'), 0.55));
+      root.style.setProperty(`--room${i}-border`, hexToRgba(main, 0.55));
       root.style.setProperty(`--room${i}-fg`, __roomsUiTextColor__(pair));
     }
   }catch(_){ }
@@ -14513,30 +14465,29 @@ function __openRoomSettingsColorPicker__(target){
       const pair = __tagColorPairFromValue__(current, 'blue-4');
       const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'blue-4').spec;
       if ((payload?.mode || 'bg') === 'bg') pair.bg = spec;
-      else if ((payload?.mode || 'bg') === 'border') pair.border = spec;
       else pair.fg = spec;
       const next = getRoomsUiConfig();
       if (/^room:\d+$/.test(key)){
         const n = key.split(':')[1];
-        next.rooms[String(n)] = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.rooms[String(n)] = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'nights'){
-        next.nights = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.nights = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'option:m'){
-        next.options.m = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.options.m = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'option:g'){
-        next.options.g = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.options.g = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'option:c'){
-        next.options.c = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.options.c = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'bed:matrimoniale'){
-        next.beds.matrimoniale = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.beds.matrimoniale = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'bed:singolo'){
-        next.beds.singolo = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.beds.singolo = { bg: pair.bg, fg: pair.fg || '' };
       } else if (key === 'bed:culla'){
-        next.beds.culla = { bg: pair.bg, fg: pair.fg || '', border: pair.border || '' };
+        next.beds.culla = { bg: pair.bg, fg: pair.fg || '' };
       }
       await saveRoomsUiConfigToSettings(next, { showToast:true });
     }catch(e){ try{ toast(e?.message || 'Errore colori stanze'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
+  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
 }
 
 function renderRoomSettingsPage(){
@@ -16803,7 +16754,7 @@ function renderGuestCards(){
         </div>
         <div class="guest-meta-right" aria-label="Stato">
           ${buildNightsDotHTML(stayNights)}
-          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:channelBadge.borderColor || '' }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
+          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
@@ -20359,7 +20310,7 @@ function renderCalendarioWeek(){
           if (info.channelInitial){
             const ch = document.createElement("span");
             ch.className = `cal-channel-tag operatori-tag color-${info.channelColor || "orange"}`;
-            ch.setAttribute('style', info.channelStyle || __tagColorInlineStyle__(info.channelColor || 'orange', info.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:info.channelBorderColor || '' }));
+            ch.setAttribute('style', info.channelStyle || __tagColorInlineStyle__(info.channelColor || 'orange', info.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }));
             ch.textContent = String(info.channelInitial).slice(0,1).toUpperCase();
             chrome.appendChild(ch);
           }
@@ -20645,7 +20596,7 @@ function buildCalendarCellPayload(info, room, dateIso){
     channelInitial: String(channelBadge?.initial || info?.channelInitial || '').trim(),
     channelColor: String(channelBadge?.color || info?.channelColor || 'orange').trim(),
     channelTextColor: String(channelBadge?.textColor || info?.channelTextColor || '').trim(),
-    channelStyle: String(channelBadge?.style || info?.channelStyle || __tagColorInlineStyle__(channelBadge?.color || info?.channelColor || 'orange', channelBadge?.textColor || info?.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:channelBadge?.borderColor || info?.channelBorderColor || '' })),
+    channelStyle: String(channelBadge?.style || info?.channelStyle || __tagColorInlineStyle__(channelBadge?.color || info?.channelColor || 'orange', channelBadge?.textColor || info?.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false })),
     beds,
     mgc: [
       { short:'M', label:'Matrimonio', on: !!(info && info.mOn) },
@@ -20669,7 +20620,7 @@ function buildCalendarCellZoomMarkup(payload){
   for (let i = 0; i < (data.beds?.lettoS || 0); i++) dots.push('<span class="bed-dot bed-dot-s"></span>');
   for (let i = 0; i < (data.beds?.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
   const flags = (Array.isArray(data.mgc) ? data.mgc : []).filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
-  const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}" style="${escapeHtml(data.channelStyle || __tagColorInlineStyle__(data.channelColor || 'orange', data.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:data.channelBorderColor || '' }))}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
+  const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}" style="${escapeHtml(data.channelStyle || __tagColorInlineStyle__(data.channelColor || 'orange', data.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
   return `
     <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
@@ -21066,7 +21017,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelBorderColor: badge.borderColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:badge.borderColor || '' }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }) });
       }
     }
   }
@@ -21119,7 +21070,7 @@ function buildWeekOccupancy(weekStart){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelBorderColor: badge.borderColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:badge.borderColor || '' }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }) });
       }
     }
   }
