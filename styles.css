@@ -15047,3 +15047,58 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
   user-select:none !important;
   -webkit-touch-callout:none !important;
 }
+
+
+/* dDAE_2.365 — Statistiche: card Generali e Spese con dimensioni e tipografia identiche */
+#page-statgen .stats-stack,
+#page-statspese .stats-stack{
+  gap: 18px !important;
+}
+
+#page-statgen .stat-row,
+#page-statspese .stat-row{
+  min-height: 96px !important;
+  padding: 18px 34px 18px 18px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+#page-statgen .stat-name,
+#page-statspese .stat-name{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  font-size: 22px !important;
+  line-height: 1.12 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+#page-statgen .stat-val,
+#page-statspese .stat-val{
+  flex: 0 0 auto !important;
+  min-width: max-content !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: right !important;
+  font-size: 22px !important;
+  line-height: 1.12 !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+  white-space: nowrap !important;
+}
+
+#page-statgen .stat-ico-wrap{
+  display: none !important;
+}
+
+body.ddae-dark #page-statgen .stat-name,
+body.ddae-dark #page-statgen .stat-val,
+body.ddae-dark #page-statspese .stat-name,
+body.ddae-dark #page-statspese .stat-val{
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
