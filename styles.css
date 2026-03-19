@@ -9203,6 +9203,36 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 .tag-color-modal-body{
   padding-top:2px;
 }
+.tag-color-modebar{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+  padding:2px 0 12px 0;
+}
+.tag-color-modebar[hidden]{ display:none !important; }
+.tag-color-mode-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  height:44px;
+  border-radius:16px;
+  border:1px solid rgba(148,163,184,0.18);
+  background:#ffffff;
+  color:#123e7a;
+  font-weight:800;
+  font-size:16px;
+  letter-spacing:0.01em;
+  opacity:0.80;
+  box-shadow:none;
+  padding:0;
+}
+.tag-color-mode-btn.is-active{
+  background:rgba(77,156,197,0.80) !important;
+  border-color:rgba(77,156,197,0.80) !important;
+  color:#ffffff !important;
+}
+.tag-color-mode-btn:disabled{
+  opacity:0.42;
+}
 .tag-color-grid{
   display:grid;
   grid-template-columns:repeat(6, minmax(0, 1fr));
