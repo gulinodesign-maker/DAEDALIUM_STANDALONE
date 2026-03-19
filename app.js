@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.376
+ * Build: 2.377
  */
-const BUILD_VERSION = "2.376";
+const BUILD_VERSION = "2.377";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7847,7 +7847,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, colors:{ bg:'blue-4', border:'', fg:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, onPreview: null, onCancel: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, colors:{ bg:'blue-4', border:'', fg:'' }, initialColors:{ bg:'blue-4', border:'', fg:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -7932,12 +7932,16 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   const grid = document.getElementById('tagColorGrid');
   const opts = (options && typeof options === 'object') ? options : {};
   if (!modal || !grid) return;
+  const normalizedColors = { ...__tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4'), border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || '') };
   __tagColorPopupState__.target = String(target || '').trim();
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
+  __tagColorPopupState__.onPreview = typeof opts.onPreview === 'function' ? opts.onPreview : null;
+  __tagColorPopupState__.onCancel = typeof opts.onCancel === 'function' ? opts.onCancel : null;
   __tagColorPopupState__.supportsBg = !!opts.supportsBg;
   __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
-  __tagColorPopupState__.colors = { ...__tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4'), border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || '') };
+  __tagColorPopupState__.colors = { ...normalizedColors };
+  __tagColorPopupState__.initialColors = { ...normalizedColors };
   const enabledModes = [];
   if (__tagColorPopupState__.supportsBg) enabledModes.push('bg');
   if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
@@ -7952,9 +7956,27 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   modal.setAttribute('aria-hidden', 'false');
 }
 
-function __tagColorPopupClose__(){
+function __tagColorPopupConfirm__(){
+  try{
+    const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
+    const spec = mode === 'bg'
+      ? __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4')
+      : (mode === 'border'
+        ? __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4')
+        : __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4'));
+    if (typeof __tagColorPopupState__.onSelect === 'function') {
+      try{ __tagColorPopupState__.onSelect({ mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
+    }
+  }catch(_){ }
+  __tagColorPopupClose__(false);
+}
+
+function __tagColorPopupClose__(revertPreview = true){
   const modal = document.getElementById('tagColorModal');
   if (!modal) return;
+  if (revertPreview && typeof __tagColorPopupState__.onCancel === 'function') {
+    try{ __tagColorPopupState__.onCancel({ colors: { ...(__tagColorPopupState__.initialColors || __tagColorPopupState__.colors || {}) } }); }catch(_){ }
+  }
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
@@ -7962,11 +7984,14 @@ function __tagColorPopupClose__(){
   }
   __tagColorPopupState__.target = '';
   __tagColorPopupState__.onSelect = null;
+  __tagColorPopupState__.onPreview = null;
+  __tagColorPopupState__.onCancel = null;
   __tagColorPopupState__.mode = 'fg';
   __tagColorPopupState__.supportsBg = false;
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.supportsFg = true;
   __tagColorPopupState__.colors = { bg:'blue-4', border:'', fg:'' };
+  __tagColorPopupState__.initialColors = { bg:'blue-4', border:'', fg:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -8386,6 +8411,7 @@ function setupTagColorPopup(){
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
+  const confirmBtn = document.getElementById('tagColorModalConfirm');
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -8393,7 +8419,8 @@ function setupTagColorPopup(){
       window.addEventListener('resize', () => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } }, { passive:true });
     }
   }catch(_){ }
-  if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
+  if (closeBtn) bindFastTap(closeBtn, () => __tagColorPopupClose__(true));
+  if (confirmBtn) bindFastTap(confirmBtn, __tagColorPopupConfirm__);
   if (card){
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
@@ -8419,10 +8446,9 @@ function setupTagColorPopup(){
         else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
-        if (typeof __tagColorPopupState__.onSelect === 'function') {
-          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
+        if (typeof __tagColorPopupState__.onPreview === 'function') {
+          try{ __tagColorPopupState__.onPreview({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
         }
-        try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
@@ -14549,7 +14575,28 @@ function __openRoomSettingsColorPicker__(target){
   } else if (key === 'pagebuttons'){
     current = __normalizeRoomsUiPageButtons__(cfg.pageButtons || { bg:'sky-4', border:'sky-4' });
     popupTarget = 'roomsettings-pagebuttons';
-    popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current?.bg || 'sky-4') };
+    popupOptions = {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:false,
+      defaultMode:'bg',
+      fallbackBg:(current?.bg || 'sky-4'),
+      onPreview:(payload) => {
+        try{
+          const demoBtn = document.getElementById('roomSettingsPageButtonDemo');
+          if (!demoBtn) return;
+          const preview = __normalizeRoomsUiPageButtons__(payload?.colors || current || { bg:'sky-4', border:'sky-4' });
+          demoBtn.setAttribute('style', __roomsUiPageButtonStyle__(preview));
+        }catch(_){ }
+      },
+      onCancel:() => {
+        try{
+          const demoBtn = document.getElementById('roomSettingsPageButtonDemo');
+          if (!demoBtn) return;
+          demoBtn.setAttribute('style', __roomsUiPageButtonStyle__(current || { bg:'sky-4', border:'sky-4' }));
+        }catch(_){ }
+      }
+    };
   }
   __tagColorPopupOpen__(popupTarget, current, async(payload) => {
     try{

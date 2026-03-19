@@ -9203,6 +9203,12 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 .tag-color-modal-body{
   padding-top:2px;
 }
+.tag-color-modal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+}
 .tag-color-modebar{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -9250,19 +9256,26 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   border-color: rgba(15,23,42,0.88);
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12), inset 0 0 0 1px rgba(255,255,255,0.30);
 }
+.tag-color-modal-confirm,
 .tag-color-modal-close{
   width:42px;
   height:42px;
   min-width:42px;
   border:none;
   border-radius:999px;
-  background:#d73c3c !important;
   color:#ffffff !important;
   display:grid;
   place-items:center;
   padding:0;
   box-shadow:none;
 }
+.tag-color-modal-confirm{
+  background:#43b5ff !important;
+}
+.tag-color-modal-close{
+  background:#d73c3c !important;
+}
+.tag-color-modal-confirm span,
 .tag-color-modal-close span{
   display:block;
   font-size:24px;
@@ -14952,6 +14965,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   gap:var(--tag-color-gap, 4px);
 }
 #tagColorModal .tag-color-option,
+#tagColorModal .tag-color-modal-confirm,
 #tagColorModal .tag-color-modal-close,
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
