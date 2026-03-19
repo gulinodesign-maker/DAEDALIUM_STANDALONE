@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.374
+ * Build: 2.375
  */
-const BUILD_VERSION = "2.374";
+const BUILD_VERSION = "2.375";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7026,10 +7026,11 @@ function __launcherVisualNormalize__(value, fallbackFg){
     return {
       fg: __normalizeOperatoreColor__(value.fg || value.foreground || value.color || fallback),
       bg: __normalizeOptionalOperatoreColor__(value.bg || value.background || ''),
+      border: __normalizeOptionalOperatoreColor__(value.border || value.borderColor || value.stroke || value.outline || ''),
     };
   }
   const raw = String(value || '').trim();
-  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '' };
+  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '', border: '' };
 }
 
 function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
@@ -7041,7 +7042,7 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
 }
 
 
-const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v1';
+const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
@@ -7086,7 +7087,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
 
 function __launcherIconColorMapRead__(){
   try{
-    const raw = localStorage.getItem(__LAUNCHER_ICON_COLOR_STORAGE_KEY__);
+    const raw = localStorage.getItem(__LAUNCHER_ICON_COLOR_STORAGE_KEY__) || localStorage.getItem('dDAE_launcher_icon_colors_v1');
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return (parsed && typeof parsed === 'object') ? parsed : {};
@@ -7099,7 +7100,7 @@ function __launcherIconColorMapWrite__(map){
 
 function __launcherIconVisualFor__(id){
   const key = String(id || '').trim();
-  if (!key) return { fg:'blue-4', bg:'' };
+  if (!key) return { fg:'blue-4', bg:'', border:'' };
   const map = __launcherIconColorMapRead__();
   return __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
 }
@@ -7153,6 +7154,7 @@ function __launcherIconApplyToButton__(btn){
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
     const bgHex = visual.bg ? __operatoreColorHex__(visual.bg) : '';
+    const borderHex = visual.border ? __operatoreColorHex__(visual.border) : '';
     const setImp = (node, prop, value) => {
       if (!node) return;
       if (value === undefined || value === null || value === '') node.style.removeProperty(prop);
@@ -7161,7 +7163,9 @@ function __launcherIconApplyToButton__(btn){
     if (btn.id === 'homeYearPill'){
       btn.style.color = hex;
       btn.style.webkitTextFillColor = hex;
-      btn.style.borderColor = bgHex ? hexToRgba(bgHex, 0.80) : hex;
+      btn.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : hex);
+      btn.style.borderWidth = '1px';
+      btn.style.borderStyle = 'solid';
       btn.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
       btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
       return;
@@ -7173,7 +7177,9 @@ function __launcherIconApplyToButton__(btn){
         glyph.style.webkitTextFillColor = hex;
         glyph.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
         glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
-        glyph.style.borderColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
+        glyph.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+        glyph.style.borderWidth = '1px';
+        glyph.style.borderStyle = 'solid';
         glyph.style.backdropFilter = bgHex ? 'none' : '';
         glyph.style.webkitBackdropFilter = bgHex ? 'none' : '';
       }
@@ -7190,10 +7196,12 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      const resolvedBorder = bgHex ? hexToRgba(bgHex, 0.24) : '';
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
+      setImp(btn, 'border-width', '1px');
+      setImp(btn, 'border-style', 'solid');
       setImp(btn, 'color', hex);
       setImp(btn, '-webkit-text-fill-color', hex);
       const label = btn.querySelector('.settings-btn-label');
@@ -7228,11 +7236,14 @@ function __launcherIconApplyAll__(){
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
   const key = String(id || '').trim();
   if (!key) return;
-  const normalizedMode = String(mode || 'fg').trim().toLowerCase() === 'bg' ? 'bg' : 'fg';
+  const rawMode = String(mode || 'fg').trim().toLowerCase();
+  const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
   const map = __launcherIconColorMapRead__();
   const current = __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
-  current[normalizedMode] = normalizedMode === 'bg' ? __normalizeOperatoreColor__(spec || current.bg || 'blue-4') : __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
-  map[key] = { fg: current.fg, bg: current.bg || '' };
+  if (normalizedMode === 'bg') current.bg = __normalizeOperatoreColor__(spec || current.bg || 'blue-4');
+  else if (normalizedMode === 'border') current.border = __normalizeOperatoreColor__(spec || current.border || current.bg || current.fg || 'blue-4');
+  else current.fg = __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
+  map[key] = { fg: current.fg, bg: current.bg || '', border: current.border || '' };
   __launcherIconColorMapWrite__(map);
   const btn = document.getElementById(key);
   if (btn) __launcherIconApplyToButton__(btn);
@@ -7295,11 +7306,12 @@ function __bindLauncherIconLongPress__(btn){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const inSettingsPage = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
         __tagColorPopupOpen__('launcher-icon', __launcherIconVisualFor__(btn.id), (payload) => {
-          const nextSpec = payload?.spec || payload?.colors?.fg || __launcherIconSpecFor__(btn.id);
-          __launcherIconSaveColor__(btn.id, nextSpec, payload?.mode || 'fg');
+          const mode = payload?.mode || 'fg';
+          const nextSpec = payload?.spec || payload?.colors?.[mode] || payload?.colors?.fg || __launcherIconSpecFor__(btn.id);
+          __launcherIconSaveColor__(btn.id, nextSpec, mode);
           setSuppress(1800);
           keepCurrentLauncherPage();
-        }, { supportsBg:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
+        }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const cancelHold = (ev) => {
@@ -7835,7 +7847,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, colors:{ bg:'blue-4', fg:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, colors:{ bg:'blue-4', border:'', fg:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -7857,18 +7869,20 @@ function __tagColorPopupSwallowGhostTap__(ev){
 function __tagColorPopupSelectedSpec__(){
   const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
+  if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
   return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4');
 }
 
 function __tagColorPopupRefreshModeButtons__(){
   const bar = document.getElementById('tagColorModeBar');
   if (!bar) return;
-  const dual = !!(__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg);
-  bar.hidden = !dual;
+  const enabledCount = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length;
+  const showBar = enabledCount > 1;
+  bar.hidden = !showBar;
   bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
-    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : !!__tagColorPopupState__.supportsFg;
-    btn.hidden = !dual || !enabled;
+    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : (mode === 'border' ? !!__tagColorPopupState__.supportsBorder : !!__tagColorPopupState__.supportsFg);
+    btn.hidden = !showBar || !enabled;
     btn.disabled = !enabled;
     btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
   });
@@ -7921,13 +7935,15 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.target = String(target || '').trim();
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
   __tagColorPopupState__.supportsBg = !!opts.supportsBg;
+  __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
-  __tagColorPopupState__.colors = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
-  const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : 'fg') || 'fg').trim().toLowerCase();
-  __tagColorPopupState__.mode = (requestedMode === 'bg' && __tagColorPopupState__.supportsBg) ? 'bg' : 'fg';
-  if (__tagColorPopupState__.mode === 'fg' && !__tagColorPopupState__.supportsFg && __tagColorPopupState__.supportsBg) {
-    __tagColorPopupState__.mode = 'bg';
-  }
+  __tagColorPopupState__.colors = { ...__tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4'), border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || '') };
+  const enabledModes = [];
+  if (__tagColorPopupState__.supportsBg) enabledModes.push('bg');
+  if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
+  if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
+  const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
+  __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupRefreshSelection__();
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = Date.now() + 500;
@@ -7948,8 +7964,9 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.onSelect = null;
   __tagColorPopupState__.mode = 'fg';
   __tagColorPopupState__.supportsBg = false;
+  __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.supportsFg = true;
-  __tagColorPopupState__.colors = { bg:'blue-4', fg:'' };
+  __tagColorPopupState__.colors = { bg:'blue-4', border:'', fg:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -8399,6 +8416,7 @@ function setupTagColorPopup(){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
         if (__tagColorPopupState__.mode === 'bg') __tagColorPopupState__.colors.bg = spec;
+        else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
         if (typeof __tagColorPopupState__.onSelect === 'function') {
@@ -8409,8 +8427,10 @@ function setupTagColorPopup(){
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
       bindFastTap(btn, () => {
-        const mode = String(btn.dataset.mode || '').trim().toLowerCase() === 'bg' ? 'bg' : 'fg';
+        const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
+        const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
         if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
+        if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
         if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
         __tagColorPopupState__.mode = mode;
         if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) __tagColorPopupLastDualMode__ = mode;
