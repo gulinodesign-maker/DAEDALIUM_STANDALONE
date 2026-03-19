@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.372";
+const BUILD_VERSION = "2.373";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2323,7 +2323,7 @@ function __openDbMenuModal__(){
 
 // ===== DB Import/Export (LOCAL) =====
 const __DB_EXPORT_KIND__ = "dDAE_export";
-const __DB_SCHEMA_VERSION__ = 1;
+const __DB_SCHEMA_VERSION__ = 2;
 
 function __dbTablesForKind__(kind){
   const k = String(kind || "").toLowerCase();
@@ -2332,6 +2332,50 @@ function __dbTablesForKind__(kind){
 
 function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
+}
+
+function __dbBackupExcludedLocalStorageKeys__(){
+  try{
+    return new Set([
+      "dDAE_pending_build",
+      "dDAE_update_attempt_build",
+      "dDAE_update_attempt_at"
+    ]);
+  }catch(_){ return new Set(); }
+}
+
+function __collectBackupLocalStorage__(){
+  const out = {};
+  try{
+    const excluded = __dbBackupExcludedLocalStorageKeys__();
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      const key = String(k);
+      const lower = key.toLowerCase();
+      const isAppKey = key.startsWith("dDAE_") || key.startsWith("ddae_") || key.startsWith("__ddae_") || lower.startsWith("ddae:");
+      if (!isAppKey) continue;
+      if (excluded.has(key)) continue;
+      try{ out[key] = String(localStorage.getItem(key) ?? ""); }catch(_){ }
+    }
+  }catch(_){ }
+  return out;
+}
+
+function __restoreBackupLocalStorage__(payload){
+  try{
+    if (!payload || typeof payload !== "object") return;
+    const excluded = __dbBackupExcludedLocalStorageKeys__();
+    Object.keys(payload).forEach((key)=>{
+      try{
+        const k = String(key || "");
+        if (!k || excluded.has(k)) return;
+        const v = payload[key];
+        if (v === null || v === undefined) localStorage.removeItem(k);
+        else localStorage.setItem(k, String(v));
+      }catch(_){ }
+    });
+  }catch(_){ }
 }
 
 function __dbFmtDateDdMmYy__(){
@@ -2441,6 +2485,9 @@ async function __dbImport__(kind){
     const allowedTables = new Set(__dbTablesForKind__(kind));
     const ds = data.datasets || {};
     const tablesToWrite = Object.keys(ds).filter(t => allowedTables.has(t));
+    const backupLocalStorage = (data && typeof data.localStorage === "object" && data.localStorage)
+      ? data.localStorage
+      : ((data?.meta && typeof data.meta.localStorage === "object") ? data.meta.localStorage : null);
 
     if (!tablesToWrite.length){
       try{ toast("Nessun dataset da importare", "orange"); }catch(_){}
@@ -2524,6 +2571,8 @@ async function __dbImport__(kind){
         }
       }
     }catch(_){ }
+
+    try{ __restoreBackupLocalStorage__(backupLocalStorage); }catch(_){ }
 
 // Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
@@ -2694,12 +2743,16 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
+    const backupLocalStorage = __collectBackupLocalStorage__();
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
       datasets,
-      meta: {}
+      localStorage: backupLocalStorage,
+      meta: {
+        localStorage: backupLocalStorage
+      }
     };
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
