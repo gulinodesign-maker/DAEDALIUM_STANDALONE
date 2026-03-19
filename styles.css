@@ -9224,6 +9224,27 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   opacity:0.80;
   box-shadow:none;
   padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.tag-color-mode-btn .ui-ico{
+  width:24px;
+  height:24px;
+  color:currentColor;
+  stroke:currentColor;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+}
+.tag-color-mode-btn .ui-ico rect,
+.tag-color-mode-btn .ui-ico path,
+.tag-color-mode-btn .ui-ico circle,
+.tag-color-mode-btn .ui-ico line,
+.tag-color-mode-btn .ui-ico polyline,
+.tag-color-mode-btn .ui-ico polygon{
+  vector-effect:non-scaling-stroke;
 }
 .tag-color-mode-btn.is-active{
   background:rgba(77,156,197,0.80) !important;
@@ -9232,6 +9253,57 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 .tag-color-mode-btn:disabled{
   opacity:0.42;
+}
+.tag-opacity-popover{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(15,23,42,0.12);
+}
+.tag-opacity-popover[hidden]{
+  display:none !important;
+}
+.tag-opacity-popover-card{
+  width:min(320px, calc(100vw - 56px));
+  border-radius:22px;
+  background:#ffffff;
+  border:1px solid rgba(148,163,184,0.20);
+  box-shadow:0 18px 42px rgba(15,23,42,0.18);
+  padding:18px 16px 16px;
+}
+.tag-opacity-popover-title{
+  font-size:18px;
+  font-weight:800;
+  color:#123e7a;
+  text-align:center;
+  margin-bottom:14px;
+}
+.tag-opacity-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+.tag-opacity-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  min-height:46px;
+  border-radius:16px;
+  border:1px solid rgba(148,163,184,0.22);
+  background:#ffffff;
+  color:#123e7a;
+  font-size:16px;
+  font-weight:800;
+  opacity:0.80;
+  box-shadow:none;
+}
+.tag-opacity-btn.is-active{
+  background:rgba(77,156,197,0.80) !important;
+  border-color:rgba(77,156,197,0.80) !important;
+  color:#ffffff !important;
 }
 .tag-color-grid{
   display:grid;
