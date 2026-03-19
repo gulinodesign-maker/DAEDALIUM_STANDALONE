@@ -14924,16 +14924,16 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 /* dDAE_2.334 — Tag palette stays fully within the iOS viewport */
 #tagColorModal{
   padding:
-    max(10px, env(safe-area-inset-top))
-    14px
-    max(10px, env(safe-area-inset-bottom))
-    14px;
-  overflow:auto;
+    max(8px, env(safe-area-inset-top))
+    12px
+    max(8px, env(safe-area-inset-bottom))
+    12px;
+  overflow:hidden;
   overscroll-behavior:contain;
 }
 #tagColorModal .tag-color-modal-card{
-  width:min(420px, calc(100vw - 28px));
-  max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px);
+  width:min(430px, calc(100vw - 24px));
+  max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
   margin:0 auto;
   display:flex;
   flex-direction:column;
@@ -14942,41 +14942,76 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #tagColorModal .tag-color-modal-body{
   flex:1 1 auto;
   min-height:0;
-  overflow:auto;
+  overflow:hidden;
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
-  padding-right:2px;
+  padding-right:0;
 }
 #tagColorModal .tag-color-grid{
   width:100%;
+  gap:6px;
 }
 #tagColorModal .tag-color-option,
 #tagColorModal .tag-color-modal-close,
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
 }
+#tagColorModal .tag-color-modebar{
+  gap:8px;
+  margin-bottom:8px;
+}
+#tagColorModal .tag-color-mode-btn{
+  min-height:40px;
+  padding:9px 12px;
+}
+#tagColorModal .tag-color-option{
+  height:36px;
+  min-height:36px;
+  border-radius:14px;
+}
 @media (max-height:900px){
   #tagColorModal .tag-color-option{
-    height:48px;
-    border-radius:17px;
+    height:34px;
+    min-height:34px;
+    border-radius:13px;
+  }
+  #tagColorModal .tag-color-grid{
+    gap:5px;
+  }
+  #tagColorModal .tag-color-modebar{
+    margin-bottom:6px;
   }
 }
 @media (max-height:820px){
   #tagColorModal .tag-color-option{
-    height:44px;
-    border-radius:16px;
+    height:32px;
+    min-height:32px;
+    border-radius:12px;
   }
   #tagColorModal .tag-color-grid{
-    gap:8px;
+    gap:4px;
+  }
+  #tagColorModal .tag-color-mode-btn{
+    min-height:36px;
+    padding:7px 10px;
   }
 }
 @media (max-height:740px){
   #tagColorModal .tag-color-option{
-    height:40px;
-    border-radius:15px;
+    height:30px;
+    min-height:30px;
+    border-radius:11px;
   }
   #tagColorModal .tag-color-grid{
-    gap:7px;
+    gap:4px;
+  }
+  #tagColorModal .tag-color-modebar{
+    gap:6px;
+    margin-bottom:4px;
+  }
+  #tagColorModal .tag-color-mode-btn{
+    min-height:34px;
+    padding:6px 9px;
   }
 }
 
