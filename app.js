@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.377
+ * Build: 2.375
  */
-const BUILD_VERSION = "2.377";
+const BUILD_VERSION = "2.375";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4259,7 +4259,6 @@ function openGuestAlertModal(side){
       list.appendChild(card);
     });
   }
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
 }
@@ -7000,26 +6999,11 @@ function __tagColorTextHex__(bgSpec, fgSpec, preferWhite = false){
   return __tagColorTextAutoHex__(bgSpec, preferWhite);
 }
 
-function __normalizeTagOpacity__(value, fallback = 0.80){
-  const n = Number(value);
-  const safe = isFinite(n) ? n : Number(fallback);
-  return Math.max(0.25, Math.min(1, safe || 0.80));
-}
-
-function __resolveTagBgOpacity__(input, fallback = 0.80){
-  try{
-    if (input && typeof input === 'object' && !Array.isArray(input)) {
-      return __normalizeTagOpacity__(input.bgOpacity ?? input.opacity ?? input.backgroundOpacity ?? input.opacitaSfondo, fallback);
-    }
-  }catch(_){ }
-  return __normalizeTagOpacity__(input, fallback);
-}
-
 function __tagColorInlineStyle__(bgSpec, fgSpec, opts){
   const options = (opts && typeof opts === 'object') ? opts : {};
   const bg = __normalizeOperatoreColor__(bgSpec || options.fallbackBg || 'blue-4');
   const main = __operatoreColorHex__(bg);
-  const bgOpacity = __resolveTagBgOpacity__(options.opacity, 0.80);
+  const bgOpacity = isFinite(Number(options.opacity)) ? Math.max(0, Math.min(1, Number(options.opacity))) : 0.80;
   const borderOpacity = isFinite(Number(options.borderOpacity)) ? Math.max(0, Math.min(1, Number(options.borderOpacity))) : bgOpacity;
   const borderSpec = __normalizeOptionalOperatoreColor__(options.border || options.borderSpec || options.borderColor || '');
   const borderHex = __operatoreColorHex__(borderSpec || bg);
@@ -7034,12 +7018,11 @@ function __tagColorPairFromValue__(input, fallbackBg){
       bg: __normalizeOperatoreColor__(input.bg || input.background || input.colore || input.color || fallback),
       fg: __normalizeOptionalOperatoreColor__(input.fg || input.foreground || input.text || input.icon || input.coloreTesto || input.textColor || ''),
       border: __normalizeOptionalOperatoreColor__(input.border || input.borderColor || input.coloreBordo || input.stroke || ''),
-      opacity: __resolveTagBgOpacity__(input, 0.80),
     };
   }
   const raw = String(input || '').trim();
-  if (!raw) return { bg: fallback, fg: '', border: '', opacity:0.80 };
-  return { bg: __normalizeOperatoreColor__(raw), fg: '', border: '', opacity:0.80 };
+  if (!raw) return { bg: fallback, fg: '', border: '' };
+  return { bg: __normalizeOperatoreColor__(raw), fg: '', border: '' };
 }
 
 function __launcherVisualNormalize__(value, fallbackFg){
@@ -7055,12 +7038,11 @@ function __launcherVisualNormalize__(value, fallbackFg){
   return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '', border: '' };
 }
 
-function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec, borderSpec, bgOpacity){
+function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec, borderSpec){
   try{
     const btn = document.getElementById(id);
     if (!btn) return;
-    const safeOpacity = __resolveTagBgOpacity__(bgOpacity, 0.80);
-    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:safeOpacity, borderOpacity:safeOpacity, preferWhiteText:false, border:borderSpec || '' }));
+    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:borderSpec || '' }));
   }catch(_){ }
 }
 
@@ -7564,7 +7546,6 @@ function applySelectedChannelToGuestForm(channelId, { preserveManual=false } = {
   try{ state.guestChannelTextColor = item ? String(item.coloreTesto || '') : ''; }catch(_){ }
   try{ state.guestChannelInitial = item ? String(item.iniziale || __channelInitialFromName__(item.nome)) : ''; }catch(_){ }
   try{ state.guestChannelBorderColor = item ? String(item.coloreBordo || '') : ''; }catch(_){ }
-  try{ state.guestChannelBgOpacity = item ? __resolveTagBgOpacity__(item, 0.80) : 0.80; }catch(_){ }
   try{ state.guestChannelCommissionPct = item ? Number(item.commissione || 0) : 0; }catch(_){ }
   try{ recalcGuestCommission(); }catch(_){ }
   if (!preserveManual){ try{ refreshFloatingLabels(); }catch(_){ } }
@@ -7578,8 +7559,7 @@ function getGuestChannelBadgeData(item){
   const borderColor = __normalizeChannelTextColor__(catalogItem?.coloreBordo || item?.channel_colore_bordo || item?.channelBorderColor || '');
   const initial = String(catalogItem?.iniziale || item?.channel_iniziale || item?.channelInitial || __channelInitialFromName__(catalogItem?.nome || item?.channel_nome || item?.channelName || '')).trim().slice(0,1).toUpperCase() || 'C';
   const name = String(catalogItem?.nome || item?.channel_nome || item?.channelName || '').trim();
-  const bgOpacity = __resolveTagBgOpacity__(catalogItem || item, 0.80);
-  return { color, textColor, borderColor, bgOpacity, style: __tagColorInlineStyle__(color, textColor, { opacity:bgOpacity, borderOpacity:bgOpacity, preferWhiteText:false, border:borderColor }), initial, name };
+  return { color, textColor, borderColor, style: __tagColorInlineStyle__(color, textColor, { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:borderColor }), initial, name };
 }
 
 function __operatoriCatalogDefaultFromLegacy__(){
@@ -7815,7 +7795,6 @@ const __operatoriPageUi = {
   color: "blue-2",
   textColor: "",
   borderColor: "",
-  bgOpacity: 0.80,
   editingId: "",
   tones: {},
 };
@@ -7864,25 +7843,18 @@ function __operatoriSetSelectedColor__(color){
   });
   __operatoriPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#operatoriColorGrid', __operatoriPageUi);
-  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '', __operatoriPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
 }
 
 function __operatoriSetSelectedTextColor__(color){
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '', __operatoriPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
 }
 
-function __operatoriSetSelectedOpacity__(value){
-  __operatoriPageUi.bgOpacity = __resolveTagBgOpacity__(value, 0.80);
-  __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '', __operatoriPageUi.bgOpacity);
-}
-
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'', opacity:0.80 } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
-const __TAG_COLOR_MODE_LONGPRESS_DELAY__ = 500;
-const __TAG_OPACITY_OPTIONS__ = [0.25, 0.50, 0.75, 1];
 function __tagColorPopupGhostTapActive__(){
   try{ return Date.now() < (__tagColorPopupSuppressUntil__ || 0); }catch(_){ return false; }
 }
@@ -7903,37 +7875,6 @@ function __tagColorPopupSelectedSpec__(){
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
   if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
   return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4');
-}
-
-function __tagColorPopupSelectedOpacity__(){
-  return __resolveTagBgOpacity__(__tagColorPopupState__.colors?.opacity, 0.80);
-}
-
-function __tagColorPopupRefreshOpacityButtons__(){
-  const pop = document.getElementById('tagOpacityPopover');
-  if (!pop) return;
-  const current = __tagColorPopupSelectedOpacity__();
-  pop.querySelectorAll('.tag-opacity-btn').forEach((btn) => {
-    const value = __resolveTagBgOpacity__(btn.dataset.opacity, 0.80);
-    btn.classList.toggle('is-active', Math.abs(value - current) < 0.001);
-  });
-}
-
-function __tagOpacityPopoverOpen__(){
-  const pop = document.getElementById('tagOpacityPopover');
-  if (!pop) return;
-  __tagColorPopupState__.mode = 'bg';
-  __tagColorPopupRefreshSelection__();
-  __tagColorPopupRefreshOpacityButtons__();
-  pop.hidden = false;
-  pop.setAttribute('aria-hidden', 'false');
-}
-
-function __tagOpacityPopoverClose__(){
-  const pop = document.getElementById('tagOpacityPopover');
-  if (!pop) return;
-  pop.hidden = true;
-  pop.setAttribute('aria-hidden', 'true');
 }
 
 function __tagColorPopupRefreshModeButtons__(){
@@ -7965,7 +7906,6 @@ function __tagColorPopupRefreshSelection__(){
     btn.classList.toggle('is-selected', spec === selected);
   });
   __tagColorPopupRefreshModeButtons__();
-  __tagColorPopupRefreshOpacityButtons__();
 }
 
 function __tagColorPopupApplyViewportLayout__(){
@@ -8007,7 +7947,6 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
   __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.colors = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
-  __tagColorPopupState__.colors.opacity = __resolveTagBgOpacity__(__tagColorPopupState__.colors.opacity, 0.80);
   const hasManyModes = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1;
   const requestedMode = String(opts.defaultMode || (hasManyModes ? __tagColorPopupLastDualMode__ : (__tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg'))) || 'fg').trim().toLowerCase();
   const fallbackMode = __tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg');
@@ -8016,7 +7955,6 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = Date.now() + 500;
   __tagColorPopupSuppressUntil__ = 0;
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
 }
@@ -8035,8 +7973,7 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.supportsBg = false;
   __tagColorPopupState__.supportsFg = true;
   __tagColorPopupState__.supportsBorder = false;
-  __tagColorPopupState__.colors = { bg:'blue-4', fg:'', border:'', opacity:0.80 };
-  __tagOpacityPopoverClose__();
+  __tagColorPopupState__.colors = { bg:'blue-4', fg:'', border:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -8044,8 +7981,7 @@ function __tagColorPopupClose__(){
 function __openTagColorPickerFor__(target){
   const key = String(target || '').trim().toLowerCase();
   if (key === 'operatore'){
-    __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '', border: __operatoriPageUi.borderColor || '', opacity: __operatoriPageUi.bgOpacity }, (payload) => {
-      if (payload && Object.prototype.hasOwnProperty.call(payload, 'opacity')) __operatoriSetSelectedOpacity__(payload.opacity);
+    __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '', border: __operatoriPageUi.borderColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __operatoriSetSelectedColor__(payload?.spec || __operatoriPageUi.color || 'blue-3');
       else if ((payload?.mode || 'bg') === 'border') __operatoriSetSelectedBorderColor__(payload?.spec || __operatoriPageUi.borderColor || __operatoriPageUi.color || 'blue-3');
       else __operatoriSetSelectedTextColor__(payload?.spec || __operatoriPageUi.textColor || __operatoriPageUi.color || 'blue-3');
@@ -8053,8 +7989,7 @@ function __openTagColorPickerFor__(target){
     return;
   }
   if (key === 'channel'){
-    __tagColorPopupOpen__('channel', { bg: __channelPageUi.color || 'orange-3', fg: __channelPageUi.textColor || '', border: __channelPageUi.borderColor || '', opacity: __channelPageUi.bgOpacity }, (payload) => {
-      if (payload && Object.prototype.hasOwnProperty.call(payload, 'opacity')) __channelSetSelectedOpacity__(payload.opacity);
+    __tagColorPopupOpen__('channel', { bg: __channelPageUi.color || 'orange-3', fg: __channelPageUi.textColor || '', border: __channelPageUi.borderColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __channelSetSelectedColor__(payload?.spec || __channelPageUi.color || 'orange-3');
       else if ((payload?.mode || 'bg') === 'border') __channelSetSelectedBorderColor__(payload?.spec || __channelPageUi.borderColor || __channelPageUi.color || 'orange-3');
       else __channelSetSelectedTextColor__(payload?.spec || __channelPageUi.textColor || __channelPageUi.color || 'orange-3');
@@ -8062,8 +7997,7 @@ function __openTagColorPickerFor__(target){
     return;
   }
   if (key === 'lavanderia'){
-    __tagColorPopupOpen__('lavanderia', { bg: __laundryCatalogPageUi.color || 'blue-3', fg: __laundryCatalogPageUi.textColor || '', border: __laundryCatalogPageUi.borderColor || '', opacity: __laundryCatalogPageUi.bgOpacity }, (payload) => {
-      if (payload && Object.prototype.hasOwnProperty.call(payload, 'opacity')) __laundryCatalogSetSelectedOpacity__(payload.opacity);
+    __tagColorPopupOpen__('lavanderia', { bg: __laundryCatalogPageUi.color || 'blue-3', fg: __laundryCatalogPageUi.textColor || '', border: __laundryCatalogPageUi.borderColor || '' }, (payload) => {
       if ((payload?.mode || 'bg') === 'bg') __laundryCatalogSetSelectedColor__(payload?.spec || __laundryCatalogPageUi.color || 'blue-3');
       else if ((payload?.mode || 'bg') === 'border') __laundryCatalogSetSelectedBorderColor__(payload?.spec || __laundryCatalogPageUi.borderColor || __laundryCatalogPageUi.color || 'blue-3');
       else __laundryCatalogSetSelectedTextColor__(payload?.spec || __laundryCatalogPageUi.textColor || __laundryCatalogPageUi.color || 'blue-3');
@@ -8091,12 +8025,9 @@ function __operatoriOpenModal__(item){
   if (delBtn) delBtn.hidden = !current;
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
   __operatoriPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
-  __operatoriPageUi.bgOpacity = __resolveTagBgOpacity__(current, 0.80);
   __operatoriSetSelectedColor__(current?.colore || 'blue-2');
   __operatoriSetSelectedTextColor__(__operatoriPageUi.textColor || '');
   __operatoriSetSelectedBorderColor__(__operatoriPageUi.borderColor || '');
-  __operatoriSetSelectedOpacity__(__operatoriPageUi.bgOpacity);
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8115,12 +8046,10 @@ function __operatoriCloseModal__(){
   __operatoriPageUi.editingId = '';
   __operatoriPageUi.textColor = '';
   __operatoriPageUi.borderColor = '';
-  __operatoriPageUi.bgOpacity = 0.80;
   __initColorToneMap__(__operatoriPageUi, 'blue');
   __operatoriSetSelectedColor__('blue-2');
   __operatoriSetSelectedTextColor__('');
   __operatoriSetSelectedBorderColor__('');
-  __operatoriSetSelectedOpacity__(0.80);
 }
 
 async function renderOperatoriPage(){
@@ -8139,7 +8068,7 @@ async function renderOperatoriPage(){
     <article class="operatori-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:__resolveTagBgOpacity__(item, 0.80), borderOpacity:__resolveTagBgOpacity__(item, 0.80), preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -8216,7 +8145,6 @@ function setupOperatoriPage(){
         colore: __operatoriPageUi.color || 'blue',
         coloreTesto: __operatoriPageUi.textColor || '',
         coloreBordo: __operatoriPageUi.borderColor || '',
-        bgOpacity: __resolveTagBgOpacity__(__operatoriPageUi.bgOpacity, 0.80),
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -8273,8 +8201,6 @@ function setupOperatoriPage(){
 const __channelPageUi = {
   color: "orange-2",
   textColor: "",
-  borderColor: "",
-  bgOpacity: 0.80,
   editingId: "",
   tones: {},
 };
@@ -8294,17 +8220,12 @@ function __channelSetSelectedColor__(color){
   });
   __channelPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '', __channelPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '');
 }
 
 function __channelSetSelectedTextColor__(color){
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '', __channelPageUi.bgOpacity);
-}
-
-function __channelSetSelectedOpacity__(value){
-  __channelPageUi.bgOpacity = __resolveTagBgOpacity__(value, 0.80);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '', __channelPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', __channelPageUi.borderColor || '');
 }
 
 function __channelOpenModal__(item){
@@ -8327,12 +8248,9 @@ function __channelOpenModal__(item){
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
   __channelPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
-  __channelPageUi.bgOpacity = __resolveTagBgOpacity__(current, 0.80);
   __channelSetSelectedColor__(current?.colore || 'orange-2');
   __channelSetSelectedTextColor__(__channelPageUi.textColor || '');
   __channelSetSelectedBorderColor__(__channelPageUi.borderColor || '');
-  __channelSetSelectedOpacity__(__channelPageUi.bgOpacity);
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8350,12 +8268,10 @@ function __channelCloseModal__(){
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
   __channelPageUi.borderColor = '';
-  __channelPageUi.bgOpacity = 0.80;
   __initColorToneMap__(__channelPageUi, 'orange');
   __channelSetSelectedColor__('orange-2');
   __channelSetSelectedTextColor__('');
   __channelSetSelectedBorderColor__('');
-  __channelSetSelectedOpacity__(0.80);
 }
 
 async function renderChannelPage(){
@@ -8374,7 +8290,7 @@ async function renderChannelPage(){
     <article class="operatori-item channel-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:__resolveTagBgOpacity__(item, 0.80), borderOpacity:__resolveTagBgOpacity__(item, 0.80), preferWhiteText:false, border:item.coloreBordo || '' }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -8441,7 +8357,6 @@ function setupChannelPage(){
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
         coloreBordo: __channelPageUi.borderColor || '',
-        bgOpacity: __resolveTagBgOpacity__(__channelPageUi.bgOpacity, 0.80),
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -8486,73 +8401,11 @@ function setupChannelPage(){
   });
 }
 
-
-function __bindTagColorModeLongPress__(btn, onTap){
-  if (!btn || btn.dataset.longPressBound === '1') return;
-  btn.dataset.longPressBound = '1';
-  let timer = null;
-  let triggered = false;
-  let startX = 0;
-  let startY = 0;
-  const pointOf = (ev) => {
-    const t = ev?.touches?.[0] || ev?.changedTouches?.[0];
-    return { x: Number(t?.clientX ?? ev?.clientX ?? 0), y: Number(t?.clientY ?? ev?.clientY ?? 0) };
-  };
-  const clear = () => { if (timer) clearTimeout(timer); timer = null; };
-  const block = (ev) => {
-    try{ ev.preventDefault(); }catch(_){ }
-    try{ ev.stopPropagation(); }catch(_){ }
-    try{ ev.stopImmediatePropagation(); }catch(_){ }
-  };
-  const start = (ev) => {
-    const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
-    if (rawMode !== 'bg') return;
-    triggered = false;
-    const pt = pointOf(ev);
-    startX = pt.x;
-    startY = pt.y;
-    clear();
-    timer = setTimeout(() => {
-      triggered = true;
-      block(ev);
-      __tagOpacityPopoverOpen__();
-    }, __TAG_COLOR_MODE_LONGPRESS_DELAY__);
-  };
-  const cancel = () => clear();
-  const move = (ev) => {
-    if (!timer) return;
-    const pt = pointOf(ev);
-    if (Math.abs(pt.x - startX) > 12 || Math.abs(pt.y - startY) > 12) clear();
-  };
-  const end = (ev) => {
-    const didLongPress = triggered;
-    clear();
-    if (didLongPress){
-      block(ev);
-      triggered = false;
-      return;
-    }
-    triggered = false;
-    if (typeof onTap === 'function') onTap();
-    block(ev);
-  };
-  btn.addEventListener('pointerdown', start, { passive:false, capture:true });
-  btn.addEventListener('touchstart', start, { passive:false, capture:true });
-  btn.addEventListener('pointermove', move, { passive:true, capture:true });
-  btn.addEventListener('touchmove', move, { passive:true, capture:true });
-  btn.addEventListener('pointerleave', cancel, { passive:false, capture:true });
-  btn.addEventListener('pointercancel', cancel, { passive:false, capture:true });
-  btn.addEventListener('touchcancel', cancel, { passive:false, capture:true });
-  btn.addEventListener('pointerup', end, { passive:false, capture:true });
-  btn.addEventListener('touchend', end, { passive:false, capture:true });
-}
-
 function setupTagColorPopup(){
   const modal = document.getElementById('tagColorModal');
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
-  const confirmBtn = document.getElementById('tagColorModalConfirm');
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -8561,24 +8414,6 @@ function setupTagColorPopup(){
     }
   }catch(_){ }
   if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
-  if (confirmBtn) bindFastTap(confirmBtn, __tagColorPopupClose__);
-  const opacityPopover = document.getElementById('tagOpacityPopover');
-  if (opacityPopover){
-    opacityPopover.addEventListener('click', (ev) => { try{ ev.stopPropagation(); }catch(_){} });
-    opacityPopover.querySelectorAll('.tag-opacity-btn').forEach((btn) => {
-      bindFastTap(btn, () => {
-        const value = __resolveTagBgOpacity__(btn.dataset.opacity, 0.80);
-        __tagColorPopupState__.mode = 'bg';
-        __tagColorPopupState__.colors.opacity = value;
-        __tagColorPopupRefreshSelection__();
-        if (typeof __tagColorPopupState__.onSelect === 'function') {
-          try{ __tagColorPopupState__.onSelect({ mode:'bg', spec: __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4'), opacity:value, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
-        }
-        __tagOpacityPopoverClose__();
-        try{ toast('Opacità aggiornata'); }catch(_){ }
-      });
-    });
-  }
   if (card){
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
@@ -8605,27 +8440,23 @@ function setupTagColorPopup(){
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
         if (typeof __tagColorPopupState__.onSelect === 'function') {
-          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, opacity: __tagColorPopupSelectedOpacity__(), colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
+          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
         }
         try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
-      const activateMode = () => {
+      bindFastTap(btn, () => {
         const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
         const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
         if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
         if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
         if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
-        __tagOpacityPopoverClose__();
         __tagColorPopupState__.mode = mode;
         if ([__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1) __tagColorPopupLastDualMode__ = mode;
         __tagColorPopupRefreshSelection__();
         try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
-      };
-      const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
-      if (rawMode === 'bg') __bindTagColorModeLongPress__(btn, activateMode);
-      else bindFastTap(btn, activateMode);
+      });
     });
   }catch(_){ }
 }
@@ -8645,8 +8476,6 @@ function __applyHomeIconGradients__(){
 const __laundryCatalogPageUi = {
   color: "blue-2",
   textColor: "",
-  borderColor: "",
-  bgOpacity: 0.80,
   editingId: "",
   tones: {},
 };
@@ -8660,17 +8489,12 @@ function __laundryCatalogSetSelectedColor__(color){
   });
   __laundryCatalogPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#laundryCatalogColorGrid', __laundryCatalogPageUi);
-  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '', __laundryCatalogPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '');
 }
 
 function __laundryCatalogSetSelectedTextColor__(color){
   __laundryCatalogPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '', __laundryCatalogPageUi.bgOpacity);
-}
-
-function __laundryCatalogSetSelectedOpacity__(value){
-  __laundryCatalogPageUi.bgOpacity = __resolveTagBgOpacity__(value, 0.80);
-  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '', __laundryCatalogPageUi.bgOpacity);
+  __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '', __laundryCatalogPageUi.borderColor || '');
 }
 
 function __laundryCatalogOpenModal__(item){
@@ -8693,12 +8517,9 @@ function __laundryCatalogOpenModal__(item){
   if (delBtn) delBtn.hidden = !current;
   __laundryCatalogPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
   __laundryCatalogPageUi.borderColor = __normalizeOptionalOperatoreColor__(current?.coloreBordo ?? current?.borderColor);
-  __laundryCatalogPageUi.bgOpacity = __resolveTagBgOpacity__(current, 0.80);
   __laundryCatalogSetSelectedColor__(current?.colore || 'blue-2');
   __laundryCatalogSetSelectedTextColor__(__laundryCatalogPageUi.textColor || '');
   __laundryCatalogSetSelectedBorderColor__(__laundryCatalogPageUi.borderColor || '');
-  __laundryCatalogSetSelectedOpacity__(__laundryCatalogPageUi.bgOpacity);
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -8716,12 +8537,10 @@ function __laundryCatalogCloseModal__(){
   __laundryCatalogPageUi.editingId = '';
   __laundryCatalogPageUi.textColor = '';
   __laundryCatalogPageUi.borderColor = '';
-  __laundryCatalogPageUi.bgOpacity = 0.80;
   __initColorToneMap__(__laundryCatalogPageUi, 'blue');
   __laundryCatalogSetSelectedColor__('blue-2');
   __laundryCatalogSetSelectedTextColor__('');
   __laundryCatalogSetSelectedBorderColor__('');
-  __laundryCatalogSetSelectedOpacity__(0.80);
 }
 
 async function renderLaundryCatalogPage(){
@@ -8740,7 +8559,7 @@ async function renderLaundryCatalogPage(){
     <article class="operatori-item laundry-component-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:__resolveTagBgOpacity__(item, 0.80), borderOpacity:__resolveTagBgOpacity__(item, 0.80), preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false, border:item.coloreBordo || '' }))}"></span>
           <div class="operatori-name">${String(__laundryDisplayTitle__(item, item?.titolo || '') || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -20967,7 +20786,6 @@ function openCalendarCellModal(payload, mode){
       <div class="calendar-cell-status-list">${badges}</div>`;
   }
 
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ document.body.classList.add('modal-open'); }catch(_){ }
@@ -21554,7 +21372,6 @@ async function __openLaundryPricesModal__(){
     const n = Number(prices?.[k] || 0) || 0;
     input.value = n ? String(n.toFixed(2)) : '';
   });
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
@@ -21975,7 +21792,6 @@ function __openLaundryDetailModal__(raw){
       try{ await __shareLaundryDetail__(modal.__currentLaundryItem || item); }catch(_){ toast('Condivisione non disponibile'); }
     });
   }
-  __tagOpacityPopoverClose__();
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
