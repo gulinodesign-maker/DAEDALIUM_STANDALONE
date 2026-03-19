@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.361";
+const BUILD_VERSION = "2.362";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11521,6 +11521,20 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
   try{
     const hex = __getStatCardTextColorHex__(pageKey, cardKey, fallback || '#2B7CB4');
     el.style.setProperty('--cardtext', hex);
+    el.style.setProperty('color', hex, 'important');
+    el.style.setProperty('-webkit-text-fill-color', hex, 'important');
+    try{
+      el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill').forEach((node)=>{
+        try{
+          if (node.classList && node.classList.contains('month-fill')){
+            node.style.setProperty('background', hex, 'important');
+          } else {
+            node.style.setProperty('color', hex, 'important');
+            node.style.setProperty('-webkit-text-fill-color', hex, 'important');
+          }
+        }catch(_){ }
+      });
+    }catch(_){ }
   }catch(_){ }
 }
 

@@ -6880,6 +6880,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   white-space: nowrap;
     text-align: right;
 color: var(--cardtext, var(--mcol,#ff3b30));
+  -webkit-text-fill-color: var(--cardtext, var(--mcol,#ff3b30));
 }
 .month-stack{
   display:flex;
@@ -6944,6 +6945,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
   font-size:18px;
   line-height:1.1;
   color: var(--cardtext, var(--mcol,#ff3b30));
+  -webkit-text-fill-color: var(--cardtext, var(--mcol,#ff3b30));
 }
 
 .month-val{
@@ -6951,6 +6953,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
   font-size:18px;
   white-space:nowrap;
   color: var(--cardtext, var(--mcol,#ff3b30));
+  -webkit-text-fill-color: var(--cardtext, var(--mcol,#ff3b30));
 }
 
 .month-bar{
@@ -6965,8 +6968,8 @@ color: var(--cardtext, var(--mcol,#ff3b30));
   height:100%;
   width:0%;
   border-radius:999px;
-  background:var(--mcol,#ff3b30);
-  transition:width 720ms cubic-bezier(.2,.8,.2,1);
+  background:var(--cardtext, var(--mcol,#ff3b30));
+  transition:width 720ms cubic-bezier(.2,.8,.2,1), background-color 180ms ease;
   box-shadow:0 8px 18px rgba(15,23,42,0.18);
 }
 
@@ -12970,7 +12973,8 @@ body.ddae-dark #statGraphModalClose svg path{
 #page-statgen .stat-row .stat-val,
 #page-statspese .stat-row .stat-name,
 #page-statspese .stat-row .stat-val{
-  color: var(--mcol, var(--statfg, var(--ico-blue-night))) !important;
+  color: var(--cardtext, var(--mcol, var(--statfg, var(--ico-blue-night)))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statfg, var(--ico-blue-night)))) !important;
 }
 body.ddae-dark #page-statgen .stat-row,
 body.ddae-dark #page-statspese .stat-row{
@@ -12986,7 +12990,8 @@ body.ddae-dark #page-statgen .stat-row .stat-name,
 body.ddae-dark #page-statgen .stat-row .stat-val,
 body.ddae-dark #page-statspese .stat-row .stat-name,
 body.ddae-dark #page-statspese .stat-row .stat-val{
-  color: var(--mcol, #6fb7d6) !important;
+  color: var(--cardtext, var(--mcol, #6fb7d6)) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, #6fb7d6)) !important;
 }
 
 
@@ -13007,7 +13012,8 @@ body.ddae-dark #page-statspese .stat-row .stat-val{
 #page-statspese .stat-val{
   width: 100% !important;
   text-align: left !important;
-  color: var(--mcol, #ff3b30) !important;
+  color: var(--cardtext, var(--mcol, #ff3b30)) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, #ff3b30)) !important;
 }
 #page-statgen .stat-val,
 #page-statspese .stat-val{
@@ -13017,7 +13023,8 @@ body.ddae-dark #page-statgen .stat-name,
 body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
-  color: var(--mcol, #6fb7d6) !important;
+  color: var(--cardtext, var(--mcol, #6fb7d6)) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, #6fb7d6)) !important;
 }
 
 
@@ -13057,6 +13064,7 @@ body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-val{
   color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
 
 
@@ -13080,12 +13088,14 @@ body.ddae-dark #page-statspese .stat-val{
 #page-statspese .stat-name,
 #page-statspese .stat-val{
   color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
 }
 body.ddae-dark #page-statgen .stat-name,
 body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
 
 
