@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.371";
+const BUILD_VERSION = "2.372";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7858,7 +7858,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   }
   __tagColorPopupRefreshSelection__();
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
-  __tagColorPopupReadyAt__ = Date.now() + 260;
+  __tagColorPopupReadyAt__ = Date.now() + 500;
   __tagColorPopupSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
