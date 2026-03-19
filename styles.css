@@ -15057,8 +15057,8 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 
 #page-statgen .stat-row,
 #page-statspese .stat-row{
-  min-height: 96px !important;
-  padding: 18px 34px 18px 18px !important;
+  min-height: 67px !important;
+  padding: 13px 34px 13px 18px !important;
   align-items: center !important;
   justify-content: space-between !important;
 }
