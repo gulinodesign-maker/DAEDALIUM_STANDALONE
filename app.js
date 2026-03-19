@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.356";
+const BUILD_VERSION = "2.359";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6113,30 +6113,32 @@ function toISODateLocal(d){
 
 
 function spesaCategoryClass(s){
-  // "campo X": categoria (fallback: aliquotaIva)
+  const key = spesaGraphKeyForItem(s);
+  if (key === "CONTANTI") return "spesa-bg-contanti";
+  if (key === "TASSA_SOGGIORNO") return "spesa-bg-tassa";
+  if (key === "IVA_22") return "spesa-bg-iva22";
+  if (key === "IVA_10") return "spesa-bg-iva10";
+  if (key === "IVA_4") return "spesa-bg-iva4";
+  return ""; // nessun colore
+}
+
+function spesaGraphKeyForItem(s){
   const catRaw = (s?.categoria ?? s?.cat ?? "").toString().trim().toLowerCase();
   const aliq = (s?.aliquotaIva ?? s?.aliquota_iva ?? "").toString().trim();
-
-  // Normalizza varianti
-  if (catRaw.includes("contant")) return "spesa-bg-contanti";
-  if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "spesa-bg-tassa";
-
-  // IVA
+  if (catRaw.includes("contant")) return "CONTANTI";
+  if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "TASSA_SOGGIORNO";
   if (catRaw.includes("iva")){
-    if (catRaw.includes("22")) return "spesa-bg-iva22";
-    if (catRaw.includes("10")) return "spesa-bg-iva10";
-    if (catRaw.includes("4")) return "spesa-bg-iva4";
+    if (catRaw.includes("22")) return "IVA_22";
+    if (catRaw.includes("10")) return "IVA_10";
+    if (catRaw.includes("4")) return "IVA_4";
   }
-
-  // Fallback su aliquota numerica
   const n = parseFloat(String(aliq).replace(",", "."));
   if (!isNaN(n)){
-    if (n >= 21.5) return "spesa-bg-iva22";
-    if (n >= 9.5 && n < 11.5) return "spesa-bg-iva10";
-    if (n >= 3.5 && n < 5.5) return "spesa-bg-iva4";
+    if (n >= 21.5) return "IVA_22";
+    if (n >= 9.5 && n < 11.5) return "IVA_10";
+    if (n >= 3.5 && n < 5.5) return "IVA_4";
   }
-
-  return ""; // nessun colore
+  return "";
 }
 
 
@@ -13154,6 +13156,37 @@ function __syncStatSpeseCardColors__(){
       row.style.setProperty('--statfg', '#ffffff');
     }
   });
+}
+
+function __getSpeseGraphSliceColor__(key, fallback){
+  try{
+    const slices = __speseGraphSlicesCustom__();
+    const found = (Array.isArray(slices) ? slices : []).find((slice)=>String(slice && slice.key || '') === String(key || ''));
+    if (found && found.color) return __graphColorValueToHex__(found.color, fallback || '#2B7CB4');
+  }catch(_){ }
+  return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4');
+}
+
+function __applySpesaCardColor__(el, row){
+  if (!el) return;
+  try{
+    const key = spesaGraphKeyForItem(row);
+    if (!key) return;
+    const fallbackMap = {
+      CONTANTI: (COLORS.CONTANTI || '#2b7cb4'),
+      TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
+      IVA_22: (COLORS.IVA_22 || '#c9772b'),
+      IVA_10: (COLORS.IVA_10 || '#7ac0db'),
+      IVA_4: (COLORS.IVA_4 || '#1f2937')
+    };
+    const hex = __getSpeseGraphSliceColor__(key, fallbackMap[key] || '#2B7CB4');
+    const parsed = parseInt(String(hex || '#2B7CB4').slice(1), 16);
+    const r = (parsed >> 16) & 255;
+    const g = (parsed >> 8) & 255;
+    const b = parsed & 255;
+    el.style.setProperty('--spesa-accent-rgb', `${r}, ${g}, ${b}`);
+    el.style.setProperty('--spesa-accent', hex);
+  }catch(_){ }
 }
 
 function renderStatSpese(){
@@ -21590,6 +21623,7 @@ function renderSpese(){
     el.className = "item spesa-bg";
     const cls = spesaCategoryClass(s);
     if (cls) el.classList.add(cls);
+    __applySpesaCardColor__(el, s);
 
     const importo = Number(s.importoLordo || 0);
     const data = formatShortDateIT(s.dataSpesa || s.data || s.data_spesa || "");

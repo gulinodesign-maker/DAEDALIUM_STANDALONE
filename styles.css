@@ -314,7 +314,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .logo{
   width: 36px; height: 36px;
   border-radius: 12px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   object-fit: cover;
   background: rgba(255,255,255,0.7);
@@ -392,7 +392,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 
 /* dDAE_2.056 — Action buttons vicino ai titoli: fondo bianco (80%) + icona azzurra */
 .icon-btn.icon-btn-whiteblue{
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
   border: 1px solid rgba(15,23,42,0.14);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   backdrop-filter:none;
@@ -878,7 +878,7 @@ input[type="date"]{
   gap: 14px;
 }
 .home-icon{
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   border-radius: 22px;
   padding: 14px 10px 12px;
   background: rgba(255,255,255,0.62);
@@ -901,7 +901,7 @@ input[type="date"]{
   height: 62px;
   border-radius: 20px;
   background: rgba(255,255,255,0.82);
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   box-shadow: 0 16px 42px rgba(15,23,42,0.14);
   display:flex;
   align-items:center;
@@ -1377,7 +1377,7 @@ body::before{
   font-size: clamp(39px, 9.1vw, 70px);
   font-weight: 400;
   color: var(--ico-sky);
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -1496,7 +1496,7 @@ body::before{
   justify-content:center;
   font-size: 40px;
   font-weight: 400;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: var(--glass);
   color: var(--ico-sky);
   box-shadow: none !important;
@@ -1661,7 +1661,7 @@ border: 1px solid var(--border);
   justify-content:center;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(255,255,255,0.74);
   font-weight: 500;
   font-size: 12px;
@@ -3982,7 +3982,7 @@ border-color: rgba(255,255,255,.16);
   height: 36px;
   margin-right: 10px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(52,199,89,0.35);
   font-size: 24px;
   font-weight: 600;
@@ -4308,7 +4308,7 @@ body.perf-lite .guest-booking-block{
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(255,255,255,0.85);
   display:flex;
   align-items:center;
@@ -4325,7 +4325,7 @@ body.perf-lite .guest-booking-block{
 .guest-booking-actions .icon-round-btn:disabled{ opacity: 0.45; }
 
 .guest-booking-actions .mini-btn{
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(255,255,255,0.70);
   border-radius: 12px;
   padding: 8px 10px;
@@ -4507,6 +4507,12 @@ body.perf-lite *::after{
   opacity:.35;
   mix-blend-mode: soft-light;
 }
+.item.spesa-bg{
+  --spesa-accent-rgb: 43, 124, 180;
+  --spesa-accent: rgba(var(--spesa-accent-rgb),1);
+}
+.item.spesa-bg::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg{ border-color: rgba(var(--spesa-accent-rgb), .22) !important; }
 
 /* Mapping colori (ispirati allo screenshot) */
 .item.spesa-bg-contanti::before{ background: rgba(43,124,180,1); }        /* blu */
@@ -4955,7 +4961,7 @@ grid-template-rows: 34px repeat(7, 54px);
   display:grid;
   place-items:center;
   border-radius: 12px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(52,199,89,0.35);
 }
 .laundry-tile-icon svg{ width:18px; height:18px; }
@@ -5353,7 +5359,7 @@ grid-template-rows: 34px repeat(7, 54px);
   border-radius: 22px;
   padding: 14px 14px;
   min-height: 78px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: #ffffff;
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   display:flex;
@@ -5369,7 +5375,7 @@ grid-template-rows: 34px repeat(7, 54px);
 .tax-result-card{ 
   border-radius: 22px;
   padding: 14px 14px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
 }
 .tax-result-top{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
@@ -5567,7 +5573,7 @@ grid-template-rows: 34px repeat(7, 54px);
   border-radius: 18px;
   padding: 11px 13px;
   min-height: 57px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   box-shadow: 0 14px 34px rgba(15,23,42,0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -5701,7 +5707,7 @@ grid-template-rows: 34px repeat(7, 54px);
 /* Modal report tassa */
 .tax-report-card{
   background: var(--glass);
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   box-shadow: 0 14px 34px rgba(15,23,42,0.16);
 }
 .tax-report-text{
@@ -6414,7 +6420,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   flex: 1;
   min-height: 48px;
   border-radius: 16px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: rgba(255,255,255,0.40);
   box-shadow: 0 10px 26px rgba(15,23,42,0.10);
   -webkit-tap-highlight-color: transparent;
@@ -6556,7 +6562,12 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 }
 .piscina-action-sim{ background: #4d9cc5; }
 .piscina-action-sim2{ background: #2b7cb4; }
-.piscina-action-report{ background: #22c55e; }
+.piscina-action-report{ background: rgba(255,255,255,0.80); border-color: rgba(77,156,197,0.26); }
+.piscina-action-report .ui-ico,
+.piscina-action-report .ui-ico *{
+  stroke: #4d9cc5 !important;
+  fill: none !important;
+}
 
 .stats-subtitle{
   font-weight: 900;
@@ -6609,7 +6620,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   font-size: clamp(39px, 9.1vw, 70px);
   font-weight: 400;
   color: var(--ico-sky);
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -6761,7 +6772,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   color: var(--statbg, var(--blue));
 }
 
@@ -7588,7 +7599,7 @@ color: var(--mcol,#ff3b30);
   min-width:32px;
   border-radius:999px;
   border:1px solid rgba(15,23,42,0.10);
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
   color: var(--ico-sky);
   font-size: 18px;
   font-weight: 900;
@@ -8005,10 +8016,10 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   pointer-events: auto;
 }
 .piscina-cell{
-  background-color: rgba(255,255,255,0.80);
+  background-color: rgba(148,163,184,0.30);
   position: relative;
-  border: 1px solid rgba(15,23,42,0.10);
-  background: rgba(255,255,255,0.80);
+  border: 1px solid rgba(148,163,184,0.24);
+  background: rgba(148,163,184,0.30);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: 14px;
@@ -8076,7 +8087,7 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   align-items:center;
   justify-content:space-between;
   gap: 14px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   background: var(--glass);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -8301,9 +8312,9 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   justify-content:space-between;
   gap: 10px;
   padding: 10px 10px;
-  border: 1px solid rgba(15,23,42,0.10);
+  border: 1px solid rgba(148,163,184,0.24);
   border-radius: 14px;
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
 }
 .service-item .meta{ min-width:0; flex: 1 1 auto; }
 .service-item .name{ font-weight: 900; }
@@ -9319,7 +9330,7 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   margin: 6px auto 2px auto;
   padding: 10px 16px;
   border-radius: 18px;
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
   border: 1px solid rgba(15,23,42,0.12);
   justify-content:center;
 }
@@ -9560,7 +9571,7 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   min-width: 120px;
   padding: 12px 18px;
   border-radius: 24px;
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
 }
 #page-impostazioni .settings-audio-centered .settings-audio-label{
   font-size: 13px;
@@ -12223,7 +12234,7 @@ body.ddae-dark .calendar-grid .calendar-cell{
   color: #f8fafc !important;
 }
 body.ddae-dark .piscina-cell{
-  background: rgba(148,163,184,0.25) !important;
+  background: rgba(148,163,184,0.30) !important;
   border-color: rgba(148,163,184,0.28) !important;
   box-shadow: none !important;
   color: #f8fafc !important;
@@ -13124,7 +13135,7 @@ body.ddae-dark #page-ospite .room-dot:disabled{
   padding: 0 18px;
   border-radius: 999px;
   border: 1px solid rgba(43,124,180,0.22);
-  background: rgba(255,255,255,0.80);
+  background: rgba(148,163,184,0.30);
   color: var(--ico-sky);
   -webkit-text-fill-color: var(--ico-sky);
   font-size: 18px;
@@ -14965,7 +14976,7 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 }
 
 
-/* dDAE_2.356 — Statistiche: grafici e popup migliorati */
+/* dDAE_2.358 — Statistiche: grafici e popup migliorati */
 .stats-graphs-grid{gap:14px;padding:8px 6px 12px;}
 .stats-graph-card{background:rgba(255,255,255,0.72);border:1px solid rgba(15,23,42,0.08);box-shadow:0 10px 24px rgba(15,23,42,0.08);padding:12px 10px 10px;border-radius:24px;}
 .stats-graph-card-title{min-height:34px;margin-bottom:10px;font-size:13px;letter-spacing:.1px;}
@@ -14986,4 +14997,4 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 #statGraphModal .modal-card, #statPieModal .modal-card, #statMensiliPieModal .modal-card, #statSpesePieModal .modal-card, #adminChartModal .modal-card{margin:0 auto;max-height:calc(100dvh - var(--safe-top) - 92px);overflow:auto;}
 @media (max-width:380px){.stats-graphs-grid{gap:12px;padding:6px 4px 10px;}.stats-graph-card{padding:12px 8px 10px;border-radius:22px;}.stats-graph-canvas{min-height:162px;}}
 
-/* dDAE_2.356 — Grafici anteprima sincronizzati con colori personalizzati; celle piscina grigie 25% */
+/* dDAE_2.358 — Grafici anteprima sincronizzati con colori personalizzati; celle piscina grigie 25% */
