@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.375
+ * Build: 2.376
  */
-const BUILD_VERSION = "2.375";
+const BUILD_VERSION = "2.376";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -10324,6 +10324,7 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
   // Palette icone (launcher)
   applyIconPalette();
+  try{ __applyPageButtonsDesign__(); }catch(_){ }
 
 
 }
@@ -14344,6 +14345,14 @@ function __roomsUiColorPair__(input, fallbackBg){
   return __tagColorPairFromValue__(input, fallbackBg || 'blue-4');
 }
 
+function __normalizeRoomsUiPageButtons__(input){
+  const src = (input && typeof input === 'object') ? input : {};
+  return {
+    bg: __normalizeOperatoreColor__(src.bg || src.background || src.color || 'sky-4'),
+    border: __normalizeOperatoreColor__(src.border || src.borderColor || src.stroke || src.outline || src.bg || src.background || 'sky-4'),
+  };
+}
+
 function __buildDefaultRoomsUiConfig__(){
   const rooms = {};
   for (let i = 1; i <= 12; i++) rooms[String(i)] = __roomsUiColorPair__(__ROOMS_UI_DEFAULT_ROOM_COLORS__[i - 1] || 'blue-4', 'blue-4');
@@ -14351,6 +14360,7 @@ function __buildDefaultRoomsUiConfig__(){
     nights: __roomsUiColorPair__('indigo-4', 'indigo-4'),
     options: { m: __roomsUiColorPair__('blue-4', 'blue-4'), g: __roomsUiColorPair__('yellow-4', 'yellow-4'), c: __roomsUiColorPair__('indigo-6', 'indigo-6') },
     beds: { matrimoniale: __roomsUiColorPair__('red-4', 'red-4'), singolo: __roomsUiColorPair__('blue-4', 'blue-4'), culla: __roomsUiColorPair__('yellow-4', 'yellow-4') },
+    pageButtons: __normalizeRoomsUiPageButtons__({ bg:'sky-4', border:'sky-4' }),
     rooms,
   };
 }
@@ -14370,6 +14380,7 @@ function __sanitizeRoomsUiConfig__(input){
       singolo: __roomsUiColorPair__(src?.beds?.singolo || src?.beds?.s, base.beds.singolo.bg),
       culla: __roomsUiColorPair__(src?.beds?.culla || src?.beds?.c, base.beds.culla.bg),
     },
+    pageButtons: __normalizeRoomsUiPageButtons__(src?.pageButtons || src?.buttons || src?.page_buttons || base.pageButtons),
     rooms: {},
   };
   for (let i = 1; i <= 12; i++) out.rooms[String(i)] = __roomsUiColorPair__(src?.rooms?.[String(i)] || src?.rooms?.[i], base.rooms[String(i)].bg);
@@ -14408,6 +14419,59 @@ function __roomsUiBadgeStyle__(spec){
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
   return `background:${hexToRgba(main, 0.92)};border-color:${hexToRgba(main, 0.55)};color:${__roomsUiTextColor__(pair)};`;
 }
+function __roomsUiPageButtonStyle__(spec){
+  const current = __normalizeRoomsUiPageButtons__(spec);
+  const bgHex = __operatoreColorHex__(current.bg || 'sky-4');
+  const borderHex = __operatoreColorHex__(current.border || current.bg || 'sky-4');
+  return `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 0.80)};color:#ffffff;-webkit-text-fill-color:#ffffff;`;
+}
+
+function __applyPageButtonsDesign__(){
+  try{
+    const cfg = getRoomsUiConfig();
+    const style = __roomsUiPageButtonStyle__(cfg.pageButtons || { bg:'sky-4', border:'sky-4' });
+    const setStyle = (node, inlineStyle) => {
+      if (!node) return;
+      node.setAttribute('style', inlineStyle);
+    };
+    ['goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbImport','goDbExport','goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const glyph = btn.querySelector('.home-main-glyph');
+      if (glyph) setStyle(glyph, `${style}backdrop-filter:none;-webkit-backdrop-filter:none;`);
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.setProperty('color', '#ffffff', 'important');
+        svg.style.setProperty('stroke', '#ffffff', 'important');
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.setProperty('stroke', '#ffffff', 'important');
+          node.style.setProperty('fill', 'none', 'important');
+        });
+      }
+    });
+    ['settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      setStyle(btn, style);
+      const label = btn.querySelector('.settings-btn-label');
+      if (label){
+        label.style.setProperty('color', '#ffffff', 'important');
+        label.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+      }
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.setProperty('color', '#ffffff', 'important');
+        svg.style.setProperty('stroke', '#ffffff', 'important');
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.setProperty('stroke', '#ffffff', 'important');
+          node.style.setProperty('fill', 'none', 'important');
+        });
+      }
+    });
+    const demoBtn = document.getElementById('roomSettingsPageButtonDemo');
+    if (demoBtn) setStyle(demoBtn, style);
+  }catch(_){ }
+}
 
 function __applyRoomsUiConfig__(){
   try{
@@ -14436,6 +14500,7 @@ function __applyRoomsUiConfig__(){
       root.style.setProperty(`--room${i}-border`, hexToRgba(main, 0.55));
       root.style.setProperty(`--room${i}-fg`, __roomsUiTextColor__(pair));
     }
+    try{ __applyPageButtonsDesign__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -14462,6 +14527,8 @@ function __openRoomSettingsColorPicker__(target){
   const key = String(target || '').trim().toLowerCase();
   const cfg = getRoomsUiConfig();
   let current = cfg.nights;
+  let popupTarget = 'roomsettings';
+  let popupOptions = { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') };
   if (/^room:\d+$/.test(key)){
     const n = key.split(':')[1];
     current = cfg.rooms?.[String(n)] || current;
@@ -14479,35 +14546,47 @@ function __openRoomSettingsColorPicker__(target){
     current = cfg.beds?.singolo || current;
   } else if (key === 'bed:culla'){
     current = cfg.beds?.culla || current;
+  } else if (key === 'pagebuttons'){
+    current = __normalizeRoomsUiPageButtons__(cfg.pageButtons || { bg:'sky-4', border:'sky-4' });
+    popupTarget = 'roomsettings-pagebuttons';
+    popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current?.bg || 'sky-4') };
   }
-  __tagColorPopupOpen__('roomsettings', current, async(payload) => {
+  __tagColorPopupOpen__(popupTarget, current, async(payload) => {
     try{
-      const pair = __tagColorPairFromValue__(current, 'blue-4');
-      const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'blue-4').spec;
-      if ((payload?.mode || 'bg') === 'bg') pair.bg = spec;
-      else pair.fg = spec;
       const next = getRoomsUiConfig();
-      if (/^room:\d+$/.test(key)){
-        const n = key.split(':')[1];
-        next.rooms[String(n)] = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'nights'){
-        next.nights = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'option:m'){
-        next.options.m = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'option:g'){
-        next.options.g = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'option:c'){
-        next.options.c = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'bed:matrimoniale'){
-        next.beds.matrimoniale = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'bed:singolo'){
-        next.beds.singolo = { bg: pair.bg, fg: pair.fg || '' };
-      } else if (key === 'bed:culla'){
-        next.beds.culla = { bg: pair.bg, fg: pair.fg || '' };
+      if (key === 'pagebuttons'){
+        const pair = __normalizeRoomsUiPageButtons__(current);
+        const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'sky-4').spec;
+        if ((payload?.mode || 'bg') === 'border') pair.border = spec;
+        else pair.bg = spec;
+        next.pageButtons = { bg: pair.bg, border: pair.border || pair.bg };
+      } else {
+        const pair = __tagColorPairFromValue__(current, 'blue-4');
+        const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'blue-4').spec;
+        if ((payload?.mode || 'bg') === 'bg') pair.bg = spec;
+        else pair.fg = spec;
+        if (/^room:\d+$/.test(key)){
+          const n = key.split(':')[1];
+          next.rooms[String(n)] = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'nights'){
+          next.nights = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'option:m'){
+          next.options.m = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'option:g'){
+          next.options.g = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'option:c'){
+          next.options.c = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'bed:matrimoniale'){
+          next.beds.matrimoniale = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'bed:singolo'){
+          next.beds.singolo = { bg: pair.bg, fg: pair.fg || '' };
+        } else if (key === 'bed:culla'){
+          next.beds.culla = { bg: pair.bg, fg: pair.fg || '' };
+        }
       }
       await saveRoomsUiConfigToSettings(next, { showToast:true });
-    }catch(e){ try{ toast(e?.message || 'Errore colori stanze'); }catch(_){ } }
-  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
+    }catch(e){ try{ toast(e?.message || 'Errore design'); }catch(_){ } }
+  }, popupOptions);
 }
 
 function renderRoomSettingsPage(){
@@ -14533,6 +14612,9 @@ function renderRoomSettingsPage(){
     applyBtn('roomSettingsBedMBtn', cfg.beds?.matrimoniale, 'M');
     applyBtn('roomSettingsBedSBtn', cfg.beds?.singolo, 'S');
     applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
+    const demoBtn = document.getElementById('roomSettingsPageButtonDemo');
+    if (demoBtn) demoBtn.setAttribute('style', __roomsUiPageButtonStyle__(cfg.pageButtons || { bg:'sky-4', border:'sky-4' }));
+    try{ __applyPageButtonsDesign__(); }catch(_){ }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
       const parts = [];
@@ -14607,7 +14689,7 @@ function setupRoomSettingsPage(){
       __openRoomSettingsColorPicker__(`room:${room}`);
     });
   }
-  [['roomSettingsNightsBtn','nights'],['roomSettingsMBtn','option:m'],['roomSettingsGBtn','option:g'],['roomSettingsCBtn','option:c'],['roomSettingsBedMBtn','bed:matrimoniale'],['roomSettingsBedSBtn','bed:singolo'],['roomSettingsBedCBtn','bed:culla']].forEach(([id, target]) => {
+  [['roomSettingsNightsBtn','nights'],['roomSettingsMBtn','option:m'],['roomSettingsGBtn','option:g'],['roomSettingsCBtn','option:c'],['roomSettingsBedMBtn','bed:matrimoniale'],['roomSettingsBedSBtn','bed:singolo'],['roomSettingsBedCBtn','bed:culla'],['roomSettingsPageButtonDemo','pagebuttons']].forEach(([id, target]) => {
     const el = document.getElementById(id);
     if (!el || el.__boundRoomSettingsColorTap) return;
     el.__boundRoomSettingsColorTap = true;
@@ -22881,6 +22963,7 @@ async function initOrePuliziaPage(){
   const run = ()=>{
     try{ setupLauncherIconLongPressPalette(); }catch(_){ }
     try{ __launcherIconApplyAll__(); }catch(_){ }
+    try{ __applyPageButtonsDesign__(); }catch(_){ }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
   else setTimeout(run, 0);

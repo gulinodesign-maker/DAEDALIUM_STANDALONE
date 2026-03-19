@@ -15140,3 +15140,44 @@ body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
+
+
+/* dDAE_2.376 — Design pagina pulsanti */
+.room-settings-section-subtitle{
+  margin-top:-4px;
+}
+.room-settings-page-button-demo{
+  width:96px;
+  min-width:96px;
+  height:96px;
+  border-radius:28px;
+  border:1px solid rgba(148,163,184,0.24);
+  background:rgba(77,156,197,0.80);
+  color:#ffffff;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.room-settings-page-button-demo-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border:2px solid currentColor;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:900;
+  line-height:1;
+}
+.room-settings-page-button-demo-label{
+  font-size:15px;
+  font-weight:800;
+  line-height:1;
+}
