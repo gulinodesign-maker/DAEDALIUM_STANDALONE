@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.377
+ * Build: 2.378
  */
-const BUILD_VERSION = "2.377";
+const BUILD_VERSION = "2.378";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12035,9 +12035,18 @@ function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
   const selectedSpec = __closestGraphColorSpec__(currentColor);
   __tagColorPopupOpen__('stat-graph', selectedSpec, (payload) => {
     const normalized = __parseOperatoreColorSpec__(payload?.spec || selectedSpec).spec;
+    const safeLabel = String(label || '').trim();
     const map = __loadGraphColorMap__(graphKey);
-    map[String(label || '')] = normalized;
+    if (safeLabel) map[safeLabel] = normalized;
     __saveGraphColorMap__(graphKey, map);
+    if (String(graphKey || '').trim() === 'occupazione-mensile' && safeLabel){
+      try{
+        const statMap = __loadStatCardColorMap__('statmensili');
+        const fallbackPair = __getStatCardColorPair__('statmensili', safeLabel, normalized);
+        statMap[safeLabel] = { bg: normalized, fg: fallbackPair.fg || '' };
+        __saveStatCardColorMap__('statmensili', statMap);
+      }catch(_){ }
+    }
     __refreshStatGraphPreviews__();
     if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
   });
@@ -12165,13 +12174,33 @@ function __ensureStatGraphPopupBound__(){
   modal.addEventListener("click", (e)=>{ if (e.target === modal) __closeStatGraphPopup__(); });
 }
 
+function __syncOccupazioneMensileGraphColorsFromStatMensili__(){
+  try{
+    const colors = __mensiliPalette12();
+    const statMap = __loadStatCardColorMap__('statmensili');
+    const graphMap = __loadGraphColorMap__('occupazione-mensile');
+    let changed = false;
+    for (let i = 0; i < 12; i++){
+      const label = String(__MONTHS_IT[i] || `Mese ${i+1}`);
+      const fallback = colors[i % colors.length] || '#2B7CB4';
+      const pair = __tagColorPairFromValue__(statMap[label], fallback);
+      const next = __parseOperatoreColorSpec__(pair.bg || fallback).spec;
+      if (graphMap[label] !== next){
+        graphMap[label] = next;
+        changed = true;
+      }
+    }
+    if (changed) __saveGraphColorMap__('occupazione-mensile', graphMap);
+  }catch(_){ }
+}
+
 function __occupazioneMensileSlices__(mensili){
   const vals = Array.isArray(mensili && mensili.occPctByMonth) ? mensili.occPctByMonth : [];
   const colors = __mensiliPalette12();
   return new Array(12).fill(0).map((_,i)=>{
     const label = String(__MONTHS_IT[i] || `Mese ${i+1}`);
     const fallback = colors[i % colors.length] || "#2b7cb4";
-    const syncedColor = __getStatCardTextColorHex__('statmensili', label, fallback);
+    const syncedColor = __graphColorValueToHex__(__getStatCardColorPair__('statmensili', label, fallback).bg, fallback);
     return {
       label,
       value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
@@ -12258,6 +12287,7 @@ function renderStatGrafici(operatoriRows){
     { label: "Con Booking", value: pren.withBooking, color: "#2b7cb4" },
     { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
   ];
+  __syncOccupazioneMensileGraphColorsFromStatMensili__();
   const occSlices = __applyGraphCustomColors__('occupazione-mensile', __occupazioneMensileSlices__(mensili));
   const ricevuteSlicesCustom = __applyGraphCustomColors__('ricevute', ricevuteSlices);
   const bookingSlicesCustom = __applyGraphCustomColors__('booking', bookingSlices);
