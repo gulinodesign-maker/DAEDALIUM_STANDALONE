@@ -15169,3 +15169,44 @@ body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
+
+
+/* dDAE_2.377 — Impostazioni: dark mode reale sui tasti */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(8,18,38,0.80) !important;
+  background-color: rgba(8,18,38,0.80) !important;
+  border: 1px solid rgba(148,163,184,0.24) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark{ color: #8fcbe8 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{ color: #4fcd66 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{ color: #ffcc00 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{ color: #4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{ color: #f29c50 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{ color: #d6c1a0 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{ color: #f06a6a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster{ color: #9b8cff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language{ color: #58b7f4 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label{
+  color: currentColor !important;
+  stroke: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill{
+  color: #ef4444 !important;
+  border-color: rgba(239,68,68,0.34) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+}
