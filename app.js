@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.384
+ * Build: 2.376
  */
-const BUILD_VERSION = "2.384";
+const BUILD_VERSION = "2.376";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7187,43 +7187,21 @@ function __launcherIconResolveHex__(id, fallbackHex){
 
 function __applySettingsLauncherIconColors__(){
   try{
-    const isDarkSettings = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
     [
       'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
       'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn'
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
-      const label = btn.querySelector('.settings-btn-label');
-      const svg = btn.querySelector('svg.ui-ico');
-      if (isDarkSettings){
-        ['color','-webkit-text-fill-color','background','background-color','border-color'].forEach((prop) => {
-          try{ btn.style.removeProperty(prop); }catch(_){ }
-        });
-        if (label){
-          ['color','-webkit-text-fill-color'].forEach((prop) => {
-            try{ label.style.removeProperty(prop); }catch(_){ }
-          });
-        }
-        if (svg){
-          ['color','stroke','fill'].forEach((prop) => {
-            try{ svg.style.removeProperty(prop); }catch(_){ }
-          });
-          svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-            ['stroke','fill'].forEach((prop) => {
-              try{ node.style.removeProperty(prop); }catch(_){ }
-            });
-          });
-        }
-        return;
-      }
       const hex = __launcherIconResolveHex__(id, '#4d9cc5');
       btn.style.setProperty('color', hex, 'important');
       btn.style.setProperty('-webkit-text-fill-color', hex, 'important');
+      const label = btn.querySelector('.settings-btn-label');
       if (label){
         label.style.setProperty('color', hex, 'important');
         label.style.setProperty('-webkit-text-fill-color', hex, 'important');
       }
+      const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
         svg.style.setProperty('stroke', hex, 'important');
@@ -7280,29 +7258,6 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const isDarkSettings = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
-      const label = btn.querySelector('.settings-btn-label');
-      const svg = btn.querySelector('svg.ui-ico');
-      if (isDarkSettings){
-        ['background','background-color','border-color','color','-webkit-text-fill-color'].forEach((prop) => {
-          setImp(btn, prop, '');
-        });
-        if (label){
-          setImp(label, 'color', '');
-          setImp(label, '-webkit-text-fill-color', '');
-        }
-        if (svg){
-          ['color','stroke','fill'].forEach((prop) => {
-            try{ svg.style.removeProperty(prop); }catch(_){ }
-          });
-          svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-            ['stroke','fill'].forEach((prop) => {
-              try{ node.style.removeProperty(prop); }catch(_){ }
-            });
-          });
-        }
-        return;
-      }
       const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
       const resolvedBorder = visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
       setImp(btn, 'background', resolvedBg);
@@ -7310,10 +7265,12 @@ function __launcherIconApplyToButton__(btn){
       setImp(btn, 'border-color', resolvedBorder);
       setImp(btn, 'color', hex);
       setImp(btn, '-webkit-text-fill-color', hex);
+      const label = btn.querySelector('.settings-btn-label');
       if (label){
         setImp(label, 'color', hex);
         setImp(label, '-webkit-text-fill-color', hex);
       }
+      const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
         svg.style.setProperty('stroke', hex, 'important');
@@ -7955,7 +7912,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' }, originalColors:{ bg:'blue-4', fg:'', border:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8051,7 +8008,6 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
   __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.colors = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
-  __tagColorPopupState__.originalColors = { ...(__tagColorPopupState__.colors || { bg:'blue-4', fg:'', border:'' }) };
   const hasManyModes = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1;
   const requestedMode = String(opts.defaultMode || (hasManyModes ? __tagColorPopupLastDualMode__ : (__tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg'))) || 'fg').trim().toLowerCase();
   const fallbackMode = __tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg');
@@ -8079,7 +8035,6 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.supportsFg = true;
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.colors = { bg:'blue-4', fg:'', border:'' };
-  __tagColorPopupState__.originalColors = { bg:'blue-4', fg:'', border:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -8512,7 +8467,6 @@ function setupTagColorPopup(){
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
-  const confirmBtn = document.getElementById('tagColorModalConfirm');
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -8521,16 +8475,6 @@ function setupTagColorPopup(){
     }
   }catch(_){ }
   if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
-  if (confirmBtn) bindFastTap(confirmBtn, () => {
-    try{
-      const mode = String(__tagColorPopupState__.mode || 'bg').trim().toLowerCase();
-      const spec = __tagColorPopupSelectedSpec__();
-      if (typeof __tagColorPopupState__.onSelect === 'function') {
-        __tagColorPopupState__.onSelect({ mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) }, originalColors: { ...(__tagColorPopupState__.originalColors || {}) } });
-      }
-    }catch(_){ }
-    __tagColorPopupClose__();
-  });
   if (card){
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
@@ -8556,6 +8500,9 @@ function setupTagColorPopup(){
         else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
+        if (typeof __tagColorPopupState__.onSelect === 'function') {
+          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
+        }
         try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
@@ -23090,99 +23037,4 @@ function __applyLaundryResetCloseIcon__(){
     const t = e && e.target && e.target.closest ? e.target.closest('#goPulizie, #goLavanderia, #topLaundryBtn, #cleanPrev, #cleanNext, #cleanToday') : null;
     if (t) setTimeout(run, 0);
   }, true);
-})();
-
-
-const __DESIGN_SLOTS_STORAGE_KEY__ = 'dDAE_design_slots_v1';
-
-function __captureDesignSlotSnapshot__(){
-  try{
-    return {
-      savedAt: __nowIso__(),
-      roomsCount: getConfiguredRoomsCount(6),
-      roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
-      gridButtonStyle: __gridButtonStyleRead__(),
-      build: `dDAE_${BUILD_VERSION}`
-    };
-  }catch(_){
-    return null;
-  }
-}
-
-function __loadDesignSlots__(){
-  try{
-    const raw = localStorage.getItem(__DESIGN_SLOTS_STORAGE_KEY__);
-    if (!raw) return {};
-    const parsed = JSON.parse(String(raw || '{}'));
-    return (parsed && typeof parsed === 'object') ? parsed : {};
-  }catch(_){ return {}; }
-}
-
-function __saveDesignSlots__(slots){
-  try{
-    const clean = (slots && typeof slots === 'object') ? slots : {};
-    localStorage.setItem(__DESIGN_SLOTS_STORAGE_KEY__, JSON.stringify(clean));
-    return clean;
-  }catch(_){ return {}; }
-}
-
-function __renderDesignSlots__(){
-  try{
-    const slots = __loadDesignSlots__();
-    document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
-      const idx = String(btn.getAttribute('data-design-slot') || '').trim();
-      const saved = !!(idx && slots && slots[idx]);
-      btn.classList.toggle('is-saved', saved);
-      btn.textContent = idx || '';
-      btn.setAttribute('aria-label', saved ? `Slot ${idx} salvato` : `Slot ${idx}`);
-      btn.title = saved ? `Slot ${idx} salvato` : `Slot ${idx}`;
-    });
-  }catch(_){ }
-}
-
-async function __storeDesignSlot__(slotIndex){
-  const slot = String(slotIndex || '').trim();
-  if (!slot) return;
-  const choice = await __confirmTwoActions__('Vuoi memorizzare la combinazione di colori?', 'Sì', 'No');
-  if (choice !== 'yes') return;
-  const snapshot = __captureDesignSlotSnapshot__();
-  if (!snapshot) { try{ toast('Errore slot design', 'orange'); }catch(_){ } return; }
-  const slots = __loadDesignSlots__();
-  slots[slot] = snapshot;
-  __saveDesignSlots__(slots);
-  __renderDesignSlots__();
-  try{ toast(`Slot ${slot} salvato`, 'blue'); }catch(_){ }
-}
-
-(function(){
-  const __origRenderRoomSettingsPage__ = (typeof renderRoomSettingsPage === 'function') ? renderRoomSettingsPage : null;
-  if (__origRenderRoomSettingsPage__ && !__origRenderRoomSettingsPage__.__designSlotsWrapped){
-    const wrapped = function(){
-      const out = __origRenderRoomSettingsPage__.apply(this, arguments);
-      try{ __renderDesignSlots__(); }catch(_){ }
-      return out;
-    };
-    wrapped.__designSlotsWrapped = true;
-    renderRoomSettingsPage = wrapped;
-  }
-
-  const __origSetupRoomSettingsPage__ = (typeof setupRoomSettingsPage === 'function') ? setupRoomSettingsPage : null;
-  if (__origSetupRoomSettingsPage__ && !__origSetupRoomSettingsPage__.__designSlotsWrapped){
-    const wrapped = function(){
-      const out = __origSetupRoomSettingsPage__.apply(this, arguments);
-      try{
-        document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
-          if (!btn || btn.__boundDesignSlotTap) return;
-          btn.__boundDesignSlotTap = true;
-          bindFastTap(btn, async () => {
-            await __storeDesignSlot__(btn.getAttribute('data-design-slot'));
-          });
-        });
-      }catch(_){ }
-      try{ __renderDesignSlots__(); }catch(_){ }
-      return out;
-    };
-    wrapped.__designSlotsWrapped = true;
-    setupRoomSettingsPage = wrapped;
-  }
 })();
