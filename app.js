@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.352";
+const BUILD_VERSION = "2.353";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11277,22 +11277,29 @@ function drawPie(canvasId, slices, opts){
   const cx = cssSize/2, cy = cssSize/2;
   const r = cssSize/2 - 10;
 
-  // Glass ring background
+  const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+  const ringBg = isDark ? "rgba(15,23,42,0.70)" : "rgba(255,255,255,0.55)";
+  const ringStroke = isDark ? "rgba(148,163,184,0.22)" : "rgba(15,23,42,0.08)";
+  const holeBg = isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)";
+  const holeTextSoft = isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)";
+  const holeTextStrong = isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)";
+
+  // Ring background
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI*2);
-  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.fillStyle = ringBg;
   ctx.fill();
   ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(15,23,42,0.08)";
+  ctx.strokeStyle = ringStroke;
   ctx.stroke();
 
   let ang = -Math.PI/2;
   if (total <= 0){
     ctx.beginPath();
     ctx.arc(cx, cy, r-8, 0, Math.PI*2);
-    ctx.fillStyle = "rgba(43,124,180,0.10)";
+    ctx.fillStyle = isDark ? "rgba(143,203,232,0.14)" : "rgba(43,124,180,0.10)";
     ctx.fill();
-    ctx.fillStyle = "rgba(15,23,42,0.55)";
+    ctx.fillStyle = holeTextSoft;
     ctx.font = "600 12px system-ui";
     ctx.textAlign = "center";
     ctx.fillText("Nessun dato", cx, cy+4);
@@ -11319,18 +11326,18 @@ function drawPie(canvasId, slices, opts){
   // inner hole
   ctx.beginPath();
   ctx.arc(cx, cy, r*0.58, 0, Math.PI*2);
-  ctx.fillStyle = "rgba(255,255,255,0.78)";
+  ctx.fillStyle = holeBg;
   ctx.fill();
-  ctx.strokeStyle = "rgba(15,23,42,0.08)";
+  ctx.strokeStyle = ringStroke;
   ctx.lineWidth = 1;
   ctx.stroke();
 
   if (showCenter){
-    ctx.fillStyle = "rgba(15,23,42,0.75)";
+    ctx.fillStyle = holeTextSoft;
     ctx.font = "900 12px system-ui";
     ctx.textAlign = "center";
     ctx.fillText(centerTitle, cx, cy-4);
-    ctx.fillStyle = "rgba(15,23,42,0.92)";
+    ctx.fillStyle = holeTextStrong;
     ctx.font = "950 14px system-ui";
     ctx.fillText(centerFormatter(total), cx, cy+14);
   }
@@ -11393,7 +11400,7 @@ function drawMonthlyPctBars(canvasId, pctValues, colors, opts){
     ctx.fill();
 
     // month label (1 letter)
-    ctx.fillStyle = "rgba(15,23,42,0.55)";
+    ctx.fillStyle = holeTextSoft;
     ctx.font = "700 10px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
@@ -11402,7 +11409,7 @@ function drawMonthlyPctBars(canvasId, pctValues, colors, opts){
   }
 
   // 100% label
-  ctx.fillStyle = "rgba(15,23,42,0.55)";
+  ctx.fillStyle = holeTextSoft;
   ctx.font = "800 10px system-ui";
   ctx.textAlign = "right";
   ctx.fillText("100%", padL + chartW, padT + 10);
@@ -11419,6 +11426,100 @@ function roundRect(ctx, x, y, w, h, r){
   ctx.closePath();
 }
 
+
+function __graphColorStoreKey__(graphKey){
+  const year = String(state && (state.exerciseYear || loadExerciseYear && loadExerciseYear()) || new Date().getFullYear());
+  return `ddae_graph_colors_${year}_${String(graphKey || "generic")}`;
+}
+
+function __normalizeHexColor__(value, fallback){
+  const v = String(value || "").trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(v)) return v.toUpperCase();
+  return String(fallback || "#2B7CB4").toUpperCase();
+}
+
+function __loadGraphColorMap__(graphKey){
+  try{
+    const raw = localStorage.getItem(__graphColorStoreKey__(graphKey));
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveGraphColorMap__(graphKey, map){
+  try{ localStorage.setItem(__graphColorStoreKey__(graphKey), JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __applyGraphCustomColors__(graphKey, slices){
+  const arr = Array.isArray(slices) ? slices.map(s => ({...s})) : [];
+  const map = __loadGraphColorMap__(graphKey);
+  arr.forEach((sl)=>{
+    const key = String(sl && sl.label || '');
+    if (key && map[key]) sl.color = __normalizeHexColor__(map[key], sl.color);
+    else sl.color = __normalizeHexColor__(sl && sl.color, '#2B7CB4');
+  });
+  return arr;
+}
+
+function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
+  let picker = document.getElementById('statGraphColorPicker');
+  if (!picker){
+    picker = document.createElement('input');
+    picker.type = 'color';
+    picker.id = 'statGraphColorPicker';
+    picker.style.position = 'fixed';
+    picker.style.opacity = '0';
+    picker.style.pointerEvents = 'none';
+    picker.style.width = '1px';
+    picker.style.height = '1px';
+    picker.style.left = '-100px';
+    picker.style.top = '-100px';
+    document.body.appendChild(picker);
+  }
+  const initial = __normalizeHexColor__(currentColor, '#2B7CB4');
+  picker.value = initial;
+  const finish = ()=>{
+    const chosen = __normalizeHexColor__(picker.value, initial);
+    const map = __loadGraphColorMap__(graphKey);
+    map[String(label || '')] = chosen;
+    __saveGraphColorMap__(graphKey, map);
+    if (typeof onDone === 'function') onDone(chosen);
+    picker.oninput = null;
+    picker.onchange = null;
+    picker.onblur = null;
+  };
+  picker.oninput = finish;
+  picker.onchange = finish;
+  picker.onblur = ()=>{
+    picker.oninput = null;
+    picker.onchange = null;
+    picker.onblur = null;
+  };
+  try{ picker.click(); }catch(_){ }
+}
+
+function __bindGraphLegendLongPress__(row, payload, slice){
+  if (!row || !payload || !slice) return;
+  let timer = null;
+  let fired = false;
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
+      fired = true;
+      row.classList.add('is-pressing');
+      __openGraphColorPicker__(payload.graphKey || payload.title || 'generic', slice.label, slice.color, ()=>{
+        row.classList.remove('is-pressing');
+        try{ __openStatGraphPopup__(payload); }catch(_){ }
+      });
+    }, 500);
+  };
+  const stop = ()=>{ clearTimeout(timer); timer = null; if (!fired) row.classList.remove('is-pressing'); };
+  ['pointerdown','touchstart','mousedown'].forEach(evt=>row.addEventListener(evt, start, {passive:true}));
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave'].forEach(evt=>row.addEventListener(evt, stop, {passive:true}));
+  row.addEventListener('contextmenu', (e)=>{ e.preventDefault(); });
+}
 
 function __renderLegendRows__(containerId, slices, valueFormatter, opts){
   const leg = document.getElementById(containerId);
@@ -11441,6 +11542,11 @@ function __renderLegendRows__(containerId, slices, valueFormatter, opts){
       </div>
       <div class="legright">${right}</div>
     `;
+    if (options.enableColorEdit) {
+      row.classList.add('is-color-editable');
+      row.title = 'Pressione lunga per cambiare colore';
+      __bindGraphLegendLongPress__(row, options.payload || null, sl);
+    }
     leg.appendChild(row);
   });
 }
@@ -11479,25 +11585,21 @@ function __openStatGraphPopup__(payload){
   const detailEl = document.getElementById("statGraphModalDetail");
   const legendEl = document.getElementById("statGraphModalLegend");
   const canvasWrap = document.querySelector("#statGraphModal .stat-graph-modal-canvas");
-  if (titleEl) titleEl.textContent = String(payload.title || "Grafico");
-  if (detailEl) detailEl.textContent = String(payload.detail || "");
-  if (legendEl) __renderLegendRows__("statGraphModalLegend", Array.isArray(payload.slices) ? payload.slices : [], payload.valueFormatter, { mode: payload.legendMode || "share" });
+  const workingPayload = { ...payload };
+  workingPayload.slices = __applyGraphCustomColors__(workingPayload.graphKey || workingPayload.title || 'generic', Array.isArray(payload.slices) ? payload.slices : []);
+  if (titleEl) titleEl.textContent = String(workingPayload.title || "Grafico");
+  if (detailEl) detailEl.textContent = String(workingPayload.detail || "");
+  if (legendEl) __renderLegendRows__("statGraphModalLegend", workingPayload.slices, workingPayload.valueFormatter, { mode: workingPayload.legendMode || "share", enableColorEdit: true, payload: workingPayload });
   if (canvasWrap){
-    try{ canvasWrap.classList.toggle("is-bars", String(payload.chartType || "").toLowerCase() === "bars"); }catch(_){ }
+    try{ canvasWrap.classList.remove("is-bars"); }catch(_){ }
   }
-  if (String(payload.chartType || "").toLowerCase() === "bars"){
-    drawMonthlyPctBars("statGraphModalCanvas", Array.isArray(payload.pctValues) ? payload.pctValues : [], payload.colors || __mensiliPalette12(), {
-      labels: (__MONTHS_IT || []).map(m=>String(m || "").slice(0,1).toUpperCase())
-    });
-  } else {
-    drawPie("statGraphModalCanvas", Array.isArray(payload.slices) ? payload.slices : [], {
-      centerTitle: payload.centerTitle != null ? payload.centerTitle : "Totale",
-      centerFormatter: (typeof payload.centerFormatter === "function") ? payload.centerFormatter : euro,
-      showCenter: true,
-      maxSize: 340,
-      minSize: 180
-    });
-  }
+  drawPie("statGraphModalCanvas", workingPayload.slices, {
+    centerTitle: workingPayload.centerTitle != null ? workingPayload.centerTitle : "Totale",
+    centerFormatter: (typeof workingPayload.centerFormatter === "function") ? workingPayload.centerFormatter : euro,
+    showCenter: true,
+    maxSize: 340,
+    minSize: 180
+  });
   modal.hidden = false;
   try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
 }
@@ -11605,65 +11707,75 @@ function renderStatGrafici(operatoriRows){
     { label: "Con Booking", value: pren.withBooking, color: "#2b7cb4" },
     { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
   ];
-  const occSlices = __occupazioneMensileSlices__(mensili);
+  const occSlices = __applyGraphCustomColors__('occupazione-mensile', __occupazioneMensileSlices__(mensili));
+  const ricevuteSlicesCustom = __applyGraphCustomColors__('ricevute', ricevuteSlices);
+  const bookingSlicesCustom = __applyGraphCustomColors__('booking', bookingSlices);
+  const cancSlicesCustom = __applyGraphCustomColors__('cancellazioni', cancSlices);
+  const speseSlicesCustom = __applyGraphCustomColors__('spese', speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }]);
+  const pulizieSlicesCustom = __applyGraphCustomColors__('pulizie', pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }]);
   const occAvg = occSlices.length ? (occSlices.reduce((a,x)=>a + (Number(x.value || 0) || 0), 0) / occSlices.length) : 0;
 
-  drawMonthlyPctBars("statGrafOccCanvas", mensili.occPctByMonth || [], __mensiliPalette12(), { labels: (__MONTHS_IT || []).map(m=>String(m || "").slice(0,1).toUpperCase()) });
-  drawPie("statGrafRicevuteCanvas", ricevuteSlices, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafBookingCanvas", bookingSlices, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafCancCanvas", cancSlices, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafSpeseCanvas", speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }], { centerTitle: "Spese", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafPulizieCanvas", pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }], { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0", showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafOccCanvas", occSlices, { centerTitle: "Media", centerFormatter: ()=>`${occAvg.toFixed(1)}%`, showCenter: true, maxSize: 170, minSize: 120 });
+  drawPie("statGrafRicevuteCanvas", ricevuteSlicesCustom, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafBookingCanvas", bookingSlicesCustom, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafCancCanvas", cancSlicesCustom, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafSpeseCanvas", speseSlicesCustom, { centerTitle: "Spese", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
+  drawPie("statGrafPulizieCanvas", pulizieSlicesCustom, { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0", showCenter: false, maxSize: 170, minSize: 120 });
 
   __bindStatGraphPopup__("statGrafOccCanvas", {
+    graphKey: 'occupazione-mensile',
     title: "Occupazione mensile",
-    detail: `Anno solare ${year} · valori mensili allineati alla pagina Mensili`,
+    detail: `Anno solare ${year} · percentuali mensili allineate alla pagina Mensili · pressione lunga sulle voci per cambiare colore`,
     slices: occSlices,
-    pctValues: mensili.occPctByMonth || [],
-    colors: __mensiliPalette12(),
-    chartType: "bars",
     legendMode: "absolute",
-    valueFormatter: (v)=>`${Number(v || 0).toFixed(0)}%`
+    valueFormatter: (v)=>`${Number(v || 0).toFixed(0)}%`,
+    centerTitle: 'Media',
+    centerFormatter: ()=>`${occAvg.toFixed(1)}%`
   });
   const occNote = document.getElementById("statGrafOccNote");
   if (occNote) occNote.textContent = `Anno ${year} · media ${occAvg.toFixed(1)}%`;
 
   __bindStatGraphPopup__("statGrafRicevuteCanvas", {
+    graphKey: 'ricevute',
     title: "Con ricevuta / Senza ricevuta",
-    detail: `Anno solare ${year} · distribuzione degli incassi`,
-    slices: ricevuteSlices,
+    detail: `Anno solare ${year} · distribuzione degli incassi · pressione lunga sulle voci per cambiare colore`,
+    slices: ricevuteSlicesCustom,
     valueFormatter: euro,
     centerTitle: "Totale",
     centerFormatter: euro
   });
   __bindStatGraphPopup__("statGrafBookingCanvas", {
+    graphKey: 'booking',
     title: "Prenotazioni con / senza Booking",
-    detail: `Anno solare ${year} · numero prenotazioni`,
-    slices: bookingSlices,
+    detail: `Anno solare ${year} · numero prenotazioni · pressione lunga sulle voci per cambiare colore`,
+    slices: bookingSlicesCustom,
     valueFormatter: (v)=>String(Math.round(Number(v || 0))),
     centerTitle: "Prenot.",
     centerFormatter: (n)=>String(Math.round(Number(n || 0)))
   });
   __bindStatGraphPopup__("statGrafCancCanvas", {
+    graphKey: 'cancellazioni',
     title: "Cancellazioni",
-    detail: `Anno solare ${year} · attive vs cancellate`,
-    slices: cancSlices,
+    detail: `Anno solare ${year} · attive vs cancellate · pressione lunga sulle voci per cambiare colore`,
+    slices: cancSlicesCustom,
     valueFormatter: (v)=>String(Math.round(Number(v || 0))),
     centerTitle: "Totale",
     centerFormatter: (n)=>String(Math.round(Number(n || 0)))
   });
   __bindStatGraphPopup__("statGrafSpeseCanvas", {
+    graphKey: 'spese',
     title: "Spese",
-    detail: `Anno solare ${year} · distribuzione per categoria`,
-    slices: speseSlices,
+    detail: `Anno solare ${year} · distribuzione per categoria · pressione lunga sulle voci per cambiare colore`,
+    slices: speseSlicesCustom,
     valueFormatter: euro,
     centerTitle: "Spese",
     centerFormatter: euro
   });
   __bindStatGraphPopup__("statGrafPulizieCanvas", {
+    graphKey: 'pulizie',
     title: "Ore pulizia operatori",
-    detail: `Anno solare ${year} · ripartizione percentuale ore operatori`,
-    slices: pulizieSlices,
+    detail: `Anno solare ${year} · ripartizione percentuale ore operatori · pressione lunga sulle voci per cambiare colore`,
+    slices: pulizieSlicesCustom,
     valueFormatter: (v)=>`${__fmtHours_(v) || "0"}h`,
     centerTitle: "Ore",
     centerFormatter: (n)=>`${__fmtHours_(n) || "0"}h`
