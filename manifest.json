@@ -1,19 +1,19 @@
 {
   "name": "Daedalium",
   "short_name": "Daedalium",
-  "start_url": "./index.html?v=2.370",
+  "start_url": "./index.html?v=2.371",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "assets/icons/icon-192.png?v=2.370",
+      "src": "assets/icons/icon-192.png?v=2.371",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "assets/icons/icon-512.png?v=2.370",
+      "src": "assets/icons/icon-512.png?v=2.371",
       "sizes": "512x512",
       "type": "image/png"
     }

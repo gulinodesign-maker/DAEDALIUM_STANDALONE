@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.370";
+const BUILD_VERSION = "2.371";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7832,7 +7832,7 @@ function __tagColorPopupApplyViewportLayout__(){
     const gap = window.innerHeight <= 760 ? 3 : (window.innerHeight <= 860 ? 4 : 5);
     const cellWidth = Math.floor((availableWidth - (gap * (cols - 1))) / cols);
     const cellHeight = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
-    const finalHeight = Math.max(22, Math.min(cellHeight, Math.floor(cellWidth * 0.72)));
+    const finalHeight = Math.max(24, Math.min(cellHeight, Math.floor(cellWidth * 0.82)));
     const radius = Math.max(9, Math.min(16, Math.round(finalHeight * 0.38)));
     card.style.setProperty('--tag-color-gap', `${gap}px`);
     card.style.setProperty('--tag-color-cell-height', `${finalHeight}px`);
@@ -8316,7 +8316,7 @@ function setupTagColorPopup(){
   });
   try{
     modal.addEventListener('click', (ev) => {
-      try{ if (ev.target === modal) __tagColorPopupClose__(); }catch(_){ }
+      try{ if (ev.target === modal) { ev.preventDefault(); ev.stopPropagation(); } }catch(_){ }
     });
   }catch(_){ }
   try{
@@ -8332,7 +8332,7 @@ function setupTagColorPopup(){
         if (typeof __tagColorPopupState__.onSelect === 'function') {
           try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
         }
-        setTimeout(() => { try{ __tagColorPopupClose__(); }catch(_){ } }, 80);
+        try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
