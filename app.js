@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.376
+ * Build: 2.375
  */
-const BUILD_VERSION = "2.376";
+const BUILD_VERSION = "2.375";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7047,59 +7047,6 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec, borderSpec){
 }
 
 
-const __GRID_BUTTON_STYLE_STORAGE_KEY__ = 'dDAE_grid_button_style_v1';
-const __GRID_BUTTON_STYLE_TARGET_IDS__ = [
-  'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
-  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
-];
-
-function __gridButtonStyleRead__(){
-  try{
-    const raw = localStorage.getItem(__GRID_BUTTON_STYLE_STORAGE_KEY__);
-    if (!raw) return { bg:'', border:'' };
-    const parsed = JSON.parse(raw);
-    const pair = __tagColorPairFromValue__(parsed || {}, '');
-    return { bg: pair.bg || '', border: pair.border || '' };
-  }catch(_){ return { bg:'', border:'' }; }
-}
-
-function __gridButtonStyleWrite__(value){
-  try{
-    const pair = __tagColorPairFromValue__(value || {}, '');
-    localStorage.setItem(__GRID_BUTTON_STYLE_STORAGE_KEY__, JSON.stringify({ bg: pair.bg || '', border: pair.border || '' }));
-  }catch(_){ }
-}
-
-function __gridButtonStyleRenderPreview__(){
-  try{
-    const btn = document.getElementById('roomSettingsGlobalButtonStyleBtn');
-    if (!btn) return;
-    const pair = __gridButtonStyleRead__();
-    const bg = pair.bg || 'sky-4';
-    btn.textContent = 'T';
-    btn.setAttribute('style', __tagColorInlineStyle__(bg, '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:true, border:(pair.border || bg) }));
-  }catch(_){ }
-}
-
-function __gridButtonStyleResetPerButtonOverrides__(){
-  try{
-    const map = __launcherIconColorMapRead__();
-    let changed = false;
-    __GRID_BUTTON_STYLE_TARGET_IDS__.forEach((id) => {
-      const current = map[id];
-      if (!current || typeof current !== 'object') return;
-      if (Object.prototype.hasOwnProperty.call(current, 'bg') || Object.prototype.hasOwnProperty.call(current, 'border')){
-        delete current.bg;
-        delete current.border;
-        map[id] = current;
-        changed = true;
-      }
-    });
-    if (changed) __launcherIconColorMapWrite__(map);
-  }catch(_){ }
-}
-
 const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v1';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
@@ -7160,15 +7107,7 @@ function __launcherIconVisualFor__(id){
   const key = String(id || '').trim();
   if (!key) return { fg:'blue-4', bg:'' };
   const map = __launcherIconColorMapRead__();
-  const current = __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
-  try{
-    if (__GRID_BUTTON_STYLE_TARGET_IDS__.includes(key)){
-      const globalPair = __gridButtonStyleRead__();
-      if (globalPair.bg && !current.bg) current.bg = globalPair.bg;
-      if (globalPair.border && !current.border) current.border = globalPair.border;
-    }
-  }catch(_){ }
-  return current;
+  return __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
 }
 
 function __launcherIconSpecFor__(id){
@@ -14419,9 +14358,9 @@ function updateSettingsRoomsButtonLabel(){
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
-    if (label) label.textContent = `Design`;
-    el.setAttribute('aria-label', `Design. Numero attuale: ${n}`);
-    el.title = `Design. Numero attuale: ${n}`;
+    if (label) label.textContent = `Stanze`;
+    el.setAttribute('aria-label', `Stanze. Numero attuale: ${n}`);
+    el.title = `Stanze. Numero attuale: ${n}`;
   }catch(_){ }
 }
 
@@ -14630,7 +14569,6 @@ function renderRoomSettingsPage(){
       dots.innerHTML = parts.join('');
       dots.style.setProperty('--room-settings-cols', String(Math.min(6, Math.max(1, count || 1))));
     }
-    __gridButtonStyleRenderPreview__();
   }catch(_){ }
 }
 
@@ -14704,27 +14642,6 @@ function setupRoomSettingsPage(){
     el.__boundRoomSettingsColorTap = true;
     bindFastTap(el, () => { __openRoomSettingsColorPicker__(target); });
   });
-  const globalBtn = document.getElementById('roomSettingsGlobalButtonStyleBtn');
-  if (globalBtn && !globalBtn.__boundGridButtonStyleTap){
-    globalBtn.__boundGridButtonStyleTap = true;
-    bindFastTap(globalBtn, () => {
-      const current = __gridButtonStyleRead__();
-      __tagColorPopupOpen__('grid-button-style', { bg: current.bg || 'sky-4', border: current.border || '' }, (payload) => {
-        try{
-          const pair = __tagColorPairFromValue__({ bg: current.bg || 'sky-4', border: current.border || '' }, 'sky-4');
-          const mode = String(payload?.mode || 'bg').trim().toLowerCase();
-          const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'sky-4').spec;
-          if (mode === 'border') pair.border = spec;
-          else pair.bg = spec;
-          __gridButtonStyleWrite__({ bg: pair.bg || 'sky-4', border: pair.border || '' });
-          __gridButtonStyleResetPerButtonOverrides__();
-          __gridButtonStyleRenderPreview__();
-          __launcherIconApplyAll__();
-          try{ toast('Stile tasto aggiornato'); }catch(_){ }
-        }catch(e){ try{ toast(e?.message || 'Errore stile tasto'); }catch(_){ } }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current.bg || 'sky-4') });
-    });
-  }
 }
 
 function ensureRoomsPickerButtons(){
