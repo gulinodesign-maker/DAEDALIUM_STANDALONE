@@ -9203,12 +9203,6 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 .tag-color-modal-body{
   padding-top:2px;
 }
-.tag-color-modal-actions{
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:10px;
-}
 .tag-color-modebar{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -9256,26 +9250,19 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   border-color: rgba(15,23,42,0.88);
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12), inset 0 0 0 1px rgba(255,255,255,0.30);
 }
-.tag-color-modal-confirm,
 .tag-color-modal-close{
   width:42px;
   height:42px;
   min-width:42px;
   border:none;
   border-radius:999px;
+  background:#d73c3c !important;
   color:#ffffff !important;
   display:grid;
   place-items:center;
   padding:0;
   box-shadow:none;
 }
-.tag-color-modal-confirm{
-  background:#43b5ff !important;
-}
-.tag-color-modal-close{
-  background:#d73c3c !important;
-}
-.tag-color-modal-confirm span,
 .tag-color-modal-close span{
   display:block;
   font-size:24px;
@@ -14965,7 +14952,6 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   gap:var(--tag-color-gap, 4px);
 }
 #tagColorModal .tag-color-option,
-#tagColorModal .tag-color-modal-confirm,
 #tagColorModal .tag-color-modal-close,
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
@@ -15153,45 +15139,4 @@ body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
-}
-
-
-/* dDAE_2.376 — Design pagina pulsanti */
-.room-settings-section-subtitle{
-  margin-top:-4px;
-}
-.room-settings-page-button-demo{
-  width:96px;
-  min-width:96px;
-  height:96px;
-  border-radius:28px;
-  border:1px solid rgba(148,163,184,0.24);
-  background:rgba(77,156,197,0.80);
-  color:#ffffff;
-  display:inline-flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:0;
-  box-shadow:none;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-}
-.room-settings-page-button-demo-icon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:36px;
-  height:36px;
-  border:2px solid currentColor;
-  border-radius:12px;
-  font-size:17px;
-  font-weight:900;
-  line-height:1;
-}
-.room-settings-page-button-demo-label{
-  font-size:15px;
-  font-weight:800;
-  line-height:1;
 }
