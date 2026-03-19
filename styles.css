@@ -11122,7 +11122,7 @@ body[data-role="operatore"] #page-home .home-grid{
 
 
 
-/* dDAE_2.330 — Pagina Stanze */
+/* dDAE_2.376 — Pagina Design */
 .room-settings-shell{
   padding-top: 14px;
 }
@@ -11198,6 +11198,31 @@ body[data-role="operatore"] #page-home .home-grid{
   align-items:center;
   justify-content:flex-start;
 }
+.room-settings-inline-style{
+  justify-content:flex-start;
+}
+.room-settings-subtitle-section{
+  margin-top: -4px;
+}
+.room-settings-style-btn{
+  width: 120px;
+  min-width: 120px;
+  height: 58px;
+  border-radius: 18px;
+  border:1px solid rgba(15,23,42,0.12);
+  background: rgba(77,156,197,0.80);
+  color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  line-height:1;
+  padding:0 16px;
+  text-transform:uppercase;
+  box-shadow:none;
+  backdrop-filter:none;
+}
 .room-settings-dots{
   display:flex;
   flex-wrap:wrap;
@@ -11235,6 +11260,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
+  .room-settings-style-btn{ width:110px; min-width:110px; height:54px; font-size:18px; }
 }
 body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
@@ -11249,6 +11275,9 @@ body.ddae-dark .room-settings-subtitle{
 }
 body.ddae-dark .room-settings-section{
   border-top-color: rgba(148,163,184,0.18);
+}
+body.ddae-dark .room-settings-style-btn{
+  border-color: rgba(148,163,184,0.22);
 }
 
 /* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
