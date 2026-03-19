@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.380
+ * Build: 2.381
  */
-const BUILD_VERSION = "2.380";
+const BUILD_VERSION = "2.381";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7187,21 +7187,43 @@ function __launcherIconResolveHex__(id, fallbackHex){
 
 function __applySettingsLauncherIconColors__(){
   try{
+    const isDarkSettings = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
     [
       'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
       'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn'
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
+      const label = btn.querySelector('.settings-btn-label');
+      const svg = btn.querySelector('svg.ui-ico');
+      if (isDarkSettings){
+        ['color','-webkit-text-fill-color','background','background-color','border-color'].forEach((prop) => {
+          try{ btn.style.removeProperty(prop); }catch(_){ }
+        });
+        if (label){
+          ['color','-webkit-text-fill-color'].forEach((prop) => {
+            try{ label.style.removeProperty(prop); }catch(_){ }
+          });
+        }
+        if (svg){
+          ['color','stroke','fill'].forEach((prop) => {
+            try{ svg.style.removeProperty(prop); }catch(_){ }
+          });
+          svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+            ['stroke','fill'].forEach((prop) => {
+              try{ node.style.removeProperty(prop); }catch(_){ }
+            });
+          });
+        }
+        return;
+      }
       const hex = __launcherIconResolveHex__(id, '#4d9cc5');
       btn.style.setProperty('color', hex, 'important');
       btn.style.setProperty('-webkit-text-fill-color', hex, 'important');
-      const label = btn.querySelector('.settings-btn-label');
       if (label){
         label.style.setProperty('color', hex, 'important');
         label.style.setProperty('-webkit-text-fill-color', hex, 'important');
       }
-      const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
         svg.style.setProperty('stroke', hex, 'important');
@@ -7259,21 +7281,39 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const isDarkSettings = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
-      const resolvedBg = isDarkSettings ? 'rgba(8,18,38,0.80)' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
-      const resolvedBorder = isDarkSettings
-        ? (visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : 'rgba(148,163,184,0.26)')
-        : (visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : ''));
+      const label = btn.querySelector('.settings-btn-label');
+      const svg = btn.querySelector('svg.ui-ico');
+      if (isDarkSettings){
+        ['background','background-color','border-color','color','-webkit-text-fill-color'].forEach((prop) => {
+          setImp(btn, prop, '');
+        });
+        if (label){
+          setImp(label, 'color', '');
+          setImp(label, '-webkit-text-fill-color', '');
+        }
+        if (svg){
+          ['color','stroke','fill'].forEach((prop) => {
+            try{ svg.style.removeProperty(prop); }catch(_){ }
+          });
+          svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+            ['stroke','fill'].forEach((prop) => {
+              try{ node.style.removeProperty(prop); }catch(_){ }
+            });
+          });
+        }
+        return;
+      }
+      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
+      const resolvedBorder = visual.border ? hexToRgba(__operatoreColorHex__(visual.border), 0.80) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
       setImp(btn, 'color', hex);
       setImp(btn, '-webkit-text-fill-color', hex);
-      const label = btn.querySelector('.settings-btn-label');
       if (label){
         setImp(label, 'color', hex);
         setImp(label, '-webkit-text-fill-color', hex);
       }
-      const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
         svg.style.setProperty('stroke', hex, 'important');

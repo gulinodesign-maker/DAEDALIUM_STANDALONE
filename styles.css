@@ -11219,8 +11219,8 @@ body[data-role="operatore"] #page-home .home-grid{
   margin-top: -4px;
 }
 .room-settings-style-btn{
-  width: 120px;
-  min-width: 120px;
+  width: 58px;
+  min-width: 58px;
   height: 58px;
   border-radius: 18px;
   border:1px solid rgba(15,23,42,0.12);
@@ -11274,7 +11274,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
-  .room-settings-style-btn{ width:110px; min-width:110px; height:54px; font-size:18px; }
+  .room-settings-style-btn{ width:54px; min-width:54px; height:54px; font-size:18px; }
 }
 body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
@@ -15275,3 +15275,22 @@ body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language{ color: #8ed0ff !important; }
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill{ color: #ef8f4a !important; }
+
+
+/* dDAE_2.381 — Impostazioni dark: i custom design non sovrascrivono la resa dark */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{
+  background: #0b1528 !important;
+  background-color: #0b1528 !important;
+  border-color: rgba(83,104,134,0.42) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 24px rgba(3,10,24,0.20) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
