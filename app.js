@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.376
+ * Build: 2.377
  */
-const BUILD_VERSION = "2.376";
+const BUILD_VERSION = "2.377";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7306,9 +7306,10 @@ function __bindLauncherIconLongPress__(btn){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const inSettingsPage = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
         __tagColorPopupOpen__('launcher-icon', __launcherIconVisualFor__(btn.id), (payload) => {
-          const mode = payload?.mode || 'fg';
-          const nextSpec = payload?.spec || payload?.colors?.[mode] || payload?.colors?.fg || __launcherIconSpecFor__(btn.id);
-          __launcherIconSaveColor__(btn.id, nextSpec, mode);
+          const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+          __launcherIconSaveColor__(btn.id, colors.bg || __launcherIconVisualFor__(btn.id).bg || 'blue-4', 'bg');
+          __launcherIconSaveColor__(btn.id, colors.border || __launcherIconVisualFor__(btn.id).border || colors.bg || __launcherIconVisualFor__(btn.id).bg || 'blue-4', 'border');
+          __launcherIconSaveColor__(btn.id, colors.fg || __launcherIconVisualFor__(btn.id).fg || __launcherIconSpecFor__(btn.id), 'fg');
           setSuppress(1800);
           keepCurrentLauncherPage();
         }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
@@ -7991,22 +7992,25 @@ function __openTagColorPickerFor__(target){
   const key = String(target || '').trim().toLowerCase();
   if (key === 'operatore'){
     __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '' }, (payload) => {
-      if ((payload?.mode || 'bg') === 'bg') __operatoriSetSelectedColor__(payload?.spec || __operatoriPageUi.color || 'blue-3');
-      else __operatoriSetSelectedTextColor__(payload?.spec || __operatoriPageUi.textColor || __operatoriPageUi.color || 'blue-3');
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      __operatoriSetSelectedColor__(colors.bg || __operatoriPageUi.color || 'blue-3');
+      __operatoriSetSelectedTextColor__(colors.fg || '');
     }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
     return;
   }
   if (key === 'channel'){
     __tagColorPopupOpen__('channel', { bg: __channelPageUi.color || 'orange-3', fg: __channelPageUi.textColor || '' }, (payload) => {
-      if ((payload?.mode || 'bg') === 'bg') __channelSetSelectedColor__(payload?.spec || __channelPageUi.color || 'orange-3');
-      else __channelSetSelectedTextColor__(payload?.spec || __channelPageUi.textColor || __channelPageUi.color || 'orange-3');
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      __channelSetSelectedColor__(colors.bg || __channelPageUi.color || 'orange-3');
+      __channelSetSelectedTextColor__(colors.fg || '');
     }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'orange-3' });
     return;
   }
   if (key === 'lavanderia'){
     __tagColorPopupOpen__('lavanderia', { bg: __laundryCatalogPageUi.color || 'blue-3', fg: __laundryCatalogPageUi.textColor || '' }, (payload) => {
-      if ((payload?.mode || 'bg') === 'bg') __laundryCatalogSetSelectedColor__(payload?.spec || __laundryCatalogPageUi.color || 'blue-3');
-      else __laundryCatalogSetSelectedTextColor__(payload?.spec || __laundryCatalogPageUi.textColor || __laundryCatalogPageUi.color || 'blue-3');
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      __laundryCatalogSetSelectedColor__(colors.bg || __laundryCatalogPageUi.color || 'blue-3');
+      __laundryCatalogSetSelectedTextColor__(colors.fg || '');
     }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
   }
 }
