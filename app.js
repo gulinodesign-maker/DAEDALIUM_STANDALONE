@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.306
+ * Build: 2.374
  */
-const BUILD_VERSION = "2.373";
+const BUILD_VERSION = "2.374";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7045,7 +7045,8 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v1';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
+  'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni','homeYearPill'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
@@ -7067,6 +7068,13 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
+  settingsYearPill: 'sky-4',
+  settingsLogoutBtn: 'red-4',
+  opSettingsLanguageBtn: 'sky-4',
+  opSettingsDarkBtn: 'gray-6',
+  opSettingsCodeBtn: 'violet-4',
+  opSettingsYearPill: 'sky-4',
+  opSettingsLogoutBtn: 'red-4',
   goStatGen: 'blue-5',
   goStatMensili: 'sky-5',
   goStatSpese: 'orange-4',
@@ -7113,7 +7121,8 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn'
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
+      'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn'
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -7144,6 +7153,11 @@ function __launcherIconApplyToButton__(btn){
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
     const bgHex = visual.bg ? __operatoreColorHex__(visual.bg) : '';
+    const setImp = (node, prop, value) => {
+      if (!node) return;
+      if (value === undefined || value === null || value === '') node.style.removeProperty(prop);
+      else node.style.setProperty(prop, value, 'important');
+    };
     if (btn.id === 'homeYearPill'){
       btn.style.color = hex;
       btn.style.webkitTextFillColor = hex;
@@ -7175,25 +7189,29 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      btn.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      btn.style.borderColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      btn.style.color = hex;
-      btn.style.webkitTextFillColor = hex;
+      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
+      const resolvedBorder = bgHex ? hexToRgba(bgHex, 0.24) : '';
+      setImp(btn, 'background', resolvedBg);
+      setImp(btn, 'background-color', resolvedBg);
+      setImp(btn, 'border-color', resolvedBorder);
+      setImp(btn, 'color', hex);
+      setImp(btn, '-webkit-text-fill-color', hex);
       const label = btn.querySelector('.settings-btn-label');
       if (label){
-        label.style.color = hex;
-        label.style.webkitTextFillColor = hex;
+        setImp(label, 'color', hex);
+        setImp(label, '-webkit-text-fill-color', hex);
       }
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
         svg.style.setProperty('color', hex, 'important');
         svg.style.setProperty('stroke', hex, 'important');
+        svg.style.setProperty('fill', 'none', 'important');
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
           node.style.setProperty('stroke', hex, 'important');
           node.style.setProperty('fill', 'none', 'important');
         });
       }
+      return;
     }
   }catch(_){ }
 }
@@ -7275,12 +7293,13 @@ function __bindLauncherIconLongPress__(btn){
         holdTriggered = true;
         setSuppress(1800);
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+        const inSettingsPage = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
         __tagColorPopupOpen__('launcher-icon', __launcherIconVisualFor__(btn.id), (payload) => {
           const nextSpec = payload?.spec || payload?.colors?.fg || __launcherIconSpecFor__(btn.id);
           __launcherIconSaveColor__(btn.id, nextSpec, payload?.mode || 'fg');
           setSuppress(1800);
           keepCurrentLauncherPage();
-        }, { supportsBg:true, supportsFg:true, defaultMode:'fg', fallbackBg:'blue-4' });
+        }, { supportsBg:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const cancelHold = (ev) => {
