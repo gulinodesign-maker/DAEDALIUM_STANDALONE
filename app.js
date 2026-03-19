@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.379
+ * Build: 2.380
  */
-const BUILD_VERSION = "2.379";
+const BUILD_VERSION = "2.380";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7915,7 +7915,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '', __operatoriPageUi.borderColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsFg:true, supportsBorder:false, colors:{ bg:'blue-4', fg:'', border:'' }, originalColors:{ bg:'blue-4', fg:'', border:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8011,6 +8011,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
   __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.colors = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
+  __tagColorPopupState__.originalColors = { ...(__tagColorPopupState__.colors || { bg:'blue-4', fg:'', border:'' }) };
   const hasManyModes = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length > 1;
   const requestedMode = String(opts.defaultMode || (hasManyModes ? __tagColorPopupLastDualMode__ : (__tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg'))) || 'fg').trim().toLowerCase();
   const fallbackMode = __tagColorPopupState__.supportsBg ? 'bg' : (__tagColorPopupState__.supportsBorder ? 'border' : 'fg');
@@ -8038,6 +8039,7 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.supportsFg = true;
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.colors = { bg:'blue-4', fg:'', border:'' };
+  __tagColorPopupState__.originalColors = { bg:'blue-4', fg:'', border:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
@@ -8470,6 +8472,7 @@ function setupTagColorPopup(){
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
+  const confirmBtn = document.getElementById('tagColorModalConfirm');
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -8478,6 +8481,16 @@ function setupTagColorPopup(){
     }
   }catch(_){ }
   if (closeBtn) bindFastTap(closeBtn, __tagColorPopupClose__);
+  if (confirmBtn) bindFastTap(confirmBtn, () => {
+    try{
+      const mode = String(__tagColorPopupState__.mode || 'bg').trim().toLowerCase();
+      const spec = __tagColorPopupSelectedSpec__();
+      if (typeof __tagColorPopupState__.onSelect === 'function') {
+        __tagColorPopupState__.onSelect({ mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) }, originalColors: { ...(__tagColorPopupState__.originalColors || {}) } });
+      }
+    }catch(_){ }
+    __tagColorPopupClose__();
+  });
   if (card){
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
@@ -8503,9 +8516,6 @@ function setupTagColorPopup(){
         else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
-        if (typeof __tagColorPopupState__.onSelect === 'function') {
-          try{ __tagColorPopupState__.onSelect({ mode: __tagColorPopupState__.mode, spec, colors: { ...(__tagColorPopupState__.colors || {}) } }); }catch(_){ }
-        }
         try{ toast('Colore aggiornato'); }catch(_){ }
       });
     });
