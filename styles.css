@@ -12214,12 +12214,17 @@ body.ddae-dark .settings-build{ color: #ffffff !important; opacity: 0.74 !import
 body.ddae-dark .cal-nav-btn,
 body.ddae-dark .cal-pill,
 body.ddae-dark .cal-cell,
-body.ddae-dark .piscina-cell,
 body.ddae-dark .opcal-day,
 body.ddae-dark .clean-grid .cell,
 body.ddae-dark .calendar-grid .calendar-cell{
   background: rgba(15,23,42,0.92) !important;
   border-color: rgba(148,163,184,0.22) !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+}
+body.ddae-dark .piscina-cell{
+  background: rgba(148,163,184,0.25) !important;
+  border-color: rgba(148,163,184,0.28) !important;
   box-shadow: none !important;
   color: #f8fafc !important;
 }
@@ -14960,7 +14965,7 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 }
 
 
-/* dDAE_2.354 — Statistiche: grafici e popup migliorati */
+/* dDAE_2.356 — Statistiche: grafici e popup migliorati */
 .stats-graphs-grid{gap:14px;padding:8px 6px 12px;}
 .stats-graph-card{background:rgba(255,255,255,0.72);border:1px solid rgba(15,23,42,0.08);box-shadow:0 10px 24px rgba(15,23,42,0.08);padding:12px 10px 10px;border-radius:24px;}
 .stats-graph-card-title{min-height:34px;margin-bottom:10px;font-size:13px;letter-spacing:.1px;}
@@ -14980,3 +14985,5 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 #statGraphModal, #statPieModal, #statMensiliPieModal, #statSpesePieModal, #adminChartModal{align-items:flex-start;padding:calc(74px + var(--safe-top)) 14px 18px;overflow:auto;}
 #statGraphModal .modal-card, #statPieModal .modal-card, #statMensiliPieModal .modal-card, #statSpesePieModal .modal-card, #adminChartModal .modal-card{margin:0 auto;max-height:calc(100dvh - var(--safe-top) - 92px);overflow:auto;}
 @media (max-width:380px){.stats-graphs-grid{gap:12px;padding:6px 4px 10px;}.stats-graph-card{padding:12px 8px 10px;border-radius:22px;}.stats-graph-canvas{min-height:162px;}}
+
+/* dDAE_2.356 — Grafici anteprima sincronizzati con colori personalizzati; celle piscina grigie 25% */

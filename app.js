@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.306
  */
-const BUILD_VERSION = "2.354";
+const BUILD_VERSION = "2.356";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11488,6 +11488,13 @@ function __applyGraphCustomColors__(graphKey, slices){
   return arr;
 }
 
+function __refreshStatGraphPreviews__(){
+  try{
+    if ((state && state.page) !== 'grafici') return;
+    renderStatGrafici(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
+  }catch(_){ }
+}
+
 function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
   const selectedSpec = __closestGraphColorSpec__(currentColor);
   __tagColorPopupOpen__('stat-graph', selectedSpec, (spec) => {
@@ -11495,6 +11502,7 @@ function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
     const map = __loadGraphColorMap__(graphKey);
     map[String(label || '')] = normalized;
     __saveGraphColorMap__(graphKey, map);
+    __refreshStatGraphPreviews__();
     if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
   });
 }
@@ -11677,6 +11685,7 @@ function computeStatOrePuliziaGrafico(rows){
 }
 
 function renderStatGrafici(operatoriRows){
+  try{ state.statGraficiOperatoriRows = Array.isArray(operatoriRows) ? operatoriRows.slice() : []; }catch(_){ }
   __ensureStatGraphPopupBound__();
   const year = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const mensili = computeStatMensili();
