@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.382
+ * Build: 2.383
  */
-const BUILD_VERSION = "2.382";
+const BUILD_VERSION = "2.383";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14600,67 +14600,6 @@ async function saveRoomsUiConfigToSettings(config, { showToast = false } = {}){
   return clean;
 }
 
-const __DESIGN_SLOTS_STORAGE_KEY__ = 'dDAE_design_slots_v1';
-
-function __captureDesignSlotSnapshot__(){
-  try{
-    return {
-      savedAt: __nowIso__(),
-      roomsCount: getConfiguredRoomsCount(6),
-      roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
-      gridButtonStyle: __gridButtonStyleRead__(),
-      build: `dDAE_${BUILD_VERSION}`
-    };
-  }catch(_){
-    return null;
-  }
-}
-
-function __loadDesignSlots__(){
-  try{
-    const raw = localStorage.getItem(__DESIGN_SLOTS_STORAGE_KEY__);
-    if (!raw) return {};
-    const parsed = JSON.parse(String(raw || '{}'));
-    return (parsed && typeof parsed === 'object') ? parsed : {};
-  }catch(_){ return {}; }
-}
-
-function __saveDesignSlots__(slots){
-  try{
-    const clean = (slots && typeof slots === 'object') ? slots : {};
-    localStorage.setItem(__DESIGN_SLOTS_STORAGE_KEY__, JSON.stringify(clean));
-    return clean;
-  }catch(_){ return {}; }
-}
-
-function __renderDesignSlots__(){
-  try{
-    const slots = __loadDesignSlots__();
-    document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
-      const idx = String(btn.getAttribute('data-design-slot') || '').trim();
-      const saved = !!(idx && slots && slots[idx]);
-      btn.classList.toggle('is-saved', saved);
-      btn.textContent = idx || '';
-      btn.setAttribute('aria-label', saved ? `Slot ${idx} salvato` : `Slot ${idx}`);
-      btn.title = saved ? `Slot ${idx} salvato` : `Slot ${idx}`;
-    });
-  }catch(_){ }
-}
-
-async function __storeDesignSlot__(slotIndex){
-  const slot = String(slotIndex || '').trim();
-  if (!slot) return;
-  const choice = await __confirmTwoActions__('Vuoi memorizzare la combinazione di colori?', 'Sì', 'No');
-  if (choice !== 'yes') return;
-  const snapshot = __captureDesignSlotSnapshot__();
-  if (!snapshot) { try{ toast('Errore slot design', 'orange'); }catch(_){ } return; }
-  const slots = __loadDesignSlots__();
-  slots[slot] = snapshot;
-  __saveDesignSlots__(slots);
-  __renderDesignSlots__();
-  try{ toast(`Slot ${slot} salvato`, 'blue'); }catch(_){ }
-}
-
 function __openRoomSettingsColorPicker__(target){
   const key = String(target || '').trim().toLowerCase();
   const cfg = getRoomsUiConfig();
@@ -14745,7 +14684,6 @@ function renderRoomSettingsPage(){
       dots.style.setProperty('--room-settings-cols', String(Math.min(6, Math.max(1, count || 1))));
     }
     __gridButtonStyleRenderPreview__();
-    __renderDesignSlots__();
   }catch(_){ }
 }
 
@@ -14818,13 +14756,6 @@ function setupRoomSettingsPage(){
     if (!el || el.__boundRoomSettingsColorTap) return;
     el.__boundRoomSettingsColorTap = true;
     bindFastTap(el, () => { __openRoomSettingsColorPicker__(target); });
-  });
-  document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
-    if (!btn || btn.__boundDesignSlotTap) return;
-    btn.__boundDesignSlotTap = true;
-    bindFastTap(btn, async () => {
-      await __storeDesignSlot__(btn.getAttribute('data-design-slot'));
-    });
   });
   const globalBtn = document.getElementById('roomSettingsGlobalButtonStyleBtn');
   if (globalBtn && !globalBtn.__boundGridButtonStyleTap){
@@ -23159,4 +23090,99 @@ function __applyLaundryResetCloseIcon__(){
     const t = e && e.target && e.target.closest ? e.target.closest('#goPulizie, #goLavanderia, #topLaundryBtn, #cleanPrev, #cleanNext, #cleanToday') : null;
     if (t) setTimeout(run, 0);
   }, true);
+})();
+
+
+const __DESIGN_SLOTS_STORAGE_KEY__ = 'dDAE_design_slots_v1';
+
+function __captureDesignSlotSnapshot__(){
+  try{
+    return {
+      savedAt: __nowIso__(),
+      roomsCount: getConfiguredRoomsCount(6),
+      roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
+      gridButtonStyle: __gridButtonStyleRead__(),
+      build: `dDAE_${BUILD_VERSION}`
+    };
+  }catch(_){
+    return null;
+  }
+}
+
+function __loadDesignSlots__(){
+  try{
+    const raw = localStorage.getItem(__DESIGN_SLOTS_STORAGE_KEY__);
+    if (!raw) return {};
+    const parsed = JSON.parse(String(raw || '{}'));
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveDesignSlots__(slots){
+  try{
+    const clean = (slots && typeof slots === 'object') ? slots : {};
+    localStorage.setItem(__DESIGN_SLOTS_STORAGE_KEY__, JSON.stringify(clean));
+    return clean;
+  }catch(_){ return {}; }
+}
+
+function __renderDesignSlots__(){
+  try{
+    const slots = __loadDesignSlots__();
+    document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
+      const idx = String(btn.getAttribute('data-design-slot') || '').trim();
+      const saved = !!(idx && slots && slots[idx]);
+      btn.classList.toggle('is-saved', saved);
+      btn.textContent = idx || '';
+      btn.setAttribute('aria-label', saved ? `Slot ${idx} salvato` : `Slot ${idx}`);
+      btn.title = saved ? `Slot ${idx} salvato` : `Slot ${idx}`;
+    });
+  }catch(_){ }
+}
+
+async function __storeDesignSlot__(slotIndex){
+  const slot = String(slotIndex || '').trim();
+  if (!slot) return;
+  const choice = await __confirmTwoActions__('Vuoi memorizzare la combinazione di colori?', 'Sì', 'No');
+  if (choice !== 'yes') return;
+  const snapshot = __captureDesignSlotSnapshot__();
+  if (!snapshot) { try{ toast('Errore slot design', 'orange'); }catch(_){ } return; }
+  const slots = __loadDesignSlots__();
+  slots[slot] = snapshot;
+  __saveDesignSlots__(slots);
+  __renderDesignSlots__();
+  try{ toast(`Slot ${slot} salvato`, 'blue'); }catch(_){ }
+}
+
+(function(){
+  const __origRenderRoomSettingsPage__ = (typeof renderRoomSettingsPage === 'function') ? renderRoomSettingsPage : null;
+  if (__origRenderRoomSettingsPage__ && !__origRenderRoomSettingsPage__.__designSlotsWrapped){
+    const wrapped = function(){
+      const out = __origRenderRoomSettingsPage__.apply(this, arguments);
+      try{ __renderDesignSlots__(); }catch(_){ }
+      return out;
+    };
+    wrapped.__designSlotsWrapped = true;
+    renderRoomSettingsPage = wrapped;
+  }
+
+  const __origSetupRoomSettingsPage__ = (typeof setupRoomSettingsPage === 'function') ? setupRoomSettingsPage : null;
+  if (__origSetupRoomSettingsPage__ && !__origSetupRoomSettingsPage__.__designSlotsWrapped){
+    const wrapped = function(){
+      const out = __origSetupRoomSettingsPage__.apply(this, arguments);
+      try{
+        document.querySelectorAll('#roomSettingsSlots .room-settings-slot-btn').forEach((btn) => {
+          if (!btn || btn.__boundDesignSlotTap) return;
+          btn.__boundDesignSlotTap = true;
+          bindFastTap(btn, async () => {
+            await __storeDesignSlot__(btn.getAttribute('data-design-slot'));
+          });
+        });
+      }catch(_){ }
+      try{ __renderDesignSlots__(); }catch(_){ }
+      return out;
+    };
+    wrapped.__designSlotsWrapped = true;
+    setupRoomSettingsPage = wrapped;
+  }
 })();
