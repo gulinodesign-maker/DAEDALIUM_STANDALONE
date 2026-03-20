@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.396
+ * Build: 2.397
  */
-const BUILD_VERSION = "2.396";
+const BUILD_VERSION = "2.397";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15282,17 +15282,28 @@ async function __roomSettingsThemeSlotApply__(slot){
     return;
   }
   await saveRoomsUiConfigToSettings(payload.roomsUi, { showToast:false });
+  const statsThemeStorage = (payload && payload.statsThemeStorage && typeof payload.statsThemeStorage === 'object') ? payload.statsThemeStorage : {};
+  const hasLauncherSnapshot = !!(statsThemeStorage && (__LAUNCHER_ICON_COLOR_STORAGE_KEY__ in statsThemeStorage || __LAUNCHER_GRID_THEME_STORAGE_KEY__ in statsThemeStorage));
+  const hasStatisticsSnapshot = !!(statsThemeStorage && (__STATISTICS_CARD_THEME_STORAGE_KEY__ in statsThemeStorage || Object.keys(statsThemeStorage).some((k) => String(k || '').startsWith('dDAE_statcard_colors_') || String(k || '').startsWith('dDAE_stat_card_text_') || String(k || '').startsWith('ddae_graph_colors_'))));
+  const hasHeaderSnapshot = !!(statsThemeStorage && (__HEADER_ACTION_THEME_STORAGE_KEY__ in statsThemeStorage || __HEADER_ACTION_COLOR_STORAGE_KEY__ in statsThemeStorage));
   try{
     __launcherGridThemeWrite__(payload.launcherGridTheme);
     __launcherIconColorMapWrite__(payload.launcherIconColors || {});
     __designBgOpacityWrite__(payload.designBgOpacity != null ? payload.designBgOpacity : __designBgOpacityRead__());
-    __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
-    __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
+    if (!hasLauncherSnapshot) __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
+    if (!hasStatisticsSnapshot) __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
+    else {
+      const statsVisual = __launcherVisualNormalize__(payload.statisticsCardTheme || payload.launcherGridTheme || {}, 'blue-4');
+      localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: statsVisual.fg || 'white', bg: statsVisual.bg || 'blue-4', border: statsVisual.border || statsVisual.bg || 'blue-4' }));
+    }
     __headerActionThemeWrite__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
     __headerActionColorMapWrite__(payload.headerActionColors || {});
-    __launcherIconApplyAll__();
   }catch(_){ }
-  try{ __roomSettingsThemeStatsStorageApply__(payload.statsThemeStorage); }catch(_){ }
+  try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
+  try{
+    if (!hasHeaderSnapshot) __headerActionThemeOverwriteTargets__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
+  }catch(_){ }
+  try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
