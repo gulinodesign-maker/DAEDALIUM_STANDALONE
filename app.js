@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.382
+ * Build: 2.383
  */
-const BUILD_VERSION = "2.382";
+const BUILD_VERSION = "2.383";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14663,6 +14663,75 @@ function __openRoomSettingsColorPicker__(target){
   }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
 }
 
+const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
+
+function __roomSettingsThemeSlotsRead__(){
+  try{
+    const raw = localStorage.getItem(__ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __roomSettingsThemeSlotsWrite__(slots){
+  try{ localStorage.setItem(__ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__, JSON.stringify((slots && typeof slots === 'object') ? slots : {})); }catch(_){ }
+}
+
+function __roomSettingsThemePayloadBuild__(){
+  return {
+    roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
+    launcherGridTheme: __launcherGridThemeRead__()
+  };
+}
+
+function __roomSettingsThemePayloadNormalize__(payload){
+  const src = (payload && typeof payload === 'object') ? payload : {};
+  return {
+    roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
+    launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4')
+  };
+}
+
+function __roomSettingsThemeSlotGet__(slot){
+  const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+  const slots = __roomSettingsThemeSlotsRead__();
+  const current = slots[key];
+  return current ? __roomSettingsThemePayloadNormalize__(current) : null;
+}
+
+async function __roomSettingsThemeSlotSave__(slot){
+  const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+  const slots = __roomSettingsThemeSlotsRead__();
+  slots[key] = __roomSettingsThemePayloadBuild__();
+  __roomSettingsThemeSlotsWrite__(slots);
+  try{ renderRoomSettingsPage(); }catch(_){ }
+  try{ toast(`Tema ${key} salvato`); }catch(_){ }
+}
+
+async function __roomSettingsThemeSlotApply__(slot){
+  const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+  const payload = __roomSettingsThemeSlotGet__(key);
+  if (!payload){
+    try{ toast(`Tema ${key} non salvato`); }catch(_){ }
+    return;
+  }
+  await saveRoomsUiConfigToSettings(payload.roomsUi, { showToast:false });
+  try{
+    __launcherGridThemeWrite__(payload.launcherGridTheme);
+    __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
+    __launcherIconApplyAll__();
+  }catch(_){ }
+  try{ renderRoomSettingsPage(); }catch(_){ }
+  try{ toast(`Tema ${key} richiamato`); }catch(_){ }
+}
+
+async function __roomSettingsThemeSlotAskSave__(slot){
+  const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+  const choice = await __confirmTwoActions__(`Salvare il tema ${key}?`, 'Sì', 'No');
+  if (choice !== 'yes') return;
+  return __roomSettingsThemeSlotSave__(key);
+}
+
 function renderRoomSettingsPage(){
   try{
     const cfg = getRoomsUiConfig();
@@ -14686,6 +14755,28 @@ function renderRoomSettingsPage(){
     applyBtn('roomSettingsBedMBtn', cfg.beds?.matrimoniale, 'M');
     applyBtn('roomSettingsBedSBtn', cfg.beds?.singolo, 'S');
     applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
+    [1,2,3,4].forEach((slot) => {
+      const el = document.getElementById(`roomSettingsThemeBtn${slot}`);
+      if (!el) return;
+      const saved = __roomSettingsThemeSlotGet__(slot);
+      el.textContent = String(slot);
+      if (saved){
+        const visual = saved.launcherGridTheme || {};
+        const bgSpec = visual.bg || saved.roomsUi?.options?.m?.bg || saved.roomsUi?.nights?.bg || 'blue-4';
+        const borderSpec = visual.border || bgSpec;
+        const bgHex = __operatoreColorHex__(bgSpec);
+        const borderHex = __operatoreColorHex__(borderSpec);
+        el.setAttribute('style', `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 1)};color:#ffffff;-webkit-text-fill-color:#ffffff;`);
+        el.classList.remove('room-settings-square-btn-placeholder');
+        el.setAttribute('aria-label', `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`);
+        el.title = `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`;
+      }else{
+        el.setAttribute('style', '');
+        el.classList.add('room-settings-square-btn-placeholder');
+        el.setAttribute('aria-label', `Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`);
+        el.title = `Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`;
+      }
+    });
     const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
     if (launcherThemeBtn){
       launcherThemeBtn.textContent = '1';
@@ -14759,6 +14850,59 @@ function setupRoomSettingsPage(){
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     }, true);
   }
+  [1,2,3,4].forEach((slot) => {
+    const el = document.getElementById(`roomSettingsThemeBtn${slot}`);
+    if (!el || el.__boundRoomThemeSlot) return;
+    el.__boundRoomThemeSlot = true;
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+      holdTriggered = false;
+    };
+    const doTap = async () => {
+      try{ __sfxTap(); }catch(_){ }
+      await __roomSettingsThemeSlotApply__(slot);
+    };
+    const doLong = async () => {
+      try{ __sfxGlass(); }catch(_){ }
+      holdTriggered = true;
+      await __roomSettingsThemeSlotAskSave__(slot);
+    };
+    el.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
+      clearHold();
+      holdTimer = setTimeout(() => { doLong(); }, 500);
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    el.addEventListener('touchend', async (e) => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      if (!holdTriggered) await doTap();
+      clearHold();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    el.addEventListener('touchcancel', (e) => {
+      clearHold();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    el.addEventListener('click', async (e) => {
+      if (Date.now() - touchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
+      await doTap();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, true);
+    el.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
+    el.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      clearHold();
+      holdTimer = setTimeout(() => { doLong(); }, 500);
+    });
+    ['mouseup','mouseleave'].forEach((evt) => el.addEventListener(evt, () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      clearHold();
+    }));
+  });
   const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
   if (launcherThemeBtn && !launcherThemeBtn.__boundLauncherThemeBtn){
     launcherThemeBtn.__boundLauncherThemeBtn = true;

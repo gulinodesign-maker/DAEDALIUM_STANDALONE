@@ -11200,6 +11200,22 @@ body[data-role="operatore"] #page-home .home-grid{
   flex-direction:column;
   gap:12px;
 }
+.room-settings-section-theme{
+  padding-top:0;
+  border-top:0;
+}
+.room-settings-theme-squares{
+  justify-content:space-between;
+  gap:12px;
+}
+.room-settings-theme-btn{
+  flex:1 1 0;
+  width:auto;
+  min-width:0;
+  aspect-ratio:1 / 1;
+  height:auto;
+  max-width:none;
+}
 .room-settings-section-title{
   font-size:17px;
   line-height:1.1;
@@ -11279,6 +11295,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
   .room-settings-squares{ gap:12px; }
+  .room-settings-theme-squares{ gap:10px; }
   .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
 }
 body.ddae-dark .room-settings-panel{
