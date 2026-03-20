@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.391
+ * Build: 2.392
  */
-const BUILD_VERSION = "2.391";
+const BUILD_VERSION = "2.392";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7149,12 +7149,45 @@ function __statisticsCardThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
     localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4' }));
+    try{ __statisticsCardThemeOverwriteTargets__(clean); }catch(__){ }
   }catch(_){ }
 }
 
 function __statisticsCardThemeVisual__(){
   const visual = __statisticsCardThemeRead__();
   return { fg:'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+}
+
+function __statisticsCardThemeTargetKeys__(){
+  const statGenKeys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
+  const statSpeseKeys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
+  const statMensiliKeys = (Array.isArray(__MONTHS_IT) ? __MONTHS_IT : []).map((m)=>String(m || '').trim()).filter(Boolean);
+  return {
+    statgen: statGenKeys,
+    statspese: statSpeseKeys,
+    statmensili: statMensiliKeys
+  };
+}
+
+function __statisticsCardThemeOverwriteTargets__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    const targets = __statisticsCardThemeTargetKeys__();
+    Object.keys(targets).forEach((pageKey) => {
+      const map = __loadStatCardColorMap__(pageKey);
+      (targets[pageKey] || []).forEach((cardKey) => {
+        const safeKey = String(cardKey || '').trim();
+        if (!safeKey) return;
+        const current = __tagColorPairFromValue__(map[safeKey] || {}, clean.bg || 'blue-4');
+        map[safeKey] = {
+          bg: clean.bg || 'blue-4',
+          border: clean.border || clean.bg || 'blue-4',
+          fg: current.fg || ''
+        };
+      });
+      __saveStatCardColorMap__(pageKey, map);
+    });
+  }catch(_){ }
 }
 
 function __statisticsCardThemeButtonStyle__(){
