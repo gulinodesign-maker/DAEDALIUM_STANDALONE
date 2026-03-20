@@ -11200,22 +11200,6 @@ body[data-role="operatore"] #page-home .home-grid{
   flex-direction:column;
   gap:12px;
 }
-.room-settings-section-theme{
-  padding-top:0;
-  border-top:0;
-}
-.room-settings-theme-squares{
-  justify-content:space-between;
-  gap:12px;
-}
-.room-settings-theme-btn{
-  flex:1 1 0;
-  width:auto;
-  min-width:0;
-  aspect-ratio:1 / 1;
-  height:auto;
-  max-width:none;
-}
 .room-settings-section-title{
   font-size:17px;
   line-height:1.1;
@@ -11295,7 +11279,6 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
   .room-settings-squares{ gap:12px; }
-  .room-settings-theme-squares{ gap:10px; }
   .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
 }
 body.ddae-dark .room-settings-panel{
@@ -15212,107 +15195,4 @@ body.ddae-dark #page-statgen .stat-val,
 body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
-}
-
-/* dDAE_2.384 — Design: Tema e Numero stanze come schede separate */
-.room-settings-section-card{
-  padding: 14px !important;
-  border: 1px solid rgba(15,23,42,0.12) !important;
-  border-radius: 20px !important;
-  background: rgba(248,250,252,0.92) !important;
-  gap: 12px !important;
-}
-.room-settings-section-card.room-settings-section,
-.room-settings-section-card.room-settings-section-theme,
-.room-settings-section-card.room-settings-section-count{
-  border-top: 1px solid rgba(15,23,42,0.12) !important;
-}
-.room-settings-section-count .room-settings-top{
-  width: 100%;
-}
-body.ddae-dark .room-settings-section-card{
-  background: rgba(30,41,59,0.88) !important;
-  border-color: rgba(148,163,184,0.22) !important;
-}
-
-/* dDAE_2.384 — Impostazioni: dark mode reale per tutti i tasti */
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-impostazioni .settings-bottom-stack .settings-btn,
-body.ddae-dark #page-opsettings .settings-bottom-stack .settings-btn,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill{
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: rgba(15,23,42,0.80) !important;
-  background-color: rgba(15,23,42,0.80) !important;
-  border: 1px solid rgba(148,163,184,0.22) !important;
-  box-shadow: none !important;
-}
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
-body.ddae-dark #page-impostazioni .settings-bottom-stack .settings-btn .ui-ico,
-body.ddae-dark #page-opsettings .settings-bottom-stack .settings-btn .ui-ico,
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-label,
-body.ddae-dark #page-impostazioni .settings-bottom-stack .settings-btn-label,
-body.ddae-dark #page-opsettings .settings-bottom-stack .settings-btn-label{
-  color: currentColor !important;
-  stroke: currentColor !important;
-  -webkit-text-fill-color: currentColor !important;
-}
-
-
-/* dDAE_2.385 — Design: scheda numero stanze come riferimento iOS */
-.room-settings-section-count{
-  padding: 18px 18px 16px !important;
-}
-.room-settings-section-count .room-settings-top{
-  align-items: center;
-  gap: 18px;
-}
-.room-settings-section-count .room-settings-count-btn{
-  width: 96px;
-  min-width: 96px;
-  height: 96px;
-  border-radius: 30px;
-  align-self: center;
-}
-.room-settings-section-theme .room-settings-square-btn{
-  flex: 1 1 0;
-  width: auto;
-  min-width: 0;
-  max-width: 78px;
-}
-@media (max-width: 390px){
-  .room-settings-section-count .room-settings-count-btn{
-    width: 88px;
-    min-width: 88px;
-    height: 88px;
-    border-radius: 28px;
-  }
-}
-
-/* dDAE_2.385 — Dark mode impostazioni: tasti sempre scuri, mai grigi chiari su iOS */
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill{
-  background: rgba(15,23,42,0.80) !important;
-  background-color: rgba(15,23,42,0.80) !important;
-  border-color: rgba(148,163,184,0.22) !important;
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-}
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn::before,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn::before,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill::before,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill::before,
-body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn::after,
-body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn::after,
-body.ddae-dark #page-impostazioni .settings-btn-logout-pill::after,
-body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
-  background: transparent !important;
-  box-shadow: none !important;
-  opacity: 0 !important;
 }
