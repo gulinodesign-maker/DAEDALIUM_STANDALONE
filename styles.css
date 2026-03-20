@@ -11215,6 +11215,8 @@ body[data-role="operatore"] #page-home .home-grid{
   aspect-ratio:1 / 1;
   height:auto;
   max-width:none;
+  color:#000000 !important;
+  -webkit-text-fill-color:#000000 !important;
 }
 .room-settings-section-title{
   font-size:17px;

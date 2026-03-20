@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.397
+ * Build: 2.398
  */
-const BUILD_VERSION = "2.397";
+const BUILD_VERSION = "2.398";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7016,12 +7016,13 @@ function __tagColorPairFromValue__(input, fallbackBg){
       bg,
       border: border || bg,
       fg: __normalizeOptionalOperatoreColor__(input.fg || input.foreground || input.text || input.icon || input.coloreTesto || input.textColor || ''),
+      opacity: __designBgOpacityNormalize__(input.opacity ?? input.alpha ?? 0.80)
     };
   }
   const raw = String(input || '').trim();
-  if (!raw) return { bg: fallback, border: fallback, fg: '' };
+  if (!raw) return { bg: fallback, border: fallback, fg: '', opacity:0.80 };
   const bg = __normalizeOperatoreColor__(raw);
-  return { bg, border: bg, fg: '' };
+  return { bg, border: bg, fg: '', opacity:0.80 };
 }
 
 function __launcherVisualNormalize__(value, fallbackFg){
@@ -8306,7 +8307,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, supportsOpacity:false, opacity:0.80, colors:{ bg:'blue-4', border:'', fg:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8336,16 +8337,14 @@ function __tagColorPopupSelectedSpec__(){
 function __tagColorPopupRefreshModeButtons__(){
   const bar = document.getElementById('tagColorModeBar');
   if (!bar) return;
-  const enabledCount = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg, __tagColorPopupState__.supportsOpacity].filter(Boolean).length;
-  const showBar = enabledCount > 1;
-  bar.hidden = !showBar;
-  try{ bar.style.setProperty('--tag-color-mode-count', String(Math.max(1, enabledCount || 1))); }catch(_){ }
+  const enabledCount = 4;
+  bar.hidden = false;
+  try{ bar.style.setProperty('--tag-color-mode-count', '4'); }catch(_){ }
   bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
-    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : (mode === 'border' ? !!__tagColorPopupState__.supportsBorder : (mode === 'opacity' ? !!__tagColorPopupState__.supportsOpacity : !!__tagColorPopupState__.supportsFg));
-    btn.hidden = !showBar || !enabled;
-    btn.disabled = !enabled;
-    btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
+    btn.hidden = false;
+    btn.disabled = false;
+    btn.classList.toggle('is-active', mode === __tagColorPopupState__.mode);
   });
 }
 
@@ -8407,17 +8406,17 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   if (!modal || !grid) return;
   __tagColorPopupState__.target = String(target || '').trim();
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
-  __tagColorPopupState__.supportsBg = !!opts.supportsBg;
-  __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
-  __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
-  __tagColorPopupState__.supportsOpacity = !!opts.supportsOpacity;
-  __tagColorPopupState__.opacity = __designBgOpacityNormalize__(opts.opacity ?? currentColor?.opacity ?? __designBgOpacityRead__());
-  __tagColorPopupState__.colors = { ...__tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4'), border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || '') };
-  const enabledModes = [];
-  if (__tagColorPopupState__.supportsBg) enabledModes.push('bg');
-  if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
-  if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
-  if (__tagColorPopupState__.supportsOpacity) enabledModes.push('opacity');
+  __tagColorPopupState__.supportsBg = true;
+  __tagColorPopupState__.supportsBorder = true;
+  __tagColorPopupState__.supportsFg = true;
+  __tagColorPopupState__.supportsOpacity = true;
+  const currentVisual = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
+  __tagColorPopupState__.opacity = __designBgOpacityNormalize__(opts.opacity ?? currentColor?.opacity ?? currentVisual?.opacity ?? __designBgOpacityRead__());
+  __tagColorPopupState__.colors = {
+    ...currentVisual,
+    border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || currentVisual?.border || currentVisual?.bg || opts.fallbackBg || 'blue-4') || currentVisual?.bg || opts.fallbackBg || 'blue-4'
+  };
+  const enabledModes = ['bg','border','fg','opacity'];
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
@@ -14955,6 +14954,16 @@ function __roomsUiColorPair__(input, fallbackBg){
   return __tagColorPairFromValue__(input, fallbackBg || 'blue-4');
 }
 
+function __roomsUiVisualNormalize__(input, fallbackBg){
+  const pair = __roomsUiColorPair__(input, fallbackBg || 'blue-4');
+  return {
+    bg: pair.bg || __normalizeOperatoreColor__(fallbackBg || 'blue-4'),
+    border: pair.border || pair.bg || __normalizeOperatoreColor__(fallbackBg || 'blue-4'),
+    fg: pair.fg || '',
+    opacity: __designBgOpacityNormalize__(input?.opacity ?? pair?.opacity ?? 0.80)
+  };
+}
+
 function __buildDefaultRoomsUiConfig__(){
   const rooms = {};
   for (let i = 1; i <= 12; i++) rooms[String(i)] = __roomsUiColorPair__(__ROOMS_UI_DEFAULT_ROOM_COLORS__[i - 1] || 'blue-4', 'blue-4');
@@ -15009,15 +15018,19 @@ function __roomsUiTextColor__(spec, fallback, preferWhite = false){
 }
 
 function __roomsUiButtonStyle__(spec, preferWhite = true){
-  const pair = __roomsUiColorPair__(spec, 'blue-4');
+  const pair = __roomsUiVisualNormalize__(spec, 'blue-4');
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
-  return `background:${hexToRgba(main, 0.80)};border-color:${hexToRgba(main, 0.80)};color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
+  const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
+  const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.80);
+  return `background:${hexToRgba(main, opacity)};background-color:${hexToRgba(main, opacity)};border-color:${hexToRgba(borderHex, opacity)};color:${__roomsUiTextColor__(pair, '', preferWhite)};-webkit-text-fill-color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
 }
 
 function __roomsUiBadgeStyle__(spec){
-  const pair = __roomsUiColorPair__(spec, 'blue-4');
+  const pair = __roomsUiVisualNormalize__(spec, 'blue-4');
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
-  return `background:${hexToRgba(main, 0.92)};border-color:${hexToRgba(main, 0.55)};color:${__roomsUiTextColor__(pair)};`;
+  const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
+  const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.92);
+  return `background:${hexToRgba(main, opacity)};background-color:${hexToRgba(main, opacity)};border-color:${hexToRgba(borderHex, opacity)};color:${__roomsUiTextColor__(pair)};-webkit-text-fill-color:${__roomsUiTextColor__(pair)};`;
 }
 
 function __applyRoomsUiConfig__(){
@@ -15026,10 +15039,12 @@ function __applyRoomsUiConfig__(){
     if (!root) return;
     const cfg = getRoomsUiConfig();
     const setVar = (prefix, spec) => {
-      const pair = __roomsUiColorPair__(spec, 'blue-4');
+      const pair = __roomsUiVisualNormalize__(spec, 'blue-4');
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
-      root.style.setProperty(`${prefix}-bg`, hexToRgba(main, 0.95));
-      root.style.setProperty(`${prefix}-border`, hexToRgba(main, 0.55));
+      const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
+      const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.95);
+      root.style.setProperty(`${prefix}-bg`, hexToRgba(main, opacity));
+      root.style.setProperty(`${prefix}-border`, hexToRgba(borderHex, opacity));
       root.style.setProperty(`${prefix}-fg`, __roomsUiTextColor__(pair));
     };
     setVar('--ddae-room-nights', cfg.nights);
@@ -15040,11 +15055,13 @@ function __applyRoomsUiConfig__(){
     setVar('--ddae-bed-s', cfg.beds.singolo);
     setVar('--ddae-bed-c', cfg.beds.culla);
     for (let i = 1; i <= 12; i++) {
-      const pair = __roomsUiColorPair__(cfg.rooms?.[String(i)] || 'blue-4', 'blue-4');
+      const pair = __roomsUiVisualNormalize__(cfg.rooms?.[String(i)] || 'blue-4', 'blue-4');
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
-      root.style.setProperty(`--room${i}`, hexToRgba(main, 0.55));
-      root.style.setProperty(`--room${i}-solid`, hexToRgba(main, 0.95));
-      root.style.setProperty(`--room${i}-border`, hexToRgba(main, 0.55));
+      const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
+      const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.55);
+      root.style.setProperty(`--room${i}`, hexToRgba(main, opacity));
+      root.style.setProperty(`--room${i}-solid`, hexToRgba(main, opacity));
+      root.style.setProperty(`--room${i}-border`, hexToRgba(borderHex, opacity));
       root.style.setProperty(`--room${i}-fg`, __roomsUiTextColor__(pair));
     }
   }catch(_){ }
@@ -15093,32 +15110,36 @@ function __openRoomSettingsColorPicker__(target){
   }
   __tagColorPopupOpen__('roomsettings', current, async(payload) => {
     try{
-      const pair = __tagColorPairFromValue__(current, 'blue-4');
+      const pair = __roomsUiVisualNormalize__(current, 'blue-4');
+      const mode = String(payload?.mode || 'bg').trim().toLowerCase();
       const spec = __parseOperatoreColorSpec__(payload?.spec || pair.bg || 'blue-4').spec;
-      if ((payload?.mode || 'bg') === 'bg') pair.bg = spec;
+      if (mode === 'bg') pair.bg = spec;
+      else if (mode === 'border') pair.border = spec;
+      else if (mode === 'opacity') pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? 0.80);
       else pair.fg = spec;
+      const nextVisual = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: __designBgOpacityNormalize__(pair.opacity ?? 0.80) };
       const next = getRoomsUiConfig();
       if (/^room:\d+$/.test(key)){
         const n = key.split(':')[1];
-        next.rooms[String(n)] = { bg: pair.bg, fg: pair.fg || '' };
+        next.rooms[String(n)] = nextVisual;
       } else if (key === 'nights'){
-        next.nights = { bg: pair.bg, fg: pair.fg || '' };
+        next.nights = nextVisual;
       } else if (key === 'option:m'){
-        next.options.m = { bg: pair.bg, fg: pair.fg || '' };
+        next.options.m = nextVisual;
       } else if (key === 'option:g'){
-        next.options.g = { bg: pair.bg, fg: pair.fg || '' };
+        next.options.g = nextVisual;
       } else if (key === 'option:c'){
-        next.options.c = { bg: pair.bg, fg: pair.fg || '' };
+        next.options.c = nextVisual;
       } else if (key === 'bed:matrimoniale'){
-        next.beds.matrimoniale = { bg: pair.bg, fg: pair.fg || '' };
+        next.beds.matrimoniale = nextVisual;
       } else if (key === 'bed:singolo'){
-        next.beds.singolo = { bg: pair.bg, fg: pair.fg || '' };
+        next.beds.singolo = nextVisual;
       } else if (key === 'bed:culla'){
-        next.beds.culla = { bg: pair.bg, fg: pair.fg || '' };
+        next.beds.culla = nextVisual;
       }
       await saveRoomsUiConfigToSettings(next, { showToast:true });
     }catch(e){ try{ toast(e?.message || 'Errore colori stanze'); }catch(_){ } }
-  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:(current?.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
 }
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
@@ -15351,7 +15372,7 @@ function renderRoomSettingsPage(){
         const borderSpec = visual.border || bgSpec;
         const bgHex = __operatoreColorHex__(bgSpec);
         const borderHex = __operatoreColorHex__(borderSpec);
-        el.setAttribute('style', `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 1)};color:#ffffff;-webkit-text-fill-color:#ffffff;`);
+        el.setAttribute('style', `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 1)};color:#000000;-webkit-text-fill-color:#000000;`);
         el.classList.remove('room-settings-square-btn-placeholder');
         el.setAttribute('aria-label', `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`);
         el.title = `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`;
