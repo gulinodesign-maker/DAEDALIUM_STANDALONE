@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.379
+ * Build: 2.380
  */
-const BUILD_VERSION = "2.379";
+const BUILD_VERSION = "2.380";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7150,15 +7150,39 @@ function __launcherGridThemeButtonStyle__(){
   }
 }
 
+const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
+  'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
+  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
+];
+
+function __launcherGridThemeOverwriteTargets__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    const map = __launcherIconColorMapRead__();
+    __LAUNCHER_GRID_THEME_TARGET_IDS__.forEach((id) => {
+      const current = __launcherVisualNormalize__(map[id], __LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4');
+      map[id] = {
+        fg: current.fg || (__LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4'),
+        bg: clean.bg || 'blue-4',
+        border: clean.border || clean.bg || 'blue-4'
+      };
+    });
+    __launcherIconColorMapWrite__(map);
+  }catch(_){ }
+}
+
 function __openLauncherGridThemePicker__(){
   const current = __launcherGridThemeVisual__();
   __tagColorPopupOpen__('launcher-grid-theme', current, (payload) => {
     try{
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      __launcherGridThemeWrite__({
+      const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
-      });
+      };
+      __launcherGridThemeWrite__(nextVisual);
+      __launcherGridThemeOverwriteTargets__(nextVisual);
       __launcherIconApplyAll__();
       try{ renderRoomSettingsPage(); }catch(_){ }
       try{ toast('Design tasti aggiornato'); }catch(_){ }

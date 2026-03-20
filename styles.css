@@ -2295,7 +2295,7 @@ body[data-page="ospiti"] .guest-card .actions {
   letter-spacing: 0.2px;
 }
 .dots{display:flex;gap:8px}
-.dot{width:22px;height:22px;border-radius:50%;border:2px solid rgba(15,23,42,0.35); background: transparent}
+.dot{display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:2px solid rgba(15,23,42,0.35); background: transparent;box-sizing:border-box}
 
 /* Popup letti (Ospiti): colori specifici per tipologia */
 #rc_matrimoniale .dot{ border-color: rgba(255,59,48,0.95); }
