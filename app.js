@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.398
+ * Build: 2.399
  */
-const BUILD_VERSION = "2.398";
+const BUILD_VERSION = "2.399";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7032,10 +7032,11 @@ function __launcherVisualNormalize__(value, fallbackFg){
       fg: __normalizeOperatoreColor__(value.fg || value.foreground || value.color || fallback),
       bg: __normalizeOptionalOperatoreColor__(value.bg || value.background || ''),
       border: __normalizeOptionalOperatoreColor__(value.border || value.borderColor || value.stroke || value.outline || ''),
+      opacity: __designBgOpacityNormalize__(value.opacity ?? value.alpha ?? 0.80),
     };
   }
   const raw = String(value || '').trim();
-  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '', border: '' };
+  return { fg: __normalizeOperatoreColor__(raw || fallback), bg: '', border: '', opacity:0.80 };
 }
 
 function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
@@ -7106,7 +7107,7 @@ function __launcherIconColorMapWrite__(map){
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
 const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
 const __DESIGN_BG_OPACITY_STORAGE_KEY__ = 'dDAE_design_bg_opacity_v1';
-const __DESIGN_BG_OPACITY_ALLOWED__ = [0.25, 0.50, 0.75, 1.00];
+const __DESIGN_BG_OPACITY_ALLOWED__ = [0.25, 0.50, 0.75, 0.80, 1.00];
 
 function __designBgOpacityNormalize__(value){
   const raw = Number(value);
@@ -7159,21 +7160,21 @@ function __headerActionColorMapWrite__(map){
 function __headerActionThemeRead__(){
   try{
     const raw = localStorage.getItem(__HEADER_ACTION_THEME_STORAGE_KEY__);
-    if (!raw) return { fg:'blue-4', bg:'white', border:'white' };
+    if (!raw) return { fg:'blue-4', bg:'white', border:'white', opacity:0.80 };
     return __launcherVisualNormalize__(JSON.parse(raw), 'blue-4');
-  }catch(_){ return { fg:'blue-4', bg:'white', border:'white' }; }
+  }catch(_){ return { fg:'blue-4', bg:'white', border:'white', opacity:0.80 }; }
 }
 
 function __headerActionThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    localStorage.setItem(__HEADER_ACTION_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'blue-4', bg: clean.bg || 'white', border: clean.border || clean.bg || 'white' }));
+    localStorage.setItem(__HEADER_ACTION_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'blue-4', bg: clean.bg || 'white', border: clean.border || clean.bg || 'white', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) }));
   }catch(_){ }
 }
 
 function __headerActionThemeVisual__(){
   const visual = __headerActionThemeRead__();
-  return { fg: visual.fg || 'blue-4', bg: visual.bg || 'white', border: visual.border || visual.bg || 'white' };
+  return { fg: visual.fg || 'blue-4', bg: visual.bg || 'white', border: visual.border || visual.bg || 'white', opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80) };
 }
 
 function __headerActionVisualFor__(id){
@@ -7185,7 +7186,8 @@ function __headerActionVisualFor__(id){
   return {
     fg: current.fg || base.fg || 'blue-4',
     bg: current.bg || base.bg || 'white',
-    border: current.border || current.bg || base.border || base.bg || 'white'
+    border: current.border || current.bg || base.border || base.bg || 'white',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? base.opacity ?? 0.80)
   };
 }
 
@@ -7199,7 +7201,7 @@ function __headerActionSaveColor__(id, spec, mode = 'fg'){
   if (normalizedMode === 'bg') current.bg = __normalizeOperatoreColor__(spec || current.bg || 'white');
   else if (normalizedMode === 'border') current.border = __normalizeOperatoreColor__(spec || current.border || current.bg || 'white');
   else current.fg = __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
-  map[key] = { fg: current.fg || 'blue-4', bg: current.bg || 'white', border: current.border || current.bg || 'white' };
+  map[key] = { fg: current.fg || 'blue-4', bg: current.bg || 'white', border: current.border || current.bg || 'white', opacity: __designBgOpacityNormalize__(current.opacity ?? 0.80) };
   __headerActionColorMapWrite__(map);
 }
 
@@ -7213,7 +7215,8 @@ function __headerActionThemeOverwriteTargets__(visual){
       map[key] = {
         fg: clean.fg || 'blue-4',
         bg: clean.bg || 'white',
-        border: clean.border || clean.bg || 'white'
+        border: clean.border || clean.bg || 'white',
+        opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80)
       };
     });
     __headerActionColorMapWrite__(map);
@@ -7227,7 +7230,7 @@ function __headerActionApplyToButton__(btn){
     const fgHex = __operatoreColorHex__(visual.fg || 'blue-4');
     const bgHex = __operatoreColorHex__(visual.bg || 'white');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'white');
-    const bgCss = hexToRgba(bgHex, __designBgOpacityRead__());
+    const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
     btn.style.setProperty('background', bgCss, 'important');
     btn.style.setProperty('background-color', bgCss, 'important');
     btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
@@ -7268,8 +7271,8 @@ function __headerActionThemeButtonStyle__(){
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'white');
     const fgHex = __operatoreColorHex__(visual.fg || 'blue-4');
     return [
-      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
-      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
       'border-color:' + hexToRgba(borderHex, 1),
       'color:' + fgHex,
       '-webkit-text-fill-color:' + fgHex
@@ -7287,7 +7290,8 @@ function __openHeaderActionThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'white',
         border: colors.border || current.border || colors.bg || current.bg || 'white',
-        fg: colors.fg || current.fg || 'blue-4'
+        fg: colors.fg || current.fg || 'blue-4',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __headerActionThemeWrite__(nextVisual);
       if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
@@ -7314,7 +7318,13 @@ function __bindHeaderActionLongPress__(btn){
         __headerActionSaveColor__(btn.id, colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'bg');
         __headerActionSaveColor__(btn.id, colors.border || __headerActionVisualFor__(btn.id).border || colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'border');
         __headerActionSaveColor__(btn.id, colors.fg || __headerActionVisualFor__(btn.id).fg || 'blue-4', 'fg');
-        if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+        if (payload && payload.opacity != null){
+          const map = __headerActionColorMapRead__();
+          const current = __headerActionVisualFor__(btn.id);
+          map[String(btn.id||'').trim()] = { fg: current.fg || 'blue-4', bg: current.bg || 'white', border: current.border || current.bg || 'white', opacity: __designBgOpacityNormalize__(payload.opacity) };
+          __headerActionColorMapWrite__(map);
+          __designBgOpacityWrite__(payload.opacity);
+        }
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
       }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white') });
@@ -7353,21 +7363,21 @@ function __statisticsCardThemeRead__(){
     const parsed = JSON.parse(raw);
     return __launcherVisualNormalize__(parsed, 'blue-4');
   }catch(_){
-    try{ return __launcherVisualNormalize__(__launcherGridThemeRead__(), 'blue-4'); }catch(__){ return { fg:'white', bg:'blue-4', border:'blue-4' }; }
+    try{ return __launcherVisualNormalize__(__launcherGridThemeRead__(), 'blue-4'); }catch(__){ return { fg:'white', bg:'blue-4', border:'blue-4', opacity:0.80 }; }
   }
 }
 
 function __statisticsCardThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4' }));
+    localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) }));
     try{ __statisticsCardThemeOverwriteTargets__(clean); }catch(__){ }
   }catch(_){ }
 }
 
 function __statisticsCardThemeVisual__(){
   const visual = __statisticsCardThemeRead__();
-  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80) };
 }
 
 function __statisticsCardThemeTargetKeys__(){
@@ -7394,7 +7404,8 @@ function __statisticsCardThemeOverwriteTargets__(visual){
         map[safeKey] = {
           bg: clean.bg || 'blue-4',
           border: clean.border || clean.bg || 'blue-4',
-          fg: clean.fg || ''
+          fg: clean.fg || '',
+          opacity: __designBgOpacityNormalize__(clean.opacity ?? current.opacity ?? __designBgOpacityRead__())
         };
       });
       __saveStatCardColorMap__(pageKey, map);
@@ -7408,8 +7419,8 @@ function __statisticsCardThemeButtonStyle__(){
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     return [
-      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
-      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
       'border-color:' + hexToRgba(borderHex, 1),
       'color:' + __operatoreColorHex__(visual.fg || 'white'),
       '-webkit-text-fill-color:' + __operatoreColorHex__(visual.fg || 'white')
@@ -7427,7 +7438,8 @@ function __openStatisticsCardThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
-        fg: colors.fg || current.fg || 'white'
+        fg: colors.fg || current.fg || 'white',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __statisticsCardThemeWrite__(nextVisual);
       if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
@@ -7441,22 +7453,22 @@ function __openStatisticsCardThemePicker__(){
 function __launcherGridThemeRead__(){
   try{
     const raw = localStorage.getItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__);
-    if (!raw) return { bg:'', border:'' };
+    if (!raw) return { bg:'', border:'', opacity:0.80 };
     const parsed = JSON.parse(raw);
     return __launcherVisualNormalize__(parsed, 'blue-4');
-  }catch(_){ return { bg:'', border:'' }; }
+  }catch(_){ return { bg:'', border:'', opacity:0.80 }; }
 }
 
 function __launcherGridThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    localStorage.setItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || '', border: clean.border || '' }));
+    localStorage.setItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || '', border: clean.border || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) }));
   }catch(_){ }
 }
 
 function __launcherGridThemeVisual__(){
   const visual = __launcherGridThemeRead__();
-  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80) };
 }
 
 function __launcherGridThemeResolveLayer__(mode, fallbackSpec){
@@ -7477,8 +7489,8 @@ function __launcherGridThemeButtonStyle__(){
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     return [
-      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
-      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
       'border-color:' + hexToRgba(borderHex, 1),
       'color:' + __operatoreColorHex__(visual.fg || 'white'),
       '-webkit-text-fill-color:' + __operatoreColorHex__(visual.fg || 'white')
@@ -7503,7 +7515,8 @@ function __launcherGridThemeOverwriteTargets__(visual){
       map[id] = {
         fg: clean.fg || (current.fg || (__LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4')),
         bg: clean.bg || 'blue-4',
-        border: clean.border || clean.bg || 'blue-4'
+        border: clean.border || clean.bg || 'blue-4',
+        opacity: __designBgOpacityNormalize__(clean.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
     });
     __launcherIconColorMapWrite__(map);
@@ -7518,7 +7531,8 @@ function __openLauncherGridThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
-        fg: colors.fg || current.fg || 'white'
+        fg: colors.fg || current.fg || 'white',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __launcherGridThemeWrite__(nextVisual);
       if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
@@ -7532,7 +7546,7 @@ function __openLauncherGridThemePicker__(){
 
 function __launcherIconVisualFor__(id){
   const key = String(id || '').trim();
-  if (!key) return { fg:'blue-4', bg:'', border:'' };
+  if (!key) return { fg:'blue-4', bg:'', border:'', opacity:0.80 };
   const map = __launcherIconColorMapRead__();
   return __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
 }
@@ -7601,8 +7615,8 @@ function __launcherIconApplyToButton__(btn){
       btn.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : hex);
       btn.style.borderWidth = '1px';
       btn.style.borderStyle = 'solid';
-      btn.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
-      btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
+      btn.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
+      btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
       return;
     }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
@@ -7610,8 +7624,8 @@ function __launcherIconApplyToButton__(btn){
       if (glyph){
         glyph.style.color = hex;
         glyph.style.webkitTextFillColor = hex;
-        glyph.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
-        glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
+        glyph.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
+        glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
         glyph.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : '');
         glyph.style.borderWidth = '1px';
         glyph.style.borderStyle = 'solid';
@@ -7631,7 +7645,7 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const isDarkUi = !!__isDarkModeEnabled__();
-      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '');
+      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '');
       const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : (isDarkUi ? 'rgba(148,163,184,0.22)' : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
@@ -7702,7 +7716,7 @@ function __launcherIconSaveColor__(id, spec, mode = 'fg'){
   if (normalizedMode === 'bg') current.bg = __normalizeOperatoreColor__(spec || current.bg || 'blue-4');
   else if (normalizedMode === 'border') current.border = __normalizeOperatoreColor__(spec || current.border || current.bg || current.fg || 'blue-4');
   else current.fg = __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
-  map[key] = { fg: current.fg, bg: current.bg || '', border: current.border || '' };
+  map[key] = { fg: current.fg, bg: current.bg || '', border: current.border || '', opacity: __designBgOpacityNormalize__(current.opacity ?? 0.80) };
   __launcherIconColorMapWrite__(map);
   const btn = document.getElementById(key);
   if (btn) __launcherIconApplyToButton__(btn);
@@ -15315,7 +15329,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     if (!hasStatisticsSnapshot) __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
     else {
       const statsVisual = __launcherVisualNormalize__(payload.statisticsCardTheme || payload.launcherGridTheme || {}, 'blue-4');
-      localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: statsVisual.fg || 'white', bg: statsVisual.bg || 'blue-4', border: statsVisual.border || statsVisual.bg || 'blue-4' }));
+      localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: statsVisual.fg || 'white', bg: statsVisual.bg || 'blue-4', border: statsVisual.border || statsVisual.bg || 'blue-4', opacity: __designBgOpacityNormalize__(statsVisual.opacity ?? designBgOpacity ?? 0.80) }));
     }
     __headerActionThemeWrite__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
     __headerActionColorMapWrite__(payload.headerActionColors || {});
