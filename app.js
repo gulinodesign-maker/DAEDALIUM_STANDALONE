@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.399
+ * Build: 2.401
  */
-const BUILD_VERSION = "2.399";
+const BUILD_VERSION = "2.401";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7052,9 +7052,9 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
-  'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn',
-  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni','homeYearPill'
+  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+  'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn',
+  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -7107,7 +7107,7 @@ function __launcherIconColorMapWrite__(map){
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
 const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
 const __DESIGN_BG_OPACITY_STORAGE_KEY__ = 'dDAE_design_bg_opacity_v1';
-const __DESIGN_BG_OPACITY_ALLOWED__ = [0.25, 0.50, 0.75, 0.80, 1.00];
+const __DESIGN_BG_OPACITY_ALLOWED__ = [0.00, 0.25, 0.50, 0.75, 0.80, 1.00];
 
 function __designBgOpacityNormalize__(value){
   const raw = Number(value);
@@ -7133,6 +7133,15 @@ function __designBgOpacityWrite__(value){
 
 function __designBgOpacityPercentLabel__(value){
   return String(Math.round(__designBgOpacityNormalize__(value) * 100));
+}
+
+function __designTranslate__(it, map = null){
+  try{
+    const lang = __getAppLanguage__();
+    if (lang === 'it') return String(it || '');
+    if (map && map[lang]) return String(map[lang] || '');
+    return __translateText__(String(it || ''));
+  }catch(_){ return String(it || ''); }
 }
 
 const __HEADER_ACTION_THEME_STORAGE_KEY__ = 'dDAE_header_action_theme_v1';
@@ -7301,6 +7310,163 @@ function __openHeaderActionThemePicker__(){
       try{ toast('Design tasti top bar aggiornato'); }catch(_){ }
     }catch(e){ try{ toast(e?.message || 'Errore design tasti top bar'); }catch(_){ } }
   }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'white') });
+}
+
+const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
+const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
+const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn'];
+
+function __pillTargetButtons__(){
+  try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter(Boolean); }catch(_){ return []; }
+}
+
+function __pillColorMapRead__(){
+  try{
+    const raw = localStorage.getItem(__PILL_COLOR_STORAGE_KEY__);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __pillColorMapWrite__(map){
+  try{ localStorage.setItem(__PILL_COLOR_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __pillThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__PILL_THEME_STORAGE_KEY__);
+    if (!raw) return { fg:'white', bg:'blue-4', border:'blue-4', opacity:0.80 };
+    return __launcherVisualNormalize__(JSON.parse(raw), 'blue-4');
+  }catch(_){ return { fg:'white', bg:'blue-4', border:'blue-4', opacity:0.80 }; }
+}
+
+function __pillThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__PILL_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) }));
+  }catch(_){ }
+}
+
+function __pillThemeVisual__(){
+  const visual = __pillThemeRead__();
+  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80) };
+}
+
+function __pillVisualFor__(id){
+  const key = String(id || '').trim();
+  if (!key) return __pillThemeVisual__();
+  const map = __pillColorMapRead__();
+  const base = __pillThemeVisual__();
+  const current = __launcherVisualNormalize__(map[key], base.fg || 'white');
+  return {
+    fg: current.fg || base.fg || 'white',
+    bg: current.bg || base.bg || 'blue-4',
+    border: current.border || current.bg || base.border || base.bg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? base.opacity ?? 0.80)
+  };
+}
+
+function __pillSaveColor__(id, spec, mode = 'fg'){
+  const key = String(id || '').trim();
+  if (!key) return;
+  const rawMode = String(mode || 'fg').trim().toLowerCase();
+  const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
+  const map = __pillColorMapRead__();
+  const current = __pillVisualFor__(key);
+  if (normalizedMode === 'bg') current.bg = __normalizeOperatoreColor__(spec || current.bg || 'blue-4');
+  else if (normalizedMode === 'border') current.border = __normalizeOperatoreColor__(spec || current.border || current.bg || 'blue-4');
+  else current.fg = __normalizeOperatoreColor__(spec || current.fg || 'white');
+  map[key] = { fg: current.fg || 'white', bg: current.bg || 'blue-4', border: current.border || current.bg || 'blue-4', opacity: __designBgOpacityNormalize__(current.opacity ?? 0.80) };
+  __pillColorMapWrite__(map);
+}
+
+function __pillThemeOverwriteTargets__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    const map = __pillColorMapRead__();
+    __PILL_THEME_TARGET_IDS__.forEach((id) => {
+      map[id] = { fg: clean.fg || 'white', bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
+    });
+    __pillColorMapWrite__(map);
+  }catch(_){ }
+}
+
+function __pillApplyToButton__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const visual = __pillVisualFor__(btn.id);
+    const fgHex = __operatoreColorHex__(visual.fg || 'white');
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
+    btn.style.setProperty('background', bgCss, 'important');
+    btn.style.setProperty('background-color', bgCss, 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-style', 'solid', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('opacity', '1', 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    const label = btn.querySelector('.settings-btn-label, #taxYearBtnLabel');
+    if (label){
+      label.style.setProperty('color', fgHex, 'important');
+      label.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+      label.style.setProperty('opacity', '1', 'important');
+    }
+    const svg = btn.querySelector('svg.ui-ico');
+    if (svg){
+      svg.style.setProperty('color', fgHex, 'important');
+      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+        node.style.setProperty('stroke', fgHex, 'important');
+        node.style.setProperty('fill', 'none', 'important');
+      });
+    }
+  }catch(_){ }
+}
+
+function __pillApplyAll__(){
+  try{ __pillTargetButtons__().forEach((btn) => __pillApplyToButton__(btn)); }catch(_){ }
+}
+
+function __pillThemeButtonStyle__(){
+  try{
+    const visual = __pillThemeVisual__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = __operatoreColorHex__(visual.fg || 'white');
+    return [
+      'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
+      'border-color:' + hexToRgba(borderHex, 1),
+      'color:' + fgHex,
+      '-webkit-text-fill-color:' + fgHex
+    ].join(';');
+  }catch(_){
+    return 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
+  }
+}
+
+function __openPillThemePicker__(){
+  const current = __pillThemeVisual__();
+  __tagColorPopupOpen__('pill-theme', current, (payload) => {
+    try{
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const nextVisual = {
+        bg: colors.bg || current.bg || 'blue-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+        fg: colors.fg || current.fg || 'white',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
+      };
+      __pillThemeWrite__(nextVisual);
+      if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+      __pillThemeOverwriteTargets__(nextVisual);
+      __pillApplyAll__();
+      try{ renderRoomSettingsPage(); }catch(_){ }
+      try{ toast(__designTranslate__('Design pulsanti pill aggiornato', { en:'Pill button design updated', fr:'Design des boutons pill mis à jour', de:'Pill-Button-Design aktualisiert', es:'Diseño de botones pill actualizado' })); }catch(_){ }
+    }catch(e){ try{ toast(e?.message || __designTranslate__('Errore design pulsanti pill', { en:'Pill button design error', fr:'Erreur de design des boutons pill', de:'Fehler beim Pill-Button-Design', es:'Error de diseño de botones pill' })); }catch(_){ } }
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
 function __bindHeaderActionLongPress__(btn){
@@ -7568,8 +7734,8 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsYearPill','settingsLogoutBtn',
-      'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn','opSettingsYearPill','opSettingsLogoutBtn'
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+      'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn'
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -7620,15 +7786,22 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
+      const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
+      const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, resolvedOpacity) : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
       const glyph = btn.querySelector('.home-main-glyph');
+      setImp(btn, 'background', 'transparent');
+      setImp(btn, 'background-color', 'transparent');
+      setImp(btn, 'border-color', 'transparent');
       if (glyph){
         glyph.style.color = hex;
         glyph.style.webkitTextFillColor = hex;
-        glyph.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
-        glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
-        glyph.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+        glyph.style.background = resolvedBg;
+        glyph.style.backgroundColor = resolvedBg;
+        glyph.style.borderColor = resolvedBorder;
         glyph.style.borderWidth = '1px';
         glyph.style.borderStyle = 'solid';
+        glyph.style.boxShadow = 'none';
         glyph.style.backdropFilter = bgHex ? 'none' : '';
         glyph.style.webkitBackdropFilter = bgHex ? 'none' : '';
       }
@@ -7644,9 +7817,9 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const isDarkUi = !!__isDarkModeEnabled__();
-      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '');
-      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : (isDarkUi ? 'rgba(148,163,184,0.22)' : ''));
+      const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
+      const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, resolvedOpacity) : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
@@ -7783,6 +7956,14 @@ function __bindLauncherIconLongPress__(btn){
           __launcherIconSaveColor__(btn.id, colors.bg || __launcherIconVisualFor__(btn.id).bg || 'blue-4', 'bg');
           __launcherIconSaveColor__(btn.id, colors.border || __launcherIconVisualFor__(btn.id).border || colors.bg || __launcherIconVisualFor__(btn.id).bg || 'blue-4', 'border');
           __launcherIconSaveColor__(btn.id, colors.fg || __launcherIconVisualFor__(btn.id).fg || __launcherIconSpecFor__(btn.id), 'fg');
+          if (payload && payload.opacity != null){
+            const map = __launcherIconColorMapRead__();
+            const currentVisual = __launcherIconVisualFor__(btn.id);
+            map[String(btn.id || '').trim()] = { fg: currentVisual.fg, bg: currentVisual.bg || '', border: currentVisual.border || '', opacity: __designBgOpacityNormalize__(payload.opacity) };
+            __launcherIconColorMapWrite__(map);
+            __designBgOpacityWrite__(payload.opacity);
+          }
+          try{ __launcherIconApplyToButton__(btn); }catch(_){ }
           setSuppress(1800);
           keepCurrentLauncherPage();
         }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
@@ -8485,7 +8666,7 @@ function __openTagColorPickerFor__(target){
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       __operatoriSetSelectedColor__(colors.bg || __operatoriPageUi.color || 'blue-3');
       __operatoriSetSelectedTextColor__(colors.fg || '');
-    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, defaultMode:'bg', fallbackBg:'blue-3' });
     return;
   }
   if (key === 'channel'){
@@ -8493,7 +8674,7 @@ function __openTagColorPickerFor__(target){
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       __channelSetSelectedColor__(colors.bg || __channelPageUi.color || 'orange-3');
       __channelSetSelectedTextColor__(colors.fg || '');
-    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'orange-3' });
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, defaultMode:'bg', fallbackBg:'orange-3' });
     return;
   }
   if (key === 'lavanderia'){
@@ -8501,7 +8682,7 @@ function __openTagColorPickerFor__(target){
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       __laundryCatalogSetSelectedColor__(colors.bg || __laundryCatalogPageUi.color || 'blue-3');
       __laundryCatalogSetSelectedTextColor__(colors.fg || '');
-    }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:'blue-3' });
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, defaultMode:'bg', fallbackBg:'blue-3' });
   }
 }
 
@@ -12411,27 +12592,26 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const bgHex = __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
+    const bgOpacity = __designBgOpacityNormalize__(pair.opacity ?? 0.80);
+    const borderOpacity = bgOpacity;
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
     el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    if (el.classList && el.classList.contains('month-row')){
-      el.style.setProperty('background', hexToRgba(bgHex, 0.18), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.40)}`, 'important');
-    } else {
-      el.style.setProperty('background', hexToRgba(bgHex, 0.10), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.36)}`, 'important');
-    }
+    el.style.setProperty('background', hexToRgba(bgHex, bgOpacity), 'important');
+    el.style.setProperty('background-color', hexToRgba(bgHex, bgOpacity), 'important');
+    el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, borderOpacity)}`, 'important');
     try{
       el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap, .kpi-label, .kpi-value, .fin-head, .fin-head div, .fin-label, .fin-val, .stats-graph-card-title, .stats-graph-note, .stats-graph-legend, .piscina-nav-center, .piscina-today').forEach((node)=>{
         try{
           if (node.classList && node.classList.contains('month-fill')){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
-            node.style.setProperty('background', hexToRgba(bgHex, 0.80), 'important');
-            node.style.setProperty('border-color', hexToRgba(borderHex, 0.52), 'important');
+            node.style.setProperty('background', hexToRgba(bgHex, bgOpacity), 'important');
+            node.style.setProperty('background-color', hexToRgba(bgHex, bgOpacity), 'important');
+            node.style.setProperty('border-color', hexToRgba(borderHex, borderOpacity), 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {
@@ -15181,7 +15361,9 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __STATISTICS_CARD_THEME_STORAGE_KEY__,
     __DESIGN_BG_OPACITY_STORAGE_KEY__,
     __HEADER_ACTION_THEME_STORAGE_KEY__,
-    __HEADER_ACTION_COLOR_STORAGE_KEY__
+    __HEADER_ACTION_COLOR_STORAGE_KEY__,
+    __PILL_THEME_STORAGE_KEY__,
+    __PILL_COLOR_STORAGE_KEY__
   ].filter(Boolean);
 }
 
@@ -15254,6 +15436,8 @@ function __roomSettingsThemePayloadBuild__(){
     designBgOpacity: __designBgOpacityRead__(),
     headerActionTheme: __headerActionThemeRead__(),
     headerActionColors: __headerActionColorMapRead__(),
+    pillTheme: __pillThemeRead__(),
+    pillColors: __pillColorMapRead__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
   };
 }
@@ -15281,6 +15465,12 @@ function __roomSettingsThemePayloadNormalize__(payload){
   try{
     if (!( __HEADER_ACTION_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__HEADER_ACTION_COLOR_STORAGE_KEY__] = JSON.stringify((src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {});
   }catch(_){ }
+  try{
+    if (!( __PILL_THEME_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__PILL_THEME_STORAGE_KEY__] = JSON.stringify(src.pillTheme || {});
+  }catch(_){ }
+  try{
+    if (!( __PILL_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__PILL_COLOR_STORAGE_KEY__] = JSON.stringify((src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {});
+  }catch(_){ }
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
@@ -15289,6 +15479,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
     designBgOpacity,
     headerActionTheme: __launcherVisualNormalize__(src.headerActionTheme || {}, 'blue-4'),
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
+    pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
+    pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
     statsThemeStorage
   };
 }
@@ -15333,6 +15525,8 @@ async function __roomSettingsThemeSlotApply__(slot){
     }
     __headerActionThemeWrite__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
     __headerActionColorMapWrite__(payload.headerActionColors || {});
+    __pillThemeWrite__(payload.pillTheme || { fg:'white', bg:'blue-4', border:'blue-4' });
+    __pillColorMapWrite__(payload.pillColors || {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
   try{
@@ -15340,6 +15534,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   }catch(_){ }
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ __pillApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
@@ -15354,6 +15549,21 @@ async function __roomSettingsThemeSlotAskSave__(slot){
 
 function renderRoomSettingsPage(){
   try{
+    const page = document.getElementById('page-roomsettings');
+    if (page){
+      const pageTitle = page.querySelector('.page-title');
+      if (pageTitle) pageTitle.textContent = __designTranslate__('Design', { en:'Design', fr:'Design', de:'Design', es:'Diseño' });
+      const sectionTitles = page.querySelectorAll('.room-settings-section-title');
+      if (sectionTitles[0]) sectionTitles[0].textContent = __designTranslate__('Tema', { en:'Theme', fr:'Thème', de:'Thema', es:'Tema' });
+      if (sectionTitles[1]) sectionTitles[1].textContent = __designTranslate__('Tag colore stanze', { en:'Room color tags', fr:'Tags couleur des chambres', de:'Zimmer-Farbmarken', es:'Etiquetas de color de habitaciones' });
+      if (sectionTitles[2]) sectionTitles[2].textContent = __designTranslate__('Tag colore opzioni', { en:'Option color tags', fr:'Tags couleur des options', de:'Options-Farbmarken', es:'Etiquetas de color de opciones' });
+      if (sectionTitles[3]) sectionTitles[3].textContent = __designTranslate__('Tag colore letti', { en:'Bed color tags', fr:'Tags couleur des lits', de:'Bett-Farbmarken', es:'Etiquetas de color de camas' });
+      if (sectionTitles[4]) sectionTitles[4].textContent = __designTranslate__('Tasti', { en:'Buttons', fr:'Boutons', de:'Tasten', es:'Botones' });
+      const title = page.querySelector('.room-settings-title');
+      if (title) title.textContent = __designTranslate__('Numero stanze', { en:'Room count', fr:'Nombre de chambres', de:'Zimmeranzahl', es:'Número de habitaciones' });
+      const subtitle = page.querySelector('.room-settings-subtitle');
+      if (subtitle) subtitle.textContent = __designTranslate__('Tap per avanzare. Pressione lunga per azzerare.', { en:'Tap to advance. Long press to reset.', fr:'Touchez pour avancer. Appui long pour réinitialiser.', de:'Tippen zum Weitergehen. Lange drücken zum Zurücksetzen.', es:'Toca para avanzar. Mantén pulsado para reiniciar.' });
+    }
     const cfg = getRoomsUiConfig();
     const count = getConfiguredRoomsCount(6);
     const countBtn = document.getElementById('roomSettingsCountBtn');
@@ -15388,13 +15598,15 @@ function renderRoomSettingsPage(){
         const borderHex = __operatoreColorHex__(borderSpec);
         el.setAttribute('style', `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 1)};color:#000000;-webkit-text-fill-color:#000000;`);
         el.classList.remove('room-settings-square-btn-placeholder');
-        el.setAttribute('aria-label', `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`);
-        el.title = `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`;
+        const savedLabel = __designTranslate__(`Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`, { en:`Theme ${slot} saved. Tap to recall, long press to save`, fr:`Thème ${slot} enregistré. Touchez pour rappeler, appui long pour enregistrer`, de:`Thema ${slot} gespeichert. Tippen zum Laden, lange drücken zum Speichern`, es:`Tema ${slot} guardado. Toca para aplicar, mantén pulsado para guardar` });
+        el.setAttribute('aria-label', savedLabel);
+        el.title = savedLabel;
       }else{
         el.setAttribute('style', '');
         el.classList.add('room-settings-square-btn-placeholder');
-        el.setAttribute('aria-label', `Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`);
-        el.title = `Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`;
+        const emptyLabel = __designTranslate__(`Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`, { en:`Theme ${slot} empty. Tap to recall, long press to save`, fr:`Thème ${slot} vide. Touchez pour rappeler, appui long pour enregistrer`, de:`Thema ${slot} leer. Tippen zum Laden, lange drücken zum Speichern`, es:`Tema ${slot} vacío. Toca para aplicar, mantén pulsado para guardar` });
+        el.setAttribute('aria-label', emptyLabel);
+        el.title = emptyLabel;
       }
     });
     const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
@@ -15402,24 +15614,32 @@ function renderRoomSettingsPage(){
       launcherThemeBtn.textContent = '1';
       launcherThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
       launcherThemeBtn.classList.remove('room-settings-square-btn-placeholder');
-      launcherThemeBtn.setAttribute('aria-label', 'Design icone e tasti griglie');
-      launcherThemeBtn.title = 'Design icone e tasti griglie';
+      launcherThemeBtn.setAttribute('aria-label', __designTranslate__('Design icone e tasti griglie', { en:'Grid icon and button design', fr:'Design des icônes et boutons de grille', de:'Design der Raster-Icons und -Tasten', es:'Diseño de iconos y botones de cuadrícula' }));
+      launcherThemeBtn.title = __designTranslate__('Design icone e tasti griglie', { en:'Grid icon and button design', fr:'Design des icônes et boutons de grille', de:'Design der Raster-Icons und -Tasten', es:'Diseño de iconos y botones de cuadrícula' });
     }
     const statisticsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
     if (statisticsThemeBtn){
       statisticsThemeBtn.textContent = '2';
       statisticsThemeBtn.setAttribute('style', __statisticsCardThemeButtonStyle__());
       statisticsThemeBtn.classList.remove('room-settings-square-btn-placeholder');
-      statisticsThemeBtn.setAttribute('aria-label', 'Design card statistiche');
-      statisticsThemeBtn.title = 'Design card statistiche';
+      statisticsThemeBtn.setAttribute('aria-label', __designTranslate__('Design card statistiche', { en:'Statistics card design', fr:'Design des cartes statistiques', de:'Design der Statistik-Karten', es:'Diseño de tarjetas estadísticas' }));
+      statisticsThemeBtn.title = __designTranslate__('Design card statistiche', { en:'Statistics card design', fr:'Design des cartes statistiques', de:'Design der Statistik-Karten', es:'Diseño de tarjetas estadísticas' });
     }
     const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
     if (opacityBtn){
       opacityBtn.textContent = '3';
       opacityBtn.setAttribute('style', __headerActionThemeButtonStyle__());
       opacityBtn.classList.remove('room-settings-square-btn-placeholder');
-      opacityBtn.setAttribute('aria-label', 'Design tasti top bar e titoli pagina');
-      opacityBtn.title = 'Design tasti top bar e titoli pagina';
+      opacityBtn.setAttribute('aria-label', __designTranslate__('Design tasti top bar e titoli pagina', { en:'Top bar and page title button design', fr:'Design des boutons de la barre supérieure et des titres de page', de:'Design der Topbar- und Seitentitel-Schaltflächen', es:'Diseño de botones de la barra superior y títulos de página' }));
+      opacityBtn.title = __designTranslate__('Design tasti top bar e titoli pagina', { en:'Top bar and page title button design', fr:'Design des boutons de la barre supérieure et des titres de page', de:'Design der Topbar- und Seitentitel-Schaltflächen', es:'Diseño de botones de la barra superior y títulos de página' });
+    }
+    const pillBtn = document.getElementById('roomSettingsLauncherExtraBtn3');
+    if (pillBtn){
+      pillBtn.textContent = '4';
+      pillBtn.setAttribute('style', __pillThemeButtonStyle__());
+      pillBtn.classList.remove('room-settings-square-btn-placeholder');
+      pillBtn.setAttribute('aria-label', __designTranslate__('Design pulsanti pill', { en:'Pill button design', fr:'Design des boutons pill', de:'Pill-Button-Design', es:'Diseño de botones pill' }));
+      pillBtn.title = __designTranslate__('Design pulsanti pill', { en:'Pill button design', fr:'Design des boutons pill', de:'Pill-Button-Design', es:'Diseño de botones pill' });
     }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
@@ -15551,6 +15771,11 @@ function setupRoomSettingsPage(){
   if (opacityBtn && !opacityBtn.__boundDesignOpacityBtn){
     opacityBtn.__boundDesignOpacityBtn = true;
     bindFastTap(opacityBtn, () => { __openHeaderActionThemePicker__(); });
+  }
+  const pillBtn = document.getElementById('roomSettingsLauncherExtraBtn3');
+  if (pillBtn && !pillBtn.__boundPillThemeBtn){
+    pillBtn.__boundPillThemeBtn = true;
+    bindFastTap(pillBtn, () => { __openPillThemePicker__(); });
   }
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
