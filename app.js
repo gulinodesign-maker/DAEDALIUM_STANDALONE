@@ -7133,20 +7133,16 @@ function __launcherGridThemeResolveLayer__(mode, fallbackSpec){
   }
 }
 
-function __isDarkModeActive__(){
-  try{ return !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark')); }catch(_){ return false; }
-}
-
 function __launcherGridThemeButtonStyle__(){
   try{
     const visual = __launcherGridThemeVisual__();
-    const isDark = __isDarkModeActive__();
-    const bgHex = isDark ? '' : __operatoreColorHex__(visual.bg || 'blue-4');
-    const borderHex = isDark ? '' : __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
     return [
-      'background:' + (bgHex ? hexToRgba(bgHex, 0.80) : 'rgba(15,23,42,0.96)'),
-      'background-color:' + (bgHex ? hexToRgba(bgHex, 0.80) : 'rgba(15,23,42,0.96)'),
-      'border-color:' + (borderHex ? hexToRgba(borderHex, 1) : 'rgba(148,163,184,0.24)'),
+      'background:' + (isDark ? 'transparent' : hexToRgba(bgHex, 0.80)),
+      'background-color:' + (isDark ? 'transparent' : hexToRgba(bgHex, 0.80)),
+      'border-color:' + (isDark ? 'transparent' : hexToRgba(borderHex, 1)),
       'color:#ffffff',
       '-webkit-text-fill-color:#ffffff'
     ].join(';');
@@ -7250,14 +7246,12 @@ function __launcherIconApplyToButton__(btn){
     if (!btn || !btn.id) return;
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
-    const isDark = __isDarkModeActive__();
     const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-impostazioni'));
-    const resolvedBgSpec = isDark ? '' : (visual.bg || (allowGridTheme ? __launcherGridThemeResolveLayer__('bg', '') : ''));
-    const resolvedBorderSpec = isDark ? '' : (visual.border || (allowGridTheme ? __launcherGridThemeResolveLayer__('border', resolvedBgSpec || '') : ''));
+    const resolvedBgSpec = visual.bg || (allowGridTheme ? __launcherGridThemeResolveLayer__('bg', '') : '');
+    const resolvedBorderSpec = visual.border || (allowGridTheme ? __launcherGridThemeResolveLayer__('border', resolvedBgSpec || '') : '');
     const bgHex = resolvedBgSpec ? __operatoreColorHex__(resolvedBgSpec) : '';
     const borderHex = resolvedBorderSpec ? __operatoreColorHex__(resolvedBorderSpec) : '';
-    const neutralBg = 'rgba(15,23,42,0.96)';
-    const neutralBorder = 'rgba(148,163,184,0.24)';
+    const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
     const setImp = (node, prop, value) => {
       if (!node) return;
       if (value === undefined || value === null || value === '') node.style.removeProperty(prop);
@@ -7266,11 +7260,11 @@ function __launcherIconApplyToButton__(btn){
     if (btn.id === 'homeYearPill'){
       btn.style.color = hex;
       btn.style.webkitTextFillColor = hex;
-      btn.style.borderColor = isDark ? neutralBorder : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : hex));
+      btn.style.borderColor = isDark ? 'transparent' : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : hex));
       btn.style.borderWidth = '1px';
       btn.style.borderStyle = 'solid';
-      btn.style.background = isDark ? neutralBg : (bgHex ? hexToRgba(bgHex, 0.80) : '');
-      btn.style.backgroundColor = isDark ? neutralBg : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+      btn.style.background = isDark ? 'transparent' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+      btn.style.backgroundColor = isDark ? 'transparent' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
       return;
     }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
@@ -7278,9 +7272,9 @@ function __launcherIconApplyToButton__(btn){
       if (glyph){
         glyph.style.color = hex;
         glyph.style.webkitTextFillColor = hex;
-        glyph.style.background = isDark ? neutralBg : (bgHex ? hexToRgba(bgHex, 0.80) : '');
-        glyph.style.backgroundColor = isDark ? neutralBg : (bgHex ? hexToRgba(bgHex, 0.80) : '');
-        glyph.style.borderColor = isDark ? neutralBorder : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : ''));
+        glyph.style.background = isDark ? 'transparent' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+        glyph.style.backgroundColor = isDark ? 'transparent' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+        glyph.style.borderColor = isDark ? 'transparent' : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : ''));
         glyph.style.borderWidth = '1px';
         glyph.style.borderStyle = 'solid';
         glyph.style.backdropFilter = bgHex ? 'none' : '';
@@ -7298,8 +7292,8 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const resolvedBg = isDark ? neutralBg : (bgHex ? hexToRgba(bgHex, 0.80) : '');
-      const resolvedBorder = isDark ? neutralBorder : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : ''));
+      const resolvedBg = (!isDark && bgHex) ? hexToRgba(bgHex, 0.80) : 'transparent';
+      const resolvedBorder = (!isDark && (borderHex || bgHex)) ? (borderHex ? hexToRgba(borderHex, 1) : hexToRgba(bgHex, 0.24)) : 'transparent';
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
@@ -12009,7 +12003,11 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     el.style.setProperty('--cardtext', fgHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    if (el.classList && el.classList.contains('month-row')){
+    const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+    if (isDark){
+      el.style.setProperty('background', 'transparent', 'important');
+      el.style.setProperty('border', '1px solid transparent', 'important');
+    } else if (el.classList && el.classList.contains('month-row')){
       el.style.setProperty('background', hexToRgba(bgHex, 0.18), 'important');
       el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.26)}`, 'important');
     } else {
@@ -12022,8 +12020,8 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
           if (node.classList && node.classList.contains('month-fill')){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
-            node.style.setProperty('background', hexToRgba(bgHex, 0.80), 'important');
-            node.style.setProperty('border-color', hexToRgba(bgHex, 0.30), 'important');
+            node.style.setProperty('background', isDark ? 'transparent' : hexToRgba(bgHex, 0.80), 'important');
+            node.style.setProperty('border-color', isDark ? 'transparent' : hexToRgba(bgHex, 0.30), 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {
@@ -14561,8 +14559,8 @@ function __roomsUiTextColor__(spec, fallback, preferWhite = false){
 function __roomsUiButtonStyle__(spec, preferWhite = true){
   const pair = __roomsUiColorPair__(spec, 'blue-4');
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
-  const isDark = __isDarkModeActive__();
-  return `background:${isDark ? 'rgba(15,23,42,0.96)' : hexToRgba(main, 0.80)};border-color:${isDark ? 'rgba(148,163,184,0.24)' : hexToRgba(main, 0.80)};color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
+  const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+  return `background:${isDark ? 'transparent' : hexToRgba(main, 0.80)};border-color:${isDark ? 'transparent' : hexToRgba(main, 0.80)};color:${__roomsUiTextColor__(pair, '', preferWhite)};`;
 }
 
 function __roomsUiBadgeStyle__(spec){
@@ -14576,14 +14574,11 @@ function __applyRoomsUiConfig__(){
     const root = document.documentElement;
     if (!root) return;
     const cfg = getRoomsUiConfig();
-    const isDark = __isDarkModeActive__();
-    const neutralBg = 'rgba(15,23,42,0.96)';
-    const neutralBorder = 'rgba(148,163,184,0.24)';
     const setVar = (prefix, spec) => {
       const pair = __roomsUiColorPair__(spec, 'blue-4');
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
-      root.style.setProperty(`${prefix}-bg`, isDark ? neutralBg : hexToRgba(main, 0.95));
-      root.style.setProperty(`${prefix}-border`, isDark ? neutralBorder : hexToRgba(main, 0.55));
+      root.style.setProperty(`${prefix}-bg`, hexToRgba(main, 0.95));
+      root.style.setProperty(`${prefix}-border`, hexToRgba(main, 0.55));
       root.style.setProperty(`${prefix}-fg`, __roomsUiTextColor__(pair));
     };
     setVar('--ddae-room-nights', cfg.nights);
@@ -14596,9 +14591,9 @@ function __applyRoomsUiConfig__(){
     for (let i = 1; i <= 12; i++) {
       const pair = __roomsUiColorPair__(cfg.rooms?.[String(i)] || 'blue-4', 'blue-4');
       const main = __operatoreColorHex__(pair.bg || 'blue-4');
-      root.style.setProperty(`--room${i}`, isDark ? neutralBorder : hexToRgba(main, 0.55));
-      root.style.setProperty(`--room${i}-solid`, isDark ? neutralBg : hexToRgba(main, 0.95));
-      root.style.setProperty(`--room${i}-border`, isDark ? neutralBorder : hexToRgba(main, 0.55));
+      root.style.setProperty(`--room${i}`, hexToRgba(main, 0.55));
+      root.style.setProperty(`--room${i}-solid`, hexToRgba(main, 0.95));
+      root.style.setProperty(`--room${i}-border`, hexToRgba(main, 0.55));
       root.style.setProperty(`--room${i}-fg`, __roomsUiTextColor__(pair));
     }
   }catch(_){ }
@@ -14689,10 +14684,41 @@ function __roomSettingsThemeSlotsWrite__(slots){
   try{ localStorage.setItem(__ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__, JSON.stringify((slots && typeof slots === 'object') ? slots : {})); }catch(_){ }
 }
 
+function __roomSettingsThemeCollectStatLocalStorage__(){
+  const out = {};
+  try{
+    for (let i = 0; i < localStorage.length; i++){
+      const key = String(localStorage.key(i) || '');
+      if (!key) continue;
+      if (/^dDAE_statcard_colors_/i.test(key) || /^ddae_graph_colors_/i.test(key) || /^ddae_stat_card_text_/i.test(key)){
+        try{ out[key] = String(localStorage.getItem(key) ?? ''); }catch(_){ }
+      }
+    }
+  }catch(_){ }
+  return out;
+}
+
+function __roomSettingsThemeApplyStatLocalStorage__(payload){
+  try{
+    const incoming = (payload && typeof payload === 'object') ? payload : {};
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++){
+      const key = String(localStorage.key(i) || '');
+      if (/^dDAE_statcard_colors_/i.test(key) || /^ddae_graph_colors_/i.test(key) || /^ddae_stat_card_text_/i.test(key)) toRemove.push(key);
+    }
+    toRemove.forEach((key) => { try{ localStorage.removeItem(key); }catch(_){ } });
+    Object.keys(incoming).forEach((key) => {
+      try{ localStorage.setItem(String(key), String(incoming[key] ?? '')); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __roomSettingsThemePayloadBuild__(){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
-    launcherGridTheme: __launcherGridThemeRead__()
+    launcherGridTheme: __launcherGridThemeRead__(),
+    launcherIconMap: __launcherIconColorMapRead__(),
+    statLocalStorage: __roomSettingsThemeCollectStatLocalStorage__()
   };
 }
 
@@ -14700,7 +14726,9 @@ function __roomSettingsThemePayloadNormalize__(payload){
   const src = (payload && typeof payload === 'object') ? payload : {};
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
-    launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4')
+    launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    launcherIconMap: (src.launcherIconMap && typeof src.launcherIconMap === 'object') ? src.launcherIconMap : {},
+    statLocalStorage: (src.statLocalStorage && typeof src.statLocalStorage === 'object') ? src.statLocalStorage : {}
   };
 }
 
@@ -14730,9 +14758,16 @@ async function __roomSettingsThemeSlotApply__(slot){
   await saveRoomsUiConfigToSettings(payload.roomsUi, { showToast:false });
   try{
     __launcherGridThemeWrite__(payload.launcherGridTheme);
+    __launcherIconColorMapWrite__(payload.launcherIconMap || {});
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
+    __roomSettingsThemeApplyStatLocalStorage__(payload.statLocalStorage);
     __launcherIconApplyAll__();
   }catch(_){ }
+  try{ __refreshStatCardsPage__('statgen'); }catch(_){ }
+  try{ __refreshStatCardsPage__('statmensili'); }catch(_){ }
+  try{ __refreshStatCardsPage__('statspese'); }catch(_){ }
+  try{ __refreshStatGraphPreviews__(); }catch(_){ }
+  try{ if (state?.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
 }
@@ -14774,12 +14809,22 @@ function renderRoomSettingsPage(){
       el.textContent = String(slot);
       if (saved){
         const visual = saved.launcherGridTheme || {};
-        const bgSpec = visual.bg || saved.roomsUi?.options?.m?.bg || saved.roomsUi?.nights?.bg || 'blue-4';
+        const statMap = (saved.statLocalStorage && typeof saved.statLocalStorage === 'object') ? saved.statLocalStorage : {};
+        const firstStatKey = Object.keys(statMap).find((k) => /^dDAE_statcard_colors_/i.test(k));
+        let statBgSpec = '';
+        if (firstStatKey){
+          try{
+            const parsed = JSON.parse(String(statMap[firstStatKey] || '{}'));
+            const firstEntry = parsed && typeof parsed === 'object' ? parsed[Object.keys(parsed)[0]] : null;
+            statBgSpec = __tagColorPairFromValue__(firstEntry, 'blue-4').bg || '';
+          }catch(_){ }
+        }
+        const bgSpec = visual.bg || statBgSpec || saved.roomsUi?.options?.m?.bg || saved.roomsUi?.nights?.bg || 'blue-4';
         const borderSpec = visual.border || bgSpec;
-        const isDark = __isDarkModeActive__();
         const bgHex = __operatoreColorHex__(bgSpec);
         const borderHex = __operatoreColorHex__(borderSpec);
-        el.setAttribute('style', `background:${isDark ? 'rgba(15,23,42,0.96)' : hexToRgba(bgHex, 0.80)};background-color:${isDark ? 'rgba(15,23,42,0.96)' : hexToRgba(bgHex, 0.80)};border-color:${isDark ? 'rgba(148,163,184,0.24)' : hexToRgba(borderHex, 1)};color:#ffffff;-webkit-text-fill-color:#ffffff;`);
+        const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+        el.setAttribute('style', `background:${isDark ? 'transparent' : hexToRgba(bgHex, 0.80)};background-color:${isDark ? 'transparent' : hexToRgba(bgHex, 0.80)};border-color:${isDark ? 'transparent' : hexToRgba(borderHex, 1)};color:#ffffff;-webkit-text-fill-color:#ffffff;`);
         el.classList.remove('room-settings-square-btn-placeholder');
         el.setAttribute('aria-label', `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`);
         el.title = `Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`;
