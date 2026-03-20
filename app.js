@@ -7010,14 +7010,18 @@ function __tagColorInlineStyle__(bgSpec, fgSpec, opts){
 function __tagColorPairFromValue__(input, fallbackBg){
   const fallback = __normalizeOperatoreColor__(fallbackBg || 'blue-4');
   if (input && typeof input === 'object' && !Array.isArray(input)) {
+    const bg = __normalizeOperatoreColor__(input.bg || input.background || input.colore || input.color || fallback);
+    const border = __normalizeOptionalOperatoreColor__(input.border || input.borderColor || input.stroke || input.outline || '');
     return {
-      bg: __normalizeOperatoreColor__(input.bg || input.background || input.colore || input.color || fallback),
+      bg,
+      border: border || bg,
       fg: __normalizeOptionalOperatoreColor__(input.fg || input.foreground || input.text || input.icon || input.coloreTesto || input.textColor || ''),
     };
   }
   const raw = String(input || '').trim();
-  if (!raw) return { bg: fallback, fg: '' };
-  return { bg: __normalizeOperatoreColor__(raw), fg: '' };
+  if (!raw) return { bg: fallback, border: fallback, fg: '' };
+  const bg = __normalizeOperatoreColor__(raw);
+  return { bg, border: bg, fg: '' };
 }
 
 function __launcherVisualNormalize__(value, fallbackFg){
@@ -12008,7 +12012,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
   const current = __loadStatCardColorMap__(pageKey);
   Object.keys(map || {}).forEach((key) => {
     const prev = __tagColorPairFromValue__(current[key], map[key] || 'blue-4');
-    current[key] = { bg: prev.bg, fg: map[key] || prev.fg || '' };
+    current[key] = { bg: prev.bg, border: prev.border || prev.bg, fg: map[key] || prev.fg || '' };
   });
   __saveStatCardColorMap__(pageKey, current);
 }
@@ -12033,18 +12037,20 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
   try{
     const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || '#2B7CB4');
     const bgHex = __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
+    const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
+    el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
     if (el.classList && el.classList.contains('month-row')){
       el.style.setProperty('background', hexToRgba(bgHex, 0.18), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.26)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.40)}`, 'important');
     } else {
       el.style.setProperty('background', hexToRgba(bgHex, 0.10), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.22)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 0.36)}`, 'important');
     }
     try{
       el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap, .kpi-label, .kpi-value, .fin-head, .fin-head div, .fin-label, .fin-val, .stats-graph-card-title, .stats-graph-note, .stats-graph-legend, .piscina-nav-center, .piscina-today').forEach((node)=>{
@@ -12053,7 +12059,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
             node.style.setProperty('background', hexToRgba(bgHex, 0.80), 'important');
-            node.style.setProperty('border-color', hexToRgba(bgHex, 0.30), 'important');
+            node.style.setProperty('border-color', hexToRgba(borderHex, 0.52), 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {
@@ -12092,10 +12098,12 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const pair = __tagColorPairFromValue__(map[safeKey] || currentPair, currentPair.bg || '#2B7CB4');
     const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
     const nextBg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || currentPair.bg || '#2B7CB4').spec;
+    const nextBorder = __parseOperatoreColorSpec__(payloadColors.border || pair.border || nextBg || currentPair.bg || '#2B7CB4').spec;
     const nextFgRaw = String(payloadColors.fg || '').trim();
     pair.bg = nextBg;
+    pair.border = nextBorder || nextBg;
     pair.fg = nextFgRaw ? __parseOperatoreColorSpec__(nextFgRaw).spec : '';
-    if (safeKey) map[safeKey] = { bg: pair.bg, fg: pair.fg || '' };
+    if (safeKey) map[safeKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '' };
     __saveStatCardColorMap__(pageKey, map);
     if (pageKey === 'statmensili' && safeKey){
       try{
@@ -12108,7 +12116,7 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const nextHex = __tagColorTextHex__(pair.bg || currentColor || '#2B7CB4', pair.fg || '', false);
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
-  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
 }
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
