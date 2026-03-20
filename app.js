@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.383
+ * Build: 2.384
  */
-const BUILD_VERSION = "2.383";
+const BUILD_VERSION = "2.384";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14664,6 +14664,52 @@ function __openRoomSettingsColorPicker__(target){
 }
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
+const __ROOM_SETTINGS_THEME_STAT_PREFIXES__ = ['ddae_graph_colors_', 'dDAE_statcard_colors_'];
+
+function __roomSettingsThemeStatsRead__(){
+  const out = {};
+  try{
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      if (!__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) continue;
+      try{ out[key] = String(localStorage.getItem(key) ?? ''); }catch(_){ }
+    }
+  }catch(_){ }
+  return out;
+}
+
+function __roomSettingsThemeStatsWrite__(payload){
+  const src = (payload && typeof payload === 'object') ? payload : {};
+  try{
+    const managedKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      if (__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) managedKeys.push(key);
+    }
+    managedKeys.forEach((key) => {
+      if (!(key in src)) {
+        try{ localStorage.removeItem(key); }catch(_){ }
+      }
+    });
+    Object.keys(src).forEach((key) => {
+      if (!__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) return;
+      try{ localStorage.setItem(key, String(src[key] ?? '')); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __roomSettingsThemeStatsRefresh__(){
+  try{ __refreshStatCardsPage__('statgen'); }catch(_){ }
+  try{ __refreshStatCardsPage__('statmensili'); }catch(_){ }
+  try{ __refreshStatCardsPage__('statspese'); }catch(_){ }
+  try{ __refreshStatGraphPreviews__(); }catch(_){ }
+  try{ if (state?.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
+  try{
+    if (state?.page && String(state.page).startsWith('stat')) showPage(state.page);
+  }catch(_){ }
+}
 
 function __roomSettingsThemeSlotsRead__(){
   try{
@@ -14680,7 +14726,8 @@ function __roomSettingsThemeSlotsWrite__(slots){
 function __roomSettingsThemePayloadBuild__(){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
-    launcherGridTheme: __launcherGridThemeRead__()
+    launcherGridTheme: __launcherGridThemeRead__(),
+    statistiche: __roomSettingsThemeStatsRead__()
   };
 }
 
@@ -14688,7 +14735,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
   const src = (payload && typeof payload === 'object') ? payload : {};
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
-    launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4')
+    launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    statistiche: (src.statistiche && typeof src.statistiche === 'object') ? src.statistiche : __roomSettingsThemeStatsRead__()
   };
 }
 
@@ -14721,6 +14769,8 @@ async function __roomSettingsThemeSlotApply__(slot){
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
     __launcherIconApplyAll__();
   }catch(_){ }
+  try{ __roomSettingsThemeStatsWrite__(payload.statistiche); }catch(_){ }
+  try{ __roomSettingsThemeStatsRefresh__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
 }
