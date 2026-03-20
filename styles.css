@@ -12237,6 +12237,57 @@ body.ddae-dark .btn.warning .ui-ico{
   color: #ffffff !important;
   stroke: #ffffff !important;
 }
+body.ddae-dark .topbar .icon-btn,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .prodotti-header-btn,
+body.ddae-dark .laundry-detail-tool,
+body.ddae-dark #laundryPricesClose,
+body.ddae-dark #piscinaPrevMonth,
+body.ddae-dark #piscinaNextMonth{
+  background: rgba(30,41,59,0.92) !important;
+  border-color: rgba(143,202,232,0.34) !important;
+  box-shadow: none !important;
+  color: #8fcae8 !important;
+}
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .prodotti-header-btn .ui-ico,
+body.ddae-dark .prodotti-header-btn .ui-ico *,
+body.ddae-dark .laundry-detail-tool .ui-ico,
+body.ddae-dark .laundry-detail-tool .ui-ico *,
+body.ddae-dark #laundryPricesClose .ui-ico,
+body.ddae-dark #laundryPricesClose .ui-ico *,
+body.ddae-dark #piscinaPrevMonth .ui-ico,
+body.ddae-dark #piscinaPrevMonth .ui-ico *,
+body.ddae-dark #piscinaNextMonth .ui-ico,
+body.ddae-dark #piscinaNextMonth .ui-ico *{
+  stroke: #8fcae8 !important;
+  color: #8fcae8 !important;
+  fill: none !important;
+}
+body.ddae-dark .topbar .icon-btn:active,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .prodotti-header-btn:active,
+body.ddae-dark .laundry-detail-tool:active,
+body.ddae-dark #laundryPricesClose:active,
+body.ddae-dark #piscinaPrevMonth:active,
+body.ddae-dark #piscinaNextMonth:active{
+  background: rgba(51,65,85,0.96) !important;
+}
 #page-opsettings .settings-actions.settings-actions-reference{
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   width: min(360px, 96vw) !important;
