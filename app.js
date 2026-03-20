@@ -4261,9 +4261,7 @@ function openGuestAlertModal(side){
   }
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
-  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
 }
-
 function closeGuestAlertModal(){
   const modal = document.getElementById('guestAlertModal');
   if (!modal) return;
@@ -7401,14 +7399,11 @@ function __pillApplyToButton__(btn){
     const fgHex = __operatoreColorHex__(visual.fg || 'white');
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
-    const inSettings = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
-    const isDark = inSettings && document.body.classList.contains('ddae-dark');
-    const bgCss = isDark ? 'rgba(15,23,42,0.96)' : hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
-    const borderCss = isDark ? 'rgba(255,255,255,0.92)' : hexToRgba(borderHex, 1);
+    const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
     btn.style.setProperty('background', bgCss, 'important');
     btn.style.setProperty('background-color', bgCss, 'important');
-    btn.style.setProperty('border-color', borderCss, 'important');
-    btn.style.setProperty('border-width', isDark ? '1.5px' : '1px', 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
     btn.style.setProperty('border-style', 'solid', 'important');
     btn.style.setProperty('box-shadow', 'none', 'important');
     btn.style.setProperty('opacity', '1', 'important');
@@ -7446,33 +7441,10 @@ function __bindPillLongPress__(btn){
     btn.dataset.pillColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
-    let suppressUntil = 0;
-    let startX = 0;
-    let startY = 0;
-    const LONG_MS = 560;
-    const MOVE_TOL = 12;
-    const clearHold = () => {
-      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
-      holdTimer = null;
-    };
-    const setSuppress = (ms = 900) => {
-      suppressUntil = Date.now() + Math.max(0, Number(ms) || 0);
-    };
-    const isSuppressed = () => {
-      try{ return Date.now() < suppressUntil; }catch(_){ return false; }
-    };
-    const blockEvent = (ev) => {
-      try{ ev?.preventDefault?.(); }catch(_){ }
-      try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
-      try{ ev?.stopPropagation?.(); }catch(_){ }
-    };
-    const currentPoint = (ev) => {
-      const t = ev?.touches?.[0] || ev?.changedTouches?.[0] || ev;
-      return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
-    };
+    let touchAt = 0;
+    const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
     const openPicker = () => {
       holdTriggered = true;
-      setSuppress(1800);
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
         try{
@@ -7497,60 +7469,34 @@ function __bindPillLongPress__(btn){
         }catch(_){ }
       }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
     };
-    const startHold = (ev) => {
-      if (btn.disabled || btn.hidden) return;
-      clearHold();
+    btn.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
       holdTriggered = false;
-      suppressUntil = 0;
-      const pt = currentPoint(ev);
-      startX = pt.x;
-      startY = pt.y;
-      holdTimer = setTimeout(() => { openPicker(); }, LONG_MS);
-    };
-    const cancelHold = (ev) => {
-      const fired = holdTriggered || isSuppressed();
       clearHold();
-      if (fired){
-        setSuppress(1800);
-        blockEvent(ev);
-      }
-    };
-    const endHold = (ev) => {
-      const fired = holdTriggered || isSuppressed();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, { passive:true, capture:true });
+    btn.addEventListener('touchend', (e) => {
       clearHold();
-      if (fired){
-        holdTriggered = false;
-        setSuppress(1800);
-        blockEvent(ev);
-        return;
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
+    btn.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, true);
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
+    btn.addEventListener('click', (e) => {
+      if (holdTriggered || (Date.now() - touchAt < 450 && holdTriggered)){
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
       }
-      setTimeout(() => { holdTriggered = false; }, 0);
-    };
-    const moveHold = (ev) => {
-      if (!holdTimer) return;
-      const pt = currentPoint(ev);
-      if (Math.abs(pt.x - startX) > MOVE_TOL || Math.abs(pt.y - startY) > MOVE_TOL){
-        clearHold();
-      }
-    };
-    ['pointerdown','touchstart','mousedown'].forEach((evt) => {
-      try{ btn.addEventListener(evt, startHold, { passive:true, capture:true }); }catch(_){ }
+    }, true);
+    btn.addEventListener('contextmenu', (e) => {
+      try{ e.preventDefault(); }catch(_){ }
+      try{ openPicker(); }catch(_){ }
+      try{ e.stopPropagation(); }catch(_){ }
     });
-    ['pointermove','touchmove','mousemove'].forEach((evt) => {
-      try{ btn.addEventListener(evt, moveHold, { passive:true, capture:true }); }catch(_){ }
-    });
-    ['pointerup','touchend','mouseup','pointercancel','touchcancel','mouseleave','dragstart'].forEach((evt) => {
-      try{ btn.addEventListener(evt, endHold, { passive:false, capture:true }); }catch(_){ }
-    });
-    ['click','contextmenu','selectstart'].forEach((evt) => {
-      try{ btn.addEventListener(evt, cancelHold, true); }catch(_){ }
-    });
-    try{
-      btn.addEventListener('contextmenu', (e) => {
-        blockEvent(e);
-        openPicker();
-      }, true);
-    }catch(_){ }
   }catch(_){ }
 }
 
@@ -7941,30 +7887,36 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const isDark = !!document.body.classList.contains('ddae-dark');
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
-      const resolvedBg = isDark ? 'rgba(15,23,42,0.96)' : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
-      const resolvedBorder = isDark ? 'rgba(255,255,255,0.92)' : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : ''));
+      const isDarkSettings = !!(__isDarkModeEnabled__ && __isDarkModeEnabled__());
+      const useForcedDarkPalette = isDarkSettings && !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
+      const resolvedBg = useForcedDarkPalette
+        ? 'rgba(15,23,42,0.80)'
+        : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
+      const resolvedBorder = useForcedDarkPalette
+        ? 'rgba(148,163,184,0.24)'
+        : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : ''));
+      const resolvedFg = useForcedDarkPalette ? '#ffffff' : hex;
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
-      setImp(btn, 'border-width', isDark ? '1.5px' : '1px');
+      setImp(btn, 'border-width', '1px');
       setImp(btn, 'border-style', 'solid');
       setImp(btn, 'box-shadow', 'none');
-      setImp(btn, 'color', hex);
-      setImp(btn, '-webkit-text-fill-color', hex);
+      setImp(btn, 'color', resolvedFg);
+      setImp(btn, '-webkit-text-fill-color', resolvedFg);
       const label = btn.querySelector('.settings-btn-label');
       if (label){
-        setImp(label, 'color', hex);
-        setImp(label, '-webkit-text-fill-color', hex);
+        setImp(label, 'color', resolvedFg);
+        setImp(label, '-webkit-text-fill-color', resolvedFg);
       }
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
-        svg.style.setProperty('color', hex, 'important');
-        svg.style.setProperty('stroke', hex, 'important');
+        svg.style.setProperty('color', resolvedFg, 'important');
+        svg.style.setProperty('stroke', resolvedFg, 'important');
         svg.style.setProperty('fill', 'none', 'important');
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-          node.style.setProperty('stroke', hex, 'important');
+          node.style.setProperty('stroke', resolvedFg, 'important');
           node.style.setProperty('fill', 'none', 'important');
         });
       }
@@ -9511,108 +9463,6 @@ function __syncDarkModeButtons__(){
   });
 }
 
-
-
-function __applySettingsAndColorPopupDarkFix__(){
-  try{
-    const dark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
-    const setImp = (el, prop, value) => { try{ el && el.style && el.style.setProperty(prop, value, 'important'); }catch(_){ } };
-    const clear = (el, props) => { try{ (props||[]).forEach((prop)=>el?.style?.removeProperty(prop)); }catch(_){ } };
-    const commonProps = ['background','background-color','background-image','border','border-color','border-width','border-style','box-shadow','-webkit-box-shadow','color','-webkit-text-fill-color','opacity','filter','mix-blend-mode','backdrop-filter','-webkit-backdrop-filter','appearance','-webkit-appearance'];
-    const shellBg = 'rgba(22,28,36,0.88)';
-    const shellBorder = 'rgba(255,255,255,0.10)';
-    const settingsPalette = {
-      settingsSaveBtn:'#ffffff',
-      settingsDbBtn:'#92cf32',
-      settingsRoomsBtn:'#ffd43b',
-      settingsOperatoriBtn:'#4da8ff',
-      settingsChannelBtn:'#ffa133',
-      settingsLaundryCatalogBtn:'#c8a36f',
-      settingsConfigBtn:'#cf362f',
-      settingsExportRosterBtn:'#8d63e6',
-      settingsLanguageBtn:'#bf2f6f',
-      settingsLogoutBtn:'#c92e2e',
-      opSettingsLanguageBtn:'#bf2f6f',
-      opSettingsDarkBtn:'#ffffff',
-      opSettingsCodeBtn:'#8d63e6',
-      opSettingsLogoutBtn:'#c92e2e'
-    };
-    Object.entries(settingsPalette).forEach(([id, accent]) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (!dark){ clear(el, commonProps); return; }
-      setImp(el, 'appearance', 'none');
-      setImp(el, '-webkit-appearance', 'none');
-      setImp(el, 'background', shellBg);
-      setImp(el, 'background-color', shellBg);
-      setImp(el, 'background-image', 'none');
-      setImp(el, 'border', `1px solid ${shellBorder}`);
-      setImp(el, 'border-color', shellBorder);
-      setImp(el, 'border-width', '1px');
-      setImp(el, 'border-style', 'solid');
-      setImp(el, 'box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
-      setImp(el, '-webkit-box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
-      setImp(el, 'color', accent);
-      setImp(el, '-webkit-text-fill-color', accent);
-      setImp(el, 'opacity', '1');
-      setImp(el, 'filter', 'none');
-      setImp(el, 'mix-blend-mode', 'normal');
-      setImp(el, 'backdrop-filter', 'blur(12px)');
-      setImp(el, '-webkit-backdrop-filter', 'blur(12px)');
-      el.querySelectorAll('.settings-btn-label').forEach((node) => {
-        setImp(node, 'color', accent);
-        setImp(node, '-webkit-text-fill-color', accent);
-        setImp(node, 'opacity', '1');
-      });
-      el.querySelectorAll('.ui-ico, .ui-ico *').forEach((node) => {
-        setImp(node, 'color', accent);
-        setImp(node, 'stroke', accent);
-        setImp(node, 'fill', 'none');
-        setImp(node, '-webkit-text-fill-color', accent);
-        setImp(node, 'opacity', '1');
-      });
-    });
-    const popupPalette = {
-      tagColorModeBg:'#58b7f4',
-      tagColorModeBorder:'#ffffff',
-      tagColorModeFg:'#f3b15a',
-      tagColorModeOpacity:'#9b8cff',
-      tagColorModalClose:'#ffffff',
-      tagColorModalConfirm:'#58b7f4'
-    };
-    Object.entries(popupPalette).forEach(([id, accent]) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (!dark){ clear(el, commonProps); return; }
-      setImp(el, 'appearance', 'none');
-      setImp(el, '-webkit-appearance', 'none');
-      setImp(el, 'background', shellBg);
-      setImp(el, 'background-color', shellBg);
-      setImp(el, 'background-image', 'none');
-      setImp(el, 'border', `1px solid ${shellBorder}`);
-      setImp(el, 'border-color', shellBorder);
-      setImp(el, 'border-width', '1px');
-      setImp(el, 'border-style', 'solid');
-      setImp(el, 'box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
-      setImp(el, '-webkit-box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
-      setImp(el, 'color', accent);
-      setImp(el, '-webkit-text-fill-color', accent);
-      setImp(el, 'opacity', '1');
-      setImp(el, 'filter', 'none');
-      setImp(el, 'mix-blend-mode', 'normal');
-      setImp(el, 'backdrop-filter', 'blur(12px)');
-      setImp(el, '-webkit-backdrop-filter', 'blur(12px)');
-      el.querySelectorAll('span, .tag-color-mode-ico, .tag-color-mode-ico *').forEach((node) => {
-        setImp(node, 'color', accent);
-        setImp(node, '-webkit-text-fill-color', accent);
-        setImp(node, 'stroke', accent);
-        setImp(node, 'fill', 'none');
-        setImp(node, 'opacity', '1');
-      });
-    });
-  }catch(_){ }
-}
-
 function __applyDarkMode__(enabled){
   try{
     document.body.classList.toggle('ddae-dark', !!enabled);
@@ -9621,10 +9471,7 @@ function __applyDarkMode__(enabled){
   try{ __updateThemeMeta__(!!enabled); }catch(_){ }
   try{ __syncDarkModeButtons__(); }catch(_){ }
   try{ __launcherIconApplyAll__(); }catch(_){ }
-  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
-  try{ __pillApplyAll__(); }catch(_){ }
 }
-
 
 function __setDarkMode__(enabled){
   try{ localStorage.setItem(__DARK_MODE_KEY__, enabled ? '1' : '0'); }catch(_){ }
@@ -10934,10 +10781,6 @@ state.page = page;
   if (page === "impostazioni" || page === "opsettings"){
     try{ updateSettingsTabs(); }catch(_){ }
     if (page === "impostazioni"){ try{ loadImpostazioniPage({ force:true }); }catch(_){ } }
-    try{ __launcherIconApplyAll__(); }catch(_){ }
-    try{ __pillApplyAll__(); }catch(_){ }
-    try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
-    try{ requestAnimationFrame(() => { try{ __launcherIconApplyAll__(); }catch(_){ } try{ __pillApplyAll__(); }catch(_){ } }); }catch(_){ }
   }
   if (page === "operatori"){
     try{ loadOperatoriPage(); }catch(_){ }
@@ -20176,8 +20019,6 @@ async function init(){
   setupOperatoriPage();
   setupChannelPage();
   setupTagColorPopup();
-  try{ __pillApplyAll__(); }catch(_){ }
-  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
   setupRoomSettingsPage();
   setupLaundryCatalogPage();
 setupPiscina();
