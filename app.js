@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.381
+ * Build: 2.382
  */
-const BUILD_VERSION = "2.381";
+const BUILD_VERSION = "2.382";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12036,26 +12036,34 @@ function __refreshStatCardsPage__(pageKey){
   }catch(_){ }
 }
 
+function __monthlyStatCardGraphSpecFromPair__(pair, fallback){
+  const normalizedPair = __tagColorPairFromValue__(pair, fallback || 'blue-4');
+  const textSource = normalizedPair.fg || __tagColorTextHex__(normalizedPair.bg || fallback || '#2B7CB4', normalizedPair.fg || '', false);
+  return __closestGraphColorSpec__(textSource || fallback || '#2B7CB4');
+}
+
 function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone){
   const currentPair = __getStatCardColorPair__(pageKey, cardKey, currentColor || '#2B7CB4');
   __tagColorPopupOpen__('stat-card-text', currentPair, (payload) => {
     const map = __loadStatCardColorMap__(pageKey);
     const safeKey = String(cardKey || '').trim();
     const pair = __tagColorPairFromValue__(map[safeKey] || currentPair, currentPair.bg || '#2B7CB4');
-    const normalized = __parseOperatoreColorSpec__(payload?.spec || currentPair.bg || '#2B7CB4').spec;
-    if ((payload?.mode || 'bg') === 'bg') pair.bg = normalized;
-    else pair.fg = normalized;
+    const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const nextBg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || currentPair.bg || '#2B7CB4').spec;
+    const nextFgRaw = String(payloadColors.fg || '').trim();
+    pair.bg = nextBg;
+    pair.fg = nextFgRaw ? __parseOperatoreColorSpec__(nextFgRaw).spec : '';
     if (safeKey) map[safeKey] = { bg: pair.bg, fg: pair.fg || '' };
     __saveStatCardColorMap__(pageKey, map);
     if (pageKey === 'statmensili' && safeKey){
       try{
         const graphMap = __loadGraphColorMap__('occupazione-mensile');
-        graphMap[safeKey] = pair.bg;
+        graphMap[safeKey] = __monthlyStatCardGraphSpecFromPair__(pair, currentPair.bg || '#2B7CB4');
         __saveGraphColorMap__('occupazione-mensile', graphMap);
       }catch(_){ }
       try{ __refreshStatGraphPreviews__(); }catch(_){ }
     }
-    const nextHex = __graphColorValueToHex__(pair.bg, currentColor || '#2B7CB4');
+    const nextHex = __tagColorTextHex__(pair.bg || currentColor || '#2B7CB4', pair.fg || '', false);
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
   }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
@@ -12138,9 +12146,10 @@ function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
       try{
         const statMap = __loadStatCardColorMap__('statmensili');
         const fallbackPair = __getStatCardColorPair__('statmensili', safeLabel, normalized);
-        statMap[safeLabel] = { bg: normalized, fg: fallbackPair.fg || '' };
+        statMap[safeLabel] = { bg: fallbackPair.bg || 'blue-4', fg: normalized };
         __saveStatCardColorMap__('statmensili', statMap);
       }catch(_){ }
+      try{ __refreshStatCardsPage__('statmensili'); }catch(_){ }
     }
     __refreshStatGraphPreviews__();
     if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
@@ -12279,7 +12288,7 @@ function __syncOccupazioneMensileGraphColorsFromStatMensili__(){
       const label = String(__MONTHS_IT[i] || `Mese ${i+1}`);
       const fallback = colors[i % colors.length] || '#2B7CB4';
       const pair = __tagColorPairFromValue__(statMap[label], fallback);
-      const next = __parseOperatoreColorSpec__(pair.bg || fallback).spec;
+      const next = __monthlyStatCardGraphSpecFromPair__(pair, fallback);
       if (graphMap[label] !== next){
         graphMap[label] = next;
         changed = true;
@@ -12295,7 +12304,8 @@ function __occupazioneMensileSlices__(mensili){
   return new Array(12).fill(0).map((_,i)=>{
     const label = String(__MONTHS_IT[i] || `Mese ${i+1}`);
     const fallback = colors[i % colors.length] || "#2b7cb4";
-    const syncedColor = __graphColorValueToHex__(__getStatCardColorPair__('statmensili', label, fallback).bg, fallback);
+    const pair = __getStatCardColorPair__('statmensili', label, fallback);
+    const syncedColor = __tagColorTextHex__(pair.bg || fallback, pair.fg || '', false);
     return {
       label,
       value: Math.max(0, Math.min(100, Number(vals[i] || 0) || 0)),
