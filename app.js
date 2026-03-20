@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.388
+ * Build: 2.389
  */
-const BUILD_VERSION = "2.388";
+const BUILD_VERSION = "2.389";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7104,6 +7104,35 @@ function __launcherIconColorMapWrite__(map){
 
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
 const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
+const __DESIGN_BG_OPACITY_STORAGE_KEY__ = 'dDAE_design_bg_opacity_v1';
+const __DESIGN_BG_OPACITY_ALLOWED__ = [0.25, 0.50, 0.75, 1.00];
+
+function __designBgOpacityNormalize__(value){
+  const raw = Number(value);
+  const allowed = __DESIGN_BG_OPACITY_ALLOWED__.slice();
+  if (!isFinite(raw)) return 0.80;
+  let best = allowed[0];
+  let dist = Math.abs(raw - best);
+  allowed.forEach((v) => { const d = Math.abs(raw - v); if (d < dist) { best = v; dist = d; } });
+  return best;
+}
+
+function __designBgOpacityRead__(){
+  try{
+    const raw = localStorage.getItem(__DESIGN_BG_OPACITY_STORAGE_KEY__);
+    if (!raw) return 0.80;
+    return __designBgOpacityNormalize__(parseFloat(raw));
+  }catch(_){ return 0.80; }
+}
+
+function __designBgOpacityWrite__(value){
+  try{ localStorage.setItem(__DESIGN_BG_OPACITY_STORAGE_KEY__, String(__designBgOpacityNormalize__(value))); }catch(_){ }
+}
+
+function __designBgOpacityPercentLabel__(value){
+  return String(Math.round(__designBgOpacityNormalize__(value) * 100));
+}
+
 
 function __statisticsCardThemeRead__(){
   try{
@@ -7134,8 +7163,8 @@ function __statisticsCardThemeButtonStyle__(){
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     return [
-      'background:' + hexToRgba(bgHex, 0.80),
-      'background-color:' + hexToRgba(bgHex, 0.80),
+      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'border-color:' + hexToRgba(borderHex, 1),
       'color:#ffffff',
       '-webkit-text-fill-color:#ffffff'
@@ -7155,11 +7184,12 @@ function __openStatisticsCardThemePicker__(){
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
       };
       __statisticsCardThemeWrite__(nextVisual);
+      if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
       __applyStatisticsCardTheme__();
       try{ renderRoomSettingsPage(); }catch(_){ }
       try{ toast('Design card statistiche aggiornato'); }catch(_){ }
     }catch(e){ try{ toast(e?.message || 'Errore design card statistiche'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:false, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
 function __launcherGridThemeRead__(){
@@ -7201,8 +7231,8 @@ function __launcherGridThemeButtonStyle__(){
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     return [
-      'background:' + hexToRgba(bgHex, 0.80),
-      'background-color:' + hexToRgba(bgHex, 0.80),
+      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'border-color:' + hexToRgba(borderHex, 1),
       'color:#ffffff',
       '-webkit-text-fill-color:#ffffff'
@@ -7244,12 +7274,13 @@ function __openLauncherGridThemePicker__(){
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
       };
       __launcherGridThemeWrite__(nextVisual);
+      if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
       __launcherGridThemeOverwriteTargets__(nextVisual);
       __launcherIconApplyAll__();
       try{ renderRoomSettingsPage(); }catch(_){ }
       try{ toast('Design tasti aggiornato'); }catch(_){ }
     }catch(e){ try{ toast(e?.message || 'Errore design tasti'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:false, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
 function __launcherIconVisualFor__(id){
@@ -7323,8 +7354,8 @@ function __launcherIconApplyToButton__(btn){
       btn.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : hex);
       btn.style.borderWidth = '1px';
       btn.style.borderStyle = 'solid';
-      btn.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
+      btn.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
+      btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
       return;
     }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
@@ -7332,8 +7363,8 @@ function __launcherIconApplyToButton__(btn){
       if (glyph){
         glyph.style.color = hex;
         glyph.style.webkitTextFillColor = hex;
-        glyph.style.background = bgHex ? hexToRgba(bgHex, 0.80) : '';
-        glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, 0.80) : '';
+        glyph.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
+        glyph.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '';
         glyph.style.borderColor = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.80) : '');
         glyph.style.borderWidth = '1px';
         glyph.style.borderStyle = 'solid';
@@ -7353,7 +7384,7 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const isDarkUi = !!__isDarkModeEnabled__();
-      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
+      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, __designBgOpacityRead__()) : '');
       const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : (isDarkUi ? 'rgba(148,163,184,0.22)' : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
@@ -7390,22 +7421,24 @@ function __applyStatisticsCardTheme__(){
     const borderSpec = visual.border || bgSpec || 'blue-4';
     const bgHex = __operatoreColorHex__(bgSpec || 'blue-4');
     const borderHex = __operatoreColorHex__(borderSpec || bgSpec || 'blue-4');
+    const alpha = __designBgOpacityRead__();
     const groups = [
-      ['#page-statgen .stat-row', 0.10, 0.36],
-      ['#page-statspese .stat-row', 0.10, 0.36],
-      ['#page-statmensili .month-row', 0.18, 0.40]
+      ['#page-statgen .stat-row', alpha, 1],
+      ['#page-statspese .stat-row', alpha, 1],
+      ['#page-statmensili .month-row', alpha, 1]
     ];
-    groups.forEach(([selector, alpha, borderAlpha]) => {
+    groups.forEach(([selector, bgAlpha, borderAlpha]) => {
       try{
         document.querySelectorAll(selector).forEach((el) => {
-          const bg = hexToRgba(bgHex, alpha);
+          const bg = hexToRgba(bgHex, bgAlpha);
           const border = hexToRgba(borderHex, borderAlpha);
           el.style.setProperty('background', bg, 'important');
           el.style.setProperty('background-color', bg, 'important');
-          el.style.setProperty('border', `1px solid ${border}`, 'important');
+          el.style.setProperty('border', '0', 'important');
           el.style.setProperty('--stats-theme-bg', bg, 'important');
           el.style.setProperty('--stats-theme-border', border, 'important');
-          el.style.setProperty('--stats-theme-border-strong', hexToRgba(borderHex, 1), 'important');
+          el.style.setProperty('--stats-theme-border-strong', border, 'important');
+          el.style.setProperty('--stats-theme-overlay-opacity', '0', 'important');
         });
       }catch(_){ }
     });
@@ -8037,7 +8070,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, colors:{ bg:'blue-4', border:'', fg:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:false, supportsBorder:false, supportsFg:true, supportsOpacity:false, opacity:0.80, colors:{ bg:'blue-4', border:'', fg:'' } };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8058,6 +8091,7 @@ function __tagColorPopupSwallowGhostTap__(ev){
 
 function __tagColorPopupSelectedSpec__(){
   const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
+  if (mode === 'opacity') return String(__designBgOpacityNormalize__(__tagColorPopupState__.opacity || 0.80));
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
   if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
   return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4');
@@ -8066,12 +8100,12 @@ function __tagColorPopupSelectedSpec__(){
 function __tagColorPopupRefreshModeButtons__(){
   const bar = document.getElementById('tagColorModeBar');
   if (!bar) return;
-  const enabledCount = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg].filter(Boolean).length;
+  const enabledCount = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg, __tagColorPopupState__.supportsOpacity].filter(Boolean).length;
   const showBar = enabledCount > 1;
   bar.hidden = !showBar;
   bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
-    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : (mode === 'border' ? !!__tagColorPopupState__.supportsBorder : !!__tagColorPopupState__.supportsFg);
+    const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : (mode === 'border' ? !!__tagColorPopupState__.supportsBorder : (mode === 'opacity' ? !!__tagColorPopupState__.supportsOpacity : !!__tagColorPopupState__.supportsFg));
     btn.hidden = !showBar || !enabled;
     btn.disabled = !enabled;
     btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
@@ -8080,12 +8114,24 @@ function __tagColorPopupRefreshModeButtons__(){
 
 function __tagColorPopupRefreshSelection__(){
   const grid = document.getElementById('tagColorGrid');
-  if (!grid) return;
+  const opacityWrap = document.getElementById('tagOpacityWrap');
+  const opacityGrid = document.getElementById('tagOpacityGrid');
   const selected = __tagColorPopupSelectedSpec__();
-  grid.querySelectorAll('.tag-color-option').forEach((btn) => {
-    const spec = __parseOperatoreColorSpec__(btn.dataset.spec || '').spec;
-    btn.classList.toggle('is-selected', spec === selected);
-  });
+  const isOpacityMode = String(__tagColorPopupState__.mode || '').trim().toLowerCase() === 'opacity';
+  if (grid){
+    grid.hidden = isOpacityMode;
+    grid.querySelectorAll('.tag-color-option').forEach((btn) => {
+      const spec = __parseOperatoreColorSpec__(btn.dataset.spec || '').spec;
+      btn.classList.toggle('is-selected', !isOpacityMode && spec === selected);
+    });
+  }
+  if (opacityWrap) opacityWrap.hidden = !isOpacityMode;
+  if (opacityGrid){
+    opacityGrid.querySelectorAll('.tag-opacity-option').forEach((btn) => {
+      const raw = __designBgOpacityNormalize__(parseFloat(btn.dataset.opacity || '0.80'));
+      btn.classList.toggle('is-selected', isOpacityMode && String(raw) === String(selected));
+    });
+  }
   __tagColorPopupRefreshModeButtons__();
 }
 
@@ -8127,11 +8173,14 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.supportsBg = !!opts.supportsBg;
   __tagColorPopupState__.supportsBorder = !!opts.supportsBorder;
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
+  __tagColorPopupState__.supportsOpacity = !!opts.supportsOpacity;
+  __tagColorPopupState__.opacity = __designBgOpacityNormalize__(opts.opacity ?? currentColor?.opacity ?? __designBgOpacityRead__());
   __tagColorPopupState__.colors = { ...__tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4'), border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || '') };
   const enabledModes = [];
   if (__tagColorPopupState__.supportsBg) enabledModes.push('bg');
   if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
   if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
+  if (__tagColorPopupState__.supportsOpacity) enabledModes.push('opacity');
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
@@ -8147,7 +8196,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
 function __tagColorPopupConfirm__(){
   try{
     const cb = __tagColorPopupState__.onSelect;
-    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), colors: { ...(__tagColorPopupState__.colors || {}) } };
+    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity || 0.80), colors: { ...(__tagColorPopupState__.colors || {}) } };
     __tagColorPopupState__.confirmed = true;
     if (typeof cb === 'function'){
       try{ cb(payload); }catch(_){ }
@@ -8172,6 +8221,8 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.supportsBg = false;
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.supportsFg = true;
+  __tagColorPopupState__.supportsOpacity = false;
+  __tagColorPopupState__.opacity = 0.80;
   __tagColorPopupState__.colors = { bg:'blue-4', border:'', fg:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
@@ -8635,14 +8686,24 @@ function setupTagColorPopup(){
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
       bindFastTap(btn, () => {
         const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
-        const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
+        const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : (rawMode === 'opacity' ? 'opacity' : 'fg'));
         if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
         if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
         if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
+        if (mode === 'opacity' && !__tagColorPopupState__.supportsOpacity) return;
         __tagColorPopupState__.mode = mode;
         if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) __tagColorPopupLastDualMode__ = mode;
         __tagColorPopupRefreshSelection__();
         try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
+      });
+    });
+    document.querySelectorAll('#tagOpacityGrid .tag-opacity-option').forEach((btn) => {
+      bindFastTap(btn, () => {
+        if (Date.now() < __tagColorPopupReadyAt__) return;
+        __tagColorPopupSuppressUntil__ = Date.now() + 900;
+        try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+        __tagColorPopupState__.opacity = __designBgOpacityNormalize__(parseFloat(btn.dataset.opacity || '0.80'));
+        __tagColorPopupRefreshSelection__();
       });
     });
   }catch(_){ }
@@ -15011,11 +15072,13 @@ function renderRoomSettingsPage(){
       statisticsThemeBtn.setAttribute('aria-label', 'Design card statistiche');
       statisticsThemeBtn.title = 'Design card statistiche';
     }
-    const placeholderBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
-    if (placeholderBtn){
-      placeholderBtn.textContent = '3';
-      placeholderBtn.setAttribute('style', '');
-      placeholderBtn.classList.add('room-settings-square-btn-placeholder');
+    const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+    if (opacityBtn){
+      opacityBtn.textContent = __designBgOpacityPercentLabel__(__designBgOpacityRead__());
+      opacityBtn.setAttribute('style', 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff;');
+      opacityBtn.classList.remove('room-settings-square-btn-placeholder');
+      opacityBtn.setAttribute('aria-label', 'Opacità sfondo tasti e card');
+      opacityBtn.title = 'Opacità sfondo tasti e card';
     }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
@@ -15143,10 +15206,19 @@ function setupRoomSettingsPage(){
     statisticsThemeBtn.__boundStatisticsCardThemeBtn = true;
     bindFastTap(statisticsThemeBtn, () => { __openStatisticsCardThemePicker__(); });
   }
-  const launcherPlaceholderBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
-  if (launcherPlaceholderBtn && !launcherPlaceholderBtn.__boundLauncherPlaceholderBtn){
-    launcherPlaceholderBtn.__boundLauncherPlaceholderBtn = true;
-    bindFastTap(launcherPlaceholderBtn, () => { try{ toast('Da definire'); }catch(_){ } });
+  const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+  if (opacityBtn && !opacityBtn.__boundDesignOpacityBtn){
+    opacityBtn.__boundDesignOpacityBtn = true;
+    bindFastTap(opacityBtn, () => {
+      __tagColorPopupOpen__('design-opacity', { opacity: __designBgOpacityRead__() }, (payload) => {
+        try{
+          __designBgOpacityWrite__(payload && payload.opacity != null ? payload.opacity : __designBgOpacityRead__());
+          __launcherIconApplyAll__();
+          try{ renderRoomSettingsPage(); }catch(_){ }
+          try{ toast('Opacità aggiornata'); }catch(_){ }
+        }catch(e){ try{ toast(e?.message || 'Errore opacità'); }catch(_){ } }
+      }, { supportsBg:false, supportsBorder:false, supportsFg:false, supportsOpacity:true, defaultMode:'opacity', opacity:__designBgOpacityRead__() });
+    });
   }
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
