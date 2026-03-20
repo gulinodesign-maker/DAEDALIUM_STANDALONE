@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.394
+ * Build: 2.395
  */
-const BUILD_VERSION = "2.394";
+const BUILD_VERSION = "2.395";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7133,6 +7133,217 @@ function __designBgOpacityPercentLabel__(value){
   return String(Math.round(__designBgOpacityNormalize__(value) * 100));
 }
 
+const __HEADER_ACTION_THEME_STORAGE_KEY__ = 'dDAE_header_action_theme_v1';
+const __HEADER_ACTION_COLOR_STORAGE_KEY__ = 'dDAE_header_action_colors_v1';
+
+function __headerActionTargetButtons__(){
+  try{
+    return Array.from(document.querySelectorAll('.topbar .icon-btn[id], .hd-actions .icon-btn[id], .guest-hd-actions .icon-btn[id], .clean-topbar .icon-btn[id]'));
+  }catch(_){ return []; }
+}
+
+function __headerActionColorMapRead__(){
+  try{
+    const raw = localStorage.getItem(__HEADER_ACTION_COLOR_STORAGE_KEY__);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __headerActionColorMapWrite__(map){
+  try{ localStorage.setItem(__HEADER_ACTION_COLOR_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __headerActionThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__HEADER_ACTION_THEME_STORAGE_KEY__);
+    if (!raw) return { fg:'blue-4', bg:'white', border:'white' };
+    return __launcherVisualNormalize__(JSON.parse(raw), 'blue-4');
+  }catch(_){ return { fg:'blue-4', bg:'white', border:'white' }; }
+}
+
+function __headerActionThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__HEADER_ACTION_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'blue-4', bg: clean.bg || 'white', border: clean.border || clean.bg || 'white' }));
+  }catch(_){ }
+}
+
+function __headerActionThemeVisual__(){
+  const visual = __headerActionThemeRead__();
+  return { fg: visual.fg || 'blue-4', bg: visual.bg || 'white', border: visual.border || visual.bg || 'white' };
+}
+
+function __headerActionVisualFor__(id){
+  const key = String(id || '').trim();
+  if (!key) return __headerActionThemeVisual__();
+  const map = __headerActionColorMapRead__();
+  const base = __headerActionThemeVisual__();
+  const current = __launcherVisualNormalize__(map[key], base.fg || 'blue-4');
+  return {
+    fg: current.fg || base.fg || 'blue-4',
+    bg: current.bg || base.bg || 'white',
+    border: current.border || current.bg || base.border || base.bg || 'white'
+  };
+}
+
+function __headerActionSaveColor__(id, spec, mode = 'fg'){
+  const key = String(id || '').trim();
+  if (!key) return;
+  const rawMode = String(mode || 'fg').trim().toLowerCase();
+  const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
+  const map = __headerActionColorMapRead__();
+  const current = __headerActionVisualFor__(key);
+  if (normalizedMode === 'bg') current.bg = __normalizeOperatoreColor__(spec || current.bg || 'white');
+  else if (normalizedMode === 'border') current.border = __normalizeOperatoreColor__(spec || current.border || current.bg || 'white');
+  else current.fg = __normalizeOperatoreColor__(spec || current.fg || 'blue-4');
+  map[key] = { fg: current.fg || 'blue-4', bg: current.bg || 'white', border: current.border || current.bg || 'white' };
+  __headerActionColorMapWrite__(map);
+}
+
+function __headerActionThemeOverwriteTargets__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    const map = __headerActionColorMapRead__();
+    __headerActionTargetButtons__().forEach((btn) => {
+      const key = String(btn && btn.id || '').trim();
+      if (!key) return;
+      map[key] = {
+        fg: clean.fg || 'blue-4',
+        bg: clean.bg || 'white',
+        border: clean.border || clean.bg || 'white'
+      };
+    });
+    __headerActionColorMapWrite__(map);
+  }catch(_){ }
+}
+
+function __headerActionApplyToButton__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const visual = __headerActionVisualFor__(btn.id);
+    const fgHex = __operatoreColorHex__(visual.fg || 'blue-4');
+    const bgHex = __operatoreColorHex__(visual.bg || 'white');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'white');
+    const bgCss = hexToRgba(bgHex, __designBgOpacityRead__());
+    btn.style.setProperty('background', bgCss, 'important');
+    btn.style.setProperty('background-color', bgCss, 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-style', 'solid', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    const svg = btn.querySelector('svg.ui-ico');
+    if (svg){
+      svg.style.setProperty('color', fgHex, 'important');
+      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+        node.style.setProperty('stroke', fgHex, 'important');
+        node.style.setProperty('fill', 'none', 'important');
+      });
+    }
+    const iconWrap = btn.querySelector('.backchev, .ui-ico');
+    if (iconWrap){
+      iconWrap.style.setProperty('color', fgHex, 'important');
+      iconWrap.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    }
+  }catch(_){ }
+}
+
+function __headerActionApplyAll__(){
+  try{
+    __headerActionTargetButtons__().forEach((btn) => {
+      try{ __bindHeaderActionLongPress__(btn); }catch(_){ }
+      __headerActionApplyToButton__(btn);
+    });
+  }catch(_){ }
+}
+
+function __headerActionThemeButtonStyle__(){
+  try{
+    const visual = __headerActionThemeVisual__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'white');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'white');
+    const fgHex = __operatoreColorHex__(visual.fg || 'blue-4');
+    return [
+      'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
+      'border-color:' + hexToRgba(borderHex, 1),
+      'color:' + fgHex,
+      '-webkit-text-fill-color:' + fgHex
+    ].join(';');
+  }catch(_){
+    return 'background:rgba(255,255,255,0.80);background-color:rgba(255,255,255,0.80);border-color:rgba(255,255,255,1);color:#4d9cc5;-webkit-text-fill-color:#4d9cc5';
+  }
+}
+
+function __openHeaderActionThemePicker__(){
+  const current = __headerActionThemeVisual__();
+  __tagColorPopupOpen__('header-action-theme', current, (payload) => {
+    try{
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const nextVisual = {
+        bg: colors.bg || current.bg || 'white',
+        border: colors.border || current.border || colors.bg || current.bg || 'white',
+        fg: colors.fg || current.fg || 'blue-4'
+      };
+      __headerActionThemeWrite__(nextVisual);
+      if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+      __headerActionThemeOverwriteTargets__(nextVisual);
+      __headerActionApplyAll__();
+      try{ renderRoomSettingsPage(); }catch(_){ }
+      try{ toast('Design tasti top bar aggiornato'); }catch(_){ }
+    }catch(e){ try{ toast(e?.message || 'Errore design tasti top bar'); }catch(_){ } }
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'white') });
+}
+
+function __bindHeaderActionLongPress__(btn){
+  try{
+    if (!btn || btn.dataset.headerColorHoldBound === '1') return;
+    btn.dataset.headerColorHoldBound = '1';
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
+    const openPicker = () => {
+      holdTriggered = true;
+      __tagColorPopupOpen__('header-action-button', __headerActionVisualFor__(btn.id), (payload) => {
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        __headerActionSaveColor__(btn.id, colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'bg');
+        __headerActionSaveColor__(btn.id, colors.border || __headerActionVisualFor__(btn.id).border || colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'border');
+        __headerActionSaveColor__(btn.id, colors.fg || __headerActionVisualFor__(btn.id).fg || 'blue-4', 'fg');
+        if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+        __headerActionApplyAll__();
+        try{ renderRoomSettingsPage(); }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white') });
+    };
+    btn.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, { passive:true, capture:true });
+    btn.addEventListener('touchend', (e) => {
+      clearHold();
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
+    btn.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, true);
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
+    btn.addEventListener('click', (e) => {
+      if (holdTriggered || (Date.now() - touchAt < 450 && holdTriggered)){
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      }
+    }, true);
+    btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
+  }catch(_){ }
+}
 
 function __statisticsCardThemeRead__(){
   try{
@@ -7148,14 +7359,14 @@ function __statisticsCardThemeRead__(){
 function __statisticsCardThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4' }));
+    localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4' }));
     try{ __statisticsCardThemeOverwriteTargets__(clean); }catch(__){ }
   }catch(_){ }
 }
 
 function __statisticsCardThemeVisual__(){
   const visual = __statisticsCardThemeRead__();
-  return { fg:'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
 }
 
 function __statisticsCardThemeTargetKeys__(){
@@ -7182,7 +7393,7 @@ function __statisticsCardThemeOverwriteTargets__(visual){
         map[safeKey] = {
           bg: clean.bg || 'blue-4',
           border: clean.border || clean.bg || 'blue-4',
-          fg: current.fg || ''
+          fg: clean.fg || ''
         };
       });
       __saveStatCardColorMap__(pageKey, map);
@@ -7199,8 +7410,8 @@ function __statisticsCardThemeButtonStyle__(){
       'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'border-color:' + hexToRgba(borderHex, 1),
-      'color:#ffffff',
-      '-webkit-text-fill-color:#ffffff'
+      'color:' + __operatoreColorHex__(visual.fg || 'white'),
+      '-webkit-text-fill-color:' + __operatoreColorHex__(visual.fg || 'white')
     ].join(';');
   }catch(_){
     return 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
@@ -7214,7 +7425,8 @@ function __openStatisticsCardThemePicker__(){
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
-        border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+        fg: colors.fg || current.fg || 'white'
       };
       __statisticsCardThemeWrite__(nextVisual);
       if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
@@ -7222,7 +7434,7 @@ function __openStatisticsCardThemePicker__(){
       try{ renderRoomSettingsPage(); }catch(_){ }
       try{ toast('Design card statistiche aggiornato'); }catch(_){ }
     }catch(e){ try{ toast(e?.message || 'Errore design card statistiche'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:false, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
 function __launcherGridThemeRead__(){
@@ -7237,13 +7449,13 @@ function __launcherGridThemeRead__(){
 function __launcherGridThemeWrite__(visual){
   try{
     const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    localStorage.setItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__, JSON.stringify({ bg: clean.bg || '', border: clean.border || '' }));
+    localStorage.setItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__, JSON.stringify({ fg: clean.fg || 'white', bg: clean.bg || '', border: clean.border || '' }));
   }catch(_){ }
 }
 
 function __launcherGridThemeVisual__(){
   const visual = __launcherGridThemeRead__();
-  return { fg:'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+  return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
 }
 
 function __launcherGridThemeResolveLayer__(mode, fallbackSpec){
@@ -7267,8 +7479,8 @@ function __launcherGridThemeButtonStyle__(){
       'background:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'background-color:' + hexToRgba(bgHex, __designBgOpacityRead__()),
       'border-color:' + hexToRgba(borderHex, 1),
-      'color:#ffffff',
-      '-webkit-text-fill-color:#ffffff'
+      'color:' + __operatoreColorHex__(visual.fg || 'white'),
+      '-webkit-text-fill-color:' + __operatoreColorHex__(visual.fg || 'white')
     ].join(';');
   }catch(_){
     return 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
@@ -7288,7 +7500,7 @@ function __launcherGridThemeOverwriteTargets__(visual){
     __LAUNCHER_GRID_THEME_TARGET_IDS__.forEach((id) => {
       const current = __launcherVisualNormalize__(map[id], __LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4');
       map[id] = {
-        fg: current.fg || (__LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4'),
+        fg: clean.fg || (current.fg || (__LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4')),
         bg: clean.bg || 'blue-4',
         border: clean.border || clean.bg || 'blue-4'
       };
@@ -7304,7 +7516,8 @@ function __openLauncherGridThemePicker__(){
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
-        border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+        fg: colors.fg || current.fg || 'white'
       };
       __launcherGridThemeWrite__(nextVisual);
       if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
@@ -7313,7 +7526,7 @@ function __openLauncherGridThemePicker__(){
       try{ renderRoomSettingsPage(); }catch(_){ }
       try{ toast('Design tasti aggiornato'); }catch(_){ }
     }catch(e){ try{ toast(e?.message || 'Errore design tasti'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:false, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
 function __launcherIconVisualFor__(id){
@@ -7475,6 +7688,7 @@ function __launcherIconApplyAll__(){
     });
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
@@ -12886,6 +13100,7 @@ function renderStatGen(){
     });
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
 }
 
 
@@ -13191,6 +13406,7 @@ function renderStatMensili(){
     }
   });
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
 }
 
 
@@ -14985,6 +15201,8 @@ function __roomSettingsThemePayloadBuild__(){
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
     launcherGridTheme: __launcherGridThemeRead__(),
     statisticsCardTheme: __statisticsCardThemeRead__(),
+    headerActionTheme: __headerActionThemeRead__(),
+    headerActionColors: __headerActionColorMapRead__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
   };
 }
@@ -14995,6 +15213,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
     statisticsCardTheme: __launcherVisualNormalize__(src.statisticsCardTheme || src.statCardsTheme || src.statsCardTheme || src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    headerActionTheme: __launcherVisualNormalize__(src.headerActionTheme || {}, 'blue-4'),
+    headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     statsThemeStorage: __roomSettingsThemeStatsStorageNormalize__(src.statsThemeStorage || src.statisticheThemeStorage || src.statsStorage || src.statistiche || {})
   };
 }
@@ -15027,6 +15247,8 @@ async function __roomSettingsThemeSlotApply__(slot){
     __launcherGridThemeWrite__(payload.launcherGridTheme);
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
     __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
+    __headerActionThemeWrite__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
+    __headerActionColorMapWrite__(payload.headerActionColors || {});
     __launcherIconApplyAll__();
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(payload.statsThemeStorage); }catch(_){ }
@@ -15105,11 +15327,11 @@ function renderRoomSettingsPage(){
     }
     const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
     if (opacityBtn){
-      opacityBtn.textContent = __designBgOpacityPercentLabel__(__designBgOpacityRead__());
-      opacityBtn.setAttribute('style', 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff;');
+      opacityBtn.textContent = '3';
+      opacityBtn.setAttribute('style', __headerActionThemeButtonStyle__());
       opacityBtn.classList.remove('room-settings-square-btn-placeholder');
-      opacityBtn.setAttribute('aria-label', 'Opacità sfondo tasti e card');
-      opacityBtn.title = 'Opacità sfondo tasti e card';
+      opacityBtn.setAttribute('aria-label', 'Design tasti top bar e titoli pagina');
+      opacityBtn.title = 'Design tasti top bar e titoli pagina';
     }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
@@ -15240,16 +15462,7 @@ function setupRoomSettingsPage(){
   const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
   if (opacityBtn && !opacityBtn.__boundDesignOpacityBtn){
     opacityBtn.__boundDesignOpacityBtn = true;
-    bindFastTap(opacityBtn, () => {
-      __tagColorPopupOpen__('design-opacity', { opacity: __designBgOpacityRead__() }, (payload) => {
-        try{
-          __designBgOpacityWrite__(payload && payload.opacity != null ? payload.opacity : __designBgOpacityRead__());
-          __launcherIconApplyAll__();
-          try{ renderRoomSettingsPage(); }catch(_){ }
-          try{ toast('Opacità aggiornata'); }catch(_){ }
-        }catch(e){ try{ toast(e?.message || 'Errore opacità'); }catch(_){ } }
-      }, { supportsBg:false, supportsBorder:false, supportsFg:false, supportsOpacity:true, defaultMode:'opacity', opacity:__designBgOpacityRead__() });
-    });
+    bindFastTap(opacityBtn, () => { __openHeaderActionThemePicker__(); });
   }
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){

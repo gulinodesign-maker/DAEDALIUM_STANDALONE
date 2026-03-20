@@ -11283,17 +11283,17 @@ body[data-role="operatore"] #page-home .home-grid{
   text-transform:uppercase;
 }
 .room-settings-color-dot-tag{
-  width:58px;
-  min-width:58px;
-  height:58px;
-  font-size:22px;
+  width:54px;
+  min-width:54px;
+  height:54px;
+  font-size:20px;
 }
 @media (max-width: 390px){
   .room-settings-panel{ padding:14px; }
   .room-settings-top{ align-items:flex-start; }
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
-  .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
+  .room-settings-color-dot-tag{ width:50px; min-width:50px; height:50px; }
   .room-settings-squares{ gap:12px; }
   .room-settings-theme-squares{ gap:10px; }
   .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
@@ -15514,7 +15514,7 @@ body.ddae-dark .room-settings-section-card{
 }
 
 
-/* dDAE_2.394 — Design: card Tema separata dal blocco principale */
+/* dDAE_2.395 — Design: card Tema separata dal blocco principale */
 .room-settings-shell{
   display:flex;
   flex-direction:column;
