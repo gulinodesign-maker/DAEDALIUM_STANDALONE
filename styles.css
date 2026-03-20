@@ -15196,3 +15196,18 @@ body.ddae-dark #page-statspese .stat-name,
 body.ddae-dark #page-statspese .stat-val{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
 }
+
+/* dDAE_2.387 — Design: ripristino scheda Temi */
+#roomSettingsLauncherThemeBtn,
+#roomSettingsLauncherExtraBtn1{
+  font-size:14px;
+  letter-spacing:0.01em;
+  padding:0 6px;
+}
+@media (max-width: 390px){
+  #roomSettingsLauncherThemeBtn,
+  #roomSettingsLauncherExtraBtn1{
+    font-size:13px;
+    padding:0 4px;
+  }
+}

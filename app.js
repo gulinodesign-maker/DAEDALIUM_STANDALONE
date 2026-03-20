@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.386
+ * Build: 2.387
  */
-const BUILD_VERSION = "2.386";
+const BUILD_VERSION = "2.387";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7012,12 +7012,13 @@ function __tagColorPairFromValue__(input, fallbackBg){
   if (input && typeof input === 'object' && !Array.isArray(input)) {
     return {
       bg: __normalizeOperatoreColor__(input.bg || input.background || input.colore || input.color || fallback),
+      border: __normalizeOptionalOperatoreColor__(input.border || input.borderColor || input.stroke || input.outline || ''),
       fg: __normalizeOptionalOperatoreColor__(input.fg || input.foreground || input.text || input.icon || input.coloreTesto || input.textColor || ''),
     };
   }
   const raw = String(input || '').trim();
-  if (!raw) return { bg: fallback, fg: '' };
-  return { bg: __normalizeOperatoreColor__(raw), fg: '' };
+  if (!raw) return { bg: fallback, border:'', fg: '' };
+  return { bg: __normalizeOperatoreColor__(raw), border:'', fg: '' };
 }
 
 function __launcherVisualNormalize__(value, fallbackFg){
@@ -11974,7 +11975,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
   const current = __loadStatCardColorMap__(pageKey);
   Object.keys(map || {}).forEach((key) => {
     const prev = __tagColorPairFromValue__(current[key], map[key] || 'blue-4');
-    current[key] = { bg: prev.bg, fg: map[key] || prev.fg || '' };
+    current[key] = { bg: prev.bg, border: prev.border || '', fg: map[key] || prev.fg || '' };
   });
   __saveStatCardColorMap__(pageKey, current);
 }
@@ -11999,18 +12000,20 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
   try{
     const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || '#2B7CB4');
     const bgHex = __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
+    const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
+    el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
     if (el.classList && el.classList.contains('month-row')){
       el.style.setProperty('background', hexToRgba(bgHex, 0.18), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.26)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 1)}`, 'important');
     } else {
       el.style.setProperty('background', hexToRgba(bgHex, 0.10), 'important');
-      el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.22)}`, 'important');
+      el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, 1)}`, 'important');
     }
     try{
       el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap').forEach((node)=>{
@@ -12019,7 +12022,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
             node.style.setProperty('background', hexToRgba(bgHex, 0.80), 'important');
-            node.style.setProperty('border-color', hexToRgba(bgHex, 0.30), 'important');
+            node.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {
@@ -12054,10 +12057,12 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const pair = __tagColorPairFromValue__(map[safeKey] || currentPair, currentPair.bg || '#2B7CB4');
     const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
     const nextBg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || currentPair.bg || '#2B7CB4').spec;
+    const nextBorderRaw = String(payloadColors.border || '').trim();
     const nextFgRaw = String(payloadColors.fg || '').trim();
     pair.bg = nextBg;
+    pair.border = nextBorderRaw ? __parseOperatoreColorSpec__(nextBorderRaw).spec : '';
     pair.fg = nextFgRaw ? __parseOperatoreColorSpec__(nextFgRaw).spec : '';
-    if (safeKey) map[safeKey] = { bg: pair.bg, fg: pair.fg || '' };
+    if (safeKey) map[safeKey] = { bg: pair.bg, border: pair.border || '', fg: pair.fg || '' };
     __saveStatCardColorMap__(pageKey, map);
     if (pageKey === 'statmensili' && safeKey){
       try{
@@ -12070,7 +12075,7 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const nextHex = __tagColorTextHex__(pair.bg || currentColor || '#2B7CB4', pair.fg || '', false);
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
-  }, { supportsBg:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
 }
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
@@ -14692,14 +14697,24 @@ function renderRoomSettingsPage(){
     applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
     const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
     if (launcherThemeBtn){
-      launcherThemeBtn.textContent = '1';
+      launcherThemeBtn.textContent = 'T';
       launcherThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
+      launcherThemeBtn.classList.remove('room-settings-square-btn-placeholder');
+      launcherThemeBtn.setAttribute('aria-label', 'Tasti');
+      launcherThemeBtn.title = 'Tasti';
     }
-    ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id, index) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.textContent = String(index + 2);
-    });
+    const roomSettingsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
+    if (roomSettingsThemeBtn){
+      roomSettingsThemeBtn.textContent = 'Temi';
+      roomSettingsThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
+      roomSettingsThemeBtn.classList.remove('room-settings-square-btn-placeholder');
+      roomSettingsThemeBtn.setAttribute('aria-label', 'Temi');
+      roomSettingsThemeBtn.title = 'Temi';
+    }
+    const roomSettingsExtraBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+    if (roomSettingsExtraBtn){
+      roomSettingsExtraBtn.textContent = '3';
+    }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
       const parts = [];
@@ -14768,12 +14783,16 @@ function setupRoomSettingsPage(){
     launcherThemeBtn.__boundLauncherThemeBtn = true;
     bindFastTap(launcherThemeBtn, () => { __openLauncherGridThemePicker__(); });
   }
-  ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el || el.__boundLauncherPlaceholderBtn) return;
-    el.__boundLauncherPlaceholderBtn = true;
-    bindFastTap(el, () => { try{ toast('Da definire'); }catch(_){ } });
-  });
+  const roomSettingsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
+  if (roomSettingsThemeBtn && !roomSettingsThemeBtn.__boundRoomSettingsThemeBtn){
+    roomSettingsThemeBtn.__boundRoomSettingsThemeBtn = true;
+    bindFastTap(roomSettingsThemeBtn, () => { __openLauncherGridThemePicker__(); });
+  }
+  const roomSettingsExtraBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+  if (roomSettingsExtraBtn && !roomSettingsExtraBtn.__boundLauncherPlaceholderBtn){
+    roomSettingsExtraBtn.__boundLauncherPlaceholderBtn = true;
+    bindFastTap(roomSettingsExtraBtn, () => { try{ toast('Da definire'); }catch(_){ } });
+  }
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
     dotsWrap.__boundRoomColorTap = true;
