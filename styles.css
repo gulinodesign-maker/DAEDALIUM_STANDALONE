@@ -15512,3 +15512,28 @@ body.ddae-dark .room-settings-section-card{
     border-radius:14px;
   }
 }
+
+
+/* dDAE_2.394 — Design: card Tema separata dal blocco principale */
+.room-settings-shell{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.room-settings-shell > .room-settings-panel{
+  flex:0 0 auto;
+}
+.room-settings-panel-theme{
+  padding:16px !important;
+}
+.room-settings-panel-theme .room-settings-section-theme{
+  padding-top:0 !important;
+  border-top:0 !important;
+}
+.room-settings-panel-main{
+  margin-top:0 !important;
+}
+@media (max-width: 390px){
+  .room-settings-shell{ gap:14px; }
+  .room-settings-panel-theme{ padding:14px !important; }
+}
