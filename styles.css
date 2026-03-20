@@ -15014,10 +15014,11 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #tagColorModal .tag-color-modal-body{
   flex:1 1 auto;
   min-height:0;
-  overflow:hidden;
+  overflow:auto;
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
-  padding-right:0;
+  padding-right:2px;
+  padding-bottom:max(6px, env(safe-area-inset-bottom));
 }
 #tagColorModal .tag-color-grid{
   width:100%;
@@ -15030,16 +15031,16 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   touch-action:manipulation;
 }
 #tagColorModal .tag-color-modebar{
-  gap:6px;
+  gap:clamp(6px, 1.6vw, 10px);
   margin-bottom:6px;
 }
 #tagColorModal .tag-color-mode-btn{
-  min-height:var(--tag-color-mode-height, 36px);
+  min-height:var(--tag-color-mode-height, clamp(40px, 6.2dvh, 46px));
   padding:7px 12px;
 }
 #tagColorModal .tag-color-option{
-  height:var(--tag-color-cell-height, 39px);
-  min-height:var(--tag-color-cell-height, 39px);
+  height:clamp(34px, 5.1dvh, var(--tag-color-cell-height, 52px));
+  min-height:clamp(34px, 5.1dvh, var(--tag-color-cell-height, 52px));
   border-radius:var(--tag-color-cell-radius, 12px);
 }
 @media (max-width:430px){
@@ -15450,4 +15451,64 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 body.ddae-dark .room-settings-section-card{
   background:transparent !important;
   border-color:transparent !important;
+}
+
+
+/* dDAE_2.391 — Tag palette: fit iPhone displays without clipping cells */
+#tagColorModal{
+  align-items:flex-start !important;
+}
+#tagColorModal .tag-color-modal-card{
+  margin-top:max(8px, env(safe-area-inset-top));
+}
+#tagColorModal .tag-color-modal-hd,
+#tagColorModal .tag-color-modebar{
+  flex:0 0 auto;
+}
+@media (max-height:860px){
+  #tagColorModal .tag-color-modal-card{
+    max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);
+  }
+  #tagColorModal .tag-color-modal-body{
+    padding-bottom:max(8px, env(safe-area-inset-bottom));
+  }
+  #tagColorModal .tag-color-grid{
+    gap:clamp(6px, 1.2dvh, 10px);
+  }
+  #tagColorModal .tag-color-option{
+    height:clamp(32px, 4.6dvh, 48px);
+    min-height:clamp(32px, 4.6dvh, 48px);
+    border-radius:16px;
+  }
+}
+@media (max-height:760px){
+  #tagColorModal{
+    padding:max(4px, env(safe-area-inset-top)) 8px max(4px, env(safe-area-inset-bottom)) 8px;
+  }
+  #tagColorModal .tag-color-modal-card{
+    width:min(420px, calc(100vw - 16px));
+    border-radius:24px !important;
+  }
+  #tagColorModal .tag-color-modal-hd{
+    gap:8px;
+    padding-bottom:6px;
+  }
+  #tagColorModal .tag-color-modal-actions{
+    gap:6px;
+  }
+  #tagColorModal .tag-color-modebar{
+    padding:0 0 8px 0;
+    gap:6px;
+  }
+  #tagColorModal .tag-color-mode-btn{
+    font-size:15px;
+  }
+  #tagColorModal .tag-color-grid{
+    gap:6px;
+  }
+  #tagColorModal .tag-color-option{
+    height:clamp(30px, 4.1dvh, 42px);
+    min-height:clamp(30px, 4.1dvh, 42px);
+    border-radius:14px;
+  }
 }
