@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.401
+ * Build: 2.407
  */
-const BUILD_VERSION = "2.403";
+const BUILD_VERSION = "2.407";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7954,6 +7954,7 @@ function __launcherIconApplyAll__(){
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ __pillApplyAll__(); }catch(_){ }
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
