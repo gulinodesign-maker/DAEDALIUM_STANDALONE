@@ -11140,18 +11140,13 @@ body[data-role="operatore"] #page-home .home-grid{
   padding-top: 14px;
 }
 .room-settings-panel{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-.room-settings-card{
   background: rgba(255,255,255,0.94);
   border: 1px solid rgba(15,23,42,0.12);
   border-radius: 22px;
   padding: 16px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 .room-settings-top{
   display:flex;
@@ -11220,12 +11215,6 @@ body[data-role="operatore"] #page-home .home-grid{
   aspect-ratio:1 / 1;
   height:auto;
   max-width:none;
-}
-.room-settings-card-theme{
-  gap:12px;
-}
-.room-settings-card-main{
-  gap:16px;
 }
 .room-settings-section-title{
   font-size:17px;
@@ -11300,7 +11289,7 @@ body[data-role="operatore"] #page-home .home-grid{
   font-size:22px;
 }
 @media (max-width: 390px){
-  .room-settings-card{ padding:14px; }
+  .room-settings-panel{ padding:14px; }
   .room-settings-top{ align-items:flex-start; }
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
@@ -11309,7 +11298,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-theme-squares{ gap:10px; }
   .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
 }
-body.ddae-dark .room-settings-card{
+body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
   border-color: rgba(148,163,184,0.22);
 }
