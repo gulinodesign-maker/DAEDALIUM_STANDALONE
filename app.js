@@ -7290,13 +7290,15 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
-      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : '';
-      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : '');
+      const isDarkUi = !!__isDarkModeEnabled__();
+      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : (isDarkUi ? 'rgba(15,23,42,0.80)' : '');
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : (isDarkUi ? 'rgba(148,163,184,0.22)' : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
       setImp(btn, 'border-width', '1px');
       setImp(btn, 'border-style', 'solid');
+      setImp(btn, 'box-shadow', 'none');
       setImp(btn, 'color', hex);
       setImp(btn, '-webkit-text-fill-color', hex);
       const label = btn.querySelector('.settings-btn-label');
@@ -8807,6 +8809,7 @@ function __applyDarkMode__(enabled){
   }catch(_){ }
   try{ __updateThemeMeta__(!!enabled); }catch(_){ }
   try{ __syncDarkModeButtons__(); }catch(_){ }
+  try{ __launcherIconApplyAll__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
@@ -14664,52 +14667,6 @@ function __openRoomSettingsColorPicker__(target){
 }
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
-const __ROOM_SETTINGS_THEME_STAT_PREFIXES__ = ['ddae_graph_colors_', 'dDAE_statcard_colors_'];
-
-function __roomSettingsThemeStatsRead__(){
-  const out = {};
-  try{
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      if (!__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) continue;
-      try{ out[key] = String(localStorage.getItem(key) ?? ''); }catch(_){ }
-    }
-  }catch(_){ }
-  return out;
-}
-
-function __roomSettingsThemeStatsWrite__(payload){
-  const src = (payload && typeof payload === 'object') ? payload : {};
-  try{
-    const managedKeys = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      if (__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) managedKeys.push(key);
-    }
-    managedKeys.forEach((key) => {
-      if (!(key in src)) {
-        try{ localStorage.removeItem(key); }catch(_){ }
-      }
-    });
-    Object.keys(src).forEach((key) => {
-      if (!__ROOM_SETTINGS_THEME_STAT_PREFIXES__.some((prefix) => String(key).startsWith(prefix))) return;
-      try{ localStorage.setItem(key, String(src[key] ?? '')); }catch(_){ }
-    });
-  }catch(_){ }
-}
-
-function __roomSettingsThemeStatsRefresh__(){
-  try{ __refreshStatCardsPage__('statgen'); }catch(_){ }
-  try{ __refreshStatCardsPage__('statmensili'); }catch(_){ }
-  try{ __refreshStatCardsPage__('statspese'); }catch(_){ }
-  try{ __refreshStatGraphPreviews__(); }catch(_){ }
-  try{ if (state?.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
-  try{
-    if (state?.page && String(state.page).startsWith('stat')) showPage(state.page);
-  }catch(_){ }
-}
 
 function __roomSettingsThemeSlotsRead__(){
   try{
@@ -14723,11 +14680,72 @@ function __roomSettingsThemeSlotsWrite__(slots){
   try{ localStorage.setItem(__ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__, JSON.stringify((slots && typeof slots === 'object') ? slots : {})); }catch(_){ }
 }
 
+function __roomSettingsThemeStoragePrefixes__(){
+  return ['ddae_graph_colors_', 'dDAE_statcard_colors_', 'dDAE_stat_card_text_'];
+}
+
+function __roomSettingsThemeStatsStorageCollect__(){
+  const out = {};
+  try{
+    const prefixes = __roomSettingsThemeStoragePrefixes__();
+    for (let i = 0; i < localStorage.length; i++){
+      const key = String(localStorage.key(i) || '');
+      if (!key) continue;
+      if (!prefixes.some((prefix) => key.startsWith(prefix))) continue;
+      try{ out[key] = String(localStorage.getItem(key) ?? ''); }catch(_){ }
+    }
+  }catch(_){ }
+  return out;
+}
+
+function __roomSettingsThemeStatsStorageNormalize__(payload){
+  const src = (payload && typeof payload === 'object') ? payload : {};
+  const out = {};
+  try{
+    Object.keys(src).forEach((key) => {
+      const safeKey = String(key || '');
+      if (!safeKey) return;
+      if (!__roomSettingsThemeStoragePrefixes__().some((prefix) => safeKey.startsWith(prefix))) return;
+      out[safeKey] = String(src[key] ?? '');
+    });
+  }catch(_){ }
+  return out;
+}
+
+function __roomSettingsThemeStatsStorageApply__(payload){
+  try{
+    const prefixes = __roomSettingsThemeStoragePrefixes__();
+    const next = __roomSettingsThemeStatsStorageNormalize__(payload);
+    const toDelete = [];
+    for (let i = 0; i < localStorage.length; i++){
+      const key = String(localStorage.key(i) || '');
+      if (!key) continue;
+      if (prefixes.some((prefix) => key.startsWith(prefix))) toDelete.push(key);
+    }
+    toDelete.forEach((key) => {
+      if (!(key in next)){
+        try{ localStorage.removeItem(key); }catch(_){ }
+      }
+    });
+    Object.keys(next).forEach((key) => {
+      try{ localStorage.setItem(key, String(next[key] ?? '')); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __refreshRoomSettingsThemeStatsUi__(){
+  try{ renderStatGen(); }catch(_){ }
+  try{ renderStatSpese(); }catch(_){ }
+  try{ renderStatMensili(); }catch(_){ }
+  try{ __refreshStatGraphPreviews__(); }catch(_){ }
+  try{ if (state.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
+}
+
 function __roomSettingsThemePayloadBuild__(){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
     launcherGridTheme: __launcherGridThemeRead__(),
-    statistiche: __roomSettingsThemeStatsRead__()
+    statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
   };
 }
 
@@ -14736,7 +14754,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
-    statistiche: (src.statistiche && typeof src.statistiche === 'object') ? src.statistiche : __roomSettingsThemeStatsRead__()
+    statsThemeStorage: __roomSettingsThemeStatsStorageNormalize__(src.statsThemeStorage || src.statisticheThemeStorage || src.statsStorage || src.statistiche || {})
   };
 }
 
@@ -14769,8 +14787,8 @@ async function __roomSettingsThemeSlotApply__(slot){
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
     __launcherIconApplyAll__();
   }catch(_){ }
-  try{ __roomSettingsThemeStatsWrite__(payload.statistiche); }catch(_){ }
-  try{ __roomSettingsThemeStatsRefresh__(); }catch(_){ }
+  try{ __roomSettingsThemeStatsStorageApply__(payload.statsThemeStorage); }catch(_){ }
+  try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
 }
