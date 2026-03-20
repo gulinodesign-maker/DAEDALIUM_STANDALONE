@@ -15318,7 +15318,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 }
 
 
-/* dDAE_2.389 — Design: tasto 2 dedicato alle card Statistiche (Generali, Spese, Mensili) */
+/* dDAE_2.390 — Design: tasto 2 dedicato alle card Statistiche (Generali, Spese, Mensili) */
 #page-statgen .stat-row,
 #page-statspese .stat-row,
 #page-statmensili .month-row{
@@ -15332,7 +15332,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 }
 
 
-/* dDAE_2.389 — Card statistiche: un solo bordo reale */
+/* dDAE_2.390 — Card statistiche: un solo bordo reale */
 #page-statgen .stat-row,
 #page-statspese .stat-row,
 #page-statmensili .month-row{
@@ -15355,9 +15355,10 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
   box-shadow: none !important;
 }
 
-/* dDAE_2.389 — Popup opacità design */
+/* dDAE_2.390 — Popup opacità design */
 .tag-color-modebar{
-  grid-template-columns:repeat(4, minmax(0, 1fr));
+  grid-template-columns:repeat(var(--tag-color-mode-count, 4), minmax(0, 1fr));
+  justify-content:space-between;
 }
 .tag-opacity-wrap[hidden]{ display:none !important; }
 .tag-opacity-grid{
@@ -15390,4 +15391,63 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 .tag-opacity-option.is-selected{
   border-color:rgba(15,23,42,0.88) !important;
   box-shadow:0 0 0 2px rgba(15,23,42,0.12) !important;
+}
+
+
+/* dDAE_2.390 — Popup colore: celle più alte del 40% e tre tasti uniformi */
+#tagColorModal .tag-color-modebar{
+  display:grid !important;
+  grid-template-columns:repeat(var(--tag-color-mode-count, 4), minmax(0, 1fr)) !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  gap:10px !important;
+}
+#tagColorModal .tag-color-mode-btn{
+  width:100% !important;
+  min-width:0 !important;
+  justify-self:stretch !important;
+}
+#tagColorModal .tag-color-option{
+  height:var(--tag-color-cell-height, 55px) !important;
+  min-height:var(--tag-color-cell-height, 55px) !important;
+}
+
+/* dDAE_2.390 — Card statistiche: un solo bordo visibile */
+#page-statgen .stat-row,
+#page-statspese .stat-row,
+#page-statmensili .month-row{
+  border:1px solid var(--stats-theme-border, rgba(255,255,255,0.30)) !important;
+  box-shadow:0 10px 22px rgba(15,23,42,0.12) !important;
+}
+#page-statgen .stat-row::after,
+#page-statspese .stat-row::after,
+#page-statmensili .month-row::after{
+  content:none !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+/* dDAE_2.390 — Pagina Design: niente riquadri annidati sotto Tema e Numero stanze */
+.room-settings-section-card{
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.room-settings-section-card.room-settings-section,
+.room-settings-section-card.room-settings-section-theme,
+.room-settings-section-card.room-settings-section-count{
+  border-top:0 !important;
+}
+.room-settings-section-count{
+  padding:0 !important;
+}
+.room-settings-section-count .room-settings-top{
+  width:100%;
+  align-items:center;
+}
+body.ddae-dark .room-settings-section-card{
+  background:transparent !important;
+  border-color:transparent !important;
 }

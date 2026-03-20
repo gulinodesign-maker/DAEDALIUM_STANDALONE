@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.389
+ * Build: 2.390
  */
-const BUILD_VERSION = "2.389";
+const BUILD_VERSION = "2.390";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7434,7 +7434,7 @@ function __applyStatisticsCardTheme__(){
           const border = hexToRgba(borderHex, borderAlpha);
           el.style.setProperty('background', bg, 'important');
           el.style.setProperty('background-color', bg, 'important');
-          el.style.setProperty('border', '0', 'important');
+          el.style.setProperty('border', '1px solid ' + border, 'important');
           el.style.setProperty('--stats-theme-bg', bg, 'important');
           el.style.setProperty('--stats-theme-border', border, 'important');
           el.style.setProperty('--stats-theme-border-strong', border, 'important');
@@ -8103,6 +8103,7 @@ function __tagColorPopupRefreshModeButtons__(){
   const enabledCount = [__tagColorPopupState__.supportsBg, __tagColorPopupState__.supportsBorder, __tagColorPopupState__.supportsFg, __tagColorPopupState__.supportsOpacity].filter(Boolean).length;
   const showBar = enabledCount > 1;
   bar.hidden = !showBar;
+  try{ bar.style.setProperty('--tag-color-mode-count', String(Math.max(1, enabledCount || 1))); }catch(_){ }
   bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
     const enabled = mode === 'bg' ? !!__tagColorPopupState__.supportsBg : (mode === 'border' ? !!__tagColorPopupState__.supportsBorder : (mode === 'opacity' ? !!__tagColorPopupState__.supportsOpacity : !!__tagColorPopupState__.supportsFg));
@@ -8154,7 +8155,7 @@ function __tagColorPopupApplyViewportLayout__(){
     const gap = window.innerHeight <= 760 ? 3 : (window.innerHeight <= 860 ? 4 : 5);
     const cellWidth = Math.floor((availableWidth - (gap * (cols - 1))) / cols);
     const cellHeight = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
-    const finalHeight = Math.max(24, Math.min(cellHeight, Math.floor(cellWidth * 0.82)));
+    const finalHeight = Math.max(34, Math.min(cellHeight, Math.floor(cellWidth * 1.15)));
     const radius = Math.max(9, Math.min(16, Math.round(finalHeight * 0.38)));
     card.style.setProperty('--tag-color-gap', `${gap}px`);
     card.style.setProperty('--tag-color-cell-height', `${finalHeight}px`);
