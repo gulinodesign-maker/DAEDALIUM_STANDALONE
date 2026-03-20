@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.378
+ * Build: 2.379
  */
-const BUILD_VERSION = "2.378";
+const BUILD_VERSION = "2.379";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7098,6 +7098,74 @@ function __launcherIconColorMapWrite__(map){
   try{ localStorage.setItem(__LAUNCHER_ICON_COLOR_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
 }
 
+const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
+
+function __launcherGridThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__);
+    if (!raw) return { bg:'', border:'' };
+    const parsed = JSON.parse(raw);
+    return __launcherVisualNormalize__(parsed, 'blue-4');
+  }catch(_){ return { bg:'', border:'' }; }
+}
+
+function __launcherGridThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__LAUNCHER_GRID_THEME_STORAGE_KEY__, JSON.stringify({ bg: clean.bg || '', border: clean.border || '' }));
+  }catch(_){ }
+}
+
+function __launcherGridThemeVisual__(){
+  const visual = __launcherGridThemeRead__();
+  return { fg:'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+}
+
+function __launcherGridThemeResolveLayer__(mode, fallbackSpec){
+  const key = String(mode || '').trim().toLowerCase();
+  const fallback = fallbackSpec ? __normalizeOperatoreColor__(fallbackSpec) : '';
+  try{
+    const visual = __launcherGridThemeRead__();
+    if (key === 'border') return visual.border || visual.bg || fallback || '';
+    return visual.bg || fallback || '';
+  }catch(_){
+    return fallback || '';
+  }
+}
+
+function __launcherGridThemeButtonStyle__(){
+  try{
+    const visual = __launcherGridThemeVisual__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    return [
+      'background:' + hexToRgba(bgHex, 0.80),
+      'background-color:' + hexToRgba(bgHex, 0.80),
+      'border-color:' + hexToRgba(borderHex, 1),
+      'color:#ffffff',
+      '-webkit-text-fill-color:#ffffff'
+    ].join(';');
+  }catch(_){
+    return 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
+  }
+}
+
+function __openLauncherGridThemePicker__(){
+  const current = __launcherGridThemeVisual__();
+  __tagColorPopupOpen__('launcher-grid-theme', current, (payload) => {
+    try{
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      __launcherGridThemeWrite__({
+        bg: colors.bg || current.bg || 'blue-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
+      });
+      __launcherIconApplyAll__();
+      try{ renderRoomSettingsPage(); }catch(_){ }
+      try{ toast('Design tasti aggiornato'); }catch(_){ }
+    }catch(e){ try{ toast(e?.message || 'Errore design tasti'); }catch(_){ } }
+  }, { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+}
+
 function __launcherIconVisualFor__(id){
   const key = String(id || '').trim();
   if (!key) return { fg:'blue-4', bg:'', border:'' };
@@ -7153,8 +7221,11 @@ function __launcherIconApplyToButton__(btn){
     if (!btn || !btn.id) return;
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
-    const bgHex = visual.bg ? __operatoreColorHex__(visual.bg) : '';
-    const borderHex = visual.border ? __operatoreColorHex__(visual.border) : '';
+    const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-impostazioni'));
+    const resolvedBgSpec = visual.bg || (allowGridTheme ? __launcherGridThemeResolveLayer__('bg', '') : '');
+    const resolvedBorderSpec = visual.border || (allowGridTheme ? __launcherGridThemeResolveLayer__('border', resolvedBgSpec || '') : '');
+    const bgHex = resolvedBgSpec ? __operatoreColorHex__(resolvedBgSpec) : '';
+    const borderHex = resolvedBorderSpec ? __operatoreColorHex__(resolvedBorderSpec) : '';
     const setImp = (node, prop, value) => {
       if (!node) return;
       if (value === undefined || value === null || value === '') node.style.removeProperty(prop);
@@ -14581,6 +14652,16 @@ function renderRoomSettingsPage(){
     applyBtn('roomSettingsBedMBtn', cfg.beds?.matrimoniale, 'M');
     applyBtn('roomSettingsBedSBtn', cfg.beds?.singolo, 'S');
     applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
+    const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
+    if (launcherThemeBtn){
+      launcherThemeBtn.textContent = '1';
+      launcherThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
+    }
+    ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id, index) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = String(index + 2);
+    });
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
       const parts = [];
@@ -14644,6 +14725,17 @@ function setupRoomSettingsPage(){
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     }, true);
   }
+  const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
+  if (launcherThemeBtn && !launcherThemeBtn.__boundLauncherThemeBtn){
+    launcherThemeBtn.__boundLauncherThemeBtn = true;
+    bindFastTap(launcherThemeBtn, () => { __openLauncherGridThemePicker__(); });
+  }
+  ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el || el.__boundLauncherPlaceholderBtn) return;
+    el.__boundLauncherPlaceholderBtn = true;
+    bindFastTap(el, () => { try{ toast('Da definire'); }catch(_){ } });
+  });
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
     dotsWrap.__boundRoomColorTap = true;

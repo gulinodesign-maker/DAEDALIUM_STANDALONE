@@ -11220,6 +11220,36 @@ body[data-role="operatore"] #page-home .home-grid{
 .room-settings-dots-three{
   justify-content:flex-start;
 }
+.room-settings-squares{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:14px;
+}
+.room-settings-square-btn{
+  width:64px;
+  min-width:64px;
+  height:64px;
+  border-radius:18px;
+  border:1px solid rgba(15,23,42,0.12);
+  background: rgba(77,156,197,0.80);
+  color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:900;
+  line-height:1;
+  padding:0;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.room-settings-square-btn-placeholder{
+  background: rgba(226,232,240,0.80);
+  color: rgba(15,23,42,0.62);
+  -webkit-text-fill-color: rgba(15,23,42,0.62);
+}
 .room-settings-color-dot{
   width:54px;
   min-width:54px;
@@ -11248,6 +11278,8 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-count-btn{ width:72px; min-width:72px; height:72px; font-size:30px; }
   .room-settings-color-dot{ width:50px; min-width:50px; height:50px; }
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
+  .room-settings-squares{ gap:12px; }
+  .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
 }
 body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
@@ -11262,6 +11294,12 @@ body.ddae-dark .room-settings-subtitle{
 }
 body.ddae-dark .room-settings-section{
   border-top-color: rgba(148,163,184,0.18);
+}
+body.ddae-dark .room-settings-square-btn-placeholder{
+  background: rgba(51,65,85,0.80);
+  border-color: rgba(148,163,184,0.24);
+  color: rgba(226,232,240,0.78);
+  -webkit-text-fill-color: rgba(226,232,240,0.78);
 }
 
 /* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
