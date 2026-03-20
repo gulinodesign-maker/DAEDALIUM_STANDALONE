@@ -15316,3 +15316,17 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
   box-shadow: none !important;
   opacity: 0 !important;
 }
+
+
+/* dDAE_2.388 — Design: tasto 2 dedicato alle card Statistiche (Generali, Spese, Mensili) */
+#page-statgen .stat-row,
+#page-statspese .stat-row,
+#page-statmensili .month-row{
+  background: var(--stats-theme-bg, rgba(255,255,255,0.60)) !important;
+  background-color: var(--stats-theme-bg, rgba(255,255,255,0.60)) !important;
+}
+#page-statgen .stat-row::after,
+#page-statspese .stat-row::after,
+#page-statmensili .month-row::after{
+  border-color: var(--stats-theme-border, rgba(255,255,255,0.30)) !important;
+}

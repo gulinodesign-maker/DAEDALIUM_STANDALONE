@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.384
+ * Build: 2.388
  */
-const BUILD_VERSION = "2.384";
+const BUILD_VERSION = "2.388";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7103,6 +7103,64 @@ function __launcherIconColorMapWrite__(map){
 }
 
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
+const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
+
+function __statisticsCardThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__STATISTICS_CARD_THEME_STORAGE_KEY__);
+    if (!raw) return __launcherVisualNormalize__(__launcherGridThemeRead__(), 'blue-4');
+    const parsed = JSON.parse(raw);
+    return __launcherVisualNormalize__(parsed, 'blue-4');
+  }catch(_){
+    try{ return __launcherVisualNormalize__(__launcherGridThemeRead__(), 'blue-4'); }catch(__){ return { fg:'white', bg:'blue-4', border:'blue-4' }; }
+  }
+}
+
+function __statisticsCardThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__STATISTICS_CARD_THEME_STORAGE_KEY__, JSON.stringify({ bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4' }));
+  }catch(_){ }
+}
+
+function __statisticsCardThemeVisual__(){
+  const visual = __statisticsCardThemeRead__();
+  return { fg:'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4' };
+}
+
+function __statisticsCardThemeButtonStyle__(){
+  try{
+    const visual = __statisticsCardThemeVisual__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    return [
+      'background:' + hexToRgba(bgHex, 0.80),
+      'background-color:' + hexToRgba(bgHex, 0.80),
+      'border-color:' + hexToRgba(borderHex, 1),
+      'color:#ffffff',
+      '-webkit-text-fill-color:#ffffff'
+    ].join(';');
+  }catch(_){
+    return 'background:rgba(77,156,197,0.80);background-color:rgba(77,156,197,0.80);border-color:rgba(77,156,197,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
+  }
+}
+
+function __openStatisticsCardThemePicker__(){
+  const current = __statisticsCardThemeVisual__();
+  __tagColorPopupOpen__('statistics-card-theme', current, (payload) => {
+    try{
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const nextVisual = {
+        bg: colors.bg || current.bg || 'blue-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4'
+      };
+      __statisticsCardThemeWrite__(nextVisual);
+      __applyStatisticsCardTheme__();
+      try{ renderRoomSettingsPage(); }catch(_){ }
+      try{ toast('Design card statistiche aggiornato'); }catch(_){ }
+    }catch(e){ try{ toast(e?.message || 'Errore design card statistiche'); }catch(_){ } }
+  }, { supportsBg:true, supportsBorder:true, supportsFg:false, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+}
 
 function __launcherGridThemeRead__(){
   try{
@@ -7327,32 +7385,27 @@ function __launcherIconApplyToButton__(btn){
 
 function __applyStatisticsCardTheme__(){
   try{
-    const visual = __launcherGridThemeRead__();
+    const visual = __statisticsCardThemeRead__();
     const bgSpec = visual.bg || 'blue-4';
     const borderSpec = visual.border || bgSpec || 'blue-4';
     const bgHex = __operatoreColorHex__(bgSpec || 'blue-4');
     const borderHex = __operatoreColorHex__(borderSpec || bgSpec || 'blue-4');
-    const isDarkUi = !!__isDarkModeEnabled__();
     const groups = [
-      ['#page-statgen .stat-row', 0.10, 1],
-      ['#page-statspese .stat-row', 0.10, 1],
-      ['#page-statmensili .month-row', 0.18, 1],
-      ['#page-statprenotazioni .stats-graph-card', isDarkUi ? 0.12 : 0.06, 1],
-      ['#page-statcancellazioni .kpi-card', isDarkUi ? 0.12 : 0.06, 1],
-      ['#page-statazienda .fin-card', isDarkUi ? 0.12 : 0.06, 1],
-      ['#page-statamministratore .fin-card', isDarkUi ? 0.12 : 0.06, 1],
-      ['#page-statpiscina .stats-card, #page-statpiscina .stats-graph-card, #page-statpiscina .piscina-wrap, #page-statpiscina .piscina-nav, #page-statpiscina .piscina-cal', isDarkUi ? 0.12 : 0.06, 1]
+      ['#page-statgen .stat-row', 0.10, 0.36],
+      ['#page-statspese .stat-row', 0.10, 0.36],
+      ['#page-statmensili .month-row', 0.18, 0.40]
     ];
-    groups.forEach(([selector, alpha]) => {
+    groups.forEach(([selector, alpha, borderAlpha]) => {
       try{
         document.querySelectorAll(selector).forEach((el) => {
-          el.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
-          el.style.setProperty('border-width', '1px', 'important');
-          el.style.setProperty('border-style', 'solid', 'important');
-          if (!el.classList.contains('stat-row') && !el.classList.contains('month-row')){
-            el.style.setProperty('background', hexToRgba(bgHex, alpha), 'important');
-            el.style.setProperty('background-color', hexToRgba(bgHex, alpha), 'important');
-          }
+          const bg = hexToRgba(bgHex, alpha);
+          const border = hexToRgba(borderHex, borderAlpha);
+          el.style.setProperty('background', bg, 'important');
+          el.style.setProperty('background-color', bg, 'important');
+          el.style.setProperty('border', `1px solid ${border}`, 'important');
+          el.style.setProperty('--stats-theme-bg', bg, 'important');
+          el.style.setProperty('--stats-theme-border', border, 'important');
+          el.style.setProperty('--stats-theme-border-strong', hexToRgba(borderHex, 1), 'important');
         });
       }catch(_){ }
     });
@@ -12740,6 +12793,7 @@ function renderStatGen(){
       row.title = 'Pressione lunga per cambiare colori card';
     });
   }catch(_){ }
+  try{ __applyStatisticsCardTheme__(); }catch(_){ }
 }
 
 
@@ -13044,6 +13098,7 @@ function renderStatMensili(){
       try{ f.el.style.width = `${f.pct.toFixed(2)}%`; }catch(_){ }
     }
   });
+  try{ __applyStatisticsCardTheme__(); }catch(_){ }
 }
 
 
@@ -14009,6 +14064,8 @@ function renderStatSpese(){
 
   // Dettaglio elenco spese (visibile in Statistiche → Spese)
   const list = document.getElementById("statSpeseList");
+  try{ __applyStatisticsCardTheme__(); }catch(_){ }
+
   if (list){
     list.innerHTML = "";
     let items = Array.isArray(state.speseAll) ? [...state.speseAll] : [];
@@ -14771,7 +14828,7 @@ function __roomSettingsThemeSlotsWrite__(slots){
 }
 
 function __roomSettingsThemeStoragePrefixes__(){
-  return ['ddae_graph_colors_', 'dDAE_statcard_colors_', 'dDAE_stat_card_text_'];
+  return ['ddae_graph_colors_', 'dDAE_statcard_colors_', 'dDAE_stat_card_text_', 'dDAE_statistics_card_theme_'];
 }
 
 function __roomSettingsThemeStatsStorageCollect__(){
@@ -14835,6 +14892,7 @@ function __roomSettingsThemePayloadBuild__(){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
     launcherGridTheme: __launcherGridThemeRead__(),
+    statisticsCardTheme: __statisticsCardThemeRead__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
   };
 }
@@ -14844,6 +14902,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    statisticsCardTheme: __launcherVisualNormalize__(src.statisticsCardTheme || src.statCardsTheme || src.statsCardTheme || src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
     statsThemeStorage: __roomSettingsThemeStatsStorageNormalize__(src.statsThemeStorage || src.statisticheThemeStorage || src.statsStorage || src.statistiche || {})
   };
 }
@@ -14875,6 +14934,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{
     __launcherGridThemeWrite__(payload.launcherGridTheme);
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
+    __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
     __launcherIconApplyAll__();
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(payload.statsThemeStorage); }catch(_){ }
@@ -14939,12 +14999,24 @@ function renderRoomSettingsPage(){
     if (launcherThemeBtn){
       launcherThemeBtn.textContent = '1';
       launcherThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
+      launcherThemeBtn.classList.remove('room-settings-square-btn-placeholder');
+      launcherThemeBtn.setAttribute('aria-label', 'Design icone e tasti griglie');
+      launcherThemeBtn.title = 'Design icone e tasti griglie';
     }
-    ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id, index) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.textContent = String(index + 2);
-    });
+    const statisticsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
+    if (statisticsThemeBtn){
+      statisticsThemeBtn.textContent = '2';
+      statisticsThemeBtn.setAttribute('style', __statisticsCardThemeButtonStyle__());
+      statisticsThemeBtn.classList.remove('room-settings-square-btn-placeholder');
+      statisticsThemeBtn.setAttribute('aria-label', 'Design card statistiche');
+      statisticsThemeBtn.title = 'Design card statistiche';
+    }
+    const placeholderBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+    if (placeholderBtn){
+      placeholderBtn.textContent = '3';
+      placeholderBtn.setAttribute('style', '');
+      placeholderBtn.classList.add('room-settings-square-btn-placeholder');
+    }
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
       const parts = [];
@@ -15066,12 +15138,16 @@ function setupRoomSettingsPage(){
     launcherThemeBtn.__boundLauncherThemeBtn = true;
     bindFastTap(launcherThemeBtn, () => { __openLauncherGridThemePicker__(); });
   }
-  ['roomSettingsLauncherExtraBtn1','roomSettingsLauncherExtraBtn2'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el || el.__boundLauncherPlaceholderBtn) return;
-    el.__boundLauncherPlaceholderBtn = true;
-    bindFastTap(el, () => { try{ toast('Da definire'); }catch(_){ } });
-  });
+  const statisticsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
+  if (statisticsThemeBtn && !statisticsThemeBtn.__boundStatisticsCardThemeBtn){
+    statisticsThemeBtn.__boundStatisticsCardThemeBtn = true;
+    bindFastTap(statisticsThemeBtn, () => { __openStatisticsCardThemePicker__(); });
+  }
+  const launcherPlaceholderBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
+  if (launcherPlaceholderBtn && !launcherPlaceholderBtn.__boundLauncherPlaceholderBtn){
+    launcherPlaceholderBtn.__boundLauncherPlaceholderBtn = true;
+    bindFastTap(launcherPlaceholderBtn, () => { try{ toast('Da definire'); }catch(_){ } });
+  }
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
     dotsWrap.__boundRoomColorTap = true;
