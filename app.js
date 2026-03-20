@@ -4261,7 +4261,9 @@ function openGuestAlertModal(side){
   }
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
+  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
 }
+
 function closeGuestAlertModal(){
   const modal = document.getElementById('guestAlertModal');
   if (!modal) return;
@@ -9456,6 +9458,106 @@ function __syncDarkModeButtons__(){
   });
 }
 
+
+
+function __applySettingsAndColorPopupDarkFix__(){
+  try{
+    const dark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+    const setImp = (el, prop, value) => { try{ el && el.style && el.style.setProperty(prop, value, 'important'); }catch(_){ } };
+    const clear = (el, props) => { try{ (props||[]).forEach((prop)=>el?.style?.removeProperty(prop)); }catch(_){ } };
+    const commonProps = ['background','background-color','background-image','border','border-color','border-width','border-style','box-shadow','-webkit-box-shadow','color','-webkit-text-fill-color','opacity','filter','mix-blend-mode','backdrop-filter','-webkit-backdrop-filter','appearance','-webkit-appearance'];
+    const settingsPalette = {
+      settingsSaveBtn:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
+      settingsDbBtn:['rgba(79,205,102,0.80)','rgba(79,205,102,0.24)'],
+      settingsRoomsBtn:['rgba(255,204,0,0.80)','rgba(255,204,0,0.28)'],
+      settingsOperatoriBtn:['rgba(36,122,224,0.80)','rgba(36,122,224,0.24)'],
+      settingsChannelBtn:['rgba(242,156,80,0.80)','rgba(242,156,80,0.24)'],
+      settingsLaundryCatalogBtn:['rgba(124,111,214,0.80)','rgba(124,111,214,0.24)'],
+      settingsConfigBtn:['rgba(232,84,84,0.80)','rgba(232,84,84,0.24)'],
+      settingsExportRosterBtn:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
+      settingsLanguageBtn:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
+      settingsLogoutBtn:['rgba(213,68,68,0.80)','rgba(213,68,68,0.24)'],
+      opSettingsLanguageBtn:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
+      opSettingsDarkBtn:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
+      opSettingsCodeBtn:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
+      opSettingsLogoutBtn:['rgba(213,68,68,0.80)','rgba(213,68,68,0.24)']
+    };
+    Object.entries(settingsPalette).forEach(([id, pair]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!dark){ clear(el, commonProps); return; }
+      const bg = pair[0], border = pair[1];
+      setImp(el, 'appearance', 'none');
+      setImp(el, '-webkit-appearance', 'none');
+      setImp(el, 'background', bg);
+      setImp(el, 'background-color', bg);
+      setImp(el, 'background-image', 'none');
+      setImp(el, 'border', `1px solid ${border}`);
+      setImp(el, 'border-color', border);
+      setImp(el, 'border-width', '1px');
+      setImp(el, 'border-style', 'solid');
+      setImp(el, 'box-shadow', 'none');
+      setImp(el, '-webkit-box-shadow', 'none');
+      setImp(el, 'color', '#ffffff');
+      setImp(el, '-webkit-text-fill-color', '#ffffff');
+      setImp(el, 'opacity', '1');
+      setImp(el, 'filter', 'none');
+      setImp(el, 'mix-blend-mode', 'normal');
+      setImp(el, 'backdrop-filter', 'none');
+      setImp(el, '-webkit-backdrop-filter', 'none');
+      el.querySelectorAll('.settings-btn-label, .ui-ico, .ui-ico *').forEach((node) => {
+        if (node.classList && node.classList.contains('settings-btn-label')){
+          setImp(node, 'color', '#ffffff');
+          setImp(node, '-webkit-text-fill-color', '#ffffff');
+          setImp(node, 'opacity', '1');
+        } else {
+          setImp(node, 'color', '#ffffff');
+          setImp(node, 'stroke', '#ffffff');
+          setImp(node, 'fill', 'none');
+          setImp(node, '-webkit-text-fill-color', '#ffffff');
+          setImp(node, 'opacity', '1');
+        }
+      });
+    });
+    const popupPalette = {
+      tagColorModeBg:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
+      tagColorModeBorder:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
+      tagColorModeFg:['rgba(242,156,80,0.80)','rgba(242,156,80,0.24)'],
+      tagColorModeOpacity:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
+      tagColorModalClose:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
+      tagColorModalConfirm:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)']
+    };
+    Object.entries(popupPalette).forEach(([id, pair]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!dark){ clear(el, commonProps); return; }
+      const bg = pair[0], border = pair[1];
+      setImp(el, 'appearance', 'none');
+      setImp(el, '-webkit-appearance', 'none');
+      setImp(el, 'background', bg);
+      setImp(el, 'background-color', bg);
+      setImp(el, 'background-image', 'none');
+      setImp(el, 'border', `1px solid ${border}`);
+      setImp(el, 'border-color', border);
+      setImp(el, 'box-shadow', 'none');
+      setImp(el, '-webkit-box-shadow', 'none');
+      setImp(el, 'color', '#ffffff');
+      setImp(el, '-webkit-text-fill-color', '#ffffff');
+      setImp(el, 'opacity', '1');
+      setImp(el, 'filter', 'none');
+      setImp(el, 'mix-blend-mode', 'normal');
+      setImp(el, 'backdrop-filter', 'none');
+      setImp(el, '-webkit-backdrop-filter', 'none');
+      el.querySelectorAll('span, .tag-color-mode-ico, .tag-color-mode-ico *').forEach((node) => {
+        setImp(node, 'color', '#ffffff');
+        setImp(node, '-webkit-text-fill-color', '#ffffff');
+        setImp(node, 'stroke', '#ffffff');
+        setImp(node, 'fill', 'none');
+        setImp(node, 'opacity', '1');
+      });
+    });
+  }catch(_){ }
+}
 function __applyDarkMode__(enabled){
   try{
     document.body.classList.toggle('ddae-dark', !!enabled);
@@ -9464,7 +9566,10 @@ function __applyDarkMode__(enabled){
   try{ __updateThemeMeta__(!!enabled); }catch(_){ }
   try{ __syncDarkModeButtons__(); }catch(_){ }
   try{ __launcherIconApplyAll__(); }catch(_){ }
+  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
+  try{ __pillApplyAll__(); }catch(_){ }
 }
+
 
 function __setDarkMode__(enabled){
   try{ localStorage.setItem(__DARK_MODE_KEY__, enabled ? '1' : '0'); }catch(_){ }
@@ -20012,6 +20117,8 @@ async function init(){
   setupOperatoriPage();
   setupChannelPage();
   setupTagColorPopup();
+  try{ __pillApplyAll__(); }catch(_){ }
+  try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
   setupRoomSettingsPage();
   setupLaundryCatalogPage();
 setupPiscina();
