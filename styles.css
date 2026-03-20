@@ -15887,3 +15887,75 @@ body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{ color: currentColor !important; -webkit-text-fill-color: currentColor !important; opacity:1 !important; }
+
+
+/* dDAE_2.411 — FINAL dark mode override: Settings buttons and color popup use black tiles with white border */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill,
+body.ddae-dark #tagColorModal .tag-color-mode-btn,
+body.ddae-dark #tagColorModal .tag-opacity-option,
+body.ddae-dark #tagColorModal .tag-color-modal-close,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm{
+  background: rgba(15,23,42,0.96) !important;
+  background-color: rgba(15,23,42,0.96) !important;
+  border: 1.5px solid rgba(255,255,255,0.92) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn::before,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn::before,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn::after,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn::after,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill::before,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill::before,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill::after,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill::after,
+body.ddae-dark #page-impostazioni .settings-year-pill::before,
+body.ddae-dark #page-opsettings .settings-year-pill::before,
+body.ddae-dark #page-impostazioni .settings-year-pill::after,
+body.ddae-dark #page-opsettings .settings-year-pill::after,
+body.ddae-dark #tagColorModal .tag-color-mode-btn::before,
+body.ddae-dark #tagColorModal .tag-color-mode-btn::after,
+body.ddae-dark #tagColorModal .tag-opacity-option::before,
+body.ddae-dark #tagColorModal .tag-opacity-option::after,
+body.ddae-dark #tagColorModal .tag-color-modal-close::before,
+body.ddae-dark #tagColorModal .tag-color-modal-close::after,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm::before,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm::after{
+  content:none !important;
+  display:none !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill,
+body.ddae-dark #tagColorModal .tag-color-modal-close,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm,
+body.ddae-dark #tagColorModal .tag-color-mode-btn,
+body.ddae-dark #tagColorModal .tag-opacity-option{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+body.ddae-dark #tagColorModal .tag-color-mode-btn .tag-color-mode-ico,
+body.ddae-dark #tagColorModal .tag-color-mode-btn .tag-color-mode-ico *,
+body.ddae-dark #tagColorModal .tag-color-modal-close span,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm span{
+  color:currentColor !important;
+  stroke:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  fill:none !important;
+}
+body.ddae-dark #tagColorModal .tag-color-mode-btn.is-active,
+body.ddae-dark #tagColorModal .tag-opacity-option.is-selected,
+body.ddae-dark #page-impostazioni .settings-actions .settings-btn.is-active,
+body.ddae-dark #page-opsettings .settings-actions .settings-btn.is-active{
+  outline:2px solid rgba(255,255,255,0.96) !important;
+  outline-offset:0 !important;
+}

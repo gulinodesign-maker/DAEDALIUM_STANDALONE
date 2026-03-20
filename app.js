@@ -7401,11 +7401,14 @@ function __pillApplyToButton__(btn){
     const fgHex = __operatoreColorHex__(visual.fg || 'white');
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
-    const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
+    const inSettings = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
+    const isDark = inSettings && document.body.classList.contains('ddae-dark');
+    const bgCss = isDark ? 'rgba(15,23,42,0.96)' : hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
+    const borderCss = isDark ? 'rgba(255,255,255,0.92)' : hexToRgba(borderHex, 1);
     btn.style.setProperty('background', bgCss, 'important');
     btn.style.setProperty('background-color', bgCss, 'important');
-    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
-    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-color', borderCss, 'important');
+    btn.style.setProperty('border-width', isDark ? '1.5px' : '1px', 'important');
     btn.style.setProperty('border-style', 'solid', 'important');
     btn.style.setProperty('box-shadow', 'none', 'important');
     btn.style.setProperty('opacity', '1', 'important');
@@ -7938,13 +7941,14 @@ function __launcherIconApplyToButton__(btn){
       return;
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
+      const isDark = !!document.body.classList.contains('ddae-dark');
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
-      const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
-      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : '');
+      const resolvedBg = isDark ? 'rgba(15,23,42,0.96)' : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
+      const resolvedBorder = isDark ? 'rgba(255,255,255,0.92)' : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
-      setImp(btn, 'border-width', '1px');
+      setImp(btn, 'border-width', isDark ? '1.5px' : '1px');
       setImp(btn, 'border-style', 'solid');
       setImp(btn, 'box-shadow', 'none');
       setImp(btn, 'color', hex);
@@ -10930,6 +10934,10 @@ state.page = page;
   if (page === "impostazioni" || page === "opsettings"){
     try{ updateSettingsTabs(); }catch(_){ }
     if (page === "impostazioni"){ try{ loadImpostazioniPage({ force:true }); }catch(_){ } }
+    try{ __launcherIconApplyAll__(); }catch(_){ }
+    try{ __pillApplyAll__(); }catch(_){ }
+    try{ __applySettingsAndColorPopupDarkFix__(); }catch(_){ }
+    try{ requestAnimationFrame(() => { try{ __launcherIconApplyAll__(); }catch(_){ } try{ __pillApplyAll__(); }catch(_){ } }); }catch(_){ }
   }
   if (page === "operatori"){
     try{ loadOperatoriPage(); }catch(_){ }
