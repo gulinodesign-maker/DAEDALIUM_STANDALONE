@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.395
+ * Build: 2.396
  */
-const BUILD_VERSION = "2.395";
+const BUILD_VERSION = "2.396";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15139,14 +15139,26 @@ function __roomSettingsThemeStoragePrefixes__(){
   return ['ddae_graph_colors_', 'dDAE_statcard_colors_', 'dDAE_stat_card_text_', 'dDAE_statistics_card_theme_'];
 }
 
+function __roomSettingsThemeAdditionalStorageKeys__(){
+  return [
+    __LAUNCHER_ICON_COLOR_STORAGE_KEY__,
+    __LAUNCHER_GRID_THEME_STORAGE_KEY__,
+    __STATISTICS_CARD_THEME_STORAGE_KEY__,
+    __DESIGN_BG_OPACITY_STORAGE_KEY__,
+    __HEADER_ACTION_THEME_STORAGE_KEY__,
+    __HEADER_ACTION_COLOR_STORAGE_KEY__
+  ].filter(Boolean);
+}
+
 function __roomSettingsThemeStatsStorageCollect__(){
   const out = {};
   try{
     const prefixes = __roomSettingsThemeStoragePrefixes__();
+    const directKeys = new Set(__roomSettingsThemeAdditionalStorageKeys__());
     for (let i = 0; i < localStorage.length; i++){
       const key = String(localStorage.key(i) || '');
       if (!key) continue;
-      if (!prefixes.some((prefix) => key.startsWith(prefix))) continue;
+      if (!directKeys.has(key) && !prefixes.some((prefix) => key.startsWith(prefix))) continue;
       try{ out[key] = String(localStorage.getItem(key) ?? ''); }catch(_){ }
     }
   }catch(_){ }
@@ -15157,10 +15169,11 @@ function __roomSettingsThemeStatsStorageNormalize__(payload){
   const src = (payload && typeof payload === 'object') ? payload : {};
   const out = {};
   try{
+    const directKeys = new Set(__roomSettingsThemeAdditionalStorageKeys__());
     Object.keys(src).forEach((key) => {
       const safeKey = String(key || '');
       if (!safeKey) return;
-      if (!__roomSettingsThemeStoragePrefixes__().some((prefix) => safeKey.startsWith(prefix))) return;
+      if (!directKeys.has(safeKey) && !__roomSettingsThemeStoragePrefixes__().some((prefix) => safeKey.startsWith(prefix))) return;
       out[safeKey] = String(src[key] ?? '');
     });
   }catch(_){ }
@@ -15170,12 +15183,13 @@ function __roomSettingsThemeStatsStorageNormalize__(payload){
 function __roomSettingsThemeStatsStorageApply__(payload){
   try{
     const prefixes = __roomSettingsThemeStoragePrefixes__();
+    const directKeys = new Set(__roomSettingsThemeAdditionalStorageKeys__());
     const next = __roomSettingsThemeStatsStorageNormalize__(payload);
     const toDelete = [];
     for (let i = 0; i < localStorage.length; i++){
       const key = String(localStorage.key(i) || '');
       if (!key) continue;
-      if (prefixes.some((prefix) => key.startsWith(prefix))) toDelete.push(key);
+      if (directKeys.has(key) || prefixes.some((prefix) => key.startsWith(prefix))) toDelete.push(key);
     }
     toDelete.forEach((key) => {
       if (!(key in next)){
@@ -15200,7 +15214,9 @@ function __roomSettingsThemePayloadBuild__(){
   return {
     roomsUi: __sanitizeRoomsUiConfig__(getRoomsUiConfig()),
     launcherGridTheme: __launcherGridThemeRead__(),
+    launcherIconColors: __launcherIconColorMapRead__(),
     statisticsCardTheme: __statisticsCardThemeRead__(),
+    designBgOpacity: __designBgOpacityRead__(),
     headerActionTheme: __headerActionThemeRead__(),
     headerActionColors: __headerActionColorMapRead__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
@@ -15209,13 +15225,36 @@ function __roomSettingsThemePayloadBuild__(){
 
 function __roomSettingsThemePayloadNormalize__(payload){
   const src = (payload && typeof payload === 'object') ? payload : {};
+  const launcherIconColors = (src.launcherIconColors && typeof src.launcherIconColors === 'object') ? src.launcherIconColors : {};
+  const designBgOpacity = __designBgOpacityNormalize__(src.designBgOpacity != null ? src.designBgOpacity : __designBgOpacityRead__());
+  const statsThemeStorage = __roomSettingsThemeStatsStorageNormalize__(src.statsThemeStorage || src.statisticheThemeStorage || src.statsStorage || src.statistiche || {});
+  try{
+    if (!( __LAUNCHER_ICON_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__LAUNCHER_ICON_COLOR_STORAGE_KEY__] = JSON.stringify(launcherIconColors || {});
+  }catch(_){ }
+  try{
+    if (!( __LAUNCHER_GRID_THEME_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__LAUNCHER_GRID_THEME_STORAGE_KEY__] = JSON.stringify(src.launcherGridTheme || src.launcherTheme || {});
+  }catch(_){ }
+  try{
+    if (!( __STATISTICS_CARD_THEME_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__STATISTICS_CARD_THEME_STORAGE_KEY__] = JSON.stringify(src.statisticsCardTheme || src.statCardsTheme || src.statsCardTheme || src.launcherGridTheme || src.launcherTheme || {});
+  }catch(_){ }
+  try{
+    if (!( __DESIGN_BG_OPACITY_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__DESIGN_BG_OPACITY_STORAGE_KEY__] = String(designBgOpacity);
+  }catch(_){ }
+  try{
+    if (!( __HEADER_ACTION_THEME_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__HEADER_ACTION_THEME_STORAGE_KEY__] = JSON.stringify(src.headerActionTheme || {});
+  }catch(_){ }
+  try{
+    if (!( __HEADER_ACTION_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__HEADER_ACTION_COLOR_STORAGE_KEY__] = JSON.stringify((src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {});
+  }catch(_){ }
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    launcherIconColors,
     statisticsCardTheme: __launcherVisualNormalize__(src.statisticsCardTheme || src.statCardsTheme || src.statsCardTheme || src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
+    designBgOpacity,
     headerActionTheme: __launcherVisualNormalize__(src.headerActionTheme || {}, 'blue-4'),
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
-    statsThemeStorage: __roomSettingsThemeStatsStorageNormalize__(src.statsThemeStorage || src.statisticheThemeStorage || src.statsStorage || src.statistiche || {})
+    statsThemeStorage
   };
 }
 
@@ -15245,6 +15284,8 @@ async function __roomSettingsThemeSlotApply__(slot){
   await saveRoomsUiConfigToSettings(payload.roomsUi, { showToast:false });
   try{
     __launcherGridThemeWrite__(payload.launcherGridTheme);
+    __launcherIconColorMapWrite__(payload.launcherIconColors || {});
+    __designBgOpacityWrite__(payload.designBgOpacity != null ? payload.designBgOpacity : __designBgOpacityRead__());
     __launcherGridThemeOverwriteTargets__(payload.launcherGridTheme);
     __statisticsCardThemeWrite__(payload.statisticsCardTheme || payload.launcherGridTheme);
     __headerActionThemeWrite__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
@@ -15252,6 +15293,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __launcherIconApplyAll__();
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(payload.statsThemeStorage); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
