@@ -11201,19 +11201,30 @@ body[data-role="operatore"] #page-home .home-grid{
   gap:12px;
 }
 .room-settings-section-theme{
-  padding-top:0;
-  border-top:0;
+  padding:16px;
+  border:1px solid rgba(15,23,42,0.12);
+  border-radius:20px;
+  background:rgba(255,255,255,0.72);
+}
+.room-settings-section-count{
+  margin-top:2px;
+  padding:16px;
+  border:1px solid rgba(15,23,42,0.12);
+  border-radius:20px;
+  background:rgba(255,255,255,0.72);
 }
 .room-settings-theme-squares{
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  justify-content:stretch;
   gap:12px;
 }
 .room-settings-theme-btn{
-  flex:1 1 0;
-  width:auto;
-  min-width:0;
+  flex:0 0 auto;
+  width:100% !important;
+  min-width:0 !important;
   aspect-ratio:1 / 1;
-  height:auto;
+  height:auto !important;
   max-width:none;
 }
 .room-settings-section-title{
@@ -11296,11 +11307,17 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-color-dot-tag{ width:54px; min-width:54px; height:54px; }
   .room-settings-squares{ gap:12px; }
   .room-settings-theme-squares{ gap:10px; }
+  .room-settings-theme-btn{ min-width:0; width:100%; height:auto; }
   .room-settings-square-btn{ width:58px; min-width:58px; height:58px; border-radius:16px; font-size:22px; }
 }
 body.ddae-dark .room-settings-panel{
   background: rgba(15,23,42,0.96);
   border-color: rgba(148,163,184,0.22);
+}
+body.ddae-dark .room-settings-section-theme,
+body.ddae-dark .room-settings-section-count{
+  background: rgba(15,23,42,0.72);
+  border-color: rgba(148,163,184,0.18);
 }
 body.ddae-dark .room-settings-title,
 body.ddae-dark .room-settings-section-title{
@@ -11317,6 +11334,26 @@ body.ddae-dark .room-settings-square-btn-placeholder{
   border-color: rgba(148,163,184,0.24);
   color: rgba(226,232,240,0.78);
   -webkit-text-fill-color: rgba(226,232,240,0.78);
+}
+body.ddae-dark{
+  --ddae-room-neutral-bg: rgba(15,23,42,0.96);
+  --ddae-room-neutral-border: rgba(148,163,184,0.24);
+}
+body.ddae-dark .home-main-glyph,
+body.ddae-dark #homeYearPill,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark .room-settings-color-dot,
+body.ddae-dark .room-settings-count-btn,
+body.ddae-dark .room-settings-square-btn,
+body.ddae-dark .room-settings-color-dot-tag,
+body.ddae-dark .booking-card .notti-pill,
+body.ddae-dark .booking-card .meta-pill,
+body.ddae-dark .room-chip,
+body.ddae-dark #page-pulizie .clean-grid .cell.slot::before{
+  background: var(--ddae-room-neutral-bg) !important;
+  background-color: var(--ddae-room-neutral-bg) !important;
+  border-color: var(--ddae-room-neutral-border) !important;
 }
 
 /* dDAE_2.330 — Popup lingua con tasto X visibile rosso */
