@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.380
+ * Build: 2.381
  */
-const BUILD_VERSION = "2.380";
+const BUILD_VERSION = "2.381";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -22247,6 +22247,12 @@ function applyToState(rows){
 state.lettiPerStanza = state.lettiPerStanza || {};
 let __rc_room = null;
 
+function __rc_dotStyle__(spec){
+  const pair = __roomsUiColorPair__(spec, 'blue-4');
+  const main = __operatoreColorHex__(pair.bg || 'blue-4');
+  return `--rc-dot-fill:${hexToRgba(main, 0.92)};--rc-dot-border:${hexToRgba(main, 0.95)};`;
+}
+
 function __rc_renderToggle(el, on){
   const key = String(el?.id || '').trim();
   const cfg = getRoomsUiConfig();
@@ -22255,13 +22261,13 @@ function __rc_renderToggle(el, on){
     : key === 'rc_culla'
       ? (cfg.beds?.culla || 'yellow-4')
       : (cfg.beds?.singolo || 'blue-4');
-  el.innerHTML = `<span class="dot ${on?'on':''}" style="${__roomsUiButtonStyle__(spec, true)}"></span>`;
+  el.innerHTML = `<span class="dot ${on?'on':''}" style="${__rc_dotStyle__(spec)}"></span>`;
   el.onclick = ()=> el.firstElementChild.classList.toggle('on');
 }
 function __rc_renderSingoli(el, n){
   el.innerHTML = '';
   const spec = getRoomsUiConfig().beds?.singolo || 'blue-4';
-  const style = __roomsUiButtonStyle__(spec, true);
+  const style = __rc_dotStyle__(spec);
   for(let i=1;i<=3;i++){
     const s=document.createElement('span');
     s.className='dot'+(i<=n?' on':'');

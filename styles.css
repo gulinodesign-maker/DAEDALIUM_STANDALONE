@@ -14839,9 +14839,13 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   height:22px;
   border-width:2px;
   background:transparent !important;
+  border-color:var(--rc-dot-border, rgba(15,23,42,0.35)) !important;
+  transition:background-color .15s ease, border-color .15s ease, transform .15s ease;
 }
 #roomConfigModal .dot.on{
   opacity:1;
+  background:var(--rc-dot-fill, #2b7cb4) !important;
+  border-color:var(--rc-dot-fill, #2b7cb4) !important;
 }
 
 /* dDAE_2.334 — Calendario: testo stanza leggibile sui nuovi colori */
