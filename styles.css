@@ -15713,3 +15713,168 @@ body.ddae-dark #tagColorModal .tag-opacity-option.is-selected{
     padding-top:4px;
   }
 }
+
+
+/* dDAE_2.409 — Dark mode: topbar/title buttons white+azure, settings grid keeps colors, pills optimized */
+body.ddae-dark .topbar .icon-btn,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .prodotti-header-btn,
+body.ddae-dark .laundry-detail-tool,
+body.ddae-dark #laundryPricesClose,
+body.ddae-dark #piscinaPrevMonth,
+body.ddae-dark #piscinaNextMonth{
+  background: rgba(255,255,255,0.94) !important;
+  background-color: rgba(255,255,255,0.94) !important;
+  border: 1px solid rgba(143,202,232,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18) !important;
+  color: #8fcae8 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .prodotti-header-btn .ui-ico,
+body.ddae-dark .prodotti-header-btn .ui-ico *,
+body.ddae-dark .laundry-detail-tool .ui-ico,
+body.ddae-dark .laundry-detail-tool .ui-ico *,
+body.ddae-dark #laundryPricesClose .ui-ico,
+body.ddae-dark #laundryPricesClose .ui-ico *,
+body.ddae-dark #piscinaPrevMonth .ui-ico,
+body.ddae-dark #piscinaPrevMonth .ui-ico *,
+body.ddae-dark #piscinaNextMonth .ui-ico,
+body.ddae-dark #piscinaNextMonth .ui-ico *{
+  stroke: #8fcae8 !important;
+  color: #8fcae8 !important;
+  fill: none !important;
+}
+body.ddae-dark .topbar .icon-btn:active,
+body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .prodotti-header-btn:active,
+body.ddae-dark .laundry-detail-tool:active,
+body.ddae-dark #laundryPricesClose:active,
+body.ddae-dark #piscinaPrevMonth:active,
+body.ddae-dark #piscinaNextMonth:active{
+  background: rgba(255,255,255,0.88) !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
+  color: #ffffff !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-save,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-dark,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark{
+  background: rgba(0,0,0,0.80) !important;
+  background-color: rgba(0,0,0,0.80) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-db{
+  background: rgba(79,205,102,0.80) !important;
+  background-color: rgba(79,205,102,0.80) !important;
+  border-color: rgba(79,205,102,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-rooms{
+  background: rgba(255,204,0,0.80) !important;
+  background-color: rgba(255,204,0,0.80) !important;
+  border-color: rgba(255,204,0,0.28) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-operator{
+  background: rgba(36,122,224,0.80) !important;
+  background-color: rgba(36,122,224,0.80) !important;
+  border-color: rgba(36,122,224,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-channel{
+  background: rgba(242,156,80,0.80) !important;
+  background-color: rgba(242,156,80,0.80) !important;
+  border-color: rgba(242,156,80,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-laundrycatalog{
+  background: rgba(214,193,160,0.80) !important;
+  background-color: rgba(214,193,160,0.80) !important;
+  border-color: rgba(214,193,160,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-tax-year{
+  background: rgba(232,84,84,0.80) !important;
+  background-color: rgba(232,84,84,0.80) !important;
+  border-color: rgba(232,84,84,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opcode{
+  background: rgba(127,123,242,0.80) !important;
+  background-color: rgba(127,123,242,0.80) !important;
+  border-color: rgba(127,123,242,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn-language-beige{
+  background: rgba(77,156,197,0.80) !important;
+  background-color: rgba(77,156,197,0.80) !important;
+  border-color: rgba(77,156,197,0.24) !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico *{
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.ddae-dark #page-home .home-year-pill,
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill{
+  background: rgba(255,255,255,0.94) !important;
+  background-color: rgba(255,255,255,0.94) !important;
+  border: 1px solid rgba(143,202,232,0.24) !important;
+  color: #4d9cc5 !important;
+  -webkit-text-fill-color: #4d9cc5 !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.16) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill.settings-btn-logout,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill.settings-btn-logout{
+  background: rgba(255,255,255,0.96) !important;
+  background-color: rgba(255,255,255,0.96) !important;
+  border: 1px solid rgba(248,113,113,0.34) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18) !important;
+}
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #ef4444 !important;
+  stroke: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+}
+
+body.ddae-dark .auth-btn,
+body.ddae-dark .btn.tax-year-pill{
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  box-shadow: none !important;
+}
