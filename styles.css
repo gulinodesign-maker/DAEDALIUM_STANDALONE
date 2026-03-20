@@ -15826,3 +15826,64 @@ body.ddae-dark #tagColorModal #tagColorModeFg{ background: rgba(242,156,80,0.80)
 body.ddae-dark #tagColorModal #tagColorModeOpacity{ background: rgba(127,123,242,0.80) !important; border-color: rgba(127,123,242,0.24) !important; }
 body.ddae-dark #tagColorModal .tag-color-modal-confirm{ background: rgba(77,156,197,0.80) !important; border-color: rgba(77,156,197,0.24) !important; }
 body.ddae-dark #tagColorModal .tag-color-modal-close{ background: rgba(31,41,55,0.80) !important; border-color: rgba(148,163,184,0.24) !important; }
+
+
+/* dDAE_2.410 — Dark mode: Settings and color popup follow Home dark tiles */
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #tagColorModal .tag-color-mode-btn,
+body.ddae-dark #tagColorModal .tag-opacity-option,
+body.ddae-dark #tagColorModal .tag-color-modal-close,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm{
+  background: rgba(22,28,36,0.88) !important;
+  background-color: rgba(22,28,36,0.88) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  opacity: 1 !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-save,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn.settings-btn-dark,
+body.ddae-dark #tagColorModal #tagColorModeBorder,
+body.ddae-dark #tagColorModal .tag-color-modal-close{ color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-db{ color:#92cf32 !important; -webkit-text-fill-color:#92cf32 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-rooms{ color:#ffd43b !important; -webkit-text-fill-color:#ffd43b !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-operator{ color:#4da8ff !important; -webkit-text-fill-color:#4da8ff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-channel{ color:#ffa133 !important; -webkit-text-fill-color:#ffa133 !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-laundrycatalog{ color:#c8a36f !important; -webkit-text-fill-color:#c8a36f !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-tax-year{ color:#cf362f !important; -webkit-text-fill-color:#cf362f !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-roster,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn.settings-btn-opcode,
+body.ddae-dark #tagColorModal #tagColorModeOpacity{ color:#9b8cff !important; -webkit-text-fill-color:#9b8cff !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn.settings-btn-language,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn.settings-btn-language{ color:#bf2f6f !important; -webkit-text-fill-color:#bf2f6f !important; }
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{ color:#c92e2e !important; -webkit-text-fill-color:#c92e2e !important; }
+body.ddae-dark #tagColorModal #tagColorModeBg,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm{ color:#58b7f4 !important; -webkit-text-fill-color:#58b7f4 !important; }
+body.ddae-dark #tagColorModal #tagColorModeFg{ color:#f3b15a !important; -webkit-text-fill-color:#f3b15a !important; }
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #tagColorModal .tag-color-mode-btn .tag-color-mode-ico,
+body.ddae-dark #tagColorModal .tag-color-mode-btn .tag-color-mode-ico *,
+body.ddae-dark #tagColorModal .tag-color-modal-close span,
+body.ddae-dark #tagColorModal .tag-color-modal-confirm span{
+  color: currentColor !important;
+  stroke: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+  fill: none !important;
+}
+body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn .settings-btn-label,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{ color: currentColor !important; -webkit-text-fill-color: currentColor !important; opacity:1 !important; }

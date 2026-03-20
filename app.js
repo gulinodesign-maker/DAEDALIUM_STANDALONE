@@ -7443,10 +7443,33 @@ function __bindPillLongPress__(btn){
     btn.dataset.pillColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
-    let touchAt = 0;
-    const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
+    let suppressUntil = 0;
+    let startX = 0;
+    let startY = 0;
+    const LONG_MS = 560;
+    const MOVE_TOL = 12;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+    };
+    const setSuppress = (ms = 900) => {
+      suppressUntil = Date.now() + Math.max(0, Number(ms) || 0);
+    };
+    const isSuppressed = () => {
+      try{ return Date.now() < suppressUntil; }catch(_){ return false; }
+    };
+    const blockEvent = (ev) => {
+      try{ ev?.preventDefault?.(); }catch(_){ }
+      try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
+      try{ ev?.stopPropagation?.(); }catch(_){ }
+    };
+    const currentPoint = (ev) => {
+      const t = ev?.touches?.[0] || ev?.changedTouches?.[0] || ev;
+      return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
+    };
     const openPicker = () => {
       holdTriggered = true;
+      setSuppress(1800);
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
         try{
@@ -7471,34 +7494,60 @@ function __bindPillLongPress__(btn){
         }catch(_){ }
       }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
     };
-    btn.addEventListener('touchstart', (e) => {
-      touchAt = Date.now();
+    const startHold = (ev) => {
+      if (btn.disabled || btn.hidden) return;
+      clearHold();
       holdTriggered = false;
+      suppressUntil = 0;
+      const pt = currentPoint(ev);
+      startX = pt.x;
+      startY = pt.y;
+      holdTimer = setTimeout(() => { openPicker(); }, LONG_MS);
+    };
+    const cancelHold = (ev) => {
+      const fired = holdTriggered || isSuppressed();
       clearHold();
-      holdTimer = setTimeout(() => { openPicker(); }, 500);
-    }, { passive:true, capture:true });
-    btn.addEventListener('touchend', (e) => {
-      clearHold();
-      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
-    }, { passive:false, capture:true });
-    btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
-    btn.addEventListener('mousedown', (e) => {
-      if ((e.button || 0) !== 0) return;
-      holdTriggered = false;
-      clearHold();
-      holdTimer = setTimeout(() => { openPicker(); }, 500);
-    }, true);
-    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
-    btn.addEventListener('click', (e) => {
-      if (holdTriggered || (Date.now() - touchAt < 450 && holdTriggered)){
-        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      if (fired){
+        setSuppress(1800);
+        blockEvent(ev);
       }
-    }, true);
-    btn.addEventListener('contextmenu', (e) => {
-      try{ e.preventDefault(); }catch(_){ }
-      try{ openPicker(); }catch(_){ }
-      try{ e.stopPropagation(); }catch(_){ }
+    };
+    const endHold = (ev) => {
+      const fired = holdTriggered || isSuppressed();
+      clearHold();
+      if (fired){
+        holdTriggered = false;
+        setSuppress(1800);
+        blockEvent(ev);
+        return;
+      }
+      setTimeout(() => { holdTriggered = false; }, 0);
+    };
+    const moveHold = (ev) => {
+      if (!holdTimer) return;
+      const pt = currentPoint(ev);
+      if (Math.abs(pt.x - startX) > MOVE_TOL || Math.abs(pt.y - startY) > MOVE_TOL){
+        clearHold();
+      }
+    };
+    ['pointerdown','touchstart','mousedown'].forEach((evt) => {
+      try{ btn.addEventListener(evt, startHold, { passive:true, capture:true }); }catch(_){ }
     });
+    ['pointermove','touchmove','mousemove'].forEach((evt) => {
+      try{ btn.addEventListener(evt, moveHold, { passive:true, capture:true }); }catch(_){ }
+    });
+    ['pointerup','touchend','mouseup','pointercancel','touchcancel','mouseleave','dragstart'].forEach((evt) => {
+      try{ btn.addEventListener(evt, endHold, { passive:false, capture:true }); }catch(_){ }
+    });
+    ['click','contextmenu','selectstart'].forEach((evt) => {
+      try{ btn.addEventListener(evt, cancelHold, true); }catch(_){ }
+    });
+    try{
+      btn.addEventListener('contextmenu', (e) => {
+        blockEvent(e);
+        openPicker();
+      }, true);
+    }catch(_){ }
   }catch(_){ }
 }
 
@@ -9466,98 +9515,100 @@ function __applySettingsAndColorPopupDarkFix__(){
     const setImp = (el, prop, value) => { try{ el && el.style && el.style.setProperty(prop, value, 'important'); }catch(_){ } };
     const clear = (el, props) => { try{ (props||[]).forEach((prop)=>el?.style?.removeProperty(prop)); }catch(_){ } };
     const commonProps = ['background','background-color','background-image','border','border-color','border-width','border-style','box-shadow','-webkit-box-shadow','color','-webkit-text-fill-color','opacity','filter','mix-blend-mode','backdrop-filter','-webkit-backdrop-filter','appearance','-webkit-appearance'];
+    const shellBg = 'rgba(22,28,36,0.88)';
+    const shellBorder = 'rgba(255,255,255,0.10)';
     const settingsPalette = {
-      settingsSaveBtn:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
-      settingsDbBtn:['rgba(79,205,102,0.80)','rgba(79,205,102,0.24)'],
-      settingsRoomsBtn:['rgba(255,204,0,0.80)','rgba(255,204,0,0.28)'],
-      settingsOperatoriBtn:['rgba(36,122,224,0.80)','rgba(36,122,224,0.24)'],
-      settingsChannelBtn:['rgba(242,156,80,0.80)','rgba(242,156,80,0.24)'],
-      settingsLaundryCatalogBtn:['rgba(124,111,214,0.80)','rgba(124,111,214,0.24)'],
-      settingsConfigBtn:['rgba(232,84,84,0.80)','rgba(232,84,84,0.24)'],
-      settingsExportRosterBtn:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
-      settingsLanguageBtn:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
-      settingsLogoutBtn:['rgba(213,68,68,0.80)','rgba(213,68,68,0.24)'],
-      opSettingsLanguageBtn:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
-      opSettingsDarkBtn:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
-      opSettingsCodeBtn:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
-      opSettingsLogoutBtn:['rgba(213,68,68,0.80)','rgba(213,68,68,0.24)']
+      settingsSaveBtn:'#ffffff',
+      settingsDbBtn:'#92cf32',
+      settingsRoomsBtn:'#ffd43b',
+      settingsOperatoriBtn:'#4da8ff',
+      settingsChannelBtn:'#ffa133',
+      settingsLaundryCatalogBtn:'#c8a36f',
+      settingsConfigBtn:'#cf362f',
+      settingsExportRosterBtn:'#8d63e6',
+      settingsLanguageBtn:'#bf2f6f',
+      settingsLogoutBtn:'#c92e2e',
+      opSettingsLanguageBtn:'#bf2f6f',
+      opSettingsDarkBtn:'#ffffff',
+      opSettingsCodeBtn:'#8d63e6',
+      opSettingsLogoutBtn:'#c92e2e'
     };
-    Object.entries(settingsPalette).forEach(([id, pair]) => {
+    Object.entries(settingsPalette).forEach(([id, accent]) => {
       const el = document.getElementById(id);
       if (!el) return;
       if (!dark){ clear(el, commonProps); return; }
-      const bg = pair[0], border = pair[1];
       setImp(el, 'appearance', 'none');
       setImp(el, '-webkit-appearance', 'none');
-      setImp(el, 'background', bg);
-      setImp(el, 'background-color', bg);
+      setImp(el, 'background', shellBg);
+      setImp(el, 'background-color', shellBg);
       setImp(el, 'background-image', 'none');
-      setImp(el, 'border', `1px solid ${border}`);
-      setImp(el, 'border-color', border);
+      setImp(el, 'border', `1px solid ${shellBorder}`);
+      setImp(el, 'border-color', shellBorder);
       setImp(el, 'border-width', '1px');
       setImp(el, 'border-style', 'solid');
-      setImp(el, 'box-shadow', 'none');
-      setImp(el, '-webkit-box-shadow', 'none');
-      setImp(el, 'color', '#ffffff');
-      setImp(el, '-webkit-text-fill-color', '#ffffff');
+      setImp(el, 'box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
+      setImp(el, '-webkit-box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
+      setImp(el, 'color', accent);
+      setImp(el, '-webkit-text-fill-color', accent);
       setImp(el, 'opacity', '1');
       setImp(el, 'filter', 'none');
       setImp(el, 'mix-blend-mode', 'normal');
-      setImp(el, 'backdrop-filter', 'none');
-      setImp(el, '-webkit-backdrop-filter', 'none');
-      el.querySelectorAll('.settings-btn-label, .ui-ico, .ui-ico *').forEach((node) => {
-        if (node.classList && node.classList.contains('settings-btn-label')){
-          setImp(node, 'color', '#ffffff');
-          setImp(node, '-webkit-text-fill-color', '#ffffff');
-          setImp(node, 'opacity', '1');
-        } else {
-          setImp(node, 'color', '#ffffff');
-          setImp(node, 'stroke', '#ffffff');
-          setImp(node, 'fill', 'none');
-          setImp(node, '-webkit-text-fill-color', '#ffffff');
-          setImp(node, 'opacity', '1');
-        }
+      setImp(el, 'backdrop-filter', 'blur(12px)');
+      setImp(el, '-webkit-backdrop-filter', 'blur(12px)');
+      el.querySelectorAll('.settings-btn-label').forEach((node) => {
+        setImp(node, 'color', accent);
+        setImp(node, '-webkit-text-fill-color', accent);
+        setImp(node, 'opacity', '1');
+      });
+      el.querySelectorAll('.ui-ico, .ui-ico *').forEach((node) => {
+        setImp(node, 'color', accent);
+        setImp(node, 'stroke', accent);
+        setImp(node, 'fill', 'none');
+        setImp(node, '-webkit-text-fill-color', accent);
+        setImp(node, 'opacity', '1');
       });
     });
     const popupPalette = {
-      tagColorModeBg:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)'],
-      tagColorModeBorder:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
-      tagColorModeFg:['rgba(242,156,80,0.80)','rgba(242,156,80,0.24)'],
-      tagColorModeOpacity:['rgba(127,123,242,0.80)','rgba(127,123,242,0.24)'],
-      tagColorModalClose:['rgba(31,41,55,0.80)','rgba(148,163,184,0.24)'],
-      tagColorModalConfirm:['rgba(77,156,197,0.80)','rgba(77,156,197,0.24)']
+      tagColorModeBg:'#58b7f4',
+      tagColorModeBorder:'#ffffff',
+      tagColorModeFg:'#f3b15a',
+      tagColorModeOpacity:'#9b8cff',
+      tagColorModalClose:'#ffffff',
+      tagColorModalConfirm:'#58b7f4'
     };
-    Object.entries(popupPalette).forEach(([id, pair]) => {
+    Object.entries(popupPalette).forEach(([id, accent]) => {
       const el = document.getElementById(id);
       if (!el) return;
       if (!dark){ clear(el, commonProps); return; }
-      const bg = pair[0], border = pair[1];
       setImp(el, 'appearance', 'none');
       setImp(el, '-webkit-appearance', 'none');
-      setImp(el, 'background', bg);
-      setImp(el, 'background-color', bg);
+      setImp(el, 'background', shellBg);
+      setImp(el, 'background-color', shellBg);
       setImp(el, 'background-image', 'none');
-      setImp(el, 'border', `1px solid ${border}`);
-      setImp(el, 'border-color', border);
-      setImp(el, 'box-shadow', 'none');
-      setImp(el, '-webkit-box-shadow', 'none');
-      setImp(el, 'color', '#ffffff');
-      setImp(el, '-webkit-text-fill-color', '#ffffff');
+      setImp(el, 'border', `1px solid ${shellBorder}`);
+      setImp(el, 'border-color', shellBorder);
+      setImp(el, 'border-width', '1px');
+      setImp(el, 'border-style', 'solid');
+      setImp(el, 'box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
+      setImp(el, '-webkit-box-shadow', '0 10px 24px rgba(0,0,0,0.28)');
+      setImp(el, 'color', accent);
+      setImp(el, '-webkit-text-fill-color', accent);
       setImp(el, 'opacity', '1');
       setImp(el, 'filter', 'none');
       setImp(el, 'mix-blend-mode', 'normal');
-      setImp(el, 'backdrop-filter', 'none');
-      setImp(el, '-webkit-backdrop-filter', 'none');
+      setImp(el, 'backdrop-filter', 'blur(12px)');
+      setImp(el, '-webkit-backdrop-filter', 'blur(12px)');
       el.querySelectorAll('span, .tag-color-mode-ico, .tag-color-mode-ico *').forEach((node) => {
-        setImp(node, 'color', '#ffffff');
-        setImp(node, '-webkit-text-fill-color', '#ffffff');
-        setImp(node, 'stroke', '#ffffff');
+        setImp(node, 'color', accent);
+        setImp(node, '-webkit-text-fill-color', accent);
+        setImp(node, 'stroke', accent);
         setImp(node, 'fill', 'none');
         setImp(node, 'opacity', '1');
       });
     });
   }catch(_){ }
 }
+
 function __applyDarkMode__(enabled){
   try{
     document.body.classList.toggle('ddae-dark', !!enabled);
