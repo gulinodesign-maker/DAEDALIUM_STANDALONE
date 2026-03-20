@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.401
  */
-const BUILD_VERSION = "2.401";
+const BUILD_VERSION = "2.403";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6941,7 +6941,7 @@ const __OPERATORI_COLOR_TONES__ = {
   mint:   ["#effffc", "#cffff8", "#8ff0e8", "#26d9c7", "#13b8a6", "#0b7f74"],
   sky:    ["#eef8ff", "#d7ecff", "#9dd8ff", "#5bbcff", "#2695e8", "#1769aa"],
   blue:   ["#eef6ff", "#cfe4ff", "#8cbcff", "#3d8bfd", "#1f6fe5", "#0a58ca"],
-  gray:   ["#f4f5f7", "#e4e7ec", "#cfd4dc", "#98a2b3", "#667085", "#475467"],
+  gray:   ["#FFFFFF", "#F2F2F2", "#D9D9D9", "#A6A6A6", "#4D4D4D", "#000000"],
   indigo: ["#f0efff", "#ddd9ff", "#b4a8ff", "#7c6ff2", "#6357dc", "#4338b8"],
   violet: ["#f7f0ff", "#e9dbff", "#cfb3ff", "#a678ff", "#7a46d1", "#5a2ea6"],
   pink:   ["#fff0f5", "#ffd6e4", "#ff9fc0", "#ff5f93", "#e04377", "#b92b58"],
@@ -7002,7 +7002,7 @@ function __tagColorInlineStyle__(bgSpec, fgSpec, opts){
   const bg = __normalizeOperatoreColor__(bgSpec || options.fallbackBg || 'blue-4');
   const main = __operatoreColorHex__(bg);
   const bgOpacity = isFinite(Number(options.opacity)) ? Math.max(0, Math.min(1, Number(options.opacity))) : 0.80;
-  const borderOpacity = isFinite(Number(options.borderOpacity)) ? Math.max(0, Math.min(1, Number(options.borderOpacity))) : bgOpacity;
+  const borderOpacity = isFinite(Number(options.borderOpacity)) ? Math.max(0, Math.min(1, Number(options.borderOpacity))) : 1;
   const fg = __tagColorTextHex__(bg, fgSpec, !!options.preferWhiteText);
   return `background:${hexToRgba(main, bgOpacity)};background-color:${hexToRgba(main, bgOpacity)};border-color:${hexToRgba(main, borderOpacity)};color:${fg};-webkit-text-fill-color:${fg};`;
 }
@@ -7043,7 +7043,7 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
   try{
     const btn = document.getElementById(id);
     if (!btn) return;
-    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }));
+    btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }));
   }catch(_){ }
 }
 
@@ -7427,7 +7427,77 @@ function __pillApplyToButton__(btn){
 }
 
 function __pillApplyAll__(){
-  try{ __pillTargetButtons__().forEach((btn) => __pillApplyToButton__(btn)); }catch(_){ }
+  try{
+    __pillTargetButtons__().forEach((btn) => {
+      try{ __pillApplyToButton__(btn); }catch(_){ }
+      try{ __bindPillLongPress__(btn); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __bindPillLongPress__(btn){
+  try{
+    if (!btn || !btn.id || btn.dataset.pillColorHoldBound === '1') return;
+    btn.dataset.pillColorHoldBound = '1';
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
+    const openPicker = () => {
+      holdTriggered = true;
+      const current = __pillVisualFor__(btn.id);
+      __tagColorPopupOpen__('pill-single-button', current, (payload) => {
+        try{
+          const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+          __pillSaveColor__(btn.id, colors.bg || current.bg || 'blue-4', 'bg');
+          __pillSaveColor__(btn.id, colors.border || current.border || colors.bg || current.bg || 'blue-4', 'border');
+          __pillSaveColor__(btn.id, colors.fg || current.fg || 'white', 'fg');
+          if (payload && payload.opacity != null){
+            const map = __pillColorMapRead__();
+            const next = __pillVisualFor__(btn.id);
+            map[String(btn.id||'').trim()] = {
+              fg: next.fg || 'white',
+              bg: next.bg || 'blue-4',
+              border: next.border || next.bg || 'blue-4',
+              opacity: __designBgOpacityNormalize__(payload.opacity)
+            };
+            __pillColorMapWrite__(map);
+            __designBgOpacityWrite__(payload.opacity);
+          }
+          __pillApplyAll__();
+          try{ renderRoomSettingsPage(); }catch(_){ }
+        }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+    };
+    btn.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, { passive:true, capture:true });
+    btn.addEventListener('touchend', (e) => {
+      clearHold();
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
+    btn.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, true);
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
+    btn.addEventListener('click', (e) => {
+      if (holdTriggered || (Date.now() - touchAt < 450 && holdTriggered)){
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      }
+    }, true);
+    btn.addEventListener('contextmenu', (e) => {
+      try{ e.preventDefault(); }catch(_){ }
+      try{ openPicker(); }catch(_){ }
+      try{ e.stopPropagation(); }catch(_){ }
+    });
+  }catch(_){ }
 }
 
 function __pillThemeButtonStyle__(){
@@ -7788,7 +7858,7 @@ function __launcherIconApplyToButton__(btn){
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
       const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
-      const resolvedBorder = borderHex ? hexToRgba(borderHex, resolvedOpacity) : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : '');
       const glyph = btn.querySelector('.home-main-glyph');
       setImp(btn, 'background', 'transparent');
       setImp(btn, 'background-color', 'transparent');
@@ -7819,7 +7889,7 @@ function __launcherIconApplyToButton__(btn){
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
       const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
-      const resolvedBorder = borderHex ? hexToRgba(borderHex, resolvedOpacity) : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
+      const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : '');
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
@@ -8213,7 +8283,7 @@ function getGuestChannelBadgeData(item){
   const textColor = __normalizeChannelTextColor__(catalogItem?.coloreTesto || item?.channel_colore_testo || item?.channelColorText || '');
   const initial = String(catalogItem?.iniziale || item?.channel_iniziale || item?.channelInitial || __channelInitialFromName__(catalogItem?.nome || item?.channel_nome || item?.channelName || '')).trim().slice(0,1).toUpperCase() || 'C';
   const name = String(catalogItem?.nome || item?.channel_nome || item?.channelName || '').trim();
-  return { color, textColor, style: __tagColorInlineStyle__(color, textColor, { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }), initial, name };
+  return { color, textColor, style: __tagColorInlineStyle__(color, textColor, { opacity:0.80, borderOpacity:1, preferWhiteText:false }), initial, name };
 }
 
 function __operatoriCatalogDefaultFromLegacy__(){
@@ -8523,7 +8593,7 @@ function __tagColorPopupSwallowGhostTap__(ev){
 
 function __tagColorPopupSelectedSpec__(){
   const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
-  if (mode === 'opacity') return String(__designBgOpacityNormalize__(__tagColorPopupState__.opacity || 0.80));
+  if (mode === 'opacity') return String(__designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)));
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
   if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
   return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.fg || __tagColorPopupState__.colors?.bg || 'blue-4');
@@ -8627,7 +8697,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
 function __tagColorPopupConfirm__(){
   try{
     const cb = __tagColorPopupState__.onSelect;
-    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity || 0.80), colors: { ...(__tagColorPopupState__.colors || {}) } };
+    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)), colors: { ...(__tagColorPopupState__.colors || {}) } };
     __tagColorPopupState__.confirmed = true;
     if (typeof cb === 'function'){
       try{ cb(payload); }catch(_){ }
@@ -8745,7 +8815,7 @@ async function renderOperatoriPage(){
     <article class="operatori-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -8962,7 +9032,7 @@ async function renderChannelPage(){
     <article class="operatori-item channel-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -9234,7 +9304,7 @@ async function renderLaundryCatalogPage(){
     <article class="operatori-item laundry-component-item" data-id="${item.id}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
-          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}"></span>
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"></span>
           <div class="operatori-name">${String(__laundryDisplayTitle__(item, item?.titolo || '') || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</div>
         </div>
         <div class="operatori-item-actions">
@@ -12557,7 +12627,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
   const current = __loadStatCardColorMap__(pageKey);
   Object.keys(map || {}).forEach((key) => {
     const prev = __tagColorPairFromValue__(current[key], map[key] || 'blue-4');
-    current[key] = { bg: prev.bg, border: prev.border || prev.bg, fg: map[key] || prev.fg || '' };
+    current[key] = { bg: prev.bg, border: prev.border || prev.bg, fg: map[key] || prev.fg || '', opacity: __designBgOpacityNormalize__(prev.opacity ?? 0.80) };
   });
   __saveStatCardColorMap__(pageKey, current);
 }
@@ -12593,7 +12663,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
     const bgOpacity = __designBgOpacityNormalize__(pair.opacity ?? 0.80);
-    const borderOpacity = bgOpacity;
+    const borderOpacity = 1;
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
@@ -12655,7 +12725,8 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     pair.bg = nextBg;
     pair.border = nextBorder || nextBg;
     pair.fg = nextFgRaw ? __parseOperatoreColorSpec__(nextFgRaw).spec : '';
-    if (safeKey) map[safeKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '' };
+    pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? currentPair.opacity ?? __designBgOpacityRead__());
+    if (safeKey) map[safeKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: pair.opacity };
     __saveStatCardColorMap__(pageKey, map);
     if (pageKey === 'statmensili' && safeKey){
       try{
@@ -12668,7 +12739,7 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const nextHex = __tagColorTextHex__(pair.bg || currentColor || '#2B7CB4', pair.fg || '', false);
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(currentPair.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
 }
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
@@ -17955,7 +18026,7 @@ function renderGuestCards(){
         </div>
         <div class="guest-meta-right" aria-label="Stato">
           ${buildNightsDotHTML(stayNights)}
-          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
+          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
           ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
@@ -21511,7 +21582,7 @@ function renderCalendarioWeek(){
           if (info.channelInitial){
             const ch = document.createElement("span");
             ch.className = `cal-channel-tag operatori-tag color-${info.channelColor || "orange"}`;
-            ch.setAttribute('style', info.channelStyle || __tagColorInlineStyle__(info.channelColor || 'orange', info.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }));
+            ch.setAttribute('style', info.channelStyle || __tagColorInlineStyle__(info.channelColor || 'orange', info.channelTextColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }));
             ch.textContent = String(info.channelInitial).slice(0,1).toUpperCase();
             chrome.appendChild(ch);
           }
@@ -21797,7 +21868,7 @@ function buildCalendarCellPayload(info, room, dateIso){
     channelInitial: String(channelBadge?.initial || info?.channelInitial || '').trim(),
     channelColor: String(channelBadge?.color || info?.channelColor || 'orange').trim(),
     channelTextColor: String(channelBadge?.textColor || info?.channelTextColor || '').trim(),
-    channelStyle: String(channelBadge?.style || info?.channelStyle || __tagColorInlineStyle__(channelBadge?.color || info?.channelColor || 'orange', channelBadge?.textColor || info?.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false })),
+    channelStyle: String(channelBadge?.style || info?.channelStyle || __tagColorInlineStyle__(channelBadge?.color || info?.channelColor || 'orange', channelBadge?.textColor || info?.channelTextColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false })),
     beds,
     mgc: [
       { short:'M', label:'Matrimonio', on: !!(info && info.mOn) },
@@ -21821,7 +21892,7 @@ function buildCalendarCellZoomMarkup(payload){
   for (let i = 0; i < (data.beds?.lettoS || 0); i++) dots.push('<span class="bed-dot bed-dot-s"></span>');
   for (let i = 0; i < (data.beds?.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
   const flags = (Array.isArray(data.mgc) ? data.mgc : []).filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
-  const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}" style="${escapeHtml(data.channelStyle || __tagColorInlineStyle__(data.channelColor || 'orange', data.channelTextColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }))}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
+  const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}" style="${escapeHtml(data.channelStyle || __tagColorInlineStyle__(data.channelColor || 'orange', data.channelTextColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
   return `
     <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
@@ -22218,7 +22289,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -22271,7 +22342,7 @@ function buildWeekOccupancy(weekStart){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:0.80, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
