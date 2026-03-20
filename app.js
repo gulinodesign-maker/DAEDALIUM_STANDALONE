@@ -7291,7 +7291,7 @@ function __launcherIconApplyToButton__(btn){
     }
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings')){
       const isDarkUi = !!__isDarkModeEnabled__();
-      const resolvedBg = bgHex ? hexToRgba(bgHex, 0.80) : (isDarkUi ? 'rgba(15,23,42,0.80)' : '');
+      const resolvedBg = isDarkUi ? 'rgba(15,23,42,0.80)' : (bgHex ? hexToRgba(bgHex, 0.80) : '');
       const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 0.24) : (isDarkUi ? 'rgba(148,163,184,0.22)' : ''));
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
@@ -7321,6 +7321,40 @@ function __launcherIconApplyToButton__(btn){
   }catch(_){ }
 }
 
+function __applyStatisticsCardTheme__(){
+  try{
+    const visual = __launcherGridThemeRead__();
+    const bgSpec = visual.bg || 'blue-4';
+    const borderSpec = visual.border || bgSpec || 'blue-4';
+    const bgHex = __operatoreColorHex__(bgSpec || 'blue-4');
+    const borderHex = __operatoreColorHex__(borderSpec || bgSpec || 'blue-4');
+    const isDarkUi = !!__isDarkModeEnabled__();
+    const groups = [
+      ['#page-statgen .stat-row', 0.10, 1],
+      ['#page-statspese .stat-row', 0.10, 1],
+      ['#page-statmensili .month-row', 0.18, 1],
+      ['#page-statprenotazioni .stats-graph-card', isDarkUi ? 0.12 : 0.06, 1],
+      ['#page-statcancellazioni .kpi-card', isDarkUi ? 0.12 : 0.06, 1],
+      ['#page-statazienda .fin-card', isDarkUi ? 0.12 : 0.06, 1],
+      ['#page-statamministratore .fin-card', isDarkUi ? 0.12 : 0.06, 1],
+      ['#page-statpiscina .stats-card, #page-statpiscina .stats-graph-card, #page-statpiscina .piscina-wrap, #page-statpiscina .piscina-nav, #page-statpiscina .piscina-cal', isDarkUi ? 0.12 : 0.06, 1]
+    ];
+    groups.forEach(([selector, alpha]) => {
+      try{
+        document.querySelectorAll(selector).forEach((el) => {
+          el.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+          el.style.setProperty('border-width', '1px', 'important');
+          el.style.setProperty('border-style', 'solid', 'important');
+          if (!el.classList.contains('stat-row') && !el.classList.contains('month-row')){
+            el.style.setProperty('background', hexToRgba(bgHex, alpha), 'important');
+            el.style.setProperty('background-color', hexToRgba(bgHex, alpha), 'important');
+          }
+        });
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __launcherIconApplyAll__(){
   try{
     __LAUNCHER_ICON_TARGET_IDS__.forEach((id) => {
@@ -7328,6 +7362,7 @@ function __launcherIconApplyAll__(){
       if (btn) __launcherIconApplyToButton__(btn);
     });
   }catch(_){ }
+  try{ __applyStatisticsCardTheme__(); }catch(_){ }
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
@@ -12012,7 +12047,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
       el.style.setProperty('border', `1px solid ${hexToRgba(bgHex, 0.22)}`, 'important');
     }
     try{
-      el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap').forEach((node)=>{
+      el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap, .kpi-label, .kpi-value, .fin-head, .fin-head div, .fin-label, .fin-val, .stats-graph-card-title, .stats-graph-note, .stats-graph-legend, .piscina-nav-center, .piscina-today').forEach((node)=>{
         try{
           if (node.classList && node.classList.contains('month-fill')){
             node.style.setProperty('background', fgHex, 'important');
@@ -12036,6 +12071,10 @@ function __refreshStatCardsPage__(pageKey){
     if (pageKey === 'statgen') return renderStatGen();
     if (pageKey === 'statspese') return renderStatSpese();
     if (pageKey === 'statmensili') return renderStatMensili();
+    if (pageKey === 'statprenotazioni') return renderStatGrafici(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
+    if (pageKey === 'statcancellazioni') return renderStatCancellazioni();
+    if (pageKey === 'statazienda') return renderStatAzienda();
+    if (pageKey === 'statamministratore') return renderStatAmministratore();
   }catch(_){ }
 }
 
@@ -12469,6 +12508,17 @@ function renderStatGrafici(operatoriRows){
     centerTitle: "Ore",
     centerFormatter: (n)=>`${__fmtHours_(n) || "0"}h`
   });
+
+  try{
+    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
+      const keys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
+      const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
+      const cardKey = keys[index] || `graph-${index+1}`;
+      const fallback = fallbacks[index] || '#2b7cb4';
+      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
+      __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
+    });
+  }catch(_){ }
 }
 
 
@@ -13025,6 +13075,14 @@ function computeStatPrenotazioni(){
 function renderStatPrenotazioni(){
   const s = computeStatPrenotazioni();
   state.statPrenotazioni = s;
+  try{
+    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
+      const cardKey = `graph-${index+1}`;
+      const fallback = index === 0 ? '#2b7cb4' : (index === 1 ? '#6fb7d6' : (index === 2 ? '#c9772b' : '#ff3b30'));
+      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
+      __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
+    });
+  }catch(_){ }
 
   const slices = [
     { label: "Con importo booking", value: s.withBooking, color: "#2b7cb4" },
@@ -13491,6 +13549,16 @@ function renderStatCancellazioni(){
       leg.appendChild(row);
     });
   }
+  try{
+    document.querySelectorAll('#page-statcancellazioni .kpi-card').forEach((card, index) => {
+      const keys = ['percentuale','totale','cancellate'];
+      const fallbacks = ['#ff3b30','#2b7cb4','#c9772b'];
+      const cardKey = keys[index] || `kpi-${index+1}`;
+      const fallback = fallbacks[index] || '#2b7cb4';
+      __applyStatCardTextColor__(card, 'statcancellazioni', cardKey, fallback);
+      __bindStatCardColorLongPress__(card, 'statcancellazioni', cardKey, fallback);
+    });
+  }catch(_){ }
 }
 
 
@@ -13527,6 +13595,13 @@ function renderStatAzienda(){
       <div class="fin-val">${_euroSigned(r.v)}</div>
     </div>`;
   }).join("");
+  try{
+    const card = document.querySelector('#page-statazienda .fin-card');
+    if (card){
+      __applyStatCardTextColor__(card, 'statazienda', 'bilancio', '#2b7cb4');
+      __bindStatCardColorLongPress__(card, 'statazienda', 'bilancio', '#2b7cb4');
+    }
+  }catch(_){ }
 }
 
 
@@ -13640,6 +13715,13 @@ function renderStatAmministratore(){
       <div class="fin-val">${_euroSigned(r.v)}</div>
     </div>`;
   }).join("");
+  try{
+    const card = document.querySelector('#page-statamministratore .fin-card');
+    if (card){
+      __applyStatCardTextColor__(card, 'statamministratore', 'personale', '#2b7cb4');
+      __bindStatCardColorLongPress__(card, 'statamministratore', 'personale', '#2b7cb4');
+    }
+  }catch(_){ }
 }
 
 function saveStatAmministratore(){
