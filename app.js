@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.392
+ * Build: 2.393
  */
-const BUILD_VERSION = "2.392";
+const BUILD_VERSION = "2.393";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7449,29 +7449,18 @@ function __launcherIconApplyToButton__(btn){
 
 function __applyStatisticsCardTheme__(){
   try{
-    const visual = __statisticsCardThemeRead__();
-    const bgSpec = visual.bg || 'blue-4';
-    const borderSpec = visual.border || bgSpec || 'blue-4';
-    const bgHex = __operatoreColorHex__(bgSpec || 'blue-4');
-    const borderHex = __operatoreColorHex__(borderSpec || bgSpec || 'blue-4');
-    const alpha = __designBgOpacityRead__();
-    const groups = [
-      ['#page-statgen .stat-row', alpha, 1],
-      ['#page-statspese .stat-row', alpha, 1],
-      ['#page-statmensili .month-row', alpha, 1]
+    const configs = [
+      ['#page-statgen .stat-row', 'statgen'],
+      ['#page-statspese .stat-row', 'statspese'],
+      ['#page-statmensili .month-row', 'statmensili']
     ];
-    groups.forEach(([selector, bgAlpha, borderAlpha]) => {
+    configs.forEach(([selector, pageKey]) => {
       try{
-        document.querySelectorAll(selector).forEach((el) => {
-          const bg = hexToRgba(bgHex, bgAlpha);
-          const border = hexToRgba(borderHex, borderAlpha);
-          el.style.setProperty('background', bg, 'important');
-          el.style.setProperty('background-color', bg, 'important');
-          el.style.setProperty('border', '1px solid ' + border, 'important');
-          el.style.setProperty('--stats-theme-bg', bg, 'important');
-          el.style.setProperty('--stats-theme-border', border, 'important');
-          el.style.setProperty('--stats-theme-border-strong', border, 'important');
-          el.style.setProperty('--stats-theme-overlay-opacity', '0', 'important');
+        document.querySelectorAll(selector).forEach((el, index) => {
+          const cardKey = String(el?.dataset?.statCardKey || '').trim() || `${pageKey}-${index+1}`;
+          el.dataset.statCardKey = cardKey;
+          const fallback = getComputedStyle(el).getPropertyValue('--mcol') || getComputedStyle(el).getPropertyValue('--statbg') || '#2B7CB4';
+          __applyStatCardTextColor__(el, pageKey, cardKey, fallback);
         });
       }catch(_){ }
     });
@@ -12166,7 +12155,15 @@ function __saveStatCardTextColorMap__(pageKey, map){
 }
 
 function __getStatCardColorPair__(pageKey, cardKey, fallback){
-  const normalizedFallback = __tagColorPairFromValue__(fallback || 'blue-4', fallback || 'blue-4');
+  let baseFallback = fallback || 'blue-4';
+  try{
+    const themedPages = new Set(['statgen','statspese','statmensili']);
+    if (themedPages.has(String(pageKey || '').trim().toLowerCase())){
+      const visual = __statisticsCardThemeRead__();
+      baseFallback = { bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', fg: '' };
+    }
+  }catch(_){ }
+  const normalizedFallback = __tagColorPairFromValue__(baseFallback || 'blue-4', (baseFallback && baseFallback.bg) || fallback || 'blue-4');
   try{
     const map = __loadStatCardColorMap__(pageKey);
     const saved = map[String(cardKey || '')];
