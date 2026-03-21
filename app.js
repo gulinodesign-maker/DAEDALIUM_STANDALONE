@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.432
+ * Build: 2.433
  */
-const BUILD_VERSION = "2.432";
+const BUILD_VERSION = "2.433";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12599,33 +12599,18 @@ function drawPie(canvasId, slices, opts){
   const r = cssSize/2 - 10;
 
   const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
-  const hostCard = canvas.closest ? canvas.closest('.stats-graph-card') : null;
-  const hostStyles = hostCard ? getComputedStyle(hostCard) : null;
-  const hostSurface = (hostStyles && hostStyles.getPropertyValue) ? String(hostStyles.getPropertyValue('--card-surface') || '').trim() : '';
-  const hostBg = (hostStyles && hostStyles.backgroundColor) ? String(hostStyles.backgroundColor).trim() : '';
-  const hostText = (hostStyles && hostStyles.color) ? String(hostStyles.color).trim() : '';
-  const resolvedSurface = hostSurface || hostBg;
-  const ringBg = 'rgba(0,0,0,0)';
-  const ringStroke = isDark ? "rgba(148,163,184,0.18)" : "rgba(15,23,42,0.06)";
-  const holeBg = "rgba(0,0,0,0)";
-  const holeTextSoft = hostText || (isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)");
-  const holeTextStrong = hostText || (isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)");
-
-  // Ring background
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI*2);
-  ctx.fillStyle = ringBg;
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = ringStroke;
-  ctx.stroke();
+  const ringStroke = isDark ? "rgba(148,163,184,0.22)" : "rgba(15,23,42,0.08)";
+  const holeTextSoft = isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)";
+  const holeTextStrong = isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)";
 
   let ang = -Math.PI/2;
   if (total <= 0){
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(cx, cy, r-8, 0, Math.PI*2);
-    ctx.fillStyle = "rgba(0,0,0,0)";
+    ctx.arc(cx, cy, r*0.58, 0, Math.PI*2);
     ctx.fill();
+    ctx.restore();
     ctx.fillStyle = holeTextSoft;
     ctx.font = "600 12px system-ui";
     ctx.textAlign = "center";
@@ -12650,17 +12635,13 @@ function drawPie(canvasId, slices, opts){
     ang += a;
   });
 
-  // inner hole
+  // inner hole: truly transparent, so no residual surface color remains under the graph
   ctx.save();
   ctx.globalCompositeOperation = "destination-out";
   ctx.beginPath();
   ctx.arc(cx, cy, r*0.58, 0, Math.PI*2);
-  ctx.fillStyle = holeBg;
   ctx.fill();
   ctx.restore();
-  ctx.strokeStyle = ringStroke;
-  ctx.lineWidth = 1;
-  ctx.stroke();
 
   if (showCenter){
     ctx.fillStyle = holeTextSoft;
@@ -12885,7 +12866,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const safePageKey = String(pageKey || '').trim().toLowerCase();
     const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili'].includes(safePageKey);
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni'].includes(safePageKey);
     const fgHex = useForcedDarkSurface
       ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
       : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
@@ -12899,8 +12880,6 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    el.style.setProperty('--card-surface', resolvedBg);
-    el.style.setProperty('--graph-hole-bg', resolvedBg);
     el.style.setProperty('background', resolvedBg, 'important');
     el.style.setProperty('background-color', resolvedBg, 'important');
     el.style.setProperty('border', `1px solid ${resolvedBorder}`, 'important');
@@ -13382,17 +13361,6 @@ function renderStatGrafici(operatoriRows){
   const pulizieSlicesCustom = __applyGraphCustomColors__('pulizie', pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }]);
   const occAvg = occSlices.length ? (occSlices.reduce((a,x)=>a + (Number(x.value || 0) || 0), 0) / occSlices.length) : 0;
 
-  try{
-    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
-      const keys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
-      const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
-      const cardKey = keys[index] || `graph-${index+1}`;
-      const fallback = fallbacks[index] || '#2b7cb4';
-      __sanitizeStatPrenotazioniCardPair__(cardKey, fallback);
-      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
-    });
-  }catch(_){ }
-
   drawPie("statGrafOccCanvas", occSlices, { centerTitle: "Media", centerFormatter: ()=>`${occAvg.toFixed(1)}%`, showCenter: true, maxSize: 170, minSize: 120 });
   drawPie("statGrafRicevuteCanvas", ricevuteSlicesCustom, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
   drawPie("statGrafBookingCanvas", bookingSlicesCustom, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
@@ -13465,6 +13433,7 @@ function renderStatGrafici(operatoriRows){
       const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
       const cardKey = keys[index] || `graph-${index+1}`;
       const fallback = fallbacks[index] || '#2b7cb4';
+      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
       __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
     });
   }catch(_){ }
@@ -13480,41 +13449,6 @@ function hexToRgba(hex, a){
   const g = parseInt(h.slice(2,4),16);
   const b = parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${a})`;
-}
-function __hexRgbTriplet__(hex){
-  const h = String(hex || '').trim().replace('#','');
-  if (h.length !== 6) return null;
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
-  if (![r,g,b].every((n)=>Number.isFinite(n))) return null;
-  return { r, g, b };
-}
-function __isVeryLightHex__(hex){
-  const rgb = __hexRgbTriplet__(hex);
-  if (!rgb) return false;
-  return rgb.r >= 235 && rgb.g >= 235 && rgb.b >= 235;
-}
-function __sanitizeStatPrenotazioniCardPair__(cardKey, fallback){
-  const safeKey = String(cardKey || '').trim();
-  if (!safeKey) return;
-  try{
-    const map = __loadStatCardColorMap__('statprenotazioni');
-    if (!map || typeof map !== 'object' || !map[safeKey]) return;
-    const current = __tagColorPairFromValue__(map[safeKey], fallback || '#2B7CB4');
-    const bgHex = __graphColorValueToHex__(current.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
-    const fgHex = current.fg ? __graphColorValueToHex__(current.fg, current.fg) : '';
-    const opacity = __designBgOpacityNormalize__(current.opacity ?? 0.80);
-    const hasBrokenSurface = __isVeryLightHex__(bgHex) || opacity < 0.45 || (fgHex && __isVeryLightHex__(fgHex));
-    if (!hasBrokenSurface) return;
-    map[safeKey] = {
-      bg: fallback || '#2B7CB4',
-      border: fallback || '#2B7CB4',
-      fg: '',
-      opacity: 0.80
-    };
-    __saveStatCardColorMap__('statprenotazioni', map);
-  }catch(_){ }
 }
 function escapeHtml(s){
   return String(s || "")
