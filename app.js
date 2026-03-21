@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.426
+ * Build: 2.427
  */
-const BUILD_VERSION = "2.426";
+const BUILD_VERSION = "2.427";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13041,6 +13041,10 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
   if (!el || el.dataset.statCardColorBound === '1') return;
+  try{
+    const safePageKey = String(pageKey || '').trim().toLowerCase();
+    if (safePageKey === 'statprenotazioni' && el.classList && el.classList.contains('stats-graph-card')) return;
+  }catch(_){ }
   el.dataset.statCardColorBound = '1';
   let timer = null;
   let fired = false;
@@ -13443,6 +13447,7 @@ function renderStatGrafici(operatoriRows){
       const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
       const cardKey = keys[index] || `graph-${index+1}`;
       const fallback = fallbacks[index] || '#2b7cb4';
+      __sanitizeStatPrenotazioniCardPair__(cardKey, fallback);
       __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
       __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
     });
@@ -13459,6 +13464,41 @@ function hexToRgba(hex, a){
   const g = parseInt(h.slice(2,4),16);
   const b = parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${a})`;
+}
+function __hexRgbTriplet__(hex){
+  const h = String(hex || '').trim().replace('#','');
+  if (h.length !== 6) return null;
+  const r = parseInt(h.slice(0,2),16);
+  const g = parseInt(h.slice(2,4),16);
+  const b = parseInt(h.slice(4,6),16);
+  if (![r,g,b].every((n)=>Number.isFinite(n))) return null;
+  return { r, g, b };
+}
+function __isVeryLightHex__(hex){
+  const rgb = __hexRgbTriplet__(hex);
+  if (!rgb) return false;
+  return rgb.r >= 235 && rgb.g >= 235 && rgb.b >= 235;
+}
+function __sanitizeStatPrenotazioniCardPair__(cardKey, fallback){
+  const safeKey = String(cardKey || '').trim();
+  if (!safeKey) return;
+  try{
+    const map = __loadStatCardColorMap__('statprenotazioni');
+    if (!map || typeof map !== 'object' || !map[safeKey]) return;
+    const current = __tagColorPairFromValue__(map[safeKey], fallback || '#2B7CB4');
+    const bgHex = __graphColorValueToHex__(current.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
+    const fgHex = current.fg ? __graphColorValueToHex__(current.fg, current.fg) : '';
+    const opacity = __designBgOpacityNormalize__(current.opacity ?? 0.80);
+    const hasBrokenSurface = __isVeryLightHex__(bgHex) || opacity < 0.45 || (fgHex && __isVeryLightHex__(fgHex));
+    if (!hasBrokenSurface) return;
+    map[safeKey] = {
+      bg: fallback || '#2B7CB4',
+      border: fallback || '#2B7CB4',
+      fg: '',
+      opacity: 0.80
+    };
+    __saveStatCardColorMap__('statprenotazioni', map);
+  }catch(_){ }
 }
 function escapeHtml(s){
   return String(s || "")
