@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.435
+ * Build: 2.436
  */
-const BUILD_VERSION = "2.435";
+const BUILD_VERSION = "2.436";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13626,8 +13626,9 @@ function computeStatGen(){
 
 function computeStatGenRoomPriceMonthly(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
-  const sums = new Array(12).fill(0);
-  const counts = new Array(12).fill(0);
+  const revenueByMonth = new Array(12).fill(0);
+  const roomNightsByMonth = new Array(12).fill(0);
+  const bookingCountsByMonth = new Array(12).fill(0);
 
   const money = (v) => {
     if (v === null || v === undefined) return 0;
@@ -13656,29 +13657,8 @@ function computeStatGenRoomPriceMonthly(){
       if (!map[gid]) map[gid] = new Set();
       map[gid].add(n);
     }
-    for (const k in map){
-      roomsCountByGuestId[k] = map[k].size || 0;
-    }
+    for (const k in map) roomsCountByGuestId[k] = map[k].size || 0;
   }catch(_){ }
-
-  const pickMonth = (g) => {
-    let iso = "";
-    try{
-      if (typeof __parseDateFlexibleToISO === "function"){
-        iso = __parseDateFlexibleToISO(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.data_arrivo ?? g?.checkin ?? "");
-      }
-    }catch(_){ iso = ""; }
-    if (!iso){
-      try{
-        if (typeof __parseDateFlexibleToISO === "function"){
-          iso = __parseDateFlexibleToISO(g?.check_out ?? g?.checkOut ?? g?.partenza ?? g?.data_partenza ?? "");
-        }
-      }catch(_){ iso = ""; }
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return -1;
-    const mm = parseInt(iso.slice(5,7), 10);
-    return Number.isFinite(mm) && mm >= 1 && mm <= 12 ? (mm - 1) : -1;
-  };
 
   const pickRoomsCount = (g) => {
     const gid = String(guestIdOf(g) ?? g?.id ?? g?.ID ?? g?.Id ?? "").trim();
@@ -13692,25 +13672,52 @@ function computeStatGenRoomPriceMonthly(){
     return 1;
   };
 
+  const pickISO = (value) => {
+    try{
+      if (typeof __parseDateFlexibleToISO === "function") return __parseDateFlexibleToISO(value || "");
+    }catch(_){ }
+    return "";
+  };
+
   for (const g of guests){
-    const monthIdx = pickMonth(g);
-    if (monthIdx < 0) continue;
     const price = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
     if (!isFinite(price) || price <= 0) continue;
-    const roomsCount = pickRoomsCount(g);
-    const roomPrice = price / Math.max(1, roomsCount || 1);
-    if (!isFinite(roomPrice) || roomPrice <= 0) continue;
-    sums[monthIdx] += roomPrice;
-    counts[monthIdx] += 1;
+
+    const roomsCount = Math.max(1, pickRoomsCount(g));
+    const ciISO = pickISO(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.data_arrivo ?? g?.checkin ?? "");
+    const coISO = pickISO(g?.check_out ?? g?.checkOut ?? g?.partenza ?? g?.data_partenza ?? "");
+    const totalNights = Math.max(0, parseInt(calcStayNights(g), 10) || 0);
+    const totalRoomNights = Math.max(0, totalNights * roomsCount);
+    if (!ciISO || !coISO || !/^\d{4}-\d{2}-\d{2}$/.test(ciISO) || !/^\d{4}-\d{2}-\d{2}$/.test(coISO) || totalRoomNights <= 0) continue;
+
+    const unitRoomNightPrice = price / totalRoomNights;
+    if (!isFinite(unitRoomNightPrice) || unitRoomNightPrice <= 0) continue;
+
+    const ci = new Date(ciISO + "T00:00:00Z");
+    const co = new Date(coISO + "T00:00:00Z");
+    if (!isFinite(ci.getTime()) || !isFinite(co.getTime()) || co <= ci) continue;
+
+    const touchedMonths = new Set();
+    let d = new Date(ci.getTime());
+    while (d < co){
+      const m = d.getUTCMonth();
+      if (m >= 0 && m < 12){
+        roomNightsByMonth[m] += roomsCount;
+        revenueByMonth[m] += (unitRoomNightPrice * roomsCount);
+        touchedMonths.add(m);
+      }
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    touchedMonths.forEach((m) => { bookingCountsByMonth[m] += 1; });
   }
 
-  const avgByMonth = sums.map((sum, idx) => {
-    const count = Number(counts[idx] || 0) || 0;
-    if (count <= 0) return 0;
-    return Math.round((sum / count) * 100) / 100;
+  const avgByMonth = revenueByMonth.map((sum, idx) => {
+    const roomNights = Number(roomNightsByMonth[idx] || 0) || 0;
+    if (roomNights <= 0) return 0;
+    return Math.round((sum / roomNights) * 100) / 100;
   });
 
-  return { avgByMonth, counts };
+  return { avgByMonth, counts: bookingCountsByMonth, roomNightsByMonth };
 }
 
 function renderStatGenRoomPriceGraph(){
@@ -13746,8 +13753,8 @@ function renderStatGenRoomPriceGraph(){
   axis.classList.remove('is-empty');
 
   const width = 360;
-  const height = 186;
-  const pad = { left: 6, right: 6, top: 14, bottom: 18 };
+  const height = 92;
+  const pad = { left: 4, right: 4, top: 10, bottom: 10 };
   const chartW = width - pad.left - pad.right;
   const chartH = height - pad.top - pad.bottom;
   const maxVal = Math.max(...positive);
@@ -13780,19 +13787,13 @@ function renderStatGenRoomPriceGraph(){
     const x = pad.left + (chartW * idx / 11);
     return `<line x1="${x.toFixed(2)}" y1="${pad.top}" x2="${x.toFixed(2)}" y2="${(height - pad.bottom).toFixed(2)}"></line>`;
   }).join('');
-  const gridH = new Array(5).fill(0).map((_, idx) => {
-    const y = pad.top + (chartH * idx / 4);
+  const gridH = new Array(3).fill(0).map((_, idx) => {
+    const y = pad.top + (chartH * idx / 2);
     return `<line x1="${pad.left}" y1="${y.toFixed(2)}" x2="${(width - pad.right).toFixed(2)}" y2="${y.toFixed(2)}"></line>`;
-  }).join('');
-  const valueTags = points.filter((p) => p.hasData).map((p) => {
-    const label = escapeHtml(euro(p.value).replace(/\s/g, ''));
-    const tx = Math.max(26, Math.min(width - 26, p.x));
-    const ty = Math.max(16, p.y - 12);
-    return `<g class="room-ecg-tag"><text x="${tx.toFixed(2)}" y="${ty.toFixed(2)}" text-anchor="middle">${label}</text></g>`;
   }).join('');
   const dots = points.map((p) => {
     if (!p.hasData) return `<circle class="room-ecg-dot is-empty" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="3"></circle>`;
-    return `<circle class="room-ecg-dot" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="3.5"><title>${escapeHtml((__MONTHS_IT && __MONTHS_IT[p.idx]) || ('Mese ' + (p.idx + 1)))} · ${escapeHtml(euro(p.value))} · ${p.count} pren.</title></circle>`;
+    return `<circle class="room-ecg-dot" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="3.5"><title>${escapeHtml((__MONTHS_IT && __MONTHS_IT[p.idx]) || ('Mese ' + (p.idx + 1)))} · ${escapeHtml(euro(p.value))} · ${p.count} prenotazioni</title></circle>`;
   }).join('');
 
   chart.innerHTML = `
@@ -13800,7 +13801,6 @@ function renderStatGenRoomPriceGraph(){
       <g class="room-ecg-grid">${gridV}${gridH}</g>
       <path class="room-ecg-line" d="${linePath}"></path>
       ${dots}
-      ${valueTags}
     </svg>
   `;
 }
