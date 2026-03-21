@@ -15894,7 +15894,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   fill: none !important;
 }
 
-/* dDAE_2.412 — Dark mode canonical overrides (topbar/header + anno/login pills + settings 3x3) */
+/* dDAE_2.413 — Dark mode canonical overrides (topbar/header + anno/login pills + settings 3x3) */
 body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn,
 body.ddae-dark .guest-hd-actions .icon-btn,
@@ -16041,3 +16041,103 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   }
 }
 
+
+/* dDAE_2.413 — Dark mode cleanup definitivo: topbar/title buttons dark, anno/logout dark, no pill doppia in impostazioni */
+body.ddae-dark #page-impostazioni .settings-account-name{
+  display: none !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-account-name{
+  background: rgba(8,18,38,0.96) !important;
+  background-color: rgba(8,18,38,0.96) !important;
+  border: 1px solid rgba(88,183,244,0.28) !important;
+  box-shadow: none !important;
+  color: #e5edf8 !important;
+  -webkit-text-fill-color: #e5edf8 !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-year-pill,
+body.ddae-dark #page-opsettings .settings-year-pill{
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill{
+  color: #58b7f4 !important;
+  -webkit-text-fill-color: #58b7f4 !important;
+}
+
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico *,
+body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
+  color: #58b7f4 !important;
+  stroke: #58b7f4 !important;
+  fill: none !important;
+  -webkit-text-fill-color: #58b7f4 !important;
+}
+
+body.ddae-dark .topbar .icon-btn,
+body.ddae-dark .hd-actions .icon-btn,
+body.ddae-dark .guest-hd-actions .icon-btn,
+body.ddae-dark .clean-topbar .icon-btn,
+body.ddae-dark .app-section-head-row .icon-btn,
+body.ddae-dark .prodotti-header-btn,
+body.ddae-dark .laundry-detail-tool,
+body.ddae-dark #laundryPricesClose,
+body.ddae-dark #piscinaPrevMonth,
+body.ddae-dark #piscinaNextMonth{
+  background: rgba(8,18,38,0.96) !important;
+  background-color: rgba(8,18,38,0.96) !important;
+  border: 1px solid rgba(88,183,244,0.26) !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
+body.ddae-dark .hd-actions .icon-btn .ui-ico,
+body.ddae-dark .hd-actions .icon-btn .ui-ico *,
+body.ddae-dark .guest-hd-actions .icon-btn .ui-ico,
+body.ddae-dark .guest-hd-actions .icon-btn .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico *,
+body.ddae-dark .app-section-head-row .icon-btn .ui-ico,
+body.ddae-dark .app-section-head-row .icon-btn .ui-ico *,
+body.ddae-dark .prodotti-header-btn .ui-ico,
+body.ddae-dark .prodotti-header-btn .ui-ico *,
+body.ddae-dark .laundry-detail-tool .ui-ico,
+body.ddae-dark .laundry-detail-tool .ui-ico *,
+body.ddae-dark #laundryPricesClose .ui-ico,
+body.ddae-dark #laundryPricesClose .ui-ico *,
+body.ddae-dark #piscinaPrevMonth .ui-ico,
+body.ddae-dark #piscinaPrevMonth .ui-ico *,
+body.ddae-dark #piscinaNextMonth .ui-ico,
+body.ddae-dark #piscinaNextMonth .ui-ico *{
+  color: #58b7f4 !important;
+  stroke: #58b7f4 !important;
+  fill: none !important;
+  -webkit-text-fill-color: #58b7f4 !important;
+}
+
+body.ddae-dark .topbar .icon-btn:active,
+body.ddae-dark .hd-actions .icon-btn:active,
+body.ddae-dark .guest-hd-actions .icon-btn:active,
+body.ddae-dark .clean-topbar .icon-btn:active,
+body.ddae-dark .app-section-head-row .icon-btn:active,
+body.ddae-dark .prodotti-header-btn:active,
+body.ddae-dark .laundry-detail-tool:active,
+body.ddae-dark #laundryPricesClose:active,
+body.ddae-dark #piscinaPrevMonth:active,
+body.ddae-dark #piscinaNextMonth:active{
+  background: rgba(12,24,48,0.98) !important;
+  background-color: rgba(12,24,48,0.98) !important;
+}
