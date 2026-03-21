@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.421");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.421");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.422");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.422");
 }
 html{
   background-color:#ececec;
@@ -1247,7 +1247,7 @@ body::before{
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: rgba(236,236,236,0.08);
+  background: rgba(236,236,236,0.03);
 }
 
 body > *{
@@ -12210,7 +12210,7 @@ body.ddae-dark[data-page]{
   background-attachment: scroll !important;
 }
 body.ddae-dark::before{
-  background: rgba(2,6,23,0.16) !important;
+  background: rgba(2,6,23,0.06) !important;
 }
 body.ddae-dark .app-shell,
 body.ddae-dark main,
