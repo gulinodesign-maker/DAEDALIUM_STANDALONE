@@ -16407,3 +16407,158 @@ body.ddae-dark #page-statprenotazioni .stat-graph-modal-legend .legrow{
   background: rgba(15,23,42,0.88) !important;
   border-color: rgba(148,163,184,0.20) !important;
 }
+
+
+/* dDAE_2.435 — Statistiche Generali: grafico ECG prezzo medio stanza */
+#page-statgen .stats-room-ecg-card{
+  position: relative;
+  margin-bottom: 18px;
+  padding: 14px 14px 12px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+  overflow: hidden;
+}
+#page-statgen .stats-room-ecg-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+#page-statgen .stats-room-ecg-title{
+  min-width: 0;
+  font-size: 18px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: rgba(15,23,42,0.88);
+}
+#page-statgen .stats-room-ecg-year{
+  flex: 0 0 auto;
+  min-width: 52px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(77,156,197,0.12);
+  color: #2b7cb4;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 900;
+  text-align: center;
+}
+#page-statgen .stats-room-ecg-chart{
+  min-height: 186px;
+}
+#page-statgen .stats-room-ecg-chart svg{
+  display: block;
+  width: 100%;
+  height: 186px;
+}
+#page-statgen .room-ecg-grid line{
+  stroke: rgba(77,156,197,0.16);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+#page-statgen .room-ecg-line{
+  fill: none;
+  stroke: #4d9cc5;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+#page-statgen .room-ecg-dot{
+  fill: #4d9cc5;
+  stroke: #ffffff;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+#page-statgen .room-ecg-dot.is-empty{
+  fill: rgba(148,163,184,0.18);
+  stroke: rgba(148,163,184,0.24);
+}
+#page-statgen .room-ecg-tag text{
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 800;
+  fill: rgba(15,23,42,0.72);
+}
+#page-statgen .stats-room-ecg-axis{
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 6px;
+}
+#page-statgen .stats-room-ecg-axis span{
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(15,23,42,0.52);
+}
+#page-statgen .stats-room-ecg-axis.is-empty{
+  opacity: 0.35;
+}
+#page-statgen .stats-room-ecg-empty{
+  padding: 12px 0 2px;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 800;
+  text-align: center;
+  color: rgba(15,23,42,0.52);
+}
+body.ddae-dark #page-statgen .stats-room-ecg-card{
+  background: rgba(12,23,46,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statgen .stats-room-ecg-title{
+  color: #f8fafc !important;
+}
+body.ddae-dark #page-statgen .stats-room-ecg-year{
+  background: rgba(88,183,244,0.14) !important;
+  color: #58b7f4 !important;
+}
+body.ddae-dark #page-statgen .room-ecg-grid line{
+  stroke: rgba(88,183,244,0.16) !important;
+}
+body.ddae-dark #page-statgen .room-ecg-line,
+body.ddae-dark #page-statgen .room-ecg-dot{
+  stroke: #58b7f4 !important;
+  fill: #58b7f4 !important;
+}
+body.ddae-dark #page-statgen .room-ecg-dot{
+  stroke: rgba(8,18,38,0.96) !important;
+}
+body.ddae-dark #page-statgen .room-ecg-dot.is-empty{
+  fill: rgba(148,163,184,0.18) !important;
+  stroke: rgba(148,163,184,0.24) !important;
+}
+body.ddae-dark #page-statgen .room-ecg-tag text,
+body.ddae-dark #page-statgen .stats-room-ecg-axis span,
+body.ddae-dark #page-statgen .stats-room-ecg-empty{
+  fill: rgba(226,232,240,0.72) !important;
+  color: rgba(226,232,240,0.72) !important;
+}
+@media (max-width: 390px){
+  #page-statgen .stats-room-ecg-card{
+    padding: 12px 12px 10px;
+    border-radius: 22px;
+  }
+  #page-statgen .stats-room-ecg-title{
+    font-size: 16px;
+  }
+  #page-statgen .stats-room-ecg-chart,
+  #page-statgen .stats-room-ecg-chart svg{
+    min-height: 170px;
+    height: 170px;
+  }
+  #page-statgen .stats-room-ecg-axis span{
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+}
