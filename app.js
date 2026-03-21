@@ -7336,6 +7336,93 @@ function __headerActionApplyAll__(){
   }catch(_){ }
 }
 
+
+function __applyDesignPayloadToVisual__(current, payload, changed, fallback){
+  const base = __launcherVisualNormalize__(current || {}, fallback || 'blue-4');
+  const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+  if (changed?.bg) base.bg = __normalizeOperatoreColor__(colors.bg || base.bg || fallback || 'blue-4');
+  if (changed?.border) base.border = __normalizeOperatoreColor__(colors.border || colors.bg || base.border || base.bg || fallback || 'blue-4');
+  if (changed?.fg) base.fg = __normalizeOperatoreColor__(colors.fg || base.fg || fallback || 'blue-4');
+  if (changed?.opacity) base.opacity = __designBgOpacityNormalize__(payload?.opacity ?? base.opacity ?? 0.80);
+  if (!base.border) base.border = base.bg || fallback || 'blue-4';
+  return base;
+}
+
+async function __applyHeaderActionChangesToCategory__(payload, changed){
+  try{
+    const map = __headerActionColorMapRead__();
+    __headerActionTargetButtons__().forEach((btn) => {
+      if (!btn || !btn.id) return;
+      const next = __applyDesignPayloadToVisual__(__headerActionVisualFor__(btn.id), payload, changed, 'blue-4');
+      map[String(btn.id || '').trim()] = { fg: next.fg || 'blue-4', bg: next.bg || 'white', border: next.border || next.bg || 'white', opacity: __designBgOpacityNormalize__(next.opacity ?? 0.80) };
+    });
+    __headerActionColorMapWrite__(map);
+    if (changed?.opacity) __designBgOpacityWrite__(payload?.opacity);
+    __headerActionApplyAll__();
+    try{ renderRoomSettingsPage(); }catch(_){ }
+  }catch(_){ }
+}
+
+async function __applyPillChangesToCategory__(payload, changed){
+  try{
+    const map = __pillColorMapRead__();
+    __PILL_THEME_TARGET_IDS__.forEach((id) => {
+      const next = __applyDesignPayloadToVisual__(__pillVisualFor__(id), payload, changed, 'white');
+      map[String(id || '').trim()] = { fg: next.fg || 'white', bg: next.bg || 'blue-4', border: next.border || next.bg || 'blue-4', opacity: __designBgOpacityNormalize__(next.opacity ?? 0.80) };
+    });
+    __pillColorMapWrite__(map);
+    if (changed?.opacity) __designBgOpacityWrite__(payload?.opacity);
+    __pillApplyAll__();
+    try{ renderRoomSettingsPage(); }catch(_){ }
+  }catch(_){ }
+}
+
+async function __applyLauncherIconChangesToCategory__(payload, changed){
+  try{
+    const map = __launcherIconColorMapRead__();
+    __LAUNCHER_ICON_TARGET_IDS__.forEach((id) => {
+      const current = __launcherIconVisualFor__(id);
+      const next = __applyDesignPayloadToVisual__(current, payload, changed, __LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4');
+      map[String(id || '').trim()] = { fg: next.fg || (current.fg || (__LAUNCHER_ICON_DEFAULT_SPECS__[id] || 'blue-4')), bg: next.bg || current.bg || '', border: next.border || next.bg || current.border || current.bg || '', opacity: __designBgOpacityNormalize__(next.opacity ?? 0.80) };
+    });
+    __launcherIconColorMapWrite__(map);
+    if (changed?.opacity) __designBgOpacityWrite__(payload?.opacity);
+    __launcherIconApplyAll__();
+    try{ renderRoomSettingsPage(); }catch(_){ }
+  }catch(_){ }
+}
+
+async function __applyRoomSettingsChangesToCategory__(target, payload, changed){
+  try{
+    const key = String(target || '').trim().toLowerCase();
+    const next = getRoomsUiConfig();
+    const applyVisual = (visual, fallback) => {
+      const base = __roomsUiVisualNormalize__(visual, fallback || 'blue-4');
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      if (changed?.bg) base.bg = __normalizeOperatoreColor__(colors.bg || base.bg || fallback || 'blue-4');
+      if (changed?.border) base.border = __normalizeOperatoreColor__(colors.border || colors.bg || base.border || base.bg || fallback || 'blue-4');
+      if (changed?.fg) base.fg = __normalizeOptionalOperatoreColor__(colors.fg || base.fg || '');
+      if (changed?.opacity) base.opacity = __designBgOpacityNormalize__(payload?.opacity ?? base.opacity ?? 0.80);
+      return { bg: base.bg || fallback || 'blue-4', border: base.border || base.bg || fallback || 'blue-4', fg: base.fg || '', opacity: __designBgOpacityNormalize__(base.opacity ?? 0.80) };
+    };
+    if (/^room:\d+$/.test(key)){
+      const count = getConfiguredRoomsCount(6);
+      for (let i = 1; i <= count; i++) next.rooms[String(i)] = applyVisual(next.rooms?.[String(i)] || 'blue-4', 'blue-4');
+    } else if (key.startsWith('option:')){
+      next.options.m = applyVisual(next.options?.m || 'blue-4', 'blue-4');
+      next.options.g = applyVisual(next.options?.g || 'yellow-4', 'yellow-4');
+      next.options.c = applyVisual(next.options?.c || 'indigo-6', 'indigo-6');
+    } else if (key.startsWith('bed:')){
+      next.beds.matrimoniale = applyVisual(next.beds?.matrimoniale || 'red-4', 'red-4');
+      next.beds.singolo = applyVisual(next.beds?.singolo || 'blue-4', 'blue-4');
+      next.beds.culla = applyVisual(next.beds?.culla || 'yellow-4', 'yellow-4');
+    } else {
+      return;
+    }
+    await saveRoomsUiConfigToSettings(next, { showToast:true });
+  }catch(_){ }
+}
+
 function __headerActionThemeButtonStyle__(){
   try{
     const visual = __headerActionThemeVisual__();
@@ -7540,7 +7627,7 @@ function __bindPillLongPress__(btn){
           __pillApplyAll__();
           try{ renderRoomSettingsPage(); }catch(_){ }
         }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), applyCategory:{ message:'Applicare le modifiche a tutti i pulsanti pill?', apply: async(payload, changed) => { await __applyPillChangesToCategory__(payload, changed); } } });
     };
     btn.addEventListener('touchstart', (e) => {
       touchAt = Date.now();
@@ -7636,7 +7723,7 @@ function __bindHeaderActionLongPress__(btn){
         }
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white') });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
     };
     btn.addEventListener('touchstart', (e) => {
       touchAt = Date.now();
@@ -8117,7 +8204,7 @@ function __bindLauncherIconLongPress__(btn){
           try{ __launcherIconApplyToButton__(btn); }catch(_){ }
           setSuppress(1800);
           keepCurrentLauncherPage();
-        }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' });
+        }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4', applyCategory:{ message:'Applicare le modifiche a tutti i tasti della stessa categoria?', apply: async(payload, changed) => { await __applyLauncherIconChangesToCategory__(payload, changed); } } });
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const cancelHold = (ev) => {
@@ -8653,7 +8740,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' } };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8669,6 +8756,42 @@ function __tagColorPopupSwallowGhostTap__(ev){
     try{ ev.preventDefault(); }catch(_){ }
     try{ ev.stopPropagation(); }catch(_){ }
     try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
+
+
+function __tagColorPopupChangedFields__(payload){
+  try{
+    const initial = (__tagColorPopupState__ && __tagColorPopupState__.initial && typeof __tagColorPopupState__.initial === 'object') ? __tagColorPopupState__.initial : { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 };
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const next = {
+      bg: __normalizeOperatoreColor__(colors.bg || initial.bg || 'blue-4'),
+      border: __normalizeOperatoreColor__(colors.border || colors.bg || initial.border || initial.bg || 'blue-4'),
+      fg: __normalizeOptionalOperatoreColor__(colors.fg || initial.fg || ''),
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
+    };
+    const changed = {
+      bg: String(next.bg || '') !== String(initial.bg || ''),
+      border: String(next.border || '') !== String(initial.border || ''),
+      fg: String(next.fg || '') !== String(initial.fg || ''),
+      opacity: String(next.opacity) !== String(__designBgOpacityNormalize__(initial.opacity ?? 0.80))
+    };
+    changed.any = !!(changed.bg || changed.border || changed.fg || changed.opacity);
+    changed.next = next;
+    changed.initial = initial;
+    return changed;
+  }catch(_){ return { bg:false, border:false, fg:false, opacity:false, any:false, next:null, initial:null }; }
+}
+
+async function __tagColorPopupApplyCategoryIfNeeded__(payload){
+  try{
+    const cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? __tagColorPopupState__.applyCategory : null;
+    if (!cfg || typeof cfg.apply !== 'function') return;
+    const changed = __tagColorPopupChangedFields__(payload);
+    if (!changed.any) return;
+    const ok = await confirmYesNo(String(cfg.message || 'Applicare le modifiche a tutta la categoria di questo tasto?'));
+    if (!ok) return;
+    await cfg.apply(payload, changed);
   }catch(_){ }
 }
 
@@ -8762,6 +8885,13 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
     ...currentVisual,
     border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || currentVisual?.border || currentVisual?.bg || opts.fallbackBg || 'blue-4') || currentVisual?.bg || opts.fallbackBg || 'blue-4'
   };
+  __tagColorPopupState__.initial = {
+    bg: __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || opts.fallbackBg || 'blue-4'),
+    border: __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || opts.fallbackBg || 'blue-4'),
+    fg: __normalizeOptionalOperatoreColor__(__tagColorPopupState__.colors?.fg || ''),
+    opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80)
+  };
+  __tagColorPopupState__.applyCategory = (opts.applyCategory && typeof opts.applyCategory === 'object') ? opts.applyCategory : null;
   const enabledModes = ['bg','border','fg','opacity'];
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
@@ -8775,17 +8905,17 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
 }
 
 
-function __tagColorPopupConfirm__(){
-  try{
-    const cb = __tagColorPopupState__.onSelect;
-    const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)), colors: { ...(__tagColorPopupState__.colors || {}) } };
-    __tagColorPopupState__.confirmed = true;
-    if (typeof cb === 'function'){
-      try{ cb(payload); }catch(_){ }
-    }
-    try{ toast('Colore aggiornato'); }catch(_){ }
-  }catch(_){ }
+
+async function __tagColorPopupConfirm__(){
+  const cb = __tagColorPopupState__.onSelect;
+  const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)), colors: { ...(__tagColorPopupState__.colors || {}) } };
+  __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
+  try{
+    if (typeof cb === 'function') await cb(payload);
+  }catch(_){ }
+  try{ await __tagColorPopupApplyCategoryIfNeeded__(payload); }catch(_){ }
+  try{ toast('Colore aggiornato'); }catch(_){ }
 }
 
 function __tagColorPopupClose__(){
@@ -15487,7 +15617,7 @@ function __openRoomSettingsColorPicker__(target){
       }
       await saveRoomsUiConfigToSettings(next, { showToast:true });
     }catch(e){ try{ toast(e?.message || 'Errore colori stanze'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:(current?.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4') });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:(current?.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:(current?.bg || current || 'blue-4'), applyCategory:{ message:(/^room:\d+$/.test(key) ? 'Applicare le modifiche a tutte le stanze?' : (key.startsWith('option:') ? 'Applicare le modifiche a tutte le opzioni?' : (key.startsWith('bed:') ? 'Applicare le modifiche a tutti i letti?' : 'Applicare le modifiche a tutta la categoria di questo tasto?'))), apply: async(payload, changed) => { await __applyRoomSettingsChangesToCategory__(key, payload, changed); } } });
 }
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
