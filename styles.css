@@ -4,7 +4,7 @@
   --brand-orange-2: rgba(155,92,32,0.65);
 
   /* Palette coerente col logo */
-  --bg: #ffffff;
+  --bg: #ececec;
   --text: #0f172a;
   --black: #0b0f16;
   --p1: #2B7CB4;
@@ -56,6 +56,19 @@
 
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
+:root{
+  --ddae-bg-light: url("./assets/bg-daedalium.png?v=dDAE_2.418");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=dDAE_2.418");
+}
+html{
+  background-color:#ececec;
+}
+body{
+  background-color:#ececec;
+  will-change: auto;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
 
 
 
@@ -79,14 +92,20 @@ select,
 body{
   min-height: 100vh;
   padding-top: calc(64px + var(--safe-top));
-  background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.322");
+  background-image: none;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   background-attachment: scroll;
 }
-
+html.bg-light-ready body,
+body.bg-light-ready{
+  background-image: none;
+}
+html.bg-dark-ready body.ddae-dark,
+body.ddae-dark.bg-dark-ready{
+  background-image: var(--ddae-bg-dark) !important;
+}
 
 /* Topbar */
 .topbar{
@@ -1082,8 +1101,7 @@ body[data-page="calendario"] .toast{
 
 /* HOME più accattivante (sempre minimal: solo icone + build) */
 body[data-page="home"]{
-  background-image:
-    url("./assets/bg-daedalium.png?v=dDAE_2.322");
+  background-image: none;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1229,7 +1247,7 @@ body::before{
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background: rgba(255,255,255,0.02);
+  background: rgba(236,236,236,0.92);
 }
 
 
@@ -11294,98 +11312,114 @@ body[data-role="operatore"] #page-home .home-grid{
 .room-settings-section-buttons .room-settings-square-btn{
   position:relative;
   overflow:hidden;
+  width:74px;
+  min-width:74px;
+  height:74px;
+  border-radius:22px;
+  flex-direction:column;
+  gap:6px;
 }
-.room-settings-square-icon{
+.room-settings-square-preview{
   position:relative;
   display:block;
-  width:30px;
-  height:30px;
+  width:34px;
+  height:24px;
   flex:0 0 auto;
   color:currentColor;
   pointer-events:none;
 }
-.room-settings-square-icon::before,
-.room-settings-square-icon::after{
+.room-settings-square-caption{
+  display:block;
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:0.02em;
+  text-transform:uppercase;
+  pointer-events:none;
+}
+.room-settings-square-preview::before,
+.room-settings-square-preview::after,
+.room-settings-square-preview span::before,
+.room-settings-square-preview span::after{
   content:"";
   position:absolute;
   box-sizing:border-box;
 }
-.room-settings-square-icon-grid::before{
-  top:3px;
-  left:3px;
+.room-settings-square-preview-grid::before{
+  top:1px;
+  left:1px;
   width:9px;
   height:9px;
   border-radius:3px;
   background:currentColor;
-  box-shadow: 15px 0 0 currentColor, 0 15px 0 currentColor, 15px 15px 0 currentColor;
+  box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor, 0 12px 0 currentColor, 12px 12px 0 currentColor, 24px 12px 0 currentColor;
 }
-.room-settings-square-icon-cards::before{
-  left:6px;
+.room-settings-square-preview-cards::before{
+  left:2px;
+  top:2px;
+  width:20px;
+  height:14px;
+  border:2px solid currentColor;
+  border-radius:6px;
+}
+.room-settings-square-preview-cards::after{
+  left:12px;
   top:8px;
-  width:15px;
-  height:11px;
+  width:20px;
+  height:14px;
   border:2px solid currentColor;
-  border-radius:5px;
-  background:transparent;
+  border-radius:6px;
 }
-.room-settings-square-icon-cards::after{
-  left:11px;
-  top:12px;
-  width:15px;
-  height:11px;
-  border:2px solid currentColor;
-  border-radius:5px;
-  background:transparent;
-}
-.room-settings-square-icon-topbar::before{
-  left:3px;
-  top:6px;
-  width:24px;
-  height:4px;
+.room-settings-square-preview-topbar::before{
+  left:0;
+  top:0;
+  width:34px;
+  height:5px;
   border-radius:999px;
   background:currentColor;
 }
-.room-settings-square-icon-topbar::after{
-  left:4px;
-  top:16px;
-  width:10px;
-  height:10px;
+.room-settings-square-preview-topbar::after{
+  left:2px;
+  top:11px;
+  width:11px;
+  height:11px;
   border-left:3px solid currentColor;
   border-bottom:3px solid currentColor;
   transform:rotate(45deg);
   border-radius:2px;
 }
-.room-settings-square-icon-topbar span{
-  position:absolute;
-  right:3px;
-  top:15px;
-  width:10px;
-  height:10px;
+.room-settings-square-preview-topbar span::before{
+  right:2px;
+  top:10px;
+  width:11px;
+  height:11px;
   border:2px solid currentColor;
   border-radius:3px;
-  box-sizing:border-box;
 }
-.room-settings-square-icon-pill::before{
-  left:3px;
-  top:9px;
-  width:24px;
-  height:12px;
+.room-settings-square-preview-pill::before{
+  left:2px;
+  top:5px;
+  width:30px;
+  height:14px;
   border:2px solid currentColor;
   border-radius:999px;
-  background:transparent;
 }
-.room-settings-square-icon-pill::after{
-  left:8px;
-  top:12px;
-  width:7px;
-  height:6px;
+.room-settings-square-preview-pill::after{
+  left:7px;
+  top:8px;
+  width:8px;
+  height:8px;
   border-radius:999px;
   background:currentColor;
 }
 @media (max-width: 390px){
   .room-settings-section-buttons .room-settings-squares{ gap:14px; }
-  .room-settings-square-icon{ width:26px; height:26px; }
-  .room-settings-square-icon-grid::before{ box-shadow: 13px 0 0 currentColor, 0 13px 0 currentColor, 13px 13px 0 currentColor; }
+  .room-settings-section-buttons .room-settings-square-btn{ width:68px; min-width:68px; height:68px; border-radius:20px; gap:5px; }
+  .room-settings-square-preview{ width:30px; height:22px; }
+  .room-settings-square-caption{ font-size:9px; }
+  .room-settings-square-preview-grid::before{ box-shadow: 11px 0 0 currentColor, 22px 0 0 currentColor, 0 11px 0 currentColor, 11px 11px 0 currentColor, 22px 11px 0 currentColor; }
+  .room-settings-square-preview-topbar::before{ width:30px; }
+  .room-settings-square-preview-pill::before{ width:26px; }
 }
 .room-settings-color-dot{
   width:54px;
@@ -12155,7 +12189,7 @@ body[data-role="operatore"] #page-home .home-main-label{
 body.ddae-dark{
   color: #e5edf8 !important;
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.322") !important;
+  background-image: var(--ddae-bg-dark) !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -12164,7 +12198,7 @@ body.ddae-dark{
 body.ddae-dark[data-page="home"],
 body.ddae-dark[data-page]{
   background-color: #0b1220 !important;
-  background-image: url("./bg-daedalium_dark.PNG?v=dDAE_2.322") !important;
+  background-image: var(--ddae-bg-dark) !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;

@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.413
+ * Build: 2.418
  */
-const BUILD_VERSION = "2.413";
+const BUILD_VERSION = "2.418";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15765,7 +15765,7 @@ function renderRoomSettingsPage(){
     });
     const launcherThemeBtn = document.getElementById('roomSettingsLauncherThemeBtn');
     if (launcherThemeBtn){
-      launcherThemeBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-icon room-settings-square-icon-grid"></span>';
+      launcherThemeBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-grid"></span><span class="room-settings-square-caption">App</span>'; 
       launcherThemeBtn.setAttribute('style', __launcherGridThemeButtonStyle__());
       launcherThemeBtn.classList.remove('room-settings-square-btn-placeholder');
       launcherThemeBtn.setAttribute('aria-label', __designTranslate__('Design icone e tasti griglie', { en:'Grid icon and button design', fr:'Design des icônes et boutons de grille', de:'Design der Raster-Icons und -Tasten', es:'Diseño de iconos y botones de cuadrícula' }));
@@ -15773,7 +15773,7 @@ function renderRoomSettingsPage(){
     }
     const statisticsThemeBtn = document.getElementById('roomSettingsLauncherExtraBtn1');
     if (statisticsThemeBtn){
-      statisticsThemeBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-icon room-settings-square-icon-cards"></span>';
+      statisticsThemeBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-cards"></span><span class="room-settings-square-caption">Card</span>'; 
       statisticsThemeBtn.setAttribute('style', __statisticsCardThemeButtonStyle__());
       statisticsThemeBtn.classList.remove('room-settings-square-btn-placeholder');
       statisticsThemeBtn.setAttribute('aria-label', __designTranslate__('Design card statistiche', { en:'Statistics card design', fr:'Design des cartes statistiques', de:'Design der Statistik-Karten', es:'Diseño de tarjetas estadísticas' }));
@@ -15781,7 +15781,7 @@ function renderRoomSettingsPage(){
     }
     const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
     if (opacityBtn){
-      opacityBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-icon room-settings-square-icon-topbar"><span></span></span>';
+      opacityBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-topbar"><span></span></span><span class="room-settings-square-caption">Barra</span>'; 
       opacityBtn.setAttribute('style', __headerActionThemeButtonStyle__());
       opacityBtn.classList.remove('room-settings-square-btn-placeholder');
       opacityBtn.setAttribute('aria-label', __designTranslate__('Design tasti top bar e titoli pagina', { en:'Top bar and page title button design', fr:'Design des boutons de la barre supérieure et des titres de page', de:'Design der Topbar- und Seitentitel-Schaltflächen', es:'Diseño de botones de la barra superior y títulos de página' }));
@@ -15789,7 +15789,7 @@ function renderRoomSettingsPage(){
     }
     const pillBtn = document.getElementById('roomSettingsLauncherExtraBtn3');
     if (pillBtn){
-      pillBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-icon room-settings-square-icon-pill"></span>';
+      pillBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-pill"></span><span class="room-settings-square-caption">Pill</span>'; 
       pillBtn.setAttribute('style', __pillThemeButtonStyle__());
       pillBtn.classList.remove('room-settings-square-btn-placeholder');
       pillBtn.setAttribute('aria-label', __designTranslate__('Design pulsanti pill', { en:'Pill button design', fr:'Design des boutons pill', de:'Pill-Button-Design', es:'Diseño de botones pill' }));
