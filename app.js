@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.427
+ * Build: 2.428
  */
-const BUILD_VERSION = "2.427";
+const BUILD_VERSION = "2.428";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13041,10 +13041,6 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
   if (!el || el.dataset.statCardColorBound === '1') return;
-  try{
-    const safePageKey = String(pageKey || '').trim().toLowerCase();
-    if (safePageKey === 'statprenotazioni' && el.classList && el.classList.contains('stats-graph-card')) return;
-  }catch(_){ }
   el.dataset.statCardColorBound = '1';
   let timer = null;
   let fired = false;
