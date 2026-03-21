@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.431
+ * Build: 2.432
  */
-const BUILD_VERSION = "2.431";
+const BUILD_VERSION = "2.432";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12607,7 +12607,7 @@ function drawPie(canvasId, slices, opts){
   const resolvedSurface = hostSurface || hostBg;
   const ringBg = 'rgba(0,0,0,0)';
   const ringStroke = isDark ? "rgba(148,163,184,0.18)" : "rgba(15,23,42,0.06)";
-  const holeBg = resolvedSurface || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
+  const holeBg = "rgba(0,0,0,0)";
   const holeTextSoft = hostText || (isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)");
   const holeTextStrong = hostText || (isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)");
 
@@ -12624,7 +12624,7 @@ function drawPie(canvasId, slices, opts){
   if (total <= 0){
     ctx.beginPath();
     ctx.arc(cx, cy, r-8, 0, Math.PI*2);
-    ctx.fillStyle = resolvedSurface || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
+    ctx.fillStyle = "rgba(0,0,0,0)";
     ctx.fill();
     ctx.fillStyle = holeTextSoft;
     ctx.font = "600 12px system-ui";
@@ -12651,10 +12651,13 @@ function drawPie(canvasId, slices, opts){
   });
 
   // inner hole
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
   ctx.beginPath();
   ctx.arc(cx, cy, r*0.58, 0, Math.PI*2);
   ctx.fillStyle = holeBg;
   ctx.fill();
+  ctx.restore();
   ctx.strokeStyle = ringStroke;
   ctx.lineWidth = 1;
   ctx.stroke();
