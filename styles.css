@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.420");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.420");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.421");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.421");
 }
 html{
   background-color:#ececec;
@@ -1240,14 +1240,19 @@ body[data-page="home"]{
 }
 
 
-/* Background haze (migliora leggibilità sui card senza coprire lo sfondo) */
+/* Background haze leggerissimo: non deve coprire lo sfondo */
 body::before{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background: rgba(236,236,236,0.74);
+  z-index: 0;
+  background: rgba(236,236,236,0.08);
+}
+
+body > *{
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -12205,7 +12210,7 @@ body.ddae-dark[data-page]{
   background-attachment: scroll !important;
 }
 body.ddae-dark::before{
-  background: rgba(2,6,23,0.34) !important;
+  background: rgba(2,6,23,0.16) !important;
 }
 body.ddae-dark .app-shell,
 body.ddae-dark main,
