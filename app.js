@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.429
+ * Build: 2.430
  */
-const BUILD_VERSION = "2.429";
+const BUILD_VERSION = "2.430";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13376,6 +13376,17 @@ function renderStatGrafici(operatoriRows){
   const pulizieSlicesCustom = __applyGraphCustomColors__('pulizie', pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }]);
   const occAvg = occSlices.length ? (occSlices.reduce((a,x)=>a + (Number(x.value || 0) || 0), 0) / occSlices.length) : 0;
 
+  try{
+    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
+      const keys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
+      const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
+      const cardKey = keys[index] || `graph-${index+1}`;
+      const fallback = fallbacks[index] || '#2b7cb4';
+      __sanitizeStatPrenotazioniCardPair__(cardKey, fallback);
+      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
+    });
+  }catch(_){ }
+
   drawPie("statGrafOccCanvas", occSlices, { centerTitle: "Media", centerFormatter: ()=>`${occAvg.toFixed(1)}%`, showCenter: true, maxSize: 170, minSize: 120 });
   drawPie("statGrafRicevuteCanvas", ricevuteSlicesCustom, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
   drawPie("statGrafBookingCanvas", bookingSlicesCustom, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
@@ -13448,8 +13459,6 @@ function renderStatGrafici(operatoriRows){
       const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
       const cardKey = keys[index] || `graph-${index+1}`;
       const fallback = fallbacks[index] || '#2b7cb4';
-      __sanitizeStatPrenotazioniCardPair__(cardKey, fallback);
-      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
       __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
     });
   }catch(_){ }
