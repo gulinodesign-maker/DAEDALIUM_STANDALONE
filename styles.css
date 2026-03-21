@@ -1,5 +1,5 @@
 :root{
-  --sync-footer-space: 92px;
+  --sync-footer-space: 108px;
   --brand-orange: #9B5C20;
   --brand-orange-2: rgba(155,92,32,0.65);
 
@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.422");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.422");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.423");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.423");
 }
 html{
   background-color:#ececec;
@@ -8791,18 +8791,25 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 
 /* SYNC footer fisso (sempre visibile) */
 .sync-footer{
-  position: fixed;
+  position: fixed !important;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: max(8px, calc(var(--safe-bottom) + 8px));
   z-index: 700; /* sopra launcher (450), sotto modali critiche (999) */
-  padding: 8px 0 calc(10px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 0;
   box-sizing: border-box;
   pointer-events: auto;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 #homeSyncBar.sync-footer{
-  display: block;
+  display: flex;
 }
 #homeSyncBar .sync-footer-line{
   display: block;
@@ -8813,11 +8820,13 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   background: #000;
   width: calc(100% - 20px);
   margin: 0 10px;
+  flex: 0 0 auto;
 }
 .sync-footer .home-sync-btn{
-  width: min(460px, calc(100% - 20px));
+  width: min(460px, calc(100vw - 20px));
+  max-width: calc(100vw - 20px);
   height: 58px;
-  margin: 10px auto 0 auto;
+  margin: 0 auto;
   border: 0 !important;
   border-radius: 14px;
   background: var(--blue80) !important; /* tinta unita con opacità già nel colore */
@@ -8840,6 +8849,12 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   width: 22px;
   height: 22px;
   stroke: currentColor;
+}
+
+@supports (-webkit-touch-callout: none){
+  .sync-footer{
+    bottom: max(10px, calc(var(--safe-bottom) + 10px));
+  }
 }
 
 
