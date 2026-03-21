@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.430
+ * Build: 2.431
  */
-const BUILD_VERSION = "2.430";
+const BUILD_VERSION = "2.431";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12601,11 +12601,13 @@ function drawPie(canvasId, slices, opts){
   const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
   const hostCard = canvas.closest ? canvas.closest('.stats-graph-card') : null;
   const hostStyles = hostCard ? getComputedStyle(hostCard) : null;
+  const hostSurface = (hostStyles && hostStyles.getPropertyValue) ? String(hostStyles.getPropertyValue('--card-surface') || '').trim() : '';
   const hostBg = (hostStyles && hostStyles.backgroundColor) ? String(hostStyles.backgroundColor).trim() : '';
   const hostText = (hostStyles && hostStyles.color) ? String(hostStyles.color).trim() : '';
+  const resolvedSurface = hostSurface || hostBg;
   const ringBg = 'rgba(0,0,0,0)';
   const ringStroke = isDark ? "rgba(148,163,184,0.18)" : "rgba(15,23,42,0.06)";
-  const holeBg = hostBg || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
+  const holeBg = resolvedSurface || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
   const holeTextSoft = hostText || (isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)");
   const holeTextStrong = hostText || (isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)");
 
@@ -12622,7 +12624,7 @@ function drawPie(canvasId, slices, opts){
   if (total <= 0){
     ctx.beginPath();
     ctx.arc(cx, cy, r-8, 0, Math.PI*2);
-    ctx.fillStyle = hostBg || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
+    ctx.fillStyle = resolvedSurface || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
     ctx.fill();
     ctx.fillStyle = holeTextSoft;
     ctx.font = "600 12px system-ui";
@@ -12895,6 +12897,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
     el.style.setProperty('--card-surface', resolvedBg);
+    el.style.setProperty('--graph-hole-bg', resolvedBg);
     el.style.setProperty('background', resolvedBg, 'important');
     el.style.setProperty('background-color', resolvedBg, 'important');
     el.style.setProperty('border', `1px solid ${resolvedBorder}`, 'important');
