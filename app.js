@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.428
+ * Build: 2.429
  */
-const BUILD_VERSION = "2.428";
+const BUILD_VERSION = "2.429";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12599,11 +12599,15 @@ function drawPie(canvasId, slices, opts){
   const r = cssSize/2 - 10;
 
   const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
-  const ringBg = isDark ? "rgba(15,23,42,0.70)" : "rgba(255,255,255,0.55)";
-  const ringStroke = isDark ? "rgba(148,163,184,0.22)" : "rgba(15,23,42,0.08)";
-  const holeBg = isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)";
-  const holeTextSoft = isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)";
-  const holeTextStrong = isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)";
+  const hostCard = canvas.closest ? canvas.closest('.stats-graph-card') : null;
+  const hostStyles = hostCard ? getComputedStyle(hostCard) : null;
+  const hostBg = (hostStyles && hostStyles.backgroundColor) ? String(hostStyles.backgroundColor).trim() : '';
+  const hostText = (hostStyles && hostStyles.color) ? String(hostStyles.color).trim() : '';
+  const ringBg = 'rgba(0,0,0,0)';
+  const ringStroke = isDark ? "rgba(148,163,184,0.18)" : "rgba(15,23,42,0.06)";
+  const holeBg = hostBg || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
+  const holeTextSoft = hostText || (isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)");
+  const holeTextStrong = hostText || (isDark ? "rgba(248,250,252,0.98)" : "rgba(15,23,42,0.92)");
 
   // Ring background
   ctx.beginPath();
@@ -12618,7 +12622,7 @@ function drawPie(canvasId, slices, opts){
   if (total <= 0){
     ctx.beginPath();
     ctx.arc(cx, cy, r-8, 0, Math.PI*2);
-    ctx.fillStyle = isDark ? "rgba(143,203,232,0.14)" : "rgba(43,124,180,0.10)";
+    ctx.fillStyle = hostBg || (isDark ? "rgba(2,6,23,0.92)" : "rgba(255,255,255,0.78)");
     ctx.fill();
     ctx.fillStyle = holeTextSoft;
     ctx.font = "600 12px system-ui";
@@ -12876,7 +12880,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const safePageKey = String(pageKey || '').trim().toLowerCase();
     const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni'].includes(safePageKey);
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili'].includes(safePageKey);
     const fgHex = useForcedDarkSurface
       ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
       : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
@@ -12890,6 +12894,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    el.style.setProperty('--card-surface', resolvedBg);
     el.style.setProperty('background', resolvedBg, 'important');
     el.style.setProperty('background-color', resolvedBg, 'important');
     el.style.setProperty('border', `1px solid ${resolvedBorder}`, 'important');
