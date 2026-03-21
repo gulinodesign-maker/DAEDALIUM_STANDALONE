@@ -7969,7 +7969,7 @@ function __launcherIconApplyToButton__(btn){
       const resolvedBorder = useForcedDarkPalette
         ? 'rgba(148,163,184,0.24)'
         : (borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : ''));
-      const resolvedFg = useForcedDarkPalette ? '#ffffff' : hex;
+      const resolvedFg = hex;
       setImp(btn, 'background', resolvedBg);
       setImp(btn, 'background-color', resolvedBg);
       setImp(btn, 'border-color', resolvedBorder);
