@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.433
+ * Build: 2.434
  */
-const BUILD_VERSION = "2.433";
+const BUILD_VERSION = "2.434";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7780,10 +7780,12 @@ function __statisticsCardThemeTargetKeys__(){
   const statGenKeys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
   const statSpeseKeys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
   const statMensiliKeys = (Array.isArray(__MONTHS_IT) ? __MONTHS_IT : []).map((m)=>String(m || '').trim()).filter(Boolean);
+  const statPrenotazioniKeys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
   return {
     statgen: statGenKeys,
     statspese: statSpeseKeys,
-    statmensili: statMensiliKeys
+    statmensili: statMensiliKeys,
+    statprenotazioni: statPrenotazioniKeys
   };
 }
 
@@ -8090,7 +8092,8 @@ function __applyStatisticsCardTheme__(){
     const configs = [
       ['#page-statgen .stat-row', 'statgen'],
       ['#page-statspese .stat-row', 'statspese'],
-      ['#page-statmensili .month-row', 'statmensili']
+      ['#page-statmensili .month-row', 'statmensili'],
+      ['#page-statprenotazioni .stats-graph-card', 'statprenotazioni']
     ];
     configs.forEach(([selector, pageKey]) => {
       try{
@@ -12838,7 +12841,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
 function __getStatCardColorPair__(pageKey, cardKey, fallback){
   let baseFallback = fallback || 'blue-4';
   try{
-    const themedPages = new Set(['statgen','statspese','statmensili']);
+    const themedPages = new Set(['statgen','statspese','statmensili','statprenotazioni']);
     if (themedPages.has(String(pageKey || '').trim().toLowerCase())){
       const visual = __statisticsCardThemeRead__();
       baseFallback = { bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', fg: '' };
