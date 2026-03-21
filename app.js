@@ -12925,6 +12925,83 @@ function __monthlyStatCardGraphSpecFromPair__(pair, fallback){
   return __closestGraphColorSpec__(textSource || fallback || '#2B7CB4');
 }
 
+function __statCardCategoryTargetKeys__(pageKey, fallbackKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  const out = [];
+  const seen = new Set();
+  const pushKey = (value) => {
+    const safe = String(value || '').trim();
+    if (!safe || seen.has(safe)) return;
+    seen.add(safe);
+    out.push(safe);
+  };
+  try{
+    const presets = __statisticsCardThemeTargetKeys__();
+    (Array.isArray(presets?.[safePageKey]) ? presets[safePageKey] : []).forEach(pushKey);
+  }catch(_){ }
+  try{ Object.keys(__loadStatCardColorMap__(safePageKey) || {}).forEach(pushKey); }catch(_){ }
+  try{
+    document.querySelectorAll(`[data-stat-card-key]`).forEach((node) => {
+      try{
+        const owner = node.closest ? node.closest(`[id="page-${safePageKey}"]`) : null;
+        if (owner) pushKey(node.dataset.statCardKey || '');
+      }catch(_){ }
+    });
+  }catch(_){ }
+  pushKey(fallbackKey);
+  return out;
+}
+
+function __statCardCategoryLabel__(pageKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  if (safePageKey === 'statgen') return 'Generali';
+  if (safePageKey === 'statspese') return 'Spese';
+  if (safePageKey === 'statmensili') return 'Mensili';
+  if (safePageKey === 'statprenotazioni') return 'Prenotazioni';
+  if (safePageKey === 'statcancellazioni') return 'Cancellazioni';
+  if (safePageKey === 'statazienda') return 'Azienda';
+  if (safePageKey === 'statamministratore') return 'Amministratore';
+  return 'stessa tipologia';
+}
+
+async function __applyStatCardChangesToCategory__(pageKey, cardKey, payload, changed){
+  try{
+    const safePageKey = String(pageKey || '').trim().toLowerCase();
+    const keys = __statCardCategoryTargetKeys__(safePageKey, cardKey);
+    if (!keys.length) return;
+    const map = __loadStatCardColorMap__(safePageKey);
+    keys.forEach((targetKey) => {
+      const currentPair = __getStatCardColorPair__(safePageKey, targetKey, 'blue-4');
+      const nextPair = __tagColorPairFromValue__(map[targetKey] || currentPair, currentPair.bg || 'blue-4');
+      const next = (changed && changed.next && typeof changed.next === 'object') ? changed.next : {};
+      if (changed?.bg) nextPair.bg = __normalizeOperatoreColor__(next.bg || nextPair.bg || currentPair.bg || 'blue-4');
+      if (changed?.border) nextPair.border = __normalizeOperatoreColor__(next.border || nextPair.border || nextPair.bg || currentPair.border || currentPair.bg || 'blue-4');
+      if (changed?.fg) nextPair.fg = __normalizeOptionalOperatoreColor__(next.fg || '');
+      if (changed?.opacity) nextPair.opacity = __designBgOpacityNormalize__(next.opacity ?? nextPair.opacity ?? currentPair.opacity ?? __designBgOpacityRead__());
+      nextPair.border = __normalizeOperatoreColor__(nextPair.border || nextPair.bg || 'blue-4');
+      map[targetKey] = {
+        bg: __normalizeOperatoreColor__(nextPair.bg || currentPair.bg || 'blue-4'),
+        border: __normalizeOperatoreColor__(nextPair.border || nextPair.bg || currentPair.border || currentPair.bg || 'blue-4'),
+        fg: __normalizeOptionalOperatoreColor__(nextPair.fg || ''),
+        opacity: __designBgOpacityNormalize__(nextPair.opacity ?? currentPair.opacity ?? __designBgOpacityRead__())
+      };
+    });
+    __saveStatCardColorMap__(safePageKey, map);
+    if (safePageKey === 'statmensili'){
+      try{
+        const graphMap = __loadGraphColorMap__('occupazione-mensile');
+        keys.forEach((targetKey) => {
+          const pair = __tagColorPairFromValue__(map[targetKey] || {}, 'blue-4');
+          graphMap[targetKey] = __monthlyStatCardGraphSpecFromPair__(pair, pair.bg || 'blue-4');
+        });
+        __saveGraphColorMap__('occupazione-mensile', graphMap);
+      }catch(_){ }
+      try{ __refreshStatGraphPreviews__(); }catch(_){ }
+    }
+    try{ __refreshStatCardsPage__(safePageKey); }catch(_){ }
+  }catch(_){ }
+}
+
 function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone){
   const currentPair = __getStatCardColorPair__(pageKey, cardKey, currentColor || '#2B7CB4');
   __tagColorPopupOpen__('stat-card-text', currentPair, (payload) => {
@@ -12952,7 +13029,7 @@ function __openStatCardTextColorPicker__(pageKey, cardKey, currentColor, onDone)
     const nextHex = __tagColorTextHex__(pair.bg || currentColor || '#2B7CB4', pair.fg || '', false);
     if (typeof onDone === 'function') onDone(nextHex);
     __refreshStatCardsPage__(pageKey);
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(currentPair.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4' });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(currentPair.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:currentPair.bg || '#2B7CB4', applyCategory:{ message:(__statCardCategoryLabel__(pageKey) === 'stessa tipologia' ? 'Applicare le modifiche a tutte le card della stessa tipologia?' : `Applicare le modifiche a tutte le card ${__statCardCategoryLabel__(pageKey)}?`), apply: async(payload, changed) => { await __applyStatCardChangesToCategory__(pageKey, cardKey, payload, changed); } } });
 }
 
 function __bindStatCardColorLongPress__(el, pageKey, cardKey, fallback){
