@@ -11286,6 +11286,107 @@ body[data-role="operatore"] #page-home .home-grid{
   color: rgba(15,23,42,0.62);
   -webkit-text-fill-color: rgba(15,23,42,0.62);
 }
+.room-settings-section-buttons .room-settings-squares{
+  justify-content:center;
+  width:100%;
+  gap:18px;
+}
+.room-settings-section-buttons .room-settings-square-btn{
+  position:relative;
+  overflow:hidden;
+}
+.room-settings-square-icon{
+  position:relative;
+  display:block;
+  width:30px;
+  height:30px;
+  flex:0 0 auto;
+  color:currentColor;
+  pointer-events:none;
+}
+.room-settings-square-icon::before,
+.room-settings-square-icon::after{
+  content:"";
+  position:absolute;
+  box-sizing:border-box;
+}
+.room-settings-square-icon-grid::before{
+  top:3px;
+  left:3px;
+  width:9px;
+  height:9px;
+  border-radius:3px;
+  background:currentColor;
+  box-shadow: 15px 0 0 currentColor, 0 15px 0 currentColor, 15px 15px 0 currentColor;
+}
+.room-settings-square-icon-cards::before{
+  left:6px;
+  top:8px;
+  width:15px;
+  height:11px;
+  border:2px solid currentColor;
+  border-radius:5px;
+  background:transparent;
+}
+.room-settings-square-icon-cards::after{
+  left:11px;
+  top:12px;
+  width:15px;
+  height:11px;
+  border:2px solid currentColor;
+  border-radius:5px;
+  background:transparent;
+}
+.room-settings-square-icon-topbar::before{
+  left:3px;
+  top:6px;
+  width:24px;
+  height:4px;
+  border-radius:999px;
+  background:currentColor;
+}
+.room-settings-square-icon-topbar::after{
+  left:4px;
+  top:16px;
+  width:10px;
+  height:10px;
+  border-left:3px solid currentColor;
+  border-bottom:3px solid currentColor;
+  transform:rotate(45deg);
+  border-radius:2px;
+}
+.room-settings-square-icon-topbar span{
+  position:absolute;
+  right:3px;
+  top:15px;
+  width:10px;
+  height:10px;
+  border:2px solid currentColor;
+  border-radius:3px;
+  box-sizing:border-box;
+}
+.room-settings-square-icon-pill::before{
+  left:3px;
+  top:9px;
+  width:24px;
+  height:12px;
+  border:2px solid currentColor;
+  border-radius:999px;
+  background:transparent;
+}
+.room-settings-square-icon-pill::after{
+  left:8px;
+  top:12px;
+  width:7px;
+  height:6px;
+  border-radius:999px;
+  background:currentColor;
+}
+@media (max-width: 390px){
+  .room-settings-section-buttons .room-settings-squares{ gap:14px; }
+  .room-settings-square-icon{ width:26px; height:26px; }
+  .room-settings-square-icon-grid::before{ box-shadow: 13px 0 0 currentColor, 0 13px 0 currentColor, 13px 13px 0 currentColor; }
+}
 .room-settings-color-dot{
   width:54px;
   min-width:54px;
