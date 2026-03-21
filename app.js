@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.424
+ * Build: 2.426
  */
-const BUILD_VERSION = "2.424";
+const BUILD_VERSION = "2.426";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12874,27 +12874,34 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || '#2B7CB4');
     const bgHex = __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
-    const fgHex = __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
+    const safePageKey = String(pageKey || '').trim().toLowerCase();
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni'].includes(safePageKey);
+    const fgHex = useForcedDarkSurface
+      ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
+      : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
     const bgOpacity = __designBgOpacityNormalize__(pair.opacity ?? 0.80);
     const borderOpacity = 1;
+    const resolvedBg = useForcedDarkSurface ? 'rgba(12,23,46,0.96)' : hexToRgba(bgHex, bgOpacity);
+    const resolvedBorder = useForcedDarkSurface ? 'rgba(148,163,184,0.28)' : hexToRgba(borderHex, borderOpacity);
     el.style.setProperty('--statbg', bgHex);
     el.style.setProperty('--mcol', bgHex);
     el.style.setProperty('--cardtext', fgHex);
     el.style.setProperty('--statborder', borderHex);
     el.style.setProperty('color', fgHex, 'important');
     el.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    el.style.setProperty('background', hexToRgba(bgHex, bgOpacity), 'important');
-    el.style.setProperty('background-color', hexToRgba(bgHex, bgOpacity), 'important');
-    el.style.setProperty('border', `1px solid ${hexToRgba(borderHex, borderOpacity)}`, 'important');
+    el.style.setProperty('background', resolvedBg, 'important');
+    el.style.setProperty('background-color', resolvedBg, 'important');
+    el.style.setProperty('border', `1px solid ${resolvedBorder}`, 'important');
     try{
       el.querySelectorAll('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .month-fill, .stat-ico-wrap, .kpi-label, .kpi-value, .fin-head, .fin-head div, .fin-label, .fin-val, .stats-graph-card-title, .stats-graph-note, .stats-graph-legend, .piscina-nav-center, .piscina-today').forEach((node)=>{
         try{
           if (node.classList && node.classList.contains('month-fill')){
             node.style.setProperty('background', fgHex, 'important');
           } else if (node.classList && node.classList.contains('stat-ico-wrap')){
-            node.style.setProperty('background', hexToRgba(bgHex, bgOpacity), 'important');
-            node.style.setProperty('background-color', hexToRgba(bgHex, bgOpacity), 'important');
-            node.style.setProperty('border-color', hexToRgba(borderHex, borderOpacity), 'important');
+            node.style.setProperty('background', useForcedDarkSurface ? 'rgba(12,23,46,0.96)' : hexToRgba(bgHex, bgOpacity), 'important');
+            node.style.setProperty('background-color', useForcedDarkSurface ? 'rgba(12,23,46,0.96)' : hexToRgba(bgHex, bgOpacity), 'important');
+            node.style.setProperty('border-color', resolvedBorder, 'important');
             node.style.setProperty('color', fgHex, 'important');
             node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
           } else {

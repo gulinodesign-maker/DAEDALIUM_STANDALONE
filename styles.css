@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.424");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.424");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.426");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.426");
 }
 html{
   background-color:#ececec;
@@ -16368,4 +16368,37 @@ body.ddae-dark .app-section-head-row .icon-btn .backchev{
   stroke: #58b7f4 !important;
   fill: none !important;
   -webkit-text-fill-color: #58b7f4 !important;
+}
+
+
+/* dDAE_2.426 — Dark mode: card statistiche e grafici senza layer chiaro */
+body.ddae-dark #page-statgen .stat-row,
+body.ddae-dark #page-statspese .stat-row,
+body.ddae-dark #page-statmensili .month-row,
+body.ddae-dark #page-statprenotazioni .stats-graph-card{
+  background: rgba(12,23,46,0.96) !important;
+  background-color: rgba(12,23,46,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statgen .stat-row::before,
+body.ddae-dark #page-statspese .stat-row::before,
+body.ddae-dark #page-statmensili .month-row::before,
+body.ddae-dark #page-statprenotazioni .stats-graph-card::before,
+body.ddae-dark #page-statgen .stat-row::after,
+body.ddae-dark #page-statspese .stat-row::after,
+body.ddae-dark #page-statmensili .month-row::after,
+body.ddae-dark #page-statprenotazioni .stats-graph-card::after{
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+}
+body.ddae-dark #page-statprenotazioni .stats-graph-canvas{
+  background: transparent !important;
+  background-color: transparent !important;
+}
+body.ddae-dark #page-statprenotazioni .stats-graph-legend .legrow,
+body.ddae-dark #page-statprenotazioni .stat-graph-modal-legend .legrow{
+  background: rgba(15,23,42,0.88) !important;
+  border-color: rgba(148,163,184,0.20) !important;
 }
