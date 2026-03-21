@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.410
+ * Build: 2.413
  */
-const BUILD_VERSION = "2.410";
+const BUILD_VERSION = "2.413";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7232,9 +7232,72 @@ function __headerActionThemeOverwriteTargets__(visual){
   }catch(_){ }
 }
 
+function __isDarkModeRuntime__(){
+  try{ return !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark')); }catch(_){ return false; }
+}
+
+function __isProtectedHeaderActionButton__(btn){
+  try{
+    if (!btn || !btn.id) return false;
+    return !!(btn.closest('.topbar') || btn.closest('.hd-actions') || btn.closest('.guest-hd-actions') || btn.closest('.clean-topbar') || btn.closest('.app-section-head-row'));
+  }catch(_){ return false; }
+}
+
+function __isProtectedPillButton__(btn){
+  try{
+    if (!btn || !btn.id) return false;
+    return ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn'].includes(String(btn.id || '').trim());
+  }catch(_){ return false; }
+}
+
+function __applyProtectedDarkButtonStyle__(btn, options = {}){
+  try{
+    if (!btn) return;
+    const fgHex = String(options.fg || '#58b7f4');
+    const textHex = String(options.text || fgHex);
+    const bgCss = String(options.bg || 'rgba(8,18,38,0.96)');
+    const borderCss = String(options.border || 'rgba(88,183,244,0.28)');
+    btn.style.setProperty('background', bgCss, 'important');
+    btn.style.setProperty('background-color', bgCss, 'important');
+    btn.style.setProperty('border', '1px solid ' + borderCss, 'important');
+    btn.style.setProperty('border-color', borderCss, 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-style', 'solid', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('opacity', '1', 'important');
+    btn.style.setProperty('color', textHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+    btn.style.setProperty('-webkit-appearance', 'none', 'important');
+    btn.style.setProperty('appearance', 'none', 'important');
+    const label = btn.querySelector('.settings-btn-label, #taxYearBtnLabel');
+    if (label){
+      label.style.setProperty('color', textHex, 'important');
+      label.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+      label.style.setProperty('opacity', '1', 'important');
+    }
+    const svg = btn.querySelector('svg.ui-ico');
+    if (svg){
+      svg.style.setProperty('color', fgHex, 'important');
+      svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+        node.style.setProperty('stroke', fgHex, 'important');
+        node.style.setProperty('fill', 'none', 'important');
+      });
+    }
+    const iconWrap = btn.querySelector('.backchev, .ui-ico');
+    if (iconWrap){
+      iconWrap.style.setProperty('color', fgHex, 'important');
+      iconWrap.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    }
+  }catch(_){ }
+}
+
 function __headerActionApplyToButton__(btn){
   try{
     if (!btn || !btn.id) return;
+    if (__isDarkModeRuntime__() && __isProtectedHeaderActionButton__(btn)){
+      __applyProtectedDarkButtonStyle__(btn, { fg:'#58b7f4', text:'#58b7f4', bg:'rgba(8,18,38,0.96)', border:'rgba(88,183,244,0.28)' });
+      return;
+    }
     const visual = __headerActionVisualFor__(btn.id);
     const fgHex = __operatoreColorHex__(visual.fg || 'blue-4');
     const bgHex = __operatoreColorHex__(visual.bg || 'white');
@@ -7395,6 +7458,16 @@ function __pillThemeOverwriteTargets__(visual){
 function __pillApplyToButton__(btn){
   try{
     if (!btn || !btn.id) return;
+    if (__isDarkModeRuntime__() && __isProtectedPillButton__(btn)){
+      const isLogout = String(btn.id || '').toLowerCase().includes('logout');
+      __applyProtectedDarkButtonStyle__(btn, {
+        fg: isLogout ? '#58b7f4' : '#f8fafc',
+        text: isLogout ? '#58b7f4' : '#f8fafc',
+        bg: 'rgba(8,18,38,0.96)',
+        border: 'rgba(88,183,244,0.28)'
+      });
+      return;
+    }
     const visual = __pillVisualFor__(btn.id);
     const fgHex = __operatoreColorHex__(visual.fg || 'white');
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
@@ -9472,6 +9545,8 @@ function __applyDarkMode__(enabled){
   try{ __updateThemeMeta__(!!enabled); }catch(_){ }
   try{ __syncDarkModeButtons__(); }catch(_){ }
   try{ __launcherIconApplyAll__(); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ __pillApplyAll__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
