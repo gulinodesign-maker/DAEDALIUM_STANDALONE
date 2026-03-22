@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.436
+ * Build: 2.437
  */
-const BUILD_VERSION = "2.436";
+const BUILD_VERSION = "2.437";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15505,9 +15505,9 @@ function updateSettingsRoomsButtonLabel(){
     if (!el) return;
     const label = el.querySelector('.settings-btn-label');
     const n = getConfiguredRoomsCount(6);
-    if (label) label.textContent = `Stanze`;
-    el.setAttribute('aria-label', `Stanze. Numero attuale: ${n}`);
-    el.title = `Stanze. Numero attuale: ${n}`;
+    if (label) label.textContent = `Design`;
+    el.setAttribute('aria-label', `Design. Numero attuale: ${n}`);
+    el.title = `Design. Numero attuale: ${n}`;
   }catch(_){ }
 }
 
@@ -15927,7 +15927,6 @@ function renderRoomSettingsPage(){
       if (sectionTitles[1]) sectionTitles[1].textContent = __designTranslate__('Tag colore stanze', { en:'Room color tags', fr:'Tags couleur des chambres', de:'Zimmer-Farbmarken', es:'Etiquetas de color de habitaciones' });
       if (sectionTitles[2]) sectionTitles[2].textContent = __designTranslate__('Tag colore opzioni', { en:'Option color tags', fr:'Tags couleur des options', de:'Options-Farbmarken', es:'Etiquetas de color de opciones' });
       if (sectionTitles[3]) sectionTitles[3].textContent = __designTranslate__('Tag colore letti', { en:'Bed color tags', fr:'Tags couleur des lits', de:'Bett-Farbmarken', es:'Etiquetas de color de camas' });
-      if (sectionTitles[4]) sectionTitles[4].textContent = __designTranslate__('Tasti', { en:'Buttons', fr:'Boutons', de:'Tasten', es:'Botones' });
       const title = page.querySelector('.room-settings-title');
       if (title) title.textContent = __designTranslate__('Numero stanze', { en:'Room count', fr:'Nombre de chambres', de:'Zimmeranzahl', es:'Número de habitaciones' });
       const subtitle = page.querySelector('.room-settings-subtitle');
