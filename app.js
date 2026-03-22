@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.435
+ * Build: 2.436
  */
-const BUILD_VERSION = "2.435";
+const BUILD_VERSION = "2.436";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7149,7 +7149,15 @@ const __HEADER_ACTION_COLOR_STORAGE_KEY__ = 'dDAE_header_action_colors_v1';
 
 function __headerActionTargetButtons__(){
   try{
-    return Array.from(document.querySelectorAll('.topbar .icon-btn[id], .hd-actions .icon-btn[id], .guest-hd-actions .icon-btn[id], .clean-topbar .icon-btn[id]'));
+    return Array.from(document.querySelectorAll(
+      '.topbar .icon-btn[id], ' +
+      '.hd-actions .icon-btn[id], ' +
+      '.guest-hd-actions .icon-btn[id], ' +
+      '.clean-topbar .icon-btn[id], ' +
+      '.clean-nav .btn[id], ' +
+      '.app-section-head-row .cal-nav-btn[id], ' +
+      '.stats-head-actions .piscina-action-btn[id]'
+    ));
   }catch(_){ return []; }
 }
 
