@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.434
+ * Build: 2.435
  */
-const BUILD_VERSION = "2.434";
+const BUILD_VERSION = "2.435";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12869,7 +12869,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const safePageKey = String(pageKey || '').trim().toLowerCase();
     const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni'].includes(safePageKey);
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni','statcancellazioni'].includes(safePageKey);
     const fgHex = useForcedDarkSurface
       ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
       : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);

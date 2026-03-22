@@ -12680,6 +12680,17 @@ body.ddae-dark .operatori-editor-subtitle{
   color: #ffffff !important;
   opacity: 1 !important;
 }
+body.ddae-dark #page-statcancellazioni .kpi-card{
+  background: rgba(12,23,46,0.96) !important;
+  background-color: rgba(12,23,46,0.96) !important;
+  border-color: rgba(148,163,184,0.28) !important;
+  box-shadow: none !important;
+}
+body.ddae-dark #page-statcancellazioni .stats-title,
+body.ddae-dark #page-statcancellazioni .stats-divider{
+  opacity: 1 !important;
+}
+
 body.ddae-dark .stats-graph-card canvas{ filter: none !important; }
 body.ddae-dark #page-grafici .stats-graph-card,
 body.ddae-dark #page-grafici .stats-graph-canvas{ background: transparent !important; }
