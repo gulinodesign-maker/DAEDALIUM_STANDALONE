@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.455");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.455");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.451");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.451");
 }
 html{
   background-color:#ececec;
@@ -16660,62 +16660,4 @@ body.page-lock-vertical #page-home .home-spacer:last-of-type{
 .room-settings-theme-btn{
   color: inherit;
   -webkit-text-fill-color: currentColor;
-}
-
-
-/* dDAE_2.454 — Design: nuova scheda tasti conferma + tema dedicato */
-.room-settings-section-buttons#roomSettingsConfirmSection .room-settings-squares{
-  justify-content:flex-start;
-}
-.room-settings-square-preview-confirm{
-  width:34px;
-  height:24px;
-}
-.room-settings-square-preview-confirm::before,
-.room-settings-square-preview-confirm::after{
-  content:"";
-  position:absolute;
-  top:4px;
-  width:14px;
-  height:16px;
-  border:2px solid currentColor;
-  border-radius:6px;
-  box-sizing:border-box;
-}
-.room-settings-square-preview-confirm::before{ left:0; }
-.room-settings-square-preview-confirm::after{ right:0; }
-.room-settings-square-caption{ white-space:nowrap; }
-.ddae-confirm-theme-target{
-  background:var(--ddae-confirm-btn-bg, rgba(72,170,96,0.80)) !important;
-  background-color:var(--ddae-confirm-btn-bg, rgba(72,170,96,0.80)) !important;
-  border-color:var(--ddae-confirm-btn-border, rgba(72,170,96,1)) !important;
-  color:var(--ddae-confirm-btn-fg, #ffffff) !important;
-  -webkit-text-fill-color:var(--ddae-confirm-btn-fg, #ffffff) !important;
-}
-.ddae-confirm-theme-target .ui-ico{
-  color:var(--ddae-confirm-btn-fg, #ffffff) !important;
-  stroke:var(--ddae-confirm-btn-fg, #ffffff) !important;
-}
-
-/* dDAE_2.455 - Design: 4 tasti conferma generici */
-.room-settings-squares-confirm{
-  display:grid;
-  grid-template-columns:repeat(4, minmax(0, 1fr));
-  gap:12px;
-}
-.room-settings-confirm-theme-btn{
-  justify-self:stretch;
-}
-.room-settings-square-preview-confirm-single::before,
-.room-settings-square-preview-confirm-single::after{
-  width:12px;
-  height:12px;
-  border-radius:4px;
-  top:50%;
-  transform:translateY(-50%);
-}
-.room-settings-square-preview-confirm-single::before{ left:50%; transform:translate(-50%, -50%); }
-.room-settings-square-preview-confirm-single::after{ display:none; }
-@media (max-width: 640px){
-  .room-settings-squares-confirm{ grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; }
 }

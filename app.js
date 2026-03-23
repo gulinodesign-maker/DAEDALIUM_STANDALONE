@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.458
+ * Build: 2.452
  */
-const BUILD_VERSION = "2.458";
+const BUILD_VERSION = "2.452";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7513,194 +7513,6 @@ function __openHeaderActionThemePicker__(){
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
 const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn'];
-const __CONFIRM_ACTION_THEME_STORAGE_KEYS__ = {
-  confirm:'dDAE_confirm_action_theme_confirm_v1',
-  cancel:'dDAE_confirm_action_theme_cancel_v1',
-  delete:'dDAE_confirm_action_theme_delete_v1',
-  tag:'dDAE_confirm_action_theme_tag_v1'
-};
-const __CONFIRM_ACTION_THEME_DEFAULTS__ = {
-  confirm:{ fg:'white', bg:'green-4', border:'green-4', opacity:0.80 },
-  cancel:{ fg:'white', bg:'blue-3', border:'blue-3', opacity:0.80 },
-  delete:{ fg:'white', bg:'red-3', border:'red-3', opacity:0.80 },
-  tag:{ fg:'white', bg:'violet-3', border:'violet-3', opacity:0.80 }
-};
-const __CONFIRM_ACTION_THEME_META__ = {
-  confirm:{ key:'confirm', caption:'OK', toast:'Design tasto conferma aggiornato', error:'Errore design tasto conferma' },
-  cancel:{ key:'cancel', caption:'NO', toast:'Design tasto annulla aggiornato', error:'Errore design tasto annulla' },
-  delete:{ key:'delete', caption:'DEL', toast:'Design tasto elimina aggiornato', error:'Errore design tasto elimina' },
-  tag:{ key:'tag', caption:'TAG', toast:'Design tasto tag aggiornato', error:'Errore design tasto tag' }
-};
-
-function __confirmActionThemeTypeNormalize__(type){
-  const key = String(type || 'confirm').trim().toLowerCase();
-  return __CONFIRM_ACTION_THEME_DEFAULTS__[key] ? key : 'confirm';
-}
-
-function __confirmActionThemeRead__(type){
-  try{
-    const themeType = __confirmActionThemeTypeNormalize__(type);
-    const raw = localStorage.getItem(__CONFIRM_ACTION_THEME_STORAGE_KEYS__[themeType]);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return __launcherVisualNormalize__(parsed || {}, __CONFIRM_ACTION_THEME_DEFAULTS__[themeType].bg || 'green-4');
-  }catch(_){ return null; }
-}
-
-function __confirmActionThemeWrite__(type, visual){
-  try{
-    const themeType = __confirmActionThemeTypeNormalize__(type);
-    const defaults = __CONFIRM_ACTION_THEME_DEFAULTS__[themeType] || __CONFIRM_ACTION_THEME_DEFAULTS__.confirm;
-    const clean = __launcherVisualNormalize__(visual || {}, defaults.bg || 'green-4');
-    localStorage.setItem(__CONFIRM_ACTION_THEME_STORAGE_KEYS__[themeType], JSON.stringify({ fg: clean.fg || defaults.fg || 'white', bg: clean.bg || defaults.bg || 'green-4', border: clean.border || clean.bg || defaults.border || defaults.bg || 'green-4', opacity: __designBgOpacityNormalize__(clean.opacity ?? defaults.opacity ?? 0.80) }));
-  }catch(_){ }
-}
-
-function __confirmActionThemeVisual__(type){
-  const themeType = __confirmActionThemeTypeNormalize__(type);
-  const defaults = __CONFIRM_ACTION_THEME_DEFAULTS__[themeType] || __CONFIRM_ACTION_THEME_DEFAULTS__.confirm;
-  const visual = __confirmActionThemeRead__(themeType);
-  return {
-    fg: visual?.fg || defaults.fg || 'white',
-    bg: visual?.bg || defaults.bg || 'green-4',
-    border: visual?.border || visual?.bg || defaults.border || defaults.bg || 'green-4',
-    opacity: __designBgOpacityNormalize__(visual?.opacity ?? defaults.opacity ?? 0.80)
-  };
-}
-
-function __confirmActionThemeButtonStyle__(type){
-  try{
-    const visual = __confirmActionThemeVisual__(type);
-    const bgHex = __operatoreColorHex__(visual.bg || 'green-4');
-    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'green-4');
-    const fgHex = __operatoreColorHex__(visual.fg || 'white');
-    return [
-      'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
-      'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
-      'border-color:' + hexToRgba(borderHex, 1),
-      'color:' + fgHex,
-      '-webkit-text-fill-color:' + fgHex
-    ].join(';');
-  }catch(_){
-    return 'background:rgba(72,170,96,0.80);background-color:rgba(72,170,96,0.80);border-color:rgba(72,170,96,1);color:#ffffff;-webkit-text-fill-color:#ffffff';
-  }
-}
-
-function __confirmActionThemeInferType__(btn){
-  try{
-    if (!btn) return '';
-    if (btn.closest?.('#tagColorModal, .room-settings-card, .topbar')) return '';
-    const id = String(btn.id || '').trim().toLowerCase();
-    const cls = String(btn.className || '').trim().toLowerCase();
-    const txt = String(btn.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
-    const aria = String(btn.getAttribute?.('aria-label') || '').trim().toLowerCase();
-    const title = String(btn.getAttribute?.('title') || '').trim().toLowerCase();
-    const blob = [id, cls, txt, aria, title].filter(Boolean).join(' | ');
-    if (!blob) return '';
-    if (/\b(tag|colore tag|tag colore)\b/.test(blob)) return 'tag';
-    if (/\b(elimina|eliminare|delete|remove|trash)\b/.test(blob)) return 'delete';
-    if (/\b(annulla|cancel|no)\b/.test(blob)) return 'cancel';
-    if (/\b(conferma|confermare|confirm|salva|save|ok)\b/.test(blob)) return 'confirm';
-    return '';
-  }catch(_){ return ''; }
-}
-
-function __confirmActionThemeTargets__(type){
-  try{
-    const themeType = __confirmActionThemeTypeNormalize__(type);
-    const selectors = {
-      confirm:[
-        '.editor-modal-actions > .btn.primary',
-        '.settings-popup-actions .btn.primary',
-        '#settingsBackupModal .settings-backup-actions .btn.primary',
-        '#confirmYesNoYes',
-        '#btnSaveSpesa',
-        '#laundryPricesSave',
-        '#piscinaEditSave',
-        '#svcSave',
-        '#rc_save',
-        '#settingsConfigSave',
-        '#opFormConfirm'
-      ],
-      cancel:[
-        '#confirmYesNoNo',
-        '#rc_cancel',
-        '#settingsConfigCancel',
-        '#channelEditorCancel',
-        '#operatoriEditorCancel',
-        '#laundryCatalogEditorCancel',
-        '#btnIrapCancel'
-      ],
-      delete:[
-        '#channelEditorDelete',
-        '#operatoriEditorDelete',
-        '#laundryCatalogEditorDelete',
-        '#operatorDeleteBtn'
-      ],
-      tag:[
-        '#channelEditorTagColor',
-        '#operatoriEditorTagColor',
-        '#laundryCatalogEditorTagColor'
-      ]
-    };
-    const nodes = [];
-    (selectors[themeType] || []).forEach((selector) => {
-      try{ document.querySelectorAll(selector).forEach((el) => { if (el) nodes.push(el); }); }catch(_){ }
-    });
-    try{
-      document.querySelectorAll('button').forEach((el) => {
-        if (!el) return;
-        const inferred = __confirmActionThemeInferType__(el);
-        if (inferred === themeType) nodes.push(el);
-      });
-    }catch(_){ }
-    return Array.from(new Set(nodes)).filter(Boolean);
-  }catch(_){ return []; }
-}
-
-function __confirmActionThemeApplyStyle__(btn, type){
-  try{
-    if (!btn) return;
-    const visual = __confirmActionThemeVisual__(type);
-    const bgHex = __operatoreColorHex__(visual.bg || 'green-4');
-    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'green-4');
-    const fgHex = __operatoreColorHex__(visual.fg || 'white');
-    btn.classList.add('ddae-confirm-theme-target');
-    btn.dataset.confirmThemeType = __confirmActionThemeTypeNormalize__(type);
-    btn.style.setProperty('--ddae-confirm-btn-bg', hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())));
-    btn.style.setProperty('--ddae-confirm-btn-border', hexToRgba(borderHex, 1));
-    btn.style.setProperty('--ddae-confirm-btn-fg', fgHex);
-  }catch(_){ }
-}
-
-function __confirmActionApplyAll__(){
-  try{
-    Object.keys(__CONFIRM_ACTION_THEME_DEFAULTS__).forEach((type) => {
-      __confirmActionThemeTargets__(type).forEach((btn) => { __confirmActionThemeApplyStyle__(btn, type); });
-    });
-  }catch(_){ }
-}
-
-function __openConfirmActionThemePicker__(type){
-  const themeType = __confirmActionThemeTypeNormalize__(type);
-  const meta = __CONFIRM_ACTION_THEME_META__[themeType] || __CONFIRM_ACTION_THEME_META__.confirm;
-  const current = __confirmActionThemeVisual__(themeType);
-  __tagColorPopupOpen__('confirm-action-theme:' + themeType, current, (payload) => {
-    try{
-      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      const nextVisual = {
-        bg: colors.bg || current.bg || (__CONFIRM_ACTION_THEME_DEFAULTS__[themeType]?.bg || 'green-4'),
-        border: colors.border || current.border || colors.bg || current.bg || (__CONFIRM_ACTION_THEME_DEFAULTS__[themeType]?.border || __CONFIRM_ACTION_THEME_DEFAULTS__[themeType]?.bg || 'green-4'),
-        fg: colors.fg || current.fg || (__CONFIRM_ACTION_THEME_DEFAULTS__[themeType]?.fg || 'white'),
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
-      };
-      __confirmActionThemeWrite__(themeType, nextVisual);
-      __confirmActionApplyAll__();
-      try{ renderRoomSettingsPage(); }catch(_){ }
-      try{ toast(meta.toast || 'Design tasto aggiornato'); }catch(_){ }
-    }catch(e){ try{ toast(e?.message || meta.error || 'Errore design tasto'); }catch(_){ } }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || (__CONFIRM_ACTION_THEME_DEFAULTS__[themeType]?.bg || 'green-4')) });
-}
 
 function __pillTargetButtons__(){
   try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter(Boolean); }catch(_){ return []; }
@@ -8354,7 +8166,6 @@ function __launcherIconApplyAll__(){
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
-  try{ __confirmActionApplyAll__(); }catch(_){ }
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
@@ -9971,7 +9782,6 @@ function __applyDarkMode__(enabled){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
-  try{ __confirmActionApplyAll__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
@@ -16596,7 +16406,6 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __HEADER_ACTION_COLOR_STORAGE_KEY__,
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
-    ...Object.values(__CONFIRM_ACTION_THEME_STORAGE_KEYS__),
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -16778,7 +16587,6 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
-  try{ __confirmActionApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
@@ -16882,22 +16690,6 @@ function renderRoomSettingsPage(){
       pillBtn.setAttribute('aria-label', __designTranslate__('Design pulsanti pill', { en:'Pill button design', fr:'Design des boutons pill', de:'Pill-Button-Design', es:'Diseño de botones pill' }));
       pillBtn.title = __designTranslate__('Design pulsanti pill', { en:'Pill button design', fr:'Design des boutons pill', de:'Pill-Button-Design', es:'Diseño de botones pill' });
     }
-    const confirmButtonMeta = [
-      { id:'roomSettingsConfirmThemeBtnConfirm', type:'confirm', caption:'OK', label:__designTranslate__('Design tasto conferma', { en:'Confirm button design', fr:'Design du bouton confirmer', de:'Design der Bestätigen-Taste', es:'Diseño del botón confirmar' }) },
-      { id:'roomSettingsConfirmThemeBtnCancel', type:'cancel', caption:'NO', label:__designTranslate__('Design tasto annulla', { en:'Cancel button design', fr:'Design du bouton annuler', de:'Design der Abbrechen-Taste', es:'Diseño del botón cancelar' }) },
-      { id:'roomSettingsConfirmThemeBtnDelete', type:'delete', caption:'DEL', label:__designTranslate__('Design tasto elimina', { en:'Delete button design', fr:'Design du bouton supprimer', de:'Design der Loeschen-Taste', es:'Diseño del botón eliminar' }) },
-      { id:'roomSettingsConfirmThemeBtnTag', type:'tag', caption:'TAG', label:__designTranslate__('Design tasto tag', { en:'Tag button design', fr:'Design du bouton tag', de:'Design der Tag-Taste', es:'Diseño del botón tag' }) }
-    ];
-    confirmButtonMeta.forEach((meta) => {
-      const confirmBtn = document.getElementById(meta.id);
-      if (!confirmBtn) return;
-      confirmBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-confirm room-settings-square-preview-confirm-single"></span><span class="room-settings-square-caption">' + meta.caption + '</span>';
-      confirmBtn.setAttribute('style', __confirmActionThemeButtonStyle__(meta.type));
-      confirmBtn.dataset.confirmThemeType = meta.type;
-      confirmBtn.classList.remove('room-settings-square-btn-placeholder');
-      confirmBtn.setAttribute('aria-label', meta.label);
-      confirmBtn.title = meta.label;
-    });
     const dots = document.getElementById('roomSettingsDots');
     if (dots){
       const parts = [];
@@ -17070,12 +16862,6 @@ function setupRoomSettingsPage(){
     pillBtn.__boundPillThemeBtn = true;
     bindFastTap(pillBtn, () => { __openPillThemePicker__(); });
   }
-  [['roomSettingsConfirmThemeBtnConfirm','confirm'],['roomSettingsConfirmThemeBtnCancel','cancel'],['roomSettingsConfirmThemeBtnDelete','delete'],['roomSettingsConfirmThemeBtnTag','tag']].forEach(([id, type]) => {
-    const confirmBtn = document.getElementById(id);
-    if (!confirmBtn || confirmBtn.__boundConfirmActionThemeBtn) return;
-    confirmBtn.__boundConfirmActionThemeBtn = true;
-    bindFastTap(confirmBtn, () => { __openConfirmActionThemePicker__(type); });
-  });
   const dotsWrap = document.getElementById('roomSettingsDots');
   if (dotsWrap && !dotsWrap.__boundRoomColorTap){
     dotsWrap.__boundRoomColorTap = true;
