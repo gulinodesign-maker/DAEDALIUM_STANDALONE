@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.452
+ * Build: 2.454
  */
-const BUILD_VERSION = "2.452";
+const BUILD_VERSION = "2.454";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13319,6 +13319,8 @@ function __refreshSpeseColorLinkedViews__(opts){
 const __SPESA_CARD_OPACITY_STORAGE_KEY__ = 'dDAE_spese_card_opacity_v1';
 const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
+const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
+
 
 function __loadSpesaCardVisualMap__(){
   try{
@@ -13445,6 +13447,174 @@ function __bindTaxQuarterColorHold__(btn){
   ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
   try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
   try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
+
+const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
+  'confirmYesNoYes','confirmYesNoNo',
+  'rc_cancel','rc_save',
+  'settingsConfigCancel','settingsConfigSave',
+  'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
+  'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorSave',
+  'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
+  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave'
+];
+
+function __loadSingleActionButtonVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveSingleActionButtonVisualMap__(map){
+  try{ localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __defaultSingleActionButtonVisual__(btn){
+  const id = String(btn?.id || '').trim();
+  const defaults = {
+    confirmYesNoYes:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    confirmYesNoNo:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    rc_cancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    rc_save:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    settingsConfigCancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    settingsConfigSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    settingsBackupCancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    settingsBackupImport:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    settingsBackupExport:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    channelEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
+    channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    operatoriEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    operatoriEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
+    operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    laundryCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    laundryCatalogEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    laundryCatalogEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
+    laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
+  };
+  const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
+  return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
+}
+
+function __singleActionButtonVisualFor__(btn){
+  const id = String(btn?.id || '').trim();
+  const map = __loadSingleActionButtonVisualMap__();
+  const fallback = __defaultSingleActionButtonVisual__(btn);
+  return __launcherVisualNormalize__(map[id] || fallback, fallback.bg || 'blue-4');
+}
+
+function __saveSingleActionButtonVisual__(btn, visual){
+  try{
+    const id = String(btn?.id || '').trim();
+    if (!id) return;
+    const map = __loadSingleActionButtonVisualMap__();
+    const fallback = __defaultSingleActionButtonVisual__(btn);
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
+    map[id] = {
+      bg: clean.bg || fallback.bg || 'blue-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: clean.fg || fallback.fg || 'white',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
+    };
+    __saveSingleActionButtonVisualMap__(map);
+  }catch(_){ }
+}
+
+function __applySingleActionButtonVisual__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const visual = __singleActionButtonVisualFor__(btn);
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    btn.dataset.designStandaloneButton = '1';
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('backdrop-filter', 'none', 'important');
+    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    btn.querySelectorAll('svg, .ui-ico, .tl-ico, .tag-color-mode-ico').forEach((node) => {
+      try{
+        node.style.setProperty('color', fgHex, 'important');
+        node.style.setProperty('stroke', fgHex, 'important');
+        node.style.setProperty('fill', 'none', 'important');
+      }catch(_){ }
+      try{
+        node.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((child) => {
+          child.style.setProperty('stroke', fgHex, 'important');
+          if (String(child.getAttribute('fill') || '').toLowerCase() !== 'none') child.style.setProperty('fill', 'none', 'important');
+        });
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __openSingleActionButtonColorPicker__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const current = __singleActionButtonVisualFor__(btn);
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || current.bg || 'blue-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+        fg: colors.fg || current.fg || 'white',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
+      };
+      __saveSingleActionButtonVisual__(btn, next);
+      __applySingleActionButtonVisual__(btn);
+    };
+    const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current); __applySingleActionButtonVisual__(btn); };
+    __tagColorPopupOpen__('single-action-button', current, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
+  }catch(_){ }
+}
+
+function __bindSingleActionButtonColorHold__(btn){
+  try{ if (!btn || btn.dataset.singleActionButtonColorBound === '1') return; btn.dataset.singleActionButtonColorBound = '1'; }catch(_){ if (!btn) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const clearSelection = ()=>{ try{ const sel = window.getSelection && window.getSelection(); if (sel && sel.removeAllRanges) sel.removeAllRanges(); }catch(_){ } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } clearSelection(); };
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    clearSelection();
+    timer = setTimeout(()=>{ fired = true; try{ btn.classList.add('is-pressing'); }catch(_){ } __openSingleActionButtonColorPicker__(btn); }, 500);
+  };
+  const stop = (e)=>{
+    clear();
+    if (fired){ block(e); setTimeout(()=>{ fired = false; try{ btn.classList.remove('is-pressing'); }catch(_){ } }, 0); return; }
+    try{ btn.classList.remove('is-pressing'); }catch(_){ }
+    clearSelection();
+  };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+  try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+  try{ btn.addEventListener('selectstart', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
+function __setupSingleActionButtonPaletteBindings__(){
+  try{
+    __SINGLE_ACTION_BUTTON_TARGET_IDS__.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      __applySingleActionButtonVisual__(btn);
+      __bindSingleActionButtonColorHold__(btn);
+    });
+  }catch(_){ }
 }
 
 function __loadSpesaCardOpacityMap__(){
@@ -16474,6 +16644,7 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
   try{ if (state.page === 'tassa' && typeof initTassaPage === 'function') initTassaPage(); }catch(_){ }
   try{ document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ __applyTaxQuarterVisual__(node); }catch(_){ } }); }catch(_){ }
+  try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
 }
 
 function __roomSettingsThemePayloadBuild__(){
@@ -25189,6 +25360,22 @@ function __applyLaundryResetCloseIcon__(){
     return true;
   }catch(_){ return false; }
 }
+
+(function __bindSingleActionButtonPaletteWatcher__(){
+  const run = ()=>{ try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ } };
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', run, { once:true });
+  } else {
+    setTimeout(run, 0);
+  }
+  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
+  try{
+    const mo = new MutationObserver(() => { run(); });
+    mo.observe(document.documentElement || document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class','style'] });
+    setTimeout(() => { try{ mo.disconnect(); }catch(_){ } }, 15000);
+  }catch(_){ }
+})();
+
 (function __bindLaundryResetCloseIconWatcher__(){
   const run = ()=>{ try{ __applyLaundryResetCloseIcon__(); }catch(_){ } };
   if (document.readyState === 'loading'){

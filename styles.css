@@ -16656,6 +16656,18 @@ body.page-lock-vertical #page-home .home-spacer:last-of-type{
 }
 
 
+
+/* dDAE_2.454 — Pulsanti azione popup/editabili singolarmente dal popup colore */
+.btn[data-design-standalone-button="1"],
+.btn[data-design-standalone-button="1"]:hover,
+.btn[data-design-standalone-button="1"]:focus,
+.btn[data-design-standalone-button="1"]:active{
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  background-image:none !important;
+}
+
 /* dDAE_2.453 — Design: tasti tema liberi di cambiare colore testo/numero */
 .room-settings-theme-btn{
   color: inherit;
