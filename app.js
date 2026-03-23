@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.459
+ * Build: 2.454
  */
-const BUILD_VERSION = "2.459";
+const BUILD_VERSION = "2.454";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13415,6 +13415,19 @@ function __applyTaxQuarterVisual__(btn){
   }catch(_){ }
 }
 
+function __applyTaxQuarterChangesToCategory__(payload, changed){
+  try{
+    document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{
+      try{
+        const current = __taxQuarterVisualFor__(node);
+        const next = __applyDesignPayloadToVisual__(current, payload, changed, current?.bg || 'blue-4');
+        __saveTaxQuarterVisual__(node, next);
+        __applyTaxQuarterVisual__(node);
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __openTaxQuarterColorPicker__(btn){
   try{
     if (!btn) return;
@@ -13431,7 +13444,7 @@ function __openTaxQuarterColorPicker__(btn){
       __applyTaxQuarterVisual__(btn);
     };
     const revertVisual = () => { __saveTaxQuarterVisual__(btn, current); __applyTaxQuarterVisual__(btn); };
-    __tagColorPopupOpen__('tax-quarter', current, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare il design a tutti i quadrimestri?', apply: async(payload) => { document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {}; const next = { bg: colors.bg || current.bg || 'blue-4', border: colors.border || current.border || colors.bg || current.bg || 'blue-4', fg: colors.fg || current.fg || '', opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80) }; __saveTaxQuarterVisual__(node, next); __applyTaxQuarterVisual__(node); }catch(_){ } }); } } });
+    __tagColorPopupOpen__('tax-quarter', current, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare il design a tutti i quadrimestri?', apply: async(payload, changed) => { __applyTaxQuarterChangesToCategory__(payload, changed); } } });
   }catch(_){ }
 }
 
