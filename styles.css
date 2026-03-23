@@ -4566,6 +4566,19 @@ body.perf-lite *::after{
 .item.spesa-bg{
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+}
+.item.spesa-bg::before,
+.item.spesa-bg::after{
+  z-index: 0;
+}
+.item.spesa-bg > *,
+.item.spesa-bg .spesa-card-content,
+.item.spesa-bg .item-top,
+.item.spesa-bg .spesa-line,
+.item.spesa-bg .delbtn{
+  position: relative;
+  z-index: 1;
 }
 
 /* Tinta "soft" in stile Liquid Glass */
@@ -4573,7 +4586,7 @@ body.perf-lite *::after{
   content:"";
   position:absolute;
   inset:0;
-  opacity: .22;
+  opacity: var(--spesa-card-opacity, .22);
   pointer-events:none;
   background: transparent;
 }
@@ -4591,21 +4604,21 @@ body.perf-lite *::after{
   --spesa-accent: rgba(var(--spesa-accent-rgb),1);
 }
 .item.spesa-bg::before{ background: var(--spesa-accent) !important; }
-.item.spesa-bg{ border-color: rgba(var(--spesa-accent-rgb), .22) !important; }
+.item.spesa-bg{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
 
 /* Mapping colori (ispirati allo screenshot) */
-.item.spesa-bg-contanti::before{ background: rgba(43,124,180,1); }        /* blu */
-.item.spesa-bg-tassa::before{ background: rgba(191,190,169,1); }          /* beige */
-.item.spesa-bg-iva22::before{ background: rgba(201,119,43,1); }           /* arancio */
-.item.spesa-bg-iva10::before{ background: rgba(111,183,214,1); }          /* azzurro */
-.item.spesa-bg-iva4::before{ background: rgba(77,156,197,1); } /* scuro più leggero */
+.item.spesa-bg-contanti::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg-tassa::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg-iva22::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg-iva10::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg-iva4::before{ background: var(--spesa-accent) !important; }
 
 /* Bordo leggermente colorato */
-.item.spesa-bg-contanti{ border-color: rgba(43,124,180,.22) !important; }
-.item.spesa-bg-tassa{ border-color: rgba(191,190,169,.22) !important; }
-.item.spesa-bg-iva22{ border-color: rgba(201,119,43,.22) !important; }
-.item.spesa-bg-iva10{ border-color: rgba(111,183,214,.22) !important; }
-.item.spesa-bg-iva4{ border-color: rgba(77,156,197,.22) !important; }
+.item.spesa-bg-contanti{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
+.item.spesa-bg-tassa{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
+.item.spesa-bg-iva22{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
+.item.spesa-bg-iva10{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
+.item.spesa-bg-iva4{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
 
 
 /* dDAE — Spese: due tab (Periodo + Ordina) affiancati */
@@ -15000,18 +15013,39 @@ body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label{
 body.ddae-dark #page-spese .item,
 body.ddae-dark #page-spese .item.spesa-bg{
   background: rgba(15,23,42,0.92) !important;
-  border: 1px solid rgba(148,163,184,0.20) !important;
+  border: 1px solid rgba(var(--spesa-accent-rgb, 148,163,184), var(--spesa-card-border-opacity-dark, 0.20)) !important;
   box-shadow: 0 12px 28px rgba(0,0,0,0.34) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 body.ddae-dark #page-spese .item.spesa-bg::before{
-  opacity: 0.18 !important;
+  opacity: var(--spesa-card-opacity-dark, 0.18) !important;
 }
 body.ddae-dark #page-spese .item.spesa-bg::after{
   opacity: 0.08 !important;
   mix-blend-mode: normal !important;
   background: rgba(255,255,255,0.04) !important;
+}
+#page-spese .item.spesa-bg .spesa-line,
+#page-spese .item.spesa-bg .spesa-imp,
+#page-spese .item.spesa-bg .spesa-date,
+#page-spese .item.spesa-bg .spesa-motivo,
+#page-spese .item.spesa-bg .item-title,
+#page-spese .item.spesa-bg .item-sub{
+  color: var(--spesa-text-color, inherit) !important;
+  -webkit-text-fill-color: var(--spesa-text-color, currentColor) !important;
+}
+body.ddae-dark #page-spese .item.spesa-bg{
+  border: 1px solid rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb, 148,163,184)), var(--spesa-card-border-opacity-dark, 0.20)) !important;
+}
+body.ddae-dark #page-spese .item.spesa-bg .spesa-line,
+body.ddae-dark #page-spese .item.spesa-bg .spesa-imp,
+body.ddae-dark #page-spese .item.spesa-bg .spesa-date,
+body.ddae-dark #page-spese .item.spesa-bg .spesa-motivo,
+body.ddae-dark #page-spese .item.spesa-bg .item-title,
+body.ddae-dark #page-spese .item.spesa-bg .item-sub{
+  color: var(--spesa-text-color-dark, var(--spesa-text-color, #f8fafc)) !important;
+  -webkit-text-fill-color: var(--spesa-text-color-dark, var(--spesa-text-color, #f8fafc)) !important;
 }
 body.ddae-dark #page-spese .spesa-line,
 body.ddae-dark #page-spese .spesa-imp,
@@ -15019,8 +15053,8 @@ body.ddae-dark #page-spese .spesa-date,
 body.ddae-dark #page-spese .spesa-motivo,
 body.ddae-dark #page-spese .item-title,
 body.ddae-dark #page-spese .item-sub{
-  color: #f8fafc !important;
-  -webkit-text-fill-color: #f8fafc !important;
+  color: var(--spesa-text-color-dark, var(--spesa-text-color, #f8fafc)) !important;
+  -webkit-text-fill-color: var(--spesa-text-color-dark, var(--spesa-text-color, #f8fafc)) !important;
 }
 body.ddae-dark #page-spese .spesa-date,
 body.ddae-dark #page-spese .spesa-sep,

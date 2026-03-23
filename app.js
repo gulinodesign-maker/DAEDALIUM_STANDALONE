@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.437
+ * Build: 2.442
  */
-const BUILD_VERSION = "2.437";
+const BUILD_VERSION = "2.442";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7564,7 +7564,7 @@ function __pillApplyToButton__(btn){
       return;
     }
     const visual = __pillVisualFor__(btn.id);
-    const fgHex = __operatoreColorHex__(visual.fg || 'white');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || '', false);
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__()));
@@ -7673,7 +7673,7 @@ function __pillThemeButtonStyle__(){
     const visual = __pillThemeVisual__();
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
-    const fgHex = __operatoreColorHex__(visual.fg || 'white');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || '', false);
     return [
       'background:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
       'background-color:' + hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())),
@@ -7694,7 +7694,7 @@ function __openPillThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
-        fg: colors.fg || current.fg || 'white',
+        fg: colors.fg || current.fg || '',
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __pillThemeWrite__(nextVisual);
@@ -7844,7 +7844,7 @@ function __openStatisticsCardThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
-        fg: colors.fg || current.fg || 'white',
+        fg: colors.fg || current.fg || '',
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __statisticsCardThemeWrite__(nextVisual);
@@ -7937,7 +7937,7 @@ function __openLauncherGridThemePicker__(){
       const nextVisual = {
         bg: colors.bg || current.bg || 'blue-4',
         border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
-        fg: colors.fg || current.fg || 'white',
+        fg: colors.fg || current.fg || '',
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
       };
       __launcherGridThemeWrite__(nextVisual);
@@ -8751,7 +8751,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -8817,14 +8817,22 @@ function __tagColorPopupSelectedSpec__(){
 function __tagColorPopupRefreshModeButtons__(){
   const bar = document.getElementById('tagColorModeBar');
   if (!bar) return;
-  const enabledCount = 4;
-  bar.hidden = false;
-  try{ bar.style.setProperty('--tag-color-mode-count', '4'); }catch(_){ }
-  bar.querySelectorAll('.tag-color-mode-btn').forEach((btn) => {
+  const isEnabled = (mode) => {
+    if (mode === 'bg') return !!__tagColorPopupState__.supportsBg;
+    if (mode === 'border') return !!__tagColorPopupState__.supportsBorder;
+    if (mode === 'opacity') return !!__tagColorPopupState__.supportsOpacity;
+    return !!__tagColorPopupState__.supportsFg;
+  };
+  const buttons = Array.from(bar.querySelectorAll('.tag-color-mode-btn'));
+  const enabledCount = buttons.reduce((acc, btn) => acc + (isEnabled(String(btn.dataset.mode || '').trim().toLowerCase()) ? 1 : 0), 0);
+  bar.hidden = enabledCount <= 1;
+  try{ bar.style.setProperty('--tag-color-mode-count', String(Math.max(1, enabledCount))); }catch(_){ }
+  buttons.forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
-    btn.hidden = false;
-    btn.disabled = false;
-    btn.classList.toggle('is-active', mode === __tagColorPopupState__.mode);
+    const enabled = isEnabled(mode);
+    btn.hidden = !enabled;
+    btn.disabled = !enabled;
+    btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
   });
 }
 
@@ -8879,6 +8887,24 @@ function __tagColorPopupApplyViewportLayout__(){
   }catch(_){ }
 }
 
+function __tagColorPopupCurrentPayload__(){
+  return {
+    mode: __tagColorPopupState__.mode,
+    spec: __tagColorPopupSelectedSpec__(),
+    opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)),
+    colors: { ...(__tagColorPopupState__.colors || {}) }
+  };
+}
+
+function __tagColorPopupEmitPreview__(){
+  try{
+    const cb = __tagColorPopupState__.onPreview;
+    if (typeof cb !== 'function') return;
+    __tagColorPopupState__.previewDirty = true;
+    cb(__tagColorPopupCurrentPayload__());
+  }catch(_){ }
+}
+
 function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   const modal = document.getElementById('tagColorModal');
   const grid = document.getElementById('tagColorGrid');
@@ -8886,10 +8912,13 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   if (!modal || !grid) return;
   __tagColorPopupState__.target = String(target || '').trim();
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
-  __tagColorPopupState__.supportsBg = true;
-  __tagColorPopupState__.supportsBorder = true;
-  __tagColorPopupState__.supportsFg = true;
-  __tagColorPopupState__.supportsOpacity = true;
+  __tagColorPopupState__.onPreview = typeof opts.onPreview === 'function' ? opts.onPreview : null;
+  __tagColorPopupState__.onRevert = typeof opts.onRevert === 'function' ? opts.onRevert : null;
+  __tagColorPopupState__.previewDirty = false;
+  __tagColorPopupState__.supportsBg = opts.supportsBg !== false;
+  __tagColorPopupState__.supportsBorder = opts.supportsBorder !== false;
+  __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
+  __tagColorPopupState__.supportsOpacity = opts.supportsOpacity !== false;
   const currentVisual = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
   __tagColorPopupState__.opacity = __designBgOpacityNormalize__(opts.opacity ?? currentColor?.opacity ?? currentVisual?.opacity ?? __designBgOpacityRead__());
   __tagColorPopupState__.colors = {
@@ -8903,7 +8932,11 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
     opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80)
   };
   __tagColorPopupState__.applyCategory = (opts.applyCategory && typeof opts.applyCategory === 'object') ? opts.applyCategory : null;
-  const enabledModes = ['bg','border','fg','opacity'];
+  const enabledModes = [];
+  if (__tagColorPopupState__.supportsBg) enabledModes.push('bg');
+  if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
+  if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
+  if (__tagColorPopupState__.supportsOpacity) enabledModes.push('opacity');
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
@@ -8919,7 +8952,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
 
 async function __tagColorPopupConfirm__(){
   const cb = __tagColorPopupState__.onSelect;
-  const payload = { mode: __tagColorPopupState__.mode, spec: __tagColorPopupSelectedSpec__(), opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)), colors: { ...(__tagColorPopupState__.colors || {}) } };
+  const payload = __tagColorPopupCurrentPayload__();
   __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
   try{
@@ -8932,13 +8965,31 @@ async function __tagColorPopupConfirm__(){
 function __tagColorPopupClose__(){
   const modal = document.getElementById('tagColorModal');
   if (!modal) return;
+  const shouldRevert = !__tagColorPopupState__.confirmed && __tagColorPopupState__.previewDirty;
+  const revertCb = __tagColorPopupState__.onRevert;
+  const revertPayload = {
+    mode: 'bg',
+    spec: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
+    opacity: __designBgOpacityNormalize__(__tagColorPopupState__.initial?.opacity ?? 0.80),
+    colors: {
+      bg: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
+      border: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.border || __tagColorPopupState__.initial?.bg || 'blue-4'),
+      fg: __normalizeOptionalOperatoreColor__(__tagColorPopupState__.initial?.fg || '')
+    }
+  };
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
     __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
+  if (shouldRevert && typeof revertCb === 'function') {
+    try{ revertCb(revertPayload); }catch(_){ }
+  }
   __tagColorPopupState__.target = '';
   __tagColorPopupState__.onSelect = null;
+  __tagColorPopupState__.onPreview = null;
+  __tagColorPopupState__.onRevert = null;
+  __tagColorPopupState__.previewDirty = false;
   __tagColorPopupState__.mode = 'fg';
   __tagColorPopupState__.confirmed = false;
   __tagColorPopupState__.supportsBg = false;
@@ -9404,6 +9455,7 @@ function setupTagColorPopup(){
         else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
         else __tagColorPopupState__.colors.fg = spec;
         __tagColorPopupRefreshSelection__();
+        __tagColorPopupEmitPreview__();
       });
     });
     document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
@@ -9427,6 +9479,7 @@ function setupTagColorPopup(){
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         __tagColorPopupState__.opacity = __designBgOpacityNormalize__(parseFloat(btn.dataset.opacity || '0.80'));
         __tagColorPopupRefreshSelection__();
+        __tagColorPopupEmitPreview__();
       });
     });
   }catch(_){ }
@@ -12477,15 +12530,17 @@ function renderSpese(){
     const motivo = escapeHtml((s.motivazione || s.motivo || "").toString());
 
     el.innerHTML = `
-      <div class="item-top">
-        <div class="spesa-line" title="${motivo}">
-          <span class="spesa-imp">${euro(importo)}</span>
-          <span class="spesa-sep">·</span>
-          <span class="spesa-date">${data}</span>
-          <span class="spesa-sep">·</span>
-          <span class="spesa-motivo">${motivo}</span>
+      <div class="spesa-card-content">
+        <div class="item-top">
+          <div class="spesa-line" title="${motivo}">
+            <span class="spesa-imp">${euro(importo)}</span>
+            <span class="spesa-sep">·</span>
+            <span class="spesa-date">${data}</span>
+            <span class="spesa-sep">·</span>
+            <span class="spesa-motivo">${motivo}</span>
+          </div>
+          <button class="delbtn delbtn-x" type="button" aria-label="Elimina record" data-del="${s.id}">Elimina</button>
         </div>
-        <button class="delbtn delbtn-x" type="button" aria-label="Elimina record" data-del="${s.id}">Elimina</button>
       </div>
     `;
 
@@ -13105,26 +13160,364 @@ function __refreshStatGraphPreviews__(){
   }catch(_){ }
 }
 
+function __speseGraphLabelForKey__(key){
+  try{
+    const safeKey = String(key || '').trim();
+    return safeKey ? categoriaLabel(safeKey) : '';
+  }catch(_){ return String(key || '').trim(); }
+}
+
+function __updateSpeseGraphColorByKey__(key, spec, fallback){
+  try{
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return;
+    const normalized = __parseOperatoreColorSpec__(spec || fallback || 'blue-4').spec;
+    const label = __speseGraphLabelForKey__(safeKey);
+    const map = __loadGraphColorMap__('spese');
+    if (label) map[label] = normalized;
+    __saveGraphColorMap__('spese', map);
+  }catch(_){ }
+}
+
+function __refreshSpeseColorLinkedViews__(opts){
+  const options = opts || {};
+  try{ __refreshStatGraphPreviews__(); }catch(_){ }
+  try{
+    if (!options.skipSpeseList && state && state.page === 'spese' && state.speseView === 'list') renderSpese();
+  }catch(_){ }
+  try{
+    if (state && state.page === 'statspese') renderStatSpese();
+  }catch(_){ }
+  try{
+    const modal = document.getElementById('statSpesePieModal');
+    if (modal && !modal.hidden) openStatSpesePieModal();
+  }catch(_){ }
+}
+
+const __SPESA_CARD_OPACITY_STORAGE_KEY__ = 'dDAE_spese_card_opacity_v1';
+const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
+const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
+
+function __loadSpesaCardVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__SPESA_CARD_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveSpesaCardVisualMap__(map){
+  try{ localStorage.setItem(__SPESA_CARD_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __setSpesaCardVisual__(key, visual, fallback){
+  try{
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return;
+    const map = __loadSpesaCardVisualMap__();
+    const current = __tagColorPairFromValue__(map[safeKey] || {}, fallback || 'blue-4');
+    const opacity = __designBgOpacityNormalize__(visual?.opacity ?? current.opacity ?? __getSpesaCardOpacity__(safeKey, 0.22));
+    map[safeKey] = {
+      bg: __normalizeOperatoreColor__(visual?.bg || current.bg || fallback || 'blue-4'),
+      border: __normalizeOperatoreColor__(visual?.border || current.border || visual?.bg || current.bg || fallback || 'blue-4'),
+      fg: __normalizeOptionalOperatoreColor__(visual?.fg || current.fg || ''),
+      opacity
+    };
+    __saveSpesaCardVisualMap__(map);
+    __setSpesaCardOpacity__(safeKey, opacity);
+  }catch(_){ }
+}
+
+function __loadTaxQuarterVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__TAX_QUARTER_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveTaxQuarterVisualMap__(map){
+  try{ localStorage.setItem(__TAX_QUARTER_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __defaultTaxQuarterVisual__(btn){
+  const safeId = String(btn?.id || '').trim();
+  const defaults = {
+    taxQ1Btn:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 },
+    taxQ2Btn:{ bg:'gray-4', border:'gray-4', fg:'', opacity:0.80 },
+    taxQ3Btn:{ bg:'orange-4', border:'orange-4', fg:'', opacity:0.80 },
+    taxQ4Btn:{ bg:'gray-5', border:'gray-5', fg:'', opacity:0.80 }
+  };
+  return __launcherVisualNormalize__(defaults[safeId] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 }, 'blue-4');
+}
+
+function __taxQuarterVisualFor__(btn){
+  const safeId = String(btn?.id || '').trim();
+  const map = __loadTaxQuarterVisualMap__();
+  return __launcherVisualNormalize__(map[safeId] || __defaultTaxQuarterVisual__(btn), __defaultTaxQuarterVisual__(btn).bg || 'blue-4');
+}
+
+function __saveTaxQuarterVisual__(btn, visual){
+  try{
+    const safeId = String(btn?.id || '').trim();
+    if (!safeId) return;
+    const map = __loadTaxQuarterVisualMap__();
+    const fallback = __defaultTaxQuarterVisual__(btn);
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
+    map[safeId] = { bg: clean.bg || fallback.bg, border: clean.border || clean.bg || fallback.border || fallback.bg, fg: clean.fg || fallback.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80) };
+    __saveTaxQuarterVisualMap__(map);
+  }catch(_){ }
+}
+
+function __applyTaxQuarterVisual__(btn){
+  try{
+    if (!btn) return;
+    const visual = __taxQuarterVisualFor__(btn);
+    const dark = !!(__isDarkModeEnabled__ && __isDarkModeEnabled__());
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || '', false);
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    const darkOpacity = Math.max(0.16, Math.min(0.34, opacity));
+    btn.style.setProperty('background', hexToRgba(bgHex, dark ? darkOpacity : opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, dark ? darkOpacity : opacity), 'important');
+    btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, dark ? 0.34 : 1), 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, dark ? 0.34 : 1), 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('backdrop-filter', 'none', 'important');
+    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+  }catch(_){ }
+}
+
+function __openTaxQuarterColorPicker__(btn){
+  try{
+    if (!btn) return;
+    const current = __taxQuarterVisualFor__(btn);
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || current.bg || 'blue-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+        fg: colors.fg || current.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
+      };
+      __saveTaxQuarterVisual__(btn, next);
+      __applyTaxQuarterVisual__(btn);
+    };
+    const revertVisual = () => { __saveTaxQuarterVisual__(btn, current); __applyTaxQuarterVisual__(btn); };
+    __tagColorPopupOpen__('tax-quarter', current, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare il design a tutti i quadrimestri?', apply: async(payload) => { document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {}; const next = { bg: colors.bg || current.bg || 'blue-4', border: colors.border || current.border || colors.bg || current.bg || 'blue-4', fg: colors.fg || current.fg || '', opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80) }; __saveTaxQuarterVisual__(node, next); __applyTaxQuarterVisual__(node); }catch(_){ } }); } } });
+  }catch(_){ }
+}
+
+function __bindTaxQuarterColorHold__(btn){
+  try{ if (!btn || btn.dataset.taxQuarterColorBound === '1') return; btn.dataset.taxQuarterColorBound = '1'; }catch(_){ if (!btn) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } };
+  const start = (e)=>{ try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ } fired = false; clear(); timer = setTimeout(()=>{ fired = true; __openTaxQuarterColorPicker__(btn); }, 500); };
+  const stop = (e)=>{ clear(); if (fired){ block(e); setTimeout(()=>{ fired = false; }, 0); } };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+  try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
+function __loadSpesaCardOpacityMap__(){
+  try{
+    const raw = localStorage.getItem(__SPESA_CARD_OPACITY_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveSpesaCardOpacityMap__(map){
+  try{ localStorage.setItem(__SPESA_CARD_OPACITY_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __getSpesaCardOpacity__(key, fallback){
+  try{
+    const map = __loadSpesaCardOpacityMap__();
+    const safeKey = String(key || '').trim();
+    const value = safeKey ? map[safeKey] : null;
+    return __designBgOpacityNormalize__(value ?? fallback ?? 0.22);
+  }catch(_){ return __designBgOpacityNormalize__(fallback ?? 0.22); }
+}
+
+function __setSpesaCardOpacity__(key, opacity){
+  try{
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return;
+    const map = __loadSpesaCardOpacityMap__();
+    map[safeKey] = __designBgOpacityNormalize__(opacity ?? 0.22);
+    __saveSpesaCardOpacityMap__(map);
+  }catch(_){ }
+}
+
+function __spesaCardVisualForKey__(key, fallbackColor){
+  const safeKey = String(key || '').trim();
+  const graphSpec = __closestGraphColorSpec__(__getSpeseGraphSliceColor__(safeKey, fallbackColor || '#2B7CB4'));
+  try{
+    const map = __loadSpesaCardVisualMap__();
+    const saved = __tagColorPairFromValue__(map[safeKey] || {}, graphSpec);
+    return {
+      bg: __normalizeOperatoreColor__(saved.bg || graphSpec),
+      border: __normalizeOperatoreColor__(saved.border || saved.bg || graphSpec),
+      fg: __normalizeOptionalOperatoreColor__(saved.fg || ''),
+      opacity: __designBgOpacityNormalize__(saved.opacity ?? __getSpesaCardOpacity__(safeKey, 0.22))
+    };
+  }catch(_){
+    return { bg: graphSpec, border: graphSpec, fg: '', opacity: __getSpesaCardOpacity__(safeKey, 0.22) };
+  }
+}
+
+function __openSpesaCardColorPicker__(el, row){
+  if (!el) return;
+  try{
+    const key = spesaGraphKeyForItem(row);
+    if (!key) return;
+    const fallbackMap = {
+      CONTANTI: (COLORS.CONTANTI || '#2b7cb4'),
+      TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
+      IVA_22: (COLORS.IVA_22 || '#c9772b'),
+      IVA_10: (COLORS.IVA_10 || '#7ac0db'),
+      IVA_4: (COLORS.IVA_4 || '#1f2937')
+    };
+    const currentHex = __getSpeseGraphSliceColor__(key, fallbackMap[key] || '#2B7CB4');
+    const currentVisual = __spesaCardVisualForKey__(key, fallbackMap[key] || '#2B7CB4');
+    const currentSpec = __parseOperatoreColorSpec__(currentVisual.bg || __closestGraphColorSpec__(currentHex)).spec;
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const nextSpec = __parseOperatoreColorSpec__(colors.bg || payload?.spec || currentSpec).spec;
+      const nextVisual = {
+        bg: nextSpec,
+        border: colors.border || currentVisual.border || nextSpec,
+        fg: colors.fg || currentVisual.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? currentVisual.opacity ?? 0.22)
+      };
+      __updateSpeseGraphColorByKey__(key, nextSpec, currentSpec);
+      __setSpesaCardVisual__(key, nextVisual, currentSpec);
+      try{ __applySpesaCardColor__(el, row); }catch(_){ }
+      __refreshSpeseColorLinkedViews__({ skipSpeseList:false });
+    };
+    const revertVisual = () => {
+      __updateSpeseGraphColorByKey__(key, currentSpec, currentSpec);
+      __setSpesaCardVisual__(key, currentVisual, currentSpec);
+      try{ __applySpesaCardColor__(el, row); }catch(_){ }
+      __refreshSpeseColorLinkedViews__({ skipSpeseList:false });
+    };
+    __tagColorPopupOpen__('spese-card', currentVisual, (payload) => {
+      applyVisual(payload);
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:currentVisual.opacity ?? 0.22, defaultMode:'bg', fallbackBg:currentSpec, onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare sfondo, bordo, testo e trasparenza a tutte le card spese della stessa categoria?', apply: async(payload) => {
+      applyVisual(payload);
+    } } });
+  }catch(_){ }
+}
+
+function __bindSpesaCardColorLongPress__(el, row){
+  if (!el || el.dataset.spesaColorBound === '1') return;
+  el.dataset.spesaColorBound = '1';
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{
+    try{ if (e && e.preventDefault) e.preventDefault(); }catch(_){ }
+    try{ if (e && e.stopPropagation) e.stopPropagation(); }catch(_){ }
+    return false;
+  };
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    timer = setTimeout(()=>{
+      fired = true;
+      try{ el.classList.add('is-pressing'); }catch(_){ }
+      __openSpesaCardColorPicker__(el, row);
+      setTimeout(()=>{ try{ el.classList.remove('is-pressing'); }catch(_){ } }, 0);
+    }, 500);
+  };
+  const stop = (e)=>{
+    clear();
+    if (fired){
+      block(e);
+      setTimeout(()=>{ fired = false; try{ el.classList.remove('is-pressing'); }catch(_){ } }, 0);
+      return;
+    }
+    try{ el.classList.remove('is-pressing'); }catch(_){ }
+  };
+  const swallow = (e)=>{ if (fired){ block(e); fired = false; } };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ el.addEventListener('click', swallow, true); }catch(_){ }
+  try{ el.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
 function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
   const selectedSpec = __closestGraphColorSpec__(currentColor);
-  __tagColorPopupOpen__('stat-graph', selectedSpec, (payload) => {
-    const normalized = __parseOperatoreColorSpec__(payload?.spec || selectedSpec).spec;
-    const safeLabel = String(label || '').trim();
-    const map = __loadGraphColorMap__(graphKey);
+  const safeGraphKey = String(graphKey || '').trim();
+  const safeLabel = String(label || '').trim();
+  const savedMap = __loadGraphColorMap__(safeGraphKey);
+  const initialSpec = __parseOperatoreColorSpec__(savedMap[safeLabel] || selectedSpec).spec;
+  const initialVisual = { bg: initialSpec, border: initialSpec, fg: '', opacity: 0.80 };
+  const syncMonthlyStatCard = (spec) => {
+    if (safeGraphKey !== 'occupazione-mensile' || !safeLabel) return;
+    try{
+      const statMap = __loadStatCardColorMap__('statmensili');
+      const fallbackPair = __getStatCardColorPair__('statmensili', safeLabel, spec);
+      statMap[safeLabel] = { bg: fallbackPair.bg || 'blue-4', border: fallbackPair.border || fallbackPair.bg || 'blue-4', fg: spec, opacity: __designBgOpacityNormalize__(fallbackPair.opacity ?? 0.80) };
+      __saveStatCardColorMap__('statmensili', statMap);
+    }catch(_){ }
+  };
+  const refreshLiveViews = () => {
+    try{ __refreshSpeseColorLinkedViews__({ skipSpeseList:false }); }catch(_){ }
+    try{ if (safeGraphKey === 'occupazione-mensile') __refreshStatCardsPage__('statmensili'); }catch(_){ }
+    try{
+      const modal = document.getElementById('statGraphModal');
+      if (modal && !modal.hidden) __openStatGraphPopup__({ graphKey: safeGraphKey, title: modal.querySelector('#statGraphModalTitle')?.textContent || '', detail: modal.querySelector('#statGraphModalDetail')?.textContent || '', slices: Array.isArray(state && state.statGraphModalSlices) ? state.statGraphModalSlices : [], valueFormatter: state && state.statGraphModalValueFormatter, legendMode: state && state.statGraphModalLegendMode, centerTitle: state && state.statGraphModalCenterTitle, centerFormatter: state && state.statGraphModalCenterFormatter });
+    }catch(_){ }
+  };
+  const applySpec = (payload) => {
+    const colorSource = payload?.colors?.bg || payload?.colors?.border || payload?.colors?.fg || payload?.spec || selectedSpec;
+    const normalized = __parseOperatoreColorSpec__(colorSource).spec;
+    const map = __loadGraphColorMap__(safeGraphKey);
     if (safeLabel) map[safeLabel] = normalized;
-    __saveGraphColorMap__(graphKey, map);
-    if (String(graphKey || '').trim() === 'occupazione-mensile' && safeLabel){
+    __saveGraphColorMap__(safeGraphKey, map);
+    if (safeGraphKey === 'spese' && safeLabel){
       try{
-        const statMap = __loadStatCardColorMap__('statmensili');
-        const fallbackPair = __getStatCardColorPair__('statmensili', safeLabel, normalized);
-        statMap[safeLabel] = { bg: fallbackPair.bg || 'blue-4', fg: normalized };
-        __saveStatCardColorMap__('statmensili', statMap);
+        const keyMap = __speseGraphSlicesBase__();
+        const found = (Array.isArray(keyMap) ? keyMap : []).find((slice) => String(slice?.label || '') === safeLabel);
+        const safeExpenseKey = String(found?.key || '').trim();
+        if (safeExpenseKey){
+          const currentVisual = __spesaCardVisualForKey__(safeExpenseKey, normalized);
+          __setSpesaCardVisual__(safeExpenseKey, { bg: normalized, border: payload?.colors?.border || currentVisual.border || normalized, fg: payload?.colors?.fg || currentVisual.fg || '', opacity: __designBgOpacityNormalize__(payload?.opacity ?? currentVisual.opacity ?? 0.22) }, normalized);
+        }
       }catch(_){ }
-      try{ __refreshStatCardsPage__('statmensili'); }catch(_){ }
     }
-    __refreshStatGraphPreviews__();
+    syncMonthlyStatCard(normalized);
+    refreshLiveViews();
+    return normalized;
+  };
+  const revertSpec = () => {
+    const map = __loadGraphColorMap__(safeGraphKey);
+    if (safeLabel) map[safeLabel] = initialSpec;
+    __saveGraphColorMap__(safeGraphKey, map);
+    if (safeGraphKey === 'spese' && safeLabel){
+      try{
+        const keyMap = __speseGraphSlicesBase__();
+        const found = (Array.isArray(keyMap) ? keyMap : []).find((slice) => String(slice?.label || '') === safeLabel);
+        const safeExpenseKey = String(found?.key || '').trim();
+        if (safeExpenseKey) __setSpesaCardVisual__(safeExpenseKey, { bg: initialSpec, border: initialVisual.border, fg: initialVisual.fg, opacity: 0.22 }, initialSpec);
+      }catch(_){ }
+    }
+    syncMonthlyStatCard(initialSpec);
+    refreshLiveViews();
+  };
+  __tagColorPopupOpen__('stat-graph', initialVisual, (payload) => {
+    const normalized = applySpec(payload);
     if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
-  });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, defaultMode:'bg', fallbackBg:selectedSpec, onPreview:applySpec, onRevert:revertSpec });
 }
 
 function __bindGraphLegendLongPress__(row, payload, slice){
@@ -13215,6 +13608,13 @@ function __openStatGraphPopup__(payload){
   const legendEl = document.getElementById("statGraphModalLegend");
   const canvasWrap = document.querySelector("#statGraphModal .stat-graph-modal-canvas");
   const workingPayload = { ...payload };
+  try{
+    state.statGraphModalSlices = Array.isArray(payload.slices) ? payload.slices.map((slice)=>({ ...slice })) : [];
+    state.statGraphModalValueFormatter = payload.valueFormatter;
+    state.statGraphModalLegendMode = payload.legendMode || 'share';
+    state.statGraphModalCenterTitle = payload.centerTitle != null ? payload.centerTitle : 'Totale';
+    state.statGraphModalCenterFormatter = (typeof payload.centerFormatter === 'function') ? payload.centerFormatter : euro;
+  }catch(_){ }
   workingPayload.slices = __applyGraphCustomColors__(workingPayload.graphKey || workingPayload.title || 'generic', Array.isArray(payload.slices) ? payload.slices : []);
   if (titleEl) titleEl.textContent = String(workingPayload.title || "Grafico");
   if (detailEl) detailEl.textContent = String(workingPayload.detail || "");
@@ -14892,13 +15292,36 @@ function __applySpesaCardColor__(el, row){
       IVA_10: (COLORS.IVA_10 || '#7ac0db'),
       IVA_4: (COLORS.IVA_4 || '#1f2937')
     };
-    const hex = __getSpeseGraphSliceColor__(key, fallbackMap[key] || '#2B7CB4');
-    const parsed = parseInt(String(hex || '#2B7CB4').slice(1), 16);
+    const visual = __spesaCardVisualForKey__(key, fallbackMap[key] || '#2B7CB4');
+    const bgHex = __operatoreColorHex__(visual.bg || __closestGraphColorSpec__(fallbackMap[key] || '#2B7CB4'));
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || __closestGraphColorSpec__(fallbackMap[key] || '#2B7CB4'));
+    const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '';
+    const parsed = parseInt(String(bgHex || '#2B7CB4').slice(1), 16);
     const r = (parsed >> 16) & 255;
     const g = (parsed >> 8) & 255;
     const b = parsed & 255;
+    const borderParsed = parseInt(String(borderHex || bgHex || '#2B7CB4').slice(1), 16);
+    const br = (borderParsed >> 16) & 255;
+    const bgv = (borderParsed >> 8) & 255;
+    const bb = borderParsed & 255;
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.22);
+    const darkOpacity = Math.max(0.06, Math.min(0.18, opacity));
+    const borderOpacity = Math.max(0.12, Math.min(0.50, opacity + 0.10));
+    const darkBorderOpacity = Math.max(0.16, Math.min(0.36, darkOpacity + 0.10));
     el.style.setProperty('--spesa-accent-rgb', `${r}, ${g}, ${b}`);
-    el.style.setProperty('--spesa-accent', hex);
+    el.style.setProperty('--spesa-accent', bgHex);
+    el.style.setProperty('--spesa-border-rgb', `${br}, ${bgv}, ${bb}`);
+    el.style.setProperty('--spesa-card-opacity', String(opacity));
+    el.style.setProperty('--spesa-card-opacity-dark', String(darkOpacity));
+    el.style.setProperty('--spesa-card-border-opacity', String(borderOpacity));
+    el.style.setProperty('--spesa-card-border-opacity-dark', String(darkBorderOpacity));
+    if (fgHex){
+      el.style.setProperty('--spesa-text-color', fgHex);
+      el.style.setProperty('--spesa-text-color-dark', fgHex);
+    }else{
+      el.style.removeProperty('--spesa-text-color');
+      el.style.removeProperty('--spesa-text-color-dark');
+    }
   }catch(_){ }
 }
 
@@ -15720,7 +16143,13 @@ function __roomSettingsThemeSlotsWrite__(slots){
 }
 
 function __roomSettingsThemeStoragePrefixes__(){
-  return ['ddae_graph_colors_', 'dDAE_statcard_colors_', 'dDAE_stat_card_text_', 'dDAE_statistics_card_theme_'];
+  return [
+    'ddae_graph_colors_',
+    'dDAE_statcard_colors_',
+    'dDAE_stat_card_text_',
+    'ddae_stat_card_text_',
+    'dDAE_statistics_card_theme_'
+  ];
 }
 
 function __roomSettingsThemeAdditionalStorageKeys__(){
@@ -15732,7 +16161,10 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __HEADER_ACTION_THEME_STORAGE_KEY__,
     __HEADER_ACTION_COLOR_STORAGE_KEY__,
     __PILL_THEME_STORAGE_KEY__,
-    __PILL_COLOR_STORAGE_KEY__
+    __PILL_COLOR_STORAGE_KEY__,
+    __SPESA_CARD_OPACITY_STORAGE_KEY__,
+    __SPESA_CARD_VISUAL_STORAGE_KEY__,
+    __TAX_QUARTER_VISUAL_STORAGE_KEY__
   ].filter(Boolean);
 }
 
@@ -15794,6 +16226,9 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ renderStatMensili(); }catch(_){ }
   try{ __refreshStatGraphPreviews__(); }catch(_){ }
   try{ if (state.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
+  try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
+  try{ if (state.page === 'tassa' && typeof initTassaPage === 'function') initTassaPage(); }catch(_){ }
+  try{ document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ __applyTaxQuarterVisual__(node); }catch(_){ } }); }catch(_){ }
 }
 
 function __roomSettingsThemePayloadBuild__(){
@@ -15880,7 +16315,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   await saveRoomsUiConfigToSettings(payload.roomsUi, { showToast:false });
   const statsThemeStorage = (payload && payload.statsThemeStorage && typeof payload.statsThemeStorage === 'object') ? payload.statsThemeStorage : {};
   const hasLauncherSnapshot = !!(statsThemeStorage && (__LAUNCHER_ICON_COLOR_STORAGE_KEY__ in statsThemeStorage || __LAUNCHER_GRID_THEME_STORAGE_KEY__ in statsThemeStorage));
-  const hasStatisticsSnapshot = !!(statsThemeStorage && (__STATISTICS_CARD_THEME_STORAGE_KEY__ in statsThemeStorage || Object.keys(statsThemeStorage).some((k) => String(k || '').startsWith('dDAE_statcard_colors_') || String(k || '').startsWith('dDAE_stat_card_text_') || String(k || '').startsWith('ddae_graph_colors_'))));
+  const hasStatisticsSnapshot = !!(statsThemeStorage && (__STATISTICS_CARD_THEME_STORAGE_KEY__ in statsThemeStorage || __SPESA_CARD_VISUAL_STORAGE_KEY__ in statsThemeStorage || __SPESA_CARD_OPACITY_STORAGE_KEY__ in statsThemeStorage || __TAX_QUARTER_VISUAL_STORAGE_KEY__ in statsThemeStorage || Object.keys(statsThemeStorage).some((k) => String(k || '').startsWith('dDAE_statcard_colors_') || String(k || '').startsWith('dDAE_stat_card_text_') || String(k || '').startsWith('ddae_stat_card_text_') || String(k || '').startsWith('ddae_graph_colors_'))));
   const hasHeaderSnapshot = !!(statsThemeStorage && (__HEADER_ACTION_THEME_STORAGE_KEY__ in statsThemeStorage || __HEADER_ACTION_COLOR_STORAGE_KEY__ in statsThemeStorage));
   try{
     __launcherGridThemeWrite__(payload.launcherGridTheme);
@@ -23753,6 +24188,7 @@ function renderSpese(){
     const cls = spesaCategoryClass(s);
     if (cls) el.classList.add(cls);
     __applySpesaCardColor__(el, s);
+    __bindSpesaCardColorLongPress__(el, s);
 
     const importo = Number(s.importoLordo || 0);
     const data = formatShortDateIT(s.dataSpesa || s.data || s.data_spesa || "");
@@ -24123,6 +24559,7 @@ function initTassaPage(){
   quarterBind(q2, "04-01", "06-30");
   quarterBind(q3, "07-01", "09-30");
   quarterBind(q4, "10-01", "12-31");
+  [q1,q2,q3,q4].forEach((btn)=>{ try{ __applyTaxQuarterVisual__(btn); __bindTaxQuarterColorHold__(btn); }catch(_){ } });
 
   // Mantieni listeners (inputs nascosti) per compatibilità
   const from = $("#taxFrom");
