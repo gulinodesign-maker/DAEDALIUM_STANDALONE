@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.461
+ * Build: 2.462
  */
-const BUILD_VERSION = "2.461";
+const BUILD_VERSION = "2.462";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11041,7 +11041,7 @@ function ensureTopbarIconContrast(){
 }
 
 
-const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","pulizie","orepulizia","statistiche","impostazioni","opsettings"]);
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings"]);
 function __isVerticalLockPage__(page){
   return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
 }

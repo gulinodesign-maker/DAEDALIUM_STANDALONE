@@ -16628,6 +16628,22 @@ body.page-lock-vertical #page-home .home-spacer:first-of-type,
 body.page-lock-vertical #page-home .home-spacer:last-of-type{
   flex-shrink: 1 !important;
 }
+body.page-lock-vertical[data-page="pulizie"],
+html.page-lock-vertical:has(body[data-page="pulizie"]){
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+}
+body.page-lock-vertical[data-page="pulizie"] main.wrap,
+body.page-lock-vertical[data-page="pulizie"] #page-pulizie,
+body.page-lock-vertical[data-page="pulizie"] #page-pulizie .bd,
+body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-mainGroup{
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
+  overflow: visible !important;
+}
 
 
 /* dDAE_2.451 — Home: abbassa pill anno, griglia 3x3 e build di 50px */
