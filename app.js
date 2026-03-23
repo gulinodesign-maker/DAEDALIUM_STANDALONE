@@ -87,9 +87,34 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.447
+ * Build: 2.451
  */
-const BUILD_VERSION = "2.447";
+const BUILD_VERSION = "2.451";
+
+const IOS_FIXED_PAGES = new Set(["home","tassa","pulizie","orepulizia","statistiche","impostazioni"]);
+
+function applyPageScrollLock(page){
+  try{
+    const lock = IOS_FIXED_PAGES.has(String(page || ""));
+    document.documentElement.classList.toggle("page-scroll-lock", lock);
+    document.body.classList.toggle("page-scroll-lock", lock);
+    if (lock){
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }catch(_){ }
+}
+
+function __preventLockedPageVerticalScroll__(ev){
+  try{
+    if (!document.body || !document.body.classList.contains("page-scroll-lock")) return;
+    const target = ev.target;
+    if (target && target.closest && target.closest('.modal[role="dialog"], .modal-card, textarea, input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="search"], input[type="password"], select')) return;
+    if (ev.cancelable) ev.preventDefault();
+  }catch(_){ }
+}
+
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11061,6 +11086,7 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
+  try{ applyPageScrollLock(page); }catch(_){ }
 
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
@@ -21043,6 +21069,9 @@ try{
     ? (restoredPage || "home")
     : "auth";
   showPage(targetPage);
+
+document.addEventListener("touchmove", __preventLockedPageVerticalScroll__, { passive:false });
+document.addEventListener("wheel", __preventLockedPageVerticalScroll__, { passive:false });
   if (__restore) setTimeout(() => { try { __applyUiState(__restore); } catch(_) {} }, 0);
 
 

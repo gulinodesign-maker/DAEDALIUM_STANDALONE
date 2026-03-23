@@ -16495,3 +16495,55 @@ body.ddae-dark #page-statprenotazioni .stat-graph-modal-legend .legrow{
   background: rgba(15,23,42,0.88) !important;
   border-color: rgba(148,163,184,0.20) !important;
 }
+
+
+/* dDAE_2.451 — iPhone: schermate fisse senza movimento verticale reale */
+html.page-scroll-lock,
+body.page-scroll-lock{
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+  overscroll-behavior-y: none !important;
+}
+
+body.page-scroll-lock{
+  position: relative !important;
+  touch-action: manipulation !important;
+}
+
+body.page-scroll-lock #page-home,
+body.page-scroll-lock #page-tassa,
+body.page-scroll-lock #page-pulizie,
+body.page-scroll-lock #page-orepulizia,
+body.page-scroll-lock #page-statistiche,
+body.page-scroll-lock #page-impostazioni{
+  position: fixed !important;
+  top: calc(64px + var(--safe-top)) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+body.page-scroll-lock #page-home .home-page,
+body.page-scroll-lock #page-tassa .card,
+body.page-scroll-lock #page-pulizie .clean-wrap,
+body.page-scroll-lock #page-orepulizia .opcal-wrap,
+body.page-scroll-lock #page-statistiche .stats-page,
+body.page-scroll-lock #page-impostazioni .settings-page{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+body.page-scroll-lock #page-home .home-page{
+  padding-bottom: 0 !important;
+}
