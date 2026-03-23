@@ -13529,10 +13529,21 @@ function __saveSingleActionButtonVisual__(btn, visual){
 function __singleActionButtonCategoryForId__(id){
   const key = String(id || '').trim();
   if (!key) return '';
-  if (key.startsWith('operatoriEditor')) return 'operatori';
-  if (key.startsWith('channelEditor')) return 'channel';
-  if (key.startsWith('laundryCatalogEditor')) return 'lavanderia';
-  return '';
+  const map = {
+    operatoriEditorDelete:'delete',
+    channelEditorDelete:'delete',
+    laundryCatalogEditorDelete:'delete',
+    operatoriEditorCancel:'cancel',
+    channelEditorCancel:'cancel',
+    laundryCatalogEditorCancel:'cancel',
+    operatoriEditorTagColor:'tag',
+    channelEditorTagColor:'tag',
+    laundryCatalogEditorTagColor:'tag',
+    operatoriEditorSave:'save',
+    channelEditorSave:'save',
+    laundryCatalogEditorSave:'save'
+  };
+  return map[key] || '';
 }
 
 function __singleActionButtonIdsForCategory__(category){
