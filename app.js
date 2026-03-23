@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.457
+ * Build: 2.458
  */
-const BUILD_VERSION = "2.457";
+const BUILD_VERSION = "2.458";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7586,6 +7586,25 @@ function __confirmActionThemeButtonStyle__(type){
   }
 }
 
+function __confirmActionThemeInferType__(btn){
+  try{
+    if (!btn) return '';
+    if (btn.closest?.('#tagColorModal, .room-settings-card, .topbar')) return '';
+    const id = String(btn.id || '').trim().toLowerCase();
+    const cls = String(btn.className || '').trim().toLowerCase();
+    const txt = String(btn.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+    const aria = String(btn.getAttribute?.('aria-label') || '').trim().toLowerCase();
+    const title = String(btn.getAttribute?.('title') || '').trim().toLowerCase();
+    const blob = [id, cls, txt, aria, title].filter(Boolean).join(' | ');
+    if (!blob) return '';
+    if (/\b(tag|colore tag|tag colore)\b/.test(blob)) return 'tag';
+    if (/\b(elimina|eliminare|delete|remove|trash)\b/.test(blob)) return 'delete';
+    if (/\b(annulla|cancel|no)\b/.test(blob)) return 'cancel';
+    if (/\b(conferma|confermare|confirm|salva|save|ok)\b/.test(blob)) return 'confirm';
+    return '';
+  }catch(_){ return ''; }
+}
+
 function __confirmActionThemeTargets__(type){
   try{
     const themeType = __confirmActionThemeTypeNormalize__(type);
@@ -7598,7 +7617,10 @@ function __confirmActionThemeTargets__(type){
         '#btnSaveSpesa',
         '#laundryPricesSave',
         '#piscinaEditSave',
-        '#svcSave'
+        '#svcSave',
+        '#rc_save',
+        '#settingsConfigSave',
+        '#opFormConfirm'
       ],
       cancel:[
         '#confirmYesNoNo',
@@ -7606,7 +7628,8 @@ function __confirmActionThemeTargets__(type){
         '#settingsConfigCancel',
         '#channelEditorCancel',
         '#operatoriEditorCancel',
-        '#laundryCatalogEditorCancel'
+        '#laundryCatalogEditorCancel',
+        '#btnIrapCancel'
       ],
       delete:[
         '#channelEditorDelete',
@@ -7624,6 +7647,13 @@ function __confirmActionThemeTargets__(type){
     (selectors[themeType] || []).forEach((selector) => {
       try{ document.querySelectorAll(selector).forEach((el) => { if (el) nodes.push(el); }); }catch(_){ }
     });
+    try{
+      document.querySelectorAll('button').forEach((el) => {
+        if (!el) return;
+        const inferred = __confirmActionThemeInferType__(el);
+        if (inferred === themeType) nodes.push(el);
+      });
+    }catch(_){ }
     return Array.from(new Set(nodes)).filter(Boolean);
   }catch(_){ return []; }
 }
