@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.457
+ * Build: 2.458
  */
-const BUILD_VERSION = "2.457";
+const BUILD_VERSION = "2.458";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8189,6 +8189,9 @@ function __bindGenericActionButtonLongPress__(btn){
     const isSuppressed = () => {
       try{ return Date.now() < suppressUntil; }catch(_){ return false; }
     };
+    const isSyntheticMouseAfterTouch = () => {
+      try{ return !!touchAt && (Date.now() - touchAt) < 900; }catch(_){ return false; }
+    };
     const blockEvent = (ev) => {
       try{ ev?.preventDefault?.(); }catch(_){ }
       try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
@@ -8255,31 +8258,40 @@ function __bindGenericActionButtonLongPress__(btn){
         clearHold();
       }
     };
-    const swallowIfSuppressed = (ev) => {
-      if (!holdTriggered && !isSuppressed()) return;
-      setSuppress(1600);
-      blockEvent(ev);
-    };
     btn.addEventListener('touchstart', (ev) => {
       touchAt = Date.now();
       startHold(ev);
     }, { passive:true, capture:true });
-    btn.addEventListener('touchend', endHold, { passive:false, capture:true });
-    btn.addEventListener('touchcancel', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('touchend', (ev) => {
+      touchAt = Date.now();
+      endHold(ev);
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', (ev) => {
+      touchAt = Date.now();
+      cancelHold(ev);
+    }, { passive:false, capture:true });
     btn.addEventListener('touchmove', moveHold, { passive:true, capture:true });
     btn.addEventListener('mousedown', (ev) => {
       if ((ev.button || 0) !== 0) return;
+      if (isSyntheticMouseAfterTouch()) return;
       startHold(ev);
     }, true);
-    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, endHold, true));
-    btn.addEventListener('mousemove', moveHold, true);
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, (ev) => {
+      if (isSyntheticMouseAfterTouch()) return;
+      endHold(ev);
+    }, true));
+    btn.addEventListener('mousemove', (ev) => {
+      if (isSyntheticMouseAfterTouch()) return;
+      moveHold(ev);
+    }, true);
     btn.addEventListener('click', (ev) => {
-      if (holdTriggered || isSuppressed() || (Date.now() - touchAt < 450 && holdTriggered)){
+      if (holdTriggered || isSuppressed()){
         blockEvent(ev);
       }
     }, true);
     btn.addEventListener('contextmenu', (ev) => {
       if (btn.disabled || btn.hidden) return;
+      if (isSyntheticMouseAfterTouch() && !holdTriggered && !isSuppressed()) return;
       blockEvent(ev);
       try{ openPicker(); }catch(_){ }
     }, true);
