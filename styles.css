@@ -4559,6 +4559,10 @@ body.perf-lite *::after{
   overflow:hidden;
   text-overflow:ellipsis;
 }
+.spesa-cat{
+  font-weight:700;
+  white-space:nowrap;
+}
 .spesa-sep{ opacity:.45; }
 
 

@@ -6469,6 +6469,15 @@ function categoriaLabel(cat){
   })[cat] || cat;
 }
 
+function __spesaCategoriaDisplay__(row){
+  try{
+    const key = spesaGraphKeyForItem(row);
+    if (key) return categoriaLabel(key);
+    const raw = (row?.categoria ?? row?.cat ?? '').toString().trim();
+    return raw || '';
+  }catch(_){ return ''; }
+}
+
 function __apiProfile(action, method, body){
   const a = String(action || "").trim().toLowerCase();
   const m = String(method || "").trim().toUpperCase();
@@ -15467,6 +15476,7 @@ function renderStatSpese(){
         const data = formatShortDateIT(sp.dataSpesa || sp.data || sp.data_spesa || "");
         const motivoTxt = (sp.motivazione || sp.motivo || "").toString();
         const motivo = escapeHtml(motivoTxt);
+        const categoria = escapeHtml(__spesaCategoriaDisplay__(sp));
 
         el.innerHTML = `
           <div class="item-top" style="align-items:center;">
@@ -15475,7 +15485,7 @@ function renderStatSpese(){
               <span class="spesa-sep">·</span>
               <span class="spesa-date">${data}</span>
               <span class="spesa-sep">·</span>
-              <span class="spesa-motivo">${motivo}</span>
+              <span class="spesa-motivo">${motivo}</span>${categoria ? `<span class="spesa-sep">·</span><span class="spesa-cat">${categoria}</span>` : ''}
             </div>
           </div>
         `;
@@ -24391,6 +24401,7 @@ function renderSpese(){
     const data = formatShortDateIT(s.dataSpesa || s.data || s.data_spesa || "");
     const motivoTxt = (s.motivazione || s.motivo || "").toString();
     const motivo = escapeHtml(motivoTxt);
+    const categoria = escapeHtml(__spesaCategoriaDisplay__(s));
 
     el.innerHTML = `
       <div class="item-top" style="align-items:center;">
@@ -24399,7 +24410,7 @@ function renderSpese(){
           <span class="spesa-sep">·</span>
           <span class="spesa-date">${data}</span>
           <span class="spesa-sep">·</span>
-          <span class="spesa-motivo">${motivo}</span>
+          <span class="spesa-motivo">${motivo}</span>${categoria ? `<span class="spesa-sep">·</span><span class="spesa-cat">${categoria}</span>` : ''}
         </div>
         <button class="delbtn delbtn-x" type="button" aria-label="Elimina record" data-del="${s.id}">Elimina</button>
       </div>
