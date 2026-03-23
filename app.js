@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.456
+ * Build: 2.457
  */
-const BUILD_VERSION = "2.456";
+const BUILD_VERSION = "2.457";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5874,26 +5874,89 @@ __refreshMonthNamesCache__();
 
 // Conferma con modal Sì/No (label esplicite)
 let __confirmYesNoResolve = null;
+let __confirmYesNoSuppressUntil__ = 0;
+let __confirmYesNoSuppressTimer__ = null;
+function __confirmYesNoGhostTapActive__(){
+  try{ return Date.now() < (__confirmYesNoSuppressUntil__ || 0); }catch(_){ return false; }
+}
+function __confirmYesNoSyncInterlock__(){
+  try{
+    const body = document.body;
+    const modal = document.getElementById("confirmYesNoModal");
+    if (!body || !modal) return;
+    const isOpen = !modal.hidden;
+    const isSuppressing = __confirmYesNoGhostTapActive__();
+    body.classList.toggle("confirm-yesno-open", isOpen);
+    body.classList.toggle("confirm-yesno-suppress", !isOpen && isSuppressing);
+    try{ clearTimeout(__confirmYesNoSuppressTimer__); }catch(_){ }
+    __confirmYesNoSuppressTimer__ = null;
+    if (!isOpen && isSuppressing){
+      __confirmYesNoSuppressTimer__ = setTimeout(() => {
+        try{ __confirmYesNoSyncInterlock__(); }catch(_){ }
+      }, Math.max(24, (__confirmYesNoSuppressUntil__ - Date.now()) + 24));
+    }
+  }catch(_){ }
+}
+function __confirmYesNoActivateGhostGuard__(ms){
+  try{ __confirmYesNoSuppressUntil__ = Date.now() + Math.max(0, parseInt(ms, 10) || 0); }catch(_){ __confirmYesNoSuppressUntil__ = Date.now() + 900; }
+  try{ __confirmYesNoSyncInterlock__(); }catch(_){ }
+}
+function __confirmYesNoSwallowGhostTap__(ev){
+  try{
+    const modal = document.getElementById("confirmYesNoModal");
+    if (!modal) return;
+    const isOpen = !modal.hidden;
+    const isSuppressing = __confirmYesNoGhostTapActive__();
+    if (!isOpen && !isSuppressing) return;
+    const card = modal.querySelector?.(".modal-card");
+    const target = ev && ev.target;
+    const insideCard = !!(card && target && card.contains(target));
+    const onBackdrop = !!(target && target === modal);
+    if (isOpen && (insideCard || onBackdrop)) return;
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
+function __setupConfirmYesNoModal__(){
+  try{
+    const modal = document.getElementById("confirmYesNoModal");
+    if (!modal || modal.dataset.bound === "1") return;
+    modal.dataset.bound = "1";
+    const card = modal.querySelector?.(".modal-card");
+    if (card){
+      ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt) => {
+        try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }catch(_){
+          try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(__){} }); }catch(__){}
+        }
+      });
+    }
+    ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt) => {
+      try{ document.addEventListener(evt, __confirmYesNoSwallowGhostTap__, true); }catch(_){ }
+    });
+  }catch(_){ }
+}
 function confirmYesNo(message){
   return new Promise((resolve)=>{
     try{
+      __setupConfirmYesNoModal__();
       const modal = document.getElementById("confirmYesNoModal");
       const textEl = document.getElementById("confirmYesNoText");
       const yesBtn = document.getElementById("confirmYesNoYes");
       const noBtn  = document.getElementById("confirmYesNoNo");
       if (!modal || !textEl || !yesBtn || !noBtn){
-        // fallback
         try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(_){ resolve(false); }
         return;
       }
 
-      // chiude eventuale precedente
       try{ if (__confirmYesNoResolve){ __confirmYesNoResolve(false); } }catch(_){ }
       __confirmYesNoResolve = resolve;
 
+      __confirmYesNoSuppressUntil__ = 0;
       textEl.textContent = __translateText__(String(message || "Confermare?"));
       modal.hidden = false;
       try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
+      try{ __confirmYesNoSyncInterlock__(); }catch(_){ }
 
       const cleanup = (val) => {
         if (__confirmYesNoResolve){
@@ -5901,8 +5964,10 @@ function confirmYesNo(message){
           __confirmYesNoResolve = null;
           try{ r(!!val); }catch(_){ }
         }
+        try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         try{ modal.hidden = true; }catch(_){ }
         try{ modal.setAttribute("aria-hidden", "true"); }catch(_){ }
+        try{ __confirmYesNoActivateGhostGuard__(900); }catch(_){ }
         ["pointerup","touchend","click"].forEach((evt) => {
           try{ yesBtn.removeEventListener(evt, onYes, true); }catch(_){ }
           try{ noBtn.removeEventListener(evt, onNo, true); }catch(_){ }
@@ -5924,7 +5989,6 @@ function confirmYesNo(message){
         try{ modal.addEventListener(evt, onBackdrop, true); }catch(_){ }
       });
 
-      // focus sul "No" per sicurezza (evita reset accidentale)
       try{ noBtn.focus(); }catch(_){ }
 
     }catch(_){
