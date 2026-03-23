@@ -25362,16 +25362,29 @@ function __applyLaundryResetCloseIcon__(){
 }
 
 (function __bindSingleActionButtonPaletteWatcher__(){
-  const run = ()=>{ try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ } };
+  let rafId = 0;
+  const schedule = ()=>{
+    if (rafId) return;
+    const runNow = ()=>{
+      rafId = 0;
+      try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+    };
+    try{ rafId = window.requestAnimationFrame(runNow); }catch(_){ rafId = setTimeout(runNow, 16); }
+  };
   if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', run, { once:true });
+    document.addEventListener('DOMContentLoaded', schedule, { once:true });
   } else {
-    setTimeout(run, 0);
+    setTimeout(schedule, 0);
   }
-  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
+  try{ window.addEventListener('pageshow', schedule, { passive:true }); }catch(_){ }
   try{
-    const mo = new MutationObserver(() => { run(); });
-    mo.observe(document.documentElement || document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class','style'] });
+    const mo = new MutationObserver((mutations) => {
+      try{
+        const shouldRun = Array.isArray(mutations) ? mutations.some((m) => m.type === 'childList' && ((m.addedNodes && m.addedNodes.length) || (m.removedNodes && m.removedNodes.length))) : true;
+        if (shouldRun) schedule();
+      }catch(_){ schedule(); }
+    });
+    mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
     setTimeout(() => { try{ mo.disconnect(); }catch(_){ } }, 15000);
   }catch(_){ }
 })();
