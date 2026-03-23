@@ -13663,9 +13663,11 @@ body.ddae-dark #page-ospite #roomsPicker .room-dot.selected{
 
 
 /* dDAE_2.284 — Home block 40px higher */
-#page-home .home-year-pill,
-#page-home .home-grid{
+#page-home .home-year-pill{
   transform: translateY(-40px) !important;
+}
+#page-home .home-grid{
+  transform: translate(-3px, -40px) !important;
 }
 
 

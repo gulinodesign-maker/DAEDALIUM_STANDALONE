@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.442
+ * Build: 2.444
  */
-const BUILD_VERSION = "2.442";
+const BUILD_VERSION = "2.444";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13373,6 +13373,33 @@ function __spesaCardVisualForKey__(key, fallbackColor){
   }
 }
 
+function __applySpesaCardChangesToCategory__(categoryKey, payload, changed, fallbackSpec){
+  try{
+    const safeKey = String(categoryKey || '').trim();
+    if (!safeKey) return;
+    const currentVisual = __spesaCardVisualForKey__(safeKey, fallbackSpec || '#2B7CB4');
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const nextBg = __parseOperatoreColorSpec__(colors.bg || changed?.next?.bg || currentVisual.bg || fallbackSpec || '#2B7CB4').spec;
+    const nextVisual = {
+      bg: changed?.bg ? nextBg : (currentVisual.bg || nextBg),
+      border: changed?.border ? __normalizeOperatoreColor__(colors.border || changed?.next?.border || currentVisual.border || nextBg) : (currentVisual.border || currentVisual.bg || nextBg),
+      fg: changed?.fg ? __normalizeOptionalOperatoreColor__(colors.fg || changed?.next?.fg || '') : __normalizeOptionalOperatoreColor__(currentVisual.fg || ''),
+      opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? changed?.next?.opacity ?? currentVisual.opacity ?? 0.22) : __designBgOpacityNormalize__(currentVisual.opacity ?? 0.22)
+    };
+    __updateSpeseGraphColorByKey__(safeKey, nextVisual.bg, fallbackSpec || currentVisual.bg || nextVisual.bg);
+    __setSpesaCardVisual__(safeKey, nextVisual, fallbackSpec || currentVisual.bg || nextVisual.bg);
+    document.querySelectorAll('#speseList .item.spesa-bg, #statSpeseList .item.spesa-bg').forEach((node) => {
+      try{
+        const row = node.__spesaRow || null;
+        if (!row) return;
+        if (String(spesaGraphKeyForItem(row) || '').trim() !== safeKey) return;
+        __applySpesaCardColor__(node, row);
+      }catch(_){ }
+    });
+    __refreshSpeseColorLinkedViews__({ skipSpeseList:false });
+  }catch(_){ }
+}
+
 function __openSpesaCardColorPicker__(el, row){
   if (!el) return;
   try{
@@ -13389,18 +13416,9 @@ function __openSpesaCardColorPicker__(el, row){
     const currentVisual = __spesaCardVisualForKey__(key, fallbackMap[key] || '#2B7CB4');
     const currentSpec = __parseOperatoreColorSpec__(currentVisual.bg || __closestGraphColorSpec__(currentHex)).spec;
     const applyVisual = (payload) => {
-      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      const nextSpec = __parseOperatoreColorSpec__(colors.bg || payload?.spec || currentSpec).spec;
-      const nextVisual = {
-        bg: nextSpec,
-        border: colors.border || currentVisual.border || nextSpec,
-        fg: colors.fg || currentVisual.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? currentVisual.opacity ?? 0.22)
-      };
-      __updateSpeseGraphColorByKey__(key, nextSpec, currentSpec);
-      __setSpesaCardVisual__(key, nextVisual, currentSpec);
+      const changed = __tagColorPopupChangedFields__(payload);
+      __applySpesaCardChangesToCategory__(key, payload, changed, currentSpec);
       try{ __applySpesaCardColor__(el, row); }catch(_){ }
-      __refreshSpeseColorLinkedViews__({ skipSpeseList:false });
     };
     const revertVisual = () => {
       __updateSpeseGraphColorByKey__(key, currentSpec, currentSpec);
@@ -13410,8 +13428,8 @@ function __openSpesaCardColorPicker__(el, row){
     };
     __tagColorPopupOpen__('spese-card', currentVisual, (payload) => {
       applyVisual(payload);
-    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:currentVisual.opacity ?? 0.22, defaultMode:'bg', fallbackBg:currentSpec, onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare sfondo, bordo, testo e trasparenza a tutte le card spese della stessa categoria?', apply: async(payload) => {
-      applyVisual(payload);
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:currentVisual.opacity ?? 0.22, defaultMode:'bg', fallbackBg:currentSpec, onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare sfondo, bordo, testo e trasparenza a tutte le card spese della stessa categoria?', apply: async(payload, changed) => {
+      await __applySpesaCardChangesToCategory__(key, payload, changed, currentSpec);
     } } });
   }catch(_){ }
 }
@@ -15315,6 +15333,11 @@ function __applySpesaCardColor__(el, row){
     el.style.setProperty('--spesa-card-opacity-dark', String(darkOpacity));
     el.style.setProperty('--spesa-card-border-opacity', String(borderOpacity));
     el.style.setProperty('--spesa-card-border-opacity-dark', String(darkBorderOpacity));
+    const dark = !!(__isDarkModeEnabled__ && __isDarkModeEnabled__());
+    const resolvedBorderOpacity = dark ? darkBorderOpacity : borderOpacity;
+    el.style.setProperty('border-style', 'solid');
+    el.style.setProperty('border-width', '1px');
+    el.style.setProperty('border-color', `rgba(${br}, ${bgv}, ${bb}, ${resolvedBorderOpacity})`);
     if (fgHex){
       el.style.setProperty('--spesa-text-color', fgHex);
       el.style.setProperty('--spesa-text-color-dark', fgHex);
@@ -15390,6 +15413,7 @@ function renderStatSpese(){
       items.forEach((sp) => {
         const el = document.createElement("div");
         el.className = "item spesa-bg";
+        try{ el.__spesaRow = sp; }catch(_){ }
         const cls = spesaCategoryClass(sp);
         if (cls) el.classList.add(cls);
 
@@ -16129,6 +16153,89 @@ function __openRoomSettingsColorPicker__(target){
 }
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
+const __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_theme_button_visual_v1';
+
+function __roomSettingsThemeButtonVisualMapRead__(){
+  try{
+    const raw = localStorage.getItem(__ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __roomSettingsThemeButtonVisualMapWrite__(map){
+  try{ localStorage.setItem(__ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify((map && typeof map === 'object') ? map : {})); }catch(_){ }
+}
+
+function __roomSettingsThemeButtonVisualGet__(slot){
+  try{
+    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const map = __roomSettingsThemeButtonVisualMapRead__();
+    const current = map[key] || {};
+    return __launcherVisualNormalize__(current, 'blue-4');
+  }catch(_){ return __launcherVisualNormalize__({}, 'blue-4'); }
+}
+
+function __roomSettingsThemeButtonVisualSet__(slot, visual){
+  try{
+    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const map = __roomSettingsThemeButtonVisualMapRead__();
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    map[key] = { bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', fg: clean.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
+    __roomSettingsThemeButtonVisualMapWrite__(map);
+  }catch(_){ }
+}
+
+function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual){
+  try{
+    if (!el) return;
+    const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
+    const stored = __roomSettingsThemeButtonVisualGet__(slot);
+    const visual = {
+      bg: stored.bg || fallback.bg || 'blue-4',
+      border: stored.border || stored.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: stored.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.80)
+    };
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '#000000';
+    el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)};background-color:${hexToRgba(bgHex, visual.opacity)};border-color:${hexToRgba(borderHex, 1)};color:${fgHex};-webkit-text-fill-color:${fgHex};`);
+    el.classList.remove('room-settings-square-btn-placeholder');
+  }catch(_){ }
+}
+
+function __openRoomSettingsThemeButtonColorPicker__(slot){
+  try{
+    const el = document.getElementById(`roomSettingsThemeBtn${slot}`);
+    if (!el) return;
+    const saved = __roomSettingsThemeSlotGet__(slot);
+    const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 };
+    const current = __roomSettingsThemeButtonVisualGet__(slot);
+    const initial = {
+      bg: current.bg || visualFallback.bg || 'blue-4',
+      border: current.border || current.bg || visualFallback.border || visualFallback.bg || 'blue-4',
+      fg: current.fg || visualFallback.fg || '',
+      opacity: __designBgOpacityNormalize__(current.opacity ?? visualFallback.opacity ?? 0.80)
+    };
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || initial.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || 'blue-4',
+        fg: colors.fg || initial.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
+      };
+      __roomSettingsThemeButtonVisualSet__(slot, next);
+      __roomSettingsThemeButtonVisualApply__(el, slot, visualFallback);
+    };
+    const revertVisual = () => {
+      __roomSettingsThemeButtonVisualSet__(slot, initial);
+      __roomSettingsThemeButtonVisualApply__(el, slot, visualFallback);
+    };
+    __tagColorPopupOpen__('room-theme-button', initial, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:initial.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(initial.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
+  }catch(_){ }
+}
 
 function __roomSettingsThemeSlotsRead__(){
   try{
@@ -16164,7 +16271,8 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __PILL_COLOR_STORAGE_KEY__,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
-    __TAX_QUARTER_VISUAL_STORAGE_KEY__
+    __TAX_QUARTER_VISUAL_STORAGE_KEY__,
+    __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__
   ].filter(Boolean);
 }
 
@@ -16242,7 +16350,8 @@ function __roomSettingsThemePayloadBuild__(){
     headerActionColors: __headerActionColorMapRead__(),
     pillTheme: __pillThemeRead__(),
     pillColors: __pillColorMapRead__(),
-    statsThemeStorage: __roomSettingsThemeStatsStorageCollect__()
+    statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
+    roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__()
   };
 }
 
@@ -16285,7 +16394,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
-    statsThemeStorage
+    statsThemeStorage,
+    roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}
   };
 }
 
@@ -16331,6 +16441,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __headerActionColorMapWrite__(payload.headerActionColors || {});
     __pillThemeWrite__(payload.pillTheme || { fg:'white', bg:'blue-4', border:'blue-4' });
     __pillColorMapWrite__(payload.pillColors || {});
+    __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
   try{
@@ -16399,15 +16510,13 @@ function renderRoomSettingsPage(){
         const borderSpec = visual.border || bgSpec;
         const bgHex = __operatoreColorHex__(bgSpec);
         const borderHex = __operatoreColorHex__(borderSpec);
-        el.setAttribute('style', `background:${hexToRgba(bgHex, 0.80)};background-color:${hexToRgba(bgHex, 0.80)};border-color:${hexToRgba(borderHex, 1)};color:#000000;-webkit-text-fill-color:#000000;`);
-        el.classList.remove('room-settings-square-btn-placeholder');
-        const savedLabel = __designTranslate__(`Tema ${slot} salvato. Tap per richiamare, pressione lunga per salvare`, { en:`Theme ${slot} saved. Tap to recall, long press to save`, fr:`Thème ${slot} enregistré. Touchez pour rappeler, appui long pour enregistrer`, de:`Thema ${slot} gespeichert. Tippen zum Laden, lange drücken zum Speichern`, es:`Tema ${slot} guardado. Toca para aplicar, mantén pulsado para guardar` });
+        __roomSettingsThemeButtonVisualApply__(el, slot, { bg:bgSpec, border:borderSpec, fg:'', opacity:0.80 });
+        const savedLabel = __designTranslate__(`Tema ${slot} salvato. Tap per richiamare, doppio tap per salvare, pressione lunga per modificare il tasto`, { en:`Theme ${slot} saved. Tap to recall, double tap to save, long press to edit button`, fr:`Thème ${slot} enregistré. Touchez pour rappeler, double tap pour enregistrer, appui long pour modifier le bouton`, de:`Thema ${slot} gespeichert. Tippen zum Laden, doppelt tippen zum Speichern, lange drücken zum Bearbeiten`, es:`Tema ${slot} guardado. Toca para aplicar, doble toque para guardar, pulsación larga para editar el botón` });
         el.setAttribute('aria-label', savedLabel);
         el.title = savedLabel;
       }else{
-        el.setAttribute('style', '');
-        el.classList.add('room-settings-square-btn-placeholder');
-        const emptyLabel = __designTranslate__(`Tema ${slot} vuoto. Tap per richiamare, pressione lunga per salvare`, { en:`Theme ${slot} empty. Tap to recall, long press to save`, fr:`Thème ${slot} vide. Touchez pour rappeler, appui long pour enregistrer`, de:`Thema ${slot} leer. Tippen zum Laden, lange drücken zum Speichern`, es:`Tema ${slot} vacío. Toca para aplicar, mantén pulsado para guardar` });
+        __roomSettingsThemeButtonVisualApply__(el, slot, { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 });
+        const emptyLabel = __designTranslate__(`Tema ${slot} vuoto. Tap per richiamare, doppio tap per salvare, pressione lunga per modificare il tasto`, { en:`Theme ${slot} empty. Tap to recall, double tap to save, long press to edit button`, fr:`Thème ${slot} vide. Touchez pour rappeler, double tap pour enregistrer, appui long pour modifier le bouton`, de:`Thema ${slot} leer. Tippen zum Laden, doppelt tippen zum Speichern, lange drücken zum Bearbeiten`, es:`Tema ${slot} vacío. Toca para aplicar, doble toque para guardar, pulsación larga para editar el botón` });
         el.setAttribute('aria-label', emptyLabel);
         el.title = emptyLabel;
       }
@@ -16514,44 +16623,80 @@ function setupRoomSettingsPage(){
     let holdTimer = null;
     let holdTriggered = false;
     let touchAt = 0;
+    let lastTapAt = 0;
+    let singleTapTimer = null;
     const clearHold = () => {
       try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
       holdTimer = null;
-      holdTriggered = false;
+    };
+    const clearSingleTap = () => {
+      try{ if (singleTapTimer) clearTimeout(singleTapTimer); }catch(_){ }
+      singleTapTimer = null;
     };
     const doTap = async () => {
       try{ __sfxTap(); }catch(_){ }
       await __roomSettingsThemeSlotApply__(slot);
     };
+    const doDouble = async () => {
+      try{ __sfxGlass(); }catch(_){ }
+      await __roomSettingsThemeSlotSave__(slot);
+    };
     const doLong = async () => {
       try{ __sfxGlass(); }catch(_){ }
       holdTriggered = true;
-      await __roomSettingsThemeSlotAskSave__(slot);
+      clearSingleTap();
+      await __openRoomSettingsThemeButtonColorPicker__(slot);
+    };
+    const scheduleTap = () => {
+      const now = Date.now();
+      if (now - lastTapAt <= 320){
+        lastTapAt = 0;
+        clearSingleTap();
+        doDouble();
+        return;
+      }
+      lastTapAt = now;
+      clearSingleTap();
+      singleTapTimer = setTimeout(() => {
+        lastTapAt = 0;
+        doTap();
+      }, 280);
     };
     el.addEventListener('touchstart', (e) => {
       touchAt = Date.now();
+      holdTriggered = false;
       clearHold();
       holdTimer = setTimeout(() => { doLong(); }, 500);
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     }, { passive:false, capture:true });
-    el.addEventListener('touchend', async (e) => {
+    el.addEventListener('touchend', (e) => {
       try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
-      if (!holdTriggered) await doTap();
+      if (!holdTriggered) scheduleTap();
       clearHold();
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      setTimeout(()=>{ holdTriggered = false; },0);
     }, { passive:false, capture:true });
     el.addEventListener('touchcancel', (e) => {
       clearHold();
+      holdTriggered = false;
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     }, { passive:false, capture:true });
-    el.addEventListener('click', async (e) => {
+    el.addEventListener('click', (e) => {
       if (Date.now() - touchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
-      await doTap();
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } holdTriggered = false; return; }
+      scheduleTap();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, true);
+    el.addEventListener('dblclick', (e) => {
+      clearSingleTap();
+      lastTapAt = 0;
+      doDouble();
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     }, true);
     el.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
     el.addEventListener('mousedown', (e) => {
       if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
       clearHold();
       holdTimer = setTimeout(() => { doLong(); }, 500);
     });
@@ -24185,6 +24330,7 @@ function renderSpese(){
   items.forEach(s => {
     const el = document.createElement("div");
     el.className = "item spesa-bg";
+    try{ el.__spesaRow = s; }catch(_){ }
     const cls = spesaCategoryClass(s);
     if (cls) el.classList.add(cls);
     __applySpesaCardColor__(el, s);
