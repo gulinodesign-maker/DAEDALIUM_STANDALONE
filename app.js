@@ -13525,6 +13525,46 @@ function __saveSingleActionButtonVisual__(btn, visual){
   }catch(_){ }
 }
 
+
+function __singleActionButtonCategoryForId__(id){
+  const key = String(id || '').trim();
+  if (!key) return '';
+  if (key.startsWith('operatoriEditor')) return 'operatori';
+  if (key.startsWith('channelEditor')) return 'channel';
+  if (key.startsWith('laundryCatalogEditor')) return 'lavanderia';
+  return '';
+}
+
+function __singleActionButtonIdsForCategory__(category){
+  const key = String(category || '').trim().toLowerCase();
+  if (!key) return [];
+  return __SINGLE_ACTION_BUTTON_TARGET_IDS__.filter((id) => __singleActionButtonCategoryForId__(id) === key);
+}
+
+function __applySingleActionButtonVisualToCategory__(btn, payload, changed){
+  try{
+    const category = __singleActionButtonCategoryForId__(btn?.id || '');
+    if (!category) return;
+    const ids = __singleActionButtonIdsForCategory__(category);
+    if (!ids.length) return;
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    ids.forEach((id) => {
+      try{
+        const node = document.getElementById(id);
+        const current = __singleActionButtonVisualFor__(node || { id });
+        const next = {
+          bg: changed?.bg ? (colors.bg || current.bg || 'blue-4') : current.bg,
+          border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || 'blue-4') : current.border,
+          fg: changed?.fg ? (colors.fg || current.fg || 'white') : current.fg,
+          opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80) : __designBgOpacityNormalize__(current.opacity ?? 0.80)
+        };
+        __saveSingleActionButtonVisual__(node || { id }, next);
+        if (node) __applySingleActionButtonVisual__(node);
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __applySingleActionButtonVisual__(btn){
   try{
     if (!btn || !btn.id) return;
@@ -13563,6 +13603,7 @@ function __openSingleActionButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
     const current = __singleActionButtonVisualFor__(btn);
+    const category = __singleActionButtonCategoryForId__(btn.id);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
@@ -13575,7 +13616,14 @@ function __openSingleActionButtonColorPicker__(btn){
       __applySingleActionButtonVisual__(btn);
     };
     const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current); __applySingleActionButtonVisual__(btn); };
-    __tagColorPopupOpen__('single-action-button', current, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
+    const popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual };
+    if (category){
+      popupOptions.applyCategory = {
+        message:'Applicare le modifiche a tutti i tasti della stessa categoria?',
+        apply: async(payload, changed) => { __applySingleActionButtonVisualToCategory__(btn, payload, changed); }
+      };
+    }
+    __tagColorPopupOpen__('single-action-button', current, (payload) => { applyVisual(payload); }, popupOptions);
   }catch(_){ }
 }
 
