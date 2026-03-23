@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.452
+ * Build: 2.455
  */
-const BUILD_VERSION = "2.452";
+const BUILD_VERSION = "2.455";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7800,6 +7800,433 @@ function __bindHeaderActionLongPress__(btn){
   }catch(_){ }
 }
 
+
+const __GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__ = 'dDAE_generic_action_button_colors_v1';
+const __GENERIC_ACTION_BUTTON_HOLD_DELAY__ = 500;
+let __genericActionButtonsObserver__ = null;
+let __genericActionButtonsObserverTimer__ = null;
+
+function __genericActionButtonColorMapRead__(){
+  try{
+    const raw = localStorage.getItem(__GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __genericActionButtonColorMapWrite__(map){
+  try{ localStorage.setItem(__GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __genericActionButtonDatasetSignature__(btn){
+  try{
+    const ds = (btn && btn.dataset && typeof btn.dataset === 'object') ? btn.dataset : {};
+    return Object.keys(ds)
+      .filter((key) => !String(key || '').match(/^(generic|pill|header|launcher|tag|room|stat)/i))
+      .sort()
+      .map((key) => `${key}:${String(ds[key] || '').trim()}`)
+      .filter(Boolean)
+      .join('|');
+  }catch(_){ return ''; }
+}
+
+function __genericActionButtonText__(btn){
+  try{
+    const aria = String(btn?.getAttribute?.('aria-label') || '').trim();
+    const text = String(btn?.textContent || '').replace(/\s+/g, ' ').trim();
+    return aria || text || '';
+  }catch(_){ return ''; }
+}
+
+function __genericActionButtonClassSignature__(btn){
+  try{
+    return Array.from(btn?.classList || [])
+      .filter((cls) => cls && !/^is-(selected|open|active|current|hidden|disabled)$/i.test(cls))
+      .sort()
+      .join('.');
+  }catch(_){ return ''; }
+}
+
+function __genericActionButtonContextNode__(btn){
+  try{
+    let node = btn?.parentElement || null;
+    while (node && node !== document.body && node !== document.documentElement){
+      if (node.id) return node;
+      node = node.parentElement || null;
+    }
+  }catch(_){ }
+  return document.body;
+}
+
+function __genericActionButtonContextKey__(btn){
+  try{
+    const node = __genericActionButtonContextNode__(btn);
+    if (node && node !== document.body && node.id) return String(node.id || '').trim();
+  }catch(_){ }
+  return 'document';
+}
+
+function __genericActionButtonComparableSignature__(btn){
+  try{
+    return [
+      __genericActionButtonContextKey__(btn),
+      __genericActionButtonClassSignature__(btn),
+      String(btn?.getAttribute?.('aria-label') || '').trim(),
+      __genericActionButtonText__(btn),
+      __genericActionButtonDatasetSignature__(btn)
+    ].join('||');
+  }catch(_){ return ''; }
+}
+
+function __genericActionButtonStableKey__(btn){
+  try{
+    if (!btn) return '';
+    if (btn.id) return `id:${String(btn.id || '').trim()}`;
+    const ctxNode = __genericActionButtonContextNode__(btn);
+    const signature = __genericActionButtonComparableSignature__(btn);
+    const peers = Array.from((ctxNode || document.body).querySelectorAll('button')).filter((node) => {
+      try{
+        return __isGenericActionButtonEligible__(node) && __genericActionButtonComparableSignature__(node) === signature;
+      }catch(_){ return false; }
+    });
+    const idx = Math.max(0, peers.indexOf(btn));
+    return `ctx:${__genericActionButtonContextKey__(btn)}|sig:${signature}|idx:${idx + 1}`;
+  }catch(_){ return ''; }
+}
+
+function __parseCssColorToRgba__(value){
+  try{
+    const raw = String(value || '').trim().toLowerCase();
+    if (!raw || raw === 'transparent') return null;
+    if (raw === 'white') return { r:255, g:255, b:255, a:1 };
+    if (raw === 'black') return { r:0, g:0, b:0, a:1 };
+    if (raw.startsWith('#')){
+      let hex = raw.slice(1);
+      if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('');
+      if (hex.length === 6){
+        return { r: parseInt(hex.slice(0,2), 16), g: parseInt(hex.slice(2,4), 16), b: parseInt(hex.slice(4,6), 16), a: 1 };
+      }
+      return null;
+    }
+    const m = raw.match(/^rgba?\(([^)]+)\)$/i);
+    if (!m) return null;
+    const parts = m[1].split(',').map((p) => String(p || '').trim());
+    if (parts.length < 3) return null;
+    const parsePart = (v) => {
+      if (String(v || '').includes('%')) return Math.round(Math.max(0, Math.min(100, parseFloat(v))) * 2.55);
+      return Math.max(0, Math.min(255, parseFloat(v)) || 0);
+    };
+    return {
+      r: parsePart(parts[0]),
+      g: parsePart(parts[1]),
+      b: parsePart(parts[2]),
+      a: Math.max(0, Math.min(1, parts.length > 3 ? (parseFloat(parts[3]) || 0) : 1))
+    };
+  }catch(_){ return null; }
+}
+
+function __rgbaToHexNoAlpha__(rgba, fallback = '#3d8bfd'){
+  try{
+    if (!rgba) return fallback;
+    const toHex = (n) => Math.max(0, Math.min(255, Math.round(Number(n) || 0))).toString(16).padStart(2, '0');
+    return `#${toHex(rgba.r)}${toHex(rgba.g)}${toHex(rgba.b)}`;
+  }catch(_){ return fallback; }
+}
+
+function __nearestOperatoreSpecFromHex__(hex, fallback = 'blue-4'){
+  try{
+    const rgba = __parseCssColorToRgba__(hex);
+    if (!rgba) return __normalizeOperatoreColor__(fallback || 'blue-4');
+    let bestSpec = __normalizeOperatoreColor__(fallback || 'blue-4');
+    let bestDist = Infinity;
+    Object.keys(__OPERATORI_COLOR_TONES__ || {}).forEach((base) => {
+      const tones = __OPERATORI_COLOR_TONES__[base] || [];
+      tones.forEach((tone, idx) => {
+        const probe = __parseCssColorToRgba__(tone);
+        if (!probe) return;
+        const dist = Math.pow((probe.r || 0) - (rgba.r || 0), 2) + Math.pow((probe.g || 0) - (rgba.g || 0), 2) + Math.pow((probe.b || 0) - (rgba.b || 0), 2);
+        if (dist < bestDist){
+          bestDist = dist;
+          bestSpec = `${base}-${idx + 1}`;
+        }
+      });
+    });
+    return __normalizeOperatoreColor__(bestSpec || fallback || 'blue-4');
+  }catch(_){ return __normalizeOperatoreColor__(fallback || 'blue-4'); }
+}
+
+function __genericActionButtonComputedVisual__(btn){
+  try{
+    const cs = getComputedStyle(btn);
+    const bgRgba = __parseCssColorToRgba__(cs.backgroundColor || '');
+    const borderRgba = __parseCssColorToRgba__(cs.borderColor || '');
+    const fgRgba = __parseCssColorToRgba__(cs.color || '');
+    const bgHex = __rgbaToHexNoAlpha__(bgRgba || borderRgba || fgRgba || __parseCssColorToRgba__('#3d8bfd'), '#3d8bfd');
+    const borderHex = __rgbaToHexNoAlpha__(borderRgba || bgRgba || fgRgba || __parseCssColorToRgba__('#3d8bfd'), bgHex);
+    const fgHex = __rgbaToHexNoAlpha__(fgRgba || __parseCssColorToRgba__('#ffffff'), '#ffffff');
+    const inferredOpacity = (bgRgba && typeof bgRgba.a === 'number' && bgRgba.a > 0.04) ? bgRgba.a : __designBgOpacityRead__();
+    return {
+      bg: __nearestOperatoreSpecFromHex__(bgHex, 'blue-4'),
+      border: __nearestOperatoreSpecFromHex__(borderHex, __nearestOperatoreSpecFromHex__(bgHex, 'blue-4')),
+      fg: __nearestOperatoreSpecFromHex__(fgHex, 'gray-1'),
+      opacity: __designBgOpacityNormalize__(inferredOpacity)
+    };
+  }catch(_){
+    return { bg:'blue-4', border:'blue-4', fg:'gray-1', opacity:__designBgOpacityRead__() };
+  }
+}
+
+function __genericActionButtonVisualFor__(btn){
+  const base = __genericActionButtonComputedVisual__(btn);
+  try{
+    const key = __genericActionButtonStableKey__(btn);
+    if (!key) return base;
+    const saved = __launcherVisualNormalize__(__genericActionButtonColorMapRead__()[key], base.fg || 'gray-1');
+    return {
+      bg: saved.bg || base.bg || 'blue-4',
+      border: saved.border || saved.bg || base.border || base.bg || 'blue-4',
+      fg: saved.fg || base.fg || 'gray-1',
+      opacity: __designBgOpacityNormalize__(saved.opacity ?? base.opacity ?? __designBgOpacityRead__())
+    };
+  }catch(_){ return base; }
+}
+
+function __genericActionButtonHasSavedVisual__(btn){
+  try{
+    const key = __genericActionButtonStableKey__(btn);
+    if (!key) return false;
+    const map = __genericActionButtonColorMapRead__();
+    return !!(map && typeof map === 'object' && map[key]);
+  }catch(_){ return false; }
+}
+
+function __genericActionButtonSetContentColor__(btn, color){
+  try{
+    btn.style.setProperty('color', color, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', color, 'important');
+    btn.style.setProperty('--ddae-btn-pseudo-fg', color, 'important');
+    btn.querySelectorAll('span, strong, em, small, label, .settings-btn-label').forEach((node) => {
+      try{
+        node.style.setProperty('color', color, 'important');
+        node.style.setProperty('-webkit-text-fill-color', color, 'important');
+      }catch(_){ }
+    });
+    btn.querySelectorAll('svg, svg *').forEach((node) => {
+      try{
+        node.style.setProperty('color', color, 'important');
+        node.style.setProperty('stroke', color, 'important');
+        if (!String(node.tagName || '').match(/^(svg)$/i)) node.style.setProperty('fill', 'none', 'important');
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __genericActionButtonApplyVisual__(btn, visual){
+  try{
+    if (!btn || !visual) return;
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'gray-1', false);
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
+    const bgCss = hexToRgba(bgHex, opacity);
+    btn.style.setProperty('background-image', 'none', 'important');
+    btn.style.setProperty('background', bgCss, 'important');
+    btn.style.setProperty('background-color', bgCss, 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-style', 'solid', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('backdrop-filter', 'none', 'important');
+    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    btn.style.setProperty('opacity', '1', 'important');
+    __genericActionButtonSetContentColor__(btn, fgHex);
+  }catch(_){ }
+}
+
+function __genericActionButtonApplyToButton__(btn){
+  try{
+    if (!__isGenericActionButtonEligible__(btn)) return;
+    if (!__genericActionButtonHasSavedVisual__(btn)) return;
+    __genericActionButtonApplyVisual__(btn, __genericActionButtonVisualFor__(btn));
+  }catch(_){ }
+}
+
+function __isGenericActionButtonEligible__(btn){
+  try{
+    if (!btn || String(btn.tagName || '').toUpperCase() !== 'BUTTON') return false;
+    if (btn.closest('#tagColorModal, #languageModal')) return false;
+    if (btn.closest('.topbar')) return false;
+    if (btn.matches('.home-main, .home-icon, .launcher-icon, .settings-btn, .icon-btn, .stat-row, .month-row, .stats-graph-card, .room-dot, .pay-dot, .operatori-color-option, .tag-color-option, .tag-color-mode-btn, .tag-opacity-option, .language-option, .btn.tax-quarter, .btn.tax-year-pill')) return false;
+    if (btn.id && (__LAUNCHER_ICON_TARGET_IDS__.includes(btn.id) || __PILL_THEME_TARGET_IDS__.includes(btn.id))) return false;
+    const headerTargets = __headerActionTargetButtons__();
+    if (Array.isArray(headerTargets) && headerTargets.includes(btn)) return false;
+    return true;
+  }catch(_){ return false; }
+}
+
+function __genericActionButtonSave__(btn, visual){
+  try{
+    const key = __genericActionButtonStableKey__(btn);
+    if (!key) return;
+    const clean = __launcherVisualNormalize__(visual || {}, 'gray-1');
+    const map = __genericActionButtonColorMapRead__();
+    map[key] = {
+      fg: clean.fg || 'gray-1',
+      bg: clean.bg || 'blue-4',
+      border: clean.border || clean.bg || 'blue-4',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? __designBgOpacityRead__())
+    };
+    __genericActionButtonColorMapWrite__(map);
+  }catch(_){ }
+}
+
+function __genericActionButtonsApplyAll__(){
+  try{
+    Array.from(document.querySelectorAll('button')).forEach((btn) => {
+      try{ if (__isGenericActionButtonEligible__(btn)) __bindGenericActionButtonLongPress__(btn); }catch(_){ }
+      try{ __genericActionButtonApplyToButton__(btn); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __genericActionButtonsScheduleRefresh__(){
+  try{
+    if (__genericActionButtonsObserverTimer__) clearTimeout(__genericActionButtonsObserverTimer__);
+    __genericActionButtonsObserverTimer__ = setTimeout(() => {
+      __genericActionButtonsObserverTimer__ = null;
+      try{ __genericActionButtonsApplyAll__(); }catch(_){ }
+    }, 60);
+  }catch(_){ }
+}
+
+function __bindGenericActionButtonLongPress__(btn){
+  try{
+    if (!__isGenericActionButtonEligible__(btn)) return;
+    if (btn.dataset.genericActionButtonHoldBound === '1') return;
+    btn.dataset.genericActionButtonHoldBound = '1';
+    let holdTimer = null;
+    let holdTriggered = false;
+    let suppressUntil = 0;
+    let startX = 0;
+    let startY = 0;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+    };
+    const setSuppress = (ms = 900) => {
+      suppressUntil = Date.now() + Math.max(0, Number(ms) || 0);
+    };
+    const isSuppressed = () => {
+      try{ return Date.now() < suppressUntil; }catch(_){ return false; }
+    };
+    const blockEvent = (ev) => {
+      try{ ev?.preventDefault?.(); }catch(_){ }
+      try{ ev?.stopImmediatePropagation?.(); }catch(_){ }
+      try{ ev?.stopPropagation?.(); }catch(_){ }
+    };
+    const currentPoint = (ev) => {
+      const t = ev?.touches?.[0] || ev?.changedTouches?.[0] || ev;
+      return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
+    };
+    const openPicker = () => {
+      holdTriggered = true;
+      setSuppress(1800);
+      try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+      const current = __genericActionButtonVisualFor__(btn);
+      __tagColorPopupOpen__('generic-action-button', current, (payload) => {
+        try{
+          const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+          const next = {
+            bg: colors.bg || current.bg || 'blue-4',
+            border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+            fg: colors.fg || current.fg || 'gray-1',
+            opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? __designBgOpacityRead__())
+          };
+          __genericActionButtonSave__(btn, next);
+          if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+          __genericActionButtonsApplyAll__();
+          try{ renderRoomSettingsPage(); }catch(_){ }
+          setSuppress(1800);
+        }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+    };
+    const startHold = (ev) => {
+      if (btn.disabled || btn.hidden) return;
+      clearHold();
+      holdTriggered = false;
+      suppressUntil = 0;
+      const pt = currentPoint(ev);
+      startX = pt.x;
+      startY = pt.y;
+      blockEvent(ev);
+      holdTimer = setTimeout(() => { openPicker(); }, __GENERIC_ACTION_BUTTON_HOLD_DELAY__);
+    };
+    const cancelHold = (ev) => {
+      clearHold();
+      if (holdTriggered || isSuppressed()){
+        setSuppress(1800);
+        blockEvent(ev);
+      }
+    };
+    const endHold = (ev) => {
+      const fired = holdTriggered || isSuppressed();
+      clearHold();
+      if (fired){
+        holdTriggered = false;
+        setSuppress(1800);
+        blockEvent(ev);
+        return;
+      }
+      setTimeout(() => { holdTriggered = false; }, 0);
+    };
+    const moveHold = (ev) => {
+      if (!holdTimer) return;
+      const pt = currentPoint(ev);
+      if (Math.abs(pt.x - startX) > 12 || Math.abs(pt.y - startY) > 12){
+        clearHold();
+      }
+    };
+    const swallowIfSuppressed = (ev) => {
+      if (!holdTriggered && !isSuppressed()) return;
+      setSuppress(1600);
+      blockEvent(ev);
+    };
+    btn.addEventListener('pointerdown', startHold, { passive:false, capture:true });
+    btn.addEventListener('touchstart', startHold, { passive:false, capture:true });
+    btn.addEventListener('pointerup', endHold, { passive:false, capture:true });
+    btn.addEventListener('touchend', endHold, { passive:false, capture:true });
+    btn.addEventListener('pointerleave', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('pointercancel', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', cancelHold, { passive:false, capture:true });
+    btn.addEventListener('pointermove', moveHold, { passive:true, capture:true });
+    btn.addEventListener('touchmove', moveHold, { passive:true, capture:true });
+    btn.addEventListener('click', swallowIfSuppressed, true);
+    btn.addEventListener('contextmenu', (ev) => {
+      if (holdTriggered || isSuppressed()){
+        blockEvent(ev);
+        return;
+      }
+      blockEvent(ev);
+      try{ openPicker(); }catch(_){ }
+    }, true);
+    btn.addEventListener('selectstart', (ev) => { blockEvent(ev); return false; }, true);
+    btn.addEventListener('dragstart', (ev) => { blockEvent(ev); return false; }, true);
+  }catch(_){ }
+}
+
+function __setupGenericActionButtonsCustomizer__(){
+  const run = () => { try{ __genericActionButtonsApplyAll__(); }catch(_){ } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
+  else setTimeout(run, 0);
+  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
+  try{
+    if (__genericActionButtonsObserver__) __genericActionButtonsObserver__.disconnect();
+    __genericActionButtonsObserver__ = new MutationObserver(() => { __genericActionButtonsScheduleRefresh__(); });
+    __genericActionButtonsObserver__.observe(document.documentElement || document.body, { childList:true, subtree:true });
+  }catch(_){ }
+}
+
 function __statisticsCardThemeRead__(){
   try{
     const raw = localStorage.getItem(__STATISTICS_CARD_THEME_STORAGE_KEY__);
@@ -8166,6 +8593,7 @@ function __launcherIconApplyAll__(){
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __genericActionButtonsApplyAll__(); }catch(_){ }
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
@@ -9782,6 +10210,7 @@ function __applyDarkMode__(enabled){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __genericActionButtonsApplyAll__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
@@ -16406,6 +16835,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __HEADER_ACTION_COLOR_STORAGE_KEY__,
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
+    __GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -16487,6 +16917,7 @@ function __roomSettingsThemePayloadBuild__(){
     headerActionColors: __headerActionColorMapRead__(),
     pillTheme: __pillThemeRead__(),
     pillColors: __pillColorMapRead__(),
+    genericActionButtonColors: __genericActionButtonColorMapRead__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
     roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__()
   };
@@ -16521,6 +16952,9 @@ function __roomSettingsThemePayloadNormalize__(payload){
   try{
     if (!( __PILL_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__PILL_COLOR_STORAGE_KEY__] = JSON.stringify((src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {});
   }catch(_){ }
+  try{
+    if (!( __GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__GENERIC_ACTION_BUTTON_COLOR_STORAGE_KEY__] = JSON.stringify((src.genericActionButtonColors && typeof src.genericActionButtonColors === 'object') ? src.genericActionButtonColors : {});
+  }catch(_){ }
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
@@ -16531,6 +16965,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
+    genericActionButtonColors: (src.genericActionButtonColors && typeof src.genericActionButtonColors === 'object') ? src.genericActionButtonColors : {},
     statsThemeStorage,
     roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}
   };
@@ -16578,6 +17013,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __headerActionColorMapWrite__(payload.headerActionColors || {});
     __pillThemeWrite__(payload.pillTheme || { fg:'white', bg:'blue-4', border:'blue-4' });
     __pillColorMapWrite__(payload.pillColors || {});
+    __genericActionButtonColorMapWrite__(payload.genericActionButtonColors || {});
     __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
@@ -16587,6 +17023,8 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __genericActionButtonColorMapWrite__(payload.genericActionButtonColors || {}); }catch(_){ }
+  try{ __genericActionButtonsApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
@@ -25189,6 +25627,11 @@ function __applyLaundryResetCloseIcon__(){
     return true;
   }catch(_){ return false; }
 }
+
+(function __setupGenericActionButtonsCustomizerWatcher__(){
+  try{ __setupGenericActionButtonsCustomizer__(); }catch(_){ }
+})();
+
 (function __bindLaundryResetCloseIconWatcher__(){
   const run = ()=>{ try{ __applyLaundryResetCloseIcon__(); }catch(_){ } };
   if (document.readyState === 'loading'){
