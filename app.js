@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.445
+ * Build: 2.447
  */
-const BUILD_VERSION = "2.445";
+const BUILD_VERSION = "2.447";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6192,6 +6192,37 @@ function spesaGraphKeyForItem(s){
     if (n >= 3.5 && n < 5.5) return "IVA_4";
   }
   return "";
+}
+
+function __spesaCategoryNameKey__(row){
+  try{
+    const raw = (row?.categoria ?? row?.cat ?? '').toString().trim().toLowerCase();
+    return raw ? `CAT:${raw}` : '';
+  }catch(_){ return ''; }
+}
+
+function __spesaVisualKeyForRow__(row){
+  try{
+    return __spesaCategoryNameKey__(row) || spesaGraphKeyForItem(row) || '';
+  }catch(_){ return spesaGraphKeyForItem(row) || ''; }
+}
+
+function __spesaVisualFallbackSpecForRow__(row){
+  try{
+    const graphKey = spesaGraphKeyForItem(row);
+    const fallbackMap = {
+      CONTANTI: (COLORS.CONTANTI || '#2b7cb4'),
+      TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
+      IVA_22: (COLORS.IVA_22 || '#c9772b'),
+      IVA_10: (COLORS.IVA_10 || '#7ac0db'),
+      IVA_4: (COLORS.IVA_4 || '#1f2937')
+    };
+    if (graphKey && fallbackMap[graphKey]) return fallbackMap[graphKey];
+    const cat = (row?.categoria ?? row?.cat ?? '').toString().trim().toLowerCase();
+    if (cat.includes('contant')) return fallbackMap.CONTANTI;
+    if (cat.includes('tassa') && cat.includes('sogg')) return fallbackMap.TASSA_SOGGIORNO;
+    return '#2B7CB4';
+  }catch(_){ return '#2B7CB4'; }
 }
 
 
@@ -13374,10 +13405,11 @@ function __spesaCardVisualForKey__(key, fallbackColor){
   }
 }
 
-function __applySpesaCardChangesToCategory__(categoryKey, payload, changed, fallbackSpec){
+function __applySpesaCardChangesToCategory__(categoryKey, payload, changed, fallbackSpec, matchFn){
   try{
     const safeKey = String(categoryKey || '').trim();
     if (!safeKey) return;
+    const matcher = (typeof matchFn === 'function') ? matchFn : ((row) => String(__spesaVisualKeyForRow__(row) || '').trim() === safeKey);
     const currentVisual = __spesaCardVisualForKey__(safeKey, fallbackSpec || '#2B7CB4');
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
     const nextBg = __parseOperatoreColorSpec__(colors.bg || changed?.next?.bg || currentVisual.bg || fallbackSpec || '#2B7CB4').spec;
@@ -13387,13 +13419,11 @@ function __applySpesaCardChangesToCategory__(categoryKey, payload, changed, fall
       fg: changed?.fg ? __normalizeOptionalOperatoreColor__(colors.fg || changed?.next?.fg || '') : __normalizeOptionalOperatoreColor__(currentVisual.fg || ''),
       opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? changed?.next?.opacity ?? currentVisual.opacity ?? 0.22) : __designBgOpacityNormalize__(currentVisual.opacity ?? 0.22)
     };
-    __updateSpeseGraphColorByKey__(safeKey, nextVisual.bg, fallbackSpec || currentVisual.bg || nextVisual.bg);
     __setSpesaCardVisual__(safeKey, nextVisual, fallbackSpec || currentVisual.bg || nextVisual.bg);
     document.querySelectorAll('#speseList .item.spesa-bg, #statSpeseList .item.spesa-bg').forEach((node) => {
       try{
         const row = node.__spesaRow || null;
-        if (!row) return;
-        if (String(spesaGraphKeyForItem(row) || '').trim() !== safeKey) return;
+        if (!row || !matcher(row)) return;
         __applySpesaCardColor__(node, row);
       }catch(_){ }
     });
@@ -13404,33 +13434,42 @@ function __applySpesaCardChangesToCategory__(categoryKey, payload, changed, fall
 function __openSpesaCardColorPicker__(el, row){
   if (!el) return;
   try{
-    const key = spesaGraphKeyForItem(row);
-    if (!key) return;
-    const fallbackMap = {
-      CONTANTI: (COLORS.CONTANTI || '#2b7cb4'),
-      TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
-      IVA_22: (COLORS.IVA_22 || '#c9772b'),
-      IVA_10: (COLORS.IVA_10 || '#7ac0db'),
-      IVA_4: (COLORS.IVA_4 || '#1f2937')
+    const visualKey = __spesaVisualKeyForRow__(row);
+    const graphKey = spesaGraphKeyForItem(row);
+    if (!visualKey) return;
+    const fallbackSpec = __spesaVisualFallbackSpecForRow__(row);
+    const currentVisual = __spesaCardVisualForKey__(visualKey, fallbackSpec);
+    const currentSpec = __parseOperatoreColorSpec__(currentVisual.bg || __closestGraphColorSpec__(fallbackSpec)).spec;
+    const sameCategoryMatcher = (candidate) => {
+      const sourceCat = (row?.categoria ?? row?.cat ?? '').toString().trim().toLowerCase();
+      const candidateCat = (candidate?.categoria ?? candidate?.cat ?? '').toString().trim().toLowerCase();
+      return !!sourceCat && sourceCat === candidateCat;
     };
-    const currentHex = __getSpeseGraphSliceColor__(key, fallbackMap[key] || '#2B7CB4');
-    const currentVisual = __spesaCardVisualForKey__(key, fallbackMap[key] || '#2B7CB4');
-    const currentSpec = __parseOperatoreColorSpec__(currentVisual.bg || __closestGraphColorSpec__(currentHex)).spec;
     const applyVisual = (payload) => {
       const changed = __tagColorPopupChangedFields__(payload);
-      __applySpesaCardChangesToCategory__(key, payload, changed, currentSpec);
+      __applySpesaCardChangesToCategory__(visualKey, payload, changed, currentSpec, sameCategoryMatcher);
       try{ __applySpesaCardColor__(el, row); }catch(_){ }
     };
     const revertVisual = () => {
-      __updateSpeseGraphColorByKey__(key, currentSpec, currentSpec);
-      __setSpesaCardVisual__(key, currentVisual, currentSpec);
+      __setSpesaCardVisual__(visualKey, currentVisual, currentSpec);
       try{ __applySpesaCardColor__(el, row); }catch(_){ }
       __refreshSpeseColorLinkedViews__({ skipSpeseList:false });
     };
     __tagColorPopupOpen__('spese-card', currentVisual, (payload) => {
-      applyVisual(payload);
+      try{
+        const changed = __tagColorPopupChangedFields__(payload);
+        const currentRowVisual = __spesaCardVisualForKey__(__spesaVisualKeyForRow__(row), currentSpec);
+        const rowNext = {
+          bg: changed?.bg ? __normalizeOperatoreColor__(payload?.colors?.bg || changed?.next?.bg || currentRowVisual.bg || currentSpec) : (currentRowVisual.bg || currentSpec),
+          border: changed?.border ? __normalizeOperatoreColor__(payload?.colors?.border || changed?.next?.border || currentRowVisual.border || currentRowVisual.bg || currentSpec) : (currentRowVisual.border || currentRowVisual.bg || currentSpec),
+          fg: changed?.fg ? __normalizeOptionalOperatoreColor__(payload?.colors?.fg || changed?.next?.fg || '') : __normalizeOptionalOperatoreColor__(currentRowVisual.fg || ''),
+          opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? changed?.next?.opacity ?? currentRowVisual.opacity ?? 0.22) : __designBgOpacityNormalize__(currentRowVisual.opacity ?? 0.22)
+        };
+        __setSpesaCardVisual__(visualKey, rowNext, currentSpec);
+        __applySpesaCardColor__(el, row);
+      }catch(_){ }
     }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:currentVisual.opacity ?? 0.22, defaultMode:'bg', fallbackBg:currentSpec, onPreview:applyVisual, onRevert:revertVisual, applyCategory:{ message:'Applicare sfondo, bordo, testo e trasparenza a tutte le card spese della stessa categoria?', apply: async(payload, changed) => {
-      await __applySpesaCardChangesToCategory__(key, payload, changed, currentSpec);
+      await __applySpesaCardChangesToCategory__(visualKey, payload, changed, currentSpec, sameCategoryMatcher);
     } } });
   }catch(_){ }
 }
@@ -13533,10 +13572,22 @@ function __openGraphColorPicker__(graphKey, label, currentColor, onDone){
     syncMonthlyStatCard(initialSpec);
     refreshLiveViews();
   };
+  const applyCategoryCfg = (safeGraphKey === 'spese' && safeLabel) ? {
+    message:'Applicare sfondo, bordo, testo e trasparenza a tutte le card spese della stessa categoria?',
+    apply: async(payload, changed) => {
+      try{
+        const keyMap = __speseGraphSlicesBase__();
+        const found = (Array.isArray(keyMap) ? keyMap : []).find((slice) => String(slice?.label || '') === safeLabel);
+        const safeExpenseKey = String(found?.key || '').trim();
+        if (!safeExpenseKey) return;
+        await __applySpesaCardChangesToCategory__(safeExpenseKey, payload, changed, selectedSpec);
+      }catch(_){ }
+    }
+  } : null;
   __tagColorPopupOpen__('stat-graph', initialVisual, (payload) => {
     const normalized = applySpec(payload);
     if (typeof onDone === 'function') onDone(__graphColorValueToHex__(normalized, currentColor));
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, defaultMode:'bg', fallbackBg:selectedSpec, onPreview:applySpec, onRevert:revertSpec });
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, defaultMode:'bg', fallbackBg:selectedSpec, onPreview:applySpec, onRevert:revertSpec, applyCategory: applyCategoryCfg });
 }
 
 function __bindGraphLegendLongPress__(row, payload, slice){
@@ -15302,18 +15353,12 @@ function __getSpeseGraphSliceColor__(key, fallback){
 function __applySpesaCardColor__(el, row){
   if (!el) return;
   try{
-    const key = spesaGraphKeyForItem(row);
+    const key = __spesaVisualKeyForRow__(row);
     if (!key) return;
-    const fallbackMap = {
-      CONTANTI: (COLORS.CONTANTI || '#2b7cb4'),
-      TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
-      IVA_22: (COLORS.IVA_22 || '#c9772b'),
-      IVA_10: (COLORS.IVA_10 || '#7ac0db'),
-      IVA_4: (COLORS.IVA_4 || '#1f2937')
-    };
-    const visual = __spesaCardVisualForKey__(key, fallbackMap[key] || '#2B7CB4');
-    const bgHex = __operatoreColorHex__(visual.bg || __closestGraphColorSpec__(fallbackMap[key] || '#2B7CB4'));
-    const borderHex = __operatoreColorHex__(visual.border || visual.bg || __closestGraphColorSpec__(fallbackMap[key] || '#2B7CB4'));
+    const fallbackSpec = __spesaVisualFallbackSpecForRow__(row);
+    const visual = __spesaCardVisualForKey__(key, fallbackSpec);
+    const bgHex = __operatoreColorHex__(visual.bg || __closestGraphColorSpec__(fallbackSpec || '#2B7CB4'));
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || __closestGraphColorSpec__(fallbackSpec || '#2B7CB4'));
     const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '';
     const parsed = parseInt(String(bgHex || '#2B7CB4').slice(1), 16);
     const r = (parsed >> 16) & 255;
