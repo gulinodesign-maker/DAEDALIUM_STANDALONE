@@ -16649,9 +16649,15 @@ body.page-lock-vertical #page-home .home-spacer:last-of-type{
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark .ui-ico,
 #page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark .ui-ico,
 #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-dark .settings-btn-label,
-#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark .settings-btn-label,
-.room-settings-theme-btn{
+#page-opsettings .settings-actions.settings-actions-reference .settings-btn-opdark .settings-btn-label{
   color: inherit !important;
   -webkit-text-fill-color: currentColor !important;
   stroke: currentColor !important;
+}
+
+
+/* dDAE_2.453 — Design: tasti tema liberi di cambiare colore testo/numero */
+.room-settings-theme-btn{
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
 }

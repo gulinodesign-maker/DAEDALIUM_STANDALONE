@@ -16337,7 +16337,7 @@ function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual){
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '#000000';
-    el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)};background-color:${hexToRgba(bgHex, visual.opacity)};border-color:${hexToRgba(borderHex, 1)};color:${fgHex};-webkit-text-fill-color:${fgHex};`);
+    el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)} !important;background-color:${hexToRgba(bgHex, visual.opacity)} !important;border-color:${hexToRgba(borderHex, 1)} !important;color:${fgHex} !important;-webkit-text-fill-color:${fgHex} !important;`);
     el.classList.remove('room-settings-square-btn-placeholder');
   }catch(_){ }
 }
