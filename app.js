@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.454
+ * Build: 2.460
  */
-const BUILD_VERSION = "2.454";
+const BUILD_VERSION = "2.460";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7512,7 +7512,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn'];
 
 function __pillTargetButtons__(){
   try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter(Boolean); }catch(_){ return []; }
@@ -7551,17 +7551,34 @@ function __pillThemeVisual__(){
   return { fg: visual.fg || 'white', bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80) };
 }
 
+
+function __pillDefaultVisualForId__(id, base){
+  const key = String(id || '').trim();
+  const defaults = {
+    taxYearBtn:{ fg:'sky-5', bg:'gray-1', border:'sky-2', opacity:0.80 },
+    taxEstimateBtn:{ fg:'sky-5', bg:'gray-1', border:'sky-2', opacity:0.80 }
+  };
+  const chosen = defaults[key] || base || {};
+  return {
+    fg: chosen.fg || base?.fg || 'white',
+    bg: chosen.bg || base?.bg || 'blue-4',
+    border: chosen.border || chosen.bg || base?.border || base?.bg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(chosen.opacity ?? base?.opacity ?? 0.80)
+  };
+}
+
 function __pillVisualFor__(id){
   const key = String(id || '').trim();
-  if (!key) return __pillThemeVisual__();
-  const map = __pillColorMapRead__();
   const base = __pillThemeVisual__();
-  const current = __launcherVisualNormalize__(map[key], base.fg || 'white');
+  const fallback = __pillDefaultVisualForId__(key, base);
+  if (!key) return fallback;
+  const map = __pillColorMapRead__();
+  const current = __launcherVisualNormalize__(map[key] || fallback, fallback.fg || base.fg || 'white');
   return {
-    fg: current.fg || base.fg || 'white',
-    bg: current.bg || base.bg || 'blue-4',
-    border: current.border || current.bg || base.border || base.bg || 'blue-4',
-    opacity: __designBgOpacityNormalize__(current.opacity ?? base.opacity ?? 0.80)
+    fg: current.fg || fallback.fg || base.fg || 'white',
+    bg: current.bg || fallback.bg || base.bg || 'blue-4',
+    border: current.border || current.bg || fallback.border || fallback.bg || base.border || base.bg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? fallback.opacity ?? base.opacity ?? 0.80)
   };
 }
 
@@ -13320,6 +13337,8 @@ const __SPESA_CARD_OPACITY_STORAGE_KEY__ = 'dDAE_spese_card_opacity_v1';
 const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
 const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
+const __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_tax_page_card_visual_v1';
+const __TAX_PAGE_CARD_TARGET_IDS__ = ['taxTotalRow','taxPayingCard','taxKidsCard','taxReducedCard'];
 
 
 function __loadSpesaCardVisualMap__(){
@@ -13462,6 +13481,159 @@ function __bindTaxQuarterColorHold__(btn){
   try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
 }
 
+
+
+function __loadTaxPageCardVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__TAX_PAGE_CARD_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveTaxPageCardVisualMap__(map){
+  try{ localStorage.setItem(__TAX_PAGE_CARD_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __defaultTaxPageCardVisualById__(id){
+  const defaults = {
+    taxTotalRow:{ bg:'gray-1', border:'gray-2', fg:'blue-6', opacity:0.80 },
+    taxPayingCard:{ bg:'sky-2', border:'sky-3', fg:'blue-6', opacity:0.80 },
+    taxKidsCard:{ bg:'gray-2', border:'gray-3', fg:'blue-6', opacity:0.80 },
+    taxReducedCard:{ bg:'beige-2', border:'beige-3', fg:'blue-6', opacity:0.80 }
+  };
+  return __launcherVisualNormalize__(defaults[String(id || '').trim()] || { bg:'gray-1', border:'gray-2', fg:'blue-6', opacity:0.80 }, 'blue-6');
+}
+
+function __taxPageCardVisualFor__(card){
+  const id = String((card && card.id) || card || '').trim();
+  const map = __loadTaxPageCardVisualMap__();
+  const fallback = __defaultTaxPageCardVisualById__(id);
+  const current = __launcherVisualNormalize__(map[id] || fallback, fallback.fg || 'blue-6');
+  return {
+    bg: current.bg || fallback.bg || 'gray-1',
+    border: current.border || current.bg || fallback.border || fallback.bg || 'gray-2',
+    fg: current.fg || fallback.fg || 'blue-6',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? fallback.opacity ?? 0.80)
+  };
+}
+
+function __saveTaxPageCardVisual__(card, visual){
+  try{
+    const id = String((card && card.id) || card || '').trim();
+    if (!id) return;
+    const map = __loadTaxPageCardVisualMap__();
+    const fallback = __defaultTaxPageCardVisualById__(id);
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.fg || 'blue-6');
+    map[id] = {
+      bg: clean.bg || fallback.bg || 'gray-1',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'gray-2',
+      fg: clean.fg || fallback.fg || 'blue-6',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
+    };
+    __saveTaxPageCardVisualMap__(map);
+  }catch(_){ }
+}
+
+function __applyTaxPageCardVisual__(card){
+  try{
+    if (!card) return;
+    const visual = __taxPageCardVisualFor__(card);
+    const bgHex = __operatoreColorHex__(visual.bg || 'gray-1');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'gray-2');
+    const fgHex = __tagColorTextHex__(visual.bg || 'gray-1', visual.fg || 'blue-6', false);
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    card.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    card.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    card.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+    card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    card.style.setProperty('box-shadow', 'none', 'important');
+    card.style.setProperty('backdrop-filter', 'none', 'important');
+    card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    card.style.setProperty('background-image', 'none', 'important');
+    card.querySelectorAll('.tax-total-label,.tax-total-value,.tax-result-title,.tax-result-value,.tax-result-sub').forEach((node) => {
+      try{
+        node.style.setProperty('color', fgHex, 'important');
+        node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __applyTaxPageCardChangesToCategory__(payload, changed){
+  try{
+    __TAX_PAGE_CARD_TARGET_IDS__.forEach((id) => {
+      try{
+        const next = __applyDesignPayloadToVisual__(__taxPageCardVisualFor__(id), payload, changed, __defaultTaxPageCardVisualById__(id).bg || 'gray-1');
+        __saveTaxPageCardVisual__(id, next);
+        const card = document.getElementById(id);
+        if (card) __applyTaxPageCardVisual__(card);
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __openTaxPageCardColorPicker__(card){
+  try{
+    if (!card || !card.id) return;
+    const current = __taxPageCardVisualFor__(card);
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || current.bg || 'gray-1',
+        border: colors.border || current.border || colors.bg || current.bg || 'gray-2',
+        fg: colors.fg || current.fg || 'blue-6',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
+      };
+      __saveTaxPageCardVisual__(card, next);
+      __applyTaxPageCardVisual__(card);
+    };
+    const revertVisual = () => {
+      __saveTaxPageCardVisual__(card, current);
+      __applyTaxPageCardVisual__(card);
+    };
+    __tagColorPopupOpen__('tax-page-card', current, (payload) => { applyVisual(payload); }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:current.opacity ?? 0.80,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'gray-1'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message:'Applicare le modifiche a tutte le card tassa soggiorno?',
+        apply: async(payload, changed) => { __applyTaxPageCardChangesToCategory__(payload, changed); }
+      }
+    });
+  }catch(_){ }
+}
+
+function __bindTaxPageCardColorHold__(card){
+  try{ if (!card || card.dataset.taxPageCardColorBound === '1') return; card.dataset.taxPageCardColorBound = '1'; }catch(_){ if (!card) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } };
+  const start = (e)=>{ try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ } fired = false; clear(); timer = setTimeout(()=>{ fired = true; __openTaxPageCardColorPicker__(card); }, 500); };
+  const stop = (e)=>{ clear(); if (fired){ block(e); setTimeout(()=>{ fired = false; }, 0); } };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ card.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ card.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ card.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+  try{ card.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
+function __applyTaxPageCardAll__(){
+  try{
+    __TAX_PAGE_CARD_TARGET_IDS__.forEach((id) => {
+      const card = document.getElementById(id);
+      if (!card) return;
+      __applyTaxPageCardVisual__(card);
+      __bindTaxPageCardColorHold__(card);
+    });
+  }catch(_){ }
+}
 
 const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'confirmYesNoYes','confirmYesNoNo',
@@ -16651,6 +16823,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
+    __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__
   ].filter(Boolean);
@@ -16717,6 +16890,7 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
   try{ if (state.page === 'tassa' && typeof initTassaPage === 'function') initTassaPage(); }catch(_){ }
   try{ document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ __applyTaxQuarterVisual__(node); }catch(_){ } }); }catch(_){ }
+  try{ __applyTaxPageCardAll__(); }catch(_){ }
   try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
 }
 
@@ -25082,6 +25256,8 @@ function initTassaPage(){
       catch (err) { toast(String(err && err.message || err || "Errore")); resetTassaUI(); }
     });
   }
+  try{ __pillApplyAll__(); }catch(_){ }
+  try{ __applyTaxPageCardAll__(); }catch(_){ }
 
   const q1 = $("#taxQ1Btn");
   const q2 = $("#taxQ2Btn");
