@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.426");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.426");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.449");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.449");
 }
 html{
   background-color:#ececec;
@@ -16459,7 +16459,7 @@ body.ddae-dark .app-section-head-row .icon-btn .backchev{
 }
 
 
-/* dDAE_2.426 — Dark mode: card statistiche e grafici senza layer chiaro */
+/* dDAE_2.449 — Dark mode: card statistiche e grafici senza layer chiaro */
 body.ddae-dark #page-statgen .stat-row,
 body.ddae-dark #page-statspese .stat-row,
 body.ddae-dark #page-statmensili .month-row,
@@ -16494,4 +16494,111 @@ body.ddae-dark #page-statprenotazioni .stats-graph-legend .legrow,
 body.ddae-dark #page-statprenotazioni .stat-graph-modal-legend .legrow{
   background: rgba(15,23,42,0.88) !important;
   border-color: rgba(148,163,184,0.20) !important;
+}
+
+
+/* dDAE_2.449 — iPhone: blocco totale scroll verticale nelle pagine statiche richieste */
+:root{
+  --app-viewport-height: 100dvh;
+  --app-topbar-offset: calc(64px + var(--safe-top));
+  --app-fixed-bottom-offset: 0px;
+}
+html.page-lock-vertical,
+body.page-lock-vertical{
+  height: var(--app-viewport-height) !important;
+  min-height: var(--app-viewport-height) !important;
+  max-height: var(--app-viewport-height) !important;
+  overflow: hidden !important;
+  overscroll-behavior-y: none !important;
+}
+body.page-lock-vertical{
+  min-height: 0 !important;
+  padding-top: var(--app-topbar-offset) !important;
+}
+body.page-lock-vertical main.wrap{
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow: hidden !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical.page-lock-sync-footer main.wrap{
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
+}
+body.page-lock-vertical #page-home,
+body.page-lock-vertical #page-tassa,
+body.page-lock-vertical #page-pulizie,
+body.page-lock-vertical #page-statistiche,
+body.page-lock-vertical #page-impostazioni,
+body.page-lock-vertical #page-opsettings,
+body.page-lock-vertical #page-orepulizia{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-home .home-page,
+body.page-lock-vertical #page-statistiche .stats-page,
+body.page-lock-vertical #page-impostazioni .settings-page-reference,
+body.page-lock-vertical #page-opsettings .settings-page-reference,
+body.page-lock-vertical #page-tassa .card,
+body.page-lock-vertical #page-pulizie .bd,
+body.page-lock-vertical #page-pulizie .clean-mainGroup,
+body.page-lock-vertical #page-orepulizia .opcal-wrap{
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-home .home-page{
+  min-height: 0 !important;
+  height: 100% !important;
+  padding-bottom: calc(var(--sync-footer-space) + var(--safe-bottom) + 12px) !important;
+}
+body.page-lock-vertical.page-lock-no-sync-footer #page-home .home-page{
+  padding-bottom: calc(var(--safe-bottom) + 12px) !important;
+}
+body.page-lock-vertical #page-statistiche .stats-page{
+  min-height: 0 !important;
+  height: 100% !important;
+}
+body.page-lock-vertical #page-impostazioni .settings-page-reference,
+body.page-lock-vertical #page-opsettings .settings-page-reference{
+  min-height: 0 !important;
+  height: 100% !important;
+  padding-bottom: calc(var(--safe-bottom) + 18px) !important;
+}
+body.page-lock-vertical #page-tassa .card{
+  min-height: 0 !important;
+  height: 100% !important;
+}
+body.page-lock-vertical #page-pulizie .bd{
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.page-lock-vertical #page-pulizie .clean-mainGroup{
+  flex: 1 1 auto !important;
+}
+body.page-lock-vertical #page-orepulizia{
+  padding-top: 0 !important;
+}
+body.page-lock-vertical #page-orepulizia .opcal-wrap{
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  padding-bottom: calc(var(--safe-bottom) + 18px) !important;
+}
+body.page-lock-vertical.page-lock-sync-footer #page-orepulizia .opcal-wrap{
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
+}
+body.page-lock-vertical #page-home .home-grid,
+body.page-lock-vertical #page-statistiche .home-grid,
+body.page-lock-vertical #page-pulizie .clean-grid-wrap,
+body.page-lock-vertical #page-pulizie .clean-grid{
+  overflow: hidden !important;
+}
+body.page-lock-vertical #page-home .home-spacer,
+body.page-lock-vertical #page-home .home-spacer:first-of-type,
+body.page-lock-vertical #page-home .home-spacer:last-of-type{
+  flex-shrink: 1 !important;
 }

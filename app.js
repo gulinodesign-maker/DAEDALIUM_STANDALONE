@@ -11022,6 +11022,86 @@ function ensureTopbarIconContrast(){
     });
   }catch(_){ }
 }
+
+
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","pulizie","orepulizia","statistiche","impostazioni","opsettings"]);
+function __isVerticalLockPage__(page){
+  return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
+}
+function __updateVerticalLockViewportVars__(){
+  try{
+    const root = document.documentElement;
+    const body = document.body;
+    const vv = window.visualViewport;
+    const vh = Math.max(1, Math.round((vv && vv.height) || window.innerHeight || document.documentElement.clientHeight || 0));
+    const vw = Math.max(1, Math.round((vv && vv.width) || window.innerWidth || document.documentElement.clientWidth || 0));
+    root.style.setProperty('--app-viewport-height', `${vh}px`);
+    root.style.setProperty('--app-viewport-width', `${vw}px`);
+    const topbar = document.querySelector('.topbar');
+    const topbarH = Math.max(64, Math.round((topbar && topbar.getBoundingClientRect && topbar.getBoundingClientRect().height) || 64));
+    root.style.setProperty('--app-topbar-offset', `${topbarH}px`);
+    const syncBar = document.getElementById('homeSyncBar');
+    const syncVisible = !!(body && body.dataset && body.dataset.page === 'home' && syncBar && !syncBar.hidden);
+    const syncH = syncVisible ? Math.max(0, Math.ceil((syncBar.getBoundingClientRect && syncBar.getBoundingClientRect().height) || 0) + 12) : 0;
+    root.style.setProperty('--app-fixed-bottom-offset', `${syncH}px`);
+  }catch(_){ }
+}
+function __applyVerticalPageLock__(page){
+  try{
+    const root = document.documentElement;
+    const body = document.body;
+    if (!root || !body) return;
+    const locked = __isVerticalLockPage__(page);
+    root.classList.toggle('page-lock-vertical', !!locked);
+    body.classList.toggle('page-lock-vertical', !!locked);
+    body.classList.toggle('page-lock-sync-footer', !!(locked && String(page) === 'home'));
+    body.classList.toggle('page-lock-no-sync-footer', !!(locked && String(page) !== 'home'));
+    __updateVerticalLockViewportVars__();
+    try{ window.scrollTo(0, 0); }catch(_){ }
+    try{ document.documentElement.scrollTop = 0; }catch(_){ }
+    try{ document.body.scrollTop = 0; }catch(_){ }
+  }catch(_){ }
+}
+(function(){
+  try{
+    if (window.__ddaeVerticalLockBound) return;
+    window.__ddaeVerticalLockBound = true;
+    const refresh = () => {
+      try{ __updateVerticalLockViewportVars__(); }catch(_){ }
+      try{ if (document.body && document.body.classList && document.body.classList.contains('page-lock-vertical')) { window.scrollTo(0, 0); } }catch(_){ }
+    };
+    window.addEventListener('resize', refresh, { passive:true });
+    window.addEventListener('orientationchange', refresh, { passive:true });
+    window.addEventListener('pageshow', refresh, { passive:true });
+    try{
+      if (window.visualViewport){
+        window.visualViewport.addEventListener('resize', refresh, { passive:true });
+        window.visualViewport.addEventListener('scroll', refresh, { passive:true });
+      }
+    }catch(_){ }
+    const allowVerticalMove = (target) => {
+      try{
+        if (!target || !target.closest) return false;
+        return !!target.closest('.settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
+      }catch(_){
+        return false;
+      }
+    };
+    document.addEventListener('touchmove', (ev) => {
+      try{
+        if (!document.body || !document.body.classList || !document.body.classList.contains('page-lock-vertical')) return;
+        if (ev.touches && ev.touches.length > 1) return;
+        if (allowVerticalMove(ev.target)) return;
+        ev.preventDefault();
+      }catch(_){ }
+    }, { passive:false, capture:true });
+    document.addEventListener('scroll', () => {
+      try{ if (document.body && document.body.classList && document.body.classList.contains('page-lock-vertical')) window.scrollTo(0, 0); }catch(_){ }
+    }, { passive:true, capture:true });
+    setTimeout(refresh, 0);
+  }catch(_){ }
+})();
+
 function showPage(page){
   // Back-compat: vecchia pagina "colazione" ora è "prodotti"
   if (page === "colazione") page = "prodotti";
@@ -11061,6 +11141,7 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
+  try{ __applyVerticalPageLock__(page); }catch(_){ }
 
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
