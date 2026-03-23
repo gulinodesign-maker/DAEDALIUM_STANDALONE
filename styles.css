@@ -16604,28 +16604,13 @@ body.page-lock-vertical #page-home .home-spacer:last-of-type{
 }
 
 
-/* dDAE_2.450 — Home: abbassa pill anno, griglia e build di almeno 100px */
-#page-home .home-page{
-  padding-top: 112px !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-home .home-page{
-  padding-top: 112px !important;
-}
+/* dDAE_2.450 — Home: abbassa pill anno, griglia 3x3 e build di 50px */
 #page-home .home-year-pill{
-  transform: none !important;
-  margin: 0 auto 24px !important;
+  transform: translateY(10px) !important;
 }
 #page-home .home-grid{
-  transform: none !important;
-  margin: 0 auto !important;
+  transform: translate(-3px, 10px) !important;
 }
 #page-home .build{
-  position: static !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  margin-top: auto !important;
-  padding-bottom: calc(var(--safe-bottom) + 6px) !important;
-  text-align: center !important;
+  transform: translateY(50px) !important;
 }
