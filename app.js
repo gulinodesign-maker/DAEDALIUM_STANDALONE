@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.444
+ * Build: 2.445
  */
-const BUILD_VERSION = "2.444";
+const BUILD_VERSION = "2.445";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8794,9 +8794,9 @@ function __tagColorPopupChangedFields__(payload){
   }catch(_){ return { bg:false, border:false, fg:false, opacity:false, any:false, next:null, initial:null }; }
 }
 
-async function __tagColorPopupApplyCategoryIfNeeded__(payload){
+async function __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg){
   try{
-    const cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? __tagColorPopupState__.applyCategory : null;
+    const cfg = (applyCategoryCfg && typeof applyCategoryCfg === 'object') ? applyCategoryCfg : ((__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? __tagColorPopupState__.applyCategory : null);
     if (!cfg || typeof cfg.apply !== 'function') return;
     const changed = __tagColorPopupChangedFields__(payload);
     if (!changed.any) return;
@@ -8952,13 +8952,14 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
 
 async function __tagColorPopupConfirm__(){
   const cb = __tagColorPopupState__.onSelect;
+  const applyCategoryCfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? { ...__tagColorPopupState__.applyCategory } : null;
   const payload = __tagColorPopupCurrentPayload__();
   __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
   try{
     if (typeof cb === 'function') await cb(payload);
   }catch(_){ }
-  try{ await __tagColorPopupApplyCategoryIfNeeded__(payload); }catch(_){ }
+  try{ await __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg); }catch(_){ }
   try{ toast('Colore aggiornato'); }catch(_){ }
 }
 
@@ -22218,19 +22219,24 @@ function setupCalendario(){
     return d;
   };
 
-  const shiftAnchorAndRender = (newAnchor, { force=false } = {}) => {
+  const shiftAnchorAndRender = (newAnchor, { force=false, scrollDayLeft=null } = {}) => {
     state.calendar.anchor = newAnchor;
     // Render immediato: prima cambia pagina, poi aggiorna i dati
     renderCalendario();
+    if (scrollDayLeft != null){
+      requestAnimationFrame(() => {
+        try{ scrollCalendarMonthToDayLeft(scrollDayLeft); }catch(_){ }
+      });
+    }
     // Refresh in background (no loader)
     __scheduleCalendarFetch({ force, showLoader:false });
   };
 
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1));
+    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, -1), { scrollDayLeft:1 });
   });
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
-    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1));
+    shiftAnchorAndRender(addMonthsClamped(state.calendar.anchor, 1), { scrollDayLeft:1 });
   });
   // Applica stato UI all'avvio
   applyCalendarViewUI();
