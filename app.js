@@ -16579,6 +16579,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
+    __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__
   ].filter(Boolean);
 }
@@ -16658,6 +16659,7 @@ function __roomSettingsThemePayloadBuild__(){
     headerActionColors: __headerActionColorMapRead__(),
     pillTheme: __pillThemeRead__(),
     pillColors: __pillColorMapRead__(),
+    singleActionButtonVisuals: __loadSingleActionButtonVisualMap__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
     roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__()
   };
@@ -16692,6 +16694,9 @@ function __roomSettingsThemePayloadNormalize__(payload){
   try{
     if (!( __PILL_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__PILL_COLOR_STORAGE_KEY__] = JSON.stringify((src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {});
   }catch(_){ }
+  try{
+    if (!( __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__] = JSON.stringify((src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {});
+  }catch(_){ }
   return {
     roomsUi: __sanitizeRoomsUiConfig__(src.roomsUi || src.stanzeUi || src.rooms || null),
     launcherGridTheme: __launcherVisualNormalize__(src.launcherGridTheme || src.launcherTheme || {}, 'blue-4'),
@@ -16702,6 +16707,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
+    singleActionButtonVisuals: (src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {},
     statsThemeStorage,
     roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}
   };
@@ -16749,6 +16755,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __headerActionColorMapWrite__(payload.headerActionColors || {});
     __pillThemeWrite__(payload.pillTheme || { fg:'white', bg:'blue-4', border:'blue-4' });
     __pillColorMapWrite__(payload.pillColors || {});
+    __saveSingleActionButtonVisualMap__((payload.singleActionButtonVisuals && typeof payload.singleActionButtonVisuals === 'object') ? payload.singleActionButtonVisuals : {});
     __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
