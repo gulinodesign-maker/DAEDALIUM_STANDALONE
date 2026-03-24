@@ -4469,6 +4469,18 @@ body.perf-lite .guest-booking-block{
   pointer-events:auto !important;
 }
 
+.guest-form-card.is-view #guestPhone{
+  pointer-events:auto !important;
+  cursor:pointer;
+}
+
+#page-ospite #guestPhone.whatsapp-link{
+  color:#16213e;
+  font-weight:700;
+  -webkit-text-fill-color:#16213e;
+  opacity:1;
+}
+
 /* In sola lettura, le stanze diventano una lista "stack" come nel vecchio menù */
 .guest-form-card.is-view #roomsPicker{ display:none !important; }
 .guest-form-card.is-view #roomsReadOnly{ display:block !important; }

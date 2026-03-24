@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.462
+ * Build: 2.463
  */
-const BUILD_VERSION = "2.462";
+const BUILD_VERSION = "2.463";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17711,6 +17711,60 @@ function __placeServicesPillForView(isView){
 }
 
 
+function normalizeWhatsAppPhone(raw){
+  let s = String(raw || '').trim();
+  if (!s) return '';
+  s = s.replace(/[^\d+]/g, '');
+  if (!s) return '';
+  if (s.startsWith('00')) s = '+' + s.slice(2);
+  if (s.startsWith('+')) s = '+' + s.slice(1).replace(/\D/g, '');
+  else s = s.replace(/\D/g, '');
+  if (!s) return '';
+  if (s.startsWith('+')) return s.slice(1);
+  if (s.startsWith('39')) return s;
+  if (s.startsWith('0')) return '39' + s.slice(1);
+  return '39' + s;
+}
+
+function openGuestPhoneWhatsApp(){
+  try{
+    const phoneEl = document.getElementById('guestPhone');
+    const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
+    if (!phoneEl || !isView) return;
+    const raw = String(phoneEl.value || '').trim();
+    const normalized = normalizeWhatsAppPhone(raw);
+    if (!normalized) return;
+    const url = 'https://wa.me/' + encodeURIComponent(normalized);
+    try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
+  }catch(_){ }
+}
+
+function syncGuestPhoneWhatsAppLink(isView){
+  try{
+    const phoneEl = document.getElementById('guestPhone');
+    if (!phoneEl) return;
+    if (!phoneEl.dataset.waBound){
+      phoneEl.addEventListener('click', function(){
+        try{ openGuestPhoneWhatsApp(); }catch(_){ }
+      });
+      phoneEl.addEventListener('keydown', function(ev){
+        const key = ev && (ev.key || ev.code || '');
+        if (key === 'Enter' || key === ' ' || key === 'Spacebar'){
+          try{ ev.preventDefault(); }catch(_){ }
+          try{ openGuestPhoneWhatsApp(); }catch(_){ }
+        }
+      });
+      phoneEl.dataset.waBound = '1';
+    }
+    const normalized = normalizeWhatsAppPhone(phoneEl.value || '');
+    const enabled = !!isView && !!normalized;
+    phoneEl.classList.toggle('whatsapp-link', enabled);
+    try{ phoneEl.setAttribute('aria-label', enabled ? 'Apri chat WhatsApp' : 'Telefono'); }catch(_){ }
+    try{ phoneEl.setAttribute('title', enabled ? 'Apri chat WhatsApp' : ''); }catch(_){ }
+    try{ phoneEl.readOnly = !!isView; }catch(_){ }
+    try{ phoneEl.tabIndex = enabled ? 0 : -1; }catch(_){ }
+  }catch(_){ }
+}
 
 function setGuestFormViewOnly(isView, ospite){
   try{ updateGuestFormModeClass(); }catch(_){ }
@@ -17752,6 +17806,7 @@ function setGuestFormViewOnly(isView, ospite){
   }catch(_){ }
 
   try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
+  try{ syncGuestPhoneWhatsAppLink(!!isView); }catch(_){}
   // Servizi: in sola lettura mostra il tasto accanto a "Importo servizi" (layout modifica invariato)
   try{ __placeServicesPillForView(!!isView); }catch(_){ }
 
