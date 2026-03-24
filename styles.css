@@ -6330,24 +6330,35 @@ body[data-page="ospiti"] #page-ospiti{
   overflow: hidden !important;
 }
 #page-ospiti .guest-cards-card .hd{
-  position: sticky !important;
-  top: 0 !important;
+  position: relative !important;
   z-index: 8 !important;
+  flex: 0 0 auto !important;
+  background: var(--dd-page-bg, transparent) !important;
+}
+#page-ospiti .guest-list-controls{
+  flex: 0 0 auto !important;
+  position: relative !important;
+  z-index: 7 !important;
   background: var(--dd-page-bg, transparent) !important;
 }
 #page-ospiti .guest-filter-grid{
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 7 !important;
-  background: var(--dd-page-bg, transparent) !important;
+  position: relative !important;
+  top: auto !important;
+  z-index: auto !important;
+  background: transparent !important;
   padding-bottom: 2px !important;
 }
-#page-ospiti #guestCards{
+#page-ospiti .guest-cards-scroller{
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+}
+#page-ospiti #guestCards{
+  min-height: 100% !important;
   padding: 0 0 calc(var(--sync-footer-space) + var(--safe-bottom) + 16px) !important;
 }
 
@@ -17049,4 +17060,12 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
     margin-top: 70px !important;
     column-gap: 2px !important;
   }
+}
+
+#page-ospiti,
+#page-ospiti .content,
+#page-ospiti .ospite-wrap,
+#page-ospiti .guest-cards-card,
+#page-ospiti .guest-cards-card .bd{
+  overscroll-behavior: none !important;
 }
