@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.469
+ * Build: 2.470
  */
-const BUILD_VERSION = "2.469";
+const BUILD_VERSION = "2.470";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11294,7 +11294,7 @@ function __applyVerticalPageLock__(page){
     const allowVerticalMove = (target) => {
       try{
         if (!target || !target.closest) return false;
-        return !!target.closest('.settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
+        return !!target.closest('.settings-year-wheel, #guestCards, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
       }catch(_){
         return false;
       }
@@ -17020,6 +17020,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __HEADER_ACTION_COLOR_STORAGE_KEY__,
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
+    __GUEST_FILTER_THEME_STORAGE_KEY__,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -17142,6 +17143,9 @@ function __roomSettingsThemePayloadNormalize__(payload){
     if (!( __PILL_COLOR_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__PILL_COLOR_STORAGE_KEY__] = JSON.stringify((src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {});
   }catch(_){ }
   try{
+    if (!( __GUEST_FILTER_THEME_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__GUEST_FILTER_THEME_STORAGE_KEY__] = JSON.stringify((src.guestFilterTheme && typeof src.guestFilterTheme === 'object') ? __guestFilterThemeReadFromInput__(src.guestFilterTheme) : __guestFilterThemeRead__());
+  }catch(_){ }
+  try{
     if (!( __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ in statsThemeStorage)) statsThemeStorage[__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__] = JSON.stringify((src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {});
   }catch(_){ }
   return {
@@ -17154,7 +17158,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
-    guestFilterTheme: __guestFilterThemeReadFromInput__((src.guestFilterTheme && typeof src.guestFilterTheme === 'object') ? src.guestFilterTheme : __guestFilterThemeRead__()),
+    guestFilterTheme: __guestFilterThemeReadFromInput__((src.guestFilterTheme && typeof src.guestFilterTheme === 'object') ? src.guestFilterTheme : (() => { try{ const raw = (statsThemeStorage && statsThemeStorage[__GUEST_FILTER_THEME_STORAGE_KEY__]) ? JSON.parse(statsThemeStorage[__GUEST_FILTER_THEME_STORAGE_KEY__]) : {}; return raw; }catch(_){ return __guestFilterThemeRead__(); } })()),
     singleActionButtonVisuals: (src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {},
     statsThemeStorage,
     roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}

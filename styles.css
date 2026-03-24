@@ -6326,9 +6326,21 @@ body[data-page="ospiti"] #page-ospiti{
   overflow: hidden !important;
   padding: 14px 0 0 !important;
 }
+#page-ospiti .ospite-wrap{
+  overflow: hidden !important;
+}
+#page-ospiti .guest-cards-card .hd{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 8 !important;
+  background: var(--dd-page-bg, transparent) !important;
+}
 #page-ospiti .guest-filter-grid{
-  flex: 0 0 auto !important;
-  margin-bottom: 12px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 7 !important;
+  background: var(--dd-page-bg, transparent) !important;
+  padding-bottom: 2px !important;
 }
 #page-ospiti #guestCards{
   flex: 1 1 auto !important;
@@ -6347,7 +6359,7 @@ body[data-page="ospiti"] #page-ospiti{
   -webkit-backdrop-filter: none !important;
 }
 #page-ospiti .guest-cards-card .hd{ background: transparent !important; }
-#page-ospiti .guest-cards-card .bd{ padding: 14px 0 0 !important; }
+#page-ospiti .guest-cards-card .bd{ padding: 14px 0 0 !important; position: relative !important; }
 
 #page-ospiti .guest-card{
   background: rgba(148,163,184,0.20) !important;
