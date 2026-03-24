@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.468
+ * Build: 2.469
  */
-const BUILD_VERSION = "2.468";
+const BUILD_VERSION = "2.469";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11920,6 +11920,7 @@ function setupGuestListControls(){
       btn.setAttribute("aria-pressed", active ? "true" : "false");
       try { __translateTree__(btn); } catch(_) {}
     });
+    try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
   };
 
   const paintDir = () => {
@@ -11938,6 +11939,7 @@ function setupGuestListControls(){
     todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
     todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
     try { __translateTree__(todayBtn); } catch(_) {}
+    try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
   };
 
   syncSortSelect();
@@ -12019,6 +12021,177 @@ function setupGuestListControls(){
   const btnAdminSave = document.getElementById("btnAdminSave");
   if (btnAdminSave) bindFastTap(btnAdminSave, () => saveStatAmministratore());
 
+}
+
+
+function __guestFilterButtonTargetIds__(){
+  return ['guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
+}
+
+function __loadGuestFilterButtonVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveGuestFilterButtonVisualMap__(map){
+  try{ localStorage.setItem(__GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
+  const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
+  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  const isToday = id === 'guestToday';
+  if (mode === 'active'){
+    return __launcherVisualNormalize__(isToday
+      ? { bg:'red-4', border:'red-4', fg:'white', opacity:0.80 }
+      : { bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }, isToday ? 'red-4' : 'green-4');
+  }
+  return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
+}
+
+function __guestFilterButtonVisualForState__(btnOrId, stateKey){
+  const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
+  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  const fallback = __guestFilterButtonDefaultVisual__(id, mode);
+  if (!id) return fallback;
+  const map = __loadGuestFilterButtonVisualMap__();
+  const raw = (map[id] && typeof map[id] === 'object') ? map[id][mode] : null;
+  const clean = __launcherVisualNormalize__(raw || fallback, fallback.bg || 'sky-4');
+  return {
+    bg: clean.bg || fallback.bg || 'sky-4',
+    border: clean.border || clean.bg || fallback.border || fallback.bg || 'sky-4',
+    fg: clean.fg || fallback.fg || 'white',
+    opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
+  };
+}
+
+function __saveGuestFilterButtonVisualState__(btnOrId, stateKey, visual){
+  try{
+    const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
+    if (!id) return;
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const map = __loadGuestFilterButtonVisualMap__();
+    const entry = (map[id] && typeof map[id] === 'object') ? map[id] : {};
+    const fallback = __guestFilterButtonDefaultVisual__(id, mode);
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'sky-4');
+    entry[mode] = {
+      bg: clean.bg || fallback.bg || 'sky-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'sky-4',
+      fg: clean.fg || fallback.fg || 'white',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
+    };
+    map[id] = entry;
+    __saveGuestFilterButtonVisualMap__(map);
+  }catch(_){ }
+}
+
+function __guestFilterButtonCurrentState__(btn){
+  try{ return btn && btn.classList && btn.classList.contains('is-active') ? 'active' : 'distractive'; }catch(_){ return 'distractive'; }
+}
+
+function __applyGuestFilterButtonVisual__(btn, forcedState, forcedVisual){
+  try{
+    if (!btn || !btn.id) return;
+    const stateKey = String(forcedState || __guestFilterButtonCurrentState__(btn) || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const visual = forcedVisual
+      ? __launcherVisualNormalize__(forcedVisual, (forcedVisual && forcedVisual.bg) || __guestFilterButtonDefaultVisual__(btn, stateKey).bg || 'sky-4')
+      : __guestFilterButtonVisualForState__(btn, stateKey);
+    const bgHex = __operatoreColorHex__(visual.bg || 'sky-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'sky-4');
+    const fgHex = __tagColorTextHex__(visual.bg || 'sky-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-width', '1px', 'important');
+    btn.style.setProperty('border-style', 'solid', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('backdrop-filter', 'none', 'important');
+    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    btn.style.setProperty('opacity', '1', 'important');
+  }catch(_){ }
+}
+
+function __applyGuestFilterButtonVisuals__(){
+  try{
+    __guestFilterButtonTargetIds__().forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      __applyGuestFilterButtonVisual__(btn);
+      __bindGuestFilterButtonColorHold__(btn);
+    });
+  }catch(_){ }
+}
+
+async function __openGuestFilterButtonColorPicker__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const label = String(btn.textContent || btn.getAttribute('aria-label') || '').trim() || 'Tasto';
+    const choice = await __confirmTwoActions__(`Quale stato vuoi modificare per ${label}?`, 'Attivo', 'Distrattivo');
+    const stateKey = choice === 'yes' ? 'active' : 'distractive';
+    const current = __guestFilterButtonVisualForState__(btn, stateKey);
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || current.bg || 'sky-4',
+        border: colors.border || current.border || colors.bg || current.bg || 'sky-4',
+        fg: colors.fg || current.fg || 'white',
+        opacity: __designBgOpacityNormalize__(current.opacity ?? 0.80)
+      };
+      __saveGuestFilterButtonVisualState__(btn, stateKey, next);
+      __applyGuestFilterButtonVisual__(btn, stateKey, next);
+    };
+    const revertVisual = () => {
+      __saveGuestFilterButtonVisualState__(btn, stateKey, current);
+      __applyGuestFilterButtonVisuals__();
+    };
+    __tagColorPopupOpen__('guest-filter-button', current, (payload) => {
+      try{
+        applyVisual(payload);
+        __applyGuestFilterButtonVisuals__();
+        try{ renderRoomSettingsPage(); }catch(_){ }
+        try{ toast(`Tasto ${label}: stato ${stateKey === 'active' ? 'attivo' : 'distrattivo'} aggiornato`); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:false,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'sky-4'),
+      onPreview:applyVisual,
+      onRevert:revertVisual
+    });
+  }catch(_){ }
+}
+
+function __bindGuestFilterButtonColorHold__(btn){
+  try{ if (!btn || btn.dataset.guestFilterColorBound === '1') return; btn.dataset.guestFilterColorBound = '1'; }catch(_){ if (!btn) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } };
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    timer = setTimeout(()=>{ fired = true; try{ btn.classList.add('is-pressing'); }catch(_){ } __openGuestFilterButtonColorPicker__(btn); }, 500);
+  };
+  const stop = (e)=>{
+    clear();
+    if (fired){ block(e); setTimeout(()=>{ fired = false; try{ btn.classList.remove('is-pressing'); }catch(_){ } }, 0); return; }
+    try{ btn.classList.remove('is-pressing'); }catch(_){ }
+  };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+  try{ btn.addEventListener('contextmenu', (e)=>{ block(e); __openGuestFilterButtonColorPicker__(btn); }, true); }catch(_){ }
 }
 
 function guestIdOf(g){
@@ -13339,6 +13512,7 @@ function __refreshSpeseColorLinkedViews__(opts){
 const __SPESA_CARD_OPACITY_STORAGE_KEY__ = 'dDAE_spese_card_opacity_v1';
 const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
+const __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_filter_button_visual_v1';
 const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
 const __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_tax_page_card_visual_v1';
 const __TAX_PAGE_CARD_TARGET_IDS__ = ['taxTotalRow','taxPayingCard','taxKidsCard','taxReducedCard'];
@@ -16825,6 +16999,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __HEADER_ACTION_COLOR_STORAGE_KEY__,
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
+    __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -16897,6 +17072,7 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ document.querySelectorAll('.btn.tax-quarter').forEach((node)=>{ try{ __applyTaxQuarterVisual__(node); }catch(_){ } }); }catch(_){ }
   try{ __applyTaxPageCardAll__(); }catch(_){ }
   try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+  try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
 }
 
 function __roomSettingsThemePayloadBuild__(){
