@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.463
+ * Build: 2.466
  */
-const BUILD_VERSION = "2.463";
+const BUILD_VERSION = "2.466";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3754,6 +3754,7 @@ function __captureUiState(){
       lettiPerStanza: state.lettiPerStanza || {},
       form: {
         guestName: __captureFormValue("guestName"),
+        guestNationality: __captureFormValue("guestNationality"),
         guestAdults: __captureFormValue("guestAdults"),
         guestKidsU10: __captureFormValue("guestKidsU10"),
         guestCheckIn: __captureFormValue("guestCheckIn"),
@@ -3813,6 +3814,8 @@ function __applyUiState(restore){
       // campi form
       const f = restore.guest.form || {};
       __applyFormValue("guestName", f.guestName);
+      __applyFormValue("guestNationality", f.guestNationality);
+      try{ updateGuestNationalityButton(); }catch(_){}
       __applyFormValue("guestAdults", f.guestAdults);
       __applyFormValue("guestKidsU10", f.guestKidsU10);
       __applyFormValue("guestCheckIn", f.guestCheckIn);
@@ -16229,7 +16232,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   // reset servizi state
   try{ state.guestServicesItems = []; state.guestServicesComputedTotal = 0; state.guestServicesManualOverride = false; state.guestServicesLoadedFor = null; }catch(_){ }
@@ -16239,6 +16242,7 @@ function enterGuestCreateMode(){
   if (ci) ci.value = todayISO();
   try{ populateGuestChannelOptions(); }catch(_){ }
   try{ applySelectedChannelToGuestForm(""); }catch(_){ }
+  try{ setGuestNationality(""); }catch(_){ }
 
   setMarriage(false);
   setGroup(false);
@@ -16348,6 +16352,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
 
   document.getElementById("guestName").value = ospite.nome || ospite.name || "";
   document.getElementById("guestPhone").value = ospite.telefono ?? ospite.tel ?? ospite.phone ?? "";
+  try{ setGuestNationality(__readGuestNationalityFromRecord__(ospite).code || ""); }catch(_){}
   document.getElementById("guestEmail").value = ospite.email ?? ospite.mail ?? "";
   document.getElementById("guestAdults").value = ospite.adulti ?? ospite.adults ?? 0;
   document.getElementById("guestKidsU10").value = ospite.bambini_u10 ?? ospite.kidsU10 ?? 0;
@@ -17711,6 +17716,168 @@ function __placeServicesPillForView(isView){
 }
 
 
+const __GUEST_NATIONALITY_OPTIONS__ = [
+  { code:'', flag:'🏳️', name:'Non selezionata' },
+  { code:'IT', flag:'🇮🇹', name:'Italia' },
+  { code:'FR', flag:'🇫🇷', name:'Francia' },
+  { code:'DE', flag:'🇩🇪', name:'Germania' },
+  { code:'ES', flag:'🇪🇸', name:'Spagna' },
+  { code:'GB', flag:'🇬🇧', name:'Regno Unito' },
+  { code:'IE', flag:'🇮🇪', name:'Irlanda' },
+  { code:'PT', flag:'🇵🇹', name:'Portogallo' },
+  { code:'NL', flag:'🇳🇱', name:'Paesi Bassi' },
+  { code:'BE', flag:'🇧🇪', name:'Belgio' },
+  { code:'LU', flag:'🇱🇺', name:'Lussemburgo' },
+  { code:'CH', flag:'🇨🇭', name:'Svizzera' },
+  { code:'AT', flag:'🇦🇹', name:'Austria' },
+  { code:'DK', flag:'🇩🇰', name:'Danimarca' },
+  { code:'SE', flag:'🇸🇪', name:'Svezia' },
+  { code:'NO', flag:'🇳🇴', name:'Norvegia' },
+  { code:'FI', flag:'🇫🇮', name:'Finlandia' },
+  { code:'IS', flag:'🇮🇸', name:'Islanda' },
+  { code:'PL', flag:'🇵🇱', name:'Polonia' },
+  { code:'CZ', flag:'🇨🇿', name:'Repubblica Ceca' },
+  { code:'SK', flag:'🇸🇰', name:'Slovacchia' },
+  { code:'HU', flag:'🇭🇺', name:'Ungheria' },
+  { code:'RO', flag:'🇷🇴', name:'Romania' },
+  { code:'BG', flag:'🇧🇬', name:'Bulgaria' },
+  { code:'HR', flag:'🇭🇷', name:'Croazia' },
+  { code:'SI', flag:'🇸🇮', name:'Slovenia' },
+  { code:'GR', flag:'🇬🇷', name:'Grecia' },
+  { code:'CY', flag:'🇨🇾', name:'Cipro' },
+  { code:'MT', flag:'🇲🇹', name:'Malta' },
+  { code:'EE', flag:'🇪🇪', name:'Estonia' },
+  { code:'LV', flag:'🇱🇻', name:'Lettonia' },
+  { code:'LT', flag:'🇱🇹', name:'Lituania' },
+  { code:'AL', flag:'🇦🇱', name:'Albania' },
+  { code:'RS', flag:'🇷🇸', name:'Serbia' },
+  { code:'ME', flag:'🇲🇪', name:'Montenegro' },
+  { code:'BA', flag:'🇧🇦', name:'Bosnia ed Erzegovina' },
+  { code:'MK', flag:'🇲🇰', name:'Macedonia del Nord' },
+  { code:'XK', flag:'🇽🇰', name:'Kosovo' },
+  { code:'UA', flag:'🇺🇦', name:'Ucraina' },
+  { code:'MD', flag:'🇲🇩', name:'Moldavia' },
+  { code:'US', flag:'🇺🇸', name:'Stati Uniti' },
+  { code:'CA', flag:'🇨🇦', name:'Canada' },
+  { code:'MX', flag:'🇲🇽', name:'Messico' },
+  { code:'BR', flag:'🇧🇷', name:'Brasile' },
+  { code:'AR', flag:'🇦🇷', name:'Argentina' },
+  { code:'AU', flag:'🇦🇺', name:'Australia' },
+  { code:'NZ', flag:'🇳🇿', name:'Nuova Zelanda' },
+  { code:'JP', flag:'🇯🇵', name:'Giappone' },
+  { code:'CN', flag:'🇨🇳', name:'Cina' },
+  { code:'IN', flag:'🇮🇳', name:'India' },
+  { code:'KR', flag:'🇰🇷', name:'Corea del Sud' },
+  { code:'AE', flag:'🇦🇪', name:'Emirati Arabi Uniti' },
+  { code:'SA', flag:'🇸🇦', name:'Arabia Saudita' },
+  { code:'IL', flag:'🇮🇱', name:'Israele' },
+  { code:'TR', flag:'🇹🇷', name:'Turchia' },
+  { code:'EG', flag:'🇪🇬', name:'Egitto' },
+  { code:'MA', flag:'🇲🇦', name:'Marocco' },
+  { code:'TN', flag:'🇹🇳', name:'Tunisia' },
+  { code:'DZ', flag:'🇩🇿', name:'Algeria' },
+  { code:'ZA', flag:'🇿🇦', name:'Sudafrica' }
+];
+function __normalizeGuestNationalityCode__(code){
+  return String(code || '').trim().toUpperCase();
+}
+function __getGuestNationalityOption__(code){
+  const target = __normalizeGuestNationalityCode__(code);
+  return __GUEST_NATIONALITY_OPTIONS__.find((item) => String(item.code || '').toUpperCase() === target) || __GUEST_NATIONALITY_OPTIONS__[0];
+}
+function __readGuestNationalityFromRecord__(ospite){
+  const code = __normalizeGuestNationalityCode__(ospite?.nazionalita_code ?? ospite?.nazionalitaCode ?? ospite?.country_code ?? ospite?.countryCode ?? ospite?.nazionalita ?? ospite?.nazione ?? ospite?.country ?? ospite?.paese ?? '');
+  if (code) return __getGuestNationalityOption__(code);
+  const name = String(ospite?.nazionalita_nome ?? ospite?.nazionalitaNome ?? ospite?.country_name ?? ospite?.countryName ?? '').trim().toLowerCase();
+  if (name){
+    const found = __GUEST_NATIONALITY_OPTIONS__.find((item) => String(item.name || '').trim().toLowerCase() === name);
+    if (found) return found;
+  }
+  return __GUEST_NATIONALITY_OPTIONS__[0];
+}
+function updateGuestNationalityButton(){
+  try{
+    const hidden = document.getElementById('guestNationality');
+    const flag = document.getElementById('guestNationalityFlag');
+    const btn = document.getElementById('guestNationalityBtn');
+    if (!hidden || !flag || !btn) return;
+    const option = __getGuestNationalityOption__(hidden.value || '');
+    hidden.value = option.code || '';
+    flag.textContent = option.flag || '🏳️';
+    btn.dataset.code = option.code || '';
+    btn.dataset.name = option.name || '';
+    btn.setAttribute('title', option.name || 'Nazionalità');
+    btn.setAttribute('aria-label', option.name ? ('Nazionalità: ' + option.name) : 'Seleziona nazionalità');
+  }catch(_){ }
+}
+function setGuestNationality(code){
+  try{
+    const hidden = document.getElementById('guestNationality');
+    if (!hidden) return;
+    const option = __getGuestNationalityOption__(code);
+    hidden.value = option.code || '';
+    updateGuestNationalityButton();
+  }catch(_){ }
+}
+function closeGuestNationalityModal(){
+  try{
+    const modal = document.getElementById('guestNationalityModal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }catch(_){ }
+}
+function renderGuestNationalityModal(){
+  try{
+    const list = document.getElementById('guestNationalityList');
+    if (!list) return;
+    const current = __normalizeGuestNationalityCode__(document.getElementById('guestNationality')?.value || '');
+    list.innerHTML = __GUEST_NATIONALITY_OPTIONS__.map((item) => {
+      const selected = String(item.code || '').toUpperCase() === current;
+      return `<button type="button" class="guest-nationality-option${selected ? ' is-selected' : ''}" data-code="${escapeHtml(item.code || '')}" aria-selected="${selected ? 'true' : 'false'}"><span aria-hidden="true" class="guest-nationality-option-flag">${escapeHtml(item.flag || '🏳️')}</span><span class="guest-nationality-option-name">${escapeHtml(item.name || '')}</span></button>`;
+    }).join('');
+  }catch(_){ }
+}
+function openGuestNationalityModal(){
+  try{
+    const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
+    if (isView) return;
+    const modal = document.getElementById('guestNationalityModal');
+    if (!modal) return;
+    renderGuestNationalityModal();
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+  }catch(_){ }
+}
+function __bindGuestNationalityUI__(){
+  try{
+    const btn = document.getElementById('guestNationalityBtn');
+    if (btn && !btn.__boundGuestNationality){
+      btn.__boundGuestNationality = true;
+      bindFastTap(btn, () => { openGuestNationalityModal(); });
+    }
+    const modal = document.getElementById('guestNationalityModal');
+    if (modal && !modal.__boundGuestNationality){
+      modal.__boundGuestNationality = true;
+      modal.addEventListener('click', (e) => {
+        const pick = e.target && e.target.closest ? e.target.closest('.guest-nationality-option') : null;
+        if (pick){
+          const code = pick.getAttribute('data-code') || '';
+          setGuestNationality(code);
+          closeGuestNationalityModal();
+          return;
+        }
+        if (e.target === modal) closeGuestNationalityModal();
+      });
+    }
+    const closeBtn = document.getElementById('guestNationalityModalClose');
+    if (closeBtn && !closeBtn.__boundGuestNationality){
+      closeBtn.__boundGuestNationality = true;
+      bindFastTap(closeBtn, () => { closeGuestNationalityModal(); });
+    }
+  }catch(_){ }
+}
+
 function normalizeWhatsAppPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
@@ -17807,6 +17974,7 @@ function setGuestFormViewOnly(isView, ospite){
 
   try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
   try{ syncGuestPhoneWhatsAppLink(!!isView); }catch(_){}
+  try{ updateGuestNationalityButton(); }catch(_){}
   // Servizi: in sola lettura mostra il tasto accanto a "Importo servizi" (layout modifica invariato)
   try{ __placeServicesPillForView(!!isView); }catch(_){ }
 
@@ -18408,6 +18576,7 @@ function initServiziUI(){
 async function saveGuest(opts = {}){
   const name = (document.getElementById("guestName")?.value || "").trim();
   const telefono = (document.getElementById("guestPhone")?.value || "").trim();
+  const nationalityOption = __getGuestNationalityOption__(document.getElementById("guestNationality")?.value || "");
   const email = (document.getElementById("guestEmail")?.value || "").trim();
   const adults = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
   const kidsU10 = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
@@ -18435,6 +18604,13 @@ if (!name) return toast("Inserisci il nome");
   const payload = {
     nome: name,
     telefono: telefono,
+    nazionalita: nationalityOption.code || "",
+    nazione: nationalityOption.code || "",
+    nazionalita_code: nationalityOption.code || "",
+    nazionalita_nome: nationalityOption.name || "",
+    country_code: nationalityOption.code || "",
+    country_name: nationalityOption.name || "",
+    country_flag: nationalityOption.flag || "",
     email: email,
     adulti: adults,
     bambini_u10: kidsU10,
@@ -18804,6 +18980,7 @@ function setupOspite(){
 
         const nameNow = (document.getElementById("guestName")?.value || "").trim();
         const phoneNow = (document.getElementById("guestPhone")?.value || "").trim();
+        const nationalityNow = String(document.getElementById("guestNationality")?.value || "").trim();
         const emailNow = (document.getElementById("guestEmail")?.value || "").trim();
         const adultsNow = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
         const kidsNow = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
@@ -18823,6 +19000,7 @@ function setupOspite(){
         try {
           document.getElementById("guestName").value = nameNow;
           document.getElementById("guestPhone").value = phoneNow;
+          setGuestNationality(nationalityNow);
           document.getElementById("guestEmail").value = emailNow;
           document.getElementById("guestAdults").value = adultsNow;
           document.getElementById("guestKidsU10").value = kidsNow;
@@ -25697,6 +25875,13 @@ function __applyLaundryResetCloseIcon__(){
     mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
     setTimeout(() => { try{ mo.disconnect(); }catch(_){ } }, 15000);
   }catch(_){ }
+})();
+
+(function __bindGuestNationalityWatcher__(){
+  const run = ()=>{ try{ __bindGuestNationalityUI__(); }catch(_){ } try{ updateGuestNationalityButton(); }catch(_){ } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
+  else setTimeout(run, 0);
+  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
 
 (function __bindLaundryResetCloseIconWatcher__(){
