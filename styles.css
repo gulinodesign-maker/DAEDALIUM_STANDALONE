@@ -1837,11 +1837,23 @@ border: 1px solid var(--border);
   line-height:1;
 }
 .guest-form-card.is-view #guestNationalityBtn{
-  pointer-events:none !important;
+  pointer-events:auto !important;
+  cursor:pointer !important;
 }
 .guest-form-card.is-view #guestNationalityBtn,
 .guest-form-card.is-view #guestNationalityBtn .guest-nationality-flag{
   opacity:1 !important;
+}
+.guest-form-card.is-view #guestNationalityBtn .guest-nationality-flag{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:100% !important;
+  font-size:40px !important;
+  line-height:1 !important;
+  transform:scale(1.12) !important;
+  transform-origin:center center !important;
 }
 .guest-nationality-modal-card{
   width: calc(100% - 28px);
@@ -17056,7 +17068,7 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
 }
 
 
-/* dDAE_2.475 — Popup colore: celle e bordo selezione sempre interi, senza clipping */
+/* dDAE_2.476 — Popup colore: celle e bordo selezione sempre interi, senza clipping */
 #tagColorModal .tag-color-modal-body{
   overflow-y:auto !important;
   overflow-x:hidden !important;
@@ -17083,7 +17095,7 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
   z-index:1 !important;
 }
 
-/* dDAE_2.475 — Tassa di soggiorno: dark mode coerente anche con personalizzazioni */
+/* dDAE_2.476 — Tassa di soggiorno: dark mode coerente anche con personalizzazioni */
 body.ddae-dark #page-tassa .btn.tax-year-pill,
 body.ddae-dark #page-tassa .btn.tax-quarter,
 body.ddae-dark #page-tassa .tax-total,
@@ -17098,3 +17110,6 @@ body.ddae-dark #page-tassa .tax-result-value,
 body.ddae-dark #page-tassa .tax-result-sub{
   text-shadow: none !important;
 }
+
+
+/* dDAE_2.476 — scheda ospite in lettura: bandierina cliccabile con popup paese e resa visiva più ampia */

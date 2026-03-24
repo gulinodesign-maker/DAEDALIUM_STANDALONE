@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.475
+ * Build: 2.476
  */
-const BUILD_VERSION = "2.475";
+const BUILD_VERSION = "2.476";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18267,10 +18267,27 @@ function renderGuestNationalityModal(){
     }).join('');
   }catch(_){ }
 }
+function __guestNationalityInfoText__(){
+  try{
+    const option = __getGuestNationalityOption__(document.getElementById('guestNationality')?.value || '');
+    return String(option?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata';
+  }catch(_){
+    return 'Nazionalità non selezionata';
+  }
+}
+function __showGuestNationalityInfoPopup__(){
+  try{
+    const text = __guestNationalityInfoText__();
+    toast(text, 'blue');
+  }catch(_){ }
+}
 function openGuestNationalityModal(){
   try{
     const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
-    if (isView) return;
+    if (isView){
+      __showGuestNationalityInfoPopup__();
+      return;
+    }
     const modal = document.getElementById('guestNationalityModal');
     if (!modal) return;
     renderGuestNationalityModal();
