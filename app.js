@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.468
+ * Build: 2.469
  */
-const BUILD_VERSION = "2.468";
+const BUILD_VERSION = "2.469";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7767,6 +7767,198 @@ function __openPillThemePicker__(){
   }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
 }
 
+
+const __GUEST_FILTER_THEME_STORAGE_KEY__ = 'dDAE_guest_filter_theme_v1';
+const __GUEST_FILTER_THEME_BUTTON_IDS__ = ['guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
+
+function __guestFilterThemeDefaultMap__(){
+  return {
+    guestToday: {
+      inactive: { bg:'#c9dcf0', border:'#a8cceb', fg:'#000000', opacity:0.80 },
+      active: { bg:'#ff3b30', border:'#ff3b30', fg:'#ffffff', opacity:0.80 }
+    },
+    guestSortByArrivo: {
+      inactive: { bg:'#7fb7d6', border:'#7fb7d6', fg:'#ffffff', opacity:0.80 },
+      active: { bg:'#34c759', border:'#34c759', fg:'#ffffff', opacity:0.80 }
+    },
+    guestSortByInserimento: {
+      inactive: { bg:'#7fb7d6', border:'#7fb7d6', fg:'#ffffff', opacity:0.80 },
+      active: { bg:'#34c759', border:'#34c759', fg:'#ffffff', opacity:0.80 }
+    },
+    guestSortByNome: {
+      inactive: { bg:'#7fb7d6', border:'#7fb7d6', fg:'#ffffff', opacity:0.80 },
+      active: { bg:'#34c759', border:'#34c759', fg:'#ffffff', opacity:0.80 }
+    }
+  };
+}
+
+function __guestFilterThemeNormalizeState__(input, fallback){
+  const base = __launcherVisualNormalize__(fallback || {}, (fallback && fallback.bg) || 'blue-4');
+  const current = __launcherVisualNormalize__(input || base, base.bg || 'blue-4');
+  return {
+    bg: current.bg || base.bg || 'blue-4',
+    border: current.border || current.bg || base.border || base.bg || 'blue-4',
+    fg: current.fg || base.fg || '',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? base.opacity ?? 0.80)
+  };
+}
+
+function __guestFilterThemeRead__(){
+  const defaults = __guestFilterThemeDefaultMap__();
+  let parsed = {};
+  try{
+    const raw = localStorage.getItem(__GUEST_FILTER_THEME_STORAGE_KEY__);
+    parsed = raw ? JSON.parse(raw) : {};
+  }catch(_){ parsed = {}; }
+  const out = {};
+  __GUEST_FILTER_THEME_BUTTON_IDS__.forEach((id) => {
+    const def = defaults[id] || {};
+    const current = (parsed && typeof parsed === 'object' && parsed[id] && typeof parsed[id] === 'object') ? parsed[id] : {};
+    out[id] = {
+      inactive: __guestFilterThemeNormalizeState__(current.inactive, def.inactive),
+      active: __guestFilterThemeNormalizeState__(current.active, def.active)
+    };
+  });
+  return out;
+}
+
+function __guestFilterThemeWrite__(map){
+  try{ localStorage.setItem(__GUEST_FILTER_THEME_STORAGE_KEY__, JSON.stringify(__guestFilterThemeReadFromInput__(map))); }catch(_){ }
+}
+
+function __guestFilterThemeReadFromInput__(map){
+  const defaults = __guestFilterThemeDefaultMap__();
+  const src = (map && typeof map === 'object') ? map : {};
+  const out = {};
+  __GUEST_FILTER_THEME_BUTTON_IDS__.forEach((id) => {
+    const def = defaults[id] || {};
+    const current = (src[id] && typeof src[id] === 'object') ? src[id] : {};
+    out[id] = {
+      inactive: __guestFilterThemeNormalizeState__(current.inactive, def.inactive),
+      active: __guestFilterThemeNormalizeState__(current.active, def.active)
+    };
+  });
+  return out;
+}
+
+function __guestFilterThemeStateForButton__(btnOrId){
+  const id = String((typeof btnOrId === 'string') ? btnOrId : (btnOrId && btnOrId.id) || '').trim();
+  if (!id) return 'inactive';
+  if (id === 'guestToday') return state.guestTodayOnly ? 'active' : 'inactive';
+  const el = (typeof btnOrId === 'string') ? document.getElementById(id) : btnOrId;
+  const sortBy = String(el?.dataset?.sortBy || '').trim();
+  return (sortBy && String(state.guestSortBy || '') === sortBy) ? 'active' : 'inactive';
+}
+
+function __guestFilterThemeVisualFor__(btnOrId, stateName){
+  const id = String((typeof btnOrId === 'string') ? btnOrId : (btnOrId && btnOrId.id) || '').trim();
+  const mode = String(stateName || __guestFilterThemeStateForButton__(btnOrId) || 'inactive').trim().toLowerCase() === 'active' ? 'active' : 'inactive';
+  const map = __guestFilterThemeRead__();
+  const defaults = __guestFilterThemeDefaultMap__();
+  const fallback = defaults[id]?.[mode] || defaults.guestSortByArrivo?.inactive || { bg:'#7fb7d6', border:'#7fb7d6', fg:'#ffffff', opacity:0.80 };
+  return __guestFilterThemeNormalizeState__(map[id]?.[mode], fallback);
+}
+
+function __guestFilterThemeSet__(buttonId, stateName, visual){
+  try{
+    const id = String(buttonId || '').trim();
+    if (!id) return;
+    const mode = String(stateName || 'inactive').trim().toLowerCase() === 'active' ? 'active' : 'inactive';
+    const map = __guestFilterThemeRead__();
+    map[id] = map[id] || {};
+    map[id][mode] = __guestFilterThemeNormalizeState__(visual, __guestFilterThemeDefaultMap__()[id]?.[mode]);
+    __guestFilterThemeWrite__(map);
+  }catch(_){ }
+}
+
+function __guestFilterThemeApplyToButton__(btn){
+  try{
+    if (!btn || !btn.id) return;
+    const currentState = __guestFilterThemeStateForButton__(btn);
+    const visual = __guestFilterThemeVisualFor__(btn, currentState);
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : __tagColorTextHex__(visual.bg || 'blue-4', '', false);
+    const bgCss = hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? 0.80));
+    btn.style.setProperty('background', bgCss, 'important');
+    btn.style.setProperty('background-color', bgCss, 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    btn.dataset.guestFilterVisualState = currentState;
+    const label = (btn.textContent || '').trim() || String(btn.id || '').trim();
+    btn.title = `${label} · pressione lunga per modificare il colore ${currentState === 'active' ? 'attivo' : 'disattivo'}`;
+  }catch(_){ }
+}
+
+function __guestFilterThemeApplyAll__(){
+  try{
+    __GUEST_FILTER_THEME_BUTTON_IDS__.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      try{ __guestFilterThemeApplyToButton__(btn); }catch(_){ }
+      try{ __bindGuestFilterThemeLongPress__(btn); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __bindGuestFilterThemeLongPress__(btn){
+  try{
+    if (!btn || !btn.id || btn.dataset.guestFilterColorHoldBound === '1') return;
+    btn.dataset.guestFilterColorHoldBound = '1';
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
+    const openPicker = () => {
+      holdTriggered = true;
+      const stateName = __guestFilterThemeStateForButton__(btn);
+      const current = __guestFilterThemeVisualFor__(btn, stateName);
+      __tagColorPopupOpen__('guest-filter-button', current, (payload) => {
+        try{
+          const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+          const nextVisual = {
+            bg: colors.bg || current.bg || 'blue-4',
+            border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+            fg: colors.fg || current.fg || '',
+            opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
+          };
+          __guestFilterThemeSet__(btn.id, stateName, nextVisual);
+          __guestFilterThemeApplyAll__();
+          try{ renderRoomSettingsPage(); }catch(_){ }
+        }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:(current.opacity ?? __designBgOpacityRead__()), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4') });
+    };
+    btn.addEventListener('touchstart', () => {
+      touchAt = Date.now();
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, { passive:true, capture:true });
+    btn.addEventListener('touchend', (e) => {
+      clearHold();
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
+    btn.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { openPicker(); }, 500);
+    }, true);
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
+    btn.addEventListener('click', (e) => {
+      if (holdTriggered || (Date.now() - touchAt < 450 && holdTriggered)){
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      }
+    }, true);
+    btn.addEventListener('contextmenu', (e) => {
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      try{ openPicker(); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __bindHeaderActionLongPress__(btn){
   try{
     if (!btn || btn.dataset.headerColorHoldBound === '1') return;
@@ -11920,6 +12112,7 @@ function setupGuestListControls(){
       btn.setAttribute("aria-pressed", active ? "true" : "false");
       try { __translateTree__(btn); } catch(_) {}
     });
+    try{ __guestFilterThemeApplyAll__(); }catch(_){ }
   };
 
   const paintDir = () => {
@@ -11938,11 +12131,13 @@ function setupGuestListControls(){
     todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
     todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
     try { __translateTree__(todayBtn); } catch(_) {}
+    try{ __guestFilterThemeApplyToButton__(todayBtn); }catch(_){ }
   };
 
   syncSortSelect();
   paintSortButtons();
   paintToday();
+  try{ __guestFilterThemeApplyAll__(); }catch(_){ }
 
   if (todayBtn){
     todayBtn.addEventListener("click", () => {
@@ -16910,6 +17105,7 @@ function __roomSettingsThemePayloadBuild__(){
     headerActionColors: __headerActionColorMapRead__(),
     pillTheme: __pillThemeRead__(),
     pillColors: __pillColorMapRead__(),
+    guestFilterTheme: __guestFilterThemeRead__(),
     singleActionButtonVisuals: __loadSingleActionButtonVisualMap__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
     roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__()
@@ -16958,6 +17154,7 @@ function __roomSettingsThemePayloadNormalize__(payload){
     headerActionColors: (src.headerActionColors && typeof src.headerActionColors === 'object') ? src.headerActionColors : {},
     pillTheme: __launcherVisualNormalize__(src.pillTheme || {}, 'blue-4'),
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
+    guestFilterTheme: __guestFilterThemeReadFromInput__((src.guestFilterTheme && typeof src.guestFilterTheme === 'object') ? src.guestFilterTheme : __guestFilterThemeRead__()),
     singleActionButtonVisuals: (src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {},
     statsThemeStorage,
     roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}
@@ -17006,6 +17203,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __headerActionColorMapWrite__(payload.headerActionColors || {});
     __pillThemeWrite__(payload.pillTheme || { fg:'white', bg:'blue-4', border:'blue-4' });
     __pillColorMapWrite__(payload.pillColors || {});
+    __guestFilterThemeWrite__((payload.guestFilterTheme && typeof payload.guestFilterTheme === 'object') ? payload.guestFilterTheme : {});
     __saveSingleActionButtonVisualMap__((payload.singleActionButtonVisuals && typeof payload.singleActionButtonVisuals === 'object') ? payload.singleActionButtonVisuals : {});
     __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
   }catch(_){ }
@@ -17016,6 +17214,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __guestFilterThemeApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }

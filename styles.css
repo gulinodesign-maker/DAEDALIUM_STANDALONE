@@ -6279,6 +6279,66 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
 
 
 /* dDAE_1.020 — Ospiti: layout flat + trasparenze 20% */
+
+body[data-page="ospiti"] main.wrap{
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow: hidden !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+body[data-page="ospiti"] #page-ospiti{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+#page-ospiti .content{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding-bottom: 0 !important;
+}
+#page-ospiti .ospite-wrap{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+#page-ospiti .guest-cards-card{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+#page-ospiti .guest-cards-card .hd{
+  flex: 0 0 auto !important;
+}
+#page-ospiti .guest-cards-card .bd{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 14px 0 0 !important;
+}
+#page-ospiti .guest-filter-grid{
+  flex: 0 0 auto !important;
+  margin-bottom: 12px !important;
+}
+#page-ospiti #guestCards{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  padding: 0 0 calc(var(--sync-footer-space) + var(--safe-bottom) + 16px) !important;
+}
+
 #page-ospiti .guest-cards-card{
   background: transparent !important;
   border: none !important;
@@ -6287,7 +6347,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   -webkit-backdrop-filter: none !important;
 }
 #page-ospiti .guest-cards-card .hd{ background: transparent !important; }
-#page-ospiti .guest-cards-card .bd{ padding: 14px 0 !important; }
+#page-ospiti .guest-cards-card .bd{ padding: 14px 0 0 !important; }
 
 #page-ospiti .guest-card{
   background: rgba(148,163,184,0.20) !important;
@@ -16966,7 +17026,7 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
   line-height:1 !important;
 }
 
-/* dDAE_2.468 - Statistiche: griglia 2x3 abbassata di 70px e gruppi avvicinati di 10px per lato verso l'asse centrale */
+/* dDAE_2.469 - Statistiche: griglia 2x3 abbassata di 70px e gruppi avvicinati di 10px per lato verso l'asse centrale */
 #page-statistiche .home-grid{
   margin: 70px auto 0 !important;
   align-content: start !important;
