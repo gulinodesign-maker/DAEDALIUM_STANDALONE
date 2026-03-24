@@ -16966,7 +16966,7 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
   line-height:1 !important;
 }
 
-/* dDAE_2.470 - Statistiche: griglia 2x3 abbassata di 70px e gruppi avvicinati di 10px per lato verso l'asse centrale */
+/* dDAE_2.471 - Statistiche: griglia 2x3 abbassata di 70px e gruppi avvicinati di 10px per lato verso l'asse centrale */
 #page-statistiche .home-grid{
   margin: 70px auto 0 !important;
   align-content: start !important;
@@ -16977,4 +16977,76 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
     margin-top: 70px !important;
     column-gap: 2px !important;
   }
+}
+
+
+/* dDAE_2.471 — Popup colore: dimensione fissa per display, senza scroll e uguale per tutti gli oggetti */
+#tagColorModal{
+  padding: var(--tag-color-popup-vertical-pad, max(8px, env(safe-area-inset-top))) var(--tag-color-popup-side-pad, 12px) var(--tag-color-popup-vertical-pad, max(8px, env(safe-area-inset-bottom))) !important;
+  align-items: flex-start !important;
+  overflow: hidden !important;
+}
+#tagColorModal .tag-color-modal-card{
+  width: var(--tag-color-popup-width, min(420px, calc(100vw - 24px))) !important;
+  min-width: var(--tag-color-popup-width, min(420px, calc(100vw - 24px))) !important;
+  max-width: var(--tag-color-popup-width, min(420px, calc(100vw - 24px))) !important;
+  height: var(--tag-color-popup-height, min(620px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px))) !important;
+  min-height: var(--tag-color-popup-height, min(620px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px))) !important;
+  max-height: var(--tag-color-popup-height, min(620px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px))) !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+#tagColorModal .tag-color-modal-body{
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important;
+  padding-right: 0 !important;
+}
+#tagColorModal .tag-color-modebar{
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(6px, 1.6vw, 10px) !important;
+  margin-bottom: 8px !important;
+}
+#tagColorModal .tag-color-mode-btn{
+  min-height: var(--tag-color-mode-height, 36px) !important;
+  height: var(--tag-color-mode-height, 36px) !important;
+}
+#tagColorModal .tag-color-mode-btn.is-disabled,
+#tagColorModal .tag-color-mode-btn:disabled{
+  opacity: 0.42 !important;
+  background: rgba(255,255,255,0.92) !important;
+  color: #8aa8bf !important;
+  border-color: rgba(148,163,184,0.18) !important;
+}
+#tagColorModal .tag-opacity-wrap{
+  margin-bottom: 8px !important;
+}
+#tagColorModal .tag-opacity-grid{
+  height: var(--tag-opacity-height, 46px) !important;
+  min-height: var(--tag-opacity-height, 46px) !important;
+  max-height: var(--tag-opacity-height, 46px) !important;
+  gap: clamp(6px, 1.4vw, 8px) !important;
+}
+#tagColorModal .tag-opacity-option{
+  min-height: var(--tag-opacity-height, 46px) !important;
+  height: var(--tag-opacity-height, 46px) !important;
+  font-size: clamp(15px, 3.2vw, 18px) !important;
+}
+#tagColorModal .tag-color-grid{
+  align-content: stretch !important;
+  gap: var(--tag-color-gap, 4px) !important;
+}
+#tagColorModal .tag-color-option{
+  height: var(--tag-color-cell-height, 34px) !important;
+  min-height: var(--tag-color-cell-height, 34px) !important;
+  max-height: var(--tag-color-cell-height, 34px) !important;
+  border-radius: var(--tag-color-cell-radius, 12px) !important;
+}
+body.ddae-dark #tagColorModal .tag-color-mode-btn.is-disabled,
+body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
+  background: rgba(255,255,255,0.08) !important;
+  color: rgba(143,209,255,0.58) !important;
+  border-color: rgba(143,209,255,0.16) !important;
 }
