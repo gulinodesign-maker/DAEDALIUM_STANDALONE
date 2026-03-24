@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.472
+ * Build: 2.473
  */
-const BUILD_VERSION = "2.472";
+const BUILD_VERSION = "2.473";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8960,6 +8960,8 @@ function __tagColorPopupApplyViewportLayout__(){
     const verticalPadding = Math.max(6, Math.min(12, Math.round(viewportHeight * 0.012)));
     const cardWidth = Math.max(300, Math.min(460, viewportWidth - (sidePadding * 2)));
     const cardHeight = Math.max(400, Math.min(720, viewportHeight - safeTop - safeBottom - (verticalPadding * 2)));
+    const gridPad = Math.max(7, Math.min(10, Math.round(viewportWidth * 0.018)));
+    const opacityPad = Math.max(5, gridPad - 2);
     modal.style.setProperty('--tag-color-popup-side-pad', `${sidePadding}px`);
     modal.style.setProperty('--tag-color-popup-vertical-pad', `${verticalPadding}px`);
     card.style.setProperty('--tag-color-popup-width', `${cardWidth}px`);
@@ -8971,8 +8973,8 @@ function __tagColorPopupApplyViewportLayout__(){
     card.style.minHeight = `${cardHeight}px`;
     card.style.maxHeight = `${cardHeight}px`;
     card.style.overflow = 'hidden';
-    body.style.overflow = 'hidden';
-    body.style.overflowY = 'hidden';
+    body.style.overflow = 'auto';
+    body.style.overflowY = 'auto';
     body.style.overflowX = 'hidden';
     const cardStyle = window.getComputedStyle ? window.getComputedStyle(card) : null;
     const padTop = Math.round(parseFloat(cardStyle?.paddingTop || '0') || 0);
@@ -8985,34 +8987,38 @@ function __tagColorPopupApplyViewportLayout__(){
     const bodyStyle = window.getComputedStyle ? window.getComputedStyle(body) : null;
     const bodyInnerWidth = Math.max(260, Math.floor(cardWidth - ((parseFloat(bodyStyle?.paddingLeft || '0') || 0) + (parseFloat(bodyStyle?.paddingRight || '0') || 0))));
     const modeHeight = Math.max(34, Math.min(46, Math.round(availableBodyHeight * 0.088)));
-    const opacityHeight = Math.max(40, Math.min(56, Math.round(availableBodyHeight * 0.13)));
-    const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityHeight + 6);
+    const opacityButtonHeight = Math.max(40, Math.min(56, Math.round(availableBodyHeight * 0.13)));
+    const opacityGridHeight = opacityButtonHeight + (opacityPad * 2);
+    const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityGridHeight + 6);
     const reservedMode = (!modeBar || modeBar.hidden) ? 0 : (modeHeight + 8);
     const gap = viewportHeight <= 700 ? 2 : (viewportHeight <= 840 ? 3 : 4);
     const cols = 6;
     const total = grid.querySelectorAll('.tag-color-option').length || 72;
     const rows = Math.max(1, Math.ceil(total / cols));
-    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity));
-    const cellWidth = Math.floor((bodyInnerWidth - (gap * (cols - 1))) / cols);
+    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - (gridPad * 2) - 4));
+    const gridInnerWidth = Math.max(240, bodyInnerWidth - (gridPad * 2));
+    const cellWidth = Math.floor((gridInnerWidth - (gap * (cols - 1))) / cols);
     const maxHeightFit = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
-    const baseHeightFromWidth = Math.floor(cellWidth * 1.10);
-    const targetHeight = Math.floor(baseHeightFromWidth * 1.30);
-    const finalHeight = Math.max(22, Math.min(maxHeightFit, targetHeight));
+    const baseHeightFromWidth = Math.floor(cellWidth * 1.02);
+    const targetHeight = Math.floor(baseHeightFromWidth * 1.08);
+    const finalHeight = Math.max(20, Math.min(maxHeightFit, targetHeight));
     const radius = Math.max(9, Math.min(18, Math.round(finalHeight * 0.34)));
-    const computedGridHeight = Math.max(0, (finalHeight * rows) + (gap * Math.max(0, rows - 1)));
+    const computedGridHeight = Math.max(0, (finalHeight * rows) + (gap * Math.max(0, rows - 1)) + (gridPad * 2));
     card.style.setProperty('--tag-color-gap', `${gap}px`);
     card.style.setProperty('--tag-color-cell-height', `${finalHeight}px`);
     card.style.setProperty('--tag-color-cell-radius', `${radius}px`);
     card.style.setProperty('--tag-color-grid-height', `${computedGridHeight}px`);
+    card.style.setProperty('--tag-color-grid-pad', `${gridPad}px`);
+    card.style.setProperty('--tag-opacity-grid-pad', `${opacityPad}px`);
     card.style.setProperty('--tag-color-mode-height', `${modeHeight}px`);
-    card.style.setProperty('--tag-opacity-height', `${opacityHeight}px`);
+    card.style.setProperty('--tag-opacity-height', `${opacityButtonHeight}px`);
     grid.style.height = `${computedGridHeight}px`;
     grid.style.minHeight = `${computedGridHeight}px`;
     grid.style.maxHeight = `${computedGridHeight}px`;
     if (opacityGrid){
-      opacityGrid.style.height = `${opacityHeight}px`;
-      opacityGrid.style.minHeight = `${opacityHeight}px`;
-      opacityGrid.style.maxHeight = `${opacityHeight}px`;
+      opacityGrid.style.height = `${opacityGridHeight}px`;
+      opacityGrid.style.minHeight = `${opacityGridHeight}px`;
+      opacityGrid.style.maxHeight = `${opacityGridHeight}px`;
     }
   }catch(_){ }
 }

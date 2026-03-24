@@ -17054,3 +17054,31 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
   color: rgba(143,209,255,0.58) !important;
   border-color: rgba(143,209,255,0.16) !important;
 }
+
+
+/* dDAE_2.473 — Popup colore: celle e bordo selezione sempre interi, senza clipping */
+#tagColorModal .tag-color-modal-body{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+#tagColorModal .tag-color-grid,
+#tagColorModal .tag-opacity-grid{
+  box-sizing:border-box !important;
+}
+#tagColorModal .tag-color-grid{
+  padding:var(--tag-color-grid-pad, 8px) !important;
+  overflow:visible !important;
+}
+#tagColorModal .tag-opacity-grid{
+  padding:var(--tag-opacity-grid-pad, 6px) !important;
+  overflow:visible !important;
+}
+#tagColorModal .tag-color-option,
+#tagColorModal .tag-opacity-option{
+  position:relative !important;
+}
+#tagColorModal .tag-color-option.is-selected,
+#tagColorModal .tag-opacity-option.is-selected{
+  z-index:1 !important;
+}
