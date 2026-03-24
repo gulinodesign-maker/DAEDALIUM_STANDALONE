@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.469
+ * Build: 2.470
  */
-const BUILD_VERSION = "2.469";
+const BUILD_VERSION = "2.470";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4526,6 +4526,24 @@ const __I18N_PHRASES__ = {
     "fr": "Arrivée",
     "de": "Ankunft",
     "es": "Llegada"
+  },
+  "Attivo": {
+    "en": "Active",
+    "fr": "Actif",
+    "de": "Aktiv",
+    "es": "Activo"
+  },
+  "Disattivo": {
+    "en": "Inactive",
+    "fr": "Inactif",
+    "de": "Inaktiv",
+    "es": "Inactivo"
+  },
+  "Trasparenza": {
+    "en": "Transparency",
+    "fr": "Transparence",
+    "de": "Transparenz",
+    "es": "Transparencia"
   },
   "Telefono": {
     "en": "Phone",
@@ -12024,6 +12042,42 @@ function setupGuestListControls(){
 }
 
 
+function __guestFilterButtonStateLabel__(stateKey){
+  return __translateExactText__(String(stateKey || '').trim().toLowerCase() === 'active' ? 'Attivo' : 'Disattivo');
+}
+
+function __guestFilterButtonLocalizedLabel__(btn){
+  try{
+    const raw = String(btn?.textContent || btn?.getAttribute?.('aria-label') || '').replace(/\s+/g, ' ').trim();
+    return raw || __translateExactText__('Tasto') || 'Tasto';
+  }catch(_){
+    return __translateExactText__('Tasto') || 'Tasto';
+  }
+}
+
+function __guestFilterButtonEditStatePrompt__(label){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tasto') || 'Tasto');
+  switch (__getAppLanguage__()){
+    case 'en': return `Which state do you want to edit for ${safeLabel}?`;
+    case 'fr': return `Quel état voulez-vous modifier pour ${safeLabel} ?`;
+    case 'de': return `Welchen Status möchten Sie für ${safeLabel} bearbeiten?`;
+    case 'es': return `¿Qué estado quieres modificar para ${safeLabel}?`;
+    default: return `Quale stato vuoi modificare per ${safeLabel}?`;
+  }
+}
+
+function __guestFilterButtonStateUpdatedMessage__(label, stateKey){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tasto') || 'Tasto');
+  const stateLabel = __guestFilterButtonStateLabel__(stateKey);
+  switch (__getAppLanguage__()){
+    case 'en': return `${safeLabel} button: ${stateLabel.toLowerCase()} state updated`;
+    case 'fr': return `Bouton ${safeLabel} : état ${String(stateLabel || '').toLowerCase()} mis à jour`;
+    case 'de': return `Taste ${safeLabel}: Status ${String(stateLabel || '').toLowerCase()} aktualisiert`;
+    case 'es': return `Botón ${safeLabel}: estado ${String(stateLabel || '').toLowerCase()} actualizado`;
+    default: return `Tasto ${safeLabel}: stato ${String(stateLabel || '').toLowerCase()} aggiornato`;
+  }
+}
+
 function __guestFilterButtonTargetIds__(){
   return ['guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
 }
@@ -12132,8 +12186,13 @@ function __applyGuestFilterButtonVisuals__(){
 async function __openGuestFilterButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
-    const label = String(btn.textContent || btn.getAttribute('aria-label') || '').trim() || 'Tasto';
-    const choice = await __confirmTwoActions__(`Quale stato vuoi modificare per ${label}?`, 'Attivo', 'Distrattivo');
+    const label = __guestFilterButtonLocalizedLabel__(btn);
+    const choice = await __confirmTwoActions__(
+      __guestFilterButtonEditStatePrompt__(label),
+      __guestFilterButtonStateLabel__('active'),
+      __guestFilterButtonStateLabel__('distractive')
+    );
+    if (choice !== 'yes' && choice !== 'no') return;
     const stateKey = choice === 'yes' ? 'active' : 'distractive';
     const current = __guestFilterButtonVisualForState__(btn, stateKey);
     const applyVisual = (payload) => {
@@ -12142,7 +12201,7 @@ async function __openGuestFilterButtonColorPicker__(btn){
         bg: colors.bg || current.bg || 'sky-4',
         border: colors.border || current.border || colors.bg || current.bg || 'sky-4',
         fg: colors.fg || current.fg || 'white',
-        opacity: __designBgOpacityNormalize__(current.opacity ?? 0.80)
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
       };
       __saveGuestFilterButtonVisualState__(btn, stateKey, next);
       __applyGuestFilterButtonVisual__(btn, stateKey, next);
@@ -12156,13 +12215,14 @@ async function __openGuestFilterButtonColorPicker__(btn){
         applyVisual(payload);
         __applyGuestFilterButtonVisuals__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-        try{ toast(`Tasto ${label}: stato ${stateKey === 'active' ? 'attivo' : 'distrattivo'} aggiornato`); }catch(_){ }
+        try{ toast(__guestFilterButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
       }catch(_){ }
     }, {
       supportsBg:true,
       supportsBorder:true,
       supportsFg:true,
-      supportsOpacity:false,
+      supportsOpacity:true,
+      opacity:(current.opacity ?? 0.80),
       defaultMode:'bg',
       fallbackBg:(current.bg || 'sky-4'),
       onPreview:applyVisual,
