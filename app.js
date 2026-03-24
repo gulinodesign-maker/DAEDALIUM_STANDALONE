@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.468
+ * Build: 2.469
  */
-const BUILD_VERSION = "2.468";
+const BUILD_VERSION = "2.469";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11919,6 +11919,7 @@ function setupGuestListControls(){
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
       try { __translateTree__(btn); } catch(_) {}
+      try { __applySingleActionButtonVisual__(btn); } catch(_) {}
     });
   };
 
@@ -11938,6 +11939,7 @@ function setupGuestListControls(){
     todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
     todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
     try { __translateTree__(todayBtn); } catch(_) {}
+    try { __applySingleActionButtonVisual__(todayBtn); } catch(_) {}
   };
 
   syncSortSelect();
@@ -13645,7 +13647,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
   'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
-  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave'
+  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
+  'guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -13683,7 +13686,11 @@ function __defaultSingleActionButtonVisual__(btn){
     laundryCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
-    laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
+    laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestToday:{ bg:'sky-1', border:'sky-2', fg:'blue-6', opacity:0.80 },
+    guestSortByArrivo:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestSortByInserimento:{ bg:'blue-3', border:'blue-3', fg:'white', opacity:0.80 },
+    guestSortByNome:{ bg:'blue-3', border:'blue-3', fg:'white', opacity:0.80 }
   };
   const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
@@ -13729,7 +13736,11 @@ function __singleActionButtonCategoryForId__(id){
     laundryCatalogEditorTagColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
-    laundryCatalogEditorSave:'save'
+    laundryCatalogEditorSave:'save',
+    guestToday:'guest-filter',
+    guestSortByArrivo:'guest-filter',
+    guestSortByInserimento:'guest-filter',
+    guestSortByNome:'guest-filter'
   };
   return map[key] || '';
 }
@@ -13772,6 +13783,8 @@ function __applySingleActionButtonVisual__(btn){
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
     const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    const isGuestFilterButton = !!(btn.classList && btn.classList.contains('gf-chip-btn'));
+    const isActive = !!(btn.classList && btn.classList.contains('is-active'));
     btn.dataset.designStandaloneButton = '1';
     btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
     btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
@@ -13782,6 +13795,13 @@ function __applySingleActionButtonVisual__(btn){
     btn.style.setProperty('box-shadow', 'none', 'important');
     btn.style.setProperty('backdrop-filter', 'none', 'important');
     btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    if (isGuestFilterButton){
+      btn.style.setProperty('outline', isActive ? '2px solid rgba(255,255,255,0.96)' : 'none', 'important');
+      btn.style.setProperty('outline-offset', isActive ? '-2px' : '0', 'important');
+    } else {
+      btn.style.removeProperty('outline');
+      btn.style.removeProperty('outline-offset');
+    }
     btn.querySelectorAll('svg, .ui-ico, .tl-ico, .tag-color-mode-ico').forEach((node) => {
       try{
         node.style.setProperty('color', fgHex, 'important');
