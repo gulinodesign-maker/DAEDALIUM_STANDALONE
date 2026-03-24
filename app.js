@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.466
+ * Build: 2.467
  */
-const BUILD_VERSION = "2.466";
+const BUILD_VERSION = "2.467";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -19669,6 +19669,10 @@ function renderGuestCards(){
 
     const insNo = (Number(first._displayInsNo) && Number(first._displayInsNo) > 0 && Number(first._displayInsNo) < 1e18) ? Number(first._displayInsNo) : null;
 
+    const nationalityOption = __readGuestNationalityFromRecord__(first);
+    const nationalityFlag = escapeHtml(String(first?.country_flag ?? nationalityOption?.flag ?? '🏳️').trim() || '🏳️');
+    const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
+
     const led = guestLedStatus(first);
 
     const marriageOn = !!(first?.matrimonio);
@@ -19689,6 +19693,7 @@ function renderGuestCards(){
       <div class="guest-row guest-row-compact">
         <div class="guest-main">
           ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
+          <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
             <span class="guest-name-text">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
