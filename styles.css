@@ -16965,3 +16965,16 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
   font-size:24px !important;
   line-height:1 !important;
 }
+
+/* dDAE_2.468 - Statistiche: griglia 2x3 abbassata di 70px e gruppi avvicinati di 10px per lato verso l'asse centrale */
+#page-statistiche .home-grid{
+  margin: 70px auto 0 !important;
+  align-content: start !important;
+  column-gap: 6px !important;
+}
+@media (max-width: 390px){
+  #page-statistiche .home-grid{
+    margin-top: 70px !important;
+    column-gap: 2px !important;
+  }
+}
