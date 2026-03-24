@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.471
+ * Build: 2.472
  */
-const BUILD_VERSION = "2.471";
+const BUILD_VERSION = "2.472";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8956,10 +8956,10 @@ function __tagColorPopupApplyViewportLayout__(){
     const vv = window.visualViewport;
     const viewportHeight = Math.max(320, Math.round((vv && vv.height) || window.innerHeight || document.documentElement.clientHeight || 0));
     const viewportWidth = Math.max(280, Math.round((vv && vv.width) || window.innerWidth || document.documentElement.clientWidth || 0));
-    const sidePadding = Math.max(10, Math.min(18, Math.round(viewportWidth * 0.035)));
-    const verticalPadding = Math.max(8, Math.min(16, Math.round(viewportHeight * 0.018)));
-    const cardWidth = Math.max(280, Math.min(420, viewportWidth - (sidePadding * 2)));
-    const cardHeight = Math.max(360, Math.min(620, viewportHeight - safeTop - safeBottom - (verticalPadding * 2)));
+    const sidePadding = Math.max(8, Math.min(14, Math.round(viewportWidth * 0.022)));
+    const verticalPadding = Math.max(6, Math.min(12, Math.round(viewportHeight * 0.012)));
+    const cardWidth = Math.max(300, Math.min(460, viewportWidth - (sidePadding * 2)));
+    const cardHeight = Math.max(400, Math.min(720, viewportHeight - safeTop - safeBottom - (verticalPadding * 2)));
     modal.style.setProperty('--tag-color-popup-side-pad', `${sidePadding}px`);
     modal.style.setProperty('--tag-color-popup-vertical-pad', `${verticalPadding}px`);
     card.style.setProperty('--tag-color-popup-width', `${cardWidth}px`);
@@ -8978,30 +8978,37 @@ function __tagColorPopupApplyViewportLayout__(){
     const padTop = Math.round(parseFloat(cardStyle?.paddingTop || '0') || 0);
     const padBottom = Math.round(parseFloat(cardStyle?.paddingBottom || '0') || 0);
     const headerRect = header?.getBoundingClientRect?.() || { height: 0 };
-    const availableBodyHeight = Math.max(180, Math.floor(cardHeight - padTop - padBottom - headerRect.height - 6));
+    const availableBodyHeight = Math.max(210, Math.floor(cardHeight - padTop - padBottom - headerRect.height - 4));
     body.style.height = `${availableBodyHeight}px`;
     body.style.minHeight = `${availableBodyHeight}px`;
     body.style.maxHeight = `${availableBodyHeight}px`;
     const bodyStyle = window.getComputedStyle ? window.getComputedStyle(body) : null;
-    const bodyInnerWidth = Math.max(240, Math.floor(cardWidth - ((parseFloat(bodyStyle?.paddingLeft || '0') || 0) + (parseFloat(bodyStyle?.paddingRight || '0') || 0))));
-    const modeHeight = Math.max(30, Math.min(42, Math.round(availableBodyHeight * 0.10)));
-    const opacityHeight = Math.max(38, Math.min(58, Math.round(availableBodyHeight * 0.16)));
-    const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityHeight + 8);
-    const reservedMode = (!modeBar || modeBar.hidden) ? 0 : (modeHeight + 10);
-    const gap = viewportHeight <= 700 ? 3 : (viewportHeight <= 840 ? 4 : 5);
+    const bodyInnerWidth = Math.max(260, Math.floor(cardWidth - ((parseFloat(bodyStyle?.paddingLeft || '0') || 0) + (parseFloat(bodyStyle?.paddingRight || '0') || 0))));
+    const modeHeight = Math.max(34, Math.min(46, Math.round(availableBodyHeight * 0.088)));
+    const opacityHeight = Math.max(40, Math.min(56, Math.round(availableBodyHeight * 0.13)));
+    const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityHeight + 6);
+    const reservedMode = (!modeBar || modeBar.hidden) ? 0 : (modeHeight + 8);
+    const gap = viewportHeight <= 700 ? 2 : (viewportHeight <= 840 ? 3 : 4);
     const cols = 6;
     const total = grid.querySelectorAll('.tag-color-option').length || 72;
     const rows = Math.max(1, Math.ceil(total / cols));
-    const availableHeight = Math.max(150, Math.floor(availableBodyHeight - reservedMode - reservedOpacity));
+    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity));
     const cellWidth = Math.floor((bodyInnerWidth - (gap * (cols - 1))) / cols);
-    const cellHeight = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
-    const finalHeight = Math.max(18, Math.min(cellHeight, Math.floor(cellWidth * 1.10)));
-    const radius = Math.max(8, Math.min(16, Math.round(finalHeight * 0.34)));
+    const maxHeightFit = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
+    const baseHeightFromWidth = Math.floor(cellWidth * 1.10);
+    const targetHeight = Math.floor(baseHeightFromWidth * 1.30);
+    const finalHeight = Math.max(22, Math.min(maxHeightFit, targetHeight));
+    const radius = Math.max(9, Math.min(18, Math.round(finalHeight * 0.34)));
+    const computedGridHeight = Math.max(0, (finalHeight * rows) + (gap * Math.max(0, rows - 1)));
     card.style.setProperty('--tag-color-gap', `${gap}px`);
     card.style.setProperty('--tag-color-cell-height', `${finalHeight}px`);
     card.style.setProperty('--tag-color-cell-radius', `${radius}px`);
+    card.style.setProperty('--tag-color-grid-height', `${computedGridHeight}px`);
     card.style.setProperty('--tag-color-mode-height', `${modeHeight}px`);
     card.style.setProperty('--tag-opacity-height', `${opacityHeight}px`);
+    grid.style.height = `${computedGridHeight}px`;
+    grid.style.minHeight = `${computedGridHeight}px`;
+    grid.style.maxHeight = `${computedGridHeight}px`;
     if (opacityGrid){
       opacityGrid.style.height = `${opacityHeight}px`;
       opacityGrid.style.minHeight = `${opacityHeight}px`;
