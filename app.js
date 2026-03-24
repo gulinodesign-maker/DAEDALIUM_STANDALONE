@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.474
+ * Build: 2.475
  */
-const BUILD_VERSION = "2.474";
+const BUILD_VERSION = "2.475";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12222,6 +12222,16 @@ function __guestFilterButtonStateUpdatedMessage__(label, stateKey){
   }
 }
 
+function __guestFilterButtonCategoryPrompt__(){
+  switch (__getAppLanguage__()){
+    case 'en': return 'Apply the changes to all guest filter buttons?';
+    case 'fr': return 'Appliquer les modifications à tous les boutons de filtre des invités ?';
+    case 'de': return 'Änderungen auf alle Gastfilter-Tasten anwenden?';
+    case 'es': return '¿Aplicar los cambios a todos los botones de filtro de huéspedes?';
+    default: return 'Applicare le modifiche a tutti i tasti filtro ospiti?';
+  }
+}
+
 function __guestFilterButtonTargetIds__(){
   return ['guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
 }
@@ -12327,6 +12337,20 @@ function __applyGuestFilterButtonVisuals__(){
   }catch(_){ }
 }
 
+async function __applyGuestFilterButtonChangesToCategory__(stateKey, payload, changed){
+  try{
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    __guestFilterButtonTargetIds__().forEach((id) => {
+      const current = __guestFilterButtonVisualForState__(id, mode);
+      const fallback = __guestFilterButtonDefaultVisual__(id, mode).bg || 'sky-4';
+      const next = __applyDesignPayloadToVisual__(current, payload, changed, fallback);
+      __saveGuestFilterButtonVisualState__(id, mode, next);
+    });
+    __applyGuestFilterButtonVisuals__();
+    try{ renderRoomSettingsPage(); }catch(_){ }
+  }catch(_){ }
+}
+
 async function __openGuestFilterButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
@@ -12370,7 +12394,11 @@ async function __openGuestFilterButtonColorPicker__(btn){
       defaultMode:'bg',
       fallbackBg:(current.bg || 'sky-4'),
       onPreview:applyVisual,
-      onRevert:revertVisual
+      onRevert:revertVisual,
+      applyCategory:{
+        message: __guestFilterButtonCategoryPrompt__(),
+        apply: async(payload, changed) => { await __applyGuestFilterButtonChangesToCategory__(stateKey, payload, changed); }
+      }
     });
   }catch(_){ }
 }
