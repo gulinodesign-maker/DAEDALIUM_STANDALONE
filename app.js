@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.473
+ * Build: 2.474
  */
-const BUILD_VERSION = "2.473";
+const BUILD_VERSION = "2.474";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7319,6 +7319,72 @@ function __isProtectedPillButton__(btn){
   }catch(_){ return false; }
 }
 
+function __hexToRgbTuple__(hex){
+  try{
+    let raw = String(hex || '').trim();
+    if (!raw) return null;
+    if (!raw.startsWith('#')) raw = __operatoreColorHex__(raw || 'blue-4');
+    raw = String(raw || '').trim();
+    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(raw)) return null;
+    if (raw.length === 4) raw = '#' + raw.slice(1).split('').map((ch) => ch + ch).join('');
+    return [parseInt(raw.slice(1,3),16), parseInt(raw.slice(3,5),16), parseInt(raw.slice(5,7),16)];
+  }catch(_){ return null; }
+}
+
+function __colorLuminance__(hex){
+  try{
+    const rgb = __hexToRgbTuple__(hex);
+    if (!rgb) return 0;
+    const [r,g,b] = rgb.map((v) => {
+      const n = v / 255;
+      return n <= 0.03928 ? (n / 12.92) : Math.pow((n + 0.055) / 1.055, 2.4);
+    });
+    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+  }catch(_){ return 0; }
+}
+
+function __darkModeReadableTextHex__(preferredHex, fallbackHex){
+  try{
+    const pref = String(preferredHex || '').trim();
+    const fallback = String(fallbackHex || '#f8fbff').trim();
+    if (!pref) return fallback;
+    return __colorLuminance__(pref) < 0.42 ? fallback : pref;
+  }catch(_){ return fallbackHex || '#f8fbff'; }
+}
+
+function __isTaxPagePillButton__(btn){
+  try{
+    if (!btn || !btn.id) return false;
+    return ['taxYearBtn','taxEstimateBtn'].includes(String(btn.id || '').trim());
+  }catch(_){ return false; }
+}
+
+function __applyDarkAdaptiveSurface__(el, visual, options = {}){
+  try{
+    if (!el) return;
+    const bgHex = __operatoreColorHex__(visual?.bg || options.fallbackBg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual?.border || visual?.bg || options.fallbackBg || 'blue-4');
+    const requestedFg = visual?.fg ? __operatoreColorHex__(visual.fg) : '';
+    const accentHex = requestedFg || __darkModeReadableTextHex__(borderHex, '#8fcbe8');
+    const textHex = __darkModeReadableTextHex__(requestedFg, '#f8fbff');
+    const bgOpacity = Math.max(0.14, Math.min(0.28, Number(options.bgOpacity != null ? options.bgOpacity : (visual?.opacity ?? 0.20)) || 0.20));
+    const borderOpacity = Math.max(0.22, Math.min(0.42, Number(options.borderOpacity != null ? options.borderOpacity : 0.30) || 0.30));
+    const bgCss = hexToRgba(bgHex, bgOpacity);
+    const borderCss = hexToRgba(borderHex, borderOpacity);
+    el.style.setProperty('background', bgCss, 'important');
+    el.style.setProperty('background-color', bgCss, 'important');
+    el.style.setProperty('border', '1px solid ' + borderCss, 'important');
+    el.style.setProperty('border-color', borderCss, 'important');
+    el.style.setProperty('box-shadow', 'none', 'important');
+    el.style.setProperty('backdrop-filter', 'none', 'important');
+    el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    el.style.setProperty('background-image', 'none', 'important');
+    el.style.setProperty('color', textHex, 'important');
+    el.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+    return { textHex, accentHex, bgCss, borderCss };
+  }catch(_){ return null; }
+}
+
 function __applyProtectedDarkButtonStyle__(btn, options = {}){
   try{
     if (!btn) return;
@@ -7631,6 +7697,7 @@ function __pillThemeOverwriteTargets__(visual){
 function __pillApplyToButton__(btn){
   try{
     if (!btn || !btn.id) return;
+    const visual = __pillVisualFor__(btn.id);
     if (__isDarkModeRuntime__() && __isProtectedPillButton__(btn)){
       const isLogout = String(btn.id || '').toLowerCase().includes('logout');
       __applyProtectedDarkButtonStyle__(btn, {
@@ -7641,7 +7708,26 @@ function __pillApplyToButton__(btn){
       });
       return;
     }
-    const visual = __pillVisualFor__(btn.id);
+    if (__isDarkModeRuntime__() && __isTaxPagePillButton__(btn)){
+      const resolved = __applyDarkAdaptiveSurface__(btn, visual, { fallbackBg:'gray-1', bgOpacity:0.18, borderOpacity:0.30 }) || {};
+      const pillText = resolved.textHex || '#f8fbff';
+      const pillAccent = resolved.accentHex || '#8fcbe8';
+      const label = btn.querySelector('.settings-btn-label, #taxYearBtnLabel');
+      if (label){
+        label.style.setProperty('color', pillText, 'important');
+        label.style.setProperty('-webkit-text-fill-color', pillText, 'important');
+        label.style.setProperty('opacity', '1', 'important');
+      }
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        svg.style.setProperty('color', pillAccent, 'important');
+        svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+          node.style.setProperty('stroke', pillAccent, 'important');
+          node.style.setProperty('fill', 'none', 'important');
+        });
+      }
+      return;
+    }
     const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || '', false);
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
@@ -13716,16 +13802,22 @@ function __applyTaxQuarterVisual__(btn){
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || '', false);
     const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
-    const darkOpacity = Math.max(0.16, Math.min(0.34, opacity));
-    btn.style.setProperty('background', hexToRgba(bgHex, dark ? darkOpacity : opacity), 'important');
-    btn.style.setProperty('background-color', hexToRgba(bgHex, dark ? darkOpacity : opacity), 'important');
-    btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, dark ? 0.34 : 1), 'important');
-    btn.style.setProperty('border-color', hexToRgba(borderHex, dark ? 0.34 : 1), 'important');
-    btn.style.setProperty('color', fgHex, 'important');
-    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    btn.style.setProperty('box-shadow', 'none', 'important');
-    btn.style.setProperty('backdrop-filter', 'none', 'important');
-    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    if (dark){
+      const resolved = __applyDarkAdaptiveSurface__(btn, visual, { fallbackBg:'blue-4', bgOpacity:Math.max(0.16, Math.min(0.26, opacity)), borderOpacity:0.32 }) || {};
+      const darkText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
+      btn.style.setProperty('color', darkText, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', darkText, 'important');
+    } else {
+      btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+      btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+      btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+      btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+      btn.style.setProperty('color', fgHex, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+      btn.style.setProperty('box-shadow', 'none', 'important');
+      btn.style.setProperty('backdrop-filter', 'none', 'important');
+      btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    }
   }catch(_){ }
 }
 
@@ -13838,18 +13930,33 @@ function __applyTaxPageCardVisual__(card){
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'gray-2');
     const fgHex = __tagColorTextHex__(visual.bg || 'gray-1', visual.fg || 'blue-6', false);
     const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
-    card.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
-    card.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
-    card.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
-    card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
-    card.style.setProperty('box-shadow', 'none', 'important');
-    card.style.setProperty('backdrop-filter', 'none', 'important');
-    card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-    card.style.setProperty('background-image', 'none', 'important');
-    card.querySelectorAll('.tax-total-label,.tax-total-value,.tax-result-title,.tax-result-value,.tax-result-sub').forEach((node) => {
+    const dark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    let valueText = fgHex;
+    let subText = fgHex;
+    if (dark){
+      const resolved = __applyDarkAdaptiveSurface__(card, visual, { fallbackBg:'gray-1', bgOpacity:Math.max(0.16, Math.min(0.24, opacity)), borderOpacity:0.28 }) || {};
+      valueText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
+      subText = resolved.accentHex || '#cbd5e1';
+    } else {
+      card.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+      card.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+      card.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+      card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+      card.style.setProperty('box-shadow', 'none', 'important');
+      card.style.setProperty('backdrop-filter', 'none', 'important');
+      card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+      card.style.setProperty('background-image', 'none', 'important');
+    }
+    card.querySelectorAll('.tax-total-label,.tax-total-value,.tax-result-title,.tax-result-value').forEach((node) => {
       try{
-        node.style.setProperty('color', fgHex, 'important');
-        node.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+        node.style.setProperty('color', valueText, 'important');
+        node.style.setProperty('-webkit-text-fill-color', valueText, 'important');
+      }catch(_){ }
+    });
+    card.querySelectorAll('.tax-result-sub').forEach((node) => {
+      try{
+        node.style.setProperty('color', subText, 'important');
+        node.style.setProperty('-webkit-text-fill-color', subText, 'important');
       }catch(_){ }
     });
   }catch(_){ }

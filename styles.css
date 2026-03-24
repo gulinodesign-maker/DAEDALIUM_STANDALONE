@@ -17056,7 +17056,7 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
 }
 
 
-/* dDAE_2.473 — Popup colore: celle e bordo selezione sempre interi, senza clipping */
+/* dDAE_2.474 — Popup colore: celle e bordo selezione sempre interi, senza clipping */
 #tagColorModal .tag-color-modal-body{
   overflow-y:auto !important;
   overflow-x:hidden !important;
@@ -17081,4 +17081,20 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
 #tagColorModal .tag-color-option.is-selected,
 #tagColorModal .tag-opacity-option.is-selected{
   z-index:1 !important;
+}
+
+/* dDAE_2.474 — Tassa di soggiorno: dark mode coerente anche con personalizzazioni */
+body.ddae-dark #page-tassa .btn.tax-year-pill,
+body.ddae-dark #page-tassa .btn.tax-quarter,
+body.ddae-dark #page-tassa .tax-total,
+body.ddae-dark #page-tassa .tax-result-card{
+  box-shadow: none !important;
+  background-image: none !important;
+}
+body.ddae-dark #page-tassa .tax-total-label,
+body.ddae-dark #page-tassa .tax-total-value,
+body.ddae-dark #page-tassa .tax-result-title,
+body.ddae-dark #page-tassa .tax-result-value,
+body.ddae-dark #page-tassa .tax-result-sub{
+  text-shadow: none !important;
 }
