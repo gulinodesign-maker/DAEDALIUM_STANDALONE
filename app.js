@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.478
  */
-const BUILD_VERSION = "2.478";
+const BUILD_VERSION = "2.479";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3477,7 +3477,7 @@ function updateSettingsAccountName(){
 // Mostra la build a runtime (se il JS è vecchio, lo vedi subito)
 (function syncBuildLabel(){
   try{
-    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
+    ["buildText"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.textContent = `dDAE_${BUILD_VERSION}`;
     });
@@ -3502,7 +3502,7 @@ function updateSettingsAccountName(){
 try{
   const pendingBuild = String(sessionStorage.getItem("dDAE_pending_build") || "").trim();
   if (pendingBuild) {
-    ["buildText","settingsBuildText","opSettingsBuildText"].forEach((id) => {
+    ["buildText"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.textContent = pendingBuild;
     });
