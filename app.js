@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.487
+ * Build: 2.491
  */
-const BUILD_VERSION = "2.490";
+const BUILD_VERSION = "2.491";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -6219,6 +6219,39 @@ __refreshMonthNamesCache__();
 
 // Conferma con modal Sì/No (label esplicite)
 let __confirmYesNoResolve = null;
+let __confirmYesNoReadyAt__ = 0;
+let __confirmYesNoSuppressUntil__ = 0;
+function __confirmYesNoGhostTapActive__(){
+  try{ return Date.now() < (__confirmYesNoSuppressUntil__ || 0); }catch(_){ return false; }
+}
+function __confirmYesNoSwallowGhostTap__(ev){
+  try{
+    if (!__confirmYesNoGhostTapActive__()) return;
+    const modal = document.getElementById('confirmYesNoModal');
+    const insideModal = !!(modal && !modal.hidden && ev && ev.target && modal.contains(ev.target));
+    if (insideModal) return;
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
+function __confirmYesNoSetupModal__(){
+  try{
+    const modal = document.getElementById('confirmYesNoModal');
+    if (!modal || modal.dataset.ghostTapBound === '1') return;
+    modal.dataset.ghostTapBound = '1';
+    const card = modal.querySelector?.('.modal-card');
+    if (card){
+      ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+        try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
+        catch(_){ try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} }
+      });
+    }
+    ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+      try{ document.addEventListener(evt, __confirmYesNoSwallowGhostTap__, true); }catch(_){ }
+    });
+  }catch(_){ }
+}
 function confirmYesNo(message){
   return new Promise((resolve)=>{
     try{
@@ -6232,15 +6265,21 @@ function confirmYesNo(message){
         return;
       }
 
+      try{ __confirmYesNoSetupModal__(); }catch(_){ }
+
       // chiude eventuale precedente
       try{ if (__confirmYesNoResolve){ __confirmYesNoResolve(false); } }catch(_){ }
       __confirmYesNoResolve = resolve;
 
       textEl.textContent = __translateText__(String(message || "Confermare?"));
+      const now = Date.now();
+      __confirmYesNoReadyAt__ = now + 550;
+      __confirmYesNoSuppressUntil__ = now + 900;
       modal.hidden = false;
       try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
 
       const cleanup = (val) => {
+        __confirmYesNoReadyAt__ = 0;
         if (__confirmYesNoResolve){
           const r = __confirmYesNoResolve;
           __confirmYesNoResolve = null;
@@ -6253,10 +6292,23 @@ function confirmYesNo(message){
         try{ modal.removeEventListener("click", onBackdrop, true); }catch(_){ }
       };
 
-      const onYes = (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } cleanup(true); };
-      const onNo  = (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } cleanup(false); };
+      const onYes = (e) => {
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+        if (Date.now() < (__confirmYesNoReadyAt__ || 0)) return;
+        cleanup(true);
+      };
+      const onNo  = (e) => {
+        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+        if (Date.now() < (__confirmYesNoReadyAt__ || 0)) return;
+        cleanup(false);
+      };
       const onBackdrop = (e) => {
         try{
+          if (Date.now() < (__confirmYesNoReadyAt__ || 0)) {
+            try{ e.preventDefault(); }catch(__){ }
+            try{ e.stopPropagation(); }catch(__){ }
+            return;
+          }
           if (e && e.target === modal){ cleanup(false); }
         }catch(_){ }
       };
@@ -6264,12 +6316,8 @@ function confirmYesNo(message){
       yesBtn.addEventListener("click", onYes, true);
       noBtn.addEventListener("click", onNo, true);
       modal.addEventListener("click", onBackdrop, true);
-
-      // focus sul "No" per sicurezza (evita reset accidentale)
-      try{ noBtn.focus(); }catch(_){ }
-
     }catch(_){
-      try{ resolve(false); }catch(__){}
+      try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(__){ resolve(false); }
     }
   });
 }
