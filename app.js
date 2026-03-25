@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.486
+ * Build: 2.487
  */
-const BUILD_VERSION = "2.484";
+const BUILD_VERSION = "2.489";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18183,8 +18183,6 @@ function renderRoomSettingsPage(){
       if (sectionTitles[4]) sectionTitles[4].textContent = __designTranslate__('Tag colore letti', { en:'Bed color tags', fr:'Tags couleur des lits', de:'Bett-Farbmarken', es:'Etiquetas de color de camas' });
       const title = page.querySelector('.room-settings-title');
       if (title) title.textContent = __designTranslate__('Numero stanze', { en:'Room count', fr:'Nombre de chambres', de:'Zimmeranzahl', es:'Número de habitaciones' });
-      const subtitle = page.querySelector('.room-settings-subtitle');
-      if (subtitle) subtitle.textContent = __designTranslate__('Tap per avanzare. Pressione lunga per azzerare.', { en:'Tap to advance. Long press to reset.', fr:'Touchez pour avancer. Appui long pour réinitialiser.', de:'Tippen zum Weitergehen. Lange drücken zum Zurücksetzen.', es:'Toca para avanzar. Mantén pulsado para reiniciar.' });
       const textSubtitle = document.getElementById('roomSettingsTextSubtitle');
       if (textSubtitle) textSubtitle.textContent = __designTranslate__('G = normale / grassetto • 1 2 3 = dimensione', { en:'G = normal / bold • 1 2 3 = size', fr:'G = normal / gras • 1 2 3 = taille', de:'G = normal / fett • 1 2 3 = Größe', es:'G = normal / negrita • 1 2 3 = tamaño' });
     }
@@ -18194,8 +18192,8 @@ function renderRoomSettingsPage(){
     const countBtn = document.getElementById('roomSettingsCountBtn');
     if (countBtn){
       countBtn.textContent = String(count);
-      countBtn.setAttribute('aria-label', `Numero stanze: ${count}. Tap per avanzare, pressione lunga per azzerare`);
-      countBtn.title = `Numero stanze: ${count}. Tap per avanzare, pressione lunga per azzerare`;
+      countBtn.setAttribute('aria-label', `Numero stanze: ${count}`);
+      countBtn.title = `Numero stanze: ${count}`;
     }
     const applyBtn = (id, spec, label) => {
       const el = document.getElementById(id);

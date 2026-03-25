@@ -17196,31 +17196,54 @@ body.ddae-dark #page-tassa .tax-result-sub{
 }
 
 
-/* dDAE_2.482 — Design: scheda globale formattazione testi */
+/* dDAE_2.488 — Design: schede più compatte e scheda Testi senza descrizioni */
+.room-settings-section{
+  padding-top:14px;
+  gap:10px;
+}
+.room-settings-section-card{
+  padding:12px !important;
+  gap:10px !important;
+}
+.room-settings-section-theme .room-settings-squares,
+.room-settings-text-controls{
+  gap:10px;
+}
+.room-settings-section-theme .room-settings-square-btn{
+  max-width:74px;
+}
+.room-settings-section-count{
+  padding:16px 16px 14px !important;
+}
+.room-settings-section-count .room-settings-top{
+  gap:14px;
+}
+.room-settings-section-count .room-settings-count-btn{
+  width:90px;
+  min-width:90px;
+  height:90px;
+  border-radius:28px;
+}
 .room-settings-section-head{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:0;
 }
 .room-settings-section-subtitle{
-  font-size:12px;
-  line-height:1.35;
-  font-weight:700;
-  color: rgba(15,23,42,0.58);
+  display:none !important;
 }
 .room-settings-section-text{
-  gap:14px !important;
+  gap:10px !important;
 }
 .room-settings-text-controls{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:12px;
   align-items:stretch;
 }
 .room-settings-text-controls .room-settings-square-btn{
   width:100%;
   min-width:0;
-  height:64px;
+  height:60px;
   border-radius:18px;
   font-size:24px;
   font-weight:900;
@@ -17230,17 +17253,31 @@ body.ddae-dark #page-tassa .tax-result-sub{
   box-shadow: 0 0 0 2px rgba(15,23,42,0.12) !important;
 }
 @media (max-width: 390px){
-  .room-settings-text-controls{ gap:10px; }
+  .room-settings-section-count .room-settings-count-btn{
+    width:84px;
+    min-width:84px;
+    height:84px;
+    border-radius:26px;
+  }
+  .room-settings-theme-squares,
+  .room-settings-text-controls{ gap:8px; }
   .room-settings-text-controls .room-settings-square-btn{
-    height:58px;
+    height:56px;
     border-radius:16px;
     font-size:22px;
   }
 }
-body.ddae-dark .room-settings-section-subtitle{
-  color: rgba(226,232,240,0.70);
-}
 body.ddae-dark .room-settings-text-controls .room-settings-square-btn.is-active{
   border-color: rgba(226,232,240,0.94) !important;
   box-shadow: 0 0 0 2px rgba(226,232,240,0.10) !important;
+}
+
+
+/* dDAE_2.489 - Design: divisore tra Numero stanze e Testi */
+.room-settings-panel-main .room-settings-divider{
+  width:100%;
+  margin:2px 0 4px;
+}
+body.ddae-dark .room-settings-panel-main .room-settings-divider{
+  background: rgba(148,163,184,0.22) !important;
 }
