@@ -87,7 +87,7 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.484
+ * Build: 2.485
  */
 const BUILD_VERSION = "2.484";
 
@@ -17478,6 +17478,7 @@ function __openRoomSettingsColorPicker__(target){
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
 const __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_theme_button_visual_v1';
+const __ROOM_SETTINGS_THEME_ACTIVE_SLOT_STORAGE_KEY__ = 'dDAE_roomsettings_theme_active_slot_v1';
 const __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_text_button_visual_v1';
 const __ROOM_SETTINGS_TEXT_BUTTON_KEYS__ = ['bold','1','2','3'];
 
@@ -17493,41 +17494,170 @@ function __roomSettingsThemeButtonVisualMapWrite__(map){
   try{ localStorage.setItem(__ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify((map && typeof map === 'object') ? map : {})); }catch(_){ }
 }
 
-function __roomSettingsThemeButtonVisualGet__(slot){
-  try{
-    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
-    const map = __roomSettingsThemeButtonVisualMapRead__();
-    const current = map[key] || {};
-    return __launcherVisualNormalize__(current, 'blue-4');
-  }catch(_){ return __launcherVisualNormalize__({}, 'blue-4'); }
+function __roomSettingsThemeButtonStateLabel__(stateKey){
+  return __translateExactText__(String(stateKey || '').trim().toLowerCase() === 'active' ? 'Attivo' : 'Disattivo');
 }
 
-function __roomSettingsThemeButtonVisualSet__(slot, visual){
+function __roomSettingsThemeButtonLocalizedLabel__(slotOrEl){
+  try{
+    const slot = String((slotOrEl && slotOrEl.getAttribute && slotOrEl.getAttribute('data-theme-slot')) || slotOrEl || '').trim();
+    if (slot) return slot;
+    return __translateExactText__('Tema') || 'Tema';
+  }catch(_){
+    return __translateExactText__('Tema') || 'Tema';
+  }
+}
+
+function __roomSettingsThemeButtonEditStatePrompt__(label){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tema') || 'Tema');
+  switch (__getAppLanguage__()){
+    case 'en': return `Which state do you want to edit for theme ${safeLabel}?`;
+    case 'fr': return `Quel état voulez-vous modifier pour le thème ${safeLabel} ?`;
+    case 'de': return `Welchen Status möchten Sie für Thema ${safeLabel} bearbeiten?`;
+    case 'es': return `¿Qué estado quieres modificar para el tema ${safeLabel}?`;
+    default: return `Quale stato vuoi modificare per il tema ${safeLabel}?`;
+  }
+}
+
+function __roomSettingsThemeButtonStateUpdatedMessage__(label, stateKey){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tema') || 'Tema');
+  const stateLabel = __roomSettingsThemeButtonStateLabel__(stateKey);
+  switch (__getAppLanguage__()){
+    case 'en': return `Theme button ${safeLabel}: ${String(stateLabel || '').toLowerCase()} state updated`;
+    case 'fr': return `Bouton thème ${safeLabel} : état ${String(stateLabel || '').toLowerCase()} mis à jour`;
+    case 'de': return `Thema-Taste ${safeLabel}: Status ${String(stateLabel || '').toLowerCase()} aktualisiert`;
+    case 'es': return `Botón tema ${safeLabel}: estado ${String(stateLabel || '').toLowerCase()} actualizado`;
+    default: return `Tasto tema ${safeLabel}: stato ${String(stateLabel || '').toLowerCase()} aggiornato`;
+  }
+}
+
+function __roomSettingsThemeButtonCategoryPrompt__(){
+  switch (__getAppLanguage__()){
+    case 'en': return 'Apply the changes to all theme buttons?';
+    case 'fr': return 'Appliquer les modifications à tous les boutons thème ?';
+    case 'de': return 'Änderungen auf alle Themen-Tasten anwenden?';
+    case 'es': return '¿Aplicar los cambios a todos los botones tema?';
+    default: return 'Applicare le modifiche a tutti i tasti Tema?';
+  }
+}
+
+function __roomSettingsThemeButtonTargetSlots__(){
+  return ['1','2','3','4'];
+}
+
+function __roomSettingsThemeActiveSlotRead__(){
+  try{
+    const raw = String(localStorage.getItem(__ROOM_SETTINGS_THEME_ACTIVE_SLOT_STORAGE_KEY__) || '').trim();
+    const num = parseInt(raw, 10);
+    if (!Number.isFinite(num) || num < 1 || num > 4) return '';
+    return String(num);
+  }catch(_){ return ''; }
+}
+
+function __roomSettingsThemeActiveSlotWrite__(slot){
+  try{
+    const num = parseInt(slot, 10);
+    if (!Number.isFinite(num) || num < 1 || num > 4){
+      localStorage.removeItem(__ROOM_SETTINGS_THEME_ACTIVE_SLOT_STORAGE_KEY__);
+      return;
+    }
+    localStorage.setItem(__ROOM_SETTINGS_THEME_ACTIVE_SLOT_STORAGE_KEY__, String(num));
+  }catch(_){ }
+}
+
+function __roomSettingsThemeButtonDefaultVisual__(slot, stateKey, fallbackVisual){
+  const safeSlot = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 1)));
+  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
+  if (mode === 'active'){
+    return __launcherVisualNormalize__({
+      bg: fallback.bg || 'blue-4',
+      border: fallback.border || fallback.bg || 'blue-4',
+      fg: fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(fallback.opacity ?? 0.75)
+    }, fallback.bg || 'blue-4');
+  }
+  return __launcherVisualNormalize__({ bg:'gray-2', border:'gray-3', fg:'blue-6', opacity:0.75 }, 'gray-2');
+}
+
+function __roomSettingsThemeButtonVisualGet__(slot, stateKey, fallbackVisual){
   try{
     const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
     const map = __roomSettingsThemeButtonVisualMapRead__();
-    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    map[key] = { bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', fg: clean.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
+    const entry = (map[key] && typeof map[key] === 'object') ? map[key] : {};
+    const fallback = __roomSettingsThemeButtonDefaultVisual__(key, mode, fallbackVisual);
+    let raw = null;
+    if ((entry.active && typeof entry.active === 'object') || (entry.distractive && typeof entry.distractive === 'object')) raw = entry[mode];
+    else if (mode === 'active') raw = entry;
+    const clean = __launcherVisualNormalize__(raw || fallback, fallback.bg || 'blue-4');
+    return {
+      bg: clean.bg || fallback.bg || 'blue-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: clean.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.75)
+    };
+  }catch(_){ return __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4'); }
+}
+
+function __roomSettingsThemeButtonVisualSet__(slot, visual, stateKey){
+  try{
+    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const mode = String(stateKey || 'active').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const map = __roomSettingsThemeButtonVisualMapRead__();
+    const entry = (map[key] && typeof map[key] === 'object') ? map[key] : {};
+    const fallback = __roomSettingsThemeButtonDefaultVisual__(key, mode, visual || {});
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
+    entry[mode] = {
+      bg: clean.bg || fallback.bg || 'blue-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: clean.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.75)
+    };
+    map[key] = entry;
     __roomSettingsThemeButtonVisualMapWrite__(map);
   }catch(_){ }
 }
 
-function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual){
+function __roomSettingsThemeButtonCurrentState__(el){
+  try{ return el && el.classList && el.classList.contains('is-active') ? 'active' : 'distractive'; }catch(_){ return 'distractive'; }
+}
+
+function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual, forcedState){
   try{
     if (!el) return;
-    const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
-    const stored = __roomSettingsThemeButtonVisualGet__(slot);
+    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const mode = String(forcedState || __roomSettingsThemeButtonCurrentState__(el) || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const fallback = __roomSettingsThemeButtonDefaultVisual__(key, mode, fallbackVisual);
+    const stored = __roomSettingsThemeButtonVisualGet__(key, mode, fallbackVisual || fallback);
     const visual = {
       bg: stored.bg || fallback.bg || 'blue-4',
       border: stored.border || stored.bg || fallback.border || fallback.bg || 'blue-4',
       fg: stored.fg || fallback.fg || '',
-      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.80)
+      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.75)
     };
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '#000000';
     el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)} !important;background-color:${hexToRgba(bgHex, visual.opacity)} !important;border-color:${hexToRgba(borderHex, 1)} !important;color:${fgHex} !important;-webkit-text-fill-color:${fgHex} !important;`);
+    el.classList.toggle('is-active', mode === 'active');
+    el.setAttribute('aria-pressed', mode === 'active' ? 'true' : 'false');
     el.classList.remove('room-settings-square-btn-placeholder');
+  }catch(_){ }
+}
+
+async function __applyRoomSettingsThemeButtonChangesToCategory__(stateKey, payload, changed){
+  try{
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    __roomSettingsThemeButtonTargetSlots__().forEach((slot) => {
+      const saved = __roomSettingsThemeSlotGet__(slot);
+      const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.75 };
+      const current = __roomSettingsThemeButtonVisualGet__(slot, mode, visualFallback);
+      const fallback = __roomSettingsThemeButtonDefaultVisual__(slot, mode, visualFallback).bg || 'blue-4';
+      const next = __applyDesignPayloadToVisual__(current, payload, changed, fallback);
+      __roomSettingsThemeButtonVisualSet__(slot, next, mode);
+    });
+    try{ renderRoomSettingsPage(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -17741,35 +17871,57 @@ async function __openRoomSettingsTextButtonColorPicker__(key){
   }catch(_){ }
 }
 
-function __openRoomSettingsThemeButtonColorPicker__(slot){
+async function __openRoomSettingsThemeButtonColorPicker__(slot){
   try{
-    const el = document.getElementById(`roomSettingsThemeBtn${slot}`);
+    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
+    const el = document.getElementById(`roomSettingsThemeBtn${key}`);
     if (!el) return;
-    const saved = __roomSettingsThemeSlotGet__(slot);
-    const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 };
-    const current = __roomSettingsThemeButtonVisualGet__(slot);
-    const initial = {
-      bg: current.bg || visualFallback.bg || 'blue-4',
-      border: current.border || current.bg || visualFallback.border || visualFallback.bg || 'blue-4',
-      fg: current.fg || visualFallback.fg || '',
-      opacity: __designBgOpacityNormalize__(current.opacity ?? visualFallback.opacity ?? 0.80)
-    };
+    const label = __roomSettingsThemeButtonLocalizedLabel__(key);
+    const choice = await __confirmTwoActions__(
+      __roomSettingsThemeButtonEditStatePrompt__(label),
+      __roomSettingsThemeButtonStateLabel__('active'),
+      __roomSettingsThemeButtonStateLabel__('distractive')
+    );
+    if (choice !== 'yes' && choice !== 'no') return;
+    const stateKey = choice === 'yes' ? 'active' : 'distractive';
+    const saved = __roomSettingsThemeSlotGet__(key);
+    const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.75 };
+    const initial = __roomSettingsThemeButtonVisualGet__(key, stateKey, visualFallback);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
-        bg: colors.bg || initial.bg || 'blue-4',
-        border: colors.border || initial.border || colors.bg || initial.bg || 'blue-4',
-        fg: colors.fg || initial.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
+        bg: colors.bg || initial.bg || visualFallback.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || visualFallback.border || visualFallback.bg || 'blue-4',
+        fg: colors.fg || initial.fg || visualFallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? visualFallback.opacity ?? 0.75)
       };
-      __roomSettingsThemeButtonVisualSet__(slot, next);
-      __roomSettingsThemeButtonVisualApply__(el, slot, visualFallback);
+      __roomSettingsThemeButtonVisualSet__(key, next, stateKey);
+      try{ renderRoomSettingsPage(); }catch(_){ }
     };
     const revertVisual = () => {
-      __roomSettingsThemeButtonVisualSet__(slot, initial);
-      __roomSettingsThemeButtonVisualApply__(el, slot, visualFallback);
+      __roomSettingsThemeButtonVisualSet__(key, initial, stateKey);
+      try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    __tagColorPopupOpen__('room-theme-button', initial, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:initial.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(initial.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
+    __tagColorPopupOpen__('room-theme-button', initial, (payload) => {
+      try{
+        applyVisual(payload);
+        try{ toast(__roomSettingsThemeButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:initial.opacity ?? 0.75,
+      defaultMode:'bg',
+      fallbackBg:(initial.bg || visualFallback.bg || 'blue-4'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message: __roomSettingsThemeButtonCategoryPrompt__(),
+        apply: async(payload, changed) => { await __applyRoomSettingsThemeButtonChangesToCategory__(stateKey, payload, changed); }
+      }
+    });
   }catch(_){ }
 }
 
@@ -18003,6 +18155,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
+  try{ __roomSettingsThemeActiveSlotWrite__(key); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
   try{ toast(`Tema ${key} richiamato`); }catch(_){ }
 }
@@ -18055,23 +18208,21 @@ function renderRoomSettingsPage(){
     applyBtn('roomSettingsBedMBtn', cfg.beds?.matrimoniale, 'M');
     applyBtn('roomSettingsBedSBtn', cfg.beds?.singolo, 'S');
     applyBtn('roomSettingsBedCBtn', cfg.beds?.culla, 'C');
+    const activeThemeSlot = __roomSettingsThemeActiveSlotRead__();
     [1,2,3,4].forEach((slot) => {
       const el = document.getElementById(`roomSettingsThemeBtn${slot}`);
       if (!el) return;
       const saved = __roomSettingsThemeSlotGet__(slot);
+      const isActive = String(activeThemeSlot || '') === String(slot);
       el.textContent = String(slot);
+      el.classList.toggle('is-active', isActive);
+      const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.75 };
+      __roomSettingsThemeButtonVisualApply__(el, slot, visualFallback, isActive ? 'active' : 'distractive');
       if (saved){
-        const visual = saved.launcherGridTheme || {};
-        const bgSpec = visual.bg || saved.roomsUi?.options?.m?.bg || saved.roomsUi?.nights?.bg || 'blue-4';
-        const borderSpec = visual.border || bgSpec;
-        const bgHex = __operatoreColorHex__(bgSpec);
-        const borderHex = __operatoreColorHex__(borderSpec);
-        __roomSettingsThemeButtonVisualApply__(el, slot, { bg:bgSpec, border:borderSpec, fg:'', opacity:0.80 });
         const savedLabel = __designTranslate__(`Tema ${slot} salvato. Tap per richiamare, doppio tap per salvare, pressione lunga per modificare il tasto`, { en:`Theme ${slot} saved. Tap to recall, double tap to save, long press to edit button`, fr:`Thème ${slot} enregistré. Touchez pour rappeler, double tap pour enregistrer, appui long pour modifier le bouton`, de:`Thema ${slot} gespeichert. Tippen zum Laden, doppelt tippen zum Speichern, lange drücken zum Bearbeiten`, es:`Tema ${slot} guardado. Toca para aplicar, doble toque para guardar, pulsación larga para editar el botón` });
         el.setAttribute('aria-label', savedLabel);
         el.title = savedLabel;
       }else{
-        __roomSettingsThemeButtonVisualApply__(el, slot, { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 });
         const emptyLabel = __designTranslate__(`Tema ${slot} vuoto. Tap per richiamare, doppio tap per salvare, pressione lunga per modificare il tasto`, { en:`Theme ${slot} empty. Tap to recall, double tap to save, long press to edit button`, fr:`Thème ${slot} vide. Touchez pour rappeler, double tap pour enregistrer, appui long pour modifier le bouton`, de:`Thema ${slot} leer. Tippen zum Laden, doppelt tippen zum Speichern, lange drücken zum Bearbeiten`, es:`Tema ${slot} vacío. Toca para aplicar, doble toque para guardar, pulsación larga para editar el botón` });
         el.setAttribute('aria-label', emptyLabel);
         el.title = emptyLabel;
