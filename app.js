@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.480
+ * Build: 2.481
  */
-const BUILD_VERSION = "2.480";
+const BUILD_VERSION = "2.481";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4026,6 +4026,203 @@ const COLORS = {
 };
 
 const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
+const LS_APP_TEXT_UI = "ddae_app_text_ui_v1";
+const APP_TEXT_SCALE_MAP = Object.freeze({ "1": 1, "2": 1.08, "3": 1.16 });
+let __appTextUiMutationObserver__ = null;
+let __appTextUiApplyTimer__ = null;
+
+function getAppTextUiSettings(){
+  const fallback = { bold:false, size:"1" };
+  try{
+    const raw = localStorage.getItem(LS_APP_TEXT_UI);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    const size = String(parsed?.size || "1");
+    return {
+      bold: !!parsed?.bold,
+      size: (size === "2" || size === "3") ? size : "1"
+    };
+  }catch(_){
+    return fallback;
+  }
+}
+
+function __saveAppTextUiSettings__(settings){
+  try{ localStorage.setItem(LS_APP_TEXT_UI, JSON.stringify(settings)); }catch(_){ }
+}
+
+function __appTextUiBoldWeight__(baseWeight, isBold){
+  const raw = String(baseWeight || "").trim();
+  if (!isBold) return raw || "400";
+  const numeric = parseInt(raw, 10);
+  if (Number.isFinite(numeric)) return String(Math.max(700, numeric));
+  return "700";
+}
+
+function __isAppTextCandidate__(el){
+  try{
+    if (!(el instanceof Element)) return false;
+    const tag = String(el.tagName || "").toUpperCase();
+    if (!tag) return false;
+    if (["SCRIPT","STYLE","NOSCRIPT","SVG","PATH","RECT","CIRCLE","LINE","POLYLINE","POLYGON","G","DEFS","CLIPPATH","USE","STOP"].includes(tag)) return false;
+    if (el.closest && el.closest('svg')) return false;
+    if (tag === 'INPUT'){
+      const type = String(el.getAttribute('type') || el.type || 'text').toLowerCase();
+      if (["checkbox","radio","range","color","file","hidden","date","time","month","week"].includes(type)) return false;
+      return true;
+    }
+    if (["TEXTAREA","SELECT","OPTION","BUTTON","LABEL","SPAN","A","P","PRE","LI","TD","TH","STRONG","B","EM","I","SMALL","H1","H2","H3","H4","H5","H6","SUMMARY"].includes(tag)) return true;
+    for (const node of Array.from(el.childNodes || [])){
+      if (node && node.nodeType === 3 && String(node.textContent || '').trim()) return true;
+    }
+  }catch(_){ }
+  return false;
+}
+
+function __applyAppTextUiToElement__(el, settings){
+  try{
+    if (!__isAppTextCandidate__(el)) return;
+    const style = getComputedStyle(el);
+    const computedSize = parseFloat(style.fontSize || '0');
+    if (!Number.isFinite(computedSize) || computedSize <= 0) return;
+    if (!el.dataset.appTextBaseSize) el.dataset.appTextBaseSize = String(computedSize);
+    if (!el.dataset.appTextBaseWeight) el.dataset.appTextBaseWeight = String(style.fontWeight || '400');
+    const baseSize = parseFloat(el.dataset.appTextBaseSize || '0');
+    if (!Number.isFinite(baseSize) || baseSize <= 0) return;
+    const scale = APP_TEXT_SCALE_MAP[String(settings?.size || '1')] || 1;
+    const nextSize = Math.max(9, baseSize * scale);
+    el.style.setProperty('font-size', `${nextSize.toFixed(2)}px`, 'important');
+    el.style.setProperty('font-weight', __appTextUiBoldWeight__(el.dataset.appTextBaseWeight || '400', !!settings?.bold), 'important');
+  }catch(_){ }
+}
+
+function __applyAppTextUiToIcons__(root, settings){
+  try{
+    const targets = [];
+    if (root instanceof Element && root.matches && root.matches('svg, svg *, .ui-ico, .ui-ico *')) targets.push(root);
+    if (root && root.querySelectorAll){
+      root.querySelectorAll('svg, svg *, .ui-ico, .ui-ico *').forEach((node) => targets.push(node));
+    }
+    const seen = new Set();
+    targets.forEach((node) => {
+      if (!(node instanceof Element)) return;
+      if (seen.has(node)) return;
+      seen.add(node);
+      try{
+        const style = getComputedStyle(node);
+        const strokeWidth = parseFloat(style.strokeWidth || node.getAttribute('stroke-width') || '0');
+        if (!Number.isFinite(strokeWidth) || strokeWidth <= 0) return;
+        if (!node.dataset.appTextBaseStrokeWidth) node.dataset.appTextBaseStrokeWidth = String(strokeWidth);
+        const baseStroke = parseFloat(node.dataset.appTextBaseStrokeWidth || '0');
+        if (!Number.isFinite(baseStroke) || baseStroke <= 0) return;
+        const nextStroke = (!!settings?.bold ? baseStroke * 1.18 : baseStroke);
+        node.style.setProperty('stroke-width', `${nextStroke.toFixed(2)}px`, 'important');
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function applyAppTextUi(root){
+  const scope = root || document.body;
+  if (!scope) return;
+  const settings = getAppTextUiSettings();
+  try{
+    document.body?.setAttribute('data-text-size', String(settings.size || '1'));
+    document.body?.setAttribute('data-text-weight', settings.bold ? 'bold' : 'normal');
+  }catch(_){ }
+  try{
+    const elements = [];
+    if (scope instanceof Element) elements.push(scope);
+    if (scope && scope.querySelectorAll) scope.querySelectorAll('*').forEach((el) => elements.push(el));
+    const seen = new Set();
+    elements.forEach((el) => {
+      if (!(el instanceof Element)) return;
+      if (seen.has(el)) return;
+      seen.add(el);
+      __applyAppTextUiToElement__(el, settings);
+    });
+  }catch(_){ }
+  __applyAppTextUiToIcons__(scope, settings);
+}
+
+function scheduleApplyAppTextUi(root){
+  try{ if (__appTextUiApplyTimer__) clearTimeout(__appTextUiApplyTimer__); }catch(_){ }
+  __appTextUiApplyTimer__ = setTimeout(() => {
+    __appTextUiApplyTimer__ = null;
+    try{ applyAppTextUi(root || document.body); }catch(_){ }
+  }, 16);
+}
+
+function setAppTextUiSettings(next){
+  const current = getAppTextUiSettings();
+  const size = String(next?.size || current.size || '1');
+  const settings = {
+    bold: (typeof next?.bold === 'boolean') ? next.bold : current.bold,
+    size: (size === '2' || size === '3') ? size : '1'
+  };
+  __saveAppTextUiSettings__(settings);
+  scheduleApplyAppTextUi(document.body);
+  try{ renderRoomSettingsPage(); }catch(_){ }
+}
+
+function renderRoomSettingsTextControls(){
+  try{
+    const settings = getAppTextUiSettings();
+    const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
+    if (boldBtn){
+      boldBtn.classList.toggle('is-active', !!settings.bold);
+      boldBtn.setAttribute('aria-pressed', settings.bold ? 'true' : 'false');
+      boldBtn.title = settings.bold ? 'Testi in grassetto' : 'Testi normali';
+    }
+    ['1','2','3'].forEach((size) => {
+      const btn = document.getElementById(`roomSettingsTextSizeBtn${size}`);
+      if (!btn) return;
+      const active = String(settings.size || '1') === size;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      btn.title = `Dimensione testo ${size}`;
+    });
+  }catch(_){ }
+}
+
+function bindRoomSettingsTextControls(){
+  const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
+  if (boldBtn && !boldBtn.__boundRoomSettingsTextBold){
+    boldBtn.__boundRoomSettingsTextBold = true;
+    bindFastTap(boldBtn, () => {
+      const current = getAppTextUiSettings();
+      setAppTextUiSettings({ bold: !current.bold, size: current.size });
+    });
+  }
+  ['1','2','3'].forEach((size) => {
+    const btn = document.getElementById(`roomSettingsTextSizeBtn${size}`);
+    if (!btn || btn.__boundRoomSettingsTextSize) return;
+    btn.__boundRoomSettingsTextSize = true;
+    bindFastTap(btn, () => {
+      const current = getAppTextUiSettings();
+      setAppTextUiSettings({ bold: current.bold, size });
+    });
+  });
+}
+
+function initAppTextUiObserver(){
+  try{
+    if (__appTextUiMutationObserver__ || !document.body) return;
+    __appTextUiMutationObserver__ = new MutationObserver((mutations) => {
+      try{
+        const roots = [];
+        mutations.forEach((mutation) => {
+          mutation.addedNodes && mutation.addedNodes.forEach((node) => {
+            if (node instanceof Element) roots.push(node);
+          });
+        });
+        if (!roots.length) return;
+        scheduleApplyAppTextUi(document.body);
+      }catch(_){ }
+    });
+    __appTextUiMutationObserver__.observe(document.body, { childList:true, subtree:true });
+  }catch(_){ }
+}
 
 function getStatFiscalMode(){
   try{
@@ -17551,16 +17748,20 @@ function renderRoomSettingsPage(){
       if (pageTitle) pageTitle.textContent = __designTranslate__('Design', { en:'Design', fr:'Design', de:'Design', es:'Diseño' });
       const sectionTitles = page.querySelectorAll('.room-settings-section-title');
       if (sectionTitles[0]) sectionTitles[0].textContent = __designTranslate__('Tema', { en:'Theme', fr:'Thème', de:'Thema', es:'Tema' });
-      if (sectionTitles[1]) sectionTitles[1].textContent = __designTranslate__('Tag colore stanze', { en:'Room color tags', fr:'Tags couleur des chambres', de:'Zimmer-Farbmarken', es:'Etiquetas de color de habitaciones' });
-      if (sectionTitles[2]) sectionTitles[2].textContent = __designTranslate__('Tag colore opzioni', { en:'Option color tags', fr:'Tags couleur des options', de:'Options-Farbmarken', es:'Etiquetas de color de opciones' });
-      if (sectionTitles[3]) sectionTitles[3].textContent = __designTranslate__('Tag colore letti', { en:'Bed color tags', fr:'Tags couleur des lits', de:'Bett-Farbmarken', es:'Etiquetas de color de camas' });
+      if (sectionTitles[1]) sectionTitles[1].textContent = __designTranslate__('Testi', { en:'Text', fr:'Texte', de:'Text', es:'Texto' });
+      if (sectionTitles[2]) sectionTitles[2].textContent = __designTranslate__('Tag colore stanze', { en:'Room color tags', fr:'Tags couleur des chambres', de:'Zimmer-Farbmarken', es:'Etiquetas de color de habitaciones' });
+      if (sectionTitles[3]) sectionTitles[3].textContent = __designTranslate__('Tag colore opzioni', { en:'Option color tags', fr:'Tags couleur des options', de:'Options-Farbmarken', es:'Etiquetas de color de opciones' });
+      if (sectionTitles[4]) sectionTitles[4].textContent = __designTranslate__('Tag colore letti', { en:'Bed color tags', fr:'Tags couleur des lits', de:'Bett-Farbmarken', es:'Etiquetas de color de camas' });
       const title = page.querySelector('.room-settings-title');
       if (title) title.textContent = __designTranslate__('Numero stanze', { en:'Room count', fr:'Nombre de chambres', de:'Zimmeranzahl', es:'Número de habitaciones' });
       const subtitle = page.querySelector('.room-settings-subtitle');
       if (subtitle) subtitle.textContent = __designTranslate__('Tap per avanzare. Pressione lunga per azzerare.', { en:'Tap to advance. Long press to reset.', fr:'Touchez pour avancer. Appui long pour réinitialiser.', de:'Tippen zum Weitergehen. Lange drücken zum Zurücksetzen.', es:'Toca para avanzar. Mantén pulsado para reiniciar.' });
+      const textSubtitle = document.getElementById('roomSettingsTextSubtitle');
+      if (textSubtitle) textSubtitle.textContent = __designTranslate__('G = normale / grassetto • 1 2 3 = dimensione', { en:'G = normal / bold • 1 2 3 = size', fr:'G = normal / gras • 1 2 3 = taille', de:'G = normal / fett • 1 2 3 = Größe', es:'G = normal / negrita • 1 2 3 = tamaño' });
     }
     const cfg = getRoomsUiConfig();
     const count = getConfiguredRoomsCount(6);
+    renderRoomSettingsTextControls();
     const countBtn = document.getElementById('roomSettingsCountBtn');
     if (countBtn){
       countBtn.textContent = String(count);
@@ -17645,6 +17846,7 @@ function renderRoomSettingsPage(){
 }
 
 function setupRoomSettingsPage(){
+  bindRoomSettingsTextControls();
   const countBtn = document.getElementById('roomSettingsCountBtn');
   if (countBtn && !countBtn.__boundRoomsConfigTap){
     countBtn.__boundRoomsConfigTap = true;
@@ -22197,6 +22399,8 @@ async function init(){
   applyPerfMode();
   try{ __applyDarkMode__(__isDarkModeEnabled__()); }catch(_){ }
   try{ setupAudioUI(); }catch(_){ }
+  try{ applyAppTextUi(document.body); }catch(_){ }
+  try{ initAppTextUiObserver(); }catch(_){ }
   const __restore = __readRestoreState();
   // Session + anno
   state.session = loadSession();

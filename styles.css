@@ -17194,3 +17194,53 @@ body.ddae-dark #page-tassa .tax-result-sub{
 #page-opsettings .settings-build{
   display: none !important;
 }
+
+
+/* dDAE_2.481 — Design: scheda globale formattazione testi */
+.room-settings-section-head{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.room-settings-section-subtitle{
+  font-size:12px;
+  line-height:1.35;
+  font-weight:700;
+  color: rgba(15,23,42,0.58);
+}
+.room-settings-section-text{
+  gap:14px !important;
+}
+.room-settings-text-controls{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  align-items:stretch;
+}
+.room-settings-text-controls .room-settings-square-btn{
+  width:100%;
+  min-width:0;
+  height:64px;
+  border-radius:18px;
+  font-size:24px;
+  font-weight:900;
+}
+.room-settings-text-controls .room-settings-square-btn.is-active{
+  border-color: rgba(15,23,42,0.84) !important;
+  box-shadow: 0 0 0 2px rgba(15,23,42,0.12) !important;
+}
+@media (max-width: 390px){
+  .room-settings-text-controls{ gap:10px; }
+  .room-settings-text-controls .room-settings-square-btn{
+    height:58px;
+    border-radius:16px;
+    font-size:22px;
+  }
+}
+body.ddae-dark .room-settings-section-subtitle{
+  color: rgba(226,232,240,0.70);
+}
+body.ddae-dark .room-settings-text-controls .room-settings-square-btn.is-active{
+  border-color: rgba(226,232,240,0.94) !important;
+  box-shadow: 0 0 0 2px rgba(226,232,240,0.10) !important;
+}
