@@ -17281,3 +17281,121 @@ body.ddae-dark .room-settings-text-controls .room-settings-square-btn.is-active{
 body.ddae-dark .room-settings-panel-main .room-settings-divider{
   background: rgba(148,163,184,0.22) !important;
 }
+
+
+/* dDAE_2.490 - Design: card più compatta per rientrare nel display */
+.room-settings-shell{
+  padding-top:10px;
+  gap:12px;
+}
+.room-settings-panel,
+.room-settings-panel-theme{
+  padding:12px !important;
+  gap:12px !important;
+  border-radius:20px;
+}
+.room-settings-panel-main{
+  gap:10px;
+}
+.room-settings-section{
+  padding-top:12px;
+  gap:8px;
+}
+.room-settings-section-card{
+  padding:10px !important;
+  gap:8px !important;
+}
+.room-settings-section-title,
+.room-settings-title{
+  line-height:1.0;
+}
+.room-settings-title{
+  font-size:18px;
+}
+.room-settings-section-title{
+  font-size:16px;
+}
+.room-settings-top{
+  gap:10px;
+}
+.room-settings-theme-squares,
+.room-settings-squares,
+.room-settings-dots,
+.room-settings-text-controls{
+  gap:8px;
+}
+.room-settings-section-count{
+  padding:12px !important;
+}
+.room-settings-section-count .room-settings-top{
+  gap:10px;
+}
+.room-settings-section-count .room-settings-count-btn{
+  width:74px;
+  min-width:74px;
+  height:74px;
+  border-radius:22px;
+  font-size:30px;
+}
+.room-settings-color-dot,
+.room-settings-color-dot-tag{
+  width:48px;
+  min-width:48px;
+  height:48px;
+  font-size:18px;
+}
+.room-settings-section-theme .room-settings-square-btn,
+.room-settings-text-controls .room-settings-square-btn{
+  height:54px;
+  border-radius:16px;
+  font-size:22px;
+}
+.room-settings-panel-main .room-settings-divider{
+  margin:0 0 2px;
+}
+@media (max-width: 390px){
+  .room-settings-shell{
+    padding-top:8px;
+    gap:10px;
+  }
+  .room-settings-panel,
+  .room-settings-panel-theme{
+    padding:10px !important;
+    gap:10px !important;
+    border-radius:18px;
+  }
+  .room-settings-section{
+    padding-top:10px;
+    gap:7px;
+  }
+  .room-settings-section-card{
+    padding:9px !important;
+    gap:7px !important;
+  }
+  .room-settings-title{ font-size:17px; }
+  .room-settings-section-title{ font-size:15px; }
+  .room-settings-theme-squares,
+  .room-settings-squares,
+  .room-settings-dots,
+  .room-settings-text-controls{ gap:7px; }
+  .room-settings-section-count .room-settings-count-btn{
+    width:66px;
+    min-width:66px;
+    height:66px;
+    border-radius:20px;
+    font-size:27px;
+  }
+  .room-settings-color-dot,
+  .room-settings-color-dot-tag{
+    width:44px;
+    min-width:44px;
+    height:44px;
+    font-size:17px;
+  }
+  .room-settings-section-theme .room-settings-square-btn,
+  .room-settings-text-controls .room-settings-square-btn{
+    height:50px;
+    border-radius:15px;
+    font-size:20px;
+  }
+}
