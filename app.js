@@ -87,7 +87,7 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.485
+ * Build: 2.486
  */
 const BUILD_VERSION = "2.484";
 
@@ -17959,6 +17959,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __PILL_COLOR_STORAGE_KEY__,
     __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__,
+    LS_APP_TEXT_UI,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -18148,6 +18149,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __roomSettingsTextButtonVisualMapWrite__((payload.textButtonVisuals && typeof payload.textButtonVisuals === 'object') ? payload.textButtonVisuals : {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
+  try{ applyAppTextUi(document.body); }catch(_){ }
   try{
     if (!hasHeaderSnapshot) __headerActionThemeOverwriteTargets__(payload.headerActionTheme || { fg:'blue-4', bg:'white', border:'white' });
   }catch(_){ }
