@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.481
  */
-const BUILD_VERSION = "2.481";
+const BUILD_VERSION = "2.482";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4168,11 +4168,15 @@ function setAppTextUiSettings(next){
 function renderRoomSettingsTextControls(){
   try{
     const settings = getAppTextUiSettings();
+    const fallbackVisual = { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 };
     const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
     if (boldBtn){
       boldBtn.classList.toggle('is-active', !!settings.bold);
       boldBtn.setAttribute('aria-pressed', settings.bold ? 'true' : 'false');
-      boldBtn.title = settings.bold ? 'Testi in grassetto' : 'Testi normali';
+      const label = settings.bold ? 'Testi in grassetto. Tap per tornare normale, pressione lunga per colore' : 'Testi normali. Tap per attivare il grassetto, pressione lunga per colore';
+      boldBtn.setAttribute('aria-label', label);
+      boldBtn.title = label;
+      __roomSettingsTextButtonVisualApply__(boldBtn, 'bold', fallbackVisual);
     }
     ['1','2','3'].forEach((size) => {
       const btn = document.getElementById(`roomSettingsTextSizeBtn${size}`);
@@ -4180,25 +4184,79 @@ function renderRoomSettingsTextControls(){
       const active = String(settings.size || '1') === size;
       btn.classList.toggle('is-active', active);
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      btn.title = `Dimensione testo ${size}`;
+      const label = active ? `Dimensione testo ${size} attiva. Tap per confermare, pressione lunga per colore` : `Dimensione testo ${size}. Tap per attivare, pressione lunga per colore`;
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
+      __roomSettingsTextButtonVisualApply__(btn, size, fallbackVisual);
     });
   }catch(_){ }
 }
 
 function bindRoomSettingsTextControls(){
-  const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
-  if (boldBtn && !boldBtn.__boundRoomSettingsTextBold){
-    boldBtn.__boundRoomSettingsTextBold = true;
-    bindFastTap(boldBtn, () => {
-      const current = getAppTextUiSettings();
-      setAppTextUiSettings({ bold: !current.bold, size: current.size });
+  const bindControl = (btn, key, onTap) => {
+    if (!btn || btn.__boundRoomSettingsTextControl) return;
+    btn.__boundRoomSettingsTextControl = true;
+    let holdTimer = null;
+    let holdTriggered = false;
+    let touchAt = 0;
+    const clearHold = () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      holdTimer = null;
+    };
+    const doTap = () => {
+      try{ __sfxTap(); }catch(_){ }
+      onTap();
+    };
+    const doLong = async () => {
+      try{ __sfxGlass(); }catch(_){ }
+      holdTriggered = true;
+      await __openRoomSettingsTextButtonColorPicker__(key);
+    };
+    btn.addEventListener('touchstart', (e) => {
+      touchAt = Date.now();
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { doLong(); }, 500);
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchend', (e) => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      if (!holdTriggered) doTap();
+      clearHold();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      setTimeout(()=>{ holdTriggered = false; },0);
+    }, { passive:false, capture:true });
+    btn.addEventListener('touchcancel', (e) => {
+      clearHold();
+      holdTriggered = false;
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, { passive:false, capture:true });
+    btn.addEventListener('click', (e) => {
+      if (Date.now() - touchAt < 450) { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return; }
+      if (holdTriggered){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } holdTriggered = false; return; }
+      doTap();
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }, true);
+    btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
+    btn.addEventListener('mousedown', (e) => {
+      if ((e.button || 0) !== 0) return;
+      holdTriggered = false;
+      clearHold();
+      holdTimer = setTimeout(() => { doLong(); }, 500);
     });
-  }
+    ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => {
+      try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ }
+      clearHold();
+    }));
+  };
+  const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
+  bindControl(boldBtn, 'bold', () => {
+    const current = getAppTextUiSettings();
+    setAppTextUiSettings({ bold: !current.bold, size: current.size });
+  });
   ['1','2','3'].forEach((size) => {
     const btn = document.getElementById(`roomSettingsTextSizeBtn${size}`);
-    if (!btn || btn.__boundRoomSettingsTextSize) return;
-    btn.__boundRoomSettingsTextSize = true;
-    bindFastTap(btn, () => {
+    bindControl(btn, size, () => {
       const current = getAppTextUiSettings();
       setAppTextUiSettings({ bold: current.bold, size });
     });
@@ -17420,6 +17478,7 @@ function __openRoomSettingsColorPicker__(target){
 
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
 const __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_theme_button_visual_v1';
+const __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_text_button_visual_v1';
 
 function __roomSettingsThemeButtonVisualMapRead__(){
   try{
@@ -17468,6 +17527,81 @@ function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual){
     const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '#000000';
     el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)} !important;background-color:${hexToRgba(bgHex, visual.opacity)} !important;border-color:${hexToRgba(borderHex, 1)} !important;color:${fgHex} !important;-webkit-text-fill-color:${fgHex} !important;`);
     el.classList.remove('room-settings-square-btn-placeholder');
+  }catch(_){ }
+}
+
+function __roomSettingsTextButtonVisualMapRead__(){
+  try{
+    const raw = localStorage.getItem(__ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __roomSettingsTextButtonVisualMapWrite__(map){
+  try{ localStorage.setItem(__ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify((map && typeof map === 'object') ? map : {})); }catch(_){ }
+}
+
+function __roomSettingsTextButtonVisualGet__(key){
+  try{
+    const map = __roomSettingsTextButtonVisualMapRead__();
+    const current = map[String(key || '').trim()] || {};
+    return __launcherVisualNormalize__(current, 'blue-4');
+  }catch(_){ return __launcherVisualNormalize__({}, 'blue-4'); }
+}
+
+function __roomSettingsTextButtonVisualSet__(key, visual){
+  try{
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return;
+    const map = __roomSettingsTextButtonVisualMapRead__();
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    map[safeKey] = { bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', fg: clean.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
+    __roomSettingsTextButtonVisualMapWrite__(map);
+  }catch(_){ }
+}
+
+function __roomSettingsTextButtonVisualApply__(el, key, fallbackVisual){
+  try{
+    if (!el) return;
+    const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
+    const stored = __roomSettingsTextButtonVisualGet__(key);
+    const visual = {
+      bg: stored.bg || fallback.bg || 'blue-4',
+      border: stored.border || stored.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: stored.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.80)
+    };
+    el.setAttribute('style', `${__tagColorInlineStyle__(visual.bg || 'blue-4', visual.fg || '', { opacity:visual.opacity, borderOpacity:1, preferWhiteText:false })}border-color:${hexToRgba(__operatoreColorHex__(visual.border || visual.bg || 'blue-4'), 1)} !important;`);
+    el.classList.remove('room-settings-square-btn-placeholder');
+  }catch(_){ }
+}
+
+function __openRoomSettingsTextButtonColorPicker__(key){
+  try{
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return;
+    const el = document.getElementById(safeKey === 'bold' ? 'roomSettingsTextBoldBtn' : `roomSettingsTextSizeBtn${safeKey}`);
+    if (!el) return;
+    const initial = __roomSettingsTextButtonVisualGet__(safeKey);
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || initial.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || 'blue-4',
+        fg: colors.fg || initial.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
+      };
+      __roomSettingsTextButtonVisualSet__(safeKey, next);
+      __roomSettingsTextButtonVisualApply__(el, safeKey, next);
+      try{ renderRoomSettingsTextControls(); }catch(_){ }
+    };
+    const revertVisual = () => {
+      __roomSettingsTextButtonVisualSet__(safeKey, initial);
+      __roomSettingsTextButtonVisualApply__(el, safeKey, initial);
+      try{ renderRoomSettingsTextControls(); }catch(_){ }
+    };
+    __tagColorPopupOpen__('room-text-button', initial, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:initial.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(initial.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
   }catch(_){ }
 }
 
@@ -17536,6 +17670,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
     __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__,
+    __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__,
     __SPESA_CARD_OPACITY_STORAGE_KEY__,
     __SPESA_CARD_VISUAL_STORAGE_KEY__,
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
@@ -17624,7 +17759,8 @@ function __roomSettingsThemePayloadBuild__(){
     pillColors: __pillColorMapRead__(),
     singleActionButtonVisuals: __loadSingleActionButtonVisualMap__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
-    roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__()
+    roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__(),
+    textButtonVisuals: __roomSettingsTextButtonVisualMapRead__()
   };
 }
 
@@ -17672,7 +17808,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
     pillColors: (src.pillColors && typeof src.pillColors === 'object') ? src.pillColors : {},
     singleActionButtonVisuals: (src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {},
     statsThemeStorage,
-    roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {}
+    roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {},
+    textButtonVisuals: (src.textButtonVisuals && typeof src.textButtonVisuals === 'object') ? src.textButtonVisuals : {}
   };
 }
 
@@ -17720,6 +17857,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __pillColorMapWrite__(payload.pillColors || {});
     __saveSingleActionButtonVisualMap__((payload.singleActionButtonVisuals && typeof payload.singleActionButtonVisuals === 'object') ? payload.singleActionButtonVisuals : {});
     __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
+    __roomSettingsTextButtonVisualMapWrite__((payload.textButtonVisuals && typeof payload.textButtonVisuals === 'object') ? payload.textButtonVisuals : {});
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
   try{
