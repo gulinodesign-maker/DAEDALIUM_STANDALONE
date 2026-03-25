@@ -6877,6 +6877,51 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   flex-wrap: nowrap;
 }
 
+.statgen-head-actions{
+  margin-left:auto;
+  min-width:0;
+}
+.statgen-regime-switch{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:nowrap;
+  white-space:nowrap;
+  min-width:0;
+}
+.statgen-regime-label{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+  color:rgba(15,23,42,0.72);
+  line-height:1;
+  white-space:nowrap;
+  flex:0 1 auto;
+}
+.statgen-switch{
+  flex:0 0 auto;
+}
+.statgen-switch .slider{
+  background:rgba(15,23,42,0.08);
+  border-color:rgba(15,23,42,0.14);
+}
+.statgen-switch .slider:before{
+  background:#ffffff;
+  border-color:rgba(15,23,42,0.14);
+}
+.statgen-switch input:checked + .slider{
+  background:rgba(43,124,180,0.22);
+}
+@media (max-width:380px){
+  .statgen-regime-label{
+    font-size:11px;
+  }
+  .statgen-regime-switch{
+    gap:6px;
+  }
+}
+
 /* Piscina inline actions (in-page): solid colors, 80% opacity */
 .piscina-action-btn{
   width: 38px;
@@ -12621,6 +12666,21 @@ body.ddae-dark input::placeholder,
 body.ddae-dark textarea::placeholder{
   color: rgba(226,232,240,0.56) !important;
 }
+body.ddae-dark .statgen-regime-label{
+  color:rgba(226,232,240,0.82);
+}
+body.ddae-dark .statgen-switch .slider{
+  background:rgba(15,23,42,0.52);
+  border-color:rgba(148,163,184,0.28);
+}
+body.ddae-dark .statgen-switch .slider:before{
+  background:rgba(226,232,240,0.96);
+  border-color:rgba(148,163,184,0.30);
+}
+body.ddae-dark .statgen-switch input:checked + .slider{
+  background:rgba(111,183,214,0.30);
+}
+
 body.ddae-dark .settings-year-pill,
 body.ddae-dark .pill,
 body.ddae-dark .top-pill,
@@ -17125,7 +17185,7 @@ body.ddae-dark #page-tassa .tax-result-sub{
 /* dDAE_2.476 — scheda ospite in lettura: bandierina cliccabile con popup paese e resa visiva più ampia */
 
 
-/* dDAE_2.478 — Impostazioni: pill anno 50% più stretta e 25px più in basso; build visibile solo in Home */
+/* dDAE_2.480 — Impostazioni: pill anno 50% più stretta e 25px più in basso; build visibile solo in Home */
 #page-impostazioni .settings-year-pill{
   width: min(180px, 48vw) !important;
   transform: translateY(25px) !important;

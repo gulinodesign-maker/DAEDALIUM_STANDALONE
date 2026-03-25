@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.478
+ * Build: 2.480
  */
-const BUILD_VERSION = "2.479";
+const BUILD_VERSION = "2.480";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2200,6 +2200,7 @@ async function __handleSyncBoth__(){
 // Bind sync buttons once DOM is ready
 try{
   window.addEventListener("load", ()=>{
+    try{ bindStatFiscalModeToggle(); }catch(_){ }
     try{
       __fbLoadLink__();
       const btn = document.getElementById("goDbSync");
@@ -4023,6 +4024,74 @@ const COLORS = {
   IVA_10: "#6fb7d6",            // palette
   IVA_4: "#4d9cc5",             // palette
 };
+
+const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
+
+function getStatFiscalMode(){
+  try{
+    const current = String(state?.fiscalRegime || "").trim().toLowerCase();
+    if (current === "forfettario" || current === "societa") return current;
+  }catch(_){ }
+  try{
+    const stored = String(localStorage.getItem(LS_STAT_FISCAL_MODE) || "").trim().toLowerCase();
+    if (stored === "forfettario" || stored === "societa") {
+      state.fiscalRegime = stored;
+      return stored;
+    }
+  }catch(_){ }
+  state.fiscalRegime = "societa";
+  return "societa";
+}
+
+function updateStatFiscalModeUI(){
+  const mode = getStatFiscalMode();
+  const isSocieta = mode === "societa";
+  try{
+    const input = document.getElementById("statFiscalModeToggle");
+    if (input) {
+      input.checked = isSocieta;
+      input.setAttribute("aria-checked", isSocieta ? "true" : "false");
+      input.setAttribute("aria-label", isSocieta ? "Regime società" : "Regime forfettario");
+    }
+  }catch(_){ }
+  try{
+    const label = document.getElementById("statFiscalModeLabel");
+    if (label) label.textContent = isSocieta ? "Società" : "Forfettario";
+  }catch(_){ }
+}
+
+function setStatFiscalMode(mode, opts){
+  const next = String(mode || "").trim().toLowerCase() === "forfettario" ? "forfettario" : "societa";
+  state.fiscalRegime = next;
+  try{ localStorage.setItem(LS_STAT_FISCAL_MODE, next); }catch(_){ }
+  updateStatFiscalModeUI();
+  if (!(opts && opts.skipRender) && state.page === "statgen") {
+    try{ renderStatGen(); }catch(_){ }
+  }
+}
+
+function bindStatFiscalModeToggle(){
+  try{
+    const input = document.getElementById("statFiscalModeToggle");
+    if (!input || input.__boundFiscalMode) {
+      updateStatFiscalModeUI();
+      return;
+    }
+    input.__boundFiscalMode = true;
+    input.addEventListener("change", () => {
+      setStatFiscalMode(input.checked ? "societa" : "forfettario");
+    });
+    updateStatFiscalModeUI();
+  }catch(_){ }
+}
+
+function _guestHasFiscalReceipt(g){
+  try{
+    if (_isRicevutaFlag(g, "acconto")) return true;
+    if (_isRicevutaFlag(g, "saldo")) return true;
+  }catch(_){ }
+  return false;
+}
 
 
 // Loader globale (gestisce richieste parallele + anti-flicker)
@@ -14880,6 +14949,7 @@ function escapeHtml(s){
 function computeStatGen(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
   const report = __getStatsReport() || null;
+  const fiscalMode = getStatFiscalMode();
 
   const money = (v) => {
     if (v === null || v === undefined) return 0;
@@ -14899,6 +14969,9 @@ function computeStatGen(){
   // Fatturato totale = somma di tutte le voci "importo prenotazione"
   let fatturato = 0;
 
+  // Totale prenotazioni con ricevuta fiscale: base IVA società
+  let totalePrenotazioniConRicevuta = 0;
+
   // Giacenza in cassa = somma di tutti gli importi "acconto + saldo"
   let giacenza = 0;
 
@@ -14906,15 +14979,18 @@ function computeStatGen(){
   let conRicevuta = 0;
   let senzaRicevuta = 0;
 
-
   // Servizi (foglio "servizi"): somma importi (importo * qty) per gli ospiti del periodo
   const servizi = Array.isArray(state.servizi) ? state.servizi : [];
   const guestIdsSet = new Set();
   for (const g of guests){
     const _gid = guestIdOf(g) ?? g?.id ?? g?.ID ?? g?.Id ?? "";
     if (_gid !== null && _gid !== undefined && String(_gid).trim() !== "") guestIdsSet.add(String(_gid));
+
     const pren = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
     fatturato += pren;
+    if (pren > 0 && _guestHasFiscalReceipt(g)) {
+      totalePrenotazioniConRicevuta += pren;
+    }
 
     const dep = money(g?.acconto_importo ?? g?.accontoImporto ?? 0);
     const saldo = money(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
@@ -14971,7 +15047,6 @@ function computeStatGen(){
     speseTot = 0;
   }
 
-
   // dDAE_1.020+ — Giacenza in cassa = (con ricevuta + senza ricevuta) - spese totali
   try{
     giacenza = (money(conRicevuta) + money(senzaRicevuta)) - money(speseTot);
@@ -15022,14 +15097,18 @@ function computeStatGen(){
     }catch(_){ }
   }
 
-  const ivaDaVersare = (fatturato * 0.10) - (money(ivaSpese) || 0);
-  const guadagno = fatturato - speseTot;
+  const ivaPrenotazioni = totalePrenotazioniConRicevuta * 0.10;
+  const ivaDaVersareSocieta = ivaPrenotazioni - (money(ivaSpese) || 0);
+  const ivaDaVersare = fiscalMode === "societa" ? ivaDaVersareSocieta : 0;
+  const guadagno = fatturato - speseTot - (fiscalMode === "societa" ? ivaDaVersareSocieta : 0);
 
   return {
+    fiscalMode,
     fatturatoTotale: fatturato,
     speseTotali: speseTot,
     senzaRicevuta,
     conRicevuta,
+    totalePrenotazioniConRicevuta,
     ivaDaVersare,
     guadagnoTotale: guadagno,
     giacenzaCassa: giacenza,
@@ -15037,6 +15116,9 @@ function computeStatGen(){
 }
 
 function renderStatGen(){
+  bindStatFiscalModeToggle();
+  updateStatFiscalModeUI();
+
   const s = computeStatGen();
   state.statGen = s;
 
@@ -15054,10 +15136,14 @@ function renderStatGen(){
   set("sgCassa", s.giacenzaCassa);
 
   try{
+    const ivaRow = document.getElementById("sgIvaRow");
+    if (ivaRow) ivaRow.hidden = (s.fiscalMode !== "societa");
+  }catch(_){ }
+
+  try{
     const rows = Array.from(document.querySelectorAll('#page-statgen .stat-row'));
-    const keys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
     rows.forEach((row, idx)=>{
-      const cardKey = String(row.dataset.statCardKey || keys[idx] || `statgen-${idx+1}`);
+      const cardKey = String(row.dataset.statCardKey || `statgen-${idx+1}`);
       row.dataset.statCardKey = cardKey;
       const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
       __applyStatCardTextColor__(row, 'statgen', cardKey, fallback);
