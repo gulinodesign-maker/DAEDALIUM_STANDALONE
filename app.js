@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.481
+ * Build: 2.483
  */
-const BUILD_VERSION = "2.482";
+const BUILD_VERSION = "2.483";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4168,7 +4168,6 @@ function setAppTextUiSettings(next){
 function renderRoomSettingsTextControls(){
   try{
     const settings = getAppTextUiSettings();
-    const fallbackVisual = { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 };
     const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
     if (boldBtn){
       boldBtn.classList.toggle('is-active', !!settings.bold);
@@ -4176,7 +4175,7 @@ function renderRoomSettingsTextControls(){
       const label = settings.bold ? 'Testi in grassetto. Tap per tornare normale, pressione lunga per colore' : 'Testi normali. Tap per attivare il grassetto, pressione lunga per colore';
       boldBtn.setAttribute('aria-label', label);
       boldBtn.title = label;
-      __roomSettingsTextButtonVisualApply__(boldBtn, 'bold', fallbackVisual);
+      __roomSettingsTextButtonVisualApply__(boldBtn, 'bold');
     }
     ['1','2','3'].forEach((size) => {
       const btn = document.getElementById(`roomSettingsTextSizeBtn${size}`);
@@ -4187,7 +4186,7 @@ function renderRoomSettingsTextControls(){
       const label = active ? `Dimensione testo ${size} attiva. Tap per confermare, pressione lunga per colore` : `Dimensione testo ${size}. Tap per attivare, pressione lunga per colore`;
       btn.setAttribute('aria-label', label);
       btn.title = label;
-      __roomSettingsTextButtonVisualApply__(btn, size, fallbackVisual);
+      __roomSettingsTextButtonVisualApply__(btn, size);
     });
   }catch(_){ }
 }
@@ -7492,12 +7491,12 @@ function __launcherIconColorMapWrite__(map){
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
 const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
 const __DESIGN_BG_OPACITY_STORAGE_KEY__ = 'dDAE_design_bg_opacity_v1';
-const __DESIGN_BG_OPACITY_ALLOWED__ = [0.00, 0.25, 0.50, 0.75, 0.80, 1.00];
+const __DESIGN_BG_OPACITY_ALLOWED__ = [0.00, 0.25, 0.50, 0.75, 1.00];
 
 function __designBgOpacityNormalize__(value){
   const raw = Number(value);
   const allowed = __DESIGN_BG_OPACITY_ALLOWED__.slice();
-  if (!isFinite(raw)) return 0.80;
+  if (!isFinite(raw)) return 0.75;
   let best = allowed[0];
   let dist = Math.abs(raw - best);
   allowed.forEach((v) => { const d = Math.abs(raw - v); if (d < dist) { best = v; dist = d; } });
@@ -7507,9 +7506,9 @@ function __designBgOpacityNormalize__(value){
 function __designBgOpacityRead__(){
   try{
     const raw = localStorage.getItem(__DESIGN_BG_OPACITY_STORAGE_KEY__);
-    if (!raw) return 0.80;
+    if (!raw) return 0.75;
     return __designBgOpacityNormalize__(parseFloat(raw));
-  }catch(_){ return 0.80; }
+  }catch(_){ return 0.75; }
 }
 
 function __designBgOpacityWrite__(value){
@@ -17479,55 +17478,71 @@ function __openRoomSettingsColorPicker__(target){
 const __ROOM_SETTINGS_THEME_SLOTS_STORAGE_KEY__ = 'dDAE_roomsettings_theme_slots_v1';
 const __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_theme_button_visual_v1';
 const __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_roomsettings_text_button_visual_v1';
+const __ROOM_SETTINGS_TEXT_BUTTON_KEYS__ = ['bold','1','2','3'];
 
-function __roomSettingsThemeButtonVisualMapRead__(){
-  try{
-    const raw = localStorage.getItem(__ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return (parsed && typeof parsed === 'object') ? parsed : {};
-  }catch(_){ return {}; }
+function __roomSettingsTextButtonStateLabel__(stateKey){
+  return __translateExactText__(String(stateKey || '').trim().toLowerCase() === 'active' ? 'Attivo' : 'Disattivo');
 }
 
-function __roomSettingsThemeButtonVisualMapWrite__(map){
-  try{ localStorage.setItem(__ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify((map && typeof map === 'object') ? map : {})); }catch(_){ }
+function __roomSettingsTextButtonLocalizedLabel__(btnOrKey){
+  try{
+    const safeKey = String((btnOrKey && btnOrKey.id) || btnOrKey || '').trim();
+    if (safeKey === 'bold') return 'G';
+    if (safeKey === '1' || safeKey === '2' || safeKey === '3') return safeKey;
+    const btn = (btnOrKey && btnOrKey.nodeType === 1) ? btnOrKey : document.getElementById(safeKey === 'bold' ? 'roomSettingsTextBoldBtn' : `roomSettingsTextSizeBtn${safeKey}`);
+    const raw = String(btn?.textContent || btn?.getAttribute?.('aria-label') || '').replace(/\s+/g, ' ').trim();
+    return raw || (__translateExactText__('Tasto') || 'Tasto');
+  }catch(_){
+    return __translateExactText__('Tasto') || 'Tasto';
+  }
 }
 
-function __roomSettingsThemeButtonVisualGet__(slot){
-  try{
-    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
-    const map = __roomSettingsThemeButtonVisualMapRead__();
-    const current = map[key] || {};
-    return __launcherVisualNormalize__(current, 'blue-4');
-  }catch(_){ return __launcherVisualNormalize__({}, 'blue-4'); }
+function __roomSettingsTextButtonEditStatePrompt__(label){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tasto') || 'Tasto');
+  switch (__getAppLanguage__()){
+    case 'en': return `Which state do you want to edit for ${safeLabel}?`;
+    case 'fr': return `Quel état voulez-vous modifier pour ${safeLabel} ?`;
+    case 'de': return `Welchen Status möchten Sie für ${safeLabel} bearbeiten?`;
+    case 'es': return `¿Qué estado quieres modificar para ${safeLabel}?`;
+    default: return `Quale stato vuoi modificare per ${safeLabel}?`;
+  }
 }
 
-function __roomSettingsThemeButtonVisualSet__(slot, visual){
-  try{
-    const key = String(Math.max(1, Math.min(4, parseInt(slot, 10) || 0)));
-    const map = __roomSettingsThemeButtonVisualMapRead__();
-    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    map[key] = { bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', fg: clean.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
-    __roomSettingsThemeButtonVisualMapWrite__(map);
-  }catch(_){ }
+function __roomSettingsTextButtonStateUpdatedMessage__(label, stateKey){
+  const safeLabel = String(label || '').trim() || (__translateExactText__('Tasto') || 'Tasto');
+  const stateLabel = __roomSettingsTextButtonStateLabel__(stateKey);
+  switch (__getAppLanguage__()){
+    case 'en': return `Text button ${safeLabel}: ${String(stateLabel || '').toLowerCase()} state updated`;
+    case 'fr': return `Bouton texte ${safeLabel} : état ${String(stateLabel || '').toLowerCase()} mis à jour`;
+    case 'de': return `Texttaste ${safeLabel}: Status ${String(stateLabel || '').toLowerCase()} aktualisiert`;
+    case 'es': return `Botón texto ${safeLabel}: estado ${String(stateLabel || '').toLowerCase()} actualizado`;
+    default: return `Tasto testo ${safeLabel}: stato ${String(stateLabel || '').toLowerCase()} aggiornato`;
+  }
 }
 
-function __roomSettingsThemeButtonVisualApply__(el, slot, fallbackVisual){
-  try{
-    if (!el) return;
-    const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
-    const stored = __roomSettingsThemeButtonVisualGet__(slot);
-    const visual = {
-      bg: stored.bg || fallback.bg || 'blue-4',
-      border: stored.border || stored.bg || fallback.border || fallback.bg || 'blue-4',
-      fg: stored.fg || fallback.fg || '',
-      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.80)
-    };
-    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
-    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
-    const fgHex = visual.fg ? __operatoreColorHex__(visual.fg) : '#000000';
-    el.setAttribute('style', `background:${hexToRgba(bgHex, visual.opacity)} !important;background-color:${hexToRgba(bgHex, visual.opacity)} !important;border-color:${hexToRgba(borderHex, 1)} !important;color:${fgHex} !important;-webkit-text-fill-color:${fgHex} !important;`);
-    el.classList.remove('room-settings-square-btn-placeholder');
-  }catch(_){ }
+function __roomSettingsTextButtonCategoryPrompt__(){
+  switch (__getAppLanguage__()){
+    case 'en': return 'Apply the changes to all text buttons?';
+    case 'fr': return 'Appliquer les modifications à tous les boutons texte ?';
+    case 'de': return 'Änderungen auf alle Texttasten anwenden?';
+    case 'es': return '¿Aplicar los cambios a todos los botones de texto?';
+    default: return 'Applicare le modifiche a tutti i tasti Testi?';
+  }
+}
+
+function __roomSettingsTextButtonTargetKeys__(){
+  return __ROOM_SETTINGS_TEXT_BUTTON_KEYS__.slice();
+}
+
+function __roomSettingsTextButtonDefaultVisual__(key, stateKey){
+  const safeKey = String(key || '').trim();
+  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  if (mode === 'active'){
+    return __launcherVisualNormalize__(safeKey === 'bold'
+      ? { bg:'green-4', border:'green-4', fg:'white', opacity:0.75 }
+      : { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.75 }, safeKey === 'bold' ? 'green-4' : 'blue-4');
+  }
+  return __launcherVisualNormalize__({ bg:'gray-2', border:'gray-3', fg:'blue-6', opacity:0.75 }, 'gray-2');
 }
 
 function __roomSettingsTextButtonVisualMapRead__(){
@@ -17542,66 +17557,136 @@ function __roomSettingsTextButtonVisualMapWrite__(map){
   try{ localStorage.setItem(__ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify((map && typeof map === 'object') ? map : {})); }catch(_){ }
 }
 
-function __roomSettingsTextButtonVisualGet__(key){
+function __roomSettingsTextButtonVisualForState__(key, stateKey){
   try{
+    const safeKey = String(key || '').trim();
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, mode);
     const map = __roomSettingsTextButtonVisualMapRead__();
-    const current = map[String(key || '').trim()] || {};
-    return __launcherVisualNormalize__(current, 'blue-4');
+    const entry = (map[safeKey] && typeof map[safeKey] === 'object') ? map[safeKey] : {};
+    let raw = null;
+    if ((entry.active && typeof entry.active === 'object') || (entry.distractive && typeof entry.distractive === 'object')) raw = entry[mode];
+    else if (mode === 'active') raw = entry;
+    const clean = __launcherVisualNormalize__(raw || fallback, fallback.bg || 'blue-4');
+    return {
+      bg: clean.bg || fallback.bg || 'blue-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: clean.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.75)
+    };
   }catch(_){ return __launcherVisualNormalize__({}, 'blue-4'); }
 }
 
-function __roomSettingsTextButtonVisualSet__(key, visual){
+function __roomSettingsTextButtonVisualSet__(key, stateKey, visual){
   try{
     const safeKey = String(key || '').trim();
     if (!safeKey) return;
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
     const map = __roomSettingsTextButtonVisualMapRead__();
-    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
-    map[safeKey] = { bg: clean.bg || 'blue-4', border: clean.border || clean.bg || 'blue-4', fg: clean.fg || '', opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.80) };
+    const entry = (map[safeKey] && typeof map[safeKey] === 'object') ? map[safeKey] : {};
+    const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, mode);
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
+    entry[mode] = {
+      bg: clean.bg || fallback.bg || 'blue-4',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+      fg: clean.fg || fallback.fg || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.75)
+    };
+    map[safeKey] = entry;
     __roomSettingsTextButtonVisualMapWrite__(map);
   }catch(_){ }
 }
 
-function __roomSettingsTextButtonVisualApply__(el, key, fallbackVisual){
+function __roomSettingsTextButtonCurrentState__(el){
+  try{ return el && el.classList && el.classList.contains('is-active') ? 'active' : 'distractive'; }catch(_){ return 'distractive'; }
+}
+
+function __roomSettingsTextButtonVisualApply__(el, key, fallbackVisual, forcedState){
   try{
     if (!el) return;
-    const fallback = __launcherVisualNormalize__(fallbackVisual || {}, 'blue-4');
-    const stored = __roomSettingsTextButtonVisualGet__(key);
+    const safeKey = String(key || '').trim();
+    const stateKey = String(forcedState || __roomSettingsTextButtonCurrentState__(el) || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const stateFallback = __roomSettingsTextButtonDefaultVisual__(safeKey, stateKey);
+    const fallback = __launcherVisualNormalize__(fallbackVisual || stateFallback, stateFallback.bg || 'blue-4');
+    const stored = __roomSettingsTextButtonVisualForState__(safeKey, stateKey);
     const visual = {
-      bg: stored.bg || fallback.bg || 'blue-4',
-      border: stored.border || stored.bg || fallback.border || fallback.bg || 'blue-4',
-      fg: stored.fg || fallback.fg || '',
-      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? 0.80)
+      bg: stored.bg || fallback.bg || stateFallback.bg || 'blue-4',
+      border: stored.border || stored.bg || fallback.border || fallback.bg || stateFallback.border || stateFallback.bg || 'blue-4',
+      fg: stored.fg || fallback.fg || stateFallback.fg || '',
+      opacity: __designBgOpacityNormalize__(stored.opacity ?? fallback.opacity ?? stateFallback.opacity ?? 0.75)
     };
     el.setAttribute('style', `${__tagColorInlineStyle__(visual.bg || 'blue-4', visual.fg || '', { opacity:visual.opacity, borderOpacity:1, preferWhiteText:false })}border-color:${hexToRgba(__operatoreColorHex__(visual.border || visual.bg || 'blue-4'), 1)} !important;`);
     el.classList.remove('room-settings-square-btn-placeholder');
   }catch(_){ }
 }
 
-function __openRoomSettingsTextButtonColorPicker__(key){
+async function __applyRoomSettingsTextButtonChangesToCategory__(stateKey, payload, changed){
+  try{
+    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    __roomSettingsTextButtonTargetKeys__().forEach((safeKey) => {
+      const current = __roomSettingsTextButtonVisualForState__(safeKey, mode);
+      const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, mode).bg || 'blue-4';
+      const next = __applyDesignPayloadToVisual__(current, payload, changed, fallback);
+      __roomSettingsTextButtonVisualSet__(safeKey, mode, next);
+    });
+    try{ renderRoomSettingsTextControls(); }catch(_){ }
+    try{ renderRoomSettingsPage(); }catch(_){ }
+  }catch(_){ }
+}
+
+async function __openRoomSettingsTextButtonColorPicker__(key){
   try{
     const safeKey = String(key || '').trim();
     if (!safeKey) return;
     const el = document.getElementById(safeKey === 'bold' ? 'roomSettingsTextBoldBtn' : `roomSettingsTextSizeBtn${safeKey}`);
     if (!el) return;
-    const initial = __roomSettingsTextButtonVisualGet__(safeKey);
+    const label = __roomSettingsTextButtonLocalizedLabel__(safeKey);
+    const choice = await __confirmTwoActions__(
+      __roomSettingsTextButtonEditStatePrompt__(label),
+      __roomSettingsTextButtonStateLabel__('active'),
+      __roomSettingsTextButtonStateLabel__('distractive')
+    );
+    if (choice !== 'yes' && choice !== 'no') return;
+    const stateKey = choice === 'yes' ? 'active' : 'distractive';
+    const initial = __roomSettingsTextButtonVisualForState__(safeKey, stateKey);
+    const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, stateKey);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
-        bg: colors.bg || initial.bg || 'blue-4',
-        border: colors.border || initial.border || colors.bg || initial.bg || 'blue-4',
-        fg: colors.fg || initial.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
+        bg: colors.bg || initial.bg || fallback.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || fallback.border || fallback.bg || 'blue-4',
+        fg: colors.fg || initial.fg || fallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? fallback.opacity ?? 0.75)
       };
-      __roomSettingsTextButtonVisualSet__(safeKey, next);
-      __roomSettingsTextButtonVisualApply__(el, safeKey, next);
+      __roomSettingsTextButtonVisualSet__(safeKey, stateKey, next);
       try{ renderRoomSettingsTextControls(); }catch(_){ }
+      try{ renderRoomSettingsPage(); }catch(_){ }
     };
     const revertVisual = () => {
-      __roomSettingsTextButtonVisualSet__(safeKey, initial);
-      __roomSettingsTextButtonVisualApply__(el, safeKey, initial);
+      __roomSettingsTextButtonVisualSet__(safeKey, stateKey, initial);
       try{ renderRoomSettingsTextControls(); }catch(_){ }
+      try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    __tagColorPopupOpen__('room-text-button', initial, (payload) => { applyVisual(payload); }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:initial.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(initial.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual });
+    __tagColorPopupOpen__('room-text-button', initial, (payload) => {
+      try{
+        applyVisual(payload);
+        try{ toast(__roomSettingsTextButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:(initial.opacity ?? 0.75),
+      defaultMode:'bg',
+      fallbackBg:(initial.bg || fallback.bg || 'blue-4'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message: __roomSettingsTextButtonCategoryPrompt__(),
+        apply: async(payload, changed) => { await __applyRoomSettingsTextButtonChangesToCategory__(stateKey, payload, changed); }
+      }
+    });
   }catch(_){ }
 }
 
