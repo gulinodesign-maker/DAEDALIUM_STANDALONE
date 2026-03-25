@@ -17123,3 +17123,14 @@ body.ddae-dark #page-tassa .tax-result-sub{
 
 
 /* dDAE_2.476 — scheda ospite in lettura: bandierina cliccabile con popup paese e resa visiva più ampia */
+
+
+/* dDAE_2.478 — Impostazioni: pill anno 50% più stretta e 25px più in basso; build visibile solo in Home */
+#page-impostazioni .settings-year-pill{
+  width: min(180px, 48vw) !important;
+  transform: translateY(25px) !important;
+}
+#page-impostazioni .settings-build,
+#page-opsettings .settings-build{
+  display: none !important;
+}
