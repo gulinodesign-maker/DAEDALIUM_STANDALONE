@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.496
+ * Build: 2.495
  */
-const BUILD_VERSION = "2.496";
+const BUILD_VERSION = "2.495";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4072,7 +4072,7 @@ function __isAppTextCandidate__(el){
       if (["checkbox","radio","range","color","file","hidden","date","time","month","week"].includes(type)) return false;
       return true;
     }
-    if (["TEXTAREA","SELECT","OPTION","BUTTON","LABEL","SPAN","A","P","PRE","LI","TD","TH","STRONG","B","EM","I","SMALL","H1","H2","H3","H4","H5","H6","SUMMARY","DIV","SECTION","ARTICLE","HEADER","FOOTER","LEGEND","FIGCAPTION"].includes(tag)) return true;
+    if (["TEXTAREA","SELECT","OPTION","BUTTON","LABEL","SPAN","A","P","PRE","LI","TD","TH","STRONG","B","EM","I","SMALL","H1","H2","H3","H4","H5","H6","SUMMARY"].includes(tag)) return true;
     for (const node of Array.from(el.childNodes || [])){
       if (node && node.nodeType === 3 && String(node.textContent || '').trim()) return true;
     }
@@ -4274,15 +4274,12 @@ function initAppTextUiObserver(){
           mutation.addedNodes && mutation.addedNodes.forEach((node) => {
             if (node instanceof Element) roots.push(node);
           });
-          if (mutation.type === 'characterData' && mutation.target?.parentElement instanceof Element){
-            roots.push(mutation.target.parentElement);
-          }
         });
         if (!roots.length) return;
         scheduleApplyAppTextUi(document.body);
       }catch(_){ }
     });
-    __appTextUiMutationObserver__.observe(document.body, { childList:true, characterData:true, subtree:true });
+    __appTextUiMutationObserver__.observe(document.body, { childList:true, subtree:true });
   }catch(_){ }
 }
 
@@ -7994,6 +7991,31 @@ function __openHeaderActionThemePicker__(){
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
 const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn'];
+const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
+
+function __pillLongPressKey__(btnOrId){
+  try{
+    if (!btnOrId) return '';
+    if (typeof btnOrId === 'string') return String(btnOrId || '').trim();
+    return String(btnOrId.id || '').trim();
+  }catch(_){ return ''; }
+}
+
+function __pillLongPressSuppress__(btnOrId, ms = 1200){
+  try{
+    const key = __pillLongPressKey__(btnOrId);
+    if (!key) return;
+    __PILL_LONGPRESS_SUPPRESS_UNTIL__[key] = Date.now() + Math.max(0, Number(ms || 0) || 0);
+  }catch(_){ }
+}
+
+function __pillLongPressSuppressed__(btnOrId){
+  try{
+    const key = __pillLongPressKey__(btnOrId);
+    if (!key) return false;
+    return Date.now() < Number(__PILL_LONGPRESS_SUPPRESS_UNTIL__[key] || 0);
+  }catch(_){ return false; }
+}
 
 function __pillTargetButtons__(){
   try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter(Boolean); }catch(_){ return []; }
@@ -8169,7 +8191,13 @@ function __bindPillLongPress__(btn){
     let holdTriggered = false;
     let touchAt = 0;
     const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
+    const canOpenPicker = () => {
+      try{ if (__pillLongPressSuppressed__(btn)) return false; }catch(_){ }
+      try{ if (__confirmYesNoGhostTapActive__()) return false; }catch(_){ }
+      return true;
+    };
     const openPicker = () => {
+      if (!canOpenPicker()) return;
       holdTriggered = true;
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
@@ -8199,7 +8227,8 @@ function __bindPillLongPress__(btn){
       touchAt = Date.now();
       holdTriggered = false;
       clearHold();
-      holdTimer = setTimeout(() => { openPicker(); }, 500);
+      if (!canOpenPicker()) return;
+      holdTimer = setTimeout(() => { if (canOpenPicker()) openPicker(); }, 500);
     }, { passive:true, capture:true });
     btn.addEventListener('touchend', (e) => {
       clearHold();
@@ -8210,7 +8239,8 @@ function __bindPillLongPress__(btn){
       if ((e.button || 0) !== 0) return;
       holdTriggered = false;
       clearHold();
-      holdTimer = setTimeout(() => { openPicker(); }, 500);
+      if (!canOpenPicker()) return;
+      holdTimer = setTimeout(() => { if (canOpenPicker()) openPicker(); }, 500);
     }, true);
     ['mouseup','mouseleave'].forEach((evt) => btn.addEventListener(evt, () => { clearHold(); }, true));
     btn.addEventListener('click', (e) => {
@@ -8219,10 +8249,11 @@ function __bindPillLongPress__(btn){
       }
     }, true);
     btn.addEventListener('contextmenu', (e) => {
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-      const isLogoutBtn = /logout/i.test(String(btn.id || ''));
-      if (isLogoutBtn) return;
-      try{ if (holdTriggered) openPicker(); }catch(_){ }
+      try{ e.preventDefault(); }catch(_){ }
+      if (canOpenPicker()){
+        try{ openPicker(); }catch(_){ }
+      }
+      try{ e.stopPropagation(); }catch(_){ }
     });
   }catch(_){ }
 }
@@ -10418,6 +10449,7 @@ function setupImpostazioni() {
   });
   const opLogoutPageBtn = document.getElementById("opSettingsLogoutBtn");
   if (opLogoutPageBtn) bindFastTap(opLogoutPageBtn, async () => {
+    try{ __pillLongPressSuppress__(opLogoutPageBtn, 1800); }catch(_){ }
     let ok = false;
     try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
     if (!ok) return;
@@ -10574,6 +10606,7 @@ const cfg = document.getElementById("settingsConfigBtn");
 
   const logout = document.getElementById("settingsLogoutBtn");
   if (logout) bindFastTap(logout, async () => {
+    try{ __pillLongPressSuppress__(logout, 1800); }catch(_){ }
     let ok = false;
     try{ ok = await confirmYesNo("Vuoi uscire?"); }catch(_){ ok = false; }
     if (!ok) return;
@@ -11781,7 +11814,6 @@ state.page = page;
   }
 
   try{ setTimeout(() => { try{ __applyAppLanguageToDom__(); }catch(_){ } }, 0); }catch(_){ }
-  try{ setTimeout(() => { try{ applyAppTextUi(el || document.body); }catch(_){ } }, 0); }catch(_){ }
 
   // Topbar: in HOME il tasto "Home" non serve → mostra Impostazioni
   try{
