@@ -17399,3 +17399,92 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
     font-size:20px;
   }
 }
+
+
+/* dDAE_2.493 - Design: tasti Tema/Testi quadrati uniformi + scheda stanze -20% */
+.room-settings-panel-main{
+  gap:8px;
+}
+.room-settings-panel-main{
+  padding:10px !important;
+}
+.room-settings-panel-main .room-settings-divider{
+  margin:0 !important;
+}
+.room-settings-section-count{
+  padding:10px 12px !important;
+}
+.room-settings-section-count .room-settings-count-btn{
+  width:64px;
+  min-width:64px;
+  height:64px;
+  border-radius:19px;
+  font-size:26px;
+}
+.room-settings-section-text{
+  gap:8px !important;
+}
+.room-settings-section:not(.room-settings-section-card){
+  padding-top:8px;
+  gap:6px;
+}
+.room-settings-section-card{
+  padding:8px !important;
+  gap:6px !important;
+}
+.room-settings-section-theme .room-settings-squares,
+.room-settings-text-controls{
+  gap:8px;
+}
+.room-settings-section-theme .room-settings-square-btn,
+.room-settings-text-controls .room-settings-square-btn{
+  width:54px !important;
+  min-width:54px !important;
+  max-width:54px !important;
+  height:54px !important;
+  border-radius:16px;
+  font-size:22px;
+  flex:0 0 54px;
+  aspect-ratio:1 / 1;
+}
+.room-settings-text-controls{
+  grid-template-columns:repeat(4,54px);
+  justify-content:center;
+}
+@media (max-width: 390px){
+  .room-settings-panel-main{
+    padding:9px !important;
+  }
+  .room-settings-section-count{
+    padding:9px 10px !important;
+  }
+  .room-settings-section-count .room-settings-count-btn{
+    width:58px;
+    min-width:58px;
+    height:58px;
+    border-radius:17px;
+    font-size:24px;
+  }
+  .room-settings-section:not(.room-settings-section-card){
+    padding-top:7px;
+    gap:5px;
+  }
+  .room-settings-section-card{
+    padding:7px !important;
+    gap:5px !important;
+  }
+  .room-settings-section-theme .room-settings-square-btn,
+  .room-settings-text-controls .room-settings-square-btn{
+    width:50px !important;
+    min-width:50px !important;
+    max-width:50px !important;
+    height:50px !important;
+    border-radius:15px;
+    font-size:20px;
+    flex:0 0 50px;
+  }
+  .room-settings-text-controls{
+    grid-template-columns:repeat(4,50px);
+    justify-content:center;
+  }
+}

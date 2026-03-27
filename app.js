@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.491
+ * Build: 2.493
  */
-const BUILD_VERSION = "2.491";
+const BUILD_VERSION = "2.493";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3987,6 +3987,7 @@ guestMarriage: false,
   guestSaldoType: "contante",
   guestPSRegistered: false,
   guestISTATRegistered: false,
+  guestArrivalFilter: "today",
   // Scheda ospite (sola lettura): ultimo ospite aperto
   guestViewItem: null,
 
@@ -5276,6 +5277,24 @@ const __I18N_PHRASES__ = {
     "fr": "Aujourd'hui",
     "de": "Heute",
     "es": "Hoy"
+  },
+  "3 giorni": {
+    "en": "3 days",
+    "fr": "3 jours",
+    "de": "3 Tage",
+    "es": "3 días"
+  },
+  "Nessun ospite nei prossimi 3 giorni.": {
+    "en": "No guests in the next 3 days.",
+    "fr": "Aucun client dans les 3 prochains jours.",
+    "de": "Keine Gäste in den nächsten 3 Tagen.",
+    "es": "No hay huéspedes en los próximos 3 días."
+  },
+  "Nessun ospite per oggi.": {
+    "en": "No guests for today.",
+    "fr": "Aucun client pour aujourd'hui.",
+    "de": "Keine Gäste für heute.",
+    "es": "No hay huéspedes para hoy."
   },
   "Matrimoniale": {
     "en": "Double",
@@ -12465,13 +12484,29 @@ function setupGuestListControls(){
   };
   paintDir();
 
+  const savedArrivalFilter = localStorage.getItem("dDAE_guestArrivalFilter");
   const savedToday = localStorage.getItem("dDAE_guestTodayOnly");
-  state.guestTodayOnly = (savedToday === "1") ? true : (savedToday === "0") ? false : (state.guestTodayOnly || false);
+  state.guestArrivalFilter = (savedArrivalFilter === "today" || savedArrivalFilter === "3days" || savedArrivalFilter === "all")
+    ? savedArrivalFilter
+    : ((savedToday === "1") ? "today" : (state.guestArrivalFilter || "today"));
+
+  const guestArrivalFilterLabelKey = () => {
+    const mode = String(state.guestArrivalFilter || 'today');
+    if (mode === '3days') return '3 giorni';
+    if (mode === 'all') return 'Tutti';
+    return 'Oggi';
+  };
 
   const paintToday = () => {
     if (!todayBtn) return;
-    todayBtn.classList.toggle("is-active", !!state.guestTodayOnly);
-    todayBtn.setAttribute("aria-pressed", state.guestTodayOnly ? "true" : "false");
+    const mode = String(state.guestArrivalFilter || 'today');
+    const labelKey = guestArrivalFilterLabelKey();
+    todayBtn.classList.toggle("is-active", mode !== 'all');
+    todayBtn.dataset.filterState = mode;
+    todayBtn.dataset.i18n = labelKey;
+    todayBtn.textContent = labelKey;
+    todayBtn.setAttribute("aria-pressed", mode === 'all' ? "false" : "true");
+    todayBtn.setAttribute('aria-label', labelKey);
     try { __translateTree__(todayBtn); } catch(_) {}
     try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
   };
@@ -12482,8 +12517,10 @@ function setupGuestListControls(){
 
   if (todayBtn){
     todayBtn.addEventListener("click", () => {
-      state.guestTodayOnly = !state.guestTodayOnly;
-      try { localStorage.setItem("dDAE_guestTodayOnly", state.guestTodayOnly ? "1" : "0"); } catch(_){}
+      const current = String(state.guestArrivalFilter || 'today');
+      state.guestArrivalFilter = current === 'today' ? '3days' : (current === '3days' ? 'all' : 'today');
+      try { localStorage.setItem("dDAE_guestArrivalFilter", state.guestArrivalFilter); } catch(_){}
+      try { localStorage.removeItem("dDAE_guestTodayOnly"); } catch(_){}
       paintToday();
       renderGuestCards();
     });
@@ -12559,7 +12596,11 @@ function setupGuestListControls(){
 
 
 function __guestFilterButtonStateLabel__(stateKey){
-  return __translateExactText__(String(stateKey || '').trim().toLowerCase() === 'active' ? 'Attivo' : 'Disattivo');
+  const key = String(stateKey || '').trim().toLowerCase();
+  if (key === 'today') return __translateExactText__('Oggi') || 'Oggi';
+  if (key === '3days') return __translateExactText__('3 giorni') || '3 giorni';
+  if (key === 'all') return __translateExactText__('Tutti') || 'Tutti';
+  return __translateExactText__(key === 'active' ? 'Attivo' : 'Disattivo');
 }
 
 function __guestFilterButtonLocalizedLabel__(btn){
@@ -12605,7 +12646,7 @@ function __guestFilterButtonCategoryPrompt__(){
 }
 
 function __guestFilterButtonTargetIds__(){
-  return ['guestToday','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
+  return ['guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
 }
 
 function __loadGuestFilterButtonVisualMap__(){
@@ -12622,19 +12663,26 @@ function __saveGuestFilterButtonVisualMap__(map){
 
 function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
   const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
-  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  const rawMode = String(stateKey || 'distractive').trim().toLowerCase();
   const isToday = id === 'guestToday';
+  if (isToday){
+    if (rawMode === 'today') return __launcherVisualNormalize__({ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 }, 'red-4');
+    if (rawMode === '3days') return __launcherVisualNormalize__({ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 }, 'orange-4');
+    return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
+  }
+  const mode = rawMode === 'active' ? 'active' : 'distractive';
   if (mode === 'active'){
-    return __launcherVisualNormalize__(isToday
-      ? { bg:'red-4', border:'red-4', fg:'white', opacity:0.80 }
-      : { bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }, isToday ? 'red-4' : 'green-4');
+    return __launcherVisualNormalize__({ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }, 'green-4');
   }
   return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
 }
 
 function __guestFilterButtonVisualForState__(btnOrId, stateKey){
   const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
-  const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+  const rawMode = String(stateKey || 'distractive').trim().toLowerCase();
+  const mode = (id === 'guestToday')
+    ? ((rawMode === '3days' || rawMode === 'all' || rawMode === 'today') ? rawMode : 'today')
+    : (rawMode === 'active' ? 'active' : 'distractive');
   const fallback = __guestFilterButtonDefaultVisual__(id, mode);
   if (!id) return fallback;
   const map = __loadGuestFilterButtonVisualMap__();
@@ -12652,7 +12700,10 @@ function __saveGuestFilterButtonVisualState__(btnOrId, stateKey, visual){
   try{
     const id = String((btnOrId && btnOrId.id) || btnOrId || '').trim();
     if (!id) return;
-    const mode = String(stateKey || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const rawMode = String(stateKey || 'distractive').trim().toLowerCase();
+    const mode = (id === 'guestToday')
+      ? ((rawMode === '3days' || rawMode === 'all' || rawMode === 'today') ? rawMode : 'today')
+      : (rawMode === 'active' ? 'active' : 'distractive');
     const map = __loadGuestFilterButtonVisualMap__();
     const entry = (map[id] && typeof map[id] === 'object') ? map[id] : {};
     const fallback = __guestFilterButtonDefaultVisual__(id, mode);
@@ -12669,13 +12720,19 @@ function __saveGuestFilterButtonVisualState__(btnOrId, stateKey, visual){
 }
 
 function __guestFilterButtonCurrentState__(btn){
-  try{ return btn && btn.classList && btn.classList.contains('is-active') ? 'active' : 'distractive'; }catch(_){ return 'distractive'; }
+  try{
+    if (btn && btn.id === 'guestToday') return String(state.guestArrivalFilter || btn?.dataset?.filterState || 'today');
+    return btn && btn.classList && btn.classList.contains('is-active') ? 'active' : 'distractive';
+  }catch(_){ return (btn && btn.id === 'guestToday') ? 'today' : 'distractive'; }
 }
 
 function __applyGuestFilterButtonVisual__(btn, forcedState, forcedVisual){
   try{
     if (!btn || !btn.id) return;
-    const stateKey = String(forcedState || __guestFilterButtonCurrentState__(btn) || 'distractive').trim().toLowerCase() === 'active' ? 'active' : 'distractive';
+    const rawState = String(forcedState || __guestFilterButtonCurrentState__(btn) || (btn.id === 'guestToday' ? 'today' : 'distractive')).trim().toLowerCase();
+    const stateKey = btn.id === 'guestToday'
+      ? ((rawState === '3days' || rawState === 'all' || rawState === 'today') ? rawState : 'today')
+      : (rawState === 'active' ? 'active' : 'distractive');
     const visual = forcedVisual
       ? __launcherVisualNormalize__(forcedVisual, (forcedVisual && forcedVisual.bg) || __guestFilterButtonDefaultVisual__(btn, stateKey).bg || 'sky-4')
       : __guestFilterButtonVisualForState__(btn, stateKey);
@@ -12700,7 +12757,8 @@ function __applyGuestFilterButtonVisual__(btn, forcedState, forcedVisual){
 
 function __applyGuestFilterButtonVisuals__(){
   try{
-    __guestFilterButtonTargetIds__().forEach((id) => {
+    const ids = ['guestToday', ...__guestFilterButtonTargetIds__()];
+    ids.forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
       __applyGuestFilterButtonVisual__(btn);
@@ -12727,13 +12785,18 @@ async function __openGuestFilterButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
     const label = __guestFilterButtonLocalizedLabel__(btn);
-    const choice = await __confirmTwoActions__(
-      __guestFilterButtonEditStatePrompt__(label),
-      __guestFilterButtonStateLabel__('active'),
-      __guestFilterButtonStateLabel__('distractive')
-    );
-    if (choice !== 'yes' && choice !== 'no') return;
-    const stateKey = choice === 'yes' ? 'active' : 'distractive';
+    const stateKey = btn.id === 'guestToday'
+      ? String(state.guestArrivalFilter || btn?.dataset?.filterState || 'today').trim().toLowerCase()
+      : await (async()=>{
+          const choice = await __confirmTwoActions__(
+            __guestFilterButtonEditStatePrompt__(label),
+            __guestFilterButtonStateLabel__('active'),
+            __guestFilterButtonStateLabel__('distractive')
+          );
+          if (choice !== 'yes' && choice !== 'no') return '';
+          return choice === 'yes' ? 'active' : 'distractive';
+        })();
+    if (!stateKey) return;
     const current = __guestFilterButtonVisualForState__(btn, stateKey);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
@@ -12767,7 +12830,7 @@ async function __openGuestFilterButtonColorPicker__(btn){
       fallbackBg:(current.bg || 'sky-4'),
       onPreview:applyVisual,
       onRevert:revertVisual,
-      applyCategory:{
+      applyCategory: btn.id === 'guestToday' ? null : {
         message: __guestFilterButtonCategoryPrompt__(),
         apply: async(payload, changed) => { await __applyGuestFilterButtonChangesToCategory__(stateKey, payload, changed); }
       }
@@ -20781,13 +20844,17 @@ function renderGuestCards(){
     ]);
   }catch(_){ }
 
-  // Filtro rapido "Oggi": mostra solo ospiti con arrivo (check_in) = oggi
-  if (state.guestTodayOnly){
+  // Filtro arrivo guest list: oggi / 3 giorni / tutti
+  const arrivalFilter = String(state.guestArrivalFilter || 'today');
+  if (arrivalFilter !== 'all'){
     const today = todayISO();
+    const soonLimit = addDaysISO(today, 3);
     items = (items || []).filter(g => {
       const v = (g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.arrival ?? g?.guestCheckIn ?? "");
       const s = String(v).trim();
       const d = s ? s.slice(0,10) : "";
+      if (!d) return false;
+      if (arrivalFilter === '3days') return d >= today && d <= soonLimit;
       return d === today;
     });
   }
@@ -20799,7 +20866,12 @@ function renderGuestCards(){
     empty.style.opacity = ".7";
     empty.style.fontSize = "14px";
     empty.style.padding = "8px";
-    empty.textContent = state.guestTodayOnly ? "Nessun ospite per oggi." : "Nessun ospite nel periodo.";
+    const arrivalFilter = String(state.guestArrivalFilter || 'today');
+    empty.textContent = arrivalFilter === '3days'
+      ? (__translateExactText__('Nessun ospite nei prossimi 3 giorni.') || 'Nessun ospite nei prossimi 3 giorni.')
+      : (arrivalFilter === 'all'
+          ? (__translateExactText__('Nessun ospite nel periodo.') || 'Nessun ospite nel periodo.')
+          : (__translateExactText__('Nessun ospite per oggi.') || 'Nessun ospite per oggi.'));
     frag.appendChild(empty);
     wrap.appendChild(frag);
     return;
