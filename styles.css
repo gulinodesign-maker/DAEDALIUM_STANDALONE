@@ -17401,7 +17401,7 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
 }
 
 
-/* dDAE_2.493 - Design: tasti Tema/Testi quadrati uniformi + scheda stanze -20% */
+/* dDAE_2.494 - Design: tasti Tema/Testi quadrati uniformi + scheda stanze -20% */
 .room-settings-panel-main{
   gap:8px;
 }
@@ -17448,8 +17448,11 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
   aspect-ratio:1 / 1;
 }
 .room-settings-text-controls{
-  grid-template-columns:repeat(4,54px);
-  justify-content:center;
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
 }
 @media (max-width: 390px){
   .room-settings-panel-main{
@@ -17484,7 +17487,10 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
     flex:0 0 50px;
   }
   .room-settings-text-controls{
-    grid-template-columns:repeat(4,50px);
-    justify-content:center;
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
   }
 }
