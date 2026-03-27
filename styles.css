@@ -17149,7 +17149,7 @@ body.ddae-dark #tagColorModal .tag-color-mode-btn:disabled{
   box-sizing:border-box !important;
 }
 #tagColorModal .tag-color-grid{
-  padding:var(--tag-color-grid-pad, 8px) !important;
+  padding:var(--tag-color-grid-pad-top, var(--tag-color-grid-pad, 8px)) var(--tag-color-grid-pad, 8px) var(--tag-color-grid-pad-bottom, var(--tag-color-grid-pad, 8px)) !important;
   overflow:visible !important;
 }
 #tagColorModal .tag-opacity-grid{

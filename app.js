@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.495
+ * Build: 2.496
  */
-const BUILD_VERSION = "2.495";
+const BUILD_VERSION = "2.496";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9473,6 +9473,7 @@ function __tagColorPopupApplyViewportLayout__(){
     const cardWidth = Math.max(300, Math.min(460, viewportWidth - (sidePadding * 2)));
     const cardHeight = Math.max(400, Math.min(720, viewportHeight - safeTop - safeBottom - (verticalPadding * 2)));
     const gridPad = Math.max(7, Math.min(10, Math.round(viewportWidth * 0.018)));
+    const gridPadBottom = gridPad + Math.max(8, Math.min(12, Math.round(gridPad * 0.9)));
     const opacityPad = Math.max(5, gridPad - 2);
     modal.style.setProperty('--tag-color-popup-side-pad', `${sidePadding}px`);
     modal.style.setProperty('--tag-color-popup-vertical-pad', `${verticalPadding}px`);
@@ -9507,7 +9508,7 @@ function __tagColorPopupApplyViewportLayout__(){
     const cols = 6;
     const total = grid.querySelectorAll('.tag-color-option').length || 72;
     const rows = Math.max(1, Math.ceil(total / cols));
-    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - (gridPad * 2) - 4));
+    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - gridPad - gridPadBottom - 4));
     const gridInnerWidth = Math.max(240, bodyInnerWidth - (gridPad * 2));
     const cellWidth = Math.floor((gridInnerWidth - (gap * (cols - 1))) / cols);
     const maxHeightFit = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
@@ -9515,12 +9516,14 @@ function __tagColorPopupApplyViewportLayout__(){
     const targetHeight = Math.floor(baseHeightFromWidth * 1.08);
     const finalHeight = Math.max(20, Math.min(maxHeightFit, targetHeight));
     const radius = Math.max(9, Math.min(18, Math.round(finalHeight * 0.34)));
-    const computedGridHeight = Math.max(0, (finalHeight * rows) + (gap * Math.max(0, rows - 1)) + (gridPad * 2));
+    const computedGridHeight = Math.max(0, (finalHeight * rows) + (gap * Math.max(0, rows - 1)) + gridPad + gridPadBottom);
     card.style.setProperty('--tag-color-gap', `${gap}px`);
     card.style.setProperty('--tag-color-cell-height', `${finalHeight}px`);
     card.style.setProperty('--tag-color-cell-radius', `${radius}px`);
     card.style.setProperty('--tag-color-grid-height', `${computedGridHeight}px`);
     card.style.setProperty('--tag-color-grid-pad', `${gridPad}px`);
+    card.style.setProperty('--tag-color-grid-pad-top', `${gridPad}px`);
+    card.style.setProperty('--tag-color-grid-pad-bottom', `${gridPadBottom}px`);
     card.style.setProperty('--tag-opacity-grid-pad', `${opacityPad}px`);
     card.style.setProperty('--tag-color-mode-height', `${modeHeight}px`);
     card.style.setProperty('--tag-opacity-height', `${opacityButtonHeight}px`);
