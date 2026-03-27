@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.495
+ * Build: 2.496
  */
-const BUILD_VERSION = "2.495";
+const BUILD_VERSION = "2.496";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8219,9 +8219,10 @@ function __bindPillLongPress__(btn){
       }
     }, true);
     btn.addEventListener('contextmenu', (e) => {
-      try{ e.preventDefault(); }catch(_){ }
-      try{ openPicker(); }catch(_){ }
-      try{ e.stopPropagation(); }catch(_){ }
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      const isLogoutBtn = /logout/i.test(String(btn.id || ''));
+      if (isLogoutBtn) return;
+      try{ if (holdTriggered) openPicker(); }catch(_){ }
     });
   }catch(_){ }
 }
