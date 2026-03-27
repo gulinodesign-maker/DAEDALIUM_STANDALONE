@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.494
+ * Build: 2.495
  */
-const BUILD_VERSION = "2.494";
+const BUILD_VERSION = "2.495";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4072,7 +4072,7 @@ function __isAppTextCandidate__(el){
       if (["checkbox","radio","range","color","file","hidden","date","time","month","week"].includes(type)) return false;
       return true;
     }
-    if (["TEXTAREA","SELECT","OPTION","BUTTON","LABEL","SPAN","A","P","PRE","LI","TD","TH","STRONG","B","EM","I","SMALL","H1","H2","H3","H4","H5","H6","SUMMARY"].includes(tag)) return true;
+    if (["TEXTAREA","SELECT","OPTION","BUTTON","LABEL","SPAN","A","P","PRE","LI","TD","TH","STRONG","B","EM","I","SMALL","H1","H2","H3","H4","H5","H6","SUMMARY","DIV","SECTION","ARTICLE","HEADER","FOOTER","LEGEND","FIGCAPTION"].includes(tag)) return true;
     for (const node of Array.from(el.childNodes || [])){
       if (node && node.nodeType === 3 && String(node.textContent || '').trim()) return true;
     }
@@ -4274,12 +4274,15 @@ function initAppTextUiObserver(){
           mutation.addedNodes && mutation.addedNodes.forEach((node) => {
             if (node instanceof Element) roots.push(node);
           });
+          if (mutation.type === 'characterData' && mutation.target?.parentElement instanceof Element){
+            roots.push(mutation.target.parentElement);
+          }
         });
         if (!roots.length) return;
         scheduleApplyAppTextUi(document.body);
       }catch(_){ }
     });
-    __appTextUiMutationObserver__.observe(document.body, { childList:true, subtree:true });
+    __appTextUiMutationObserver__.observe(document.body, { childList:true, characterData:true, subtree:true });
   }catch(_){ }
 }
 
@@ -11777,6 +11780,7 @@ state.page = page;
   }
 
   try{ setTimeout(() => { try{ __applyAppLanguageToDom__(); }catch(_){ } }, 0); }catch(_){ }
+  try{ setTimeout(() => { try{ applyAppTextUi(el || document.body); }catch(_){ } }, 0); }catch(_){ }
 
   // Topbar: in HOME il tasto "Home" non serve → mostra Impostazioni
   try{
