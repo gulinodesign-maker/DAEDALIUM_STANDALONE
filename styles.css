@@ -17569,3 +17569,31 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
     margin-top:9px;
   }
 }
+
+
+/* dDAE_2.506 - Dark mode flags: no white background */
+body.ddae-dark #page-ospiti .guest-nationality-dot,
+body.ddae-dark #page-ospiti .guest-nationality-dot .guest-nationality-flag{
+  background: rgba(30,41,59,0.96) !important;
+}
+body.ddae-dark #page-ospiti .guest-nationality-dot{
+  border-color: rgba(88,183,244,0.30) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02) !important;
+}
+body.ddae-dark #page-ospiti .guest-nationality-flag{
+  filter: saturate(0.95) brightness(0.96) !important;
+}
+body.ddae-dark #page-ospite .guest-nationality-btn,
+body.ddae-dark #page-ospite #guestContactRow .guest-nationality-btn,
+body.ddae-dark .guest-form-card.is-view #guestNationalityBtn{
+  background: rgba(30,41,59,0.96) !important;
+  border-color: rgba(88,183,244,0.30) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02) !important;
+  color: #ffffff !important;
+}
+body.ddae-dark #page-ospite .guest-nationality-btn .guest-nationality-flag,
+body.ddae-dark #page-ospite #guestContactRow .guest-nationality-btn .guest-nationality-flag,
+body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-flag{
+  background: transparent !important;
+  filter: saturate(0.95) brightness(0.96) !important;
+}
