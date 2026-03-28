@@ -4173,6 +4173,8 @@ function renderRoomSettingsTextControls(){
     const boldBtn = document.getElementById('roomSettingsTextBoldBtn');
     if (boldBtn){
       boldBtn.classList.toggle('is-active', !!settings.bold);
+      boldBtn.classList.toggle('is-bold-active', !!settings.bold);
+      boldBtn.classList.toggle('is-bold-inactive', !settings.bold);
       boldBtn.setAttribute('aria-pressed', settings.bold ? 'true' : 'false');
       const label = settings.bold ? 'Testi in grassetto. Tap per tornare normale, pressione lunga per colore' : 'Testi normali. Tap per attivare il grassetto, pressione lunga per colore';
       boldBtn.setAttribute('aria-label', label);

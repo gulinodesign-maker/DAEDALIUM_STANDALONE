@@ -17494,3 +17494,30 @@ body.ddae-dark .room-settings-panel-main .room-settings-divider{
     width:100%;
   }
 }
+
+
+/* dDAE_2.498 - Design: G del grassetto leggibile + più spazio tra titoli e pallini */
+#roomSettingsTextBoldBtn{
+  font-weight:500 !important;
+  letter-spacing:0 !important;
+}
+#roomSettingsTextBoldBtn.is-bold-inactive{
+  font-weight:500 !important;
+}
+#roomSettingsTextBoldBtn.is-bold-active{
+  font-weight:900 !important;
+}
+.room-settings-section > .room-settings-section-title + .room-settings-dots,
+.room-settings-section > .room-settings-section-title + .room-settings-text-controls,
+.room-settings-section-card > .room-settings-section-title + .room-settings-squares,
+.room-settings-section-head + .room-settings-text-controls{
+  margin-top:10px;
+}
+@media (max-width: 390px){
+  .room-settings-section > .room-settings-section-title + .room-settings-dots,
+  .room-settings-section > .room-settings-section-title + .room-settings-text-controls,
+  .room-settings-section-card > .room-settings-section-title + .room-settings-squares,
+  .room-settings-section-head + .room-settings-text-controls{
+    margin-top:9px;
+  }
+}
