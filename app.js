@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.502";
+const BUILD_VERSION = "2.503";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15542,40 +15542,84 @@ function __statGenRegistrationsByMonth__(){
 }
 
 const __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__ = 'dDAE_stat_shared_line_chart_visual_v1';
+const __STAT_SHARED_LINE_CHART_LOCAL_STORAGE_PREFIX__ = 'dDAE_stat_shared_line_chart_local_v1_';
 const __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__ = __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__;
+
+function __statSharedLineChartDefaultVisual__(){
+  const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+  return {
+    bg: (isDark ? '#0f172a' : '#ffffff'),
+    border: (isDark ? '#94a3b8' : '#0f172a'),
+    fg: '#c9772b',
+    opacity: 0
+  };
+}
+
+function __statSharedLineChartPageKeyNormalize__(pageKey){
+  const safe = String(pageKey || '').trim().toLowerCase();
+  if (safe === 'statspese') return 'statspese';
+  if (safe === 'statmensili') return 'statmensili';
+  return 'statgen';
+}
+
+function __statSharedLineChartLocalStorageKey__(pageKey){
+  return `${__STAT_SHARED_LINE_CHART_LOCAL_STORAGE_PREFIX__}${__statSharedLineChartPageKeyNormalize__(pageKey)}`;
+}
+
+function __statSharedLineChartNormalizeVisual__(visual, fallback){
+  const base = fallback || __statSharedLineChartDefaultVisual__();
+  return {
+    bg: __normalizeOperatoreColor__(visual?.bg || base.bg || '#ffffff'),
+    border: __normalizeOperatoreColor__(visual?.border || base.border || visual?.bg || base.bg || '#0f172a'),
+    fg: __normalizeOptionalOperatoreColor__(visual?.fg || base.fg || '#c9772b') || (base.fg || '#c9772b'),
+    opacity: __designBgOpacityNormalize__(visual?.opacity ?? base.opacity ?? 0)
+  };
+}
 
 function __statSharedLineChartVisualRead__(){
   try{
     const raw = localStorage.getItem(__STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__) || localStorage.getItem('dDAE_statgen_reg_chart_visual_v1');
     const parsed = raw ? JSON.parse(raw) : {};
-    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const fallbackBg = isDark ? '#0f172a' : '#ffffff';
-    const fallbackBorder = isDark ? '#94a3b8' : '#0f172a';
-    const fallbackFg = '#c9772b';
-    return {
-      bg: __normalizeOperatoreColor__(parsed?.bg || fallbackBg),
-      border: __normalizeOperatoreColor__(parsed?.border || fallbackBorder),
-      fg: __normalizeOptionalOperatoreColor__(parsed?.fg || fallbackFg) || fallbackFg,
-      opacity: __designBgOpacityNormalize__(parsed?.opacity ?? 0)
-    };
+    return __statSharedLineChartNormalizeVisual__(parsed, __statSharedLineChartDefaultVisual__());
   }catch(_){
-    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    return { bg:(isDark ? '#0f172a' : '#ffffff'), border:(isDark ? '#94a3b8' : '#0f172a'), fg:'#c9772b', opacity:0 };
+    return __statSharedLineChartDefaultVisual__();
+  }
+}
+
+function __statSharedLineChartVisualReadFor__(pageKey){
+  const shared = __statSharedLineChartVisualRead__();
+  try{
+    const raw = localStorage.getItem(__statSharedLineChartLocalStorageKey__(pageKey));
+    if (!raw) return shared;
+    const parsed = JSON.parse(raw);
+    return __statSharedLineChartNormalizeVisual__(parsed, shared);
+  }catch(_){
+    return shared;
   }
 }
 
 function __statSharedLineChartVisualWrite__(visual){
   try{
-    const current = __statSharedLineChartVisualRead__();
-    const next = {
-      bg: __normalizeOperatoreColor__(visual?.bg || current.bg || '#ffffff'),
-      border: __normalizeOperatoreColor__(visual?.border || current.border || visual?.bg || current.bg || '#0f172a'),
-      fg: __normalizeOptionalOperatoreColor__(visual?.fg || current.fg || '#c9772b') || (current.fg || '#c9772b'),
-      opacity: __designBgOpacityNormalize__(visual?.opacity ?? current.opacity ?? 0)
-    };
+    const next = __statSharedLineChartNormalizeVisual__(visual, __statSharedLineChartVisualRead__());
     localStorage.setItem(__STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__, JSON.stringify(next));
     return next;
   }catch(_){ return __statSharedLineChartVisualRead__(); }
+}
+
+function __statSharedLineChartVisualWriteFor__(pageKey, visual){
+  try{
+    const next = __statSharedLineChartNormalizeVisual__(visual, __statSharedLineChartVisualReadFor__(pageKey));
+    localStorage.setItem(__statSharedLineChartLocalStorageKey__(pageKey), JSON.stringify(next));
+    return next;
+  }catch(_){ return __statSharedLineChartVisualReadFor__(pageKey); }
+}
+
+function __statSharedLineChartVisualResetFor__(pageKey){
+  try{ localStorage.removeItem(__statSharedLineChartLocalStorageKey__(pageKey)); }catch(_){ }
+}
+
+function __statSharedLineChartVisualResetAllLocals__(){
+  ['statgen','statspese','statmensili'].forEach((pageKey)=>{ try{ __statSharedLineChartVisualResetFor__(pageKey); }catch(_){ } });
 }
 
 function __statGenRegChartVisualRead__(){
@@ -15616,6 +15660,7 @@ function __applyStatSharedLineChartChangesToCategory__(payload, changed){
       opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0) : __designBgOpacityNormalize__(current.opacity ?? 0)
     };
     __statSharedLineChartVisualWrite__(next);
+    __statSharedLineChartVisualResetAllLocals__();
     __applyStatSharedLineChartWrapVisualToAll__();
     __refreshStatSharedLineCharts__();
   }catch(_){ }
@@ -15624,7 +15669,8 @@ function __applyStatSharedLineChartChangesToCategory__(payload, changed){
 function __applyStatGenRegChartWrapVisual__(wrap, visual){
   const el = wrap || document.querySelector('#page-statgen .statgen-line-chart-wrap');
   if (!el) return;
-  const current = visual || __statSharedLineChartVisualRead__();
+  const pageKey = __statSharedLineChartPageKeyNormalize__(el?.dataset?.statLineChartKey || 'statgen');
+  const current = visual || __statSharedLineChartVisualReadFor__(pageKey);
   const bgHex = __graphColorValueToHex__(current?.bg || '#ffffff', '#ffffff');
   const opacity = __designBgOpacityNormalize__(current?.opacity ?? 0);
   const bg = hexToRgba(bgHex, opacity);
@@ -15634,10 +15680,11 @@ function __applyStatGenRegChartWrapVisual__(wrap, visual){
 }
 
 function __openStatSharedLineChartColorPicker__(wrap){
-  const initial = __statSharedLineChartVisualRead__();
+  const pageKey = __statSharedLineChartPageKeyNormalize__(wrap?.dataset?.statLineChartKey || 'statgen');
+  const initial = __statSharedLineChartVisualReadFor__(pageKey);
   const applyVisual = (payload) => {
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    const next = __statSharedLineChartVisualWrite__({
+    const next = __statSharedLineChartVisualWriteFor__(pageKey, {
       bg: colors.bg || initial.bg,
       border: colors.border || initial.border || colors.bg || initial.bg,
       fg: colors.fg || initial.fg,
@@ -15648,7 +15695,7 @@ function __openStatSharedLineChartColorPicker__(wrap){
     return next;
   };
   const revertVisual = () => {
-    __statSharedLineChartVisualWrite__(initial);
+    __statSharedLineChartVisualWriteFor__(pageKey, initial);
     __applyStatSharedLineChartWrapVisualToAll__();
     __refreshStatSharedLineCharts__();
   };
@@ -15680,6 +15727,9 @@ function __bindStatSharedLineChartLongPress__(wrap){
   const el = wrap;
   if (!el || el.dataset.statgenChartLongPressBound === '1') return;
   el.dataset.statgenChartLongPressBound = '1';
+  try{ if (!el.dataset.statLineChartKey){
+    el.dataset.statLineChartKey = el.closest('#page-statspese') ? 'statspese' : (el.closest('#page-statmensili') ? 'statmensili' : 'statgen');
+  } }catch(_){ }
   let timer = null;
   let fired = false;
   const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
@@ -15736,7 +15786,8 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  const visual = __statSharedLineChartVisualRead__();
+  const pageKey = (canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : 'statgen');
+  const visual = __statSharedLineChartVisualReadFor__(pageKey);
   const isDark = !!document.body?.classList?.contains('ddae-dark');
   const gridColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.26 : 0.18);
   const axisColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.40 : 0.28);
