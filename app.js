@@ -15652,18 +15652,34 @@ function __refreshStatSharedLineCharts__(){
   try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
 }
 
-function __applyStatSharedLineChartChangesToCategory__(payload, changed){
+function __applyStatSharedLineChartChangesToCategory__(payload, changed, sourcePageKey){
   try{
-    const current = __statSharedLineChartVisualRead__();
+    const safeSource = __statSharedLineChartPageKeyNormalize__(sourcePageKey || 'statgen');
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    const next = {
-      bg: changed?.bg ? (colors.bg || current.bg || '#ffffff') : current.bg,
-      border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || '#0f172a') : current.border,
-      fg: changed?.fg ? (colors.fg || current.fg || '#c9772b') : current.fg,
-      opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0) : __designBgOpacityNormalize__(current.opacity ?? 0)
+    const pageKeys = ['statgen','statspese','statmensili','statcancellazioni'];
+
+    const mergeChanged = (baseVisual) => {
+      const current = __statSharedLineChartNormalizeVisual__(baseVisual || {}, __statSharedLineChartDefaultVisual__());
+      return {
+        bg: changed?.bg ? (colors.bg || current.bg || '#ffffff') : current.bg,
+        border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || '#0f172a') : current.border,
+        fg: changed?.fg ? (colors.fg || current.fg || '#c9772b') : current.fg,
+        opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0) : __designBgOpacityNormalize__(current.opacity ?? 0)
+      };
     };
-    __statSharedLineChartVisualWrite__(next);
-    __statSharedLineChartVisualResetAllLocals__();
+
+    const sharedNext = mergeChanged(__statSharedLineChartVisualRead__());
+    __statSharedLineChartVisualWrite__(sharedNext);
+
+    pageKeys.forEach((pageKey) => {
+      try{
+        if (pageKey === safeSource) return;
+        const targetCurrent = __statSharedLineChartVisualReadFor__(pageKey);
+        const targetNext = mergeChanged(targetCurrent);
+        __statSharedLineChartVisualWriteFor__(pageKey, targetNext);
+      }catch(_){ }
+    });
+
     __applyStatSharedLineChartWrapVisualToAll__();
     __refreshStatSharedLineCharts__();
   }catch(_){ }
@@ -15746,7 +15762,7 @@ function __openStatSharedLineChartColorPicker__(wrap){
     onRevert:revertVisual,
     applyCategory:{
       message:'Applicare il design a tutti i grafici statistiche della stessa tipologia?',
-      apply: async(payload, changed) => { __applyStatSharedLineChartChangesToCategory__(payload, changed); }
+      apply: async(payload, changed) => { __applyStatSharedLineChartChangesToCategory__(payload, changed, pageKey); }
     }
   });
 }
