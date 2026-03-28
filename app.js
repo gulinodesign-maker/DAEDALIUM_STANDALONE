@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.496";
+const BUILD_VERSION = "2.499";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -20762,13 +20762,49 @@ function setupOspite(){
   try { updateGuestRemaining(); } catch (_) {}
 
 
+  function syncGuestCheckoutPickerMonth(opts = {}){
+    try{
+      const ci = document.getElementById("guestCheckIn");
+      const co = document.getElementById("guestCheckOut");
+      if (!ci || !co) return;
+      const checkInVal = String(ci.value || "").trim();
+      const checkOutVal = String(co.value || "").trim();
+      if (checkInVal){
+        co.min = checkInVal;
+      }else{
+        co.removeAttribute("min");
+      }
+      if (!checkInVal) return;
+      const forceMonth = !!(opts && opts.forceMonth);
+      if (!checkOutVal || checkOutVal < checkInVal || forceMonth){
+        co.value = checkInVal;
+      }
+    }catch(_){ }
+  }
+
   // ✅ Stanze: blocca selezione finché non c'è un intervallo date valido + segna stanze occupate (rosso)
   ["guestCheckIn","guestCheckOut"].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener("input", () => { try { refreshRoomsAvailability(); } catch (_) {} });
-    el.addEventListener("change", () => { try { refreshRoomsAvailability(); } catch (_) {} });
+    el.addEventListener("input", () => {
+      try{ if (id === "guestCheckIn") syncGuestCheckoutPickerMonth(); }catch(_){ }
+      try { refreshRoomsAvailability(); } catch (_) {}
+    });
+    el.addEventListener("change", () => {
+      try{ if (id === "guestCheckIn") syncGuestCheckoutPickerMonth(); }catch(_){ }
+      try { refreshRoomsAvailability(); } catch (_) {}
+    });
   });
+  const guestCheckOutEl = document.getElementById("guestCheckOut");
+  if (guestCheckOutEl && !guestCheckOutEl.__boundSyncMonth){
+    guestCheckOutEl.__boundSyncMonth = true;
+    const syncMonthBeforeOpen = () => { try{ syncGuestCheckoutPickerMonth({ forceMonth:true }); }catch(_){ } };
+    guestCheckOutEl.addEventListener("focus", syncMonthBeforeOpen);
+    guestCheckOutEl.addEventListener("pointerdown", syncMonthBeforeOpen);
+    guestCheckOutEl.addEventListener("touchstart", syncMonthBeforeOpen, { passive:true });
+    guestCheckOutEl.addEventListener("click", syncMonthBeforeOpen);
+  }
+  try { syncGuestCheckoutPickerMonth(); } catch (_) {}
   try { refreshRoomsAvailability(); } catch (_) {}
 
 
