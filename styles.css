@@ -6978,17 +6978,26 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   margin:0 10px 12px;
   padding:0;
   overflow:hidden;
+  border-radius:16px;
+  background:var(--statgen-chart-bg, transparent);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .statgen-line-chart{
   display:block;
   width:100%;
-  height:148px;
-  max-height:148px;
+  height:118px;
+  max-height:118px;
 }
 
 body.ddae-dark .statgen-line-chart-wrap{
-  background:transparent !important;
+  background:var(--statgen-chart-bg, transparent) !important;
+}
+
+.statgen-line-chart-wrap.is-pressing{
+  outline:1px solid rgba(148,163,184,0.32);
+  outline-offset:0;
 }
 
 /* Conteggio generale: voci piu' leggibili (60%) */

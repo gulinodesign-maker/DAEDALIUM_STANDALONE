@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.500";
+const BUILD_VERSION = "2.501";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15541,13 +15541,134 @@ function __statGenRegistrationsByMonth__(){
   return { counts, percentages, total };
 }
 
+const __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__ = 'dDAE_statgen_reg_chart_visual_v1';
+
+function __statGenRegChartVisualRead__(){
+  try{
+    const raw = localStorage.getItem(__STATGEN_REG_CHART_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const fallbackBg = isDark ? '#0f172a' : '#ffffff';
+    const fallbackBorder = isDark ? '#94a3b8' : '#0f172a';
+    const fallbackFg = isDark ? '#7ac0db' : '#2b7cb4';
+    return {
+      bg: __normalizeOperatoreColor__(parsed?.bg || fallbackBg),
+      border: __normalizeOperatoreColor__(parsed?.border || fallbackBorder),
+      fg: __normalizeOptionalOperatoreColor__(parsed?.fg || fallbackFg) || fallbackFg,
+      opacity: __designBgOpacityNormalize__(parsed?.opacity ?? 0)
+    };
+  }catch(_){
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    return { bg:(isDark ? '#0f172a' : '#ffffff'), border:(isDark ? '#94a3b8' : '#0f172a'), fg:(isDark ? '#7ac0db' : '#2b7cb4'), opacity:0 };
+  }
+}
+
+function __statGenRegChartVisualWrite__(visual){
+  try{
+    const current = __statGenRegChartVisualRead__();
+    const next = {
+      bg: __normalizeOperatoreColor__(visual?.bg || current.bg || '#ffffff'),
+      border: __normalizeOperatoreColor__(visual?.border || current.border || visual?.bg || current.bg || '#0f172a'),
+      fg: __normalizeOptionalOperatoreColor__(visual?.fg || current.fg || '#2b7cb4') || (current.fg || '#2b7cb4'),
+      opacity: __designBgOpacityNormalize__(visual?.opacity ?? current.opacity ?? 0)
+    };
+    localStorage.setItem(__STATGEN_REG_CHART_VISUAL_STORAGE_KEY__, JSON.stringify(next));
+    return next;
+  }catch(_){ return __statGenRegChartVisualRead__(); }
+}
+
+function __applyStatGenRegChartWrapVisual__(wrap, visual){
+  const el = wrap || document.querySelector('#page-statgen .statgen-line-chart-wrap');
+  if (!el) return;
+  const current = visual || __statGenRegChartVisualRead__();
+  const bgHex = __graphColorValueToHex__(current?.bg || '#ffffff', '#ffffff');
+  const opacity = __designBgOpacityNormalize__(current?.opacity ?? 0);
+  const bg = hexToRgba(bgHex, opacity);
+  try{ el.style.setProperty('--statgen-chart-bg', bg); }catch(_){ }
+  try{ el.style.setProperty('background', bg, 'important'); }catch(_){ }
+  try{ el.style.setProperty('background-color', bg, 'important'); }catch(_){ }
+}
+
+function __openStatGenRegChartColorPicker__(wrap){
+  const initial = __statGenRegChartVisualRead__();
+  const applyVisual = (payload) => {
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const next = __statGenRegChartVisualWrite__({
+      bg: colors.bg || initial.bg,
+      border: colors.border || initial.border || colors.bg || initial.bg,
+      fg: colors.fg || initial.fg,
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0)
+    });
+    __applyStatGenRegChartWrapVisual__(wrap, next);
+    try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+    return next;
+  };
+  const revertVisual = () => {
+    __statGenRegChartVisualWrite__(initial);
+    __applyStatGenRegChartWrapVisual__(wrap, initial);
+    try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  };
+  __tagColorPopupOpen__('statgen-reg-chart', initial, (payload) => {
+    applyVisual(payload);
+    try{ toast('Design grafico registrazioni aggiornato'); }catch(_){ }
+  }, {
+    supportsBg:true,
+    supportsBorder:true,
+    supportsFg:true,
+    supportsOpacity:true,
+    opacity:initial.opacity ?? 0,
+    defaultMode:'bg',
+    fallbackBg:(initial.bg || '#ffffff'),
+    onPreview:applyVisual,
+    onRevert:revertVisual
+  });
+}
+
+function __bindStatGenRegChartLongPress__(wrap){
+  const el = wrap || document.querySelector('#page-statgen .statgen-line-chart-wrap');
+  if (!el || el.dataset.statgenChartLongPressBound === '1') return;
+  el.dataset.statgenChartLongPressBound = '1';
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{
+    try{ if (e?.preventDefault) e.preventDefault(); }catch(_){ }
+    try{ if (e?.stopPropagation) e.stopPropagation(); }catch(_){ }
+    return false;
+  };
+  const start = (e)=>{
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    timer = setTimeout(()=>{
+      fired = true;
+      try{ el.classList.add('is-pressing'); }catch(_){ }
+      __openStatGenRegChartColorPicker__(el);
+    }, 500);
+  };
+  const stop = (e)=>{
+    clear();
+    if (fired){
+      block(e);
+      setTimeout(()=>{ fired = false; try{ el.classList.remove('is-pressing'); }catch(_){ } }, 0);
+      return;
+    }
+    try{ el.classList.remove('is-pressing'); }catch(_){ }
+  };
+  const swallow = (e)=>{ if (!fired) return; block(e); fired = false; };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ el.addEventListener('click', swallow, true); }catch(_){ }
+  try{ el.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+}
+
 function drawStatGenRegistrationsLineChart(canvasId){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const data = __statGenRegistrationsByMonth__();
   const parent = canvas.parentElement || canvas;
   const width = Math.max(220, Math.floor(parent.clientWidth || canvas.clientWidth || 320));
-  const height = 148;
+  const height = 118;
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   canvas.width = Math.floor(width * dpr);
   canvas.height = Math.floor(height * dpr);
@@ -15560,14 +15681,15 @@ function drawStatGenRegistrationsLineChart(canvasId){
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
+  const visual = __statGenRegChartVisualRead__();
   const isDark = !!document.body?.classList?.contains('ddae-dark');
-  const gridColor = isDark ? 'rgba(148,163,184,0.16)' : 'rgba(15,23,42,0.08)';
-  const axisColor = isDark ? 'rgba(226,232,240,0.42)' : 'rgba(15,23,42,0.28)';
-  const textColor = isDark ? 'rgba(226,232,240,0.80)' : 'rgba(15,23,42,0.60)';
-  const lineColor = isDark ? '#7ac0db' : '#2b7cb4';
+  const gridColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.26 : 0.18);
+  const axisColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.40 : 0.28);
+  const textColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#cbd5e1' : '#0f172a'), isDark ? '#cbd5e1' : '#0f172a'), isDark ? 0.88 : 0.66);
+  const lineColor = __graphColorValueToHex__(visual.fg || (isDark ? '#7ac0db' : '#2b7cb4'), isDark ? '#7ac0db' : '#2b7cb4');
   const pointFill = isDark ? '#0f172a' : '#ffffff';
 
-  const pad = { top: 10, right: 10, bottom: 22, left: 12 };
+  const pad = { top: 8, right: 10, bottom: 20, left: 12 };
   const chartW = Math.max(10, width - pad.left - pad.right);
   const chartH = Math.max(10, height - pad.top - pad.bottom);
   const baseY = pad.top + chartH;
@@ -15622,15 +15744,15 @@ function drawStatGenRegistrationsLineChart(canvasId){
   ctx.textBaseline = 'alphabetic';
   const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
   points.forEach((pt, idx)=>{
-    ctx.fillText(labels[idx] || String(idx + 1), pt.x, height - 6);
+    ctx.fillText(labels[idx] || String(idx + 1), pt.x, height - 5);
   });
 
   if (data.total > 0){
     const peak = points.reduce((best, pt)=> (pt.count > best.count ? pt : best), points[0]);
-    const bubbleW = 36;
-    const bubbleH = 16;
+    const bubbleW = 34;
+    const bubbleH = 15;
     let bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
-    let by = Math.max(2, peak.y - 22);
+    let by = Math.max(2, peak.y - 20);
     ctx.fillStyle = isDark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.96)';
     ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
@@ -15690,6 +15812,14 @@ function renderStatGen(){
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
+  try{
+    const wrap = document.querySelector('#page-statgen .statgen-line-chart-wrap');
+    if (wrap){
+      __applyStatGenRegChartWrapVisual__(wrap);
+      __bindStatGenRegChartLongPress__(wrap);
+      wrap.title = 'Pressione lunga per cambiare design grafico';
+    }
+  }catch(_){ }
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
 }
 
@@ -18248,7 +18378,8 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
-    __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__
+    __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
+    __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__
   ].filter(Boolean);
 }
 
