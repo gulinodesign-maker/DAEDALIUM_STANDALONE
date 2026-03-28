@@ -18605,7 +18605,8 @@ function __roomSettingsThemeStoragePrefixes__(){
     'dDAE_statcard_colors_',
     'dDAE_stat_card_text_',
     'ddae_stat_card_text_',
-    'dDAE_statistics_card_theme_'
+    'dDAE_statistics_card_theme_',
+    'dDAE_stat_shared_line_chart_local_v1_'
   ];
 }
 
@@ -18628,7 +18629,12 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
-    __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__
+    __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__,
+    __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__,
+    __statSharedLineChartLocalStorageKey__('statgen'),
+    __statSharedLineChartLocalStorageKey__('statspese'),
+    __statSharedLineChartLocalStorageKey__('statmensili'),
+    __statSharedLineChartLocalStorageKey__('statcancellazioni')
   ].filter(Boolean);
 }
 
@@ -18688,6 +18694,9 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ renderStatGen(); }catch(_){ }
   try{ renderStatSpese(); }catch(_){ }
   try{ renderStatMensili(); }catch(_){ }
+  try{ renderStatCancellazioni(); }catch(_){ }
+  try{ __applyStatSharedLineChartWrapVisualToAll__(); }catch(_){ }
+  try{ __refreshStatSharedLineCharts__(); }catch(_){ }
   try{ __refreshStatGraphPreviews__(); }catch(_){ }
   try{ if (state.page === 'statistiche') loadStatistichePage({ force:true }); }catch(_){ }
   try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
