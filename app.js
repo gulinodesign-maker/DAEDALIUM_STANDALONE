@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.499";
+const BUILD_VERSION = "2.500";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15523,6 +15523,135 @@ function computeStatGen(){
   };
 }
 
+function __statGenRegistrationsByMonth__(){
+  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+  const counts = new Array(12).fill(0);
+  let total = 0;
+  guests.forEach((g)=>{
+    const raw = g?.createdAt || g?.created_at || '';
+    if (!raw) return;
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return;
+    const m = d.getMonth();
+    if (m < 0 || m > 11) return;
+    counts[m] += 1;
+    total += 1;
+  });
+  const percentages = counts.map((value)=> total > 0 ? ((value / total) * 100) : 0);
+  return { counts, percentages, total };
+}
+
+function drawStatGenRegistrationsLineChart(canvasId){
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const data = __statGenRegistrationsByMonth__();
+  const parent = canvas.parentElement || canvas;
+  const width = Math.max(220, Math.floor(parent.clientWidth || canvas.clientWidth || 320));
+  const height = 148;
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, width, height);
+
+  const isDark = !!document.body?.classList?.contains('ddae-dark');
+  const gridColor = isDark ? 'rgba(148,163,184,0.16)' : 'rgba(15,23,42,0.08)';
+  const axisColor = isDark ? 'rgba(226,232,240,0.42)' : 'rgba(15,23,42,0.28)';
+  const textColor = isDark ? 'rgba(226,232,240,0.80)' : 'rgba(15,23,42,0.60)';
+  const lineColor = isDark ? '#7ac0db' : '#2b7cb4';
+  const pointFill = isDark ? '#0f172a' : '#ffffff';
+
+  const pad = { top: 10, right: 10, bottom: 22, left: 12 };
+  const chartW = Math.max(10, width - pad.left - pad.right);
+  const chartH = Math.max(10, height - pad.top - pad.bottom);
+  const baseY = pad.top + chartH;
+  const maxPct = Math.max(5, ...data.percentages, 100 * (data.total > 0 ? 0 : 0));
+  const yMax = Math.max(10, Math.ceil(maxPct / 10) * 10);
+  const gridSteps = 4;
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = gridColor;
+  for (let i = 0; i <= gridSteps; i += 1){
+    const y = pad.top + (chartH / gridSteps) * i;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + chartW, y);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = axisColor;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, baseY);
+  ctx.lineTo(pad.left + chartW, baseY);
+  ctx.stroke();
+
+  const points = data.percentages.map((pct, idx)=>{
+    const x = pad.left + (chartW / 11) * idx;
+    const y = baseY - ((pct / yMax) * chartH);
+    return { x, y, pct, count: data.counts[idx] || 0, idx };
+  });
+
+  ctx.beginPath();
+  points.forEach((pt, idx)=>{
+    if (idx === 0) ctx.moveTo(pt.x, pt.y);
+    else ctx.lineTo(pt.x, pt.y);
+  });
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  points.forEach((pt)=>{
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = pointFill;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = lineColor;
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = textColor;
+  ctx.font = '800 10px system-ui';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
+  points.forEach((pt, idx)=>{
+    ctx.fillText(labels[idx] || String(idx + 1), pt.x, height - 6);
+  });
+
+  if (data.total > 0){
+    const peak = points.reduce((best, pt)=> (pt.count > best.count ? pt : best), points[0]);
+    const bubbleW = 36;
+    const bubbleH = 16;
+    let bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
+    let by = Math.max(2, peak.y - 22);
+    ctx.fillStyle = isDark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.96)';
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const rr = 8;
+    ctx.moveTo(bx + rr, by);
+    ctx.arcTo(bx + bubbleW, by, bx + bubbleW, by + bubbleH, rr);
+    ctx.arcTo(bx + bubbleW, by + bubbleH, bx, by + bubbleH, rr);
+    ctx.arcTo(bx, by + bubbleH, bx, by, rr);
+    ctx.arcTo(bx, by, bx + bubbleW, by, rr);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = textColor;
+    ctx.font = '800 10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(peak.count), bx + bubbleW / 2, by + bubbleH / 2 + 0.5);
+  }
+}
+
 function renderStatGen(){
   bindStatFiscalModeToggle();
   updateStatFiscalModeUI();
@@ -15561,6 +15690,7 @@ function renderStatGen(){
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
 }
 
 

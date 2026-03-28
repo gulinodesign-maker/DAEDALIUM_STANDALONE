@@ -21,9 +21,9 @@
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.499";
+window.APP_VERSION = "2.500";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.499";
+  const LOCAL_BUILD = "dDAE_2.500";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -463,7 +463,7 @@ window.APP_VERSION = "2.499";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.499</div></div></section>
+<div class="build" id="buildText">dDAE_2.500</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -608,6 +608,9 @@ window.APP_VERSION = "2.499";
 </div>
 </div>
 <div aria-hidden="true" class="stats-divider"></div>
+<div class="statgen-line-chart-wrap" aria-label="Andamento registrazioni prenotazioni per mese">
+<canvas id="statGenRegChart" class="statgen-line-chart" height="148"></canvas>
+</div>
 <div class="stats-stack">
 <button class="stat-row" data-stat-card-key="fatturato-totale" style="--statbg:#2b7cb4" type="button">
 <span aria-hidden="true" class="stat-ico-wrap">
