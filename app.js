@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.504";
+const BUILD_VERSION = "2.507";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15559,6 +15559,7 @@ function __statSharedLineChartPageKeyNormalize__(pageKey){
   const safe = String(pageKey || '').trim().toLowerCase();
   if (safe === 'statspese') return 'statspese';
   if (safe === 'statmensili') return 'statmensili';
+  if (safe === 'statcancellazioni') return 'statcancellazioni';
   return 'statgen';
 }
 
@@ -15619,7 +15620,7 @@ function __statSharedLineChartVisualResetFor__(pageKey){
 }
 
 function __statSharedLineChartVisualResetAllLocals__(){
-  ['statgen','statspese','statmensili'].forEach((pageKey)=>{ try{ __statSharedLineChartVisualResetFor__(pageKey); }catch(_){ } });
+  ['statgen','statspese','statmensili','statcancellazioni'].forEach((pageKey)=>{ try{ __statSharedLineChartVisualResetFor__(pageKey); }catch(_){ } });
 }
 
 function __statGenRegChartVisualRead__(){
@@ -15634,11 +15635,12 @@ function __statLineChartWrapSelector__(key){
   const safe = String(key || '').trim().toLowerCase();
   if (safe === 'statspese') return '#page-statspese .statgen-line-chart-wrap';
   if (safe === 'statmensili') return '#page-statmensili .statgen-line-chart-wrap';
+  if (safe === 'statcancellazioni') return '#page-statcancellazioni .statgen-line-chart-wrap';
   return '#page-statgen .statgen-line-chart-wrap';
 }
 
 function __applyStatSharedLineChartWrapVisualToAll__(){
-  ['statgen','statspese','statmensili'].forEach((pageKey)=>{
+  ['statgen','statspese','statmensili','statcancellazioni'].forEach((pageKey)=>{
     try{ __applyStatGenRegChartWrapVisual__(document.querySelector(__statLineChartWrapSelector__(pageKey))); }catch(_){ }
   });
 }
@@ -15647,6 +15649,7 @@ function __refreshStatSharedLineCharts__(){
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
   try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
   try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
+  try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
 }
 
 function __applyStatSharedLineChartChangesToCategory__(payload, changed){
@@ -15757,7 +15760,7 @@ function __bindStatSharedLineChartLongPress__(wrap){
   if (!el || el.dataset.statgenChartLongPressBound === '1') return;
   el.dataset.statgenChartLongPressBound = '1';
   try{ if (!el.dataset.statLineChartKey){
-    el.dataset.statLineChartKey = el.closest('#page-statspese') ? 'statspese' : (el.closest('#page-statmensili') ? 'statmensili' : 'statgen');
+    el.dataset.statLineChartKey = el.closest('#page-statspese') ? 'statspese' : (el.closest('#page-statmensili') ? 'statmensili' : (el.closest('#page-statcancellazioni') ? 'statcancellazioni' : 'statgen'));
   } }catch(_){ }
   let timer = null;
   let fired = false;
@@ -15815,7 +15818,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  const pageKey = (canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : 'statgen');
+  const pageKey = (canvas.closest && canvas.closest('.statgen-line-chart-wrap') && canvas.closest('.statgen-line-chart-wrap').dataset && canvas.closest('.statgen-line-chart-wrap').dataset.statLineChartKey) ? __statSharedLineChartPageKeyNormalize__(canvas.closest('.statgen-line-chart-wrap').dataset.statLineChartKey) : ((canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : (canvasId === 'statCancellazioniLineChart' ? 'statcancellazioni' : 'statgen')));
   const visual = __statSharedLineChartVisualReadFor__(pageKey);
   const isDark = !!document.body?.classList?.contains('ddae-dark');
   const surface = __statSharedLineChartResolvedSurface__(visual, isDark);
@@ -15954,6 +15957,51 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
   const stats = (state && state.statMensili) ? state.statMensili : computeStatMensili();
   const values = Array.isArray(stats && stats.occPctByMonth) ? stats.occPctByMonth : new Array(12).fill(0);
   __drawSharedMonthlyLineChart__(canvasId, values);
+}
+
+function __statCancellazioniMonthlyPercentages__(){
+  const activeRows = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+  const delRows = Array.isArray(state.deletedGuests) ? state.deletedGuests : [];
+  const cancRows = delRows.filter(r => String(r.delete_reason || '').toLowerCase() === 'cancellazione' || String(r.delete_reason || '').trim() === '');
+  const totalByMonth = new Array(12).fill(0);
+  const cancByMonth = new Array(12).fill(0);
+  const getMonthIndex = (row) => {
+    let iso = '';
+    try{
+      if (typeof __parseDateFlexibleToISO === 'function'){
+        iso = __parseDateFlexibleToISO(row?.check_in ?? row?.checkIn ?? row?.arrivo ?? row?.data_arrivo ?? row?.checkin ?? '');
+      }
+    }catch(_){ iso = ''; }
+    if (!iso){
+      try{
+        if (typeof __parseDateFlexibleToISO === 'function'){
+          iso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.partenza ?? row?.data_partenza ?? row?.checkout ?? '');
+        }
+      }catch(_){ iso = ''; }
+    }
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return -1;
+    const mm = parseInt(iso.slice(5,7), 10);
+    if (!Number.isFinite(mm) || mm < 1 || mm > 12) return -1;
+    return mm - 1;
+  };
+  activeRows.forEach((row)=>{
+    const idx = getMonthIndex(row);
+    if (idx >= 0) totalByMonth[idx] += 1;
+  });
+  cancRows.forEach((row)=>{
+    const idx = getMonthIndex(row);
+    if (idx >= 0){
+      totalByMonth[idx] += 1;
+      cancByMonth[idx] += 1;
+    }
+  });
+  const pctByMonth = totalByMonth.map((value, idx)=> value > 0 ? ((cancByMonth[idx] / value) * 100) : 0);
+  return { totalByMonth, cancByMonth, pctByMonth };
+}
+
+function drawStatCancellazioniPercentLineChart(canvasId){
+  const data = __statCancellazioniMonthlyPercentages__();
+  __drawSharedMonthlyLineChart__(canvasId, data.pctByMonth);
 }
 function renderStatGen(){
   bindStatFiscalModeToggle();
@@ -16830,6 +16878,17 @@ function renderStatCancellazioni(){
       leg.appendChild(row);
     });
   }
+  try{
+    const wrapChart = root.querySelector('.statgen-line-chart-wrap');
+    if (wrapChart){
+      wrapChart.dataset.statLineChartKey = 'statcancellazioni';
+      __applyStatGenRegChartWrapVisual__(wrapChart);
+      __bindStatSharedLineChartLongPress__(wrapChart);
+      wrapChart.title = 'Pressione lunga per cambiare design grafico';
+    }
+  }catch(_){ }
+  try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
+
   try{
     document.querySelectorAll('#page-statcancellazioni .kpi-card').forEach((card, index) => {
       const keys = ['percentuale','totale','cancellate'];

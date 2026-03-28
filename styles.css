@@ -17597,3 +17597,8 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
   background: transparent !important;
   filter: saturate(0.95) brightness(0.96) !important;
 }
+
+
+#page-statcancellazioni .statgen-line-chart-wrap{
+  margin-inline: 2px;
+}
