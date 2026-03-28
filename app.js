@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.503";
+const BUILD_VERSION = "2.504";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15666,17 +15666,46 @@ function __applyStatSharedLineChartChangesToCategory__(payload, changed){
   }catch(_){ }
 }
 
+function __statSharedLineChartResolvedSurface__(visual, isDark){
+  try{
+    const bgHex = __graphColorValueToHex__(visual?.bg || (isDark ? '#0f172a' : '#ffffff'), isDark ? '#0f172a' : '#ffffff');
+    const opacity = __designBgOpacityNormalize__(visual?.opacity ?? 0);
+    if (!isDark) return { bg: hexToRgba(bgHex, opacity), border: 'transparent', bgHex, opacity };
+    const lum = __colorLuminance__(bgHex);
+    const useForcedDarkSurface = opacity < 0.18 || lum > 0.58;
+    const resolvedBg = useForcedDarkSurface ? 'rgba(12,23,46,0.96)' : hexToRgba(bgHex, Math.max(0.20, opacity));
+    const resolvedBorder = useForcedDarkSurface ? 'rgba(148,163,184,0.22)' : hexToRgba(__graphColorValueToHex__(visual?.border || bgHex, bgHex), 0.38);
+    return { bg: resolvedBg, border: resolvedBorder, bgHex, opacity, useForcedDarkSurface };
+  }catch(_){
+    return { bg: isDark ? 'rgba(12,23,46,0.96)' : 'transparent', border: isDark ? 'rgba(148,163,184,0.22)' : 'transparent', bgHex: isDark ? '#0f172a' : '#ffffff', opacity: 0, useForcedDarkSurface: !!isDark };
+  }
+}
+
+function __statSharedLineChartResolvedStrokeHex__(visual, isDark){
+  const preferred = __graphColorValueToHex__(visual?.fg || visual?.border || (isDark ? '#8fcbe8' : '#c9772b'), isDark ? '#8fcbe8' : '#c9772b');
+  if (!isDark) return preferred;
+  return __darkModeReadableTextHex__(preferred, '#8fcbe8');
+}
+
+function __statSharedLineChartResolvedTextHex__(visual, isDark){
+  const preferred = __graphColorValueToHex__(visual?.border || visual?.fg || (isDark ? '#e2e8f0' : '#0f172a'), isDark ? '#e2e8f0' : '#0f172a');
+  if (!isDark) return preferred;
+  return __darkModeReadableTextHex__(preferred, '#f8fbff');
+}
+
 function __applyStatGenRegChartWrapVisual__(wrap, visual){
   const el = wrap || document.querySelector('#page-statgen .statgen-line-chart-wrap');
   if (!el) return;
   const pageKey = __statSharedLineChartPageKeyNormalize__(el?.dataset?.statLineChartKey || 'statgen');
   const current = visual || __statSharedLineChartVisualReadFor__(pageKey);
-  const bgHex = __graphColorValueToHex__(current?.bg || '#ffffff', '#ffffff');
-  const opacity = __designBgOpacityNormalize__(current?.opacity ?? 0);
-  const bg = hexToRgba(bgHex, opacity);
-  try{ el.style.setProperty('--statgen-chart-bg', bg); }catch(_){ }
-  try{ el.style.setProperty('background', bg, 'important'); }catch(_){ }
-  try{ el.style.setProperty('background-color', bg, 'important'); }catch(_){ }
+  const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+  const surface = __statSharedLineChartResolvedSurface__(current, isDark);
+  try{ el.style.setProperty('--statgen-chart-bg', surface.bg); }catch(_){ }
+  try{ el.style.setProperty('background', surface.bg, 'important'); }catch(_){ }
+  try{ el.style.setProperty('background-color', surface.bg, 'important'); }catch(_){ }
+  try{ el.style.setProperty('border', `1px solid ${surface.border || 'transparent'}`, 'important'); }catch(_){ }
+  try{ el.style.setProperty('border-color', surface.border || 'transparent', 'important'); }catch(_){ }
+  try{ el.style.setProperty('box-shadow', 'none', 'important'); }catch(_){ }
 }
 
 function __openStatSharedLineChartColorPicker__(wrap){
@@ -15789,11 +15818,14 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
   const pageKey = (canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : 'statgen');
   const visual = __statSharedLineChartVisualReadFor__(pageKey);
   const isDark = !!document.body?.classList?.contains('ddae-dark');
-  const gridColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.26 : 0.18);
-  const axisColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#94a3b8' : '#0f172a'), isDark ? '#94a3b8' : '#0f172a'), isDark ? 0.40 : 0.28);
-  const textColor = hexToRgba(__graphColorValueToHex__(visual.border || (isDark ? '#cbd5e1' : '#0f172a'), isDark ? '#cbd5e1' : '#0f172a'), isDark ? 0.88 : 0.66);
-  const lineColor = __graphColorValueToHex__(visual.fg || '#c9772b', '#c9772b');
-  const pointFill = isDark ? '#0f172a' : '#ffffff';
+  const surface = __statSharedLineChartResolvedSurface__(visual, isDark);
+  const textHex = __statSharedLineChartResolvedTextHex__(visual, isDark);
+  const lineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
+  const gridBaseHex = __graphColorValueToHex__(visual.border || textHex || (isDark ? '#94a3b8' : '#0f172a'), textHex || (isDark ? '#94a3b8' : '#0f172a'));
+  const gridColor = hexToRgba(gridBaseHex, isDark ? 0.22 : 0.18);
+  const axisColor = hexToRgba(gridBaseHex, isDark ? 0.36 : 0.28);
+  const textColor = hexToRgba(textHex, isDark ? 0.92 : 0.66);
+  const pointFill = isDark ? '#0c172e' : '#ffffff';
 
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
   const pad = { top: 8, right: 10, bottom: 20, left: 12 };
@@ -15860,8 +15892,8 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
     const bubbleText = String(Math.round(peak.value));
     let bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
     let by = Math.max(2, peak.y - 20);
-    ctx.fillStyle = isDark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.96)';
-    ctx.strokeStyle = gridColor;
+    ctx.fillStyle = isDark ? surface.bg : 'rgba(255,255,255,0.96)';
+    ctx.strokeStyle = axisColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
     const rr = 8;
