@@ -15657,25 +15657,36 @@ function __applyStatSharedLineChartChangesToCategory__(payload, changed, sourceP
     const safeSource = __statSharedLineChartPageKeyNormalize__(sourcePageKey || 'statgen');
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
     const pageKeys = ['statgen','statspese','statmensili','statcancellazioni'];
+    const snapshots = {};
+
+    pageKeys.forEach((pageKey) => {
+      try{ snapshots[pageKey] = __statSharedLineChartVisualReadFor__(pageKey); }catch(_){ }
+    });
 
     const mergeChanged = (baseVisual) => {
       const current = __statSharedLineChartNormalizeVisual__(baseVisual || {}, __statSharedLineChartDefaultVisual__());
       return {
-        bg: changed?.bg ? (colors.bg || current.bg || '#ffffff') : current.bg,
-        border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || '#0f172a') : current.border,
-        fg: changed?.fg ? (colors.fg || current.fg || '#c9772b') : current.fg,
-        opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0) : __designBgOpacityNormalize__(current.opacity ?? 0)
+        bg: changed?.bg
+          ? (Object.prototype.hasOwnProperty.call(colors, 'bg') ? colors.bg : current.bg || '#ffffff')
+          : current.bg,
+        border: changed?.border
+          ? (Object.prototype.hasOwnProperty.call(colors, 'border') ? colors.border : current.border || '#0f172a')
+          : current.border,
+        fg: changed?.fg
+          ? (Object.prototype.hasOwnProperty.call(colors, 'fg') ? colors.fg : current.fg || '#c9772b')
+          : current.fg,
+        opacity: changed?.opacity
+          ? ((payload && Object.prototype.hasOwnProperty.call(payload, 'opacity'))
+              ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0)
+              : __designBgOpacityNormalize__(current.opacity ?? 0))
+          : __designBgOpacityNormalize__(current.opacity ?? 0)
       };
     };
-
-    const sharedNext = mergeChanged(__statSharedLineChartVisualRead__());
-    __statSharedLineChartVisualWrite__(sharedNext);
 
     pageKeys.forEach((pageKey) => {
       try{
         if (pageKey === safeSource) return;
-        const targetCurrent = __statSharedLineChartVisualReadFor__(pageKey);
-        const targetNext = mergeChanged(targetCurrent);
+        const targetNext = mergeChanged(snapshots[pageKey]);
         __statSharedLineChartVisualWriteFor__(pageKey, targetNext);
       }catch(_){ }
     });
@@ -15733,10 +15744,12 @@ function __openStatSharedLineChartColorPicker__(wrap){
   const applyVisual = (payload) => {
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
     const next = __statSharedLineChartVisualWriteFor__(pageKey, {
-      bg: colors.bg || initial.bg,
-      border: colors.border || initial.border || colors.bg || initial.bg,
-      fg: colors.fg || initial.fg,
-      opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0)
+      bg: (Object.prototype.hasOwnProperty.call(colors, 'bg') ? colors.bg : initial.bg),
+      border: (Object.prototype.hasOwnProperty.call(colors, 'border') ? colors.border : initial.border),
+      fg: (Object.prototype.hasOwnProperty.call(colors, 'fg') ? colors.fg : initial.fg),
+      opacity: (payload && Object.prototype.hasOwnProperty.call(payload, 'opacity'))
+        ? __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0)
+        : __designBgOpacityNormalize__(initial.opacity ?? 0)
     });
     __applyStatSharedLineChartWrapVisualToAll__();
     __refreshStatSharedLineCharts__();
