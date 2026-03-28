@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.507";
+const BUILD_VERSION = "2.508";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15959,49 +15959,40 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
   __drawSharedMonthlyLineChart__(canvasId, values);
 }
 
-function __statCancellazioniMonthlyPercentages__(){
-  const activeRows = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+function __statCancellazioniMonthlyCounts__(){
+  const year = String((state && state.year) || new Date().getFullYear());
   const delRows = Array.isArray(state.deletedGuests) ? state.deletedGuests : [];
   const cancRows = delRows.filter(r => String(r.delete_reason || '').toLowerCase() === 'cancellazione' || String(r.delete_reason || '').trim() === '');
-  const totalByMonth = new Array(12).fill(0);
   const cancByMonth = new Array(12).fill(0);
-  const getMonthIndex = (row) => {
-    let iso = '';
-    try{
-      if (typeof __parseDateFlexibleToISO === 'function'){
-        iso = __parseDateFlexibleToISO(row?.check_in ?? row?.checkIn ?? row?.arrivo ?? row?.data_arrivo ?? row?.checkin ?? '');
-      }
-    }catch(_){ iso = ''; }
-    if (!iso){
-      try{
-        if (typeof __parseDateFlexibleToISO === 'function'){
-          iso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.partenza ?? row?.data_partenza ?? row?.checkout ?? '');
-        }
-      }catch(_){ iso = ''; }
+  const pickIso = (row) => {
+    const candidates = [
+      row?.deletedAt, row?.deleted_at,
+      row?.updatedAt, row?.updated_at,
+      row?.dataCancellazione, row?.data_cancellazione,
+      row?.delete_date, row?.deleteDate,
+      row?.data, row?.date
+    ];
+    for (const raw of candidates){
+      let iso = '';
+      try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
     }
-    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return -1;
-    const mm = parseInt(iso.slice(5,7), 10);
-    if (!Number.isFinite(mm) || mm < 1 || mm > 12) return -1;
-    return mm - 1;
+    return '';
   };
-  activeRows.forEach((row)=>{
-    const idx = getMonthIndex(row);
-    if (idx >= 0) totalByMonth[idx] += 1;
-  });
   cancRows.forEach((row)=>{
-    const idx = getMonthIndex(row);
-    if (idx >= 0){
-      totalByMonth[idx] += 1;
-      cancByMonth[idx] += 1;
-    }
+    const iso = pickIso(row);
+    if (!iso) return;
+    if (String(iso.slice(0,4)) !== year) return;
+    const mm = parseInt(iso.slice(5,7), 10);
+    if (!Number.isFinite(mm) || mm < 1 || mm > 12) return;
+    cancByMonth[mm - 1] += 1;
   });
-  const pctByMonth = totalByMonth.map((value, idx)=> value > 0 ? ((cancByMonth[idx] / value) * 100) : 0);
-  return { totalByMonth, cancByMonth, pctByMonth };
+  return { cancByMonth };
 }
 
 function drawStatCancellazioniPercentLineChart(canvasId){
-  const data = __statCancellazioniMonthlyPercentages__();
-  __drawSharedMonthlyLineChart__(canvasId, data.pctByMonth);
+  const data = __statCancellazioniMonthlyCounts__();
+  __drawSharedMonthlyLineChart__(canvasId, data.cancByMonth);
 }
 function renderStatGen(){
   bindStatFiscalModeToggle();
