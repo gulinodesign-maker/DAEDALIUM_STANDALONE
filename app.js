@@ -7532,6 +7532,16 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
   try{
     const btn = document.getElementById(id);
     if (!btn) return;
+    if (String(id || '').trim() === 'channelEditorTagColor'){
+      try{
+        const map = __loadSingleActionButtonVisualMap__();
+        const saved = map && typeof map === 'object' ? map['channelEditorTagColor'] : null;
+        if (saved && typeof saved === 'object'){
+          __applySingleActionButtonVisual__(btn);
+          return;
+        }
+      }catch(_){ }
+    }
     btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }));
   }catch(_){ }
 }
@@ -8877,6 +8887,10 @@ function __bindLauncherIconLongPress__(btn){
         setSuppress(1800);
         try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
         const inSettingsPage = !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
+        const popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4' };
+        if (btn.id !== 'goDbSync'){
+          popupOptions.applyCategory = { message:'Applicare le modifiche a tutti i tasti della stessa categoria?', apply: async(payload, changed) => { await __applyLauncherIconChangesToCategory__(payload, changed); } };
+        }
         __tagColorPopupOpen__('launcher-icon', __launcherIconVisualFor__(btn.id), (payload) => {
           const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
           __launcherIconSaveColor__(btn.id, colors.bg || __launcherIconVisualFor__(btn.id).bg || 'blue-4', 'bg');
@@ -8892,7 +8906,7 @@ function __bindLauncherIconLongPress__(btn){
           try{ __launcherIconApplyToButton__(btn); }catch(_){ }
           setSuppress(1800);
           keepCurrentLauncherPage();
-        }, { supportsBg:true, supportsBorder:true, supportsFg:true, defaultMode: inSettingsPage ? 'bg' : 'fg', fallbackBg:'blue-4', applyCategory:{ message:'Applicare le modifiche a tutti i tasti della stessa categoria?', apply: async(payload, changed) => { await __applyLauncherIconChangesToCategory__(payload, changed); } } });
+        }, popupOptions);
       }, __LAUNCHER_ICON_LONGPRESS_DELAY__);
     };
     const cancelHold = (ev) => {
