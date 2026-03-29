@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.522";
+const BUILD_VERSION = "2.523";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -7532,16 +7532,15 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
   try{
     const btn = document.getElementById(id);
     if (!btn) return;
-    if (String(id || '').trim() === 'channelEditorTagColor'){
-      try{
-        const map = __loadSingleActionButtonVisualMap__();
-        const saved = map && typeof map === 'object' ? map['channelEditorTagColor'] : null;
-        if (saved && typeof saved === 'object'){
-          __applySingleActionButtonVisual__(btn);
-          return;
-        }
-      }catch(_){ }
-    }
+    const safeId = String(id || '').trim();
+    try{
+      const map = __loadSingleActionButtonVisualMap__();
+      const saved = map && typeof map === 'object' ? map[safeId] : null;
+      if (saved && typeof saved === 'object'){
+        __applySingleActionButtonVisual__(btn);
+        return;
+      }
+    }catch(_){ }
     btn.setAttribute('style', __tagColorInlineStyle__(bgSpec || 'blue-4', fgSpec || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }));
   }catch(_){ }
 }
