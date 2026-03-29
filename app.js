@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.508";
+const BUILD_VERSION = "2.522";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14836,23 +14836,47 @@ function __bindSingleActionButtonColorHold__(btn){
   let fired = false;
   const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
   const clearSelection = ()=>{ try{ const sel = window.getSelection && window.getSelection(); if (sel && sel.removeAllRanges) sel.removeAllRanges(); }catch(_){ } };
-  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } clearSelection(); };
+  const block = (e)=>{
+    try{ e.preventDefault(); }catch(_){ }
+    try{ e.stopPropagation(); }catch(_){ }
+    try{ e.stopImmediatePropagation(); }catch(_){ }
+    clearSelection();
+  };
+  const suppressTap = ()=>{
+    try{ btn.__singleActionButtonSuppressTapUntil = Date.now() + 900; }catch(_){ }
+  };
+  const swallowSuppressedTap = (e)=>{
+    try{
+      if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) block(e);
+    }catch(_){ }
+  };
   const start = (e)=>{
     try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
     fired = false;
     clear();
     clearSelection();
-    timer = setTimeout(()=>{ fired = true; try{ btn.classList.add('is-pressing'); }catch(_){ } __openSingleActionButtonColorPicker__(btn); }, 500);
+    timer = setTimeout(()=>{
+      fired = true;
+      suppressTap();
+      try{ btn.classList.add('is-pressing'); }catch(_){ }
+      __openSingleActionButtonColorPicker__(btn);
+    }, 500);
   };
   const stop = (e)=>{
     clear();
-    if (fired){ block(e); setTimeout(()=>{ fired = false; try{ btn.classList.remove('is-pressing'); }catch(_){ } }, 0); return; }
+    if (fired){
+      suppressTap();
+      block(e);
+      setTimeout(()=>{ fired = false; try{ btn.classList.remove('is-pressing'); }catch(_){ } }, 0);
+      return;
+    }
     try{ btn.classList.remove('is-pressing'); }catch(_){ }
     clearSelection();
   };
   ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, start, { passive:true }); }catch(_){ } });
-  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
-  try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ try{ btn.addEventListener(evt, stop, true); }catch(__){ } } });
+  ['pointerup','touchend','click'].forEach((evt)=>{ try{ btn.addEventListener(evt, swallowSuppressedTap, true); }catch(_){ } });
+  try{ btn.addEventListener('click', (e)=>{ if (fired){ suppressTap(); block(e); fired = false; } }, true); }catch(_){ }
   try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
   try{ btn.addEventListener('selectstart', (e)=>{ block(e); }, true); }catch(_){ }
 }
