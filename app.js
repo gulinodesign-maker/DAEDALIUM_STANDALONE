@@ -8307,7 +8307,7 @@ function __openPillThemePicker__(){
 
 function __bindHeaderActionLongPress__(btn){
   try{
-    if (!btn || btn.dataset.headerColorHoldBound === '1') return;
+    if (!btn || btn.id === 'piscinaResetMonthBtn' || btn.dataset.headerColorHoldBound === '1') return;
     btn.dataset.headerColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
@@ -12474,7 +12474,6 @@ if (btnNewGuestTop){
 
 
   if (btnPiscinaBackfillTop){ bindFastTap(btnPiscinaBackfillTop, () => { try{ piscinaBackfillCurrentMonth(); }catch(e){ toast(e.message||"Errore"); } }); }
-  if (btnPiscinaResetMonthTop){ bindFastTap(btnPiscinaResetMonthTop, () => { try{ piscinaResetCurrentMonthReports(); }catch(e){ toast(e?.message || "Errore"); } }); }
 
 const btnPieSpese = $("#btnStatSpesePie");
   if (btnPieSpese){ bindFastTap(btnPieSpese, () => { openStatSpesePieModal(); }); }
@@ -23789,8 +23788,12 @@ async function piscinaBackfillCurrentMonth(){
 
 async function piscinaResetCurrentMonthReports(){
   if (!state?.session?.user_id) return;
+  const viewMonth = piscinaGetViewMonth();
+  const y = viewMonth.getFullYear();
+  const m = viewMonth.getMonth();
+  const monthLabel = __fmtMonthYear(new Date(y, m, 1));
   const choice = await __confirmTwoActions__(
-    "Azzerare tutti i report piscina del mese corrente?",
+    `Azzerare tutti i report piscina del mese visualizzato (${monthLabel})?`,
     "Azzera",
     "Annulla"
   );
@@ -23798,9 +23801,6 @@ async function piscinaResetCurrentMonthReports(){
 
   await loadPiscinaAll({ force:false, showLoader:true });
 
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth();
   const startKey = __isoDayLocal(new Date(y, m, 1));
   const endKey = __isoDayLocal(new Date(y, m + 1, 0));
 
@@ -23821,7 +23821,7 @@ async function piscinaResetCurrentMonthReports(){
   });
 
   if (!toDelete.length){
-    try{ toast("Nessun report piscina nel mese corrente"); }catch(_){ }
+    try{ toast(`Nessun report piscina nel mese visualizzato (${monthLabel})`); }catch(_){ }
     return;
   }
 
@@ -23842,7 +23842,54 @@ async function piscinaResetCurrentMonthReports(){
     if (state.page === "statpiscina") renderPiscinaCalendar();
   }catch(_){}
 
-  try{ toast("Report mese corrente azzerati"); }catch(_){ }
+  try{ toast(`Report mese visualizzato azzerati (${monthLabel})`); }catch(_){ }
+}
+
+
+function __bindPiscinaResetMonthColorHold__(btn){
+  try{
+    if (!btn || btn.dataset.piscinaResetColorHoldBound === '1') return;
+    btn.dataset.piscinaResetColorHoldBound = '1';
+    let timer = null;
+    let fired = false;
+    const clear = ()=>{ try{ if (timer) clearTimeout(timer); }catch(_){ } timer = null; };
+    const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } };
+    const openPicker = ()=>{
+      fired = true;
+      __tagColorPopupOpen__('header-action-button', __headerActionVisualFor__(btn.id), (payload) => {
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        __headerActionSaveColor__(btn.id, colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'bg');
+        __headerActionSaveColor__(btn.id, colors.border || __headerActionVisualFor__(btn.id).border || colors.bg || __headerActionVisualFor__(btn.id).bg || 'white', 'border');
+        __headerActionSaveColor__(btn.id, colors.fg || __headerActionVisualFor__(btn.id).fg || 'blue-4', 'fg');
+        if (payload && payload.opacity != null){
+          const map = __headerActionColorMapRead__();
+          const current = __headerActionVisualFor__(btn.id);
+          map[String(btn.id||'').trim()] = { fg: current.fg || 'blue-4', bg: current.bg || 'white', border: current.border || current.bg || 'white', opacity: __designBgOpacityNormalize__(payload.opacity) };
+          __headerActionColorMapWrite__(map);
+          __designBgOpacityWrite__(payload.opacity);
+        }
+        __headerActionApplyAll__();
+        try{ renderRoomSettingsPage(); }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
+    };
+    const start = (e)=>{
+      try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+      fired = false;
+      clear();
+      timer = setTimeout(()=>{ openPicker(); }, 500);
+    };
+    const stop = (e)=>{
+      clear();
+      if (fired){
+        block(e);
+        setTimeout(()=>{ fired = false; }, 0);
+      }
+    };
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, start, { passive:true, capture:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ } });
+    try{ btn.addEventListener('click', (e)=>{ if (fired){ block(e); fired = false; } }, true); }catch(_){ }
+    try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+  }catch(_){ }
 }
 
 function setupPiscina(){
@@ -23856,6 +23903,7 @@ function setupPiscina(){
   const modal = document.getElementById("piscinaModal");
   const shareBtn = document.getElementById("piscinaShareBtn");
   const resetMonthBtn = document.getElementById("piscinaResetMonthBtn");
+  try{ __bindPiscinaResetMonthColorHold__(resetMonthBtn); }catch(_){ }
   const editModal = document.getElementById("piscinaEditModal");
   const editCancelBtn = document.getElementById("piscinaEditCancel");
   const editSaveBtn = document.getElementById("piscinaEditSave");
