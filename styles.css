@@ -11591,6 +11591,21 @@ body[data-role="operatore"] #page-home .home-grid{
 
 
 
+/* dDAE_2.515 - Design: container esterno separato dalle schede interne */
+#page-roomsettings > .card{
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.room-settings-panel,
+.room-settings-panel-theme,
+.room-settings-panel-main{
+  background:transparent !important;
+  background-color:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+
 /* dDAE_2.330 — Pagina Stanze */
 .room-settings-shell{
   padding-top: 14px;

@@ -7562,6 +7562,8 @@ function __launcherIconColorMapWrite__(map){
 
 const __LAUNCHER_GRID_THEME_STORAGE_KEY__ = 'dDAE_launcher_grid_theme_v1';
 const __STATISTICS_CARD_THEME_STORAGE_KEY__ = 'dDAE_statistics_card_theme_v1';
+const __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__ = 'dDAE_room_settings_card_theme_v1';
+const __ROOM_SETTINGS_SHELL_THEME_STORAGE_KEY__ = 'dDAE_room_settings_shell_theme_v1';
 const __DESIGN_BG_OPACITY_STORAGE_KEY__ = 'dDAE_design_bg_opacity_v1';
 const __DESIGN_BG_OPACITY_ALLOWED__ = [0.00, 0.25, 0.50, 0.75, 1.00];
 
@@ -18663,6 +18665,8 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
+    __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__,
+    __ROOM_SETTINGS_SHELL_THEME_STORAGE_KEY__,
     __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__,
     __STATGEN_REG_CHART_VISUAL_STORAGE_KEY__,
     __statSharedLineChartLocalStorageKey__('statgen'),
@@ -18724,6 +18728,256 @@ function __roomSettingsThemeStatsStorageApply__(payload){
   }catch(_){ }
 }
 
+
+function __roomSettingsShellThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__ROOM_SETTINGS_SHELL_THEME_STORAGE_KEY__);
+    if (!raw) return { bg:'', border:'', opacity:0.92 };
+    const parsed = JSON.parse(raw);
+    return __launcherVisualNormalize__(parsed, 'blue-4');
+  }catch(_){ return { bg:'', border:'', opacity:0.92 }; }
+}
+
+function __roomSettingsShellThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__ROOM_SETTINGS_SHELL_THEME_STORAGE_KEY__, JSON.stringify({
+      fg: clean.fg || '',
+      bg: clean.bg || '',
+      border: clean.border || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.92)
+    }));
+  }catch(_){ }
+}
+
+function __roomSettingsShellThemeVisual__(){
+  const visual = __roomSettingsShellThemeRead__();
+  return {
+    fg: visual.fg || '',
+    bg: visual.bg || 'blue-4',
+    border: visual.border || visual.bg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.92)
+  };
+}
+
+function __applyRoomSettingsShellTheme__(){
+  try{
+    const shell = document.querySelector('#page-roomsettings > .card');
+    if (!shell) return;
+    const visual = __roomSettingsShellThemeVisual__();
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.92);
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const bgHex = __operatoreColorHex__(visual.bg || (isDark ? '#0f172a' : 'blue-4'));
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || (isDark ? '#94a3b8' : 'blue-4'));
+    const bg = isDark ? hexToRgba(bgHex, Math.max(0.22, opacity)) : hexToRgba(bgHex, opacity);
+    const border = isDark ? hexToRgba(borderHex, Math.max(0.34, opacity)) : hexToRgba(borderHex, 1);
+    try{ shell.style.setProperty('background', bg, 'important'); }catch(_){ }
+    try{ shell.style.setProperty('background-color', bg, 'important'); }catch(_){ }
+    try{ shell.style.setProperty('border-color', border, 'important'); }catch(_){ }
+    try{ shell.style.setProperty('box-shadow', 'none', 'important'); }catch(_){ }
+    try{ shell.style.setProperty('backdrop-filter', 'none', 'important'); }catch(_){ }
+  }catch(_){ }
+}
+
+function __openRoomSettingsShellThemePicker__(){
+  try{
+    const current = __roomSettingsShellThemeVisual__();
+    __tagColorPopupOpen__('room-settings-shell-theme', current, (payload) => {
+      try{
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        const nextVisual = {
+          bg: colors.bg || current.bg || 'blue-4',
+          border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+          fg: '',
+          opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.92)
+        };
+        __roomSettingsShellThemeWrite__(nextVisual);
+        __applyRoomSettingsShellTheme__();
+        try{ renderRoomSettingsPage(); }catch(_){ }
+        try{ toast('Design container aggiornato'); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:false,
+      supportsOpacity:true,
+      opacity:current.opacity ?? 0.92,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'blue-4')
+    });
+  }catch(_){ }
+}
+
+function __bindRoomSettingsShellThemeLongPress__(){
+  try{
+    const el = document.querySelector('#page-roomsettings > .card');
+    if (!el || el.dataset.roomSettingsShellThemeBound === '1') return;
+    el.dataset.roomSettingsShellThemeBound = '1';
+    let timer = null;
+    let fired = false;
+    const clear = ()=>{ try{ if (timer) clearTimeout(timer); }catch(_){ } timer = null; };
+    const block = (e)=>{ try{ e?.preventDefault?.(); }catch(_){ } try{ e?.stopPropagation?.(); }catch(_){ } };
+    const shouldIgnore = (target) => {
+      try{
+        if (!target || !target.closest) return false;
+        return !!target.closest('.room-settings-panel, .room-settings-section-card, .room-settings-color-dot, .room-settings-square-btn, .room-settings-count-btn');
+      }catch(_){ return false; }
+    };
+    const start = (e)=>{
+      try{ if (e && e.type === 'mousedown' && (e.button || 0) !== 0) return; }catch(_){ }
+      if (shouldIgnore(e?.target)) return;
+      fired = false;
+      clear();
+      timer = setTimeout(() => {
+        fired = true;
+        try{ __sfxGlass(); }catch(_){ }
+        __openRoomSettingsShellThemePicker__();
+      }, 500);
+    };
+    const stop = (e)=>{
+      clear();
+      if (fired){
+        block(e);
+        setTimeout(()=>{ fired = false; },0);
+      }
+    };
+    ['touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:false, capture:true }); }catch(_){ } });
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ } });
+    try{ el.addEventListener('click', (e)=>{ if (!fired) return; block(e); }, true); }catch(_){ }
+    try{ el.addEventListener('contextmenu', (e)=>{ if (shouldIgnore(e?.target)) return; block(e); }, true); }catch(_){ }
+  }catch(_){ }
+}
+
+
+function __roomSettingsCardThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__);
+    if (!raw) return { bg:'', border:'', opacity:0.92 };
+    const parsed = JSON.parse(raw);
+    return __launcherVisualNormalize__(parsed, 'blue-4');
+  }catch(_){ return { bg:'', border:'', opacity:0.92 }; }
+}
+
+function __roomSettingsCardThemeWrite__(visual){
+  try{
+    const clean = __launcherVisualNormalize__(visual || {}, 'blue-4');
+    localStorage.setItem(__ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__, JSON.stringify({
+      fg: clean.fg || '',
+      bg: clean.bg || '',
+      border: clean.border || '',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? 0.92)
+    }));
+  }catch(_){ }
+}
+
+function __roomSettingsCardThemeVisual__(){
+  const visual = __roomSettingsCardThemeRead__();
+  return {
+    fg: visual.fg || '',
+    bg: visual.bg || 'blue-4',
+    border: visual.border || visual.bg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.92)
+  };
+}
+
+function __applyRoomSettingsCardTheme__(){
+  try{
+    const visual = __roomSettingsCardThemeVisual__();
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.92);
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const bgHex = __operatoreColorHex__(visual.bg || (isDark ? '#0f172a' : 'blue-4'));
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || (isDark ? '#94a3b8' : 'blue-4'));
+    const bg = isDark ? hexToRgba(bgHex, Math.max(0.22, opacity)) : hexToRgba(bgHex, opacity);
+    const border = isDark ? hexToRgba(borderHex, Math.max(0.34, opacity)) : hexToRgba(borderHex, 1);
+    document.querySelectorAll('#page-roomsettings .room-settings-panel').forEach((el) => {
+      try{ el.style.setProperty('background', bg, 'important'); }catch(_){ }
+      try{ el.style.setProperty('background-color', bg, 'important'); }catch(_){ }
+      try{ el.style.setProperty('border-color', border, 'important'); }catch(_){ }
+      try{ el.style.setProperty('box-shadow', 'none', 'important'); }catch(_){ }
+      try{ el.style.setProperty('backdrop-filter', 'none', 'important'); }catch(_){ }
+    });
+    document.querySelectorAll('#page-roomsettings .room-settings-section-card').forEach((el) => {
+      try{ el.style.removeProperty('background'); }catch(_){ }
+      try{ el.style.removeProperty('background-color'); }catch(_){ }
+      try{ el.style.removeProperty('border-color'); }catch(_){ }
+      try{ el.style.removeProperty('box-shadow'); }catch(_){ }
+      try{ el.style.removeProperty('backdrop-filter'); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __openRoomSettingsCardThemePicker__(){
+  try{
+    const current = __roomSettingsCardThemeVisual__();
+    __tagColorPopupOpen__('room-settings-card-theme', current, (payload) => {
+      try{
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        const nextVisual = {
+          bg: colors.bg || current.bg || 'blue-4',
+          border: colors.border || current.border || colors.bg || current.bg || 'blue-4',
+          fg: '',
+          opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.92)
+        };
+        __roomSettingsCardThemeWrite__(nextVisual);
+        __applyRoomSettingsCardTheme__();
+        try{ renderRoomSettingsPage(); }catch(_){ }
+        try{ toast('Design schede aggiornato'); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:false,
+      supportsOpacity:true,
+      opacity:current.opacity ?? 0.92,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'blue-4')
+    });
+  }catch(_){ }
+}
+
+function __bindRoomSettingsCardThemeLongPress__(){
+  try{
+    document.querySelectorAll('#page-roomsettings .room-settings-panel').forEach((el) => {
+      try{
+        if (!el || el.dataset.roomSettingsCardThemeBound === '1') return;
+        el.dataset.roomSettingsCardThemeBound = '1';
+        let timer = null;
+        let fired = false;
+        const clear = ()=>{ try{ if (timer) clearTimeout(timer); }catch(_){ } timer = null; };
+        const block = (e)=>{ try{ e?.preventDefault?.(); }catch(_){ } try{ e?.stopPropagation?.(); }catch(_){ } };
+        const shouldIgnore = (target) => {
+          try{
+            if (!target || !target.closest) return false;
+            return !!target.closest('.room-settings-color-dot, .room-settings-square-btn, .room-settings-count-btn');
+          }catch(_){ return false; }
+        };
+        const start = (e)=>{
+          try{ if (e && e.type === 'mousedown' && (e.button || 0) !== 0) return; }catch(_){ }
+          if (shouldIgnore(e?.target)) return;
+          fired = false;
+          clear();
+          timer = setTimeout(() => {
+            fired = true;
+            try{ __sfxGlass(); }catch(_){ }
+            __openRoomSettingsCardThemePicker__();
+          }, 500);
+        };
+        const stop = (e)=>{
+          clear();
+          if (fired){
+            block(e);
+            setTimeout(()=>{ fired = false; },0);
+          }
+        };
+        ['touchstart','mousedown'].forEach((evt)=>{ try{ el.addEventListener(evt, start, { passive:false, capture:true }); }catch(_){ } });
+        ['touchend','touchcancel','mouseup','mouseleave'].forEach((evt)=>{ try{ el.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ } });
+        try{ el.addEventListener('click', (e)=>{ if (!fired) return; block(e); }, true); }catch(_){ }
+        try{ el.addEventListener('contextmenu', (e)=>{ if (shouldIgnore(e?.target)) return; block(e); }, true); }catch(_){ }
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
 function __refreshRoomSettingsThemeStatsUi__(){
   try{ renderStatGen(); }catch(_){ }
   try{ renderStatSpese(); }catch(_){ }
@@ -18739,6 +18993,9 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ __applyTaxPageCardAll__(); }catch(_){ }
   try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
+  try{ __applyRoomSettingsShellTheme__(); }catch(_){ }
+  try{ __applyRoomSettingsShellTheme__(); }catch(_){ }
+  try{ __applyRoomSettingsCardTheme__(); }catch(_){ }
 }
 
 function __roomSettingsThemePayloadBuild__(){
@@ -18974,6 +19231,7 @@ function renderRoomSettingsPage(){
       dots.style.setProperty('--room-settings-cols', String(Math.min(6, Math.max(1, count || 1))));
     }
   }catch(_){ }
+  try{ __applyRoomSettingsCardTheme__(); }catch(_){ }
 }
 
 function setupRoomSettingsPage(){
@@ -19156,6 +19414,10 @@ function setupRoomSettingsPage(){
     el.__boundRoomSettingsColorTap = true;
     bindFastTap(el, () => { __openRoomSettingsColorPicker__(target); });
   });
+  try{ __bindRoomSettingsShellThemeLongPress__(); }catch(_){ }
+  try{ __bindRoomSettingsCardThemeLongPress__(); }catch(_){ }
+  try{ __applyRoomSettingsShellTheme__(); }catch(_){ }
+  try{ __applyRoomSettingsCardTheme__(); }catch(_){ }
 }
 
 function ensureRoomsPickerButtons(){
