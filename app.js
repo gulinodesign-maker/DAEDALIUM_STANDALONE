@@ -121,7 +121,8 @@ const __ALL_TABLES__ = [
   "motivazioni",
   "colazione",
   "prodotti_pulizia",
-  "ospiti_eliminati"
+  "ospiti_eliminati",
+  "piscina"
 ];
 
 // Dataset Amministratore (completo)
@@ -139,6 +140,7 @@ const __OP_TABLES__ = [
   "operatori",
   "colazione",
   "prodotti_pulizia",
+  "piscina",
 ];
 
 const __idbState = { p: null };
@@ -12462,6 +12464,7 @@ if (btnNewGuestTop){
   const btnBackStatsPiscina = $("#btnBackStatistichePiscina");
   if (btnBackStatsPiscina){ bindFastTap(btnBackStatsPiscina, () => { showPage("statistiche"); }); }
   const btnPiscinaBackfillTop = $("#btnPiscinaBackfillTop");
+  const btnPiscinaResetMonthTop = $("#piscinaResetMonthBtn");
   const btnPiscinaSimToday = $("#piscinaSimTodayBtn");
   if (btnPiscinaSimToday){
     bindFastTap(btnPiscinaSimToday, () => {
@@ -12471,6 +12474,7 @@ if (btnNewGuestTop){
 
 
   if (btnPiscinaBackfillTop){ bindFastTap(btnPiscinaBackfillTop, () => { try{ piscinaBackfillCurrentMonth(); }catch(e){ toast(e.message||"Errore"); } }); }
+  if (btnPiscinaResetMonthTop){ bindFastTap(btnPiscinaResetMonthTop, () => { try{ piscinaResetCurrentMonthReports(); }catch(e){ toast(e?.message || "Errore"); } }); }
 
 const btnPieSpese = $("#btnStatSpesePie");
   if (btnPieSpese){ bindFastTap(btnPieSpese, () => { openStatSpesePieModal(); }); }
@@ -23783,6 +23787,64 @@ async function piscinaBackfillCurrentMonth(){
   toast("Report mese aggiornati");
 }
 
+async function piscinaResetCurrentMonthReports(){
+  if (!state?.session?.user_id) return;
+  const choice = await __confirmTwoActions__(
+    "Azzerare tutti i report piscina del mese corrente?",
+    "Azzera",
+    "Annulla"
+  );
+  if (choice !== "yes") return;
+
+  await loadPiscinaAll({ force:false, showLoader:true });
+
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const startKey = __isoDayLocal(new Date(y, m, 1));
+  const endKey = __isoDayLocal(new Date(y, m + 1, 0));
+
+  const s = piscinaEnsureState();
+  const rows = Array.isArray(s.rows) ? s.rows.slice() : [];
+  const toDelete = rows.filter((row) => {
+    const raw = String(
+      row?.timestamp_report ||
+      row?.data ||
+      row?.date ||
+      row?.giorno ||
+      ""
+    ).trim();
+    if (!raw) return false;
+    const dayKey = __isoDayLocal(new Date(raw));
+    if (!dayKey) return false;
+    return dayKey >= startKey && dayKey <= endKey;
+  });
+
+  if (!toDelete.length){
+    try{ toast("Nessun report piscina nel mese corrente"); }catch(_){ }
+    return;
+  }
+
+  for (const row of toDelete){
+    const id = String(row?.id || "").trim();
+    if (!id) continue;
+    await api(PISCINA_ACTION, { method:"DELETE", params:{ id }, showLoader:false });
+  }
+
+  s.rows = rows.filter((row) => {
+    const id = String(row?.id || "").trim();
+    return !toDelete.some((it) => String(it?.id || "").trim() === id);
+  });
+  s.fetchedAt = Date.now();
+  piscinaIndexRows();
+
+  try{
+    if (state.page === "statpiscina") renderPiscinaCalendar();
+  }catch(_){}
+
+  try{ toast("Report mese corrente azzerati"); }catch(_){ }
+}
+
 function setupPiscina(){
   // default: mese corrente
   try{ piscinaSetViewMonth(new Date()); }catch(_){}
@@ -23793,6 +23855,7 @@ function setupPiscina(){
   const close = document.getElementById("piscinaModalClose");
   const modal = document.getElementById("piscinaModal");
   const shareBtn = document.getElementById("piscinaShareBtn");
+  const resetMonthBtn = document.getElementById("piscinaResetMonthBtn");
   const editModal = document.getElementById("piscinaEditModal");
   const editCancelBtn = document.getElementById("piscinaEditCancel");
   const editSaveBtn = document.getElementById("piscinaEditSave");
@@ -23818,6 +23881,7 @@ function setupPiscina(){
     editModal.addEventListener("click", (e)=>{ if (e.target === editModal) piscinaCloseEditModal(); });
   }
   if (shareBtn) bindFastTap(shareBtn, async ()=>{ try{ await piscinaShareCurrentMonthPdf(); }catch(e){ toast(e?.message || "Errore PDF"); } });
+  if (resetMonthBtn) bindFastTap(resetMonthBtn, async ()=>{ try{ await piscinaResetCurrentMonthReports(); }catch(e){ toast(e?.message || "Errore azzeramento"); } });
   if (editCancelBtn) bindFastTap(editCancelBtn, ()=>piscinaCloseEditModal());
   if (editSaveBtn) bindFastTap(editSaveBtn, async ()=>{ try{ await piscinaSaveTodayManual(); }catch(e){ toast(e?.message || "Errore salvataggio"); } });
 
