@@ -2381,6 +2381,31 @@ function __restoreBackupLocalStorage__(payload){
   }catch(_){ }
 }
 
+function __collectBackupThemeSlots__(){
+  try{
+    return {
+      slots: (typeof __roomSettingsThemeSlotsRead__ === 'function') ? __roomSettingsThemeSlotsRead__() : {},
+      activeSlot: (typeof localStorage !== 'undefined') ? String(localStorage.getItem('dDAE_roomsettings_theme_active_slot_v1') || '') : ''
+    };
+  }catch(_){
+    return { slots:{}, activeSlot:'' };
+  }
+}
+
+function __restoreBackupThemeSlots__(payload){
+  try{
+    const src = (payload && typeof payload === 'object') ? payload : {};
+    const slots = (src.slots && typeof src.slots === 'object') ? src.slots : {};
+    try{
+      localStorage.setItem('dDAE_roomsettings_theme_slots_v1', JSON.stringify(slots || {}));
+    }catch(_){ }
+    try{
+      if (src.activeSlot === null || src.activeSlot === undefined || String(src.activeSlot || '').trim() === '') localStorage.removeItem('dDAE_roomsettings_theme_active_slot_v1');
+      else localStorage.setItem('dDAE_roomsettings_theme_active_slot_v1', String(src.activeSlot || ''));
+    }catch(_){ }
+  }catch(_){ }
+}
+
 function __dbFmtDateDdMmYy__(){
   try{
     const ts = new Date();
@@ -2491,6 +2516,9 @@ async function __dbImport__(kind){
     const backupLocalStorage = (data && typeof data.localStorage === "object" && data.localStorage)
       ? data.localStorage
       : ((data?.meta && typeof data.meta.localStorage === "object") ? data.meta.localStorage : null);
+    const backupThemeSlots = (data?.meta && typeof data.meta.themeSlots === "object" && data.meta.themeSlots)
+      ? data.meta.themeSlots
+      : null;
 
     if (!tablesToWrite.length){
       try{ toast("Nessun dataset da importare", "orange"); }catch(_){}
@@ -2576,6 +2604,7 @@ async function __dbImport__(kind){
     }catch(_){ }
 
     try{ __restoreBackupLocalStorage__(backupLocalStorage); }catch(_){ }
+    try{ __restoreBackupThemeSlots__(backupThemeSlots); }catch(_){ }
 
 // Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
@@ -2747,6 +2776,7 @@ async function __dbExport__(kind, preopenWin){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
     const backupLocalStorage = __collectBackupLocalStorage__();
+    const backupThemeSlots = __collectBackupThemeSlots__();
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
@@ -2754,7 +2784,8 @@ async function __dbExport__(kind, preopenWin){
       datasets,
       localStorage: backupLocalStorage,
       meta: {
-        localStorage: backupLocalStorage
+        localStorage: backupLocalStorage,
+        themeSlots: backupThemeSlots
       }
     };
 
@@ -7509,7 +7540,7 @@ function __setTagPreviewButtonStyle__(id, bgSpec, fgSpec){
 const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
-  'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
+  'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
   'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
   'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
@@ -7524,6 +7555,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOrePuliziaHome: 'beige-5',
   goStatistiche: 'beige-4',
   goProdotti: 'gray-3',
+  goDbSync: 'white',
   settingsSaveBtn: 'sky-3',
   settingsDbBtn: 'green-4',
   settingsRoomsBtn: 'yellow-4',
@@ -8329,7 +8361,7 @@ function __bindHeaderActionLongPress__(btn){
         }
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
     };
     btn.addEventListener('touchstart', (e) => {
       touchAt = Date.now();
@@ -8552,6 +8584,19 @@ function __launcherIconVisualFor__(id){
   const key = String(id || '').trim();
   if (!key) return { fg:'blue-4', bg:'', border:'', opacity:0.80 };
   const map = __launcherIconColorMapRead__();
+  if (key === 'goDbSync'){
+    const raw = map[key];
+    if (!raw || typeof raw !== 'object'){
+      return { fg:'white', bg:'blue-4', border:'blue-4', opacity:0.80 };
+    }
+    const visual = __launcherVisualNormalize__(raw, 'white');
+    return {
+      fg: visual.fg || 'white',
+      bg: visual.bg || 'blue-4',
+      border: visual.border || visual.bg || 'blue-4',
+      opacity: __designBgOpacityNormalize__(visual.opacity ?? 0.80)
+    };
+  }
   return __launcherVisualNormalize__(map[key], __LAUNCHER_ICON_DEFAULT_SPECS__[key] || 'blue-4');
 }
 
@@ -8621,6 +8666,40 @@ function __launcherIconApplyToButton__(btn){
       btn.style.borderStyle = 'solid';
       btn.style.background = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
       btn.style.backgroundColor = bgHex ? hexToRgba(bgHex, __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__())) : '';
+      return;
+    }
+    if (btn.id === 'goDbSync'){
+      const syncBgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+      const syncBorderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+      const syncFgHex = __operatoreColorHex__(visual.fg || 'white');
+      const syncOpacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+      setImp(btn, 'background', hexToRgba(syncBgHex, syncOpacity));
+      setImp(btn, 'background-color', hexToRgba(syncBgHex, syncOpacity));
+      setImp(btn, 'border', `1px solid ${hexToRgba(syncBorderHex, 1)}`);
+      setImp(btn, 'border-color', hexToRgba(syncBorderHex, 1));
+      setImp(btn, 'color', syncFgHex);
+      setImp(btn, '-webkit-text-fill-color', syncFgHex);
+      const iconWrap = btn.querySelector('.home-sync-ico, .ui-ico');
+      if (iconWrap){
+        setImp(iconWrap, 'color', syncFgHex);
+        setImp(iconWrap, '-webkit-text-fill-color', syncFgHex);
+      }
+      const textWrap = btn.querySelector('.home-sync-text');
+      if (textWrap){
+        setImp(textWrap, 'color', syncFgHex);
+        setImp(textWrap, '-webkit-text-fill-color', syncFgHex);
+      }
+      const svg = btn.querySelector('svg.ui-ico');
+      if (svg){
+        setImp(svg, 'color', syncFgHex);
+        setImp(svg, 'stroke', syncFgHex);
+        try{
+          svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
+            node.style.setProperty('stroke', syncFgHex, 'important');
+            node.style.setProperty('fill', 'none', 'important');
+          });
+        }catch(_){ }
+      }
       return;
     }
     if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
@@ -23870,7 +23949,7 @@ function __bindPiscinaResetMonthColorHold__(btn){
         }
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
     };
     const start = (e)=>{
       try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
