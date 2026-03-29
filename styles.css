@@ -17297,8 +17297,8 @@ body.ddae-dark #page-tassa .tax-result-sub{
   font-weight:900;
 }
 .room-settings-text-controls .room-settings-square-btn.is-active{
-  border-color: rgba(15,23,42,0.84) !important;
-  box-shadow: 0 0 0 2px rgba(15,23,42,0.12) !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 @media (max-width: 390px){
   .room-settings-section-count .room-settings-count-btn{
@@ -17316,8 +17316,8 @@ body.ddae-dark #page-tassa .tax-result-sub{
   }
 }
 body.ddae-dark .room-settings-text-controls .room-settings-square-btn.is-active{
-  border-color: rgba(226,232,240,0.94) !important;
-  box-shadow: 0 0 0 2px rgba(226,232,240,0.10) !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 
