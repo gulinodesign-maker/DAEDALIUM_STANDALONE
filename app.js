@@ -4163,6 +4163,8 @@ function setAppTextUiSettings(next){
   };
   __saveAppTextUiSettings__(settings);
   scheduleApplyAppTextUi(document.body);
+  try{ __refreshStatSharedLineCharts__(); }catch(_){ }
+  try{ renderStatCancellazioni(); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
 }
 
@@ -15858,6 +15860,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
   const axisColor = hexToRgba(gridBaseHex, isDark ? 0.36 : 0.28);
   const textColor = hexToRgba(textHex, isDark ? 0.92 : 0.66);
   const pointFill = isDark ? '#0c172e' : '#ffffff';
+  const textUiSettings = (typeof getAppTextUiSettings === 'function') ? getAppTextUiSettings() : { bold:false, size:'1' };
+  const isBoldTrend = !!textUiSettings?.bold;
+  const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
   const pad = { top: 8, right: 10, bottom: 20, left: 12 };
@@ -15895,7 +15900,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
     else ctx.lineTo(pt.x, pt.y);
   });
   ctx.strokeStyle = lineColor;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = trendLineWidth;
   ctx.stroke();
 
   points.forEach((pt)=>{
