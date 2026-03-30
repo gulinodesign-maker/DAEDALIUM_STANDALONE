@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.523";
+const BUILD_VERSION = "2.524";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15648,20 +15648,59 @@ function computeStatGen(){
 
 function __statGenRegistrationsByMonth__(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
-  const counts = new Array(12).fill(0);
-  let total = 0;
+  const monthlyRevenue = new Array(12).fill(0);
+
+  const money = (v) => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    let s = String(v).trim();
+    if (!s) return 0;
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    const n = Number(s);
+    return isFinite(n) ? n : 0;
+  };
+
+  const pickIso = (row) => {
+    const candidates = [
+      row?.data_prenotazione, row?.dataPrenotazione,
+      row?.booking_date, row?.bookingDate,
+      row?.createdAt, row?.created_at,
+      row?.updatedAt, row?.updated_at
+    ];
+    for (const raw of candidates){
+      let iso = '';
+      try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+      try{
+        const d = new Date(raw || '');
+        if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0,10);
+      }catch(_){ }
+    }
+    return '';
+  };
+
   guests.forEach((g)=>{
-    const raw = g?.createdAt || g?.created_at || '';
-    if (!raw) return;
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) return;
-    const m = d.getMonth();
-    if (m < 0 || m > 11) return;
-    counts[m] += 1;
-    total += 1;
+    if (!g) return;
+    const iso = pickIso(g);
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const mm = parseInt(iso.slice(5,7), 10);
+    if (!Number.isFinite(mm) || mm < 1 || mm > 12) return;
+    const pren = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
+    if (!isFinite(pren) || pren <= 0) return;
+    monthlyRevenue[mm - 1] += pren;
   });
-  const percentages = counts.map((value)=> total > 0 ? ((value / total) * 100) : 0);
-  return { counts, percentages, total };
+
+  for (let i = 0; i < monthlyRevenue.length; i += 1){
+    monthlyRevenue[i] = Math.round((Number(monthlyRevenue[i] || 0) || 0) * 100) / 100;
+  }
+
+  const cumulativeRevenue = monthlyRevenue.map((_, idx)=>{
+    const partial = monthlyRevenue.slice(0, idx + 1).reduce((sum, value)=> sum + (Number(value || 0) || 0), 0);
+    return Math.round(partial * 100) / 100;
+  });
+  const totalRevenue = cumulativeRevenue.length ? cumulativeRevenue[cumulativeRevenue.length - 1] : 0;
+  return { monthlyRevenue, cumulativeRevenue, totalRevenue };
 }
 
 const __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__ = 'dDAE_stat_shared_line_chart_visual_v1';
@@ -15952,7 +15991,28 @@ function __bindStatGenRegChartLongPress__(wrap){
   return __bindStatSharedLineChartLongPress__(wrap || document.querySelector('#page-statgen .statgen-line-chart-wrap'));
 }
 
-function __drawSharedMonthlyLineChart__(canvasId, values){
+function __statLineChartCompactEuro__(value){
+  const n = Number(value || 0) || 0;
+  const abs = Math.abs(n);
+  if (abs >= 1000000) return `${(n / 1000000).toFixed(abs >= 10000000 ? 0 : 1).replace(/\.0$/, '')}M`;
+  if (abs >= 1000) return `${(n / 1000).toFixed(abs >= 10000 ? 0 : 1).replace(/\.0$/, '')}k`;
+  return `${Math.round(n)}`;
+}
+
+function __statLineChartNiceMax__(value){
+  const v = Math.max(0, Number(value || 0) || 0);
+  if (v <= 0) return 100;
+  const exponent = Math.floor(Math.log10(v));
+  const fraction = v / Math.pow(10, exponent);
+  let niceFraction = 1;
+  if (fraction <= 1) niceFraction = 1;
+  else if (fraction <= 2) niceFraction = 2;
+  else if (fraction <= 5) niceFraction = 5;
+  else niceFraction = 10;
+  return niceFraction * Math.pow(10, exponent);
+}
+
+function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const parent = canvas.parentElement || canvas;
@@ -15985,22 +16045,32 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
   const isBoldTrend = !!textUiSettings?.bold;
   const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
+  const opts = options || {};
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
-  const pad = { top: 8, right: 10, bottom: 20, left: 12 };
+  const maxValue = vals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0);
+  const yMax = Math.max(1, Number(opts.yMax || 0) || __statLineChartNiceMax__(maxValue));
+  const yTickFormatter = (typeof opts.yTickFormatter === 'function') ? opts.yTickFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
+  const bubbleFormatter = (typeof opts.bubbleFormatter === 'function') ? opts.bubbleFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
+  const pad = { top: 8, right: 10, bottom: 20, left: 24 };
   const chartW = Math.max(10, width - pad.left - pad.right);
   const chartH = Math.max(10, height - pad.top - pad.bottom);
   const baseY = pad.top + chartH;
-  const yMax = 100;
   const gridSteps = 4;
 
   ctx.lineWidth = 1;
   ctx.strokeStyle = gridColor;
+  ctx.fillStyle = textColor;
+  ctx.font = '700 9px system-ui';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
   for (let i = 0; i <= gridSteps; i += 1){
     const y = pad.top + (chartH / gridSteps) * i;
     ctx.beginPath();
     ctx.moveTo(pad.left, y);
     ctx.lineTo(pad.left + chartW, y);
     ctx.stroke();
+    const tickValue = yMax - ((yMax / gridSteps) * i);
+    ctx.fillText(yTickFormatter(tickValue), 1, y);
   }
 
   ctx.strokeStyle = axisColor;
@@ -16045,9 +16115,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
 
   const peak = points.reduce((best, pt)=> (pt.value > best.value ? pt : best), points[0]);
   if (peak && peak.value > 0){
-    const bubbleW = 38;
+    const bubbleText = bubbleFormatter(peak.value);
+    const bubbleW = Math.max(38, Math.min(64, 18 + (String(bubbleText || '').length * 7)));
     const bubbleH = 15;
-    const bubbleText = String(Math.round(peak.value));
     let bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
     let by = Math.max(2, peak.y - 20);
     ctx.fillStyle = isDark ? surface.bg : 'rgba(255,255,255,0.96)';
@@ -16073,7 +16143,12 @@ function __drawSharedMonthlyLineChart__(canvasId, values){
 
 function drawStatGenRegistrationsLineChart(canvasId){
   const data = __statGenRegistrationsByMonth__();
-  __drawSharedMonthlyLineChart__(canvasId, data.percentages);
+  __drawSharedMonthlyLineChart__(canvasId, data.cumulativeRevenue, {
+    mode: 'currency',
+    bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
+    yTickFormatter: (value) => __statLineChartCompactEuro__(value),
+    pointAriaLabel: 'Fatturato cumulativo'
+  });
 }
 
 function __statSpeseMonthlyPercentages__(){
