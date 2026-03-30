@@ -6933,6 +6933,29 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 .statgen-switch input:checked + .slider{
   background:rgba(43,124,180,0.22);
 }
+.statgen-compare-year-btn{
+  flex:0 0 auto;
+  width:38px;
+  min-width:38px;
+  height:38px;
+  padding:0;
+}
+.statgen-compare-year-value{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+  line-height:1;
+  white-space:nowrap;
+  text-align:center;
+}
+body.ddae-dark .statgen-regime-label{
+  color:rgba(226,232,240,0.72);
+}
 @media (max-width:380px){
   .statgen-regime-label{
     font-size:11px;

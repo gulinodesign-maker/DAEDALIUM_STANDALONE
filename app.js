@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.524";
+const BUILD_VERSION = "2.525";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3350,6 +3350,171 @@ function __pickExerciseYearFromSettings__(){
   __openSettingsYearModal__();
 }
 
+const __STATGEN_COMPARE_YEAR_KEY__ = "dDAE_statgen_compare_year_v1";
+let __statGenCompareYearWheelTimer__ = null;
+let __statGenCompareYearWheelApplying__ = false;
+
+function __statGenCompareYearDefault__(){
+  const current = Number(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const fallback = Number.isFinite(current) ? current - 1 : (new Date().getFullYear() - 1);
+  return String(Math.max(2000, Math.min(2100, fallback)));
+}
+
+function __sanitizeStatGenCompareYear__(year){
+  const n = Number(String(year || '').trim());
+  if (Number.isFinite(n) && n >= 2000 && n <= 2100) return String(n);
+  return __statGenCompareYearDefault__();
+}
+
+function loadStatGenCompareYear(){
+  try{
+    const stored = localStorage.getItem(__STATGEN_COMPARE_YEAR_KEY__);
+    if (stored !== null && stored !== undefined && String(stored).trim() !== '') return __sanitizeStatGenCompareYear__(stored);
+  }catch(_){ }
+  return __statGenCompareYearDefault__();
+}
+
+function saveStatGenCompareYear(year){
+  try{ localStorage.setItem(__STATGEN_COMPARE_YEAR_KEY__, __sanitizeStatGenCompareYear__(year)); }catch(_){ }
+}
+
+function __ensureStatGenCompareYear__(){
+  const current = __sanitizeStatGenCompareYear__(state.statGenCompareYear || loadStatGenCompareYear());
+  state.statGenCompareYear = current;
+  return current;
+}
+
+function __updateStatGenCompareYearButtonUI__(){
+  const year = __ensureStatGenCompareYear__();
+  try{
+    const label = document.getElementById('statGenCompareYearBtnLabel');
+    if (label) label.textContent = year;
+  }catch(_){ }
+  try{
+    const btn = document.getElementById('statGenCompareYearBtn');
+    if (btn){
+      btn.setAttribute('aria-label', `Anno confronto grafico ${year}`);
+      btn.title = `Anno confronto ${year}`;
+    }
+  }catch(_){ }
+}
+
+function __populateStatGenCompareYearPicker__(selectedYear){
+  const wheel = document.getElementById('statGenCompareYearWheel');
+  if (!wheel) return;
+  const years = __getSettingsYearValues__();
+  const selected = __sanitizeStatGenCompareYear__(selectedYear || __ensureStatGenCompareYear__());
+  const pad = '<div class="settings-year-wheel-spacer" aria-hidden="true"></div>'.repeat(__SETTINGS_YEAR_WHEEL_PAD_ROWS__);
+  wheel.innerHTML = pad + years.map((year) => `<div class="settings-year-wheel-item${year === selected ? ' is-selected' : ''}" data-year="${year}" role="option" aria-selected="${year === selected ? 'true' : 'false'}">${year}</div>`).join('') + pad;
+}
+
+function __highlightStatGenCompareYearWheel__(year){
+  const wheel = document.getElementById('statGenCompareYearWheel');
+  if (!wheel) return;
+  const target = __sanitizeStatGenCompareYear__(year);
+  wheel.querySelectorAll('.settings-year-wheel-item').forEach((item) => {
+    const on = item.getAttribute('data-year') === target;
+    item.classList.toggle('is-selected', on);
+    item.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+function __getStatGenCompareYearWheelValue__(){
+  const wheel = document.getElementById('statGenCompareYearWheel');
+  if (!wheel) return __ensureStatGenCompareYear__();
+  const years = __getSettingsYearValues__();
+  const rawIndex = Math.round((wheel.scrollTop || 0) / __SETTINGS_YEAR_WHEEL_ROW__);
+  const index = Math.max(0, Math.min(years.length - 1, rawIndex));
+  return years[index] || years[0] || __ensureStatGenCompareYear__();
+}
+
+function __scrollStatGenCompareYearWheelTo__(year, behavior){
+  const wheel = document.getElementById('statGenCompareYearWheel');
+  if (!wheel) return;
+  const years = __getSettingsYearValues__();
+  const target = __sanitizeStatGenCompareYear__(year || __ensureStatGenCompareYear__());
+  const index = Math.max(0, years.indexOf(target));
+  const top = index * __SETTINGS_YEAR_WHEEL_ROW__;
+  try{ wheel.scrollTo({ top, behavior: behavior || 'auto' }); }
+  catch(_){ wheel.scrollTop = top; }
+  __highlightStatGenCompareYearWheel__(target);
+}
+
+function __applyStatGenCompareYearSelection__(opts){
+  if (__statGenCompareYearWheelApplying__) return;
+  __statGenCompareYearWheelApplying__ = true;
+  const next = __sanitizeStatGenCompareYear__(__getStatGenCompareYearWheelValue__());
+  const current = __ensureStatGenCompareYear__();
+  __highlightStatGenCompareYearWheel__(next);
+  __scrollStatGenCompareYearWheelTo__(next, (opts && opts.snapOnly) ? 'auto' : 'smooth');
+  if (next && next !== current){
+    state.statGenCompareYear = next;
+    saveStatGenCompareYear(next);
+    __updateStatGenCompareYearButtonUI__();
+    state.statGenCompareGuests = [];
+    try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+    try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ }
+  }
+  requestAnimationFrame(() => { __statGenCompareYearWheelApplying__ = false; });
+}
+
+function __openStatGenCompareYearModal__(){
+  const modal = document.getElementById('statGenCompareYearModal');
+  const wheel = document.getElementById('statGenCompareYearWheel');
+  if (!modal || !wheel) return;
+  const current = __ensureStatGenCompareYear__();
+  __populateStatGenCompareYearPicker__(current);
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  __statGenCompareYearWheelApplying__ = false;
+  requestAnimationFrame(() => {
+    __scrollStatGenCompareYearWheelTo__(current, 'auto');
+    try{ wheel.focus({ preventScroll:true }); }catch(_){ try{ wheel.focus(); }catch(__){ } }
+  });
+}
+
+function __closeStatGenCompareYearModal__(){
+  const modal = document.getElementById('statGenCompareYearModal');
+  if (!modal) return;
+  try{ clearTimeout(__statGenCompareYearWheelTimer__); }catch(_){ }
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function __saveStatGenCompareYearModal__(){
+  __applyStatGenCompareYearSelection__({ snapOnly:true });
+  __closeStatGenCompareYearModal__();
+}
+
+async function __loadStatGenCompareGuests__(opts = {}){
+  const compareYear = __ensureStatGenCompareYear__();
+  const currentYear = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  if (compareYear === currentYear){
+    state.statGenCompareGuests = Array.isArray(state.statsGuests) ? state.statsGuests.slice() : [];
+    try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+    return state.statGenCompareGuests;
+  }
+  const from = `${compareYear}-01-01`;
+  const to = `${compareYear}-12-31`;
+  try{
+    const rows = await cachedGet('ospiti', { from, to, anno: compareYear }, { showLoader:false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force: !!opts.force });
+    const filtered = __filterByExerciseYear__(Array.isArray(rows) ? rows : [], compareYear, [
+      'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
+      'createdAt','created_at','updatedAt','updated_at'
+    ]);
+    if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
+    state.statGenCompareGuests = filtered;
+  }catch(_){
+    if (__ensureStatGenCompareYear__() === compareYear) state.statGenCompareGuests = [];
+  }
+  try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
+}
+
+function __openStatGenCompareYearPicker__(){
+  __openStatGenCompareYearModal__();
+}
+
 // =========================
 // Context change (account / anno) — reset cache + state
 // =========================
@@ -4049,6 +4214,8 @@ guestMarriage: false,
   // Auth/session + anno esercizio
   session: null,
   exerciseYear: null,
+  statGenCompareYear: null,
+  statGenCompareGuests: [],
 };
 
 const COLORS = {
@@ -10676,6 +10843,70 @@ const cfg = document.getElementById("settingsConfigBtn");
       yearCard.addEventListener(evt, (e) => { try{ e.stopPropagation(); }catch(_){ } }, { passive:false });
     });
   }
+  const statGenCompareYearBtn = document.getElementById('statGenCompareYearBtn');
+  if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundTap){
+    statGenCompareYearBtn.__boundTap = true;
+    bindFastTap(statGenCompareYearBtn, () => { __openStatGenCompareYearPicker__(); });
+  }
+  const statGenCompareModal = document.getElementById('statGenCompareYearModal');
+  if (statGenCompareModal && !statGenCompareModal.__boundClose){
+    statGenCompareModal.__boundClose = true;
+    statGenCompareModal.addEventListener('click', (e) => { if (e.target === statGenCompareModal) __closeStatGenCompareYearModal__(); });
+  }
+  const statGenCompareWheel = document.getElementById('statGenCompareYearWheel');
+  if (statGenCompareWheel && !statGenCompareWheel.__boundWheel){
+    statGenCompareWheel.__boundWheel = true;
+    statGenCompareWheel.addEventListener('scroll', () => {
+      try{ clearTimeout(__statGenCompareYearWheelTimer__); }catch(_){ }
+      const liveYear = __getStatGenCompareYearWheelValue__();
+      __highlightStatGenCompareYearWheel__(liveYear);
+      __statGenCompareYearWheelTimer__ = setTimeout(() => { __applyStatGenCompareYearSelection__({ snapOnly:true }); }, 140);
+    }, { passive:true });
+    statGenCompareWheel.addEventListener('click', (e) => {
+      const item = e.target && e.target.closest ? e.target.closest('.settings-year-wheel-item') : null;
+      if (!item) return;
+      const year = item.getAttribute('data-year');
+      __scrollStatGenCompareYearWheelTo__(year, 'smooth');
+      try{ clearTimeout(__statGenCompareYearWheelTimer__); }catch(_){ }
+      __statGenCompareYearWheelTimer__ = setTimeout(() => { __applyStatGenCompareYearSelection__({ snapOnly:false }); }, 150);
+    });
+    statGenCompareWheel.addEventListener('touchend', () => {
+      try{ clearTimeout(__statGenCompareYearWheelTimer__); }catch(_){ }
+      __statGenCompareYearWheelTimer__ = setTimeout(() => { __applyStatGenCompareYearSelection__({ snapOnly:false }); }, 170);
+    }, { passive:true });
+    statGenCompareWheel.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape'){
+        e.preventDefault();
+        __closeStatGenCompareYearModal__();
+        return;
+      }
+      if (e.key === 'Enter'){
+        e.preventDefault();
+        __saveStatGenCompareYearModal__();
+        return;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+        e.preventDefault();
+        const years = __getSettingsYearValues__();
+        const current = __getStatGenCompareYearWheelValue__();
+        let index = years.indexOf(current);
+        if (index < 0) index = 0;
+        if (e.key === 'ArrowDown') index = Math.min(years.length - 1, index + 1);
+        else index = Math.max(0, index - 1);
+        const year = years[index];
+        __scrollStatGenCompareYearWheelTo__(year, 'smooth');
+        try{ clearTimeout(__statGenCompareYearWheelTimer__); }catch(_){ }
+        __statGenCompareYearWheelTimer__ = setTimeout(() => { __applyStatGenCompareYearSelection__({ snapOnly:false }); }, 150);
+      }
+    });
+  }
+  const statGenCompareCard = document.querySelector('#statGenCompareYearModal .settings-year-wheel-card');
+  if (statGenCompareCard && !statGenCompareCard.__boundContain){
+    statGenCompareCard.__boundContain = true;
+    ['click','touchstart','touchend','pointerdown','pointerup'].forEach((evt) => {
+      statGenCompareCard.addEventListener(evt, (e) => { try{ e.stopPropagation(); }catch(_){ } }, { passive:false });
+    });
+  }
 
   const backupClose = document.getElementById("settingsBackupClose");
   if (backupClose) bindFastTap(backupClose, __closeSettingsBackupModal__);
@@ -15646,8 +15877,8 @@ function computeStatGen(){
   };
 }
 
-function __statGenRegistrationsByMonth__(){
-  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+function __statGenRegistrationsByMonth__(sourceRows){
+  const guests = Array.isArray(sourceRows) ? sourceRows : (Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
   const monthlyRevenue = new Array(12).fill(0);
 
   const money = (v) => {
@@ -16036,18 +16267,25 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const surface = __statSharedLineChartResolvedSurface__(visual, isDark);
   const textHex = __statSharedLineChartResolvedTextHex__(visual, isDark);
   const lineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
+  const compareLineColor = String((options && options.compareLineColor) || (isDark ? '#7dd3fc' : '#2563eb'));
   const gridBaseHex = __graphColorValueToHex__(visual.border || textHex || (isDark ? '#94a3b8' : '#0f172a'), textHex || (isDark ? '#94a3b8' : '#0f172a'));
   const gridColor = hexToRgba(gridBaseHex, isDark ? 0.22 : 0.18);
   const axisColor = hexToRgba(gridBaseHex, isDark ? 0.36 : 0.28);
   const textColor = hexToRgba(textHex, isDark ? 0.92 : 0.66);
   const pointFill = isDark ? '#0c172e' : '#ffffff';
+  const comparePointFill = isDark ? '#081226' : '#ffffff';
   const textUiSettings = (typeof getAppTextUiSettings === 'function') ? getAppTextUiSettings() : { bold:false, size:'1' };
   const isBoldTrend = !!textUiSettings?.bold;
   const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
   const opts = options || {};
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
-  const maxValue = vals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0);
+  const compareVals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((opts.compareValues || [])[i] || 0) || 0));
+  const compareEnabled = compareVals.some((value) => value > 0);
+  const maxValue = Math.max(
+    vals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0),
+    compareVals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0)
+  );
   const yMax = Math.max(1, Number(opts.yMax || 0) || __statLineChartNiceMax__(maxValue));
   const yTickFormatter = (typeof opts.yTickFormatter === 'function') ? opts.yTickFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
   const bubbleFormatter = (typeof opts.bubbleFormatter === 'function') ? opts.bubbleFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
@@ -16079,30 +16317,43 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.lineTo(pad.left + chartW, baseY);
   ctx.stroke();
 
-  const points = vals.map((value, idx)=>{
+  const makePoints = (series) => series.map((value, idx)=>{
     const x = pad.left + (chartW / 11) * idx;
     const y = baseY - ((value / yMax) * chartH);
     return { x, y, value, idx };
   });
+  const points = makePoints(vals);
+  const comparePoints = makePoints(compareVals);
 
-  ctx.beginPath();
-  points.forEach((pt, idx)=>{
-    if (idx === 0) ctx.moveTo(pt.x, pt.y);
-    else ctx.lineTo(pt.x, pt.y);
-  });
-  ctx.strokeStyle = lineColor;
-  ctx.lineWidth = trendLineWidth;
-  ctx.stroke();
-
-  points.forEach((pt)=>{
+  const drawSeries = (seriesPoints, cfg = {}) => {
+    if (!Array.isArray(seriesPoints) || !seriesPoints.length) return;
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(pt.x, pt.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = pointFill;
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = lineColor;
+    seriesPoints.forEach((pt, idx)=>{
+      if (idx === 0) ctx.moveTo(pt.x, pt.y);
+      else ctx.lineTo(pt.x, pt.y);
+    });
+    ctx.strokeStyle = cfg.color || lineColor;
+    ctx.lineWidth = cfg.lineWidth || trendLineWidth;
+    ctx.setLineDash(Array.isArray(cfg.dash) ? cfg.dash : []);
     ctx.stroke();
-  });
+    ctx.setLineDash([]);
+    seriesPoints.forEach((pt)=>{
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, cfg.radius || 3, 0, Math.PI * 2);
+      ctx.fillStyle = cfg.pointFill || pointFill;
+      ctx.fill();
+      ctx.lineWidth = cfg.pointLineWidth || 2;
+      ctx.strokeStyle = cfg.color || lineColor;
+      ctx.stroke();
+    });
+    ctx.restore();
+  };
+
+  if (compareEnabled){
+    drawSeries(comparePoints, { color: compareLineColor, dash: [5, 4], lineWidth: Math.max(1.5, trendLineWidth - 0.2), pointFill: comparePointFill, radius: 2.5, pointLineWidth: 1.5 });
+  }
+  drawSeries(points, { color: lineColor, lineWidth: trendLineWidth, pointFill, radius: 3, pointLineWidth: 2 });
 
   ctx.fillStyle = textColor;
   ctx.font = '800 10px system-ui';
@@ -16142,9 +16393,13 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 }
 
 function drawStatGenRegistrationsLineChart(canvasId){
-  const data = __statGenRegistrationsByMonth__();
-  __drawSharedMonthlyLineChart__(canvasId, data.cumulativeRevenue, {
+  const primary = __statGenRegistrationsByMonth__();
+  const compareRows = Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
+  const compare = __statGenRegistrationsByMonth__(compareRows);
+  __drawSharedMonthlyLineChart__(canvasId, primary.cumulativeRevenue, {
     mode: 'currency',
+    compareValues: compare.cumulativeRevenue,
+    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#7dd3fc' : '#2563eb'),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value),
     pointAriaLabel: 'Fatturato cumulativo'
@@ -16227,6 +16482,7 @@ function drawStatCancellazioniPercentLineChart(canvasId){
 function renderStatGen(){
   bindStatFiscalModeToggle();
   updateStatFiscalModeUI();
+  __updateStatGenCompareYearButtonUI__();
 
   const s = computeStatGen();
   state.statGen = s;
@@ -16271,6 +16527,7 @@ function renderStatGen(){
     }
   }catch(_){ }
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  try{ __loadStatGenCompareGuests__({ force:false }); }catch(_){ }
 }
 
 
