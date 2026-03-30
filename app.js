@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.526";
+const BUILD_VERSION = "2.527";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3494,8 +3494,8 @@ async function __loadStatGenCompareGuests__(opts = {}){
     try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
     return state.statGenCompareGuests;
   }
-  const from = `${compareYear}-01-01`;
-  const to = `${compareYear}-12-31`;
+  const from = `1900-01-01`;
+  const to = `2100-12-31`;
   const pickChartIso = (row) => {
     const candidates = [
       row?.data_prenotazione, row?.dataPrenotazione,
