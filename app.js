@@ -3418,7 +3418,7 @@ async function __ensureStatGenGuestsForYear__(year){
       return state.statGenGuestsByYear[targetYear];
     }
   }catch(_){ }
-  __statGenGuestsByYearPromises__[targetYear] = cachedGet('ospiti', {}, { showLoader:false, ttlMs:5*60*1000, swrMs:30*60*1000, force:false })
+  __statGenGuestsByYearPromises__[targetYear] = cachedGet('ospiti', { anno: targetYear }, { showLoader:false, ttlMs:5*60*1000, swrMs:30*60*1000, force:false })
     .then((rows)=>{
       const allRows = Array.isArray(rows) ? rows : [];
       const out = allRows.filter((row) => String((pickIso(row) || '').slice(0,4)) === targetYear);
