@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.525";
+const BUILD_VERSION = "2.523";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11737,7 +11737,7 @@ function ensureTopbarIconContrast(){
 }
 
 
-const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings","prodotti"]);
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings"]);
 function __isVerticalLockPage__(page){
   return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
 }
@@ -11754,7 +11754,7 @@ function __updateVerticalLockViewportVars__(){
     const topbarH = Math.max(64, Math.round((topbar && topbar.getBoundingClientRect && topbar.getBoundingClientRect().height) || 64));
     root.style.setProperty('--app-topbar-offset', `${topbarH}px`);
     const syncBar = document.getElementById('homeSyncBar');
-    const syncVisible = !!(syncBar && !syncBar.hidden);
+    const syncVisible = !!(body && body.dataset && body.dataset.page === 'home' && syncBar && !syncBar.hidden);
     const syncH = syncVisible ? Math.max(0, Math.ceil((syncBar.getBoundingClientRect && syncBar.getBoundingClientRect().height) || 0) + 12) : 0;
     root.style.setProperty('--app-fixed-bottom-offset', `${syncH}px`);
   }catch(_){ }
@@ -11795,7 +11795,7 @@ function __applyVerticalPageLock__(page){
     const allowVerticalMove = (target) => {
       try{
         if (!target || !target.closest) return false;
-        return !!target.closest('.settings-year-wheel, #prodottiList, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
+        return !!target.closest('.settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
       }catch(_){
         return false;
       }
@@ -12065,9 +12065,8 @@ state.page = page;
 // render on demand
   if (page === "prodotti") {
     const _nav = navId;
-    try{ setTimeout(()=>{ if (state.navId === _nav && state.page === "prodotti") __updateProdottiScrollLayout__(); }, 0); }catch(_){ }
     loadProdotti({ force:false, showLoader:true })
-      .then(()=>{ if (state.navId !== _nav || state.page !== "prodotti") return; renderProdotti(); try{ __updateProdottiScrollLayout__(); }catch(_){ } })
+      .then(()=>{ if (state.navId !== _nav || state.page !== "prodotti") return; renderProdotti(); })
       .catch(e=>toast(e.message));
   }
 
@@ -22370,21 +22369,6 @@ function updateProdottiControls_(){
   }catch(_){}
 }
 
-function __updateProdottiScrollLayout__(){
-  try{
-    const page = document.getElementById("page-prodotti");
-    const wrap = document.getElementById("prodottiList");
-    if (!page || !wrap) return;
-    page.style.removeProperty('--prodotti-fixed-top-height');
-    page.style.removeProperty('--prodotti-list-height');
-    wrap.style.removeProperty('height');
-    wrap.style.removeProperty('max-height');
-    wrap.style.overflowY = 'auto';
-    wrap.style.overflowX = 'hidden';
-    wrap.style.webkitOverflowScrolling = 'touch';
-  }catch(_){ }
-}
-
 function renderProdotti(){
   const wrap = document.getElementById("prodottiList");
   if (!wrap) return;
@@ -22442,28 +22426,10 @@ function renderProdotti(){
 
   wrap.appendChild(frag);
   updateProdottiControls_();
-  try{ __updateProdottiScrollLayout__(); }catch(_){ }
 }
 
 // ---- Setup & handlers ----
 function setupProdotti(){
-  try{
-    if (!window.__ddaeProdottiLayoutBound){
-      window.__ddaeProdottiLayoutBound = true;
-      const refresh = () => {
-        try{ if (state && state.page === 'prodotti') __updateProdottiScrollLayout__(); }catch(_){ }
-      };
-      window.addEventListener('resize', refresh, { passive:true });
-      window.addEventListener('orientationchange', refresh, { passive:true });
-      try{
-        if (window.visualViewport){
-          window.visualViewport.addEventListener('resize', refresh, { passive:true });
-          window.visualViewport.addEventListener('scroll', refresh, { passive:true });
-        }
-      }catch(_){ }
-      setTimeout(refresh, 0);
-    }
-  }catch(_){ }
   const btnAdd = document.getElementById("prodAddBtn");
   const btnReset = document.getElementById("prodResetBtn");
   const list = document.getElementById("prodottiList");

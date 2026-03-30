@@ -7652,26 +7652,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
 /* PRODOTTI (liste: colazione + pulizia) */
 
 .prodotti-page{
-  padding: 8px 14px 0;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 12px);
-  max-height: calc(100dvh - 68px - var(--safe-top) - var(--sync-footer-space) - 12px);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-#page-prodotti{
-  min-height: 0;
-}
-
-.prodotti-fixed-top{
-  flex: 0 0 auto;
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  padding-bottom: 12px;
-  background: var(--bg);
+  padding: 8px 14px 24px;
 }
 
 .prodotti-header{
@@ -7812,21 +7793,8 @@ color: var(--cardtext, var(--mcol,#ff3b30));
 
 
 
-.prodotti-tabs-fixed{
-  margin-bottom: 0;
-}
-
 .prodotti-list{
   margin-top: 2px;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  touch-action: pan-y;
-  padding: 2px 0 calc(var(--safe-bottom) + 12px);
 }
 
 /* Modal aggiungi prodotto */
@@ -16989,39 +16957,6 @@ body.page-lock-vertical #page-orepulizia{
 body.page-lock-vertical #page-orepulizia .opcal-wrap{
   height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   padding-bottom: calc(var(--safe-bottom) + 18px) !important;
-}
-
-body.page-lock-vertical #page-prodotti{
-  height: 100% !important;
-  max-height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-page{
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-  padding-bottom: calc(var(--app-fixed-bottom-offset) + 8px) !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-fixed-top{
-  flex: 0 0 auto !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-list{
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  height: auto !important;
-  max-height: none !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: contain !important;
-  touch-action: pan-y !important;
-  padding-bottom: calc(var(--app-fixed-bottom-offset) + var(--safe-bottom) + 12px) !important;
 }
 body.page-lock-vertical.page-lock-sync-footer #page-orepulizia .opcal-wrap{
   height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
