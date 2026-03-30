@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.527";
+const BUILD_VERSION = "2.528";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3486,6 +3486,26 @@ function __saveStatGenCompareYearModal__(){
   __closeStatGenCompareYearModal__();
 }
 
+function __statGenGuestYearFields__(){
+  return [
+    'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
+    'createdAt','created_at','updatedAt','updated_at'
+  ];
+}
+
+function __statGenReadYearGuestsLocalCache__(year){
+  try{
+    const uid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : '';
+    const yy = String(year || '').trim();
+    if (!uid || !yy) return [];
+    const fullKey = `${__lsPrefixBase}${uid}:${yy}:ospitiALL|${uid}|${yy}|${yy}-01-01|${yy}-12-31`;
+    const raw = localStorage.getItem(fullKey);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.data) ? parsed.data : [];
+  }catch(_){ return []; }
+}
+
 async function __loadStatGenCompareGuests__(opts = {}){
   const compareYear = __ensureStatGenCompareYear__();
   const currentYear = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
@@ -3494,36 +3514,43 @@ async function __loadStatGenCompareGuests__(opts = {}){
     try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
     return state.statGenCompareGuests;
   }
-  const from = `1900-01-01`;
-  const to = `2100-12-31`;
-  const pickChartIso = (row) => {
-    const candidates = [
-      row?.data_prenotazione, row?.dataPrenotazione,
-      row?.booking_date, row?.bookingDate,
-      row?.createdAt, row?.created_at,
-      row?.updatedAt, row?.updated_at
-    ];
-    for (const raw of candidates){
-      let iso = '';
-      try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
-      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
-      try{
-        const d = new Date(raw || '');
-        if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0,10);
-      }catch(_){ }
-    }
-    return '';
+
+  const yearFields = __statGenGuestYearFields__();
+  const from = `${compareYear}-01-01`;
+  const to = `${compareYear}-12-31`;
+
+  const applyPrimaryYearPipeline = (rows) => {
+    const base = Array.isArray(rows) ? rows : [];
+    return __filterByExerciseYear__(base, compareYear, yearFields);
   };
+
   try{
-    const rows = await cachedGet('ospiti', { from, to, anno: compareYear }, { showLoader:false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force: !!opts.force });
-    const filtered = (Array.isArray(rows) ? rows : []).filter((row) => {
-      const iso = pickChartIso(row);
-      return !!iso && iso.slice(0,4) === compareYear;
-    });
+    const cachedRows = __statGenReadYearGuestsLocalCache__(compareYear);
+    const cachedFiltered = applyPrimaryYearPipeline(cachedRows);
+    if (cachedFiltered.length){
+      if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
+      state.statGenCompareGuests = cachedFiltered;
+      try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+    }
+  }catch(_){ }
+
+  try{
+    let rows = [];
+    try{
+      rows = await cachedGet('ospiti', { from, to, anno: compareYear }, { showLoader:false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force: !!opts.force });
+    }catch(_){ rows = []; }
+
+    if (!Array.isArray(rows) || !rows.length){
+      try{
+        rows = await api('ospiti', { method:'GET', params:{ from, to, anno: compareYear }, showLoader:false });
+      }catch(_){ rows = []; }
+    }
+
+    const filtered = applyPrimaryYearPipeline(rows);
     if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
     state.statGenCompareGuests = filtered;
   }catch(_){
-    if (__ensureStatGenCompareYear__() === compareYear) state.statGenCompareGuests = [];
+    if (__ensureStatGenCompareYear__() === compareYear) state.statGenCompareGuests = Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
   }
   try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
   return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
@@ -15915,7 +15942,12 @@ function __statGenRegistrationsByMonth__(sourceRows){
       row?.data_prenotazione, row?.dataPrenotazione,
       row?.booking_date, row?.bookingDate,
       row?.createdAt, row?.created_at,
-      row?.updatedAt, row?.updated_at
+      row?.updatedAt, row?.updated_at,
+      row?.data, row?.date,
+      row?.check_in, row?.checkIn,
+      row?.arrivo, row?.dataArrivo,
+      row?.check_out, row?.checkOut,
+      row?.partenza, row?.dataPartenza
     ];
     for (const raw of candidates){
       let iso = '';
