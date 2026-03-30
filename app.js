@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.525";
+const BUILD_VERSION = "2.526";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3496,12 +3496,30 @@ async function __loadStatGenCompareGuests__(opts = {}){
   }
   const from = `${compareYear}-01-01`;
   const to = `${compareYear}-12-31`;
+  const pickChartIso = (row) => {
+    const candidates = [
+      row?.data_prenotazione, row?.dataPrenotazione,
+      row?.booking_date, row?.bookingDate,
+      row?.createdAt, row?.created_at,
+      row?.updatedAt, row?.updated_at
+    ];
+    for (const raw of candidates){
+      let iso = '';
+      try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+      try{
+        const d = new Date(raw || '');
+        if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0,10);
+      }catch(_){ }
+    }
+    return '';
+  };
   try{
     const rows = await cachedGet('ospiti', { from, to, anno: compareYear }, { showLoader:false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force: !!opts.force });
-    const filtered = __filterByExerciseYear__(Array.isArray(rows) ? rows : [], compareYear, [
-      'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
-      'createdAt','created_at','updatedAt','updated_at'
-    ]);
+    const filtered = (Array.isArray(rows) ? rows : []).filter((row) => {
+      const iso = pickChartIso(row);
+      return !!iso && iso.slice(0,4) === compareYear;
+    });
     if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
     state.statGenCompareGuests = filtered;
   }catch(_){
