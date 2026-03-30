@@ -21,9 +21,9 @@
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.524";
+window.APP_VERSION = "2.523";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.524";
+  const LOCAL_BUILD = "dDAE_2.523";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -463,11 +463,10 @@ window.APP_VERSION = "2.524";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.524</div></div></section>
+<div class="build" id="buildText">dDAE_2.523</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
-<div class="prodotti-fixed-top">
 <div class="prodotti-header">
 <div class="prodotti-title-row">
 <h2 class="prodotti-title">Lista della spesa</h2>
@@ -478,10 +477,9 @@ window.APP_VERSION = "2.524";
 </div>
 <div aria-hidden="true" class="prodotti-divider"></div>
 </div>
-<div aria-label="Azioni e filtri prodotti" class="prodotti-grid prodotti-grid-tabs prodotti-tabs-fixed">
+<div aria-label="Azioni e filtri prodotti" class="prodotti-grid prodotti-grid-tabs">
 <button class="prod-rectbtn prod-blue" id="prodTabColazione" type="button">Colazione</button>
 <button class="prod-rectbtn prod-orange" id="prodTabPulizia" type="button">Prodotti</button>
-</div>
 </div>
 <div aria-label="Lista prodotti" class="colazione-list prodotti-list" id="prodottiList"></div>
 </div>
