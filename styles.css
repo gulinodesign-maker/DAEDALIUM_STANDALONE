@@ -6900,81 +6900,45 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 .statgen-head-actions{
   margin-left:auto;
   min-width:0;
+}
+.statgen-regime-switch{
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:10px;
-}
-.statgen-switch-control{
-  display:inline-flex;
-  align-items:center;
-  justify-content:flex-end;
   gap:8px;
-  min-width:0;
-  flex:0 0 auto;
-}
-.statgen-switch-icon,
-.statgen-compare-year-btn{
-  height:38px;
-  min-height:38px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,0.70);
-  color:var(--ico-blue-night);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:0 10px;
-  box-shadow:none;
-  -webkit-appearance:none;
-  appearance:none;
-}
-.statgen-switch-icon{
-  width:38px;
-  min-width:38px;
-  padding:0;
-}
-.statgen-switch-icon .ui-ico,
-.statgen-compare-year-btn .ui-ico{
-  width:18px;
-  height:18px;
-}
-.statgen-compare-year-btn{
-  min-width:74px;
-  font-size:13px;
-  font-weight:800;
+  flex-wrap:nowrap;
   white-space:nowrap;
+  min-width:0;
 }
-.statgen-head-switch{
+.statgen-regime-label{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+  color:rgba(15,23,42,0.72);
+  line-height:1;
+  white-space:nowrap;
+  flex:0 1 auto;
+}
+.statgen-switch{
   flex:0 0 auto;
 }
-body.ddae-dark .statgen-switch-icon,
-body.ddae-dark .statgen-compare-year-btn{
-  background:rgba(30,41,59,0.92);
-  border-color:rgba(88,183,244,0.24);
-  color:#ffffff;
+.statgen-switch .slider{
+  background:rgba(15,23,42,0.08);
+  border-color:rgba(15,23,42,0.14);
+}
+.statgen-switch .slider:before{
+  background:#ffffff;
+  border-color:rgba(15,23,42,0.14);
+}
+.statgen-switch input:checked + .slider{
+  background:rgba(43,124,180,0.22);
 }
 @media (max-width:380px){
-  .statgen-head-actions{
-    gap:8px;
+  .statgen-regime-label{
+    font-size:11px;
   }
-  .statgen-switch-control{
+  .statgen-regime-switch{
     gap:6px;
-  }
-  .statgen-switch-icon,
-  .statgen-compare-year-btn{
-    height:36px;
-    min-height:36px;
-    border-radius:11px;
-  }
-  .statgen-switch-icon{
-    width:36px;
-    min-width:36px;
-  }
-  .statgen-compare-year-btn{
-    min-width:68px;
-    padding:0 8px;
   }
 }
 
@@ -12532,8 +12496,7 @@ body[data-role="operatore"] #page-home .home-main-label{
 
 
 /* dDAE_2.248 — picker anno a ruota stile iOS più stabile e rifinito */
-#settingsYearModal.settings-year-wheel-modal,
-#statGenCompareYearModal.settings-year-wheel-modal{
+#settingsYearModal.settings-year-wheel-modal{
   display:flex !important;
   align-items:flex-end !important;
   justify-content:center !important;
@@ -12542,8 +12505,7 @@ body[data-role="operatore"] #page-home .home-main-label{
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
 }
-#settingsYearModal.settings-year-wheel-modal[hidden],
-#statGenCompareYearModal.settings-year-wheel-modal[hidden]{
+#settingsYearModal.settings-year-wheel-modal[hidden]{
   display:none !important;
 }
 .settings-year-wheel-card{
@@ -12767,14 +12729,19 @@ body.ddae-dark input::placeholder,
 body.ddae-dark textarea::placeholder{
   color: rgba(226,232,240,0.56) !important;
 }
-body.ddae-dark .statgen-header-icon-btn{
-  background:rgba(8,18,38,0.96) !important;
-  border-color:rgba(88,183,244,0.28) !important;
+body.ddae-dark .statgen-regime-label{
+  color:rgba(226,232,240,0.82);
 }
-body.ddae-dark .statgen-header-icon-btn .ui-ico,
-body.ddae-dark .statgen-header-icon-btn .ui-ico *{
-  stroke:#58b7f4 !important;
-  fill:none !important;
+body.ddae-dark .statgen-switch .slider{
+  background:rgba(15,23,42,0.52);
+  border-color:rgba(148,163,184,0.28);
+}
+body.ddae-dark .statgen-switch .slider:before{
+  background:rgba(226,232,240,0.96);
+  border-color:rgba(148,163,184,0.30);
+}
+body.ddae-dark .statgen-switch input:checked + .slider{
+  background:rgba(111,183,214,0.30);
 }
 
 body.ddae-dark .settings-year-pill,
@@ -17649,41 +17616,4 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
 
 #page-statcancellazioni .statgen-line-chart-wrap{
   margin-inline: 2px;
-}
-
-.statgen-chart-legend{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:10px;
-  flex-wrap:nowrap;
-  padding:4px 2px 6px;
-}
-.statgen-chart-legend-item{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  min-width:0;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.02em;
-  color:rgba(15,23,42,0.72);
-  white-space:nowrap;
-}
-.statgen-chart-legend-dot{
-  width:9px;
-  height:9px;
-  border-radius:999px;
-  flex:0 0 auto;
-  background:#c9772b;
-  border:1px solid rgba(15,23,42,0.12);
-}
-.statgen-chart-legend-item.is-compare .statgen-chart-legend-dot{
-  background:#2b7cb4;
-}
-body.ddae-dark .statgen-chart-legend-item{
-  color:rgba(226,232,240,0.78);
-}
-body.ddae-dark .statgen-chart-legend-dot{
-  border-color:rgba(226,232,240,0.18);
 }
