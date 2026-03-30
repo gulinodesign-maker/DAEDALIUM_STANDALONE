@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.523";
+const BUILD_VERSION = "2.525";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11737,7 +11737,7 @@ function ensureTopbarIconContrast(){
 }
 
 
-const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings"]);
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings","prodotti"]);
 function __isVerticalLockPage__(page){
   return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
 }
@@ -11754,7 +11754,7 @@ function __updateVerticalLockViewportVars__(){
     const topbarH = Math.max(64, Math.round((topbar && topbar.getBoundingClientRect && topbar.getBoundingClientRect().height) || 64));
     root.style.setProperty('--app-topbar-offset', `${topbarH}px`);
     const syncBar = document.getElementById('homeSyncBar');
-    const syncVisible = !!(body && body.dataset && body.dataset.page === 'home' && syncBar && !syncBar.hidden);
+    const syncVisible = !!(syncBar && !syncBar.hidden);
     const syncH = syncVisible ? Math.max(0, Math.ceil((syncBar.getBoundingClientRect && syncBar.getBoundingClientRect().height) || 0) + 12) : 0;
     root.style.setProperty('--app-fixed-bottom-offset', `${syncH}px`);
   }catch(_){ }
@@ -11795,7 +11795,7 @@ function __applyVerticalPageLock__(page){
     const allowVerticalMove = (target) => {
       try{
         if (!target || !target.closest) return false;
-        return !!target.closest('.settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
+        return !!target.closest('.settings-year-wheel, #prodottiList, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
       }catch(_){
         return false;
       }
