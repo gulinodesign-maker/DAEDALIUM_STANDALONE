@@ -21,9 +21,9 @@
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.528";
+window.APP_VERSION = "2.529";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.528";
+  const LOCAL_BUILD = "dDAE_2.529";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -463,7 +463,7 @@ window.APP_VERSION = "2.528";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.528</div></div></section>
+<div class="build" id="buildText">dDAE_2.529</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -598,12 +598,25 @@ window.APP_VERSION = "2.528";
 <div class="stats-head-row">
 <div class="stats-title">Generali</div>
 <div class="stats-head-actions statgen-head-actions" aria-label="Azioni grafico generali">
-<button aria-label="Regime fiscale generali" class="icon-btn statgen-header-icon-btn" id="statFiscalModeToggle" title="Regime fiscale generali" type="button">
-<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="M16.5 7h-6a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H7.5"></path></svg>
-</button>
-<button aria-label="Seleziona anno di confronto" class="icon-btn statgen-header-icon-btn" id="statGenCompareYearBtn" title="Seleziona anno di confronto" type="button">
+<div class="statgen-switch-control statgen-fiscal-control" aria-label="Forfettario">
+<span aria-hidden="true" class="statgen-switch-icon">
+<svg class="ui-ico" viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="M16.5 7h-6a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H7.5"></path></svg>
+</span>
+<label aria-label="Forfettario on/off" class="switch statgen-head-switch">
+<input aria-label="Forfettario on/off" id="statFiscalModeToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="statgen-switch-control statgen-compare-control" aria-label="Confronto anno">
+<button aria-label="Seleziona anno di confronto" class="statgen-compare-year-btn" id="statGenCompareYearBtn" title="Seleziona anno di confronto" type="button">
 <svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M3 11h18"></path><path d="M8 15h3"></path></svg>
+<span id="statGenCompareYearLabel">Anno</span>
 </button>
+<label aria-label="Confronto anno on/off" class="switch statgen-head-switch">
+<input aria-label="Confronto anno on/off" id="statGenCompareToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
 </div>
 </div>
 <div aria-hidden="true" class="stats-divider"></div>

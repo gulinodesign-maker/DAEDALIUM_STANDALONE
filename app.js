@@ -3355,17 +3355,24 @@ function __statGenCompareYearStorageKey__(){
   const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
   return `dDAE_statgen_compare_year_${current}`;
 }
-
-function __getStatGenCompareYear__(){
+function __statGenCompareEnabledStorageKey__(){
   const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
-  let fallback = String(Math.max(2000, (Number(current) || new Date().getFullYear()) - 1));
-  try{
-    const raw = String(localStorage.getItem(__statGenCompareYearStorageKey__()) || '').trim();
-    if (/^\d{4}$/.test(raw)) return raw;
-  }catch(_){ }
+  return `dDAE_statgen_compare_enabled_${current}`;
+}
+function __getStatGenDefaultCompareYear__(){
+  const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
+  const fallback = String(Math.max(2000, (Number(current) || new Date().getFullYear()) - 1));
   return fallback === current ? '' : fallback;
 }
-
+function __getStatGenCompareYear__(){
+  const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
+  const fallback = __getStatGenDefaultCompareYear__();
+  try{
+    const raw = String(localStorage.getItem(__statGenCompareYearStorageKey__()) || '').trim();
+    if (/^\d{4}$/.test(raw) && raw !== current) return raw;
+  }catch(_){ }
+  return fallback;
+}
 function __setStatGenCompareYear__(year){
   const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
   const next = String(year || '').trim();
@@ -3374,19 +3381,58 @@ function __setStatGenCompareYear__(year){
     else localStorage.setItem(__statGenCompareYearStorageKey__(), next);
   }catch(_){ }
 }
-
+function __isStatGenCompareEnabled__(){
+  try{
+    const raw = String(localStorage.getItem(__statGenCompareEnabledStorageKey__()) || '').trim().toLowerCase();
+    if (raw === '0' || raw === 'false' || raw === 'off') return false;
+    if (raw === '1' || raw === 'true' || raw === 'on') return true;
+  }catch(_){ }
+  return true;
+}
+function __setStatGenCompareEnabled__(enabled){
+  try{ localStorage.setItem(__statGenCompareEnabledStorageKey__(), enabled ? '1' : '0'); }catch(_){ }
+}
 function __updateStatGenCompareYearButton__(){
   const btn = document.getElementById('statGenCompareYearBtn');
-  if (!btn) return;
+  const input = document.getElementById('statGenCompareToggle');
+  const labelEl = document.getElementById('statGenCompareYearLabel');
   const current = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
   const compare = __getStatGenCompareYear__();
-  const label = (compare && compare !== current) ? `Anno confronto ${compare}` : 'Seleziona anno di confronto';
-  btn.setAttribute('aria-label', label);
-  btn.setAttribute('title', label);
-  btn.dataset.compareYear = (compare && compare !== current) ? compare : '';
+  const safeCompare = (compare && compare !== current) ? compare : __getStatGenDefaultCompareYear__();
+  const label = safeCompare ? `Anno confronto ${safeCompare}` : 'Seleziona anno di confronto';
+  if (btn){
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+    btn.dataset.compareYear = safeCompare || '';
+  }
+  if (labelEl) labelEl.textContent = safeCompare || 'Anno';
+  if (input) input.checked = !!(__isStatGenCompareEnabled__() && safeCompare && safeCompare !== current);
 }
 
 const __statGenGuestsByYearPromises__ = Object.create(null);
+async function __ensureStatGenAllGuests__(){
+  try{
+    if (Array.isArray(state.statGenAllGuests) && state.statGenAllGuests.length) return state.statGenAllGuests;
+  }catch(_){ }
+  const uid = String(state?.session?.user_id || '');
+  const lsKey = `ospitiSTATGENALL|${uid}`;
+  try{
+    const hit = __lsGet(lsKey);
+    if (hit && Array.isArray(hit.data) && hit.data.length){
+      state.statGenAllGuests = hit.data;
+      return state.statGenAllGuests;
+    }
+  }catch(_){ }
+  try{
+    const rows = await cachedGet('ospiti', {}, { showLoader:false, ttlMs:5*60*1000, swrMs:30*60*1000, force:false });
+    const out = Array.isArray(rows) ? rows : [];
+    state.statGenAllGuests = out;
+    try{ __lsSet(lsKey, out); }catch(_){ }
+    return out;
+  }catch(_){
+    return Array.isArray(state.statGenAllGuests) ? state.statGenAllGuests : [];
+  }
+}
 async function __ensureStatGenGuestsForYear__(year){
   const targetYear = String(year || state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
   const currentYear = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
@@ -3401,24 +3447,22 @@ async function __ensureStatGenGuestsForYear__(year){
     return '';
   };
   try{
-    if (targetYear === currentYear && Array.isArray(state.statsGuests) && state.statsGuests.length) return state.statsGuests.filter((row) => String((pickIso(row) || '').slice(0,4)) === targetYear);
-  }catch(_){ }
-  try{
     if (!state.statGenGuestsByYear || typeof state.statGenGuestsByYear !== 'object') state.statGenGuestsByYear = Object.create(null);
-    if (Array.isArray(state.statGenGuestsByYear[targetYear]) && state.statGenGuestsByYear[targetYear].length) return state.statGenGuestsByYear[targetYear];
+    if (Array.isArray(state.statGenGuestsByYear[targetYear])) return state.statGenGuestsByYear[targetYear];
   }catch(_){ }
   if (__statGenGuestsByYearPromises__[targetYear]) return __statGenGuestsByYearPromises__[targetYear];
   const uid = String(state?.session?.user_id || '');
   const lsKey = `ospitiSTATGENYEAR|${uid}|${targetYear}`;
   try{
     const hit = __lsGet(lsKey);
-    if (hit && Array.isArray(hit.data) && hit.data.length){
+    if (hit && Array.isArray(hit.data)){
       state.statGenGuestsByYear = state.statGenGuestsByYear || Object.create(null);
       state.statGenGuestsByYear[targetYear] = hit.data;
       return state.statGenGuestsByYear[targetYear];
     }
   }catch(_){ }
-  __statGenGuestsByYearPromises__[targetYear] = cachedGet('ospiti', { anno: targetYear }, { showLoader:false, ttlMs:5*60*1000, swrMs:30*60*1000, force:false })
+  __statGenGuestsByYearPromises__[targetYear] = Promise.resolve()
+    .then(() => __ensureStatGenAllGuests__())
     .then((rows)=>{
       const allRows = Array.isArray(rows) ? rows : [];
       const out = allRows.filter((row) => String((pickIso(row) || '').slice(0,4)) === targetYear);
@@ -3428,7 +3472,8 @@ async function __ensureStatGenGuestsForYear__(year){
       return out;
     })
     .catch(()=>{
-      const fallback = (targetYear === currentYear && Array.isArray(state.statsGuests)) ? state.statsGuests.filter((row) => String((pickIso(row) || '').slice(0,4)) === targetYear) : [];
+      const fallbackSource = (targetYear === currentYear && Array.isArray(state.statsGuests)) ? state.statsGuests : [];
+      const fallback = fallbackSource.filter((row) => String((pickIso(row) || '').slice(0,4)) === targetYear);
       state.statGenGuestsByYear = state.statGenGuestsByYear || Object.create(null);
       state.statGenGuestsByYear[targetYear] = fallback;
       return fallback;
@@ -3444,7 +3489,7 @@ function __statGenUpdateLegend__(){
   const compareWrap = document.getElementById('statGenCompareLegendItem');
   const compareEl = document.getElementById('statGenLegendCompare');
   if (currentEl) currentEl.textContent = currentYear;
-  const showCompare = !!(compareYear && compareYear !== currentYear);
+  const showCompare = !!(__isStatGenCompareEnabled__() && compareYear && compareYear !== currentYear);
   if (compareWrap) compareWrap.hidden = !showCompare;
   if (compareEl && showCompare) compareEl.textContent = compareYear;
 }
@@ -3492,6 +3537,7 @@ function __applyStatGenCompareYearSelection__(opts){
   __highlightStatGenCompareYearWheel__(next);
   __scrollStatGenCompareYearWheelTo__(next, (opts && opts.snapOnly) ? 'auto' : 'smooth');
   __setStatGenCompareYear__(next);
+  __setStatGenCompareEnabled__(true);
   __updateStatGenCompareYearButton__();
   __statGenUpdateLegend__();
   try{ if ((state && state.page) === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
@@ -4510,15 +4556,15 @@ function getStatFiscalMode(){
 
 function updateStatFiscalModeUI(){
   const mode = getStatFiscalMode();
-  const isSocieta = mode === "societa";
+  const isForfettario = mode === "forfettario";
   try{
-    const btn = document.getElementById("statFiscalModeToggle");
-    if (btn) {
-      const label = isSocieta ? "Regime società" : "Regime forfettario";
-      btn.dataset.mode = mode;
-      btn.setAttribute("aria-pressed", isSocieta ? "true" : "false");
-      btn.setAttribute("aria-label", label);
-      btn.setAttribute("title", label);
+    const input = document.getElementById("statFiscalModeToggle");
+    if (input) {
+      const label = isForfettario ? "Forfettario attivo" : "Forfettario disattivo";
+      input.checked = isForfettario;
+      input.dataset.mode = mode;
+      input.setAttribute("aria-label", label);
+      input.setAttribute("title", label);
     }
   }catch(_){ }
 }
@@ -4535,22 +4581,14 @@ function setStatFiscalMode(mode, opts){
 
 function bindStatFiscalModeToggle(){
   try{
-    const btn = document.getElementById("statFiscalModeToggle");
-    if (!btn || btn.__boundFiscalMode) {
+    const input = document.getElementById("statFiscalModeToggle");
+    if (!input || input.__boundFiscalMode) {
       updateStatFiscalModeUI();
       return;
     }
-    btn.__boundFiscalMode = true;
-    bindFastTap(btn, () => {
-      const mode = getStatFiscalMode();
-      setStatFiscalMode(mode === "societa" ? "forfettario" : "societa");
-    });
-    btn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' '){
-        e.preventDefault();
-        const mode = getStatFiscalMode();
-        setStatFiscalMode(mode === "societa" ? "forfettario" : "societa");
-      }
+    input.__boundFiscalMode = true;
+    input.addEventListener('change', () => {
+      setStatFiscalMode(input.checked ? "forfettario" : "societa");
     });
     updateStatFiscalModeUI();
   }catch(_){ }
@@ -16416,10 +16454,14 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 
 function drawStatGenRegistrationsLineChart(canvasId){
   const currentYear = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
-  const data = __statGenRegistrationsByMonthForYear__(currentYear, Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
+  const currentRows = (state && state.statGenGuestsByYear && Array.isArray(state.statGenGuestsByYear[currentYear]))
+    ? state.statGenGuestsByYear[currentYear]
+    : (Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
+  const data = __statGenRegistrationsByMonthForYear__(currentYear, currentRows);
   const compareYear = __getStatGenCompareYear__();
+  const compareEnabled = __isStatGenCompareEnabled__();
   let compareData = null;
-  if (compareYear && compareYear !== currentYear){
+  if (compareEnabled && compareYear && compareYear !== currentYear){
     const compareRows = (state && state.statGenGuestsByYear && Array.isArray(state.statGenGuestsByYear[compareYear])) ? state.statGenGuestsByYear[compareYear] : [];
     compareData = __statGenRegistrationsByMonthForYear__(compareYear, compareRows);
   }
@@ -16565,6 +16607,21 @@ function renderStatGen(){
         }
       });
     }
+    const compareToggle = document.getElementById('statGenCompareToggle');
+    if (compareToggle && !compareToggle.__boundCompareToggle){
+      compareToggle.__boundCompareToggle = true;
+      compareToggle.addEventListener('change', () => {
+        if (compareToggle.checked && !__getStatGenCompareYear__()) __setStatGenCompareYear__(__getStatGenDefaultCompareYear__());
+        __setStatGenCompareEnabled__(!!compareToggle.checked);
+        __updateStatGenCompareYearButton__();
+        __statGenUpdateLegend__();
+        try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+        if (compareToggle.checked){
+          const compareYear = __getStatGenCompareYear__();
+          if (compareYear) __ensureStatGenGuestsForYear__(compareYear).then(()=>{ try{ if ((state && state.page) === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ } });
+        }
+      });
+    }
   }catch(_){ }
   try{ __updateStatGenCompareYearButton__(); }catch(_){ }
   try{ __statGenUpdateLegend__(); }catch(_){ }
@@ -16572,9 +16629,10 @@ function renderStatGen(){
   try{
     const compareYear = __getStatGenCompareYear__();
     const currentYear = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear());
-    if (compareYear && compareYear !== currentYear){
-      __ensureStatGenGuestsForYear__(compareYear).then(()=>{ try{ if ((state && state.page) === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ } });
-    }
+    Promise.all([
+      __ensureStatGenGuestsForYear__(currentYear),
+      (__isStatGenCompareEnabled__() && compareYear && compareYear !== currentYear) ? __ensureStatGenGuestsForYear__(compareYear) : Promise.resolve([])
+    ]).then(()=>{ try{ if ((state && state.page) === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ } });
   }catch(_){ }
 }
 
