@@ -12065,8 +12065,9 @@ state.page = page;
 // render on demand
   if (page === "prodotti") {
     const _nav = navId;
+    try{ setTimeout(()=>{ if (state.navId === _nav && state.page === "prodotti") __updateProdottiScrollLayout__(); }, 0); }catch(_){ }
     loadProdotti({ force:false, showLoader:true })
-      .then(()=>{ if (state.navId !== _nav || state.page !== "prodotti") return; renderProdotti(); })
+      .then(()=>{ if (state.navId !== _nav || state.page !== "prodotti") return; renderProdotti(); try{ __updateProdottiScrollLayout__(); }catch(_){ } })
       .catch(e=>toast(e.message));
   }
 
@@ -22369,6 +22370,27 @@ function updateProdottiControls_(){
   }catch(_){}
 }
 
+function __updateProdottiScrollLayout__(){
+  try{
+    const page = document.getElementById("page-prodotti");
+    const wrap = document.getElementById("prodottiList");
+    const fixed = document.querySelector("#page-prodotti .prodotti-fixed-top");
+    if (!page || !wrap || !fixed) return;
+    const pageRect = page.getBoundingClientRect ? page.getBoundingClientRect() : null;
+    const fixedRect = fixed.getBoundingClientRect ? fixed.getBoundingClientRect() : null;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const bottomOffset = Math.max(0, parseFloat(rootStyle.getPropertyValue('--app-fixed-bottom-offset')) || 0);
+    const safeBottom = Math.max(0, parseFloat(rootStyle.getPropertyValue('--safe-bottom')) || 0);
+    const pageHeight = Math.max(0, Math.round((pageRect && pageRect.height) || page.clientHeight || 0));
+    const fixedHeight = Math.max(0, Math.ceil((fixedRect && fixedRect.height) || fixed.offsetHeight || 0));
+    const listHeight = Math.max(120, pageHeight - fixedHeight - bottomOffset - safeBottom - 8);
+    page.style.setProperty('--prodotti-fixed-top-height', `${fixedHeight}px`);
+    page.style.setProperty('--prodotti-list-height', `${listHeight}px`);
+    wrap.style.height = `${listHeight}px`;
+    wrap.style.maxHeight = `${listHeight}px`;
+  }catch(_){ }
+}
+
 function renderProdotti(){
   const wrap = document.getElementById("prodottiList");
   if (!wrap) return;
@@ -22426,10 +22448,28 @@ function renderProdotti(){
 
   wrap.appendChild(frag);
   updateProdottiControls_();
+  try{ __updateProdottiScrollLayout__(); }catch(_){ }
 }
 
 // ---- Setup & handlers ----
 function setupProdotti(){
+  try{
+    if (!window.__ddaeProdottiLayoutBound){
+      window.__ddaeProdottiLayoutBound = true;
+      const refresh = () => {
+        try{ if (state && state.page === 'prodotti') __updateProdottiScrollLayout__(); }catch(_){ }
+      };
+      window.addEventListener('resize', refresh, { passive:true });
+      window.addEventListener('orientationchange', refresh, { passive:true });
+      try{
+        if (window.visualViewport){
+          window.visualViewport.addEventListener('resize', refresh, { passive:true });
+          window.visualViewport.addEventListener('scroll', refresh, { passive:true });
+        }
+      }catch(_){ }
+      setTimeout(refresh, 0);
+    }
+  }catch(_){ }
   const btnAdd = document.getElementById("prodAddBtn");
   const btnReset = document.getElementById("prodResetBtn");
   const list = document.getElementById("prodottiList");
