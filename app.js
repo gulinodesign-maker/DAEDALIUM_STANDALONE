@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.528";
+const BUILD_VERSION = "2.529";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3506,6 +3506,34 @@ function __statGenReadYearGuestsLocalCache__(year){
   }catch(_){ return []; }
 }
 
+async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
+  const targetYear = String(year || '').trim();
+  if (!targetYear) return [];
+
+  const backup = {
+    exerciseYear: state.exerciseYear,
+    speseAll: Array.isArray(state.speseAll) ? state.speseAll.slice() : state.speseAll,
+    reportAll: state.reportAll,
+    statsGuests: Array.isArray(state.statsGuests) ? state.statsGuests.slice() : state.statsGuests,
+    _statsDataKey: state._statsDataKey
+  };
+
+  try{
+    state.exerciseYear = targetYear;
+    state._statsDataKey = '';
+    await ensureStatsAllData({ showLoader:false, force: !!opts.force });
+    return Array.isArray(state.statsGuests) ? state.statsGuests.slice() : [];
+  }catch(_){
+    return [];
+  }finally{
+    state.exerciseYear = backup.exerciseYear;
+    state.speseAll = backup.speseAll;
+    state.reportAll = backup.reportAll;
+    state.statsGuests = backup.statsGuests;
+    state._statsDataKey = backup._statsDataKey;
+  }
+}
+
 async function __loadStatGenCompareGuests__(opts = {}){
   const compareYear = __ensureStatGenCompareYear__();
   const currentYear = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
@@ -3515,40 +3543,19 @@ async function __loadStatGenCompareGuests__(opts = {}){
     return state.statGenCompareGuests;
   }
 
-  const yearFields = __statGenGuestYearFields__();
-  const from = `${compareYear}-01-01`;
-  const to = `${compareYear}-12-31`;
-
-  const applyPrimaryYearPipeline = (rows) => {
-    const base = Array.isArray(rows) ? rows : [];
-    return __filterByExerciseYear__(base, compareYear, yearFields);
-  };
-
   try{
     const cachedRows = __statGenReadYearGuestsLocalCache__(compareYear);
-    const cachedFiltered = applyPrimaryYearPipeline(cachedRows);
-    if (cachedFiltered.length){
+    if (Array.isArray(cachedRows) && cachedRows.length){
       if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
-      state.statGenCompareGuests = cachedFiltered;
+      state.statGenCompareGuests = cachedRows.slice();
       try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
     }
   }catch(_){ }
 
   try{
-    let rows = [];
-    try{
-      rows = await cachedGet('ospiti', { from, to, anno: compareYear }, { showLoader:false, ttlMs: 2*60*1000, swrMs: 10*60*1000, force: !!opts.force });
-    }catch(_){ rows = []; }
-
-    if (!Array.isArray(rows) || !rows.length){
-      try{
-        rows = await api('ospiti', { method:'GET', params:{ from, to, anno: compareYear }, showLoader:false });
-      }catch(_){ rows = []; }
-    }
-
-    const filtered = applyPrimaryYearPipeline(rows);
+    const rows = await __statGenLoadGuestsThroughPrimaryPipeline__(compareYear, { force:true });
     if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
-    state.statGenCompareGuests = filtered;
+    state.statGenCompareGuests = Array.isArray(rows) ? rows : [];
   }catch(_){
     if (__ensureStatGenCompareYear__() === compareYear) state.statGenCompareGuests = Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
   }
