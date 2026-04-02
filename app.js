@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.553
+ * Build: 2.556
  */
-const BUILD_VERSION = "2.553";
+const BUILD_VERSION = "2.556";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9584,12 +9584,51 @@ function __closeSettingsBackupModal__(){
   modal.setAttribute("aria-hidden", "true");
 }
 
+function __sanitizeTaxInputRaw__(raw){
+  try{
+    return String(raw ?? '').replace(/€/g, '').replace(/\s+/g, '').replace(/[^0-9,\.]/g, '').replace(/,(?=.*[,])/g, '').trim();
+  }catch(_){ return ''; }
+}
+
+function __formatTaxInputDisplay__(raw){
+  const clean = __sanitizeTaxInputRaw__(raw).replace(',', '.');
+  if (!clean) return '';
+  const n = Number(clean);
+  if (!isFinite(n) || n < 0) return '';
+  const rounded = Math.round(n * 100) / 100;
+  let text = (Math.round(rounded * 100) % 100 === 0)
+    ? String(Math.round(rounded))
+    : ((Math.round(rounded * 100) % 10 === 0) ? rounded.toFixed(1) : rounded.toFixed(2));
+  text = text.replace('.', ',');
+  return text + ' €';
+}
+
+function __bindSettingsTaxInput__(){
+  const el = document.getElementById('setTassa');
+  if (!el || el.dataset.boundTaxDisplay === '1') return;
+  el.dataset.boundTaxDisplay = '1';
+  const strip = () => {
+    try{
+      const clean = __sanitizeTaxInputRaw__(el.value).replace(',', '.');
+      el.value = clean;
+      try{ el.select(); }catch(_){ }
+    }catch(_){ }
+  };
+  const format = () => {
+    try{ el.value = __formatTaxInputDisplay__(el.value); }catch(_){ }
+  };
+  el.addEventListener('focus', strip);
+  el.addEventListener('click', () => { try{ if (document.activeElement === el) el.select(); }catch(_){ } });
+  el.addEventListener('blur', format);
+}
+
 async function loadImpostazioniPage({ force = false } = {}) {
   await ensureSettingsLoaded({ force, showLoader: true });
   try {
     const ts = document.getElementById("setTassa");
-    if (ts) ts.value = String(getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) || "");
+    if (ts) ts.value = __formatTaxInputDisplay__(String(getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) || ""));
 
+    __bindSettingsTaxInput__();
     bindTassaMaxNottiButton();
     setTassaMaxNottiValue(getTouristTaxMaxNightsSetting(3), { silent: true });
     try{ updateSettingsAccountName(); }catch(_){ }
@@ -9606,7 +9645,7 @@ function __readNumInput(id) {
   const el = document.getElementById(id);
   const raw = el ? String(el.value || "").trim() : "";
   if (!raw) return "";
-  const n = Number(raw.replace(",", "."));
+  const n = Number(__sanitizeTaxInputRaw__(raw).replace(",", "."));
   if (!isFinite(n) || n < 0) return "";
   return Math.round(n * 100) / 100;
 }
@@ -10726,6 +10765,13 @@ function __syncDarkModeButtons__(){
     if (label) label.textContent = 'Dark Mode';
     btn.title = enabled ? 'Dark Mode attiva' : 'Dark Mode disattivata';
   });
+  ["settingsDarkToggle"].forEach((id) => {
+    const toggle = document.getElementById(id);
+    if (!toggle) return;
+    try{ toggle.checked = !!enabled; }catch(_){ }
+    try{ toggle.setAttribute('aria-checked', enabled ? 'true' : 'false'); }catch(_){ }
+    try{ toggle.title = enabled ? 'Dark Mode attiva' : 'Dark Mode disattivata'; }catch(_){ }
+  });
 }
 
 function __applyDarkMode__(enabled){
@@ -10738,6 +10784,7 @@ function __applyDarkMode__(enabled){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __applyGuestListCardAll__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
@@ -10758,6 +10805,12 @@ function setupImpostazioni() {
 
   const save = document.getElementById("settingsSaveBtn");
   if (save) bindFastTap(save, () => { __toggleDarkMode__(); });
+  const settingsDarkToggle = document.getElementById("settingsDarkToggle");
+  if (settingsDarkToggle && settingsDarkToggle.dataset.boundDarkToggle !== '1'){
+    settingsDarkToggle.dataset.boundDarkToggle = '1';
+    settingsDarkToggle.checked = __isDarkModeEnabled__();
+    settingsDarkToggle.addEventListener('change', () => { __setDarkMode__(!!settingsDarkToggle.checked); try{ toast(settingsDarkToggle.checked ? 'Dark Mode attivata' : 'Dark Mode disattivata'); }catch(_){ } });
+  }
   const opDarkBtn = document.getElementById("opSettingsDarkBtn");
   if (opDarkBtn) bindFastTap(opDarkBtn, () => { __toggleDarkMode__(); });
   try{ __syncDarkModeButtons__(); }catch(_){ }
@@ -14949,6 +15002,160 @@ function __applyTaxPageCardAll__(){
       __bindTaxPageCardColorHold__(card);
     });
   }catch(_){ }
+}
+
+const __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_guest_list_card_visual_v1';
+
+function __loadGuestListCardVisualMap__(){
+  try{
+    const raw = localStorage.getItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_){ return {}; }
+}
+
+function __saveGuestListCardVisualMap__(map){
+  try{ localStorage.setItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+}
+
+function __guestListCardVisualDefault__(){
+  return __launcherVisualNormalize__({ bg:'gray-1', border:'gray-2', fg:'blue-6', opacity:0.22 }, 'blue-6');
+}
+
+function __guestListCardVisualRead__(){
+  const map = __loadGuestListCardVisualMap__();
+  const fallback = __guestListCardVisualDefault__();
+  const current = __launcherVisualNormalize__(map.guestListCard || fallback, fallback.fg || 'blue-6');
+  return {
+    bg: current.bg || fallback.bg || 'gray-1',
+    border: current.border || current.bg || fallback.border || fallback.bg || 'gray-2',
+    fg: current.fg || fallback.fg || 'blue-6',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? fallback.opacity ?? 0.22)
+  };
+}
+
+function __guestListCardVisualWrite__(visual){
+  try{
+    const map = __loadGuestListCardVisualMap__();
+    const fallback = __guestListCardVisualDefault__();
+    const clean = __launcherVisualNormalize__(visual || {}, fallback.fg || 'blue-6');
+    map.guestListCard = {
+      bg: clean.bg || fallback.bg || 'gray-1',
+      border: clean.border || clean.bg || fallback.border || fallback.bg || 'gray-2',
+      fg: clean.fg || fallback.fg || 'blue-6',
+      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.22)
+    };
+    __saveGuestListCardVisualMap__(map);
+  }catch(_){ }
+}
+
+function __applyGuestListCardVisual__(card){
+  try{
+    if (!card) return;
+    const visual = __guestListCardVisualRead__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'gray-1');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'gray-2');
+    const fgHex = __tagColorTextHex__(visual.bg || 'gray-1', visual.fg || 'blue-6', false) || __operatoreColorHex__(visual.fg || 'blue-6');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.22);
+    const dark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    let mainText = fgHex;
+    let secondaryText = fgHex;
+    if (dark){
+      const resolved = __applyDarkAdaptiveSurface__(card, visual, { fallbackBg:'gray-1', bgOpacity:Math.max(0.14, Math.min(0.24, opacity)), borderOpacity:0.28 }) || {};
+      mainText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
+      secondaryText = resolved.accentHex || mainText;
+    } else {
+      card.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+      card.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+      card.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+      card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+      card.style.setProperty('box-shadow', 'none', 'important');
+      card.style.setProperty('backdrop-filter', 'none', 'important');
+      card.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+      card.style.setProperty('background-image', 'none', 'important');
+    }
+    card.style.setProperty('--guest-list-card-text', mainText, 'important');
+    card.style.setProperty('--guest-list-card-subtext', secondaryText, 'important');
+    card.querySelectorAll('.guest-name-text').forEach((node) => {
+      try{
+        node.style.setProperty('color', mainText, 'important');
+        node.style.setProperty('-webkit-text-fill-color', mainText, 'important');
+      }catch(_){ }
+    });
+    card.querySelectorAll('.guest-arrivo,.guest-contact').forEach((node) => {
+      try{
+        node.style.setProperty('color', secondaryText, 'important');
+        node.style.setProperty('-webkit-text-fill-color', secondaryText, 'important');
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __applyGuestListCardAll__(){
+  try{
+    document.querySelectorAll('#page-ospiti .guest-card').forEach((card) => {
+      try{ __applyGuestListCardVisual__(card); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __openGuestListCardColorPicker__(card){
+  try{
+    if (!card) return;
+    const current = __guestListCardVisualRead__();
+    const applyVisual = (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      const next = {
+        bg: colors.bg || current.bg || 'gray-1',
+        border: colors.border || current.border || colors.bg || current.bg || 'gray-2',
+        fg: colors.fg || current.fg || 'blue-6',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.22)
+      };
+      __guestListCardVisualWrite__(next);
+      __applyGuestListCardAll__();
+    };
+    const revertVisual = () => {
+      __guestListCardVisualWrite__(current);
+      __applyGuestListCardAll__();
+    };
+    __tagColorPopupOpen__('guest-list-card', current, (payload) => { applyVisual(payload); }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:current.opacity ?? 0.22,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'gray-1'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message:'Applicare le modifiche a tutte le schede guest list?',
+        apply: async(payload, changed) => {
+          const next = __applyDesignPayloadToVisual__(__guestListCardVisualRead__(), payload, changed, 'gray-1');
+          __guestListCardVisualWrite__(next);
+          __applyGuestListCardAll__();
+        }
+      }
+    });
+  }catch(_){ }
+}
+
+function __bindGuestListCardColorHold__(card){
+  try{ if (!card || card.dataset.guestListCardColorBound === '1') return; card.dataset.guestListCardColorBound = '1'; }catch(_){ if (!card) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const clearSelection = ()=>{ try{ const sel = window.getSelection && window.getSelection(); if (sel && sel.removeAllRanges) sel.removeAllRanges(); }catch(_){ } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } try{ e.stopImmediatePropagation(); }catch(_){ } clearSelection(); };
+  const suppressTap = ()=>{ try{ card.__guestListCardSuppressTapUntil = Date.now() + 900; }catch(_){ } };
+  const start = (e)=>{ try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ } fired = false; clear(); clearSelection(); timer = setTimeout(()=>{ fired = true; suppressTap(); __openGuestListCardColorPicker__(card); }, 500); };
+  const stop = (e)=>{ clear(); if (fired){ block(e); setTimeout(()=>{ fired = false; }, 0); } };
+  const swallow = (e)=>{ try{ if ((card.__guestListCardSuppressTapUntil || 0) > Date.now()) block(e); }catch(_){ } };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ card.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ card.addEventListener(evt, stop, { passive:false }); }catch(_){ } });
+  try{ card.addEventListener('click', swallow, true); }catch(_){ }
+  try{ card.addEventListener('keydown', swallow, true); }catch(_){ }
+  try{ card.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
 }
 
 const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
@@ -19623,6 +19830,7 @@ function __refreshRoomSettingsThemeStatsUi__(){
   try{ __applyTaxPageCardAll__(); }catch(_){ }
   try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
+  try{ __applyGuestListCardAll__(); }catch(_){ }
   try{ __applyRoomSettingsShellTheme__(); }catch(_){ }
   try{ __applyRoomSettingsShellTheme__(); }catch(_){ }
   try{ __applyRoomSettingsCardTheme__(); }catch(_){ }
@@ -22619,7 +22827,12 @@ function renderGuestCards(){
       </div>
     `;
 
+    try{ __applyGuestListCardVisual__(card); }catch(_){ }
+    try{ __bindGuestListCardColorHold__(card); }catch(_){ }
+
     const open = () => {
+      try{ if ((card.__guestListCardSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+
       const sameNameItems = Array.isArray(first?._groupBookings) && first._groupBookings.length
         ? {
             key: normalizeGuestNameKey(first?.nome || String(first?.name ?? first?.guest ?? "").trim() || ""),
@@ -28928,7 +29141,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.553 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
+/* dDAE_2.556 — Menu impostazioni compatto + dark switch + design schede guest list */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';

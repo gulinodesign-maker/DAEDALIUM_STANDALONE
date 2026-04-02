@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.553" rel="stylesheet"/>
-<link href="./manifest.json?v=2.553" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.553" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.553" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.553" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.553" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" href="./bg-daedalium.jpeg?v=2.553" rel="preload" fetchpriority="high"/>
-<link as="image" href="./bg-daedalium_dark.PNG?v=2.553" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
+<link href="./styles.css?v=2.556" rel="stylesheet"/>
+<link href="./manifest.json?v=2.556" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.556" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.556" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.556" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.556" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.556" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.556" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.553";
+window.APP_VERSION = "2.556";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.553";
+  const LOCAL_BUILD = "dDAE_2.556";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.553";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.553")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.553")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.556")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.556")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -157,7 +157,7 @@ window.APP_VERSION = "2.553";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.553"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.556"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -268,7 +268,7 @@ window.APP_VERSION = "2.553";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.553"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.556"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -463,7 +463,7 @@ window.APP_VERSION = "2.553";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.553</div></div></section>
+<div class="build" id="buildText">dDAE_2.556</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -851,12 +851,21 @@ window.APP_VERSION = "2.553";
 <div class="settings-page settings-page-reference">
 <div class="settings-title-row">
 <div class="settings-title">Impostazioni</div>
+<div class="settings-header-toggles">
 <div class="settings-audio settings-audio-header">
 <span class="settings-audio-label">AUDIO</span>
 <label aria-label="Audio on/off" class="switch">
 <input aria-label="Audio on/off" id="audioToggle" type="checkbox"/>
 <span class="slider"></span>
 </label>
+</div>
+<div class="settings-audio settings-audio-header settings-dark-header">
+<span class="settings-audio-label settings-dark-label">DARK</span>
+<label aria-label="Dark Mode on/off" class="switch">
+<input aria-label="Dark Mode on/off" id="settingsDarkToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
 </div>
 </div>
 <div aria-hidden="true" class="settings-divider"></div>
@@ -865,10 +874,6 @@ window.APP_VERSION = "2.553";
 <button aria-label="Anno selezionato 2026" class="settings-btn settings-btn-tax-year settings-btn-year-inline" id="settingsYearPill" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 3v4"></path><path d="M17 3v4"></path><path d="M4 8h16"></path><rect height="13" rx="2" ry="2" width="16" x="4" y="7"></rect><path d="M8 12h3"></path><path d="M13 12h3"></path><path d="M8 16h3"></path><path d="M13 16h3"></path></svg>
 <span class="settings-btn-label settings-btn-year-value">Anno 2026</span>
-</button>
-<button aria-label="Dark Mode" class="settings-btn settings-btn-dark" id="settingsSaveBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path></svg>
-<span class="settings-btn-label">Dark Mode</span>
 </button>
 <button aria-label="Database" class="settings-btn settings-btn-db" id="settingsDbBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -1662,8 +1667,8 @@ window.APP_VERSION = "2.553";
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.553"></script>
-<script defer="" src="./app.js?v=2.553"></script>
+<script defer="" src="./config.js?v=2.556"></script>
+<script defer="" src="./app.js?v=2.556"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -1697,7 +1702,7 @@ window.APP_VERSION = "2.553";
 <div class="operatori-editor-body settings-popup-body">
 <div class="settings-main-row settings-main-row-modal">
 <div class="field float settings-equal-card">
-<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="number"/>
+<input id="setTassa" inputmode="decimal" min="0" placeholder=" " step="0.01" type="text"/>
 <label for="setTassa">Tassa di soggiorno (€ / persona / notte)</label>
 </div>
 <button aria-label="Numero massimo giorni tassa di soggiorno" class="settings-tax-cap-btn settings-equal-card" id="setTassaMaxNottiBtn" type="button">

@@ -18792,3 +18792,122 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
     padding: 0 14px !important;
   }
 }
+
+
+/* dDAE_2.554 — Impostazioni: scrolling verticale iPhone per lista 1x11 */
+body[data-page="impostazioni"]{
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+body[data-page="impostazioni"] main.wrap{
+  padding-bottom: calc(180px + var(--safe-bottom)) !important;
+}
+#page-impostazioni{
+  overflow: visible !important;
+}
+#page-impostazioni .settings-page-reference{
+  min-height: auto !important;
+  padding-bottom: calc(var(--safe-bottom) + 32px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  margin-bottom: 0 !important;
+}
+
+
+/* dDAE_2.556 — Impostazioni: audio + dark affiancati, lista 1x10 e popup soggiorno compatto */
+#page-impostazioni .settings-header-toggles{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:14px;
+  flex:0 0 auto;
+}
+#page-impostazioni .settings-dark-header{
+  justify-content:flex-end;
+}
+#page-impostazioni .settings-dark-header .settings-dark-label{
+  text-transform:none !important;
+  letter-spacing:.02em !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  gap: 9px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+  height: 54px !important;
+  min-height: 54px !important;
+}
+@media (max-width: 390px){
+  #page-impostazioni .settings-header-toggles{
+    gap:10px;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn{
+    height: 52px !important;
+    min-height: 52px !important;
+  }
+}
+#settingsConfigModal .settings-popup-body{
+  gap: 10px !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card,
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+  min-height: 58px !important;
+  height: 58px !important;
+  border-radius: 20px !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+  padding-top: 22px !important;
+  padding-bottom: 8px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  text-align: center !important;
+  font-weight: 800 !important;
+  font-size: 24px !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card > label{
+  top: 8px !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-width: none !important;
+  padding: 0 10px !important;
+  text-align: center !important;
+  font-size: 11px !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card,
+#settingsConfigModal .settings-popup-actions .btn{
+  min-height: 30px !important;
+  height: 30px !important;
+  border-radius: 16px !important;
+  padding: 0 12px !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{
+  display:flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+#settingsConfigModal .settings-tax-cap-top{
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+#settingsConfigModal .settings-tax-cap-value{
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+#settingsConfigModal .settings-popup-actions .btn{
+  font-size: 13px !important;
+}
+#page-ospiti .guest-card{
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+#page-ospiti .guest-card .guest-name-text{
+  color: var(--guest-list-card-text, inherit) !important;
+  -webkit-text-fill-color: var(--guest-list-card-text, currentColor) !important;
+}
+#page-ospiti .guest-card .guest-arrivo,
+#page-ospiti .guest-card .guest-contact{
+  color: var(--guest-list-card-subtext, inherit) !important;
+  -webkit-text-fill-color: var(--guest-list-card-subtext, currentColor) !important;
+}
