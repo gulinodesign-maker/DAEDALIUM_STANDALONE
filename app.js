@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.552
+ * Build: 2.553
  */
-const BUILD_VERSION = "2.552";
+const BUILD_VERSION = "2.553";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3710,7 +3710,12 @@ function updateSettingsTabs(){
     const el = document.getElementById("settingsAccountYearTab");
     if (el) el.textContent = `${userLabel} - ${yLabel}`;
     const yearPill = document.getElementById("settingsYearPill");
-    if (yearPill) yearPill.textContent = yLabel;
+    if (yearPill){
+      const yearLabelEl = yearPill.querySelector('.settings-btn-year-value');
+      if (yearLabelEl) yearLabelEl.textContent = `Anno ${yLabel}`;
+      else yearPill.textContent = yLabel;
+      try{ yearPill.setAttribute('aria-label', `Anno selezionato ${yLabel}`); }catch(_){ }
+    }
     const opYearPill = document.getElementById("opSettingsYearPill");
     if (opYearPill) opYearPill.textContent = userLabel;
   }catch(_){ }
@@ -7790,7 +7795,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
-  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn',
   'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
 ];
@@ -7995,7 +8000,7 @@ function __isProtectedHeaderActionButton__(btn){
 function __isProtectedPillButton__(btn){
   try{
     if (!btn || !btn.id) return false;
-    return ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn'].includes(String(btn.id || '').trim());
+    return ['opSettingsYearPill','opSettingsLogoutBtn'].includes(String(btn.id || '').trim());
   }catch(_){ return false; }
 }
 
@@ -8279,7 +8284,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['settingsYearPill','settingsLogoutBtn','opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -28923,7 +28928,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.552 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
+/* dDAE_2.553 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';

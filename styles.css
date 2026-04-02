@@ -18734,7 +18734,7 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
 
 
 
-/* dDAE_2.552 — Impostazioni: lista verticale 1x9 con tasti rettangolari centrati */
+/* dDAE_2.553 — Impostazioni: lista verticale 1x11 con anno e logout inglobati */
 #page-impostazioni .settings-actions.settings-actions-reference{
   display:flex !important;
   flex-direction:column !important;
@@ -18773,6 +18773,9 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-btn-year-inline .settings-btn-label{
+  font-weight: 700 !important;
 }
 #page-impostazioni .settings-bottom-stack.settings-bottom-stack-under-grid{
   width: min(340px, calc(100vw - 36px)) !important;
