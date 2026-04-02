@@ -19087,7 +19087,7 @@ body[data-page="impostazioni"] main.wrap{
 }
 
 
-/* dDAE_2.560 — Popup Dati soggiorno: quattro celle visivamente identiche */
+/* dDAE_2.561 — Popup Dati soggiorno: quattro celle visivamente identiche */
 #settingsConfigModal .settings-popup-card{
   width:min(760px, calc(100vw - 28px)) !important;
   max-width:min(760px, calc(100vw - 28px)) !important;
@@ -19198,4 +19198,114 @@ body[data-page="impostazioni"] main.wrap{
   #settingsConfigModal .settings-tax-cap-top{ font-size:15px !important; }
   #settingsConfigModal .settings-tax-cap-value{ font-size:clamp(28px, 6.4vw, 44px) !important; }
   #settingsConfigModal .settings-popup-actions .btn{ font-size:17px !important; }
+}
+
+
+/* dDAE_2.561 — Popup tassa soggiorno rifatto da zero: campo superiore + tre pill uguali */
+#settingsConfigModal .settings-popup-card{
+  width:min(calc(100% - 28px), 720px) !important;
+  max-width:720px !important;
+}
+#settingsConfigModal .settings-popup-body.settings-tax-stay-body{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:14px !important;
+  align-items:stretch !important;
+}
+#settingsConfigModal .settings-tax-stay-field{
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  border-radius:26px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+#settingsConfigModal .settings-tax-stay-field input{
+  width:100% !important;
+  height:96px !important;
+  min-height:96px !important;
+  border-radius:26px !important;
+  padding:36px 20px 16px !important;
+  font-size:26px !important;
+  font-weight:800 !important;
+  text-align:center !important;
+}
+#settingsConfigModal .settings-tax-stay-field > label{
+  left:20px !important;
+  right:20px !important;
+  top:16px !important;
+  max-width:none !important;
+  text-align:center !important;
+  white-space:normal !important;
+  line-height:1.15 !important;
+}
+#settingsConfigModal .settings-tax-stay-actions{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  gap:12px !important;
+  width:100% !important;
+  align-items:stretch !important;
+}
+#settingsConfigModal .settings-tax-pill-btn{
+  width:100% !important;
+  min-width:0 !important;
+  height:96px !important;
+  min-height:96px !important;
+  border-radius:26px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  padding:12px !important;
+  box-sizing:border-box !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  background-image:none !important;
+}
+#settingsConfigModal #settingsConfigCancelBtn,
+#settingsConfigModal #settingsConfigSaveBtn{
+  font-size:18px !important;
+  font-weight:800 !important;
+}
+#settingsConfigModal .settings-tax-pill-label{
+  display:block !important;
+  font-size:15px !important;
+  line-height:1.1 !important;
+  font-weight:800 !important;
+  text-align:center !important;
+}
+#settingsConfigModal .settings-tax-pill-value{
+  display:block !important;
+  font-size:34px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  text-align:center !important;
+}
+#settingsConfigModal #setTassaMaxNottiBtn.is-empty .settings-tax-pill-value{
+  opacity:.62 !important;
+}
+#settingsConfigModal .settings-popup-actions,
+#settingsConfigModal .settings-main-row-modal{
+  display:initial !important;
+}
+@media (max-width: 640px){
+  #settingsConfigModal .settings-popup-card{
+    width:calc(100% - 24px) !important;
+  }
+  #settingsConfigModal .settings-tax-stay-field input,
+  #settingsConfigModal .settings-tax-pill-btn{
+    height:92px !important;
+    min-height:92px !important;
+  }
+  #settingsConfigModal .settings-tax-stay-field input{
+    font-size:24px !important;
+  }
+  #settingsConfigModal .settings-tax-pill-label{
+    font-size:14px !important;
+  }
+  #settingsConfigModal .settings-tax-pill-value{
+    font-size:32px !important;
+  }
 }

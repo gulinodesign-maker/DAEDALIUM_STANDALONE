@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.560
+ * Build: 2.561
  */
-const BUILD_VERSION = "2.560";
+const BUILD_VERSION = "2.561";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8284,7 +8284,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -8312,7 +8312,7 @@ function __pillLongPressSuppressed__(btnOrId){
 }
 
 function __pillTargetButtons__(){
-  try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter(Boolean); }catch(_){ return []; }
+  try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter((el) => !!(el && String(el.tagName || '').toUpperCase() === 'BUTTON')); }catch(_){ return []; }
 }
 
 function __pillColorMapRead__(){
@@ -8468,12 +8468,103 @@ function __pillApplyToButton__(btn){
   }catch(_){ }
 }
 
+function __applySettingsTaxPillField__(){
+  try{
+    const wrap = document.getElementById('setTassaFieldPill');
+    const input = document.getElementById('setTassa');
+    const label = wrap ? wrap.querySelector('label[for="setTassa"]') : null;
+    if (!wrap || !input) return;
+    const visual = __pillVisualFor__('setTassaFieldPill');
+    if (__isDarkModeRuntime__()){
+      const resolved = __applyDarkAdaptiveSurface__(wrap, visual, { fallbackBg:'gray-1', bgOpacity:0.18, borderOpacity:0.30 }) || {};
+      const textHex = resolved.textHex || '#f8fbff';
+      const accentHex = resolved.accentHex || '#8fcbe8';
+      input.style.setProperty('background', 'transparent', 'important');
+      input.style.setProperty('background-color', 'transparent', 'important');
+      input.style.setProperty('border', '0', 'important');
+      input.style.setProperty('box-shadow', 'none', 'important');
+      input.style.setProperty('color', textHex, 'important');
+      input.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+      if (label){
+        label.style.setProperty('color', accentHex, 'important');
+        label.style.setProperty('-webkit-text-fill-color', accentHex, 'important');
+        label.style.setProperty('opacity', '1', 'important');
+      }
+      return;
+    }
+    const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
+    const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
+    wrap.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    wrap.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    wrap.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+    wrap.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    wrap.style.setProperty('box-shadow', 'none', 'important');
+    wrap.style.setProperty('backdrop-filter', 'none', 'important');
+    wrap.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    input.style.setProperty('background', 'transparent', 'important');
+    input.style.setProperty('background-color', 'transparent', 'important');
+    input.style.setProperty('border', '0', 'important');
+    input.style.setProperty('box-shadow', 'none', 'important');
+    input.style.setProperty('color', fgHex, 'important');
+    input.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    if (label){
+      label.style.setProperty('color', fgHex, 'important');
+      label.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+      label.style.setProperty('opacity', '0.92', 'important');
+    }
+  }catch(_){ }
+}
+
+function __bindSettingsTaxPillFieldLongPress__(){
+  try{
+    const wrap = document.getElementById('setTassaFieldPill');
+    if (!wrap || wrap.dataset.pillColorHoldBound === '1') return;
+    wrap.dataset.pillColorHoldBound = '1';
+    let timer = null;
+    let fired = false;
+    const clear = ()=>{ try{ if (timer) clearTimeout(timer); }catch(_){ } timer = null; };
+    const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } try{ e.stopImmediatePropagation(); }catch(_){ } };
+    const suppressTap = ()=>{ try{ wrap.__pillFieldSuppressTapUntil = Date.now() + 900; }catch(_){ } };
+    const openPicker = ()=>{
+      fired = true;
+      const current = __pillVisualFor__('setTassaFieldPill');
+      __tagColorPopupOpen__('pill-single-button', current, (payload) => {
+        try{
+          const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+          __pillSaveColor__('setTassaFieldPill', colors.bg || current.bg || 'blue-4', 'bg');
+          __pillSaveColor__('setTassaFieldPill', colors.border || current.border || colors.bg || current.bg || 'blue-4', 'border');
+          __pillSaveColor__('setTassaFieldPill', colors.fg || current.fg || 'white', 'fg');
+          if (payload && payload.opacity != null){
+            const map = __pillColorMapRead__();
+            const next = __pillVisualFor__('setTassaFieldPill');
+            map['setTassaFieldPill'] = { fg: next.fg || 'white', bg: next.bg || 'blue-4', border: next.border || next.bg || 'blue-4', opacity: __designBgOpacityNormalize__(payload.opacity) };
+            __pillColorMapWrite__(map);
+            __designBgOpacityWrite__(payload.opacity);
+          }
+          __pillApplyAll__();
+          try{ renderRoomSettingsPage(); }catch(_){ }
+        }catch(_){ }
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? __designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), applyCategory:{ message:'Applicare le modifiche a tutti i pulsanti pill?', apply: async(payload, changed) => { await __applyPillChangesToCategory__(payload, changed); } } });
+    };
+    const start = (e)=>{ fired = false; clear(); timer = setTimeout(()=>{ suppressTap(); openPicker(); }, 500); };
+    const stop = (e)=>{ clear(); if (fired){ block(e); setTimeout(()=>{ fired = false; }, 0); } };
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ wrap.addEventListener(evt, start, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ wrap.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ try{ wrap.addEventListener(evt, stop, true); }catch(__){ } } });
+    ['pointerup','touchend','click','dblclick'].forEach((evt)=>{ try{ wrap.addEventListener(evt, (e)=>{ if ((wrap.__pillFieldSuppressTapUntil || 0) > Date.now()) block(e); }, true); }catch(_){ } });
+    try{ wrap.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+  }catch(_){ }
+}
+
 function __pillApplyAll__(){
   try{
     __pillTargetButtons__().forEach((btn) => {
       try{ __pillApplyToButton__(btn); }catch(_){ }
       try{ __bindPillLongPress__(btn); }catch(_){ }
     });
+    try{ __applySettingsTaxPillField__(); }catch(_){ }
+    try{ __bindSettingsTaxPillFieldLongPress__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -9492,6 +9583,9 @@ const __settingsTaxCapUi = {
   holdTimer: null,
   holdTriggered: false,
   holdDelay: 500,
+  lastTapAt: 0,
+  tapTimer: null,
+  suppressTapUntil: 0,
 };
 
 function getTouristTaxMaxNightsSetting(fallback = 3) {
@@ -9528,13 +9622,45 @@ function bindTassaMaxNottiButton() {
     }
   };
 
+  const clearTapTimer = () => {
+    if (__settingsTaxCapUi.tapTimer) {
+      clearTimeout(__settingsTaxCapUi.tapTimer);
+      __settingsTaxCapUi.tapTimer = null;
+    }
+  };
+
+  const increment = () => {
+    setTassaMaxNottiValue((__settingsTaxCapUi.value || 0) + 1);
+  };
+
+  const reset = () => {
+    setTassaMaxNottiValue(0);
+    try { toast("Numero notti azzerato"); } catch(_) {}
+  };
+
+  const scheduleTap = () => {
+    const now = Date.now();
+    if (now < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
+    if (now - (__settingsTaxCapUi.lastTapAt || 0) <= 320) {
+      __settingsTaxCapUi.lastTapAt = 0;
+      clearTapTimer();
+      reset();
+      return;
+    }
+    __settingsTaxCapUi.lastTapAt = now;
+    clearTapTimer();
+    __settingsTaxCapUi.tapTimer = setTimeout(() => {
+      __settingsTaxCapUi.lastTapAt = 0;
+      increment();
+    }, 280);
+  };
+
   const startHold = () => {
     clearHold();
     __settingsTaxCapUi.holdTriggered = false;
     __settingsTaxCapUi.holdTimer = setTimeout(() => {
       __settingsTaxCapUi.holdTriggered = true;
-      setTassaMaxNottiValue(0);
-      try { toast("Massimo notti azzerato"); } catch(_) {}
+      __settingsTaxCapUi.suppressTapUntil = Date.now() + 900;
     }, __settingsTaxCapUi.holdDelay);
   };
 
@@ -9548,10 +9674,21 @@ function bindTassaMaxNottiButton() {
   btn.addEventListener("pointerleave", endHold, { passive: true });
   btn.addEventListener("pointercancel", endHold, { passive: true });
 
-  btn.addEventListener("click", () => {
-    if (__settingsTaxCapUi.holdTriggered) return;
-    setTassaMaxNottiValue((__settingsTaxCapUi.value || 0) + 1);
-  });
+  btn.addEventListener("click", (e) => {
+    if (__settingsTaxCapUi.holdTriggered || Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) {
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      return;
+    }
+    scheduleTap();
+  }, true);
+
+  btn.addEventListener("dblclick", (e) => {
+    try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    clearTapTimer();
+    __settingsTaxCapUi.lastTapAt = 0;
+    if (Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
+    reset();
+  }, true);
 }
 
 
@@ -10955,9 +11092,9 @@ const cfg = document.getElementById("settingsConfigBtn");
 
   const cfgClose = document.getElementById("settingsConfigClose");
   if (cfgClose) bindFastTap(cfgClose, __closeSettingsConfigModal__);
-  const cfgCancel = document.getElementById("settingsConfigCancel");
+  const cfgCancel = document.getElementById("settingsConfigCancelBtn");
   if (cfgCancel) bindFastTap(cfgCancel, __closeSettingsConfigModal__);
-  const cfgSave = document.getElementById("settingsConfigSave");
+  const cfgSave = document.getElementById("settingsConfigSaveBtn");
   if (cfgSave) bindFastTap(cfgSave, async () => {
     try { await saveImpostazioniPage(); __closeSettingsConfigModal__(); } catch (e) { toast(e.message || "Errore"); }
   });
