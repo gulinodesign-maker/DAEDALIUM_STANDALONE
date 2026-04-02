@@ -18982,3 +18982,99 @@ body[data-page="impostazioni"] main.wrap{
   font-size:18px !important;
   font-weight:900 !important;
 }
+
+
+/* dDAE_2.558 — Popup Dati soggiorno: griglia 2x2 pulita e simmetrica */
+#settingsConfigModal .settings-popup-card{
+  max-width:min(760px, calc(100vw - 28px)) !important;
+}
+#settingsConfigModal .settings-popup-body{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:16px !important;
+  align-items:stretch !important;
+}
+#settingsConfigModal .settings-main-row-modal,
+#settingsConfigModal .settings-popup-actions{
+  display:contents !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-equal-card,
+#settingsConfigModal .settings-popup-actions .btn{
+  width:100% !important;
+  min-width:0 !important;
+  height:132px !important;
+  min-height:132px !important;
+  margin:0 !important;
+  border-radius:28px !important;
+  box-sizing:border-box !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  padding:0 !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card > label{
+  display:none !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+  width:100% !important;
+  height:100% !important;
+  min-height:132px !important;
+  border-radius:28px !important;
+  padding:0 16px !important;
+  text-align:center !important;
+  font-size:clamp(34px, 6vw, 58px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  padding:14px !important;
+}
+#settingsConfigModal .settings-tax-cap-top{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  font-size:20px !important;
+  font-weight:800 !important;
+  line-height:1.05 !important;
+}
+#settingsConfigModal .settings-tax-cap-value{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  font-size:clamp(34px, 6vw, 56px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+#settingsConfigModal .settings-popup-actions .btn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 18px !important;
+  font-size:22px !important;
+  font-weight:900 !important;
+}
+@media (max-width: 640px){
+  #settingsConfigModal .settings-popup-body{ gap:12px !important; }
+  #settingsConfigModal .settings-main-row-modal .settings-equal-card,
+  #settingsConfigModal .settings-popup-actions .btn{
+    height:108px !important;
+    min-height:108px !important;
+    border-radius:24px !important;
+  }
+  #settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+    min-height:108px !important;
+    border-radius:24px !important;
+    font-size:clamp(28px, 7vw, 48px) !important;
+  }
+  #settingsConfigModal .settings-tax-cap-top{ font-size:16px !important; }
+  #settingsConfigModal .settings-tax-cap-value{ font-size:clamp(30px, 7vw, 46px) !important; }
+  #settingsConfigModal .settings-popup-actions .btn{ font-size:18px !important; }
+}

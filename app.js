@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.557
+ * Build: 2.558
  */
-const BUILD_VERSION = "2.557";
+const BUILD_VERSION = "2.558";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9588,6 +9588,7 @@ function __settingsBackupModalSwallowGhostTap__(ev){
 function __openSettingsBackupModal__(){
   const modal = document.getElementById("settingsBackupModal");
   if (!modal) return;
+  if (__settingsBackupModalGhostTapActive__()) return;
   __settingsBackupModalSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
@@ -9598,7 +9599,16 @@ function __closeSettingsBackupModal__(){
   if (!modal) return;
   modal.hidden = true;
   modal.setAttribute("aria-hidden", "true");
-  __settingsBackupModalSuppressUntil__ = Date.now() + 700;
+  __settingsBackupModalSuppressUntil__ = Date.now() + 900;
+  try{
+    const opener = document.getElementById("settingsDbBtn");
+    if (opener){
+      opener.style.pointerEvents = "none";
+      setTimeout(() => {
+        try{ opener.style.pointerEvents = ""; }catch(_){ }
+      }, 950);
+    }
+  }catch(_){ }
 }
 
 function __sanitizeTaxInputRaw__(raw){
