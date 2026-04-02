@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.529";
+const BUILD_VERSION = "2.530";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -21182,27 +21182,22 @@ function initServiziUI(){
 
   if (modal) modal.addEventListener("click", (e)=>{ if (e.target === modal) closeModal(); });
 
-  // "Servizi" (tasto): apre/chiude elenco istantaneamente sia in VIEW sia in EDIT
-  if (pillView) bindFastTap(pillView, toggleList);
-
-  // fallback toggle (iOS): assicura apertura elenco ISTANTANEA (touchstart/pointerdown)
-  if (pillView){
+  // "Servizi" (tasto): su iOS deve aprire con tap semplice, senza richiedere pressioni lunghe.
+  // Evitiamo listener sovrapposti/anticipati che possono rendere il tap inaffidabile su Safari.
+  if (pillView && pillView.dataset.servicesTapBound !== "1"){
+    pillView.dataset.servicesTapBound = "1";
     let last = 0;
     const toggle = (e)=>{
       const now = Date.now();
-      if (now - last < 250) return;
+      if (now - last < 300) return;
       last = now;
       try{ e && e.preventDefault && e.preventDefault(); }catch(_){}
       try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){}
       toggleList();
     };
-    try{
-      pillView.addEventListener("touchstart", toggle, { passive:false });
-      pillView.addEventListener("pointerdown", toggle, { passive:false });
-      pillView.addEventListener("mousedown", toggle, { passive:false });
-      pillView.addEventListener("click", toggle, { passive:false });
-      pillView.addEventListener("touchend", toggle, { passive:false });
-    }catch(_){}
+    try{ pillView.addEventListener("pointerup", toggle, { passive:false }); }catch(_){ }
+    try{ pillView.addEventListener("touchend", toggle, { passive:false }); }catch(_){ }
+    try{ pillView.addEventListener("click", toggle, { passive:false }); }catch(_){ }
   }
 
 }
