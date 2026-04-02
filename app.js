@@ -28833,7 +28833,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.546 — Popup telefono in modalità lettura + azioni contatto */
+/* dDAE_2.548 — Popup telefono in modalità lettura + azioni contatto */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';

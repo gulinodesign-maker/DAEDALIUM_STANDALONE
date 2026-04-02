@@ -18524,7 +18524,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   display:none !important;
 }
 
-/* dDAE_2.546 — Popup telefono in sola lettura */
+/* dDAE_2.548 — Popup telefono: titolo nero + icona WhatsApp rifinita */
 #guestPhoneActionsModal{
   z-index:5001 !important;
   padding:18px 14px !important;
@@ -18548,15 +18548,15 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   font-size:22px;
   line-height:1.2;
   font-weight:800;
-  color:#1e88e5;
+  color:#000000;
   word-break:break-word;
 }
 #guestPhoneActionsModal .guest-phone-actions-buttons{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:18px;
-  margin-top:20px;
+  gap:16px;
+  margin-top:22px;
 }
 #guestPhoneActionsModal .guest-phone-action-btn{
   appearance:none;
@@ -18564,27 +18564,35 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  width:64px;
-  height:64px;
-  min-width:64px;
-  min-height:64px;
+  width:68px;
+  height:68px;
+  min-width:68px;
+  min-height:68px;
   border-radius:999px;
-  border:1px solid rgba(77,156,197,0.22);
-  background:rgba(255,255,255,0.92);
-  box-shadow:none;
+  border:1px solid #22a652;
+  background:#22a652;
+  box-shadow:0 6px 14px rgba(34,166,82,0.22);
   padding:0;
+  transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease;
+}
+#guestPhoneActionsModal .guest-phone-action-btn:hover{
+  background:#1f9a4c;
 }
 #guestPhoneActionsModal .guest-phone-action-btn:active{
-  transform:scale(0.97);
+  transform:scale(0.96);
+  background:#1b8a44;
+  box-shadow:0 3px 8px rgba(34,166,82,0.18);
+}
+#guestPhoneActionsModal .guest-phone-action-btn .ui-ico{
+  width:28px;
+  height:28px;
 }
 #guestPhoneActionsModal .guest-phone-action-btn .ui-ico,
 #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
-  width:26px;
-  height:26px;
-  stroke:#1e88e5 !important;
-  color:#1e88e5 !important;
+  stroke:#ffffff !important;
+  color:#ffffff !important;
   fill:none;
-  stroke-width:2;
+  stroke-width:2.15;
   stroke-linecap:round;
   stroke-linejoin:round;
 }
@@ -18594,19 +18602,48 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   -webkit-text-fill-color:#16213e;
   opacity:1;
 }
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico{
+  width:31px;
+  height:31px;
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-bubble,
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-tail,
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-phone{
+  fill:none !important;
+  stroke:#ffffff !important;
+  color:#ffffff !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-bubble{
+  stroke-width:1.95 !important;
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-tail{
+  stroke-width:1.95 !important;
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-phone-action="whatsapp"] .ui-ico-wa .wa-phone{
+  stroke-width:2.2 !important;
+}
 body.ddae-dark #guestPhoneActionsModal .guest-phone-actions-card{
-  background:rgba(18,24,38,0.98) !important;
-  border-color:rgba(255,255,255,0.12) !important;
+  background:#ffffff !important;
+  border-color:rgba(15,23,42,0.10) !important;
 }
 body.ddae-dark #guestPhoneActionsModal .guest-phone-actions-title{
-  color:#6ec1ff !important;
+  color:#000000 !important;
+}
+body.ddae-dark #guestPhoneActionsModal .stat-modal-close{
+  background:rgba(255,255,255,0.92) !important;
+  border:1px solid rgba(15,23,42,0.10) !important;
+  color:rgba(245,130,36,0.98) !important;
+  box-shadow:0 10px 22px rgba(15,23,42,0.14) !important;
 }
 body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn{
-  background:rgba(255,255,255,0.08) !important;
-  border-color:rgba(255,255,255,0.14) !important;
+  background:#1f9a4c !important;
+  border-color:#1f9a4c !important;
+  box-shadow:0 6px 14px rgba(15,89,44,0.32) !important;
 }
 body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico,
 body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
-  stroke:#6ec1ff !important;
-  color:#6ec1ff !important;
+  stroke:#ffffff !important;
+  color:#ffffff !important;
 }

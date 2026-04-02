@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>
+html,body{margin:0;padding:0;background:#ddd;height:100%;}
+iframe{display:block;width:430px;height:1700px;border:0;margin:0 auto;background:#ddd;}
+</style>
+</head>
+<body>
+<iframe id="app" src="index.html"></iframe>
+<script>
+const f = document.getElementById('app');
+f.addEventListener('load', () => {
+  setTimeout(() => {
+    try{
+      const w = f.contentWindow;
+      const d = f.contentDocument;
+      d.querySelectorAll('.page').forEach((p)=>{ p.hidden = true; });
+      d.getElementById('page-ospite').hidden = false;
+      if (typeof w.enterGuestCreateMode === 'function') w.enterGuestCreateMode();
+      d.documentElement.style.background = '#ddd';
+      d.body.style.background = '#ddd';
+    }catch(e){ console.error(e); }
+  }, 1200);
+});
+</script>
+</body>
+</html>
