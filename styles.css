@@ -18434,3 +18434,179 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   -webkit-text-fill-color:#b24a6d !important;
   font-weight:800 !important;
 }
+
+
+/* dDAE_2.545 — Nuovo ospite: Note / Channel / Importo prenotazione equidistanti */
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:16px !important;
+  margin:16px 0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield{
+  display:flex !important;
+  align-items:stretch !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  min-height:var(--guest-create-control-height, 56px) !important;
+  height:var(--guest-create-control-height, 56px) !important;
+  flex:0 0 auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield + .subfield{
+  margin-top:0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float > input,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float > select,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap > #guestNotesToggle{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  min-height:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-create .total-row,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:none !important;
+  margin:0 !important;
+}
+
+
+/* dDAE_2.546 — Nuovo ospite: Note / Channel / Importo prenotazione davvero equidistanti */
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  justify-content:flex-start !important;
+  gap:18px !important;
+  row-gap:18px !important;
+  margin:18px 0 !important;
+  padding:0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap{
+  display:flex !important;
+  align-items:stretch !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:var(--guest-create-control-height, 56px) !important;
+  min-height:var(--guest-create-control-height, 56px) !important;
+  flex:0 0 auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield > *{
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield + .subfield{
+  margin-top:0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesWrap{
+  display:none !important;
+}
+
+/* dDAE_2.546 — Popup telefono in sola lettura */
+#guestPhoneActionsModal{
+  z-index:5001 !important;
+  padding:18px 14px !important;
+}
+#guestPhoneActionsModal[hidden]{
+  display:none !important;
+}
+#guestPhoneActionsModal .guest-phone-actions-card{
+  position:relative;
+  width:min(360px, calc(100vw - 28px));
+  margin:0 !important;
+  padding:22px 18px 18px !important;
+  border-radius:24px !important;
+  background:#ffffff !important;
+  border:1px solid rgba(15,23,42,0.08) !important;
+  box-shadow:0 18px 42px rgba(15,23,42,0.18) !important;
+}
+#guestPhoneActionsModal .guest-phone-actions-title{
+  padding:2px 34px 0;
+  text-align:center;
+  font-size:22px;
+  line-height:1.2;
+  font-weight:800;
+  color:#1e88e5;
+  word-break:break-word;
+}
+#guestPhoneActionsModal .guest-phone-actions-buttons{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  margin-top:20px;
+}
+#guestPhoneActionsModal .guest-phone-action-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:64px;
+  height:64px;
+  min-width:64px;
+  min-height:64px;
+  border-radius:999px;
+  border:1px solid rgba(77,156,197,0.22);
+  background:rgba(255,255,255,0.92);
+  box-shadow:none;
+  padding:0;
+}
+#guestPhoneActionsModal .guest-phone-action-btn:active{
+  transform:scale(0.97);
+}
+#guestPhoneActionsModal .guest-phone-action-btn .ui-ico,
+#guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
+  width:26px;
+  height:26px;
+  stroke:#1e88e5 !important;
+  color:#1e88e5 !important;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#page-ospite #guestPhone.guest-phone-action-link{
+  color:#16213e;
+  font-weight:700;
+  -webkit-text-fill-color:#16213e;
+  opacity:1;
+}
+body.ddae-dark #guestPhoneActionsModal .guest-phone-actions-card{
+  background:rgba(18,24,38,0.98) !important;
+  border-color:rgba(255,255,255,0.12) !important;
+}
+body.ddae-dark #guestPhoneActionsModal .guest-phone-actions-title{
+  color:#6ec1ff !important;
+}
+body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn{
+  background:rgba(255,255,255,0.08) !important;
+  border-color:rgba(255,255,255,0.14) !important;
+}
+body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico,
+body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
+  stroke:#6ec1ff !important;
+  color:#6ec1ff !important;
+}

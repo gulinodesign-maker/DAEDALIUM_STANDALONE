@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.496
+ * Build: 2.546
  */
-const BUILD_VERSION = "2.544";
+const BUILD_VERSION = "2.546";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -20365,9 +20365,15 @@ function syncGuestCreatePrimaryStack(){
 
     if (isCreate){
       stack.hidden = false;
-      defs.forEach(def => {
-        if (def.el && def.el.parentNode !== stack) stack.appendChild(def.el);
+      const orderedEls = defs.map((def) => def.el).filter(Boolean);
+      orderedEls.forEach((el) => {
+        try{ stack.appendChild(el); }catch(_){ }
       });
+      try{
+        Array.from(stack.children).forEach((child) => {
+          if (!orderedEls.includes(child)) child.remove();
+        });
+      }catch(_){ }
       try{
         const nameField = document.getElementById("guestName")?.closest('.field.float, .field');
         const baseControl = document.getElementById("guestName");
@@ -28824,4 +28830,147 @@ function __applyLaundryResetCloseIcon__(){
     const t = e && e.target && e.target.closest ? e.target.closest('#goPulizie, #goLavanderia, #topLaundryBtn, #cleanPrev, #cleanNext, #cleanToday') : null;
     if (t) setTimeout(run, 0);
   }, true);
+})();
+
+
+/* dDAE_2.546 — Popup telefono in modalità lettura + azioni contatto */
+function normalizeGuestDialPhone(raw){
+  let s = String(raw || '').trim();
+  if (!s) return '';
+  s = s.replace(/[^\d+]/g, '');
+  if (!s) return '';
+  if (s.startsWith('00')) s = '+' + s.slice(2);
+  if (s.startsWith('+')) s = '+' + s.slice(1).replace(/\D/g, '');
+  else s = s.replace(/\D/g, '');
+  return s;
+}
+
+function closeGuestPhoneActionsModal(){
+  try{
+    const modal = document.getElementById('guestPhoneActionsModal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }catch(_){ }
+}
+
+function openGuestPhoneWhatsApp(rawPhone){
+  try{
+    const raw = String(rawPhone || document.getElementById('guestPhone')?.value || '').trim();
+    const normalized = normalizeWhatsAppPhone(raw);
+    if (!normalized) return;
+    const url = 'https://wa.me/' + encodeURIComponent(normalized);
+    try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
+  }catch(_){ }
+}
+
+function openGuestPhoneActionsModal(){
+  try{
+    const phoneEl = document.getElementById('guestPhone');
+    const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
+    if (!phoneEl || !isView) return;
+    const raw = String(phoneEl.value || '').trim();
+    if (!raw) return;
+    const modal = document.getElementById('guestPhoneActionsModal');
+    const titleEl = document.getElementById('guestPhoneActionsTitle');
+    if (!modal || !titleEl) return;
+    modal.dataset.phoneRaw = raw;
+    modal.dataset.phoneDial = normalizeGuestDialPhone(raw);
+    modal.dataset.phoneWhatsapp = normalizeWhatsAppPhone(raw);
+    titleEl.textContent = raw;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+  }catch(_){ }
+}
+
+function triggerGuestPhoneAction(action){
+  try{
+    const modal = document.getElementById('guestPhoneActionsModal');
+    if (!modal) return;
+    const raw = String(modal.dataset.phoneRaw || '').trim();
+    const dial = String(modal.dataset.phoneDial || '').trim();
+    const wa = String(modal.dataset.phoneWhatsapp || '').trim();
+    if (action === 'call'){
+      const target = dial || raw;
+      if (!target) return;
+      window.location.href = 'tel:' + target;
+      return;
+    }
+    if (action === 'sms'){
+      const target = dial || raw;
+      if (!target) return;
+      window.location.href = 'sms:' + target;
+      return;
+    }
+    if (action === 'whatsapp'){
+      openGuestPhoneWhatsApp(wa || raw);
+      return;
+    }
+  }catch(_){ }
+}
+
+function setupGuestPhoneActionsModal(){
+  try{
+    const modal = document.getElementById('guestPhoneActionsModal');
+    if (!modal || modal.dataset.bound === '1') return;
+    modal.dataset.bound = '1';
+    const card = modal.querySelector('.guest-phone-actions-card');
+    const closeBtn = document.getElementById('guestPhoneActionsClose');
+    const bindTap = (el, fn) => {
+      if (!el || !fn) return;
+      if (typeof bindFastTap === 'function') bindFastTap(el, fn);
+      else el.addEventListener('click', fn);
+    };
+    if (card){
+      ['click','pointerdown','pointerup','touchstart','touchend'].forEach((evt) => {
+        try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){ } }, { passive:false }); }catch(_){ }
+      });
+    }
+    bindTap(closeBtn, () => { closeGuestPhoneActionsModal(); });
+    modal.querySelectorAll('[data-phone-action]').forEach((btn) => {
+      bindTap(btn, (ev) => {
+        try{ ev.preventDefault(); }catch(_){ }
+        try{ ev.stopPropagation(); }catch(_){ }
+        triggerGuestPhoneAction(btn.getAttribute('data-phone-action') || '');
+      });
+    });
+    modal.addEventListener('click', (ev) => {
+      try{ if (ev.target === modal) closeGuestPhoneActionsModal(); }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function syncGuestPhoneWhatsAppLink(isView){
+  try{
+    setupGuestPhoneActionsModal();
+    const phoneEl = document.getElementById('guestPhone');
+    if (!phoneEl) return;
+    if (!phoneEl.dataset.phoneActionsBound){
+      phoneEl.addEventListener('click', function(){
+        try{ openGuestPhoneActionsModal(); }catch(_){ }
+      });
+      phoneEl.addEventListener('keydown', function(ev){
+        const key = ev && (ev.key || ev.code || '');
+        if (key === 'Enter' || key === ' ' || key === 'Spacebar'){
+          try{ ev.preventDefault(); }catch(_){ }
+          try{ openGuestPhoneActionsModal(); }catch(_){ }
+        }
+      });
+      phoneEl.dataset.phoneActionsBound = '1';
+    }
+    const enabled = !!isView && !!String(phoneEl.value || '').trim();
+    phoneEl.classList.toggle('guest-phone-action-link', enabled);
+    phoneEl.classList.remove('whatsapp-link');
+    try{ phoneEl.setAttribute('aria-label', enabled ? 'Apri azioni telefono' : 'Telefono'); }catch(_){ }
+    try{ phoneEl.setAttribute('title', enabled ? 'Apri azioni telefono' : ''); }catch(_){ }
+    try{ phoneEl.readOnly = !!isView; }catch(_){ }
+    try{ phoneEl.tabIndex = enabled ? 0 : -1; }catch(_){ }
+  }catch(_){ }
+}
+
+(function __bindGuestPhoneActionsModalWatcher__(){
+  const run = ()=>{ try{ setupGuestPhoneActionsModal(); }catch(_){ } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
+  else setTimeout(run, 0);
+  try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
