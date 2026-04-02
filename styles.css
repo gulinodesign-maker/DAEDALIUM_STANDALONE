@@ -18667,15 +18667,49 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
   body[data-page="statmensili"] #page-statmensili .stats-gen,
   body[data-page="statspese"] #page-statspese .stats-gen,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    position: relative;
     padding-top: 10px !important;
     padding-bottom: 10px !important;
   }
 
-  body[data-page="statgen"] #page-statgen .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statgen"] #page-statgen .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
   body[data-page="statmensili"] #page-statmensili .stats-gen > :not(.statgen-line-chart-wrap),
   body[data-page="statspese"] #page-statspese .stats-gen > :not(.statgen-line-chart-wrap),
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen > :not(.statgen-line-chart-wrap){
     display: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-head-row{
+    position: absolute !important;
+    top: 16px;
+    right: 14px;
+    left: auto;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-title,
+  body[data-page="statgen"] #page-statgen .stats-head-row .statgen-regime-switch,
+  body[data-page="statgen"] #page-statgen .stats-divider{
+    display: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-head-actions{
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    pointer-events: auto;
+  }
+
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn{
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 14px;
   }
 
   body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,

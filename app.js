@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.550
+ * Build: 2.551
  */
-const BUILD_VERSION = "2.550";
+const BUILD_VERSION = "2.551";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2605,6 +2605,7 @@ async function __dbImport__(kind){
 
     try{ __restoreBackupLocalStorage__(backupLocalStorage); }catch(_){ }
     try{ __restoreBackupThemeSlots__(backupThemeSlots); }catch(_){ }
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
 
 // Mark last import
     await __kvSet__(`db:lastImport:${String(kind||"")}`, { at: __nowIso__(), fileName: file.name || "" });
@@ -16465,6 +16466,14 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.fillText(yTickFormatter(tickValue), 1, y);
   }
 
+  for (let i = 0; i < 12; i += 1){
+    const x = pad.left + (chartW / 11) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, pad.top);
+    ctx.lineTo(x, baseY);
+    ctx.stroke();
+  }
+
   ctx.strokeStyle = axisColor;
   ctx.beginPath();
   ctx.moveTo(pad.left, baseY);
@@ -28914,7 +28923,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.550 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
+/* dDAE_2.551 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
@@ -28959,6 +28968,7 @@ function openGuestPhoneActionsModal(){
     modal.dataset.phoneDial = normalizeGuestDialPhone(raw);
     modal.dataset.phoneWhatsapp = normalizeWhatsAppPhone(raw);
     titleEl.textContent = raw;
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
   }catch(_){ }
