@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.563
+ * Build: 2.564
  */
-const BUILD_VERSION = "2.563";
+const BUILD_VERSION = "2.564";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9584,10 +9584,9 @@ const __settingsTaxCapUi = {
   holdTriggered: false,
   holdDelay: 500,
   lastTapAt: 0,
-  lastIncrementAt: 0,
   suppressTapUntil: 0,
-  lastPointerUpAt: 0,
-  lastPointerType: '',
+  recentPointerUpAt: 0,
+  pendingTouchClickUntil: 0,
 };
 
 function getTouristTaxMaxNightsSetting(fallback = 3) {
@@ -9617,6 +9616,8 @@ function bindTassaMaxNottiButton() {
   if (!btn || btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
 
+  const DOUBLE_TAP_MS = 240;
+
   const clearHold = () => {
     if (__settingsTaxCapUi.holdTimer) {
       clearTimeout(__settingsTaxCapUi.holdTimer);
@@ -9626,7 +9627,6 @@ function bindTassaMaxNottiButton() {
 
   const increment = () => {
     setTassaMaxNottiValue((__settingsTaxCapUi.value || 0) + 1);
-    __settingsTaxCapUi.lastIncrementAt = Date.now();
   };
 
   const reset = () => {
@@ -9634,18 +9634,10 @@ function bindTassaMaxNottiButton() {
     try { toast("Numero notti azzerato"); } catch(_) {}
   };
 
-  const handleRapidTap = () => {
-    const now = Date.now();
-    if (now < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
-    const threshold = 260;
-    if ((__settingsTaxCapUi.lastTapAt || 0) && (now - (__settingsTaxCapUi.lastTapAt || 0) <= threshold)) {
-      __settingsTaxCapUi.lastTapAt = 0;
-      __settingsTaxCapUi.lastIncrementAt = 0;
-      reset();
-      return;
-    }
-    __settingsTaxCapUi.lastTapAt = now;
-    increment();
+  const block = (e) => {
+    try{ e?.preventDefault?.(); }catch(_){ }
+    try{ e?.stopPropagation?.(); }catch(_){ }
+    try{ e?.stopImmediatePropagation?.(); }catch(_){ }
   };
 
   const startHold = (e) => {
@@ -9666,20 +9658,49 @@ function bindTassaMaxNottiButton() {
     setTimeout(() => { __settingsTaxCapUi.holdTriggered = false; }, 0);
   };
 
-  const handleTapLikeRelease = (e) => {
+  const registerTap = (e, source = 'tap') => {
     if (__settingsTaxCapUi.holdTriggered || Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) {
-      try{ e?.preventDefault?.(); e?.stopPropagation?.(); }catch(_){ }
+      block(e);
       return;
     }
     const now = Date.now();
-    const pointerType = String(e?.pointerType || (e?.type && e.type.startsWith('touch') ? 'touch' : 'mouse') || 'tap');
-    if (__settingsTaxCapUi.lastPointerType === pointerType && (now - (__settingsTaxCapUi.lastPointerUpAt || 0) <= 360)) {
-      __settingsTaxCapUi.lastPointerUpAt = 0;
-    } else {
-      __settingsTaxCapUi.lastPointerUpAt = now;
-      __settingsTaxCapUi.lastPointerType = pointerType;
+    const lastTapAt = Number(__settingsTaxCapUi.lastTapAt || 0);
+    __settingsTaxCapUi.lastTapAt = now;
+    if (lastTapAt && (now - lastTapAt) <= DOUBLE_TAP_MS) {
+      __settingsTaxCapUi.lastTapAt = 0;
+      reset();
+      block(e);
+      return;
     }
-    handleRapidTap();
+    increment();
+    if (source === 'pointerup') {
+      __settingsTaxCapUi.recentPointerUpAt = now;
+    }
+    if (source === 'touchend') {
+      __settingsTaxCapUi.pendingTouchClickUntil = now + 700;
+    }
+    block(e);
+  };
+
+  const handlePointerUp = (e) => {
+    __settingsTaxCapUi.recentPointerUpAt = Date.now();
+    registerTap(e, 'pointerup');
+  };
+
+  const handleTouchEnd = (e) => {
+    if ((Date.now() - Number(__settingsTaxCapUi.recentPointerUpAt || 0)) <= 450) {
+      block(e);
+      return;
+    }
+    registerTap(e, 'touchend');
+  };
+
+  const handleMouseUp = (e) => {
+    if ((Date.now() - Number(__settingsTaxCapUi.recentPointerUpAt || 0)) <= 450) {
+      block(e);
+      return;
+    }
+    registerTap(e, 'mouseup');
   };
 
   ['pointerdown','touchstart','mousedown'].forEach((evt) => {
@@ -9688,28 +9709,34 @@ function bindTassaMaxNottiButton() {
   ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave'].forEach((evt) => {
     try{ btn.addEventListener(evt, endHold, { passive:true }); }catch(_){ }
   });
-  ['pointerup','touchend','mouseup'].forEach((evt) => {
-    try{ btn.addEventListener(evt, handleTapLikeRelease, true); }catch(_){ }
-  });
 
-  btn.addEventListener("click", (e) => {
+  if (window.PointerEvent) {
+    try{ btn.addEventListener('pointerup', handlePointerUp, true); }catch(_){ }
+    try{ btn.addEventListener('touchend', handleTouchEnd, true); }catch(_){ }
+  } else {
+    try{ btn.addEventListener('touchend', handleTouchEnd, true); }catch(_){ }
+    try{ btn.addEventListener('mouseup', handleMouseUp, true); }catch(_){ }
+  }
+
+  btn.addEventListener('click', (e) => {
     if (__settingsTaxCapUi.holdTriggered || Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) {
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      block(e);
       return;
     }
     const now = Date.now();
-    if (now - (__settingsTaxCapUi.lastPointerUpAt || 0) <= 420) {
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    if ((now - Number(__settingsTaxCapUi.recentPointerUpAt || 0)) <= 700) {
+      block(e);
+      return;
     }
+    if (now < Number(__settingsTaxCapUi.pendingTouchClickUntil || 0)) {
+      block(e);
+      return;
+    }
+    registerTap(e, 'click');
   }, true);
 
-  btn.addEventListener("dblclick", (e) => {
-    try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    __settingsTaxCapUi.lastTapAt = 0;
-    __settingsTaxCapUi.lastIncrementAt = 0;
-    __settingsTaxCapUi.lastPointerUpAt = 0;
-    if (Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
-    reset();
+  btn.addEventListener('dblclick', (e) => {
+    block(e);
   }, true);
 }
 
