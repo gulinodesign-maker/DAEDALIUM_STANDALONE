@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.556
+ * Build: 2.557
  */
-const BUILD_VERSION = "2.556";
+const BUILD_VERSION = "2.557";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9570,9 +9570,25 @@ function __closeSettingsConfigModal__(){
   modal.setAttribute("aria-hidden", "true");
 }
 
+let __settingsBackupModalSuppressUntil__ = 0;
+function __settingsBackupModalGhostTapActive__(){
+  try{ return Date.now() < (__settingsBackupModalSuppressUntil__ || 0); }catch(_){ return false; }
+}
+function __settingsBackupModalSwallowGhostTap__(ev){
+  try{
+    if (!__settingsBackupModalGhostTapActive__()) return;
+    const modal = document.getElementById("settingsBackupModal");
+    const insideModal = !!(modal && !modal.hidden && ev && ev.target && modal.contains(ev.target));
+    if (insideModal) return;
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }catch(_){ }
+}
 function __openSettingsBackupModal__(){
   const modal = document.getElementById("settingsBackupModal");
   if (!modal) return;
+  __settingsBackupModalSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
 }
@@ -9582,6 +9598,7 @@ function __closeSettingsBackupModal__(){
   if (!modal) return;
   modal.hidden = true;
   modal.setAttribute("aria-hidden", "true");
+  __settingsBackupModalSuppressUntil__ = Date.now() + 700;
 }
 
 function __sanitizeTaxInputRaw__(raw){
@@ -11065,6 +11082,16 @@ const cfg = document.getElementById("settingsConfigBtn");
   const backupModal = document.getElementById("settingsBackupModal");
   if (backupModal && !backupModal.__boundClose){
     backupModal.__boundClose = true;
+    const backupCard = backupModal.querySelector?.('.modal-card');
+    if (backupCard){
+      ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+        try{ backupCard.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
+        catch(_){ try{ backupCard.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} }
+      });
+    }
+    ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
+      try{ document.addEventListener(evt, __settingsBackupModalSwallowGhostTap__, true); }catch(_){ }
+    });
     backupModal.addEventListener("click", (e) => { if (e.target === backupModal) __closeSettingsBackupModal__(); });
   }
 
