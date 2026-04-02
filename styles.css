@@ -17640,3 +17640,37 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
 #page-statcancellazioni .statgen-line-chart-wrap{
   margin-inline: 2px;
 }
+
+
+/* dDAE_2.531 — Scheda ospite: tassa/servizi/sconto/rimanenza */
+#page-ospite .guest-tax-pill{
+  gap: 8px;
+}
+#page-ospite .guest-tax-pill .guest-tax-pill-label{
+  font-weight: 700;
+  color: rgba(15,23,42,0.72);
+}
+#page-ospite .guest-tax-pill #guestTaxTotalVal{
+  font-weight: 800;
+  color: #7a1f3d;
+}
+#page-ospite #servicesPillView .services-pill-text{
+  font-weight: 800;
+  color: #1f8f47;
+}
+#page-ospite #discountRow{
+  display: grid;
+}
+#page-ospite #remainingRow.payment-row-wide{
+  grid-template-columns: minmax(0,1fr) !important;
+  width: 100% !important;
+}
+#page-ospite #remainingRow.payment-row-wide .subfield.field.float{
+  width: 100% !important;
+}
+#page-ospite #remainingRow.payment-row-wide #guestRemaining{
+  width: 100% !important;
+}
+.guest-form-card.is-create #discountRow{
+  display:none !important;
+}

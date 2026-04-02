@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.530";
+const BUILD_VERSION = "2.531";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4014,6 +4014,7 @@ function __captureUiState(){
         guestChannel: __captureFormValue("guestChannel"),
         guestChannelCommission: __captureFormValue("guestChannelCommission"),
         guestBooking: __captureFormValue("guestBooking"),
+        guestDiscount: __captureFormValue("guestDiscount"),
         guestDeposit: __captureFormValue("guestDeposit"),
         guestSaldo: __captureFormValue("guestSaldo"),
       }
@@ -4076,6 +4077,7 @@ function __applyUiState(restore){
       __applyFormValue("guestChannelCommission", f.guestChannelCommission);
       __applyFormValue("guestBooking", f.guestBooking);
       try { applySelectedChannelToGuestForm(f.guestChannel, { preserveManual:true }); } catch (_) {}
+      __applyFormValue("guestDiscount", f.guestDiscount);
       __applyFormValue("guestDeposit", f.guestDeposit);
       __applyFormValue("guestSaldo", f.guestSaldo);
       try { updateGuestRemaining(); } catch (_) {}
@@ -5347,6 +5349,24 @@ const __I18N_PHRASES__ = {
     "fr": "Taxe de séjour",
     "de": "Kurtaxe",
     "es": "Tasa turística"
+  },
+  "Tassa soggiorno": {
+    "en": "Tourist Tax",
+    "fr": "Taxe de séjour",
+    "de": "Kurtaxe",
+    "es": "Tasa turística"
+  },
+  "Sconto": {
+    "en": "Discount",
+    "fr": "Remise",
+    "de": "Rabatt",
+    "es": "Descuento"
+  },
+  "Rimanenza da pagare": {
+    "en": "Remaining to pay",
+    "fr": "Reste a payer",
+    "de": "Restbetrag",
+    "es": "Pendiente de pago"
   },
   "Stima": {
     "en": "Estimate",
@@ -18093,15 +18113,17 @@ function updateGuestRemaining(){
 
   const totalEl = document.getElementById("guestTotal");
   const servicesEl = document.getElementById("guestServices");
+  const discountEl = document.getElementById("guestDiscount");
   const depEl = document.getElementById("guestDeposit");
   const saldoEl = document.getElementById("guestSaldo");
 
   const totalStr = (totalEl?.value ?? "");
   const servicesStr = (servicesEl?.value ?? "");
+  const discountStr = (discountEl?.value ?? "");
   const depStr = (depEl?.value ?? "");
   const saldoStr = (saldoEl?.value ?? "");
 
-  const anyFilled = [totalStr, servicesStr, depStr, saldoStr].some(s => String(s).trim().length > 0);
+  const anyFilled = [totalStr, servicesStr, discountStr, depStr, saldoStr].some(s => String(s).trim().length > 0);
   if (!anyFilled) {
     out.value = "";
     try { refreshFloatingLabels(); } catch (_) {}
@@ -18110,9 +18132,10 @@ function updateGuestRemaining(){
 
   const total = parseFloat(totalStr || "0") || 0;
   const services = parseFloat(servicesStr || "0") || 0;
+  const discount = parseFloat(discountStr || "0") || 0;
   const deposit = parseFloat(depStr || "0") || 0;
   const saldo = parseFloat(saldoStr || "0") || 0;
-  const remaining = (total + services) - deposit - saldo;
+  const remaining = (total + services) - discount - deposit - saldo;
 
   out.value = (isFinite(remaining) ? remaining.toFixed(2) : "");
   try { refreshFloatingLabels(); } catch (_) {}
@@ -18142,23 +18165,24 @@ function updateGuestPriceVisibility(){
     const hide = (String(state.guestMode || '').toLowerCase() === 'create' && !!state.guestCreateFromGroup);
 
     // Campi prezzi: nascondi l'intera riga/campo
-    ['guestTotal','guestBooking','guestDeposit','guestSaldo'].forEach((id) => {
+    ['guestTotal','guestBooking','guestDeposit','guestSaldo','guestDiscount'].forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       const field = el.closest('.field');
       if (field) field.hidden = hide;
     });
 
-    // Rimanenza: in create-from-group nascondi l'intera riga (niente pillole registrazioni)
-    const rem = document.getElementById('guestRemaining');
-    if (rem){
-      const row = rem.closest('.field.two-col.payment-row');
+    // Rimanenza/Sconto: in create-from-group nascondi le righe dedicate
+    ['guestDiscount','guestRemaining'].forEach((fieldId) => {
+      const fieldEl = document.getElementById(fieldId);
+      if (!fieldEl) return;
+      const row = fieldEl.closest('.field.two-col.payment-row');
       if (row) row.hidden = hide;
       else {
-        const sub = rem.closest('.subfield');
+        const sub = fieldEl.closest('.subfield');
         if (sub) sub.hidden = hide;
       }
-    }
+    });
 
     // Multi prenotazioni: quando si crea un nuovo gruppo dentro una prenotazione esistente,
     // non mostrare le pillole (Acconto/Saldo/Registrazioni).
@@ -18206,7 +18230,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   // reset servizi state
   try{ state.guestServicesItems = []; state.guestServicesComputedTotal = 0; state.guestServicesManualOverride = false; state.guestServicesLoadedFor = null; }catch(_){ }
@@ -18340,6 +18364,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   try{ applySelectedChannelToGuestForm(ospite.channel_id ?? ospite.channelId ?? "", { preserveManual:true }); }catch(_){ }
   document.getElementById("guestBooking").value = ospite.importo_booking ?? ospite.booking ?? 0;
   document.getElementById("guestServices").value = ospite.servizi_totale ?? ospite.serviziTotal ?? ospite.importo_servizi ?? 0;
+  document.getElementById("guestDiscount").value = ospite.sconto ?? ospite.discount ?? 0;
   document.getElementById("guestDeposit").value = ospite.acconto_importo ?? ospite.deposit ?? 0;
   document.getElementById("guestSaldo").value = ospite.saldo_pagato ?? ospite.saldoPagato ?? ospite.saldo ?? 0;
   try{ syncGuestNotesUI(ospite, { open:false }); }catch(_){}
@@ -21218,6 +21243,7 @@ async function saveGuest(opts = {}){
   const channelCommissionPct = parseFloat(document.getElementById("guestChannelCommission")?.value || "0") || 0;
   const booking = parseFloat(document.getElementById("guestBooking")?.value || "0") || 0;
   const serviziTotale = parseFloat(document.getElementById("guestServices")?.value || "0") || 0;
+  const discount = parseFloat(document.getElementById("guestDiscount")?.value || "0") || 0;
   const deposit = parseFloat(document.getElementById("guestDeposit")?.value || "0") || 0;
   const saldoPagato = parseFloat(document.getElementById("guestSaldo")?.value || "0") || 0;
   const notes = String(document.getElementById("guestNotes")?.value || "").trim();
@@ -21257,6 +21283,8 @@ if (!name) return toast("Inserisci il nome");
     importo_booking: booking,
     servizi_totale: serviziTotale,
     servizi_preview: serviziPreviewText(state.guestServicesItems || []),
+    sconto: discount,
+    discount: discount,
     acconto_importo: deposit,
     acconto_tipo: depositType,
     saldo_pagato: saldoPagato,
