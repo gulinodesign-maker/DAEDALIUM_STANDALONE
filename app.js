@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.542";
+const BUILD_VERSION = "2.544";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -22195,8 +22195,8 @@ function setupOspite(){
   }
   try{ populateGuestChannelOptions(); }catch(_){ }
 
-  // Rimanenza da pagare (Importo prenotazione - Acconto - Saldo)
-  ["guestTotal","guestServices","guestDeposit","guestSaldo"].forEach((id) => {
+  // Rimanenza da pagare (Importo prenotazione + Servizi - Sconto - Acconto - Saldo)
+  ["guestTotal","guestServices","guestDiscount","guestDeposit","guestSaldo"].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => {
