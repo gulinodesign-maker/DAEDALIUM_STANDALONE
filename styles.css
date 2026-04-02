@@ -17123,7 +17123,7 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
 
 
 
-/* dDAE_2.549 — Pulsanti azione popup/editabili singolarmente dal popup colore */
+/* dDAE_2.550 — Pulsanti azione popup/editabili singolarmente dal popup colore */
 .btn[data-design-standalone-button="1"],
 .btn[data-design-standalone-button="1"]:hover,
 .btn[data-design-standalone-button="1"]:focus,
@@ -18658,3 +18658,43 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
   stroke:#ffffff !important;
   color:#ffffff !important;
 }
+
+
+
+/* dDAE_2.550 — Statistiche: in landscape mostra solo il grafico nelle 4 sotto-pagine dedicate */
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statmensili"] #page-statmensili .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statspese"] #page-statspese .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen > :not(.statgen-line-chart-wrap){
+    display: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: 220px;
+    height: var(--stat-landscape-chart-height, calc(100dvh - 132px));
+    border-radius: 18px;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart{
+    height: 100% !important;
+    max-height: none !important;
+  }
+}
+

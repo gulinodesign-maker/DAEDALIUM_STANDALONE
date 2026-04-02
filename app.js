@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.549
+ * Build: 2.550
  */
-const BUILD_VERSION = "2.549";
+const BUILD_VERSION = "2.550";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -12173,6 +12173,7 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
+  try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
   if (page === "home"){
     // HOME: ricalcola sempre la visibilità del SYNC dopo operazioni in Impostazioni (es. generazione codice Roster)
     try{ __fbLoadLink__(); }catch(_){ }
@@ -16324,12 +16325,85 @@ function __statLineChartNiceMax__(value){
   return niceFraction * Math.pow(10, exponent);
 }
 
+
+const __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__ = new Set(['statgen','statmensili','statspese','statcancellazioni']);
+let __statLandscapeGraphOnlyTimer__ = null;
+let __statLandscapeGraphOnlyResizeBound__ = false;
+
+function __isLandscapeOrientation__(){
+  try{ return !!(window.matchMedia && window.matchMedia('(orientation: landscape)').matches); }catch(_){ return false; }
+}
+
+function __applyStatLandscapeGraphOnlyLayout__(){
+  const currentPage = String((state && state.page) || document.body?.dataset?.page || '');
+  const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement?.clientHeight || 0, 0);
+  __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.forEach((pageKey) => {
+    const wrap = document.querySelector(`#page-${pageKey} .statgen-line-chart-wrap`);
+    if (!wrap) return;
+    if (!(currentPage === pageKey && __isLandscapeOrientation__())){
+      try{ wrap.style.removeProperty('--stat-landscape-chart-height'); }catch(_){ }
+      return;
+    }
+    const rect = wrap.getBoundingClientRect();
+    const available = Math.floor(viewportHeight - Math.max(0, rect.top) - 12);
+    const nextHeight = Math.max(220, available);
+    try{ wrap.style.setProperty('--stat-landscape-chart-height', `${nextHeight}px`); }catch(_){ }
+  });
+}
+
+function __refreshCurrentStatLandscapeGraphOnlyPage__(){
+  const currentPage = String((state && state.page) || document.body?.dataset?.page || '');
+  try{ __applyStatLandscapeGraphOnlyLayout__(); }catch(_){ }
+  if (currentPage === 'statgen'){
+    try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  }else if (currentPage === 'statmensili'){
+    try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
+  }else if (currentPage === 'statspese'){
+    try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
+  }else if (currentPage === 'statcancellazioni'){
+    try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
+  }
+}
+
+function __scheduleStatLandscapeGraphOnlyRefresh__(){
+  try{ if (__statLandscapeGraphOnlyTimer__) clearTimeout(__statLandscapeGraphOnlyTimer__); }catch(_){ }
+  __statLandscapeGraphOnlyTimer__ = setTimeout(() => {
+    __statLandscapeGraphOnlyTimer__ = null;
+    __refreshCurrentStatLandscapeGraphOnlyPage__();
+  }, 40);
+}
+
+function __ensureStatLandscapeGraphOnlyResizeBinding__(){
+  if (__statLandscapeGraphOnlyResizeBound__) return;
+  __statLandscapeGraphOnlyResizeBound__ = true;
+  const refresh = () => { try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ } };
+  try{ window.addEventListener('resize', refresh, { passive:true }); }catch(_){ }
+  try{ window.addEventListener('orientationchange', refresh, { passive:true }); }catch(_){ }
+  try{
+    if (window.visualViewport){
+      window.visualViewport.addEventListener('resize', refresh, { passive:true });
+    }
+  }catch(_){ }
+}
+
+__ensureStatLandscapeGraphOnlyResizeBinding__();
+
 function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const parent = canvas.parentElement || canvas;
+  const wrap = (canvas.closest && canvas.closest('.statgen-line-chart-wrap')) ? canvas.closest('.statgen-line-chart-wrap') : parent;
+  const pageKey = (wrap && wrap.dataset && wrap.dataset.statLineChartKey) ? __statSharedLineChartPageKeyNormalize__(wrap.dataset.statLineChartKey) : ((canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : (canvasId === 'statCancellazioniLineChart' ? 'statcancellazioni' : 'statgen')));
   const width = Math.max(220, Math.floor(parent.clientWidth || canvas.clientWidth || 320));
-  const height = 118;
+  let height = 118;
+  const isGraphOnlyLandscape = !!(wrap && __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.has(pageKey) && document.body?.dataset?.page === pageKey && __isLandscapeOrientation__());
+  if (isGraphOnlyLandscape){
+    const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement?.clientHeight || 0, 0);
+    const rect = wrap.getBoundingClientRect();
+    const available = Math.floor(viewportHeight - Math.max(0, rect.top) - 12);
+    height = Math.max(220, Math.floor(parent.clientHeight || wrap.clientHeight || available || 0));
+    try{ wrap.style.setProperty('--stat-landscape-chart-height', `${height}px`); }catch(_){ }
+  }
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   canvas.width = Math.floor(width * dpr);
   canvas.height = Math.floor(height * dpr);
@@ -16342,7 +16416,6 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  const pageKey = (canvas.closest && canvas.closest('.statgen-line-chart-wrap') && canvas.closest('.statgen-line-chart-wrap').dataset && canvas.closest('.statgen-line-chart-wrap').dataset.statLineChartKey) ? __statSharedLineChartPageKeyNormalize__(canvas.closest('.statgen-line-chart-wrap').dataset.statLineChartKey) : ((canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : (canvasId === 'statCancellazioniLineChart' ? 'statcancellazioni' : 'statgen')));
   const visual = __statSharedLineChartVisualReadFor__(pageKey);
   const isDark = !!document.body?.classList?.contains('ddae-dark');
   const surface = __statSharedLineChartResolvedSurface__(visual, isDark);
@@ -16608,6 +16681,7 @@ function renderStatGen(){
     }
   }catch(_){ }
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
   try{ __loadStatGenCompareGuests__({ force:false }); }catch(_){ }
 }
 
@@ -16924,6 +16998,7 @@ function renderStatMensili(){
     }
   }catch(_){ }
   try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
+  try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
 }
 
 
@@ -17447,6 +17522,7 @@ function renderStatCancellazioni(){
     }
   }catch(_){ }
   try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
+  try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
 
   try{
     document.querySelectorAll('#page-statcancellazioni .kpi-card').forEach((card, index) => {
@@ -17932,6 +18008,7 @@ function renderStatSpese(){
     }
   }catch(_){ }
   try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
+  try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
 
   if (list){
     list.innerHTML = "";
@@ -28837,7 +28914,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.549 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
+/* dDAE_2.550 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
