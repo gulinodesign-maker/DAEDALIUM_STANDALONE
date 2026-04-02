@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.551
+ * Build: 2.552
  */
-const BUILD_VERSION = "2.551";
+const BUILD_VERSION = "2.552";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -28923,7 +28923,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.551 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
+/* dDAE_2.552 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
