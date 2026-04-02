@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.561
+ * Build: 2.562
  */
-const BUILD_VERSION = "2.561";
+const BUILD_VERSION = "2.562";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9586,6 +9586,8 @@ const __settingsTaxCapUi = {
   lastTapAt: 0,
   tapTimer: null,
   suppressTapUntil: 0,
+  lastPointerUpAt: 0,
+  lastPointerType: '',
 };
 
 function getTouristTaxMaxNightsSetting(fallback = 3) {
@@ -9655,7 +9657,11 @@ function bindTassaMaxNottiButton() {
     }, 280);
   };
 
-  const startHold = () => {
+  const startHold = (e) => {
+    try{
+      if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && (e.button || 0) !== 0) return;
+      if (e && e.type === 'mousedown' && (e.button || 0) !== 0) return;
+    }catch(_){ }
     clearHold();
     __settingsTaxCapUi.holdTriggered = false;
     __settingsTaxCapUi.holdTimer = setTimeout(() => {
@@ -9669,28 +9675,52 @@ function bindTassaMaxNottiButton() {
     setTimeout(() => { __settingsTaxCapUi.holdTriggered = false; }, 0);
   };
 
-  btn.addEventListener("pointerdown", startHold, { passive: true });
-  btn.addEventListener("pointerup", endHold, { passive: true });
-  btn.addEventListener("pointerleave", endHold, { passive: true });
-  btn.addEventListener("pointercancel", endHold, { passive: true });
+  const handleTapLikeRelease = (e) => {
+    if (__settingsTaxCapUi.holdTriggered || Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) {
+      try{ e?.preventDefault?.(); e?.stopPropagation?.(); }catch(_){ }
+      return;
+    }
+    const now = Date.now();
+    const pointerType = String(e?.pointerType || (e?.type && e.type.startsWith('touch') ? 'touch' : 'mouse') || 'tap');
+    if (__settingsTaxCapUi.lastPointerType === pointerType && (now - (__settingsTaxCapUi.lastPointerUpAt || 0) <= 360)) {
+      __settingsTaxCapUi.lastPointerUpAt = 0;
+    } else {
+      __settingsTaxCapUi.lastPointerUpAt = now;
+      __settingsTaxCapUi.lastPointerType = pointerType;
+    }
+    scheduleTap();
+  };
+
+  ['pointerdown','touchstart','mousedown'].forEach((evt) => {
+    try{ btn.addEventListener(evt, startHold, { passive:true }); }catch(_){ }
+  });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave'].forEach((evt) => {
+    try{ btn.addEventListener(evt, endHold, { passive:true }); }catch(_){ }
+  });
+  ['pointerup','touchend','mouseup'].forEach((evt) => {
+    try{ btn.addEventListener(evt, handleTapLikeRelease, true); }catch(_){ }
+  });
 
   btn.addEventListener("click", (e) => {
     if (__settingsTaxCapUi.holdTriggered || Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) {
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
       return;
     }
-    scheduleTap();
+    const now = Date.now();
+    if (now - (__settingsTaxCapUi.lastPointerUpAt || 0) <= 420) {
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+    }
   }, true);
 
   btn.addEventListener("dblclick", (e) => {
     try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
     clearTapTimer();
     __settingsTaxCapUi.lastTapAt = 0;
+    __settingsTaxCapUi.lastPointerUpAt = 0;
     if (Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
     reset();
   }, true);
 }
-
 
 function __syncSettingsConfigModalGrid__(){
   const modal = document.getElementById("settingsConfigModal");
@@ -15225,10 +15255,23 @@ function __guestListCardVisualDefault__(){
   return __launcherVisualNormalize__({ bg:'gray-1', border:'gray-2', fg:'blue-6', opacity:0.22 }, 'blue-6');
 }
 
-function __guestListCardVisualRead__(){
-  const map = __loadGuestListCardVisualMap__();
+function __guestListCardVisualKeyFor__(value){
+  try{
+    const raw = String(value == null ? '' : value).trim();
+    if (!raw) return '';
+    return raw.replace(/[^\w\-:.]+/g, '_');
+  }catch(_){ return ''; }
+}
+
+function __guestListCardVisualDataKey__(card){
+  try{
+    return __guestListCardVisualKeyFor__(card?.dataset?.guestVisualKey || card?.dataset?.guestId || card?.dataset?.guestKey || '');
+  }catch(_){ return ''; }
+}
+
+function __guestListCardVisualNormalizeEntry__(visual){
   const fallback = __guestListCardVisualDefault__();
-  const current = __launcherVisualNormalize__(map.guestListCard || fallback, fallback.fg || 'blue-6');
+  const current = __launcherVisualNormalize__(visual || {}, fallback.fg || 'blue-6');
   return {
     bg: current.bg || fallback.bg || 'gray-1',
     border: current.border || current.bg || fallback.border || fallback.bg || 'gray-2',
@@ -15237,17 +15280,35 @@ function __guestListCardVisualRead__(){
   };
 }
 
-function __guestListCardVisualWrite__(visual){
+function __guestListCardVisualRead__(cardOrKey = null){
+  const map = __loadGuestListCardVisualMap__();
+  const fallback = __guestListCardVisualDefault__();
+  const key = (cardOrKey && typeof cardOrKey === 'object') ? __guestListCardVisualDataKey__(cardOrKey) : __guestListCardVisualKeyFor__(cardOrKey);
+  const base = __guestListCardVisualNormalizeEntry__(map.guestListCard || fallback);
+  if (key && map[key] && typeof map[key] === 'object') return __guestListCardVisualNormalizeEntry__(map[key]);
+  return base;
+}
+
+function __guestListCardVisualWrite__(cardOrKey, visual){
   try{
     const map = __loadGuestListCardVisualMap__();
-    const fallback = __guestListCardVisualDefault__();
-    const clean = __launcherVisualNormalize__(visual || {}, fallback.fg || 'blue-6');
-    map.guestListCard = {
-      bg: clean.bg || fallback.bg || 'gray-1',
-      border: clean.border || clean.bg || fallback.border || fallback.bg || 'gray-2',
-      fg: clean.fg || fallback.fg || 'blue-6',
-      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.22)
-    };
+    const key = (cardOrKey && typeof cardOrKey === 'object') ? __guestListCardVisualDataKey__(cardOrKey) : __guestListCardVisualKeyFor__(cardOrKey);
+    const clean = __guestListCardVisualNormalizeEntry__(visual);
+    if (key) map[key] = clean;
+    else map.guestListCard = clean;
+    __saveGuestListCardVisualMap__(map);
+  }catch(_){ }
+}
+
+function __guestListCardApplyVisualToAllKeys__(visual){
+  try{
+    const map = __loadGuestListCardVisualMap__();
+    const clean = __guestListCardVisualNormalizeEntry__(visual);
+    map.guestListCard = clean;
+    document.querySelectorAll('#page-ospiti .guest-card').forEach((card) => {
+      const key = __guestListCardVisualDataKey__(card);
+      if (key) map[key] = clean;
+    });
     __saveGuestListCardVisualMap__(map);
   }catch(_){ }
 }
@@ -15255,7 +15316,7 @@ function __guestListCardVisualWrite__(visual){
 function __applyGuestListCardVisual__(card){
   try{
     if (!card) return;
-    const visual = __guestListCardVisualRead__();
+    const visual = __guestListCardVisualRead__(card);
     const bgHex = __operatoreColorHex__(visual.bg || 'gray-1');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'gray-2');
     const fgHex = __tagColorTextHex__(visual.bg || 'gray-1', visual.fg || 'blue-6', false) || __operatoreColorHex__(visual.fg || 'blue-6');
@@ -15305,7 +15366,7 @@ function __applyGuestListCardAll__(){
 function __openGuestListCardColorPicker__(card){
   try{
     if (!card) return;
-    const current = __guestListCardVisualRead__();
+    const current = __guestListCardVisualRead__(card);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
@@ -15314,11 +15375,11 @@ function __openGuestListCardColorPicker__(card){
         fg: colors.fg || current.fg || 'blue-6',
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.22)
       };
-      __guestListCardVisualWrite__(next);
+      __guestListCardVisualWrite__(card, next);
       __applyGuestListCardAll__();
     };
     const revertVisual = () => {
-      __guestListCardVisualWrite__(current);
+      __guestListCardVisualWrite__(card, current);
       __applyGuestListCardAll__();
     };
     __tagColorPopupOpen__('guest-list-card', current, (payload) => { applyVisual(payload); }, {
@@ -15334,8 +15395,8 @@ function __openGuestListCardColorPicker__(card){
       applyCategory:{
         message:'Applicare le modifiche a tutte le schede guest list?',
         apply: async(payload, changed) => {
-          const next = __applyDesignPayloadToVisual__(__guestListCardVisualRead__(), payload, changed, 'gray-1');
-          __guestListCardVisualWrite__(next);
+          const next = __applyDesignPayloadToVisual__(__guestListCardVisualRead__(card), payload, changed, 'gray-1');
+          __guestListCardApplyVisualToAllKeys__(next);
           __applyGuestListCardAll__();
         }
       }
@@ -19704,6 +19765,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
+    __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__,
     __ROOM_SETTINGS_SHELL_THEME_STORAGE_KEY__,
@@ -23007,6 +23069,10 @@ function renderGuestCards(){
     card.tabIndex = 0;
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", `Apri scheda ospite: ${nome}`);
+    try{
+      const visualKey = __guestListCardVisualKeyFor__(guestIdOf(first) || first?.id || first?.guest_id || first?.booking_id || normalizeGuestNameKey(first?.nome || String(first?.name ?? first?.guest ?? "").trim() || ""));
+      if (visualKey) card.dataset.guestVisualKey = visualKey;
+    }catch(_){ }
 
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
