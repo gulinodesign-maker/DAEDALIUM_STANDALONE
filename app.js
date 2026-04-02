@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.562
+ * Build: 2.563
  */
-const BUILD_VERSION = "2.562";
+const BUILD_VERSION = "2.563";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9584,7 +9584,7 @@ const __settingsTaxCapUi = {
   holdTriggered: false,
   holdDelay: 500,
   lastTapAt: 0,
-  tapTimer: null,
+  lastIncrementAt: 0,
   suppressTapUntil: 0,
   lastPointerUpAt: 0,
   lastPointerType: '',
@@ -9624,15 +9624,9 @@ function bindTassaMaxNottiButton() {
     }
   };
 
-  const clearTapTimer = () => {
-    if (__settingsTaxCapUi.tapTimer) {
-      clearTimeout(__settingsTaxCapUi.tapTimer);
-      __settingsTaxCapUi.tapTimer = null;
-    }
-  };
-
   const increment = () => {
     setTassaMaxNottiValue((__settingsTaxCapUi.value || 0) + 1);
+    __settingsTaxCapUi.lastIncrementAt = Date.now();
   };
 
   const reset = () => {
@@ -9640,21 +9634,18 @@ function bindTassaMaxNottiButton() {
     try { toast("Numero notti azzerato"); } catch(_) {}
   };
 
-  const scheduleTap = () => {
+  const handleRapidTap = () => {
     const now = Date.now();
     if (now < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
-    if (now - (__settingsTaxCapUi.lastTapAt || 0) <= 320) {
+    const threshold = 260;
+    if ((__settingsTaxCapUi.lastTapAt || 0) && (now - (__settingsTaxCapUi.lastTapAt || 0) <= threshold)) {
       __settingsTaxCapUi.lastTapAt = 0;
-      clearTapTimer();
+      __settingsTaxCapUi.lastIncrementAt = 0;
       reset();
       return;
     }
     __settingsTaxCapUi.lastTapAt = now;
-    clearTapTimer();
-    __settingsTaxCapUi.tapTimer = setTimeout(() => {
-      __settingsTaxCapUi.lastTapAt = 0;
-      increment();
-    }, 280);
+    increment();
   };
 
   const startHold = (e) => {
@@ -9688,7 +9679,7 @@ function bindTassaMaxNottiButton() {
       __settingsTaxCapUi.lastPointerUpAt = now;
       __settingsTaxCapUi.lastPointerType = pointerType;
     }
-    scheduleTap();
+    handleRapidTap();
   };
 
   ['pointerdown','touchstart','mousedown'].forEach((evt) => {
@@ -9714,8 +9705,8 @@ function bindTassaMaxNottiButton() {
 
   btn.addEventListener("dblclick", (e) => {
     try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-    clearTapTimer();
     __settingsTaxCapUi.lastTapAt = 0;
+    __settingsTaxCapUi.lastIncrementAt = 0;
     __settingsTaxCapUi.lastPointerUpAt = 0;
     if (Date.now() < (__settingsTaxCapUi.suppressTapUntil || 0)) return;
     reset();
