@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.546
+ * Build: 2.549
  */
-const BUILD_VERSION = "2.546";
+const BUILD_VERSION = "2.549";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14951,7 +14951,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
   'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
-  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave'
+  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -14989,7 +14990,10 @@ function __defaultSingleActionButtonVisual__(btn){
     laundryCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
-    laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
+    laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestPhoneActionCall:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestPhoneActionWhatsApp:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestPhoneActionSms:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
   };
   const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
@@ -28833,7 +28837,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.548 — Popup telefono in modalità lettura + azioni contatto */
+/* dDAE_2.549 — Popup telefono in modalità lettura + azioni contatto + popup colore sui tasti */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';

@@ -6419,7 +6419,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   background: rgba(45, 153, 255, 0.20) !important;
   border: 1px solid rgba(45, 153, 255, 0.22) !important;
   color: #000 !important;
-  font-weight: 800 !important;
+  font-weight: 400 !important;
 }
 
 /* Centro testo (bottoni) */
@@ -14665,7 +14665,7 @@ body.ddae-dark #calendarCellModal .calendar-cell-status.is-on{
   border-color: rgba(88,86,214,0.80) !important;
   color:#ffffff !important;
   -webkit-text-fill-color:#ffffff !important;
-  font-weight: 800 !important;
+  font-weight: 400 !important;
 }
 
 /* dDAE_2.327 — Guest list: notti indaco prima degli altri badge e testi in grassetto */
@@ -17123,11 +17123,15 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
 
 
 
-/* dDAE_2.454 — Pulsanti azione popup/editabili singolarmente dal popup colore */
+/* dDAE_2.549 — Pulsanti azione popup/editabili singolarmente dal popup colore */
 .btn[data-design-standalone-button="1"],
 .btn[data-design-standalone-button="1"]:hover,
 .btn[data-design-standalone-button="1"]:focus,
-.btn[data-design-standalone-button="1"]:active{
+.btn[data-design-standalone-button="1"]:active,
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"],
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]:hover,
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]:focus,
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]:active{
   box-shadow:none !important;
   backdrop-filter:none !important;
   -webkit-backdrop-filter:none !important;
@@ -18582,6 +18586,13 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestRemaining{
   transform:scale(0.96);
   background:#1b8a44;
   box-shadow:0 3px 8px rgba(34,166,82,0.18);
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]{
+  transition:transform .14s ease !important;
+}
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]:hover,
+#guestPhoneActionsModal .guest-phone-action-btn[data-design-standalone-button="1"]:active{
+  filter:none !important;
 }
 #guestPhoneActionsModal .guest-phone-action-btn .ui-ico{
   width:28px;
