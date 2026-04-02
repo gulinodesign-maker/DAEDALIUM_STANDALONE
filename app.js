@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.559
+ * Build: 2.560
  */
-const BUILD_VERSION = "2.559";
+const BUILD_VERSION = "2.560";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9554,6 +9554,19 @@ function bindTassaMaxNottiButton() {
   });
 }
 
+
+function __syncSettingsConfigModalGrid__(){
+  const modal = document.getElementById("settingsConfigModal");
+  const body = modal ? modal.querySelector(".settings-popup-body") : null;
+  if (!body) return;
+  try{
+    const bodyWidth = Math.max(0, Math.round(body.getBoundingClientRect().width || 0));
+    const gap = window.matchMedia('(max-width: 640px)').matches ? 12 : 14;
+    const target = Math.max(window.matchMedia('(max-width: 640px)').matches ? 116 : 128, Math.min(160, Math.floor((bodyWidth - gap) / 2)));
+    body.style.setProperty('--settings-stay-cell-h', target + 'px');
+  }catch(_){ }
+}
+
 function __openSettingsConfigModal__(){
   const modal = document.getElementById("settingsConfigModal");
   if (!modal) return;
@@ -9561,7 +9574,10 @@ function __openSettingsConfigModal__(){
   modal.setAttribute("aria-hidden", "false");
   try{ loadImpostazioniPage({ force:false }); }catch(_){ }
   try{ refreshFloatingLabels(); }catch(_){ }
+  try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
+  try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
 }
+
 
 function __closeSettingsConfigModal__(){
   const modal = document.getElementById("settingsConfigModal");
@@ -10116,7 +10132,10 @@ function __operatoriOpenModal__(item){
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
+  try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
+  try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
 }
+
 
 function __operatoriCloseModal__(){
   const modal = document.getElementById('operatoriEditorModal');
@@ -10334,7 +10353,10 @@ function __channelOpenModal__(item){
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
+  try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
+  try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
 }
+
 
 function __channelCloseModal__(){
   const modal = document.getElementById('channelEditorModal');
@@ -10608,7 +10630,10 @@ function __laundryCatalogOpenModal__(item){
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
+  try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
+  try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
 }
+
 
 function __laundryCatalogCloseModal__(){
   const modal = document.getElementById('laundryCatalogEditorModal');
@@ -10937,6 +10962,10 @@ const cfg = document.getElementById("settingsConfigBtn");
     try { await saveImpostazioniPage(); __closeSettingsConfigModal__(); } catch (e) { toast(e.message || "Errore"); }
   });
   const cfgModal = document.getElementById("settingsConfigModal");
+  if (!window.__boundStayGridResize){
+    window.__boundStayGridResize = true;
+    window.addEventListener("resize", () => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }, { passive:true });
+  }
   if (cfgModal && !cfgModal.__boundClose){
     cfgModal.__boundClose = true;
     cfgModal.addEventListener("click", (e) => { if (e.target === cfgModal) __closeSettingsConfigModal__(); });

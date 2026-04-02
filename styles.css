@@ -19085,3 +19085,117 @@ body[data-page="impostazioni"] main.wrap{
   #settingsConfigModal .settings-tax-cap-value{ font-size:clamp(28px, 6.4vw, 44px) !important; }
   #settingsConfigModal .settings-popup-actions .btn{ font-size:17px !important; }
 }
+
+
+/* dDAE_2.560 — Popup Dati soggiorno: quattro celle visivamente identiche */
+#settingsConfigModal .settings-popup-card{
+  width:min(760px, calc(100vw - 28px)) !important;
+  max-width:min(760px, calc(100vw - 28px)) !important;
+}
+#settingsConfigModal .settings-popup-body{
+  --settings-stay-cell-h:128px;
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+  grid-auto-rows:var(--settings-stay-cell-h) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+  margin:0 !important;
+}
+#settingsConfigModal .settings-main-row-modal,
+#settingsConfigModal .settings-popup-actions{
+  display:contents !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-equal-card,
+#settingsConfigModal .settings-popup-actions .btn{
+  width:100% !important;
+  min-width:0 !important;
+  height:var(--settings-stay-cell-h) !important;
+  min-height:var(--settings-stay-cell-h) !important;
+  max-height:var(--settings-stay-cell-h) !important;
+  margin:0 !important;
+  border-radius:26px !important;
+  box-sizing:border-box !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card{
+  display:block !important;
+  position:relative !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card > label{
+  display:none !important;
+}
+#settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+  width:100% !important;
+  height:100% !important;
+  min-height:var(--settings-stay-cell-h) !important;
+  max-height:var(--settings-stay-cell-h) !important;
+  margin:0 !important;
+  border-radius:26px !important;
+  padding:0 18px !important;
+  text-align:center !important;
+  font-size:clamp(30px, 5.8vw, 52px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  background:rgba(255,255,255,0.98) !important;
+  border:1px solid rgba(15,23,42,0.10) !important;
+  box-shadow:none !important;
+}
+#settingsConfigModal .settings-main-row-modal .settings-tax-cap-btn.settings-equal-card{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:14px 16px !important;
+  background:rgba(111,183,214,0.80) !important;
+  border:1px solid rgba(15,23,42,0.10) !important;
+  box-shadow:none !important;
+}
+#settingsConfigModal .settings-tax-cap-top,
+#settingsConfigModal .settings-tax-cap-value{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+}
+#settingsConfigModal .settings-tax-cap-top{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:800 !important;
+}
+#settingsConfigModal .settings-tax-cap-value{
+  font-size:clamp(30px, 5.8vw, 52px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+#settingsConfigModal .settings-popup-actions .btn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 18px !important;
+  font-size:21px !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+}
+@media (max-width: 640px){
+  #settingsConfigModal .settings-popup-body{
+    --settings-stay-cell-h:116px;
+    gap:12px !important;
+  }
+  #settingsConfigModal .settings-main-row-modal .settings-equal-card,
+  #settingsConfigModal .settings-popup-actions .btn,
+  #settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+    border-radius:24px !important;
+  }
+  #settingsConfigModal .settings-main-row-modal .field.settings-equal-card input{
+    font-size:clamp(26px, 6.4vw, 44px) !important;
+  }
+  #settingsConfigModal .settings-tax-cap-top{ font-size:15px !important; }
+  #settingsConfigModal .settings-tax-cap-value{ font-size:clamp(28px, 6.4vw, 44px) !important; }
+  #settingsConfigModal .settings-popup-actions .btn{ font-size:17px !important; }
+}
