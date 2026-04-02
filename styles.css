@@ -12089,7 +12089,7 @@ body.ddae-dark .language-option:active{
 .settings-backup-actions{
   width:100%;
   gap:12px !important;
-  margin-top:16px !important;
+  margin-top:var(--guest-create-label-top, 18px) !important;
   align-items:stretch;
 }
 .editor-modal-actions{
@@ -12105,7 +12105,7 @@ body.ddae-dark .language-option:active{
   min-height:72px !important;
   height:72px !important;
   border-radius:24px !important;
-  font-size:18px !important;
+  font-size:var(--guest-create-control-font-size, 16px) !important;
   font-weight:900 !important;
   box-shadow:none !important;
   backdrop-filter:none !important;
@@ -17642,31 +17642,40 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
 }
 
 
-/* dDAE_2.532 — Scheda ospite: tassa sopra importo + rimanenza bold bordeaux */
-#page-ospite .guest-tax-pill{
-  gap: 2px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* dDAE_2.535 — Scheda ospite: tassa soggiorno/rimanenza con priorita alta */
+#page-ospite #guestTaxTotal.guest-tax-pill{
+  display: flex;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
 }
-#page-ospite .guest-tax-pill .guest-tax-pill-label{
-  display:block;
-  line-height: 1.05;
-  text-align:center;
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(15,23,42,0.72);
+#page-ospite #guestTaxTotal.guest-tax-pill .guest-tax-pill-label,
+#page-ospite #guestTaxTotal.guest-tax-pill.pay-pill.pay-pill-text .guest-tax-pill-label,
+#page-ospite #guestTaxTotal.guest-tax-pill.pay-pill.pay-pill-text span.guest-tax-pill-label{
+  display: block !important;
+  width: 100% !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: rgba(15,23,42,0.72) !important;
+  white-space: normal !important;
 }
-#page-ospite .guest-tax-pill #guestTaxTotalVal{
-  display:block;
-  line-height: 1.1;
-  text-align:center;
-  font-weight: 800;
-  color: #7a1f3d;
+#page-ospite #guestTaxTotal.guest-tax-pill #guestTaxTotalVal,
+#page-ospite #guestTaxTotal.guest-tax-pill.pay-pill.pay-pill-text #guestTaxTotalVal,
+#page-ospite #guestTaxTotal.guest-tax-pill.pay-pill.pay-pill-text span#guestTaxTotalVal{
+  display: block !important;
+  width: 100% !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+  font-weight: 800 !important;
+  color: #7a1f3d !important;
+  white-space: nowrap !important;
 }
 #page-ospite #servicesPillView .services-pill-text{
-  font-weight: 800;
-  color: #1f8f47;
+  font-weight: 800 !important;
+  color: #1f8f47 !important;
 }
 #page-ospite #discountRow{
   display: grid;
@@ -17682,9 +17691,635 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
   width: 100% !important;
 }
 #page-ospite #remainingRow label[for="guestRemaining"]{
-  font-weight: 800;
-  color: #7a1f3d;
+  font-weight: 800 !important;
+  color: #7a1f3d !important;
 }
 .guest-form-card.is-create #discountRow{
   display:none !important;
+}
+
+/* dDAE_2.535 — Scheda ospite: riallineamento blocchi edit/view e servizi */
+#page-ospite #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:12px !important;
+  align-items:end !important;
+}
+#page-ospite #guestChannelRow > .subfield{ min-width:0; }
+#page-ospite #guestChannelCommissionWrap{ display:none !important; }
+#page-ospite .guest-form-card.is-view #guestChannelRow,
+#page-ospite .guest-form-card.is-edit #guestChannelRow,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  width:100% !important;
+}
+#page-ospite #remainingRow{
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  width:100% !important;
+}
+#page-ospite #remainingRow .subfield.paywrap,
+#page-ospite .total-row .subfield.paywrap,
+#page-ospite .services-row .subfield.paywrap,
+#page-ospite #depositRow .subfield.paywrap,
+#page-ospite #saldoRow .subfield.paywrap,
+#page-ospite #discountRow .subfield.paywrap{
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+}
+#page-ospite .guest-notes-toggle{
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 12px !important;
+  border-radius:999px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  background:var(--glass) !important;
+  border:1px solid rgba(15,23,42,0.14) !important;
+  color:rgba(15,23,42,0.78) !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-notes-toggle-label{
+  color:rgba(15,23,42,0.78) !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+#page-ospite .guest-notes-wrap{ margin-top:12px !important; }
+#page-ospite #servicesPillView,
+#page-ospite #guestTaxTotal,
+#page-ospite #guestNotesToggle{ width:100% !important; }
+#page-ospite #servicesPillView .services-pill-text{
+  font-weight:800 !important;
+  color:#1f8f47 !important;
+}
+#page-ospite #guestRemaining,
+#page-ospite #guestTotal,
+#page-ospite #guestBooking,
+#page-ospite #guestServices,
+#page-ospite #guestDeposit,
+#page-ospite #guestSaldo,
+#page-ospite #guestDiscount,
+#page-ospite #guestChannel{
+  text-align:left !important;
+}
+#page-ospite #servicesRow .subfield.paywrap{
+  flex-direction:row !important;
+  justify-content:center !important;
+}
+#page-ospite .pay-pill-plus{ display:none !important; }
+#page-ospite .services-list-hd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+#page-ospite .services-list-head-main{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+#page-ospite .services-list-add{
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,0.14);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  flex:0 0 34px;
+}
+#page-ospite .services-list-add .plus{
+  font-size:24px;
+  line-height:1;
+  color:rgba(50,173,230,0.95);
+  font-weight:400;
+}
+#page-ospite .guest-form-card.is-view #servicesPillEdit,
+#page-ospite .guest-form-card.is-create #servicesPillEdit{ display:none !important; }
+#page-ospite .guest-form-card.is-edit #servicesPillEdit{ display:flex !important; }
+#page-ospite #remainingRow label[for="guestRemaining"]{
+  font-weight:800 !important;
+  color:#7a1f3d !important;
+}
+body.ddae-dark #page-ospite .guest-notes-toggle,
+body.ddae-dark #page-ospite .services-list-add{
+  background:rgba(29,39,54,0.96) !important;
+  border-color:rgba(255,255,255,0.10) !important;
+}
+body.ddae-dark #page-ospite .guest-notes-toggle,
+body.ddae-dark #page-ospite .guest-notes-toggle-label{
+  color:rgba(255,255,255,0.88) !important;
+}
+#page-ospite .guest-form-card.is-view .booking-row#guestChannelRow,
+#page-ospite .guest-form-card.is-edit .booking-row#guestChannelRow,
+#page-ospite .guest-form-card.is-create .booking-row#guestChannelRow{
+  display:grid !important;
+}
+
+
+/* dDAE_2.537 — Scheda ospite: channel come pill a destra, layout coppie uniforme */
+#page-ospite #guestChannelRow,
+#page-ospite .guest-form-card.is-view #guestChannelRow,
+#page-ospite .guest-form-card.is-edit #guestChannelRow,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite #guestChannelRow > .subfield:first-child{
+  min-width:0 !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2) label{
+  display:none !important;
+}
+#page-ospite #guestChannel{
+  width:100% !important;
+  min-width:0 !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 30px 0 12px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(15,23,42,0.14) !important;
+  background:var(--glass) !important;
+  box-shadow:none !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  color:rgba(15,23,42,0.78) !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2){
+  position:relative !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2)::after{
+  content:"";
+  position:absolute;
+  right:12px;
+  top:50%;
+  width:8px;
+  height:8px;
+  border-right:2px solid rgba(15,23,42,0.55);
+  border-bottom:2px solid rgba(15,23,42,0.55);
+  transform:translateY(-65%) rotate(45deg);
+  pointer-events:none;
+}
+body.ddae-dark #page-ospite #guestChannel{
+  border-color:rgba(255,255,255,0.14) !important;
+  color:rgba(255,255,255,0.92) !important;
+}
+body.ddae-dark #page-ospite #guestChannelRow > .subfield:nth-child(2)::after{
+  border-right-color:rgba(255,255,255,0.72) !important;
+  border-bottom-color:rgba(255,255,255,0.72) !important;
+}
+
+
+/* dDAE_2.537 — Scheda ospite: uniformita definitiva colonna sinistra/destra */
+#page-ospite{
+  --paycol: 170px;
+}
+#page-ospite .field.two-col.payment-row,
+#page-ospite .field.two-col.booking-row,
+#page-ospite #guestChannelRow,
+#page-ospite .guest-form-card.is-view #guestChannelRow,
+#page-ospite .guest-form-card.is-edit #guestChannelRow,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .field.two-col.payment-row > .subfield.field.float,
+#page-ospite .field.two-col.booking-row > .subfield.field.float,
+#page-ospite #guestChannelRow > .subfield:first-child{
+  min-width:0 !important;
+  width:100% !important;
+}
+#page-ospite .field.two-col.payment-row > .subfield.paywrap,
+#page-ospite .field.two-col.booking-row > .subfield.paywrap,
+#page-ospite #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .field.two-col.payment-row > .subfield.paywrap .pay-pill,
+#page-ospite .field.two-col.booking-row > .subfield.paywrap .pay-pill,
+#page-ospite #guestNotesToggle,
+#page-ospite #servicesPillView,
+#page-ospite #guestTaxTotal,
+#page-ospite #depositType,
+#page-ospite #saldoType,
+#page-ospite #regTags,
+#page-ospite #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .pay-pill,
+#page-ospite #guestNotesToggle,
+#page-ospite #servicesPillView,
+#page-ospite #guestTaxTotal,
+#page-ospite #guestChannel{
+  border-radius:999px !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2){
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2) label{ display:none !important; }
+#page-ospite #guestChannel{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  background:var(--glass) !important;
+  border:1px solid rgba(15,23,42,0.14) !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  text-align:center !important;
+  text-align-last:center !important;
+  padding:0 28px 0 12px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  color:rgba(15,23,42,0.78) !important;
+}
+#page-ospite #guestChannel option{
+  text-align:left;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2)::after{
+  content:"";
+  position:absolute;
+  right:12px;
+  top:50%;
+  width:8px;
+  height:8px;
+  border-right:2px solid rgba(15,23,42,0.55);
+  border-bottom:2px solid rgba(15,23,42,0.55);
+  transform:translateY(-65%) rotate(45deg);
+  pointer-events:none;
+}
+#page-ospite #guestNotesToggle,
+#page-ospite #servicesPillView,
+#page-ospite #guestTaxTotal,
+#page-ospite #depositType,
+#page-ospite #saldoType,
+#page-ospite #regTags{
+  justify-self:end !important;
+}
+#page-ospite #guestTaxTotal{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:2px !important;
+}
+#page-ospite #guestTaxTotal .guest-tax-pill-label{
+  font-size:11px !important;
+  font-weight:400 !important;
+  line-height:1.05 !important;
+}
+#page-ospite #guestTaxTotal #guestTaxTotalVal{
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.05 !important;
+}
+#page-ospite #guestNotesToggle,
+#page-ospite #servicesPillView,
+#page-ospite #guestTaxTotal,
+#page-ospite #guestChannel,
+#page-ospite #depositType,
+#page-ospite #saldoType,
+#page-ospite #regTags{
+  margin:0 !important;
+}
+#page-ospite #guestTotal,
+#page-ospite #guestBooking,
+#page-ospite #guestServices,
+#page-ospite #guestDeposit,
+#page-ospite #guestSaldo,
+#page-ospite #guestDiscount,
+#page-ospite #guestRemaining{
+  width:100% !important;
+  min-width:0 !important;
+}
+body.ddae-dark #page-ospite #guestChannel{
+  border-color:rgba(255,255,255,0.14) !important;
+  color:rgba(255,255,255,0.92) !important;
+}
+body.ddae-dark #page-ospite #guestChannelRow > .subfield:nth-child(2)::after{
+  border-right-color:rgba(255,255,255,0.72) !important;
+  border-bottom-color:rgba(255,255,255,0.72) !important;
+}
+
+
+/* dDAE_2.538 — Nuovo ospite: ripristino layout originale dedicato */
+#page-ospite .guest-form-card.is-create .total-row,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-create .total-row .subfield,
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  justify-self:stretch !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-create .total-row .subfield.paywrap{
+  order:1 !important;
+  display:block !important;
+}
+#page-ospite .guest-form-card.is-create .total-row > .subfield.field.float{
+  order:2 !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2){
+  order:1 !important;
+  display:block !important;
+  position:relative !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:first-child{
+  order:2 !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelCommissionWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesToggle,
+#page-ospite .guest-form-card.is-create #guestChannel{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:82px !important;
+  min-height:82px !important;
+  border-radius:24px !important;
+  border:1px solid rgba(15,23,42,0.12) !important;
+  background:rgba(255,255,255,0.78) !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesToggle{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 20px !important;
+}
+#page-ospite .guest-form-card.is-create .guest-notes-toggle-label{
+  color:var(--ico-blue-night) !important;
+  font-size:24px !important;
+  font-weight:700 !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesToggleDot{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2) label{
+  display:block !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2)::after{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannel{
+  padding:var(--guest-create-control-padding-top, 26px) var(--guest-create-control-padding-right, 14px) var(--guest-create-control-padding-bottom, 12px) var(--guest-create-control-padding-left, 14px) !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:22px !important;
+  font-weight:800 !important;
+  color:#1e88e5 !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannel + label,
+#page-ospite .guest-form-card.is-create label[for="guestChannel"]{
+  top:18px !important;
+  left:var(--guest-create-label-left, 14px) !important;
+  transform:none !important;
+  font-size:var(--guest-create-control-font-size, 16px) !important;
+  font-weight:var(--guest-create-label-font-weight, 500) !important;
+  color:rgba(15,23,42,0.72) !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-create .total-row > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:first-child{
+  flex:0 0 auto !important;
+}
+#page-ospite .guest-form-card.is-create .total-row > .subfield.field.float input,
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:first-child input{
+  width:100% !important;
+  max-width:100% !important;
+}
+
+
+/* dDAE_2.539 — Nuovo ospite: solo Note / Channel / Importo prenotazione sotto i pallini */
+#guestCreatePrimaryStack{ display:none; }
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:14px !important;
+  width:100% !important;
+  margin-top:10px !important;
+}
+#page-ospite .guest-form-card.is-create .total-row,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap{
+  display:block !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float{
+  min-height:82px !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  width:100% !important;
+  max-width:100% !important;
+  min-height:82px !important;
+  height:82px !important;
+  border-radius:24px !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 22px !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack .guest-notes-toggle-label{
+  color:var(--ico-blue-night) !important;
+  font-size:24px !important;
+  font-weight:700 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggleDot{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel{
+  padding:var(--guest-create-control-padding-top, 26px) var(--guest-create-control-padding-right, 14px) var(--guest-create-control-padding-bottom, 12px) var(--guest-create-control-padding-left, 14px) !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:22px !important;
+  font-weight:800 !important;
+  color:#1e88e5 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal + label,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestTotal"]{
+  top:18px !important;
+  left:var(--guest-create-label-left, 14px) !important;
+  transform:none !important;
+  font-size:16px !important;
+  font-weight:600 !important;
+  color:rgba(15,23,42,0.72) !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  padding-top:28px !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  background:rgba(18,24,38,0.92) !important;
+  border-color:rgba(255,255,255,0.14) !important;
+  color:rgba(255,255,255,0.96) !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal + label,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestTotal"]{
+  color:rgba(255,255,255,0.74) !important;
+}
+
+
+/* dDAE_2.540 — Nuovo ospite: rimuovi tab/pill economiche extra solo in create */
+#page-ospite .guest-form-card.is-create #servicesRow,
+#page-ospite .guest-form-card.is-create #depositRow,
+#page-ospite .guest-form-card.is-create #saldoRow,
+#page-ospite .guest-form-card.is-create #discountRow,
+#page-ospite .guest-form-card.is-create #remainingRow,
+#page-ospite .guest-form-card.is-create #servicesListWrap{
+  display:none !important;
+}
+
+
+/* dDAE_2.542 — Nuovo ospite: solo Note, Channel, Importo prenotazione sotto i pallini */
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:12px !important;
+  margin:12px 0 10px !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield{
+  width:100% !important;
+  max-width:100% !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  width:100% !important;
+  max-width:100% !important;
+  min-height:var(--guest-create-control-height, 56px) !important;
+  height:var(--guest-create-control-height, 56px) !important;
+  border-radius:var(--guest-create-control-radius, 16px) !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  padding:0 var(--guest-create-control-padding-right, 14px) 0 var(--guest-create-control-padding-left, 14px) !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack .guest-notes-toggle-label{
+  color:var(--ico-blue-night) !important;
+  font-size:16px !important;
+  font-weight:600 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggleDot{ display:none !important; }
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  padding:var(--guest-create-control-padding-top, 26px) var(--guest-create-control-padding-right, 14px) var(--guest-create-control-padding-bottom, 12px) var(--guest-create-control-padding-left, 14px) !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:var(--guest-create-control-font-size, 16px) !important;
+  font-weight:700 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal + label,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestTotal"]{
+  top:var(--guest-create-label-top, 18px) !important;
+  left:var(--guest-create-label-left, 14px) !important;
+  transform:none !important;
+  font-size:var(--guest-create-label-font-size, 13px) !important;
+  font-weight:600 !important;
+  color:rgba(15,23,42,0.72) !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow,
+#page-ospite .guest-form-card.is-create .total-row,
+#page-ospite .guest-form-card.is-create #servicesRow,
+#page-ospite .guest-form-card.is-create #depositRow,
+#page-ospite .guest-form-card.is-create #saldoRow,
+#page-ospite .guest-form-card.is-create #discountRow,
+#page-ospite .guest-form-card.is-create #remainingRow,
+#page-ospite .guest-form-card.is-create #servicesListWrap{
+  display:none !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  background:rgba(18,24,38,0.92) !important;
+  border-color:rgba(255,255,255,0.14) !important;
+  color:rgba(255,255,255,0.96) !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal + label,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestTotal"],
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack .guest-notes-toggle-label{
+  color:rgba(255,255,255,0.78) !important;
+}
+
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:first-child{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view #guestChannelRow > .subfield:first-child{
+  display:block !important;
 }

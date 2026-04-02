@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.532";
+const BUILD_VERSION = "2.542";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18212,6 +18212,7 @@ function enterGuestCreateMode(){
 
   state.guestMode = "create";
   try{ updateGuestFormModeClass(); }catch(_){ }
+  try{ syncGuestCreatePrimaryStack(); }catch(_){ }
   state.guestEditId = null;
   state.guestEditCreatedAt = null;
 
@@ -18313,6 +18314,7 @@ function enterGuestEditMode(ospite){
 
   state.guestMode = "edit";
   try{ updateGuestFormModeClass(); }catch(_){ }
+  try{ syncGuestCreatePrimaryStack(); }catch(_){ }
   state.guestEditId = ospite?.id ?? null;
   
 
@@ -20324,6 +20326,105 @@ function updateGuestFormModeClass(){
   }catch(_){}
 }
 
+function syncGuestCreatePrimaryStack(){
+  try{
+    const formStack = document.querySelector("#page-ospite .guest-form-card .bd.form-stack");
+    const mgcRow = document.getElementById("mgcRow");
+    if (!formStack || !mgcRow) return;
+
+    let stack = document.getElementById("guestCreatePrimaryStack");
+    if (!stack){
+      stack = document.createElement("div");
+      stack.id = "guestCreatePrimaryStack";
+      stack.hidden = true;
+      formStack.insertBefore(stack, mgcRow.nextSibling);
+    }
+
+    const card = document.querySelector("#page-ospite .guest-form-card");
+    const isCreate = !!card && card.classList.contains("is-create");
+
+    const defs = [
+      { el: document.getElementById("guestNotesToggle")?.closest(".subfield") || document.getElementById("guestNotesToggle")?.parentElement, anchorId: "guestNotesToggleAnchor" },
+      { el: document.getElementById("guestChannel")?.closest(".subfield"), anchorId: "guestChannelCreateAnchor" },
+      { el: document.getElementById("guestTotal")?.closest(".subfield"), anchorId: "guestTotalCreateAnchor" }
+    ];
+
+    defs.forEach(def => {
+      if (!def.el || !def.el.parentNode) return;
+      let anchor = document.getElementById(def.anchorId);
+      if (!anchor){
+        anchor = document.createElement("span");
+        anchor.id = def.anchorId;
+        anchor.hidden = true;
+        def.el.parentNode.insertBefore(anchor, def.el);
+      }
+    });
+
+    const bookingField = document.getElementById("guestBooking")?.closest('.subfield') || document.getElementById("guestBooking")?.closest('.field');
+    if (bookingField) bookingField.hidden = !!isCreate;
+
+    if (isCreate){
+      stack.hidden = false;
+      defs.forEach(def => {
+        if (def.el && def.el.parentNode !== stack) stack.appendChild(def.el);
+      });
+      try{
+        const nameField = document.getElementById("guestName")?.closest('.field.float, .field');
+        const baseControl = document.getElementById("guestName");
+        const baseLabel = nameField?.querySelector('label[for="guestName"]') || baseControl?.nextElementSibling;
+        const controlStyle = getComputedStyle(baseControl || nameField);
+        const labelStyle = getComputedStyle(baseLabel || nameField || baseControl);
+        const targetHeight = Math.round(parseFloat(controlStyle.height) || baseControl?.getBoundingClientRect?.().height || nameField?.getBoundingClientRect?.().height || 56);
+        const targetRadius = Math.round(parseFloat(controlStyle.borderRadius) || parseFloat(getComputedStyle(nameField || baseControl).borderRadius) || 24) || 24;
+        const targetPadTop = Math.round(parseFloat(controlStyle.paddingTop) || 26);
+        const targetPadRight = Math.round(parseFloat(controlStyle.paddingRight) || 14);
+        const targetPadBottom = Math.round(parseFloat(controlStyle.paddingBottom) || 12);
+        const targetPadLeft = Math.round(parseFloat(controlStyle.paddingLeft) || 14);
+        const targetLabelTop = Math.round(parseFloat(labelStyle.top) || 18);
+        const targetLabelLeft = Math.round(parseFloat(labelStyle.left) || 14);
+        const targetFontSize = parseFloat(controlStyle.fontSize) || 16;
+        const targetLabelFontSize = parseFloat(labelStyle.fontSize) || 13;
+        const targetLabelWeight = parseFloat(labelStyle.fontWeight) || 500;
+        stack.style.setProperty('--guest-create-control-height', `${targetHeight}px`);
+        stack.style.setProperty('--guest-create-control-radius', `${targetRadius}px`);
+        stack.style.setProperty('--guest-create-control-padding-top', `${targetPadTop}px`);
+        stack.style.setProperty('--guest-create-control-padding-right', `${targetPadRight}px`);
+        stack.style.setProperty('--guest-create-control-padding-bottom', `${targetPadBottom}px`);
+        stack.style.setProperty('--guest-create-control-padding-left', `${targetPadLeft}px`);
+        stack.style.setProperty('--guest-create-label-top', `${targetLabelTop}px`);
+        stack.style.setProperty('--guest-create-label-left', `${targetLabelLeft}px`);
+        stack.style.setProperty('--guest-create-control-font-size', `${targetFontSize}px`);
+        stack.style.setProperty('--guest-create-label-font-size', `${targetLabelFontSize}px`);
+        stack.style.setProperty('--guest-create-label-font-weight', `${targetLabelWeight}`);
+      }catch(_){ }
+    } else {
+      stack.hidden = true;
+      defs.forEach(def => {
+        const anchor = document.getElementById(def.anchorId);
+        if (def.el && anchor && anchor.parentNode && def.el.parentNode !== anchor.parentNode){
+          anchor.parentNode.insertBefore(def.el, anchor.nextSibling);
+        }
+      });
+      try{
+        [
+          '--guest-create-control-height',
+          '--guest-create-control-radius',
+          '--guest-create-control-padding-top',
+          '--guest-create-control-padding-right',
+          '--guest-create-control-padding-bottom',
+          '--guest-create-control-padding-left',
+          '--guest-create-label-top',
+          '--guest-create-label-left',
+          '--guest-create-control-font-size',
+          '--guest-create-label-font-size',
+          '--guest-create-label-font-weight'
+        ].forEach(key => stack.style.removeProperty(key));
+      }catch(_){ }
+    }
+  }catch(_){ }
+}
+
+
 function __placeServicesPillForView(isView){
   try{
     const pill = document.getElementById("servicesPillView");
@@ -20595,6 +20696,7 @@ function syncGuestPhoneWhatsAppLink(isView){
 
 function setGuestFormViewOnly(isView, ospite){
   try{ updateGuestFormModeClass(); }catch(_){ }
+  try{ syncGuestCreatePrimaryStack(); }catch(_){ }
   const card = document.querySelector("#page-ospite .guest-form-card");
   if (card) card.classList.toggle("is-view", !!isView);
 
@@ -20624,11 +20726,10 @@ function setGuestFormViewOnly(isView, ospite){
     hideRowByInputId("guestAdults", !!isView);
     // Date check-in / check-out
     hideRowByInputId("guestCheckIn", !!isView);
-    // In sola lettura mantieni visibile solo la card channel; percentuale e importo commissione nascosti
-    hideRowByInputId("guestBooking", !!isView);
+    // In sola lettura mantieni visibile importo commissione e channel; percentuale channel nascosta
     try{
       const commWrap = document.getElementById("guestChannelCommissionWrap");
-      if (commWrap) commWrap.hidden = !!isView;
+      if (commWrap) commWrap.hidden = true;
     }catch(_){ }
   }catch(_){ }
 
@@ -20652,6 +20753,7 @@ function enterGuestViewMode(ospite){
   enterGuestEditMode(ospite);
   state.guestMode = "view";
   try{ updateGuestFormModeClass(); }catch(_){ }
+  try{ syncGuestCreatePrimaryStack(); }catch(_){ }
   state.guestViewItem = ospite || null;
 
   
@@ -20775,11 +20877,13 @@ function renderServiziList(){
   const wrap = document.getElementById("servicesListWrap");
   const body = document.getElementById("servicesListBody");
   const totalEl = document.getElementById("servicesListTotal");
+  const addBtn = document.getElementById("servicesPillEdit");
   if (!wrap || !body || !totalEl) return;
 
   const mode = String(state.guestMode || "").toLowerCase();
   const isEdit = (mode === "edit");
   try{ wrap.dataset.mode = isEdit ? "edit" : "view"; }catch(_){}
+  try{ if (addBtn) addBtn.hidden = !isEdit; }catch(_){}
 
   totalEl.textContent = formatEUR(state.guestServicesComputedTotal || 0);
 
