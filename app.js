@@ -89,7 +89,7 @@ try{
 /**
  * Build: 2.496
  */
-const BUILD_VERSION = "2.531";
+const BUILD_VERSION = "2.532";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {

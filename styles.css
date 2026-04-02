@@ -17642,15 +17642,25 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
 }
 
 
-/* dDAE_2.531 — Scheda ospite: tassa/servizi/sconto/rimanenza */
+/* dDAE_2.532 — Scheda ospite: tassa sopra importo + rimanenza bold bordeaux */
 #page-ospite .guest-tax-pill{
-  gap: 8px;
+  gap: 2px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 #page-ospite .guest-tax-pill .guest-tax-pill-label{
+  display:block;
+  line-height: 1.05;
+  text-align:center;
+  font-size: 11px;
   font-weight: 700;
   color: rgba(15,23,42,0.72);
 }
 #page-ospite .guest-tax-pill #guestTaxTotalVal{
+  display:block;
+  line-height: 1.1;
+  text-align:center;
   font-weight: 800;
   color: #7a1f3d;
 }
@@ -17670,6 +17680,10 @@ body.ddae-dark .guest-form-card.is-view #guestNationalityBtn .guest-nationality-
 }
 #page-ospite #remainingRow.payment-row-wide #guestRemaining{
   width: 100% !important;
+}
+#page-ospite #remainingRow label[for="guestRemaining"]{
+  font-weight: 800;
+  color: #7a1f3d;
 }
 .guest-form-card.is-create #discountRow{
   display:none !important;
