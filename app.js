@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.566
+ * Build: 2.567
  */
-const BUILD_VERSION = "2.566";
+const BUILD_VERSION = "2.567";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16456,6 +16456,10 @@ function computeStatGen(){
 function __statGenRegistrationsByMonth__(sourceRows){
   const guests = Array.isArray(sourceRows) ? sourceRows : (Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
   const monthlyRevenue = new Array(12).fill(0);
+  const yearlyCounts = Object.create(null);
+  const now = new Date();
+  const currentYear = Number.isFinite(now.getFullYear()) ? now.getFullYear() : null;
+  const currentMonthIndex = Number.isFinite(now.getMonth()) ? now.getMonth() : 11;
 
   const money = (v) => {
     if (v === null || v === undefined) return 0;
@@ -16496,6 +16500,8 @@ function __statGenRegistrationsByMonth__(sourceRows){
     if (!g) return;
     const iso = pickIso(g);
     if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const yy = parseInt(iso.slice(0,4), 10);
+    if (Number.isFinite(yy)) yearlyCounts[yy] = (Number(yearlyCounts[yy] || 0) || 0) + 1;
     const mm = parseInt(iso.slice(5,7), 10);
     if (!Number.isFinite(mm) || mm < 1 || mm > 12) return;
     const pren = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
@@ -16507,12 +16513,22 @@ function __statGenRegistrationsByMonth__(sourceRows){
     monthlyRevenue[i] = Math.round((Number(monthlyRevenue[i] || 0) || 0) * 100) / 100;
   }
 
+  let sourceYear = null;
+  Object.keys(yearlyCounts).forEach((key)=>{
+    const year = parseInt(key, 10);
+    if (!Number.isFinite(year)) return;
+    if (!Number.isFinite(sourceYear) || (Number(yearlyCounts[key] || 0) > Number(yearlyCounts[sourceYear] || 0)) || (Number(yearlyCounts[key] || 0) === Number(yearlyCounts[sourceYear] || 0) && year > sourceYear)){
+      sourceYear = year;
+    }
+  });
+
   const cumulativeRevenue = monthlyRevenue.map((_, idx)=>{
+    if (currentYear !== null && sourceYear === currentYear && idx > currentMonthIndex) return 0;
     const partial = monthlyRevenue.slice(0, idx + 1).reduce((sum, value)=> sum + (Number(value || 0) || 0), 0);
     return Math.round(partial * 100) / 100;
   });
-  const totalRevenue = cumulativeRevenue.length ? cumulativeRevenue[cumulativeRevenue.length - 1] : 0;
-  return { monthlyRevenue, cumulativeRevenue, totalRevenue };
+  const totalRevenue = cumulativeRevenue.reduce((max, value)=> Math.max(max, Number(value || 0) || 0), 0);
+  return { monthlyRevenue, cumulativeRevenue, totalRevenue, sourceYear };
 }
 
 const __STAT_SHARED_LINE_CHART_VISUAL_STORAGE_KEY__ = 'dDAE_stat_shared_line_chart_visual_v1';
