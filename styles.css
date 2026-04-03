@@ -19309,3 +19309,9 @@ body[data-page="impostazioni"] main.wrap{
     font-size:32px !important;
   }
 }
+
+
+/* dDAE_2.566 — Impostazioni: abbassa la lista verticale 1x10 di 20px */
+#page-impostazioni .settings-actions.settings-actions-reference{
+  margin-top: 48px !important;
+}

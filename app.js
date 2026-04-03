@@ -87,9 +87,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.564
+ * Build: 2.566
  */
-const BUILD_VERSION = "2.564";
+const BUILD_VERSION = "2.566";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8312,7 +8312,11 @@ function __pillLongPressSuppressed__(btnOrId){
 }
 
 function __pillTargetButtons__(){
-  try{ return __PILL_THEME_TARGET_IDS__.map((id) => document.getElementById(id)).filter((el) => !!(el && String(el.tagName || '').toUpperCase() === 'BUTTON')); }catch(_){ return []; }
+  try{
+    return __PILL_THEME_TARGET_IDS__
+      .map((id) => document.getElementById(id))
+      .filter((el) => !!(el && (String(el.tagName || '').toUpperCase() === 'BUTTON' || String(el.id || '').trim() === 'homeYearPill')));
+  }catch(_){ return []; }
 }
 
 function __pillColorMapRead__(){
