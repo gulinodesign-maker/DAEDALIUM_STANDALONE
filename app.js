@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.577
+ * Build: 2.578
  */
-const BUILD_VERSION = "2.577";
+const BUILD_VERSION = "2.578";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -11365,13 +11365,16 @@ const cfg = document.getElementById("settingsConfigBtn");
   const statGenCompareYearBtn = document.getElementById('statGenCompareYearBtn');
   if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundAdvanced){
     statGenCompareYearBtn.__boundAdvanced = true;
-    let tapTimer = null;
+    const statGenCompareYearPickerTrigger = document.getElementById('statGenCompareYearPickerTrigger');
     let longPressTimer = null;
     let longPressFired = false;
-    const clearTap = ()=>{ if (tapTimer){ clearTimeout(tapTimer); tapTimer = null; } };
     const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
     const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } return false; };
+    const isPickerTarget = (target)=>{
+      try{ return !!(statGenCompareYearPickerTrigger && target && (target === statGenCompareYearPickerTrigger || statGenCompareYearPickerTrigger.contains(target))); }catch(_){ return false; }
+    };
     const startLong = (e)=>{
+      if (isPickerTarget(e && e.target)) return;
       try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
       longPressFired = false;
       clearLong();
@@ -11392,18 +11395,27 @@ const cfg = document.getElementById("settingsConfigBtn");
     };
     statGenCompareYearBtn.addEventListener('click', (e) => {
       if (longPressFired) return block(e);
-      if (tapTimer) return;
-      tapTimer = setTimeout(() => {
-        tapTimer = null;
-        __toggleStatGenCompareEnabled__();
-      }, 240);
+      if (isPickerTarget(e.target)) return;
+      __toggleStatGenCompareEnabled__();
     });
-    statGenCompareYearBtn.addEventListener('dblclick', (e) => {
-      block(e);
-      clearTap();
-      if (longPressFired) return;
-      __openStatGenCompareYearPicker__();
-    });
+    if (statGenCompareYearPickerTrigger && !statGenCompareYearPickerTrigger.__boundOpen){
+      statGenCompareYearPickerTrigger.__boundOpen = true;
+      const openPicker = (e) => {
+        block(e);
+        clearLong();
+        longPressFired = false;
+        try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ }
+        __openStatGenCompareYearPicker__();
+      };
+      statGenCompareYearPickerTrigger.addEventListener('click', openPicker);
+      statGenCompareYearPickerTrigger.addEventListener('keydown', (e) => {
+        if (!e) return;
+        if (e.key === 'Enter' || e.key === ' '){
+          openPicker(e);
+        }
+      });
+      ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareYearPickerTrigger.addEventListener(evt, (e)=>{ clearLong(); try{ e.stopPropagation(); }catch(_){ } }, { passive:false }); }catch(_){ } });
+    }
     ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
     ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
     try{ statGenCompareYearBtn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
@@ -30476,4 +30488,4 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
 
-/* dDAE_2.577 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
+/* dDAE_2.578 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */

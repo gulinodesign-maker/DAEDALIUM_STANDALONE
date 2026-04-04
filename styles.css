@@ -18708,10 +18708,38 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
   }
 
   body[data-page="statgen"] #page-statgen #statGenCompareYearBtn{
-    width: 42px;
-    min-width: 42px;
+    width: auto;
+    min-width: 64px;
     height: 42px;
     border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 8px 0 10px;
+  }
+
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn .statgen-compare-year-value{
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn .statgen-compare-year-picker-trigger{
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    border: 1px solid currentColor;
+    opacity: .9;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
   }
 
   body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
