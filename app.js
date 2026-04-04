@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.574
+ * Build: 2.575
  */
-const BUILD_VERSION = "2.574";
+const BUILD_VERSION = "2.575";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -19038,7 +19038,8 @@ function renderStatSpese(){
     const rows = Array.from(document.querySelectorAll('#page-statspese .stat-row'));
     const keys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
     rows.forEach((row, idx)=>{
-      const cardKey = String(row.dataset.statCardKey || row.id || keys[idx] || `statspese-${idx+1}`);
+      const explicitKey = String(keys[idx] || `statspese-${idx+1}`);
+      const cardKey = explicitKey;
       row.dataset.statCardKey = cardKey;
       const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
       __applyStatCardTextColor__(row, 'statspese', cardKey, fallback);
@@ -29985,7 +29986,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.574 — Fix grafici statistiche spese + mesi futuri a zero */
+/* dDAE_2.575 — Fix selezione card grafico statistiche spese */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
