@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.571
+ * Build: 2.572
  */
-const BUILD_VERSION = "2.571";
+const BUILD_VERSION = "2.572";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16350,9 +16350,24 @@ function __statChartLineColorFromRenderedCard__(pageKey, cardKey, fallback){
     const selector = `#page-${String(pageKey || '').trim().toLowerCase()} [data-stat-card-key="${String(cardKey || '').replace(/"/g, '\"')}"]`;
     const el = document.querySelector(selector);
     if (el){
+      const cssVar = String(el.style.getPropertyValue('--cardtext') || getComputedStyle(el).getPropertyValue('--cardtext') || '').trim();
+      if (cssVar) return __graphColorValueToHex__(cssVar, fallback || '#2B7CB4');
+      const textNode = el.querySelector('.stat-name, .stat-val, .month-name, .month-val, .month-occ, .kpi-label, .kpi-value, .fin-label, .fin-val, .stats-graph-card-title, .stats-graph-note');
+      if (textNode){
+        const textCss = getComputedStyle(textNode).color || '';
+        if (textCss) return __graphColorValueToHex__(textCss, fallback || '#2B7CB4');
+      }
       const css = getComputedStyle(el).color || '';
       if (css) return __graphColorValueToHex__(css, fallback || '#2B7CB4');
     }
+  }catch(_){ }
+  return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4');
+}
+
+function __statChartSelectedLineColor__(pageKey, fallback){
+  try{
+    const selected = __getStatChartFilter__(pageKey);
+    if (selected) return __statChartLineColorFromRenderedCard__(pageKey, selected, fallback || '#2B7CB4');
   }catch(_){ }
   return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4');
 }
@@ -17619,6 +17634,7 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
   const filtered = __statMaskMonthlyValuesByCard__(values, __getStatChartFilter__('statmensili'));
   __drawSharedMonthlyLineChart__(canvasId, filtered, {
     mode: 'currency',
+    lineColor: __statChartSelectedLineColor__('statmensili', '#2B7CB4'),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
@@ -17657,7 +17673,9 @@ function __statCancellazioniMonthlyCounts__(){
 
 function drawStatCancellazioniPercentLineChart(canvasId){
   const data = __statCancellazioniMonthlyCounts__();
-  __drawSharedMonthlyLineChart__(canvasId, data.cancByMonth);
+  __drawSharedMonthlyLineChart__(canvasId, data.cancByMonth, {
+    lineColor: __statChartSelectedLineColor__('statcancellazioni', '#2B7CB4')
+  });
 }
 function renderStatGen(){
   bindStatFiscalModeToggle();
@@ -29924,7 +29942,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.571 — Filtri grafici statistiche + pulizia operatori attivi */
+/* dDAE_2.572 — Colore linea grafici allineato al testo card selezionata */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
