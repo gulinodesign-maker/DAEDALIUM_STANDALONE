@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.570
+ * Build: 2.571
  */
-const BUILD_VERSION = "2.570";
+const BUILD_VERSION = "2.571";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2778,6 +2778,12 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
+    try{
+      const activeNames = new Set((typeof getActiveOperatorNames === 'function' ? getActiveOperatorNames() : []).map((name) => String(name || '').trim().toLowerCase()).filter(Boolean));
+      if (Array.isArray(datasets.operatori)){
+        datasets.operatori = datasets.operatori.filter((row) => activeNames.has(String(getCanonicalActiveOperatorName(row?.operatore || row?.nome || '') || '').trim().toLowerCase()));
+      }
+    }catch(_){ }
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
     const payload = {
@@ -16339,9 +16345,24 @@ function __statChartLineColorFromOperatore__(name, fallback){
   }catch(_){ return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4'); }
 }
 
+function __statChartLineColorFromRenderedCard__(pageKey, cardKey, fallback){
+  try{
+    const selector = `#page-${String(pageKey || '').trim().toLowerCase()} [data-stat-card-key="${String(cardKey || '').replace(/"/g, '\"')}"]`;
+    const el = document.querySelector(selector);
+    if (el){
+      const css = getComputedStyle(el).color || '';
+      if (css) return __graphColorValueToHex__(css, fallback || '#2B7CB4');
+    }
+  }catch(_){ }
+  return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4');
+}
+
 function __refreshSpecificStatChart__(pageKey){
   const safePageKey = String(pageKey || '').trim().toLowerCase();
   try{
+    if (safePageKey === 'statgen') return renderStatGen();
+    if (safePageKey === 'statmensili') return renderStatMensili();
+    if (safePageKey === 'statspese') return renderStatSpese();
     if (safePageKey === 'statprenotazioni') return renderStatRicevute();
     if (safePageKey === 'statchannel') return renderStatChannel();
     if (safePageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
@@ -16370,13 +16391,109 @@ function __bindStatChartWrapReset__(pageKey){
   const wrap = document.querySelector(`#page-${String(pageKey || '').trim().toLowerCase()} .statgen-line-chart-wrap`);
   if (!wrap || wrap.dataset.statChartResetBound === '1') return;
   wrap.dataset.statChartResetBound = '1';
-  wrap.addEventListener('click', (e) => {
+  let lastTouchAt = 0;
+  const runReset = (e) => {
     if (!__getStatChartFilter__(pageKey)) return;
-    try{ e.preventDefault(); }catch(_){ }
-    try{ e.stopPropagation(); }catch(_){ }
+    try{ e && e.preventDefault && e.preventDefault(); }catch(_){ }
+    try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ }
     __clearStatChartFilter__(pageKey);
     __refreshSpecificStatChart__(pageKey);
+  };
+  wrap.addEventListener('dblclick', runReset);
+  wrap.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchAt <= 360) runReset(e);
+    lastTouchAt = now;
+  }, { passive:false });
+}
+
+function __statMonthlyCumulative__(values){
+  let acc = 0;
+  return (Array.isArray(values) ? values : []).map((value) => {
+    acc += (Number(value || 0) || 0);
+    return Math.round(acc * 100) / 100;
   });
+}
+
+function __statMaskMonthlyValuesByCard__(values, cardKey){
+  const selected = String(cardKey || '').trim();
+  if (!selected) return (Array.isArray(values) ? values : []).slice();
+  const monthNames = Array.isArray(__MONTHS_IT) ? __MONTHS_IT : [];
+  const idx = monthNames.findIndex((label) => String(label || '').trim() === selected);
+  if (idx < 0) return (Array.isArray(values) ? values : []).slice();
+  return (Array.isArray(values) ? values : []).map((value, i) => (i === idx ? value : 0));
+}
+
+function __statSpeseMonthlyBreakdown__(){
+  const items = Array.isArray(state && state.speseAll) ? state.speseAll : (Array.isArray(state && state.spese) ? state.spese : []);
+  const out = {
+    totale: new Array(12).fill(0),
+    contanti: new Array(12).fill(0),
+    tassa: new Array(12).fill(0),
+    iva22: new Array(12).fill(0),
+    iva10: new Array(12).fill(0),
+    iva4: new Array(12).fill(0)
+  };
+  const toNumber = (v) => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    let s = String(v).trim();
+    if (!s) return 0;
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    const n = Number(s);
+    return isFinite(n) ? n : 0;
+  };
+  items.forEach((row) => {
+    const raw = row?.dataSpesa || row?.data || row?.data_spesa || '';
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : ''; }catch(_){ iso = ''; }
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const month = parseInt(iso.slice(5,7), 10);
+    if (!Number.isFinite(month) || month < 1 || month > 12) return;
+    const idx = month - 1;
+    const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
+    const iva = Math.max(0, toNumber(row?.iva));
+    const aliquota = Math.round(toNumber(row?.aliquotaIva ?? row?.aliquota_iva));
+    const method = String(row?.metodoPagamento || row?.metodo_pagamento || row?.tipoPagamento || row?.tipo_pagamento || row?.modalita || '').trim().toLowerCase();
+    const categoria = String(row?.categoria || '').trim().toLowerCase();
+    out.totale[idx] += lordo;
+    if (method.includes('contant')) out.contanti[idx] += lordo;
+    if (categoria.includes('tassa')) out.tassa[idx] += lordo;
+    if (aliquota === 22) out.iva22[idx] += iva;
+    if (aliquota === 10) out.iva10[idx] += iva;
+    if (aliquota === 4) out.iva4[idx] += iva;
+  });
+  return out;
+}
+
+function __statGenSeriesList__(){
+  const statGen = computeStatGen();
+  const revenueData = __statGenRegistrationsByMonth__();
+  const spese = __statSpeseMonthlyBreakdown__();
+  const ricevute = __statRicevuteMonthlySeries__();
+  const revenueCum = __statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0));
+  const speseCum = __statMonthlyCumulative__(spese.totale || new Array(12).fill(0));
+  const withRecCum = __statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0));
+  const withoutRecCum = __statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0));
+  const ivaTotal = Number(statGen?.ivaDaVersare || 0) || 0;
+  const revenueTotal = Math.max(1, Number(statGen?.fatturatoTotale || 0) || 0);
+  const ivaCum = revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100);
+  const gainCum = revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100);
+  const cashCum = gainCum.slice();
+  const defs = [
+    { key:'fatturato-totale', label:'Fatturato totale', values: revenueCum, fallback:'#2b7cb4' },
+    { key:'spese-totali', label:'Spese totali', values: speseCum, fallback:'#e05a4f' },
+    { key:'senza-ricevuta', label:'Senza ricevuta', values: withoutRecCum, fallback:'#9aa3af' },
+    { key:'con-ricevuta', label:'Con ricevuta', values: withRecCum, fallback:'#6aa0b3' },
+    { key:'iva-da-versare', label:'IVA da versare', values: ivaCum, fallback:'#d39b3b' },
+    { key:'guadagno-totale', label:'Guadagno totale', values: gainCum, fallback:'#c9772b' },
+    { key:'giacenza-in-cassa', label:'Giacenza in cassa', values: cashCum, fallback:'#2b7cb4' }
+  ];
+  return defs.map((item) => ({
+    ...item,
+    color: __statChartLineColorFromRenderedCard__('statgen', item.key, item.fallback)
+  }));
 }
 
 function __statRicevuteMonthlySeries__(){
@@ -16395,8 +16512,8 @@ function drawStatRicevuteLineChart(canvasId){
   const series = __statRicevuteMonthlySeries__();
   __drawSharedMonthlyLineChart__(canvasId, series.primary, {
     seriesList: [
-      { key:'con-ricevuta', label:'Con ricevuta', values: series.primary, color: __statChartLineColorFromStatCard__('statprenotazioni', 'con-ricevuta', '#6aa0b3') },
-      { key:'senza-ricevuta', label:'Senza ricevuta', values: series.secondary, color: __statChartLineColorFromStatCard__('statprenotazioni', 'senza-ricevuta', '#9aa3af') }
+      { key:'con-ricevuta', label:'Con ricevuta', values: series.primary, color: __statChartLineColorFromRenderedCard__('statprenotazioni', 'con-ricevuta', '#6aa0b3') },
+      { key:'senza-ricevuta', label:'Senza ricevuta', values: series.secondary, color: __statChartLineColorFromRenderedCard__('statprenotazioni', 'senza-ricevuta', '#9aa3af') }
     ].filter((item) => __statChartSeriesIsVisible__('statprenotazioni', item.key)),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
@@ -16442,8 +16559,8 @@ function drawStatChannelLineChart(canvasId){
   const series = __statChannelMonthlySeries__();
   __drawSharedMonthlyLineChart__(canvasId, series.primary, {
     seriesList: [
-      { key:'channel', label:'Channel', values: series.primary, color: __statChartLineColorFromStatCard__('statchannel', 'channel', '#2b7cb4') },
-      { key:'direct', label:'Direct', values: series.secondary, color: __statChartLineColorFromStatCard__('statchannel', 'direct', '#c9772b') }
+      { key:'channel', label:'Channel', values: series.primary, color: __statChartLineColorFromRenderedCard__('statchannel', 'channel', '#2b7cb4') },
+      { key:'direct', label:'Direct', values: series.secondary, color: __statChartLineColorFromRenderedCard__('statchannel', 'direct', '#c9772b') }
     ].filter((item) => __statChartSeriesIsVisible__('statchannel', item.key)),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
@@ -16493,11 +16610,6 @@ function __statPulizieOperatorNames__(rows){
     ordered.push(clean);
   };
   try{ (getActiveOperatorNames ? (getActiveOperatorNames() || []) : []).forEach(pushName); }catch(_){ }
-  (Array.isArray(rows) ? rows : []).forEach((row) => {
-    const canonical = getCanonicalActiveOperatorName(row?.operatore || row?.nome || '');
-    const fallback = String(row?.operatore || row?.nome || '').trim();
-    pushName(canonical || fallback);
-  });
   return ordered;
 }
 
@@ -16517,7 +16629,7 @@ function __statPulizieMonthlySeriesByOperator__(rows){
     const hours = Number(String(row?.ore ?? row?.Ore ?? 0).replace(',', '.'));
     if (!isFinite(hours) || hours < 0) return;
     const canonical = getCanonicalActiveOperatorName(row?.operatore || row?.nome || '');
-    const operatorName = String(canonical || row?.operatore || row?.nome || '').trim();
+    const operatorName = String(canonical || '').trim();
     if (!operatorName) return;
     if (!map.has(operatorName)) map.set(operatorName, new Array(12).fill(0));
     map.get(operatorName)[month - 1] += hours;
@@ -16526,7 +16638,7 @@ function __statPulizieMonthlySeriesByOperator__(rows){
     key: __statPulizieCardKey__(name),
     label: name,
     values: values.map((value) => Math.round((Number(value || 0) || 0) * 100) / 100),
-    color: __statChartLineColorFromOperatore__(name, '#2b7cb4')
+    color: __statChartLineColorFromRenderedCard__('statpulizie', __statPulizieCardKey__(name), __statChartLineColorFromOperatore__(name, '#2b7cb4'))
   }));
 }
 
@@ -17446,16 +17558,13 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 }
 
 function drawStatGenRegistrationsLineChart(canvasId){
-  const primary = __statGenRegistrationsByMonth__();
-  const compareRows = Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
-  const compare = __statGenRegistrationsByMonth__(compareRows);
-  __drawSharedMonthlyLineChart__(canvasId, primary.cumulativeRevenue, {
+  const seriesList = __statGenSeriesList__().filter((item) => __statChartSeriesIsVisible__('statgen', item.key));
+  __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
     mode: 'currency',
-    compareValues: compare.cumulativeRevenue,
-    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#7dd3fc' : '#2563eb'),
+    seriesList,
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value),
-    pointAriaLabel: 'Fatturato cumulativo'
+    pointAriaLabel: 'Serie generali'
   });
 }
 
@@ -17487,14 +17596,32 @@ function __statSpeseMonthlyPercentages__(){
 }
 
 function drawStatSpesePercentLineChart(canvasId){
-  const data = __statSpeseMonthlyPercentages__();
-  __drawSharedMonthlyLineChart__(canvasId, data.pctByMonth);
+  const data = __statSpeseMonthlyBreakdown__();
+  const seriesList = [
+    { key:'totale-spese', label:'Totale spese', values: __statMonthlyCumulative__(data.totale), color: __statChartLineColorFromRenderedCard__('statspese', 'totale-spese', '#2b7cb4') },
+    { key:'contanti', label:'Contanti', values: __statMonthlyCumulative__(data.contanti), color: __statChartLineColorFromRenderedCard__('statspese', 'contanti', '#2563eb') },
+    { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statMonthlyCumulative__(data.tassa), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
+    { key:'iva-22', label:'IVA 22%', values: __statMonthlyCumulative__(data.iva22), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-22', '#f29c50') },
+    { key:'iva-10', label:'IVA 10%', values: __statMonthlyCumulative__(data.iva10), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-10', '#6aa0b3') },
+    { key:'iva-4', label:'IVA 4%', values: __statMonthlyCumulative__(data.iva4), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') }
+  ].filter((item) => __statChartSeriesIsVisible__('statspese', item.key));
+  __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
+    mode: 'currency',
+    seriesList,
+    bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
+    yTickFormatter: (value) => __statLineChartCompactEuro__(value)
+  });
 }
 
 function drawStatMensiliOccupazioneLineChart(canvasId){
   const stats = (state && state.statMensili) ? state.statMensili : computeStatMensili();
-  const values = Array.isArray(stats && stats.occPctByMonth) ? stats.occPctByMonth : new Array(12).fill(0);
-  __drawSharedMonthlyLineChart__(canvasId, values);
+  const values = Array.isArray(stats && stats.byMonth) ? stats.byMonth : new Array(12).fill(0);
+  const filtered = __statMaskMonthlyValuesByCard__(values, __getStatChartFilter__('statmensili'));
+  __drawSharedMonthlyLineChart__(canvasId, filtered, {
+    mode: 'currency',
+    bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
+    yTickFormatter: (value) => __statLineChartCompactEuro__(value)
+  });
 }
 
 function __statCancellazioniMonthlyCounts__(){
@@ -17566,6 +17693,8 @@ function renderStatGen(){
       const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
       __applyStatCardTextColor__(row, 'statgen', cardKey, fallback);
       __bindStatCardColorLongPress__(row, 'statgen', cardKey, fallback);
+      __bindStatChartCardToggle__(row, 'statgen', cardKey);
+      __setStatCardSelectionState__(row, 'statgen', cardKey);
       row.title = 'Pressione lunga per cambiare colori card';
     });
   }catch(_){ }
@@ -17576,6 +17705,7 @@ function renderStatGen(){
     if (wrap){
       __applyStatGenRegChartWrapVisual__(wrap);
       __bindStatGenRegChartLongPress__(wrap);
+      __bindStatChartWrapReset__('statgen');
       wrap.title = 'Pressione lunga per cambiare design grafico';
     }
   }catch(_){ }
@@ -17876,6 +18006,8 @@ function renderStatMensili(){
       const fallback = colors[i] || '#2B7CB4';
       __applyStatCardTextColor__(row, 'statmensili', cardKey, fallback);
       __bindStatCardColorLongPress__(row, 'statmensili', cardKey, fallback);
+      __bindStatChartCardToggle__(row, 'statmensili', cardKey);
+      __setStatCardSelectionState__(row, 'statmensili', cardKey);
       row.title = 'Pressione lunga per cambiare colori card';
     }catch(_){ }
   }
@@ -17893,6 +18025,7 @@ function renderStatMensili(){
     if (wrapChart){
       __applyStatGenRegChartWrapVisual__(wrapChart);
       __bindStatSharedLineChartLongPress__(wrapChart);
+      __bindStatChartWrapReset__('statmensili');
       wrapChart.title = 'Pressione lunga per cambiare design grafico';
     }
   }catch(_){ }
@@ -18855,6 +18988,8 @@ function renderStatSpese(){
       const fallback = getComputedStyle(row).getPropertyValue('--mcol') || getComputedStyle(row).getPropertyValue('--statbg') || '#2B7CB4';
       __applyStatCardTextColor__(row, 'statspese', cardKey, fallback);
       __bindStatCardColorLongPress__(row, 'statspese', cardKey, fallback);
+      __bindStatChartCardToggle__(row, 'statspese', cardKey);
+      __setStatCardSelectionState__(row, 'statspese', cardKey);
       row.title = 'Pressione lunga per cambiare colori card';
     });
   }catch(_){ }
@@ -18867,6 +19002,7 @@ function renderStatSpese(){
     if (wrapChart){
       __applyStatGenRegChartWrapVisual__(wrapChart);
       __bindStatSharedLineChartLongPress__(wrapChart);
+      __bindStatChartWrapReset__('statspese');
       wrapChart.title = 'Pressione lunga per cambiare design grafico';
     }
   }catch(_){ }
@@ -29788,7 +29924,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.570 — Menu impostazioni compatto + dark switch + design schede guest list */
+/* dDAE_2.571 — Filtri grafici statistiche + pulizia operatori attivi */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
