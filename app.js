@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.572
+ * Build: 2.573
  */
-const BUILD_VERSION = "2.572";
+const BUILD_VERSION = "2.573";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14195,10 +14195,10 @@ function loadOspitiEliminati({ from="", to="", force=false } = {}){
 
 
 function __getStatsReport(){
-  return (state && state.reportAll) ? state.reportAll : state.report;
+  return (state && state.report) ? state.report : state.reportAll;
 }
 function __getStatsSpese(){
-  return Array.isArray(state && state.speseAll) ? state.speseAll : (Array.isArray(state && state.spese) ? state.spese : []);
+  return Array.isArray(state && state.spese) ? state.spese : (Array.isArray(state && state.speseAll) ? state.speseAll : []);
 }
 
 // Compat: vecchi call-site
@@ -14287,6 +14287,11 @@ async function saveSpesa(){
     const newItem = { id: newId, dataSpesa, categoria, motivazione, importoLordo };
     if (Array.isArray(state.spese)) state.spese = [newItem, ...state.spese];
     else state.spese = [newItem];
+    try{
+      if (Array.isArray(state.speseAll)) state.speseAll = [newItem, ...state.speseAll];
+      else state.speseAll = [newItem, ...state.spese];
+      state.reportAll = buildReportFromSpese(state.speseAll);
+    }catch(_){ }
     if (state.page === "spese" && state.speseView === "list") {
       try{ renderSpese(); }catch(_){ }
     }
@@ -16347,6 +16352,9 @@ function __statChartLineColorFromOperatore__(name, fallback){
 
 function __statChartLineColorFromRenderedCard__(pageKey, cardKey, fallback){
   try{
+    const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || 'blue-4');
+    const preferredPairFg = String(pair?.fg || '').trim();
+    if (preferredPairFg) return __graphColorValueToHex__(preferredPairFg, fallback || pair?.bg || '#2B7CB4');
     const selector = `#page-${String(pageKey || '').trim().toLowerCase()} [data-stat-card-key="${String(cardKey || '').replace(/"/g, '\"')}"]`;
     const el = document.querySelector(selector);
     if (el){
@@ -16378,6 +16386,7 @@ function __refreshSpecificStatChart__(pageKey){
     if (safePageKey === 'statgen') return renderStatGen();
     if (safePageKey === 'statmensili') return renderStatMensili();
     if (safePageKey === 'statspese') return renderStatSpese();
+    if (safePageKey === 'statcancellazioni') return renderStatCancellazioni();
     if (safePageKey === 'statprenotazioni') return renderStatRicevute();
     if (safePageKey === 'statchannel') return renderStatChannel();
     if (safePageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
@@ -16440,7 +16449,7 @@ function __statMaskMonthlyValuesByCard__(values, cardKey){
 }
 
 function __statSpeseMonthlyBreakdown__(){
-  const items = Array.isArray(state && state.speseAll) ? state.speseAll : (Array.isArray(state && state.spese) ? state.spese : []);
+  const items = __getStatsSpese();
   const out = {
     totale: new Array(12).fill(0),
     contanti: new Array(12).fill(0),
@@ -17584,7 +17593,7 @@ function drawStatGenRegistrationsLineChart(canvasId){
 }
 
 function __statSpeseMonthlyPercentages__(){
-  const items = Array.isArray(state && state.speseAll) ? state.speseAll : (Array.isArray(state && state.spese) ? state.spese : []);
+  const items = __getStatsSpese();
   const byMonth = new Array(12).fill(0);
   const toNumber = (v) => {
     if (v === null || v === undefined) return 0;
@@ -18532,6 +18541,7 @@ function renderStatCancellazioni(){
       wrapChart.dataset.statLineChartKey = 'statcancellazioni';
       __applyStatGenRegChartWrapVisual__(wrapChart);
       __bindStatSharedLineChartLongPress__(wrapChart);
+      __bindStatChartWrapReset__('statcancellazioni');
       wrapChart.title = 'Pressione lunga per cambiare design grafico';
     }
   }catch(_){ }
@@ -18544,8 +18554,11 @@ function renderStatCancellazioni(){
       const fallbacks = ['#ff3b30','#2b7cb4','#c9772b'];
       const cardKey = keys[index] || `kpi-${index+1}`;
       const fallback = fallbacks[index] || '#2b7cb4';
+      card.dataset.statCardKey = cardKey;
       __applyStatCardTextColor__(card, 'statcancellazioni', cardKey, fallback);
       __bindStatCardColorLongPress__(card, 'statcancellazioni', cardKey, fallback);
+      __bindStatChartCardToggle__(card, 'statcancellazioni', cardKey);
+      __setStatCardSelectionState__(card, 'statcancellazioni', cardKey);
     });
   }catch(_){ }
 }
@@ -19029,7 +19042,7 @@ function renderStatSpese(){
 
   if (list){
     list.innerHTML = "";
-    let items = Array.isArray(state.speseAll) ? [...state.speseAll] : [];
+    let items = Array.isArray(__getStatsSpese()) ? [...__getStatsSpese()] : [];
 
     const toTime = (v) => {
       if (!v) return null;
@@ -29199,6 +29212,12 @@ function renderSpese(){
       toast("Spesa eliminata");
       invalidateApiCache("spese|");
       invalidateApiCache("report|");
+      try{
+        if (Array.isArray(state.spese)) state.spese = state.spese.filter(row => String(row?.id || '') !== String(s.id || ''));
+        if (Array.isArray(state.speseAll)) state.speseAll = state.speseAll.filter(row => String(row?.id || '') !== String(s.id || ''));
+        state.report = buildReportFromSpese(Array.isArray(state.spese) ? state.spese : []);
+        state.reportAll = buildReportFromSpese(Array.isArray(state.speseAll) ? state.speseAll : (Array.isArray(state.spese) ? state.spese : []));
+      }catch(_){ }
       await ensurePeriodData({ showLoader:false, force:true });
       renderSpese();
     });
@@ -29942,7 +29961,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.572 — Colore linea grafici allineato al testo card selezionata */
+/* dDAE_2.573 — Colore linea grafici allineato al testo card selezionata */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
