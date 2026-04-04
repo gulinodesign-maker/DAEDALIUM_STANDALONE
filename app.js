@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.573
+ * Build: 2.574
  */
-const BUILD_VERSION = "2.573";
+const BUILD_VERSION = "2.574";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16431,6 +16431,25 @@ function __bindStatChartWrapReset__(pageKey){
   }, { passive:false });
 }
 
+function __statCurrentMonthIndex__(){
+  try{
+    const now = new Date();
+    const idx = Number(now.getMonth());
+    return Number.isFinite(idx) ? Math.max(0, Math.min(11, idx)) : 11;
+  }catch(_){ return 11; }
+}
+
+function __statZeroFutureMonths__(values, opts){
+  const list = (Array.isArray(values) ? values : []).slice(0, 12);
+  while (list.length < 12) list.push(0);
+  const includeCurrent = !!(opts && opts.includeCurrent);
+  const currentIdx = __statCurrentMonthIndex__();
+  return list.map((value, idx) => {
+    if (idx > currentIdx || (includeCurrent && idx >= currentIdx)) return 0;
+    return Math.round((Number(value || 0) || 0) * 100) / 100;
+  });
+}
+
 function __statMonthlyCumulative__(values){
   let acc = 0;
   return (Array.isArray(values) ? values : []).map((value) => {
@@ -16477,16 +16496,21 @@ function __statSpeseMonthlyBreakdown__(){
     if (!Number.isFinite(month) || month < 1 || month > 12) return;
     const idx = month - 1;
     const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
-    const iva = Math.max(0, toNumber(row?.iva));
-    const aliquota = Math.round(toNumber(row?.aliquotaIva ?? row?.aliquota_iva));
-    const method = String(row?.metodoPagamento || row?.metodo_pagamento || row?.tipoPagamento || row?.tipo_pagamento || row?.modalita || '').trim().toLowerCase();
-    const categoria = String(row?.categoria || '').trim().toLowerCase();
+    const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
+    const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
     out.totale[idx] += lordo;
-    if (method.includes('contant')) out.contanti[idx] += lordo;
-    if (categoria.includes('tassa')) out.tassa[idx] += lordo;
-    if (aliquota === 22) out.iva22[idx] += iva;
-    if (aliquota === 10) out.iva10[idx] += iva;
-    if (aliquota === 4) out.iva4[idx] += iva;
+    if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
+    if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
+    if (categoria.includes('iva')){
+      if (categoria.includes('22')) { out.iva22[idx] += lordo; return; }
+      if (categoria.includes('10')) { out.iva10[idx] += lordo; return; }
+      if (categoria.includes('4')) { out.iva4[idx] += lordo; return; }
+    }
+    if (!Number.isNaN(aliquota)){
+      if (aliquota >= 21.5) out.iva22[idx] += lordo;
+      else if (aliquota >= 9.5 && aliquota < 11.5) out.iva10[idx] += lordo;
+      else if (aliquota >= 3.5 && aliquota < 5.5) out.iva4[idx] += lordo;
+    }
   });
   return out;
 }
@@ -16496,14 +16520,14 @@ function __statGenSeriesList__(){
   const revenueData = __statGenRegistrationsByMonth__();
   const spese = __statSpeseMonthlyBreakdown__();
   const ricevute = __statRicevuteMonthlySeries__();
-  const revenueCum = __statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0));
-  const speseCum = __statMonthlyCumulative__(spese.totale || new Array(12).fill(0));
-  const withRecCum = __statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0));
-  const withoutRecCum = __statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0));
+  const revenueCum = __statZeroFutureMonths__(__statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0)));
+  const speseCum = __statZeroFutureMonths__(__statMonthlyCumulative__(spese.totale || new Array(12).fill(0)));
+  const withRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0)));
+  const withoutRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0)));
   const ivaTotal = Number(statGen?.ivaDaVersare || 0) || 0;
   const revenueTotal = Math.max(1, Number(statGen?.fatturatoTotale || 0) || 0);
-  const ivaCum = revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100);
-  const gainCum = revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100);
+  const ivaCum = __statZeroFutureMonths__(revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100));
+  const gainCum = __statZeroFutureMonths__(revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100));
   const cashCum = gainCum.slice();
   const defs = [
     { key:'fatturato-totale', label:'Fatturato totale', values: revenueCum, fallback:'#2b7cb4' },
@@ -17622,12 +17646,12 @@ function __statSpeseMonthlyPercentages__(){
 function drawStatSpesePercentLineChart(canvasId){
   const data = __statSpeseMonthlyBreakdown__();
   const seriesList = [
-    { key:'totale-spese', label:'Totale spese', values: __statMonthlyCumulative__(data.totale), color: __statChartLineColorFromRenderedCard__('statspese', 'totale-spese', '#2b7cb4') },
-    { key:'contanti', label:'Contanti', values: __statMonthlyCumulative__(data.contanti), color: __statChartLineColorFromRenderedCard__('statspese', 'contanti', '#2563eb') },
-    { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statMonthlyCumulative__(data.tassa), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
-    { key:'iva-22', label:'IVA 22%', values: __statMonthlyCumulative__(data.iva22), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-22', '#f29c50') },
-    { key:'iva-10', label:'IVA 10%', values: __statMonthlyCumulative__(data.iva10), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-10', '#6aa0b3') },
-    { key:'iva-4', label:'IVA 4%', values: __statMonthlyCumulative__(data.iva4), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') }
+    { key:'totale-spese', label:'Totale spese', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.totale)), color: __statChartLineColorFromRenderedCard__('statspese', 'totale-spese', '#2b7cb4') },
+    { key:'contanti', label:'Contanti', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.contanti)), color: __statChartLineColorFromRenderedCard__('statspese', 'contanti', '#2563eb') },
+    { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.tassa)), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
+    { key:'iva-22', label:'IVA 22%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva22)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-22', '#f29c50') },
+    { key:'iva-10', label:'IVA 10%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva10)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-10', '#6aa0b3') },
+    { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva4)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') }
   ].filter((item) => __statChartSeriesIsVisible__('statspese', item.key));
   __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
     mode: 'currency',
@@ -29961,7 +29985,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.573 — Colore linea grafici allineato al testo card selezionata */
+/* dDAE_2.574 — Fix grafici statistiche spese + mesi futuri a zero */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
