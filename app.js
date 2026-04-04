@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.568
+ * Build: 2.569
  */
-const BUILD_VERSION = "2.568";
+const BUILD_VERSION = "2.569";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9136,7 +9136,9 @@ function __applyStatisticsCardTheme__(){
       ['#page-statgen .stat-row', 'statgen'],
       ['#page-statspese .stat-row', 'statspese'],
       ['#page-statmensili .month-row', 'statmensili'],
-      ['#page-statprenotazioni .stats-graph-card', 'statprenotazioni']
+      ['#page-statprenotazioni .stat-row', 'statprenotazioni'],
+      ['#page-statchannel .stat-row', 'statchannel'],
+      ['#page-statpulizie .stat-row', 'statpulizie']
     ];
     configs.forEach(([selector, pageKey]) => {
       try{
@@ -16234,6 +16236,82 @@ function __prepareStatPiePage__(pageKey){
   }catch(_){ }
 }
 
+function __statGuestMoney__(value){
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return isFinite(value) ? value : 0;
+  let s = String(value).trim();
+  if (!s) return 0;
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.includes(',')) s = s.replace(',', '.');
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+}
+
+function __statGuestMonthIso__(row){
+  const candidates = [
+    row?.check_in, row?.checkIn, row?.arrivo, row?.data_arrivo, row?.dataArrivo,
+    row?.data_prenotazione, row?.dataPrenotazione,
+    row?.booking_date, row?.bookingDate,
+    row?.createdAt, row?.created_at,
+    row?.updatedAt, row?.updated_at,
+    row?.data, row?.date,
+    row?.check_out, row?.checkOut, row?.partenza, row?.data_partenza, row?.dataPartenza
+  ];
+  for (const raw of candidates){
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    try{
+      const d = new Date(raw || '');
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    }catch(_){ }
+  }
+  return '';
+}
+
+function __statGuestDualMonthlySeries__(resolver){
+  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+  const primary = new Array(12).fill(0);
+  const secondary = new Array(12).fill(0);
+  guests.forEach((guest) => {
+    if (!guest) return;
+    const iso = __statGuestMonthIso__(guest);
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const month = parseInt(iso.slice(5, 7), 10);
+    if (!Number.isFinite(month) || month < 1 || month > 12) return;
+    const resolved = (typeof resolver === 'function') ? (resolver(guest) || {}) : {};
+    primary[month - 1] += Math.max(0, Number(resolved.primary || 0) || 0);
+    secondary[month - 1] += Math.max(0, Number(resolved.secondary || 0) || 0);
+  });
+  for (let i = 0; i < 12; i += 1){
+    primary[i] = Math.round((Number(primary[i] || 0) || 0) * 100) / 100;
+    secondary[i] = Math.round((Number(secondary[i] || 0) || 0) * 100) / 100;
+  }
+  return { primary, secondary };
+}
+
+function __statRicevuteMonthlySeries__(){
+  return __statGuestDualMonthlySeries__((guest) => {
+    const dep = __statGuestMoney__(guest?.acconto_importo ?? guest?.accontoImporto ?? 0);
+    const saldo = __statGuestMoney__(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
+    const depRec = truthy(guest?.acconto_ricevuta ?? guest?.accontoRicevuta ?? guest?.ricevuta_acconto ?? guest?.ricevutaAcconto ?? guest?.acconto_ricevutain);
+    const saldoRec = truthy(guest?.saldo_ricevuta ?? guest?.saldoRicevuta ?? guest?.ricevuta_saldo ?? guest?.ricevutaSaldo ?? guest?.saldo_ricevutain);
+    const withReceipt = (depRec ? dep : 0) + (saldoRec ? saldo : 0);
+    const withoutReceipt = (depRec ? 0 : dep) + (saldoRec ? 0 : saldo);
+    return { primary: withReceipt, secondary: withoutReceipt };
+  });
+}
+
+function drawStatRicevuteLineChart(canvasId){
+  const series = __statRicevuteMonthlySeries__();
+  __drawSharedMonthlyLineChart__(canvasId, series.primary, {
+    compareValues: series.secondary,
+    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#cbd5e1' : '#9aa3af'),
+    bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
+    yTickFormatter: (value) => __statLineChartCompactEuro__(value)
+  });
+}
+
 function renderStatRicevute(){
   const statGen = computeStatGen();
   state.statGen = statGen;
@@ -16251,12 +16329,29 @@ function renderStatRicevute(){
     }
   });
   __prepareStatPiePage__('statprenotazioni');
-  const slices = rows.map((row) => ({
-    label: row.label,
-    value: row.value,
-    color: __statPageSliceHexFromCard__('statprenotazioni', row.cardKey, row.fallback)
-  }));
-  drawPie('statRicevuteCanvas', slices, Object.assign({ centerTitle:'Totale', centerFormatter:euro }, __statPieOptionsForPage__('statprenotazioni')));
+  try{ drawStatRicevuteLineChart('statRicevuteCanvas'); }catch(_){ }
+}
+
+function __statChannelMonthlySeries__(){
+  return __statGuestDualMonthlySeries__((guest) => {
+    const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+    const bookingVal = __statGuestMoney__(guest?.importo_booking ?? guest?.importoBooking ?? guest?.booking ?? null);
+    const bookingFilled = bookingVal > 0;
+    return {
+      primary: bookingFilled ? pren : 0,
+      secondary: bookingFilled ? 0 : pren
+    };
+  });
+}
+
+function drawStatChannelLineChart(canvasId){
+  const series = __statChannelMonthlySeries__();
+  __drawSharedMonthlyLineChart__(canvasId, series.primary, {
+    compareValues: series.secondary,
+    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#fdba74' : '#c9772b'),
+    bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
+    yTickFormatter: (value) => __statLineChartCompactEuro__(value)
+  });
 }
 
 function renderStatChannel(){
@@ -16276,12 +16371,7 @@ function renderStatChannel(){
     }
   });
   __prepareStatPiePage__('statchannel');
-  const slices = rows.map((row) => ({
-    label: row.label,
-    value: row.value,
-    color: __statPageSliceHexFromCard__('statchannel', row.cardKey, row.fallback)
-  }));
-  drawPie('statChannelCanvas', slices, Object.assign({ centerTitle:'Totale', centerFormatter:euro }, __statPieOptionsForPage__('statchannel')));
+  try{ drawStatChannelLineChart('statChannelCanvas'); }catch(_){ }
 }
 
 function __statPulizieCardKey__(label){
@@ -16290,6 +16380,35 @@ function __statPulizieCardKey__(label){
   }catch(_){
     return `operatore-${String(label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'generico'}`;
   }
+}
+
+function __statPulizieMonthlyHours__(rows){
+  const listRaw = Array.isArray(rows) ? rows : [];
+  const list = __filterByExerciseYear__(listRaw, state.exerciseYear || loadExerciseYear(), ['data','date','Data','createdAt','created_at','updatedAt','updated_at']);
+  const byMonth = new Array(12).fill(0);
+  list.forEach((row) => {
+    if (!row) return;
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(row?.data ?? row?.date ?? row?.Data ?? row?.createdAt ?? row?.created_at ?? '') : ''; }catch(_){ iso = ''; }
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const month = parseInt(iso.slice(5, 7), 10);
+    if (!Number.isFinite(month) || month < 1 || month > 12) return;
+    const hours = Number(String(row?.ore ?? row?.Ore ?? 0).replace(',', '.'));
+    if (!isFinite(hours) || hours <= 0) return;
+    byMonth[month - 1] += hours;
+  });
+  for (let i = 0; i < 12; i += 1){
+    byMonth[i] = Math.round((Number(byMonth[i] || 0) || 0) * 100) / 100;
+  }
+  return byMonth;
+}
+
+function drawStatPulizieLineChart(canvasId, rows){
+  const values = __statPulizieMonthlyHours__(rows);
+  __drawSharedMonthlyLineChart__(canvasId, values, {
+    bubbleFormatter: (value) => `${__fmtHours_(value) || '0'}h`,
+    yTickFormatter: (value) => `${Math.round(Number(value || 0) || 0)}h`
+  });
 }
 
 function renderStatPulizie(operatoriRows){
@@ -16324,12 +16443,7 @@ function renderStatPulizie(operatoriRows){
   }
 
   __prepareStatPiePage__('statpulizie');
-  const slices = rows.map((row) => ({
-    label: row.label,
-    value: row.value,
-    color: __statPageSliceHexFromCard__('statpulizie', row.cardKey, row.fallback)
-  }));
-  drawPie('statPulizieCanvas', slices, Object.assign({ centerTitle:'Ore', centerFormatter:(n)=>`${__fmtHours_(n) || '0'}h` }, __statPieOptionsForPage__('statpulizie')));
+  try{ drawStatPulizieLineChart('statPulizieCanvas', Array.isArray(operatoriRows) ? operatoriRows : []); }catch(_){ }
 }
 
 function renderStatGrafici(operatoriRows){
@@ -29501,7 +29615,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.556 — Menu impostazioni compatto + dark switch + design schede guest list */
+/* dDAE_2.569 — Menu impostazioni compatto + dark switch + design schede guest list */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
