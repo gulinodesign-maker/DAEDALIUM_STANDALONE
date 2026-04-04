@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.575
+ * Build: 2.576
  */
-const BUILD_VERSION = "2.575";
+const BUILD_VERSION = "2.576";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16260,12 +16260,12 @@ function __statGuestMoney__(value){
 
 function __statGuestMonthIso__(row){
   const candidates = [
-    row?.check_in, row?.checkIn, row?.arrivo, row?.data_arrivo, row?.dataArrivo,
     row?.data_prenotazione, row?.dataPrenotazione,
     row?.booking_date, row?.bookingDate,
     row?.createdAt, row?.created_at,
     row?.updatedAt, row?.updated_at,
     row?.data, row?.date,
+    row?.check_in, row?.checkIn, row?.arrivo, row?.data_arrivo, row?.dataArrivo,
     row?.check_out, row?.checkOut, row?.partenza, row?.data_partenza, row?.dataPartenza
   ];
   for (const raw of candidates){
@@ -30128,3 +30128,5 @@ function syncGuestPhoneWhatsAppLink(isView){
   else setTimeout(run, 0);
   try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
+
+/* dDAE_2.576 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
