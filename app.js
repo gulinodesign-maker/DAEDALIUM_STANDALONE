@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.578
+ * Build: 2.579
  */
-const BUILD_VERSION = "2.578";
+const BUILD_VERSION = "2.579";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3447,7 +3447,7 @@ function __statGenCompareBtnVisualWrite__(visuals){
 
 function __applyStatGenCompareYearButtonVisual__(){
   try{
-    const btn = document.getElementById('statGenCompareYearBtn');
+    const btn = document.getElementById('statGenCompareToggleBtn');
     if (!btn) return;
     const enabled = __ensureStatGenCompareEnabled__();
     const visuals = __statGenCompareBtnVisualRead__();
@@ -3478,7 +3478,7 @@ function __openStatGenCompareYearButtonColorPicker__(){
   const visuals = __statGenCompareBtnVisualRead__();
   const stateKey = enabled ? 'on' : 'off';
   const initial = __tagColorPairFromValue__(visuals[stateKey], visuals[stateKey]?.bg || (enabled ? '#2b7cb4' : '#d6dee8'));
-  __tagColorPopupOpen__('statgen-compare-year-btn', initial, (payload) => {
+  __tagColorPopupOpen__('statgen-compare-toggle-btn', initial, (payload) => {
     const current = __statGenCompareBtnVisualRead__();
     const pair = __tagColorPairFromValue__(current[stateKey] || initial, initial.bg || '#2b7cb4');
     const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
@@ -3503,14 +3503,25 @@ function __updateStatGenCompareYearButtonUI__(){
   const year = __ensureStatGenCompareYear__();
   const enabled = __ensureStatGenCompareEnabled__();
   try{
-    const label = document.getElementById('statGenCompareYearBtnLabel');
-    if (label) label.textContent = year;
+    const yearLabel = document.getElementById('statGenCompareYearBtnLabel');
+    if (yearLabel) yearLabel.textContent = year;
   }catch(_){ }
   try{
-    const btn = document.getElementById('statGenCompareYearBtn');
-    if (btn){
-      btn.setAttribute('aria-label', `Anno confronto grafico ${year} ${enabled ? 'attivo' : 'disattivo'}`);
-      btn.title = `Anno confronto ${year} (${enabled ? 'ON' : 'OFF'})`;
+    const toggleLabel = document.getElementById('statGenCompareToggleBtnLabel');
+    if (toggleLabel) toggleLabel.textContent = enabled ? 'ON' : 'OFF';
+  }catch(_){ }
+  try{
+    const toggleBtn = document.getElementById('statGenCompareToggleBtn');
+    if (toggleBtn){
+      toggleBtn.setAttribute('aria-label', `Confronto grafico ${enabled ? 'attivo' : 'disattivo'}`);
+      toggleBtn.title = `Confronto ${enabled ? 'ON' : 'OFF'}`;
+    }
+  }catch(_){ }
+  try{
+    const yearBtn = document.getElementById('statGenCompareYearBtn');
+    if (yearBtn){
+      yearBtn.setAttribute('aria-label', `Seleziona anno confronto grafico ${year}`);
+      yearBtn.title = `Anno confronto ${year}`;
     }
   }catch(_){ }
   try{ __applyStatGenCompareYearButtonVisual__(); }catch(_){ }
@@ -4423,6 +4434,7 @@ const COLORS = {
 };
 
 const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
+const __STAT_FISCAL_BTN_VISUAL_KEY__ = "dDAE_stat_fiscal_btn_visual_v1";
 const LS_APP_TEXT_UI = "ddae_app_text_ui_v1";
 const APP_TEXT_SCALE_MAP = Object.freeze({ "1": 1, "2": 1.08, "3": 1.16 });
 let __appTextUiMutationObserver__ = null;
@@ -4683,6 +4695,79 @@ function initAppTextUiObserver(){
   }catch(_){ }
 }
 
+
+function __statFiscalBtnVisualDefaultState__(isSocieta){
+  return isSocieta
+    ? { bg:'#2b7cb4', border:'#2b7cb4', fg:'#ffffff', opacity:0.80 }
+    : { bg:'#d6dee8', border:'#d6dee8', fg:'#0f172a', opacity:0.80 };
+}
+
+function __statFiscalBtnVisualRead__(){
+  const fallback = { on: __statFiscalBtnVisualDefaultState__(true), off: __statFiscalBtnVisualDefaultState__(false) };
+  try{
+    const raw = localStorage.getItem(__STAT_FISCAL_BTN_VISUAL_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return {
+      on: __tagColorPairFromValue__(parsed?.on || fallback.on, fallback.on.bg),
+      off: __tagColorPairFromValue__(parsed?.off || fallback.off, fallback.off.bg)
+    };
+  }catch(_){ return fallback; }
+}
+
+function __statFiscalBtnVisualWrite__(visuals){
+  const current = __statFiscalBtnVisualRead__();
+  const next = {
+    on: __tagColorPairFromValue__(visuals?.on || current.on, (visuals?.on && visuals.on.bg) || current.on.bg),
+    off: __tagColorPairFromValue__(visuals?.off || current.off, (visuals?.off && visuals.off.bg) || current.off.bg)
+  };
+  try{ localStorage.setItem(__STAT_FISCAL_BTN_VISUAL_KEY__, JSON.stringify(next)); }catch(_){ }
+  return next;
+}
+
+function __applyStatFiscalModeButtonVisual__(){
+  try{
+    const btn = document.getElementById('statFiscalModeBtn');
+    if (!btn) return;
+    const isSocieta = getStatFiscalMode() === 'societa';
+    const visuals = __statFiscalBtnVisualRead__();
+    const pair = isSocieta ? visuals.on : visuals.off;
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const bgHex = __graphColorValueToHex__(pair?.bg || (isSocieta ? '#2b7cb4' : '#d6dee8'), isSocieta ? '#2b7cb4' : '#d6dee8');
+    const borderHex = __graphColorValueToHex__(pair?.border || pair?.bg || bgHex, bgHex);
+    const textHex = isDark
+      ? __darkModeReadableTextHex__(__graphColorValueToHex__(pair?.fg || __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false), bgHex), isSocieta ? '#f8fbff' : '#e2e8f0')
+      : __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false);
+    const opacity = __designBgOpacityNormalize__(pair?.opacity ?? 0.80);
+    btn.classList.toggle('is-active', isSocieta);
+    btn.classList.toggle('is-inactive', !isSocieta);
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border', `1px solid ${borderHex}`, 'important');
+    btn.style.setProperty('color', textHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+    btn.setAttribute('aria-pressed', isSocieta ? 'true' : 'false');
+  }catch(_){ }
+}
+
+function __openStatFiscalModeButtonColorPicker__(){
+  const isSocieta = getStatFiscalMode() === 'societa';
+  const visuals = __statFiscalBtnVisualRead__();
+  const stateKey = isSocieta ? 'on' : 'off';
+  const initial = __tagColorPairFromValue__(visuals[stateKey], visuals[stateKey]?.bg || (isSocieta ? '#2b7cb4' : '#d6dee8'));
+  __tagColorPopupOpen__('stat-fiscal-mode-btn', initial, (payload) => {
+    const current = __statFiscalBtnVisualRead__();
+    const pair = __tagColorPairFromValue__(current[stateKey] || initial, initial.bg || '#2b7cb4');
+    const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    pair.bg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || initial.bg || '#2b7cb4').spec;
+    pair.border = __parseOperatoreColorSpec__(payloadColors.border || pair.border || pair.bg || initial.bg || '#2b7cb4').spec;
+    pair.fg = String(payloadColors.fg || '').trim() ? __parseOperatoreColorSpec__(payloadColors.fg).spec : '';
+    pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? initial.opacity ?? 0.80);
+    current[stateKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: pair.opacity };
+    __statFiscalBtnVisualWrite__(current);
+    __applyStatFiscalModeButtonVisual__();
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial.opacity ?? 0.80), defaultMode:'bg', fallbackBg:initial.bg || (isSocieta ? '#2b7cb4' : '#d6dee8') });
+}
+
 function getStatFiscalMode(){
   try{
     const current = String(state?.fiscalRegime || "").trim().toLowerCase();
@@ -4703,17 +4788,18 @@ function updateStatFiscalModeUI(){
   const mode = getStatFiscalMode();
   const isSocieta = mode === "societa";
   try{
-    const input = document.getElementById("statFiscalModeToggle");
-    if (input) {
-      input.checked = isSocieta;
-      input.setAttribute("aria-checked", isSocieta ? "true" : "false");
-      input.setAttribute("aria-label", isSocieta ? "Regime società" : "Regime forfettario");
+    const btn = document.getElementById("statFiscalModeBtn");
+    if (btn) {
+      btn.setAttribute("aria-pressed", isSocieta ? "true" : "false");
+      btn.setAttribute("aria-label", isSocieta ? "Regime società" : "Regime forfettario");
+      btn.title = isSocieta ? "Regime società" : "Regime forfettario";
     }
   }catch(_){ }
   try{
     const label = document.getElementById("statFiscalModeLabel");
-    if (label) label.textContent = isSocieta ? "Società" : "Forfettario";
+    if (label) label.textContent = isSocieta ? "Società" : "Forf.";
   }catch(_){ }
+  try{ __applyStatFiscalModeButtonVisual__(); }catch(_){ }
 }
 
 function setStatFiscalMode(mode, opts){
@@ -4728,15 +4814,40 @@ function setStatFiscalMode(mode, opts){
 
 function bindStatFiscalModeToggle(){
   try{
-    const input = document.getElementById("statFiscalModeToggle");
-    if (!input || input.__boundFiscalMode) {
+    const btn = document.getElementById("statFiscalModeBtn");
+    if (!btn || btn.__boundFiscalMode) {
       updateStatFiscalModeUI();
       return;
     }
-    input.__boundFiscalMode = true;
-    input.addEventListener("change", () => {
-      setStatFiscalMode(input.checked ? "societa" : "forfettario");
+    btn.__boundFiscalMode = true;
+    let longPressTimer = null;
+    let longPressFired = false;
+    const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
+    const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } return false; };
+    const startLong = (e)=>{
+      try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+      longPressFired = false;
+      clearLong();
+      longPressTimer = setTimeout(()=>{
+        longPressFired = true;
+        __openStatFiscalModeButtonColorPicker__();
+      }, 500);
+    };
+    const stopLong = (e)=>{
+      clearLong();
+      if (longPressFired){
+        block(e);
+        setTimeout(()=>{ longPressFired = false; }, 0);
+        return;
+      }
+    };
+    btn.addEventListener('click', (e) => {
+      if (longPressFired) return block(e);
+      setStatFiscalMode(getStatFiscalMode() === 'societa' ? 'forfettario' : 'societa');
     });
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ btn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ btn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
+    try{ btn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
     updateStatFiscalModeUI();
   }catch(_){ }
 }
@@ -11362,25 +11473,20 @@ const cfg = document.getElementById("settingsConfigBtn");
       yearCard.addEventListener(evt, (e) => { try{ e.stopPropagation(); }catch(_){ } }, { passive:false });
     });
   }
-  const statGenCompareYearBtn = document.getElementById('statGenCompareYearBtn');
-  if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundAdvanced){
-    statGenCompareYearBtn.__boundAdvanced = true;
-    const statGenCompareYearPickerTrigger = document.getElementById('statGenCompareYearPickerTrigger');
+  const statGenCompareToggleBtn = document.getElementById('statGenCompareToggleBtn');
+  if (statGenCompareToggleBtn && !statGenCompareToggleBtn.__boundAdvanced){
+    statGenCompareToggleBtn.__boundAdvanced = true;
     let longPressTimer = null;
     let longPressFired = false;
     const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
     const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } return false; };
-    const isPickerTarget = (target)=>{
-      try{ return !!(statGenCompareYearPickerTrigger && target && (target === statGenCompareYearPickerTrigger || statGenCompareYearPickerTrigger.contains(target))); }catch(_){ return false; }
-    };
     const startLong = (e)=>{
-      if (isPickerTarget(e && e.target)) return;
       try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
       longPressFired = false;
       clearLong();
       longPressTimer = setTimeout(()=>{
         longPressFired = true;
-        try{ statGenCompareYearBtn.classList.add('is-pressing'); }catch(_){ }
+        try{ statGenCompareToggleBtn.classList.add('is-pressing'); }catch(_){ }
         __openStatGenCompareYearButtonColorPicker__();
       }, 500);
     };
@@ -11388,37 +11494,34 @@ const cfg = document.getElementById("settingsConfigBtn");
       clearLong();
       if (longPressFired){
         block(e);
-        setTimeout(()=>{ longPressFired = false; try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ } }, 0);
+        setTimeout(()=>{ longPressFired = false; try{ statGenCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ } }, 0);
         return;
       }
-      try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ }
+      try{ statGenCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ }
     };
-    statGenCompareYearBtn.addEventListener('click', (e) => {
+    statGenCompareToggleBtn.addEventListener('click', (e) => {
       if (longPressFired) return block(e);
-      if (isPickerTarget(e.target)) return;
       __toggleStatGenCompareEnabled__();
     });
-    if (statGenCompareYearPickerTrigger && !statGenCompareYearPickerTrigger.__boundOpen){
-      statGenCompareYearPickerTrigger.__boundOpen = true;
-      const openPicker = (e) => {
-        block(e);
-        clearLong();
-        longPressFired = false;
-        try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ }
-        __openStatGenCompareYearPicker__();
-      };
-      statGenCompareYearPickerTrigger.addEventListener('click', openPicker);
-      statGenCompareYearPickerTrigger.addEventListener('keydown', (e) => {
-        if (!e) return;
-        if (e.key === 'Enter' || e.key === ' '){
-          openPicker(e);
-        }
-      });
-      ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareYearPickerTrigger.addEventListener(evt, (e)=>{ clearLong(); try{ e.stopPropagation(); }catch(_){ } }, { passive:false }); }catch(_){ } });
-    }
-    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
-    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
-    try{ statGenCompareYearBtn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareToggleBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statGenCompareToggleBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
+    try{ statGenCompareToggleBtn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
+  }
+  const statGenCompareYearBtn = document.getElementById('statGenCompareYearBtn');
+  if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundOpen){
+    statGenCompareYearBtn.__boundOpen = true;
+    const openPicker = (e) => {
+      try{ e && e.preventDefault && e.preventDefault(); }catch(_){ }
+      try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ }
+      __openStatGenCompareYearPicker__();
+    };
+    statGenCompareYearBtn.addEventListener('click', openPicker);
+    statGenCompareYearBtn.addEventListener('keydown', (e) => {
+      if (!e) return;
+      if (e.key === 'Enter' || e.key === ' '){
+        openPicker(e);
+      }
+    });
   }
   const statGenCompareModal = document.getElementById('statGenCompareYearModal');
   if (statGenCompareModal && !statGenCompareModal.__boundClose){
@@ -30488,4 +30591,4 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
 
-/* dDAE_2.578 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
+/* dDAE_2.579 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
