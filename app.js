@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.581
+ * Build: 2.582
  */
-const BUILD_VERSION = "2.581";
+const BUILD_VERSION = "2.582";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18126,10 +18126,17 @@ function drawStatSpesePercentLineChart(canvasId){
 function drawStatMensiliOccupazioneLineChart(canvasId){
   const stats = (state && state.statMensili) ? state.statMensili : computeStatMensili();
   const values = Array.isArray(stats && stats.byMonth) ? stats.byMonth : new Array(12).fill(0);
-  const filtered = __statMaskMonthlyValuesByCard__(values, __getStatChartFilter__('statmensili'));
+  const selectedKey = __getStatChartFilter__('statmensili');
+  const filtered = __statMaskMonthlyValuesByCard__(values, selectedKey);
+  let selectedColor = '#2B7CB4';
+  try{
+    if (selectedKey) {
+      selectedColor = __statChartLineColorFromRenderedCard__('statmensili', selectedKey, '#2B7CB4');
+    }
+  }catch(_){ selectedColor = '#2B7CB4'; }
   __drawSharedMonthlyLineChart__(canvasId, filtered, {
     mode: 'currency',
-    lineColor: __statChartSelectedLineColor__('statmensili', '#2B7CB4'),
+    lineColor: selectedColor,
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
