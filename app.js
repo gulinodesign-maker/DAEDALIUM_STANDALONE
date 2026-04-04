@@ -39,9 +39,11 @@ function applyIconPalette(){
       goStatGen: "#245EA8",
       goStatMensili: "#4D9CC5",
       goStatSpese: "#F29C50",
-      goStatPrenotazioni: "#F6B67A",
-      goStatPiscina: "#C7B198",
-      goStatCancellazioni: "#D9CCC0"
+      goStatRicevute: "#F6B67A",
+      goStatChannel: "#C7B198",
+      goStatPulizie: "#D9CCC0",
+      goStatPiscina: "#D9CCC0",
+      goStatCancellazioni: "#AFC9D8"
     };
     document.querySelectorAll('#page-home .home-main').forEach((btn) => {
       const c = (typeof __launcherIconResolveHex__ === 'function')
@@ -87,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.567
+ * Build: 2.568
  */
-const BUILD_VERSION = "2.567";
+const BUILD_VERSION = "2.568";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3170,6 +3172,8 @@ function applyRoleMode(){
     try{ const statMensiliTopTools = document.getElementById("statMensiliTopTools"); if (statMensiliTopTools) statMensiliTopTools.hidden = true; }catch(_){ }
     try{ const statSpeseTopTools = document.getElementById("statSpeseTopTools"); if (statSpeseTopTools) statSpeseTopTools.hidden = true; }catch(_){ }
     try{ const statPrenTopTools = document.getElementById("statPrenTopTools"); if (statPrenTopTools) statPrenTopTools.hidden = true; }catch(_){ }
+    try{ const statChannelTopTools = document.getElementById("statChannelTopTools"); if (statChannelTopTools) statChannelTopTools.hidden = true; }catch(_){ }
+    try{ const statPulizieTopTools = document.getElementById("statPulizieTopTools"); if (statPulizieTopTools) statPulizieTopTools.hidden = true; }catch(_){ }
     try{ const statCancTopTools = document.getElementById("statCancTopTools"); if (statCancTopTools) statCancTopTools.hidden = true; }catch(_){ }
   }
 }
@@ -7797,7 +7801,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn',
   'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn',
-  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -7829,9 +7833,11 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatGen: 'blue-5',
   goStatMensili: 'sky-5',
   goStatSpese: 'orange-4',
-  goStatPrenotazioni: 'orange-3',
-  goStatPiscina: 'beige-5',
-  goStatCancellazioni: 'gray-4',
+  goStatRicevute: 'orange-3',
+  goStatChannel: 'beige-5',
+  goStatPulizie: 'gray-4',
+  goStatPiscina: 'beige-4',
+  goStatCancellazioni: 'sky-4',
   homeYearPill: 'sky-4'
 };
 
@@ -8767,12 +8773,15 @@ function __statisticsCardThemeTargetKeys__(){
   const statGenKeys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
   const statSpeseKeys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
   const statMensiliKeys = (Array.isArray(__MONTHS_IT) ? __MONTHS_IT : []).map((m)=>String(m || '').trim()).filter(Boolean);
-  const statPrenotazioniKeys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
+  const statRicevuteKeys = ['senza-ricevuta','con-ricevuta'];
+  const statChannelKeys = ['channel','direct'];
   return {
     statgen: statGenKeys,
     statspese: statSpeseKeys,
     statmensili: statMensiliKeys,
-    statprenotazioni: statPrenotazioniKeys
+    statprenotazioni: statRicevuteKeys,
+    statchannel: statChannelKeys,
+    statpulizie: []
   };
 }
 
@@ -8888,7 +8897,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
-  'goStatGen','goStatMensili','goStatSpese','goStatPrenotazioni','goStatPiscina','goStatCancellazioni'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -12239,8 +12248,12 @@ const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.cl
     if (s2){ hideLauncher(); showPage("statmensili"); return; }
     const s3 = e.target.closest && e.target.closest("#goStatSpese");
     if (s3){ hideLauncher(); showPage("statspese"); return; }
-    const s4 = e.target.closest && e.target.closest("#goStatPrenotazioni");
+    const s4 = e.target.closest && e.target.closest("#goStatRicevute");
     if (s4){ hideLauncher(); showPage("statprenotazioni"); return; }
+    const s4b = e.target.closest && e.target.closest("#goStatChannel");
+    if (s4b){ hideLauncher(); showPage("statchannel"); return; }
+    const s4c = e.target.closest && e.target.closest("#goStatPulizie");
+    if (s4c){ hideLauncher(); showPage("statpulizie"); return; }
 
   
     const s5 = e.target.closest && e.target.closest("#goStatAzienda");
@@ -12655,7 +12668,15 @@ state.page = page;
     statPrenTopTools.hidden = (page !== "statprenotazioni");
   }
 
+  const statChannelTopTools = $("#statChannelTopTools");
+  if (statChannelTopTools){
+    statChannelTopTools.hidden = (page !== "statchannel");
+  }
 
+  const statPulizieTopTools = $("#statPulizieTopTools");
+  if (statPulizieTopTools){
+    statPulizieTopTools.hidden = (page !== "statpulizie");
+  }
 
   const statCancTopTools = $("#statCancTopTools");
   if (statCancTopTools){
@@ -12763,11 +12784,29 @@ state.page = page;
     const _nav = navId;
     Promise.all([
       ensureStatsAllData({ showLoader:true }),
-      loadOspiti({ ...(state.period || {}), force:false }),
-      loadOspitiEliminati({ from: `${state.exerciseYear||new Date().getFullYear()}-01-01`, to: `${state.exerciseYear||new Date().getFullYear()}-12-31`, force:true }),
+      loadOspiti({ ...(state.period || {}), force:false })
+    ])
+      .then(()=>{ if (state.navId !== _nav || state.page !== "statprenotazioni") return; renderStatRicevute(); })
+      .catch(e=>toast(e.message));
+  }
+
+  if (page === "statchannel") {
+    const _nav = navId;
+    Promise.all([
+      ensureStatsAllData({ showLoader:true }),
+      loadOspiti({ ...(state.period || {}), force:false })
+    ])
+      .then(()=>{ if (state.navId !== _nav || state.page !== "statchannel") return; renderStatChannel(); })
+      .catch(e=>toast(e.message));
+  }
+
+  if (page === "statpulizie") {
+    const _nav = navId;
+    Promise.all([
+      ensureStatsAllData({ showLoader:true }),
       __loadOperatoriRows_().catch(()=>[])
     ])
-      .then((res)=>{ if (state.navId !== _nav || state.page !== "statprenotazioni") return; renderStatGrafici(Array.isArray(res && res[3]) ? res[3] : []); })
+      .then((res)=>{ if (state.navId !== _nav || state.page !== "statpulizie") return; renderStatPulizie(Array.isArray(res && res[1]) ? res[1] : []); })
       .catch(e=>toast(e.message));
   }
 
@@ -13114,8 +13153,12 @@ if (btnNewGuestTop){
   if (s2){ bindFastTap(s2, () => { hideLauncher(); showPage("statmensili"); }); }
   const s3 = $("#goStatSpese");
   if (s3){ bindFastTap(s3, () => { hideLauncher(); showPage("statspese"); }); }
-  const s4 = $("#goStatPrenotazioni");
+  const s4 = $("#goStatRicevute");
   if (s4){ bindFastTap(s4, () => { hideLauncher(); showPage("statprenotazioni"); }); }
+  const s4b = $("#goStatChannel");
+  if (s4b){ bindFastTap(s4b, () => { hideLauncher(); showPage("statchannel"); }); }
+  const s4c = $("#goStatPulizie");
+  if (s4c){ bindFastTap(s4c, () => { hideLauncher(); showPage("statpulizie"); }); }
 
   
   const s5 = $("#goStatAzienda");
@@ -13132,6 +13175,12 @@ if (btnNewGuestTop){
   // STATMENSILI: topbar tools
   const btnBackStatsMensili = $("#btnBackStatisticheMensili");
   if (btnBackStatsMensili){ bindFastTap(btnBackStatsMensili, () => { closeStatMensiliPieModal(); showPage("statistiche"); }); }
+  const btnBackStatsRicevute = $("#btnBackStatistichePrenotazioni");
+  if (btnBackStatsRicevute){ bindFastTap(btnBackStatsRicevute, () => { showPage("statistiche"); }); }
+  const btnBackStatsChannel = $("#btnBackStatisticheChannel");
+  if (btnBackStatsChannel){ bindFastTap(btnBackStatsChannel, () => { showPage("statistiche"); }); }
+  const btnBackStatsPulizie = $("#btnBackStatistichePulizie");
+  if (btnBackStatsPulizie){ bindFastTap(btnBackStatsPulizie, () => { showPage("statistiche"); }); }
 
   const btnPieMensili = $("#btnStatMensiliPie");
   if (btnPieMensili){ bindFastTap(btnPieMensili, () => { openStatMensiliPieModal(); }); }
@@ -13985,6 +14034,9 @@ async function ensurePeriodData({ showLoader=true, force=false } = {}){
           if (state.page === "statgen") renderStatGen();
           if (state.page === "statmensili") renderStatMensili();
           if (state.page === "statspese") renderStatSpese();
+          if (state.page === "statprenotazioni") renderStatRicevute();
+          if (state.page === "statchannel") renderStatChannel();
+          if (state.page === "statpulizie") renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
         }catch(_){ }
       })
       .catch(() => {});
@@ -14071,7 +14123,9 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
           if (state.page === "statgen") renderStatGen();
           if (state.page === "statmensili") renderStatMensili();
           if (state.page === "statspese") renderStatSpese();
-          if (state.page === "statprenotazioni") renderStatPrenotazioni();
+          if (state.page === "statprenotazioni") renderStatRicevute();
+          if (state.page === "statchannel") renderStatChannel();
+          if (state.page === "statpulizie") renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
           if (state.page === "statazienda") renderStatAzienda();
           if (state.page === "statamministratore") renderStatAmministratore();
         }catch(_){ }
@@ -14389,8 +14443,10 @@ function drawPie(canvasId, slices, opts){
   const showCenter = (opts.showCenter !== false);
 
   const parentW = (canvas.parentElement && canvas.parentElement.clientWidth) ? canvas.parentElement.clientWidth : 0;
+  const parentH = (canvas.parentElement && canvas.parentElement.clientHeight) ? canvas.parentElement.clientHeight : 0;
   const baseW = parentW || Math.floor(window.innerWidth * 0.78);
-  const cssSize = Math.min((opts.maxSize || 320), Math.max((opts.minSize || 120), Math.floor((opts.size || baseW) - 8)));
+  const baseSize = (opts.size || (parentH > 0 ? Math.min(baseW, parentH) : baseW));
+  const cssSize = Math.min((opts.maxSize || 320), Math.max((opts.minSize || 120), Math.floor(baseSize - 8)));
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = cssSize + "px";
   canvas.style.height = cssSize + "px";
@@ -14645,7 +14701,7 @@ function __saveStatCardTextColorMap__(pageKey, map){
 function __getStatCardColorPair__(pageKey, cardKey, fallback){
   let baseFallback = fallback || 'blue-4';
   try{
-    const themedPages = new Set(['statgen','statspese','statmensili','statprenotazioni']);
+    const themedPages = new Set(['statgen','statspese','statmensili','statprenotazioni','statchannel','statpulizie']);
     if (themedPages.has(String(pageKey || '').trim().toLowerCase())){
       const visual = __statisticsCardThemeRead__();
       baseFallback = { bg: visual.bg || 'blue-4', border: visual.border || visual.bg || 'blue-4', fg: '' };
@@ -14673,7 +14729,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const safePageKey = String(pageKey || '').trim().toLowerCase();
     const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni','statcancellazioni'].includes(safePageKey);
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni','statchannel','statpulizie','statcancellazioni'].includes(safePageKey);
     const fgHex = useForcedDarkSurface
       ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
       : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
@@ -14716,7 +14772,9 @@ function __refreshStatCardsPage__(pageKey){
     if (pageKey === 'statgen') return renderStatGen();
     if (pageKey === 'statspese') return renderStatSpese();
     if (pageKey === 'statmensili') return renderStatMensili();
-    if (pageKey === 'statprenotazioni') return renderStatGrafici(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
+    if (pageKey === 'statprenotazioni') return renderStatRicevute();
+    if (pageKey === 'statchannel') return renderStatChannel();
+    if (pageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
     if (pageKey === 'statcancellazioni') return renderStatCancellazioni();
     if (pageKey === 'statazienda') return renderStatAzienda();
     if (pageKey === 'statamministratore') return renderStatAmministratore();
@@ -14761,7 +14819,9 @@ function __statCardCategoryLabel__(pageKey){
   if (safePageKey === 'statgen') return 'Generali';
   if (safePageKey === 'statspese') return 'Spese';
   if (safePageKey === 'statmensili') return 'Mensili';
-  if (safePageKey === 'statprenotazioni') return 'Prenotazioni';
+  if (safePageKey === 'statprenotazioni') return 'Con / senza ricevuta';
+  if (safePageKey === 'statchannel') return 'Channel / Direct';
+  if (safePageKey === 'statpulizie') return 'Ore pulizia';
   if (safePageKey === 'statcancellazioni') return 'Cancellazioni';
   if (safePageKey === 'statazienda') return 'Azienda';
   if (safePageKey === 'statamministratore') return 'Amministratore';
@@ -16141,126 +16201,140 @@ function computeStatOrePuliziaGrafico(rows){
   return slices;
 }
 
-function renderStatGrafici(operatoriRows){
-  try{ state.statGraficiOperatoriRows = Array.isArray(operatoriRows) ? operatoriRows.slice() : []; }catch(_){ }
-  __ensureStatGraphPopupBound__();
-  const year = String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
-  const mensili = computeStatMensili();
-  state.statMensili = mensili;
-  const statGen = computeStatGen();
-  state.statGen = statGen;
-  const pren = computeStatPrenotazioni();
-  const cancRows = Array.isArray(state.deletedGuests) ? state.deletedGuests.filter(r => String(r.delete_reason || "").toLowerCase() === "cancellazione" || String(r.delete_reason || "").trim() === "") : [];
-  const activeRows = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
-  const cancSlices = [
-    { label: "Attive", value: activeRows.length, color: "#2b7cb4" },
-    { label: "Cancellate", value: cancRows.length, color: "#ff3b30" }
-  ];
-  const statSpese = computeStatSpese();
-  state.statSpese = statSpese;
-  const speseSlices = [
-    { label: categoriaLabel("CONTANTI"), value: statSpese.contanti, color: (COLORS.CONTANTI || "#2b7cb4") },
-    { label: categoriaLabel("TASSA_SOGGIORNO"), value: statSpese.tassaSoggiorno, color: (COLORS.TASSA_SOGGIORNO || "#d8bd97") },
-    { label: categoriaLabel("IVA_22"), value: statSpese.iva22, color: (COLORS.IVA_22 || "#c9772b") },
-    { label: categoriaLabel("IVA_10"), value: statSpese.iva10, color: (COLORS.IVA_10 || "#7ac0db") },
-    { label: categoriaLabel("IVA_4"), value: statSpese.iva4, color: (COLORS.IVA_4 || "#1f2937") }
-  ].filter(x=>Number(x.value || 0) > 0);
-  const pulizieSlices = computeStatOrePuliziaGrafico(operatoriRows);
-  const ricevuteSlices = [
-    { label: "Senza ricevuta", value: statGen.senzaRicevuta, color: "#bfbea9" },
-    { label: "Con ricevuta", value: statGen.conRicevuta, color: "#6fb7d6" }
-  ];
-  const bookingSlices = [
-    { label: "Con Booking", value: pren.withBooking, color: "#2b7cb4" },
-    { label: "Senza Booking", value: pren.withoutBooking, color: "#c9772b" }
-  ];
-  __syncOccupazioneMensileGraphColorsFromStatMensili__();
-  const occSlices = __applyGraphCustomColors__('occupazione-mensile', __occupazioneMensileSlices__(mensili));
-  const ricevuteSlicesCustom = __applyGraphCustomColors__('ricevute', ricevuteSlices);
-  const bookingSlicesCustom = __applyGraphCustomColors__('booking', bookingSlices);
-  const cancSlicesCustom = __applyGraphCustomColors__('cancellazioni', cancSlices);
-  const speseSlicesCustom = __applyGraphCustomColors__('spese', speseSlices.length ? speseSlices : [{ label: "Nessuna spesa", value: 0, color: "#2b7cb4" }]);
-  const pulizieSlicesCustom = __applyGraphCustomColors__('pulizie', pulizieSlices.length ? pulizieSlices : [{ label: "Nessun dato", value: 0, color: "#2b7cb4" }]);
-  const occAvg = occSlices.length ? (occSlices.reduce((a,x)=>a + (Number(x.value || 0) || 0), 0) / occSlices.length) : 0;
-
-  drawPie("statGrafOccCanvas", occSlices, { centerTitle: "Media", centerFormatter: ()=>`${occAvg.toFixed(1)}%`, showCenter: true, maxSize: 170, minSize: 120 });
-  drawPie("statGrafRicevuteCanvas", ricevuteSlicesCustom, { centerTitle: "Totale", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafBookingCanvas", bookingSlicesCustom, { centerTitle: "Prenot.", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafCancCanvas", cancSlicesCustom, { centerTitle: "Totale", centerFormatter: (n)=>String(Math.round(Number(n || 0))), showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafSpeseCanvas", speseSlicesCustom, { centerTitle: "Spese", centerFormatter: euro, showCenter: false, maxSize: 170, minSize: 120 });
-  drawPie("statGrafPulizieCanvas", pulizieSlicesCustom, { centerTitle: "Ore", centerFormatter: (n)=>__fmtHours_(n) || "0", showCenter: false, maxSize: 170, minSize: 120 });
-
-  __bindStatGraphPopup__("statGrafOccCanvas", {
-    graphKey: 'occupazione-mensile',
-    title: "Occupazione mensile",
-    detail: `Anno solare ${year} · percentuali mensili allineate alla pagina Mensili · pressione lunga sulle voci per cambiare colore`,
-    slices: occSlices,
-    legendMode: "absolute",
-    valueFormatter: (v)=>`${Number(v || 0).toFixed(0)}%`,
-    centerTitle: 'Media',
-    centerFormatter: ()=>`${occAvg.toFixed(1)}%`
-  });
-  const occNote = document.getElementById("statGrafOccNote");
-  if (occNote) occNote.textContent = `Anno ${year} · media ${occAvg.toFixed(1)}%`;
-
-  __bindStatGraphPopup__("statGrafRicevuteCanvas", {
-    graphKey: 'ricevute',
-    title: "Con ricevuta / Senza ricevuta",
-    detail: `Anno solare ${year} · distribuzione degli incassi · pressione lunga sulle voci per cambiare colore`,
-    slices: ricevuteSlicesCustom,
-    valueFormatter: euro,
-    centerTitle: "Totale",
-    centerFormatter: euro
-  });
-  __bindStatGraphPopup__("statGrafBookingCanvas", {
-    graphKey: 'booking',
-    title: "Prenotazioni con / senza Booking",
-    detail: `Anno solare ${year} · numero prenotazioni · pressione lunga sulle voci per cambiare colore`,
-    slices: bookingSlicesCustom,
-    valueFormatter: (v)=>String(Math.round(Number(v || 0))),
-    centerTitle: "Prenot.",
-    centerFormatter: (n)=>String(Math.round(Number(n || 0)))
-  });
-  __bindStatGraphPopup__("statGrafCancCanvas", {
-    graphKey: 'cancellazioni',
-    title: "Cancellazioni",
-    detail: `Anno solare ${year} · attive vs cancellate · pressione lunga sulle voci per cambiare colore`,
-    slices: cancSlicesCustom,
-    valueFormatter: (v)=>String(Math.round(Number(v || 0))),
-    centerTitle: "Totale",
-    centerFormatter: (n)=>String(Math.round(Number(n || 0)))
-  });
-  __bindStatGraphPopup__("statGrafSpeseCanvas", {
-    graphKey: 'spese',
-    title: "Spese",
-    detail: `Anno solare ${year} · distribuzione per categoria · pressione lunga sulle voci per cambiare colore`,
-    slices: speseSlicesCustom,
-    valueFormatter: euro,
-    centerTitle: "Spese",
-    centerFormatter: euro
-  });
-  __bindStatGraphPopup__("statGrafPulizieCanvas", {
-    graphKey: 'pulizie',
-    title: "Ore pulizia operatori",
-    detail: `Anno solare ${year} · ripartizione percentuale ore operatori · pressione lunga sulle voci per cambiare colore`,
-    slices: pulizieSlicesCustom,
-    valueFormatter: (v)=>`${__fmtHours_(v) || "0"}h`,
-    centerTitle: "Ore",
-    centerFormatter: (n)=>`${__fmtHours_(n) || "0"}h`
-  });
-
+function __statPageSliceHexFromCard__(pageKey, cardKey, fallback){
   try{
-    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
-      const keys = ['occupazione','ricevute','booking','cancellazioni','spese','pulizie'];
-      const fallbacks = ['#2b7cb4','#6fb7d6','#c9772b','#ff3b30','#d89a58','#7c6fd6'];
-      const cardKey = keys[index] || `graph-${index+1}`;
-      const fallback = fallbacks[index] || '#2b7cb4';
-      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
-      __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
-    });
+    const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || '#2B7CB4');
+    return __graphColorValueToHex__(pair.bg || fallback || '#2B7CB4', fallback || '#2B7CB4');
+  }catch(_){ return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4'); }
+}
+
+function __statPieOptionsForPage__(pageKey){
+  try{
+    const wrap = document.querySelector(`#page-${pageKey} .statgen-line-chart-wrap`);
+    const isLandscape = !!(String((state && state.page) || '') === String(pageKey || '') && __isLandscapeOrientation__());
+    const rect = wrap ? wrap.getBoundingClientRect() : null;
+    const available = rect ? Math.max(180, Math.min(rect.width - 16, rect.height - 16)) : (isLandscape ? 420 : 240);
+    return {
+      size: available,
+      maxSize: available,
+      minSize: Math.max(160, Math.min(available, isLandscape ? 240 : 180)),
+      showCenter: false
+    };
+  }catch(_){ return { maxSize: 240, minSize: 180, showCenter:false }; }
+}
+
+function __prepareStatPiePage__(pageKey){
+  try{
+    const wrap = document.querySelector(`#page-${pageKey} .statgen-line-chart-wrap`);
+    if (wrap){
+      __applyStatGenRegChartWrapVisual__(wrap);
+      __bindStatSharedLineChartLongPress__(wrap);
+      try{ wrap.title = 'Pressione lunga per cambiare design grafico'; }catch(_){ }
+    }
   }catch(_){ }
 }
 
+function renderStatRicevute(){
+  const statGen = computeStatGen();
+  state.statGen = statGen;
+  const rows = [
+    { cardKey:'senza-ricevuta', label:'Senza ricevuta', value: Number(statGen.senzaRicevuta || 0), fallback:'#9aa3af', valueId:'srNoRicevuta' },
+    { cardKey:'con-ricevuta', label:'Con ricevuta', value: Number(statGen.conRicevuta || 0), fallback:'#6aa0b3', valueId:'srRicevuta' }
+  ];
+  rows.forEach((row) => {
+    const valueEl = document.getElementById(row.valueId);
+    if (valueEl) valueEl.textContent = euro(row.value || 0);
+    const card = valueEl ? valueEl.closest('.stat-row') : null;
+    if (card){
+      __applyStatCardTextColor__(card, 'statprenotazioni', row.cardKey, row.fallback);
+      __bindStatCardColorLongPress__(card, 'statprenotazioni', row.cardKey, row.fallback);
+    }
+  });
+  __prepareStatPiePage__('statprenotazioni');
+  const slices = rows.map((row) => ({
+    label: row.label,
+    value: row.value,
+    color: __statPageSliceHexFromCard__('statprenotazioni', row.cardKey, row.fallback)
+  }));
+  drawPie('statRicevuteCanvas', slices, Object.assign({ centerTitle:'Totale', centerFormatter:euro }, __statPieOptionsForPage__('statprenotazioni')));
+}
+
+function renderStatChannel(){
+  const s = computeStatPrenotazioni();
+  state.statPrenotazioni = s;
+  const rows = [
+    { cardKey:'channel', label:'Channel', value: Number(s.withBooking || 0), fallback:'#2b7cb4', valueId:'scChannel' },
+    { cardKey:'direct', label:'Direct', value: Number(s.withoutBooking || 0), fallback:'#c9772b', valueId:'scDirect' }
+  ];
+  rows.forEach((row) => {
+    const valueEl = document.getElementById(row.valueId);
+    if (valueEl) valueEl.textContent = euro(row.value || 0);
+    const card = valueEl ? valueEl.closest('.stat-row') : null;
+    if (card){
+      __applyStatCardTextColor__(card, 'statchannel', row.cardKey, row.fallback);
+      __bindStatCardColorLongPress__(card, 'statchannel', row.cardKey, row.fallback);
+    }
+  });
+  __prepareStatPiePage__('statchannel');
+  const slices = rows.map((row) => ({
+    label: row.label,
+    value: row.value,
+    color: __statPageSliceHexFromCard__('statchannel', row.cardKey, row.fallback)
+  }));
+  drawPie('statChannelCanvas', slices, Object.assign({ centerTitle:'Totale', centerFormatter:euro }, __statPieOptionsForPage__('statchannel')));
+}
+
+function __statPulizieCardKey__(label){
+  try{
+    return `operatore-${String(label || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'generico'}`;
+  }catch(_){
+    return `operatore-${String(label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'generico'}`;
+  }
+}
+
+function renderStatPulizie(operatoriRows){
+  try{ state.statGraficiOperatoriRows = Array.isArray(operatoriRows) ? operatoriRows.slice() : []; }catch(_){ }
+  const baseSlices = computeStatOrePuliziaGrafico(Array.isArray(operatoriRows) ? operatoriRows : []);
+  const container = document.getElementById('statPulizieRows');
+  if (container) container.innerHTML = '';
+  const rows = (Array.isArray(baseSlices) && baseSlices.length)
+    ? baseSlices.map((slice) => ({
+        cardKey: __statPulizieCardKey__(slice.label),
+        label: String(slice.label || 'Operatore'),
+        value: Number(slice.value || 0) || 0,
+        fallback: __closestGraphColorSpec__(slice.color || '#2b7cb4')
+      }))
+    : [{ cardKey:'nessun-dato', label:'Nessun dato', value:0, fallback:'blue-4' }];
+
+  if (container){
+    rows.forEach((row) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'stat-row';
+      btn.dataset.statCardKey = row.cardKey;
+      btn.style.setProperty('--statbg', __graphColorValueToHex__(row.fallback, '#2B7CB4'));
+      btn.innerHTML = `
+        <span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M6 3h12"></path><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M12 12v4"></path><path d="M12 12l3-2"></path><path d="M12 21a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"></path></svg></span>
+        <span class="stat-name">${escapeHtml(row.label)}</span>
+        <span class="stat-val">${row.value > 0 ? `${__fmtHours_(row.value) || '0'}h` : '0h'}</span>`;
+      container.appendChild(btn);
+      __applyStatCardTextColor__(btn, 'statpulizie', row.cardKey, row.fallback);
+      __bindStatCardColorLongPress__(btn, 'statpulizie', row.cardKey, row.fallback);
+    });
+  }
+
+  __prepareStatPiePage__('statpulizie');
+  const slices = rows.map((row) => ({
+    label: row.label,
+    value: row.value,
+    color: __statPageSliceHexFromCard__('statpulizie', row.cardKey, row.fallback)
+  }));
+  drawPie('statPulizieCanvas', slices, Object.assign({ centerTitle:'Ore', centerFormatter:(n)=>`${__fmtHours_(n) || '0'}h` }, __statPieOptionsForPage__('statpulizie')));
+}
+
+function renderStatGrafici(operatoriRows){
+  return renderStatRicevute(operatoriRows);
+}
 
 
 /* Helpers */
@@ -16550,6 +16624,9 @@ function __statSharedLineChartPageKeyNormalize__(pageKey){
   if (safe === 'statspese') return 'statspese';
   if (safe === 'statmensili') return 'statmensili';
   if (safe === 'statcancellazioni') return 'statcancellazioni';
+  if (safe === 'statricevute' || safe === 'statprenotazioni') return 'statricevute';
+  if (safe === 'statchannel') return 'statchannel';
+  if (safe === 'statpulizie') return 'statpulizie';
   return 'statgen';
 }
 
@@ -16610,7 +16687,7 @@ function __statSharedLineChartVisualResetFor__(pageKey){
 }
 
 function __statSharedLineChartVisualResetAllLocals__(){
-  ['statgen','statspese','statmensili','statcancellazioni'].forEach((pageKey)=>{ try{ __statSharedLineChartVisualResetFor__(pageKey); }catch(_){ } });
+  ['statgen','statspese','statmensili','statcancellazioni','statricevute','statchannel','statpulizie'].forEach((pageKey)=>{ try{ __statSharedLineChartVisualResetFor__(pageKey); }catch(_){ } });
 }
 
 function __statGenRegChartVisualRead__(){
@@ -16626,11 +16703,14 @@ function __statLineChartWrapSelector__(key){
   if (safe === 'statspese') return '#page-statspese .statgen-line-chart-wrap';
   if (safe === 'statmensili') return '#page-statmensili .statgen-line-chart-wrap';
   if (safe === 'statcancellazioni') return '#page-statcancellazioni .statgen-line-chart-wrap';
+  if (safe === 'statricevute') return '#page-statprenotazioni .statgen-line-chart-wrap';
+  if (safe === 'statchannel') return '#page-statchannel .statgen-line-chart-wrap';
+  if (safe === 'statpulizie') return '#page-statpulizie .statgen-line-chart-wrap';
   return '#page-statgen .statgen-line-chart-wrap';
 }
 
 function __applyStatSharedLineChartWrapVisualToAll__(){
-  ['statgen','statspese','statmensili','statcancellazioni'].forEach((pageKey)=>{
+  ['statgen','statspese','statmensili','statcancellazioni','statricevute','statchannel','statpulizie'].forEach((pageKey)=>{
     try{ __applyStatGenRegChartWrapVisual__(document.querySelector(__statLineChartWrapSelector__(pageKey))); }catch(_){ }
   });
 }
@@ -16640,13 +16720,16 @@ function __refreshStatSharedLineCharts__(){
   try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
   try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
   try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
+  try{ renderStatRicevute(); }catch(_){ }
+  try{ renderStatChannel(); }catch(_){ }
+  try{ renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []); }catch(_){ }
 }
 
 function __applyStatSharedLineChartChangesToCategory__(payload, changed, sourcePageKey){
   try{
     const safeSource = __statSharedLineChartPageKeyNormalize__(sourcePageKey || 'statgen');
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    const pageKeys = ['statgen','statspese','statmensili','statcancellazioni'];
+    const pageKeys = ['statgen','statspese','statmensili','statcancellazioni','statricevute','statchannel','statpulizie'];
     const snapshots = {};
 
     pageKeys.forEach((pageKey) => {
@@ -16841,7 +16924,7 @@ function __statLineChartNiceMax__(value){
 }
 
 
-const __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__ = new Set(['statgen','statmensili','statspese','statcancellazioni']);
+const __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__ = new Set(['statgen','statmensili','statspese','statcancellazioni','statprenotazioni','statchannel','statpulizie']);
 let __statLandscapeGraphOnlyTimer__ = null;
 let __statLandscapeGraphOnlyResizeBound__ = false;
 
@@ -16877,6 +16960,12 @@ function __refreshCurrentStatLandscapeGraphOnlyPage__(){
     try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
   }else if (currentPage === 'statcancellazioni'){
     try{ drawStatCancellazioniPercentLineChart('statCancellazioniLineChart'); }catch(_){ }
+  }else if (currentPage === 'statprenotazioni'){
+    try{ renderStatRicevute(); }catch(_){ }
+  }else if (currentPage === 'statchannel'){
+    try{ renderStatChannel(); }catch(_){ }
+  }else if (currentPage === 'statpulizie'){
+    try{ renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []); }catch(_){ }
   }
 }
 
@@ -17559,43 +17648,7 @@ function computeStatPrenotazioni(){
 }
 
 function renderStatPrenotazioni(){
-  const s = computeStatPrenotazioni();
-  state.statPrenotazioni = s;
-  try{
-    document.querySelectorAll('#page-statprenotazioni .stats-graph-card').forEach((card, index) => {
-      const cardKey = `graph-${index+1}`;
-      const fallback = index === 0 ? '#2b7cb4' : (index === 1 ? '#6fb7d6' : (index === 2 ? '#c9772b' : '#ff3b30'));
-      __applyStatCardTextColor__(card, 'statprenotazioni', cardKey, fallback);
-      __bindStatCardColorLongPress__(card, 'statprenotazioni', cardKey, fallback);
-    });
-  }catch(_){ }
-
-  const slices = [
-    { label: "Con importo booking", value: s.withBooking, color: "#2b7cb4" },
-    { label: "Senza importo booking", value: s.withoutBooking, color: "#cf9458" },
-  ];
-
-  drawPie("statPrenCanvas", slices);
-
-  const leg = document.getElementById("statPrenLegend");
-  if (leg){
-    const total = slices.reduce((a,x)=>a+Math.max(0,Number(x.value||0)),0);
-    leg.innerHTML = "";
-    slices.forEach((sl)=>{
-      const v = Math.max(0, Number(sl.value || 0));
-      const pct = total > 0 ? (v/total*100) : 0;
-      const row = document.createElement("div");
-      row.className = "legrow";
-      row.innerHTML = `
-        <div class="legleft">
-          <div class="dot" style="background:${sl.color}"></div>
-          <div class="legname">${escapeHtml(sl.label)}</div>
-        </div>
-        <div class="legright">${pct.toFixed(1)}% · ${euro(v)}</div>
-      `;
-      leg.appendChild(row);
-    });
-  }
+  return renderStatChannel();
 }
 function openStatPieModal(){
   try{

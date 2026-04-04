@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.567" rel="stylesheet"/>
-<link href="./manifest.json?v=2.567" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.567" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.567" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.567" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.567" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" href="./bg-daedalium.jpeg?v=2.567" rel="preload" fetchpriority="high"/>
-<link as="image" href="./bg-daedalium_dark.PNG?v=2.567" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
+<link href="./styles.css?v=2.568" rel="stylesheet"/>
+<link href="./manifest.json?v=2.568" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.568" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.568" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.568" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.568" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.568" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.568" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.567";
+window.APP_VERSION = "2.568";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.567";
+  const LOCAL_BUILD = "dDAE_2.568";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.567";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.567")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.567")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.568")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.568")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -157,7 +157,7 @@ window.APP_VERSION = "2.567";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.567"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.568"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -196,6 +196,22 @@ window.APP_VERSION = "2.567";
 </div>
 <div hidden="" id="statPrenTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatistichePrenotazioni" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"></path>
+<path d="M9 12h12"></path>
+</svg>
+</button>
+</div>
+<div hidden="" id="statChannelTopTools">
+<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheChannel" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"></path>
+<path d="M9 12h12"></path>
+</svg>
+</button>
+</div>
+<div hidden="" id="statPulizieTopTools">
+<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatistichePulizie" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
 <path d="M9 12h12"></path>
@@ -268,7 +284,7 @@ window.APP_VERSION = "2.567";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.567"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.568"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -463,7 +479,7 @@ window.APP_VERSION = "2.567";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.567</div></div></section>
+<div class="build" id="buildText">dDAE_2.568</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -551,16 +567,37 @@ window.APP_VERSION = "2.567";
 </svg></div>
 <div class="home-main-label">Piscina</div>
 </button>
-<button aria-label="Grafici" class="home-main" id="goStatPrenotazioni" type="button">
+<button aria-label="Con senza ricevuta" class="home-main" id="goStatRicevute" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M4 19V5"></path>
-<path d="M4 19h16"></path>
-<path d="M8 17v-4"></path>
-<path d="M12 17V9"></path>
-<path d="M16 17v-7"></path>
-<path d="M7 7h10"></path>
+<path d="M7 3h7l3 3v15H7z"></path>
+<path d="M14 3v4h4"></path>
+<path d="M9 10h6"></path>
+<path d="M9 14h3"></path>
+<path d="M15 13l-2.5 3"></path>
+<path d="M12.5 13l2.5 3"></path>
 </svg></div>
-<div class="home-main-label">Grafici</div>
+<div class="home-main-label">Con/Senza ricevuta</div>
+</button>
+<button aria-label="Channel direct" class="home-main" id="goStatChannel" type="button">
+<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M4 7h7v10H4z"></path>
+<path d="M13 5h7v6h-7z"></path>
+<path d="M13 13h7v6h-7z"></path>
+<path d="M11 10h2"></path>
+<path d="M11 14h2"></path>
+</svg></div>
+<div class="home-main-label">Channel/Direct</div>
+</button>
+<button aria-label="Ore pulizia operatori" class="home-main" id="goStatPulizie" type="button">
+<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M6 3h12"></path>
+<path d="M8 3v4"></path>
+<path d="M16 3v4"></path>
+<path d="M12 12v4"></path>
+<path d="M12 12l3-2"></path>
+<path d="M12 21a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"></path>
+</svg></div>
+<div class="home-main-label">Ore pulizia</div>
 </button>
 </div>
 </div>
@@ -785,43 +822,57 @@ window.APP_VERSION = "2.567";
 </div>
 </div>
 </section>
-<!-- STATISTICHE: PRENOTAZIONI -->
+<!-- STATISTICHE: CON / SENZA RICEVUTA -->
 <section class="page" hidden="" id="page-statprenotazioni">
-<div class="stats-gen stats-graphs-page">
-<div class="stats-title">Grafici</div>
+<div class="stats-gen stats-pie-page">
+<div class="stats-title">Con / Senza ricevuta</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div class="stats-graphs-grid">
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Occupazione mensile</div>
-<div class="stats-graph-canvas"><canvas id="statGrafOccCanvas"></canvas></div>
-<div class="stats-graph-note" id="statGrafOccNote">Anno selezionato</div>
+<div class="statgen-line-chart-wrap stats-pie-chart-wrap" data-stat-line-chart-key="statricevute">
+<div class="stats-pie-chart-canvas"><canvas id="statRicevuteCanvas" class="stats-pie-chart"></canvas></div>
 </div>
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Con ricevuta / Senza ricevuta</div>
-<div class="stats-graph-canvas"><canvas id="statGrafRicevuteCanvas"></canvas></div>
-<div class="stats-graph-legend" id="statGrafRicevuteLegend"></div>
-</div>
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Prenotazioni con / senza Booking</div>
-<div class="stats-graph-canvas"><canvas id="statGrafBookingCanvas"></canvas></div>
-<div class="stats-graph-legend" id="statGrafBookingLegend"></div>
-</div>
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Cancellazioni</div>
-<div class="stats-graph-canvas"><canvas id="statGrafCancCanvas"></canvas></div>
-<div class="stats-graph-legend" id="statGrafCancLegend"></div>
-</div>
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Spese</div>
-<div class="stats-graph-canvas"><canvas id="statGrafSpeseCanvas"></canvas></div>
-<div class="stats-graph-legend" id="statGrafSpeseLegend"></div>
-</div>
-<div class="stats-graph-card">
-<div class="stats-graph-card-title">Ore pulizia operatori</div>
-<div class="stats-graph-canvas"><canvas id="statGrafPulizieCanvas"></canvas></div>
-<div class="stats-graph-legend" id="statGrafPulizieLegend"></div>
+<div class="stats-stack">
+<button class="stat-row" data-stat-card-key="senza-ricevuta" style="--statbg:#9aa3af; --statfg:rgba(15,23,42,0.92)" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 13h6"></path></svg></span>
+<span class="stat-name">Senza ricevuta</span>
+<span class="stat-val" id="srNoRicevuta">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="con-ricevuta" style="--statbg:#6aa0b3; --statfg:rgba(15,23,42,0.92)" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 14l2 2 4-4"></path></svg></span>
+<span class="stat-name">Con ricevuta</span>
+<span class="stat-val" id="srRicevuta">€0,00</span>
+</button>
 </div>
 </div>
+</section>
+<section class="page" hidden="" id="page-statchannel">
+<div class="stats-gen stats-pie-page">
+<div class="stats-title">Channel / Direct</div>
+<div aria-hidden="true" class="stats-divider"></div>
+<div class="statgen-line-chart-wrap stats-pie-chart-wrap" data-stat-line-chart-key="statchannel">
+<div class="stats-pie-chart-canvas"><canvas id="statChannelCanvas" class="stats-pie-chart"></canvas></div>
+</div>
+<div class="stats-stack">
+<button class="stat-row" data-stat-card-key="channel" style="--statbg:#2b7cb4" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h7v10H4z"></path><path d="M13 5h7v6h-7z"></path><path d="M13 13h7v6h-7z"></path></svg></span>
+<span class="stat-name">Channel</span>
+<span class="stat-val" id="scChannel">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="direct" style="--statbg:#c9772b" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 4l7 6v9H5v-9z"></path><path d="M9 19v-5h6v5"></path></svg></span>
+<span class="stat-name">Direct</span>
+<span class="stat-val" id="scDirect">€0,00</span>
+</button>
+</div>
+</div>
+</section>
+<section class="page" hidden="" id="page-statpulizie">
+<div class="stats-gen stats-pie-page">
+<div class="stats-title">Ore pulizia operatori</div>
+<div aria-hidden="true" class="stats-divider"></div>
+<div class="statgen-line-chart-wrap stats-pie-chart-wrap" data-stat-line-chart-key="statpulizie">
+<div class="stats-pie-chart-canvas"><canvas id="statPulizieCanvas" class="stats-pie-chart"></canvas></div>
+</div>
+<div class="stats-stack" id="statPulizieRows"></div>
 </div>
 </section>
 <section class="page" hidden="" id="page-statcancellazioni">
@@ -1667,8 +1718,8 @@ window.APP_VERSION = "2.567";
 </div>
 </div>
 </div>
-<script defer="" src="./config.js?v=2.567"></script>
-<script defer="" src="./app.js?v=2.567"></script>
+<script defer="" src="./config.js?v=2.568"></script>
+<script defer="" src="./app.js?v=2.568"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">

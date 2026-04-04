@@ -1441,7 +1441,9 @@ body > *{
 #page-statistiche #goStatGen .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatSpese .home-main-glyph{ color: var(--ico-orange) !important; }
-#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-orange) !important; }
+#page-statistiche #goStatRicevute .home-main-glyph{ color: var(--ico-orange) !important; }
+#page-statistiche #goStatChannel .home-main-glyph{ color: var(--ico-beige) !important; }
+#page-statistiche #goStatPulizie .home-main-glyph{ color: var(--ico-blue) !important; }
 #page-statistiche #goStatPiscina .home-main-glyph{ color: var(--ico-taupe) !important; }
 #page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-taupe) !important; }
 
@@ -19314,4 +19316,109 @@ body[data-page="impostazioni"] main.wrap{
 /* dDAE_2.566 — Impostazioni: abbassa la lista verticale 1x10 di 20px */
 #page-impostazioni .settings-actions.settings-actions-reference{
   margin-top: 48px !important;
+}
+
+
+/* dDAE_2.568 — Statistiche: nuova griglia 2x4 con 3 pagine grafico dedicate */
+#page-statistiche .home-grid{
+  margin: 24px auto 0 !important;
+  row-gap: 10px !important;
+  column-gap: 10px !important;
+  align-content: start !important;
+}
+#page-statistiche .home-main{
+  width: 160px !important;
+  max-width: 160px !important;
+}
+#page-statistiche .home-main-glyph{
+  width: clamp(74px, 21vw, 126px) !important;
+  height: clamp(74px, 21vw, 126px) !important;
+}
+#page-statistiche .home-main-label{
+  font-size: 15px !important;
+}
+@media (max-width: 390px){
+  #page-statistiche .home-grid{
+    margin-top: 18px !important;
+    column-gap: 8px !important;
+    row-gap: 8px !important;
+  }
+  #page-statistiche .home-main{
+    max-width: 148px !important;
+  }
+}
+
+.stats-pie-page .statgen-line-chart-wrap{
+  margin-top: 12px;
+}
+.stats-pie-chart-wrap{
+  min-height: 236px;
+}
+.stats-pie-chart-canvas{
+  width: 100%;
+  min-height: 236px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+.stats-pie-chart{
+  display: block;
+}
+#page-statpulizie .stats-stack{
+  padding-bottom: 18px;
+}
+
+body.ddae-dark #page-statprenotazioni .stat-row,
+body.ddae-dark #page-statchannel .stat-row,
+body.ddae-dark #page-statpulizie .stat-row{
+  background: rgba(12,23,46,0.96) !important;
+  background-color: rgba(12,23,46,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-row::before,
+body.ddae-dark #page-statchannel .stat-row::before,
+body.ddae-dark #page-statpulizie .stat-row::before,
+body.ddae-dark #page-statprenotazioni .stat-row::after,
+body.ddae-dark #page-statchannel .stat-row::after,
+body.ddae-dark #page-statpulizie .stat-row::after{
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen{
+    position: relative;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statchannel"] #page-statchannel .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen > :not(.statgen-line-chart-wrap){
+    display: none !important;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap{
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: 220px;
+    height: var(--stat-landscape-chart-height, calc(100dvh - 132px));
+    border-radius: 18px;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
+    min-height: 100%;
+    height: 100%;
+    padding: 8px;
+  }
 }
