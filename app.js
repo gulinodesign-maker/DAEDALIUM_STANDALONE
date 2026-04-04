@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.579
+ * Build: 2.580
  */
-const BUILD_VERSION = "2.579";
+const BUILD_VERSION = "2.580";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -18213,6 +18213,8 @@ function renderStatGen(){
   }catch(_){ }
   try{ __applyStatisticsCardTheme__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ __applyStatFiscalModeButtonVisual__(); }catch(_){ }
+  try{ __applyStatGenCompareYearButtonVisual__(); }catch(_){ }
   try{
     const wrap = document.querySelector('#page-statgen .statgen-line-chart-wrap');
     if (wrap){
