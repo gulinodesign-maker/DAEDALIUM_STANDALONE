@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.576
+ * Build: 2.577
  */
-const BUILD_VERSION = "2.576";
+const BUILD_VERSION = "2.577";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -3362,6 +3362,8 @@ function __pickExerciseYearFromSettings__(){
 }
 
 const __STATGEN_COMPARE_YEAR_KEY__ = "dDAE_statgen_compare_year_v1";
+const __STATGEN_COMPARE_ENABLED_KEY__ = "dDAE_statgen_compare_enabled_v1";
+const __STATGEN_COMPARE_BTN_VISUAL_KEY__ = "dDAE_statgen_compare_btn_visual_v1";
 let __statGenCompareYearWheelTimer__ = null;
 let __statGenCompareYearWheelApplying__ = false;
 
@@ -3395,8 +3397,111 @@ function __ensureStatGenCompareYear__(){
   return current;
 }
 
+function __statGenCompareEnabledRead__(){
+  try{
+    const raw = localStorage.getItem(__STATGEN_COMPARE_ENABLED_KEY__);
+    if (raw === null || raw === undefined || String(raw).trim() === '') return true;
+    return !(String(raw).trim() === '0' || String(raw).trim().toLowerCase() === 'false');
+  }catch(_){ return true; }
+}
+
+function __statGenCompareEnabledWrite__(enabled){
+  try{ localStorage.setItem(__STATGEN_COMPARE_ENABLED_KEY__, enabled ? '1' : '0'); }catch(_){ }
+  state.statGenCompareEnabled = !!enabled;
+  return !!enabled;
+}
+
+function __ensureStatGenCompareEnabled__(){
+  const current = (typeof state.statGenCompareEnabled === 'boolean') ? state.statGenCompareEnabled : __statGenCompareEnabledRead__();
+  state.statGenCompareEnabled = !!current;
+  return !!current;
+}
+
+function __statGenCompareBtnVisualDefaultState__(enabled){
+  return enabled
+    ? { bg:'#2b7cb4', border:'#2b7cb4', fg:'#ffffff', opacity:0.80 }
+    : { bg:'#d6dee8', border:'#d6dee8', fg:'#0f172a', opacity:0.80 };
+}
+
+function __statGenCompareBtnVisualRead__(){
+  const fallback = { on: __statGenCompareBtnVisualDefaultState__(true), off: __statGenCompareBtnVisualDefaultState__(false) };
+  try{
+    const raw = localStorage.getItem(__STATGEN_COMPARE_BTN_VISUAL_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return {
+      on: __tagColorPairFromValue__(parsed?.on || fallback.on, fallback.on.bg),
+      off: __tagColorPairFromValue__(parsed?.off || fallback.off, fallback.off.bg)
+    };
+  }catch(_){ return fallback; }
+}
+
+function __statGenCompareBtnVisualWrite__(visuals){
+  const current = __statGenCompareBtnVisualRead__();
+  const next = {
+    on: __tagColorPairFromValue__(visuals?.on || current.on, (visuals?.on && visuals.on.bg) || current.on.bg),
+    off: __tagColorPairFromValue__(visuals?.off || current.off, (visuals?.off && visuals.off.bg) || current.off.bg)
+  };
+  try{ localStorage.setItem(__STATGEN_COMPARE_BTN_VISUAL_KEY__, JSON.stringify(next)); }catch(_){ }
+  return next;
+}
+
+function __applyStatGenCompareYearButtonVisual__(){
+  try{
+    const btn = document.getElementById('statGenCompareYearBtn');
+    if (!btn) return;
+    const enabled = __ensureStatGenCompareEnabled__();
+    const visuals = __statGenCompareBtnVisualRead__();
+    const pair = enabled ? visuals.on : visuals.off;
+    const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    const bgHex = __graphColorValueToHex__(pair?.bg || (enabled ? '#2b7cb4' : '#d6dee8'), enabled ? '#2b7cb4' : '#d6dee8');
+    const borderHex = __graphColorValueToHex__(pair?.border || pair?.bg || bgHex, bgHex);
+    const textHex = isDark
+      ? __darkModeReadableTextHex__(__graphColorValueToHex__(pair?.fg || __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false), bgHex), enabled ? '#f8fbff' : '#e2e8f0')
+      : __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false);
+    const opacity = __designBgOpacityNormalize__(pair?.opacity ?? 0.80);
+    btn.classList.toggle('is-active', enabled);
+    btn.classList.toggle('is-inactive', !enabled);
+    btn.style.setProperty('--comparebtn-bg', hexToRgba(bgHex, opacity));
+    btn.style.setProperty('--comparebtn-border', borderHex);
+    btn.style.setProperty('--comparebtn-fg', textHex);
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border', `1px solid ${borderHex}`, 'important');
+    btn.style.setProperty('color', textHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+    btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+  }catch(_){ }
+}
+
+function __openStatGenCompareYearButtonColorPicker__(){
+  const enabled = __ensureStatGenCompareEnabled__();
+  const visuals = __statGenCompareBtnVisualRead__();
+  const stateKey = enabled ? 'on' : 'off';
+  const initial = __tagColorPairFromValue__(visuals[stateKey], visuals[stateKey]?.bg || (enabled ? '#2b7cb4' : '#d6dee8'));
+  __tagColorPopupOpen__('statgen-compare-year-btn', initial, (payload) => {
+    const current = __statGenCompareBtnVisualRead__();
+    const pair = __tagColorPairFromValue__(current[stateKey] || initial, initial.bg || '#2b7cb4');
+    const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    pair.bg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || initial.bg || '#2b7cb4').spec;
+    pair.border = __parseOperatoreColorSpec__(payloadColors.border || pair.border || pair.bg || initial.bg || '#2b7cb4').spec;
+    pair.fg = String(payloadColors.fg || '').trim() ? __parseOperatoreColorSpec__(payloadColors.fg).spec : '';
+    pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? initial.opacity ?? 0.80);
+    current[stateKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: pair.opacity };
+    __statGenCompareBtnVisualWrite__(current);
+    __applyStatGenCompareYearButtonVisual__();
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial.opacity ?? 0.80), defaultMode:'bg', fallbackBg:initial.bg || (enabled ? '#2b7cb4' : '#d6dee8') });
+}
+
+function __toggleStatGenCompareEnabled__(){
+  const next = !__ensureStatGenCompareEnabled__();
+  __statGenCompareEnabledWrite__(next);
+  __updateStatGenCompareYearButtonUI__();
+  try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+}
+
 function __updateStatGenCompareYearButtonUI__(){
   const year = __ensureStatGenCompareYear__();
+  const enabled = __ensureStatGenCompareEnabled__();
   try{
     const label = document.getElementById('statGenCompareYearBtnLabel');
     if (label) label.textContent = year;
@@ -3404,10 +3509,11 @@ function __updateStatGenCompareYearButtonUI__(){
   try{
     const btn = document.getElementById('statGenCompareYearBtn');
     if (btn){
-      btn.setAttribute('aria-label', `Anno confronto grafico ${year}`);
-      btn.title = `Anno confronto ${year}`;
+      btn.setAttribute('aria-label', `Anno confronto grafico ${year} ${enabled ? 'attivo' : 'disattivo'}`);
+      btn.title = `Anno confronto ${year} (${enabled ? 'ON' : 'OFF'})`;
     }
   }catch(_){ }
+  try{ __applyStatGenCompareYearButtonVisual__(); }catch(_){ }
 }
 
 function __populateStatGenCompareYearPicker__(selectedYear){
@@ -3526,14 +3632,20 @@ async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
     speseAll: Array.isArray(state.speseAll) ? state.speseAll.slice() : state.speseAll,
     reportAll: state.reportAll,
     statsGuests: Array.isArray(state.statsGuests) ? state.statsGuests.slice() : state.statsGuests,
-    _statsDataKey: state._statsDataKey
+    _statsDataKey: state._statsDataKey,
+    servizi: Array.isArray(state.servizi) ? state.servizi.slice() : state.servizi
   };
 
   try{
     state.exerciseYear = targetYear;
     state._statsDataKey = '';
     await ensureStatsAllData({ showLoader:false, force: !!opts.force });
-    return Array.isArray(state.statsGuests) ? state.statsGuests.slice() : [];
+    return {
+      guests: Array.isArray(state.statsGuests) ? state.statsGuests.slice() : [],
+      spese: Array.isArray(state.speseAll) ? state.speseAll.slice() : [],
+      report: state.reportAll ? JSON.parse(JSON.stringify(state.reportAll)) : null,
+      servizi: Array.isArray(state.servizi) ? state.servizi.slice() : []
+    };
   }catch(_){
     return [];
   }finally{
@@ -3542,6 +3654,7 @@ async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
     state.reportAll = backup.reportAll;
     state.statsGuests = backup.statsGuests;
     state._statsDataKey = backup._statsDataKey;
+    state.servizi = backup.servizi;
   }
 }
 
@@ -3559,14 +3672,26 @@ async function __loadStatGenCompareGuests__(opts = {}){
     if (Array.isArray(cachedRows) && cachedRows.length){
       if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
       state.statGenCompareGuests = cachedRows.slice();
+      state.statGenCompareSnapshot = {
+        guests: cachedRows.slice(),
+        spese: Array.isArray(state.statGenCompareSnapshot?.spese) ? state.statGenCompareSnapshot.spese.slice() : [],
+        report: state.statGenCompareSnapshot?.report ? JSON.parse(JSON.stringify(state.statGenCompareSnapshot.report)) : null,
+        servizi: Array.isArray(state.statGenCompareSnapshot?.servizi) ? state.statGenCompareSnapshot.servizi.slice() : []
+      };
       try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
     }
   }catch(_){ }
 
   try{
-    const rows = await __statGenLoadGuestsThroughPrimaryPipeline__(compareYear, { force:true });
+    const snapshot = await __statGenLoadGuestsThroughPrimaryPipeline__(compareYear, { force:true });
     if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
-    state.statGenCompareGuests = Array.isArray(rows) ? rows : [];
+    state.statGenCompareGuests = Array.isArray(snapshot?.guests) ? snapshot.guests : [];
+    state.statGenCompareSnapshot = {
+      guests: Array.isArray(snapshot?.guests) ? snapshot.guests.slice() : [],
+      spese: Array.isArray(snapshot?.spese) ? snapshot.spese.slice() : [],
+      report: snapshot?.report ? JSON.parse(JSON.stringify(snapshot.report)) : null,
+      servizi: Array.isArray(snapshot?.servizi) ? snapshot.servizi.slice() : []
+    };
   }catch(_){
     if (__ensureStatGenCompareYear__() === compareYear) state.statGenCompareGuests = Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
   }
@@ -4286,6 +4411,7 @@ guestMarriage: false,
   exerciseYear: null,
   statGenCompareYear: null,
   statGenCompareGuests: [],
+  statGenCompareSnapshot: null,
 };
 
 const COLORS = {
@@ -11237,9 +11363,50 @@ const cfg = document.getElementById("settingsConfigBtn");
     });
   }
   const statGenCompareYearBtn = document.getElementById('statGenCompareYearBtn');
-  if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundTap){
-    statGenCompareYearBtn.__boundTap = true;
-    bindFastTap(statGenCompareYearBtn, () => { __openStatGenCompareYearPicker__(); });
+  if (statGenCompareYearBtn && !statGenCompareYearBtn.__boundAdvanced){
+    statGenCompareYearBtn.__boundAdvanced = true;
+    let tapTimer = null;
+    let longPressTimer = null;
+    let longPressFired = false;
+    const clearTap = ()=>{ if (tapTimer){ clearTimeout(tapTimer); tapTimer = null; } };
+    const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
+    const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } return false; };
+    const startLong = (e)=>{
+      try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+      longPressFired = false;
+      clearLong();
+      longPressTimer = setTimeout(()=>{
+        longPressFired = true;
+        try{ statGenCompareYearBtn.classList.add('is-pressing'); }catch(_){ }
+        __openStatGenCompareYearButtonColorPicker__();
+      }, 500);
+    };
+    const stopLong = (e)=>{
+      clearLong();
+      if (longPressFired){
+        block(e);
+        setTimeout(()=>{ longPressFired = false; try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ } }, 0);
+        return;
+      }
+      try{ statGenCompareYearBtn.classList.remove('is-pressing'); }catch(_){ }
+    };
+    statGenCompareYearBtn.addEventListener('click', (e) => {
+      if (longPressFired) return block(e);
+      if (tapTimer) return;
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        __toggleStatGenCompareEnabled__();
+      }, 240);
+    });
+    statGenCompareYearBtn.addEventListener('dblclick', (e) => {
+      block(e);
+      clearTap();
+      if (longPressFired) return;
+      __openStatGenCompareYearPicker__();
+    });
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statGenCompareYearBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
+    try{ statGenCompareYearBtn.addEventListener('contextmenu', (e)=>{ block(e); }, true); }catch(_){ }
   }
   const statGenCompareModal = document.getElementById('statGenCompareYearModal');
   if (statGenCompareModal && !statGenCompareModal.__boundClose){
@@ -16302,6 +16469,165 @@ function __statGuestDualMonthlySeries__(resolver){
 }
 
 
+function __statGuestDualMonthlySeriesForRows__(rows, resolver){
+  const guests = Array.isArray(rows) ? rows : [];
+  const primary = new Array(12).fill(0);
+  const secondary = new Array(12).fill(0);
+  guests.forEach((guest) => {
+    if (!guest) return;
+    const iso = __statGuestMonthIso__(guest);
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const month = parseInt(iso.slice(5, 7), 10);
+    if (!Number.isFinite(month) || month < 1 || month > 12) return;
+    const resolved = (typeof resolver === 'function') ? (resolver(guest) || {}) : {};
+    primary[month - 1] += Math.max(0, Number(resolved.primary || 0) || 0);
+    secondary[month - 1] += Math.max(0, Number(resolved.secondary || 0) || 0);
+  });
+  for (let i = 0; i < 12; i += 1){
+    primary[i] = Math.round((Number(primary[i] || 0) || 0) * 100) / 100;
+    secondary[i] = Math.round((Number(secondary[i] || 0) || 0) * 100) / 100;
+  }
+  return { primary, secondary };
+}
+
+function __statSpeseMonthlyBreakdownForRows__(rows){
+  const items = Array.isArray(rows) ? rows : [];
+  const out = {
+    totale: new Array(12).fill(0),
+    contanti: new Array(12).fill(0),
+    tassa: new Array(12).fill(0),
+    iva22: new Array(12).fill(0),
+    iva10: new Array(12).fill(0),
+    iva4: new Array(12).fill(0)
+  };
+  const toNumber = (v) => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    let s = String(v).trim();
+    if (!s) return 0;
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    const n = Number(s);
+    return isFinite(n) ? n : 0;
+  };
+  items.forEach((row) => {
+    const raw = row?.dataSpesa || row?.data || row?.data_spesa || '';
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : ''; }catch(_){ iso = ''; }
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const month = parseInt(iso.slice(5,7), 10);
+    if (!Number.isFinite(month) || month < 1 || month > 12) return;
+    const idx = month - 1;
+    const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
+    const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
+    const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
+    out.totale[idx] += lordo;
+    if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
+    if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
+    if (categoria.includes('iva')){
+      if (categoria.includes('22')) { out.iva22[idx] += lordo; return; }
+      if (categoria.includes('10')) { out.iva10[idx] += lordo; return; }
+      if (categoria.includes('4')) { out.iva4[idx] += lordo; return; }
+    }
+    if (!Number.isNaN(aliquota)){
+      if (aliquota >= 21.5) out.iva22[idx] += lordo;
+      else if (aliquota >= 9.5 && aliquota < 11.5) out.iva10[idx] += lordo;
+      else if (aliquota >= 3.5 && aliquota < 5.5) out.iva4[idx] += lordo;
+    }
+  });
+  return out;
+}
+
+function __computeStatGenFromData__(data){
+  const guests = Array.isArray(data?.guests) ? data.guests : [];
+  const speseRows = Array.isArray(data?.spese) ? data.spese : [];
+  const report = data?.report || null;
+  const fiscalMode = getStatFiscalMode();
+  let fatturato = 0;
+  let totalePrenotazioniConRicevuta = 0;
+  let giacenza = 0;
+  let conRicevuta = 0;
+  let senzaRicevuta = 0;
+  guests.forEach((g) => {
+    const pren = __statGuestMoney__(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
+    fatturato += pren;
+    if (pren > 0 && _guestHasFiscalReceipt(g)) totalePrenotazioniConRicevuta += pren;
+    const dep = __statGuestMoney__(g?.acconto_importo ?? g?.accontoImporto ?? 0);
+    const saldo = __statGuestMoney__(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
+    giacenza += (dep + saldo);
+    const depRec = truthy(g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? g?.acconto_ricevutain);
+    const saldoRec = truthy(g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? g?.saldo_ricevutain);
+    if (dep > 0) depRec ? (conRicevuta += dep) : (senzaRicevuta += dep);
+    if (saldo > 0) saldoRec ? (conRicevuta += saldo) : (senzaRicevuta += saldo);
+  });
+  const speseTot = speseRows.reduce((sum, it) => sum + __statGuestMoney__(it?.importoLordo ?? it?.lordo ?? it?.importo ?? 0), 0);
+  giacenza = (__statGuestMoney__(conRicevuta) + __statGuestMoney__(senzaRicevuta)) - __statGuestMoney__(speseTot);
+  let ivaSpese = __statGuestMoney__(report?.totals?.ivaDetraibile ?? 0);
+  if (!isFinite(ivaSpese) || ivaSpese === 0){
+    ivaSpese = speseRows.reduce((sum, row) => {
+      const ivaField = __statGuestMoney__(row?.iva ?? row?.IVA ?? 0);
+      if (ivaField > 0) return sum + ivaField;
+      const lordo = __statGuestMoney__(row?.importoLordo ?? row?.lordo ?? row?.importo ?? 0);
+      if (!isFinite(lordo) || lordo <= 0) return sum;
+      const catRaw = String(row?.categoria ?? row?.cat ?? '').trim().toLowerCase();
+      let rate = 0;
+      if (catRaw.includes('iva')){
+        if (catRaw.includes('22')) rate = 22;
+        else if (catRaw.includes('10')) rate = 10;
+        else if (catRaw.includes('4')) rate = 4;
+      } else {
+        const n = parseFloat(String(row?.aliquotaIva ?? row?.aliquota_iva ?? '').replace(',', '.'));
+        if (!isNaN(n)){
+          if (n >= 21.5) rate = 22;
+          else if (n >= 9.5 && n < 11.5) rate = 10;
+          else if (n >= 3.5 && n < 5.5) rate = 4;
+        }
+      }
+      if (rate <= 0) return sum;
+      const imponibile = lordo / (1 + rate/100);
+      const iva = lordo - imponibile;
+      return sum + (isFinite(iva) ? iva : 0);
+    }, 0);
+  }
+  const ivaPrenotazioni = totalePrenotazioniConRicevuta * 0.10;
+  const ivaDaVersareSocieta = ivaPrenotazioni - (__statGuestMoney__(ivaSpese) || 0);
+  const ivaDaVersare = fiscalMode === 'societa' ? ivaDaVersareSocieta : 0;
+  const guadagno = fatturato - speseTot - (fiscalMode === 'societa' ? ivaDaVersareSocieta : 0);
+  return { fiscalMode, fatturatoTotale: fatturato, speseTotali: speseTot, senzaRicevuta, conRicevuta, ivaDaVersare, guadagnoTotale: guadagno, giacenzaCassa: giacenza };
+}
+
+function __statGenSeriesListFromData__(data){
+  const statGen = __computeStatGenFromData__(data || {});
+  const revenueData = __statGenRegistrationsByMonth__(Array.isArray(data?.guests) ? data.guests : []);
+  const spese = __statSpeseMonthlyBreakdownForRows__(Array.isArray(data?.spese) ? data.spese : []);
+  const ricevute = __statGuestDualMonthlySeriesForRows__(Array.isArray(data?.guests) ? data.guests : [], (guest) => {
+    const dep = __statGuestMoney__(guest?.acconto_importo ?? guest?.accontoImporto ?? 0);
+    const saldo = __statGuestMoney__(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
+    const depRec = truthy(guest?.acconto_ricevuta ?? guest?.accontoRicevuta ?? guest?.ricevuta_acconto ?? guest?.ricevutaAcconto ?? guest?.acconto_ricevutain);
+    const saldoRec = truthy(guest?.saldo_ricevuta ?? guest?.saldoRicevuta ?? guest?.ricevuta_saldo ?? guest?.ricevutaSaldo ?? guest?.saldo_ricevutain);
+    return { primary: (depRec ? dep : 0) + (saldoRec ? saldo : 0), secondary: (depRec ? 0 : dep) + (saldoRec ? 0 : saldo) };
+  });
+  const revenueCum = __statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0));
+  const speseCum = __statMonthlyCumulative__(spese.totale || new Array(12).fill(0));
+  const withRecCum = __statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0));
+  const withoutRecCum = __statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0));
+  const ivaTotal = Number(statGen?.ivaDaVersare || 0) || 0;
+  const revenueTotal = Math.max(1, Number(statGen?.fatturatoTotale || 0) || 0);
+  const ivaCum = revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100);
+  const gainCum = revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100);
+  const cashCum = gainCum.slice();
+  return {
+    'fatturato-totale': revenueCum,
+    'spese-totali': speseCum,
+    'senza-ricevuta': withoutRecCum,
+    'con-ricevuta': withRecCum,
+    'iva-da-versare': ivaCum,
+    'guadagno-totale': gainCum,
+    'giacenza-in-cassa': cashCum
+  };
+}
+
+
 function __statChartFiltersEnsure__(){
   if (!state.statChartFilters || typeof state.statChartFilters !== 'object') state.statChartFilters = {};
   return state.statChartFilters;
@@ -17606,7 +17932,28 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 }
 
 function drawStatGenRegistrationsLineChart(canvasId){
+  const selected = __getStatChartFilter__('statgen');
   const seriesList = __statGenSeriesList__().filter((item) => __statChartSeriesIsVisible__('statgen', item.key));
+  if (selected && __ensureStatGenCompareEnabled__()){
+    try{
+      const compareSource = state.statGenCompareSnapshot || { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], spese: [], report: null, servizi: [] };
+      const compareMap = __statGenSeriesListFromData__(compareSource || {});
+      const compareValues = Array.isArray(compareMap?.[selected]) ? compareMap[selected] : [];
+      if (Array.isArray(compareValues) && compareValues.length){
+        seriesList.push({
+          key: `${selected}-compare-year`,
+          label: `Confronto ${__ensureStatGenCompareYear__()}`,
+          values: compareValues,
+          color: '#9aa3af',
+          dash: [6,4],
+          pointFill: '#ffffff',
+          lineWidth: 1.8,
+          radius: 2.5,
+          pointLineWidth: 1.4
+        });
+      }
+    }catch(_){ }
+  }
   __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
     mode: 'currency',
     seriesList,
@@ -30129,4 +30476,4 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
 })();
 
-/* dDAE_2.576 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
+/* dDAE_2.577 — Statistiche generali: serie con/senza ricevuta allineate alla data prenotazione */
