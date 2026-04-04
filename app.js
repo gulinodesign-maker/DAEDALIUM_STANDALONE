@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.582
+ * Build: 2.583
  */
-const BUILD_VERSION = "2.582";
+const BUILD_VERSION = "2.583";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17864,7 +17864,10 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const isDark = !!document.body?.classList?.contains('ddae-dark');
   const surface = __statSharedLineChartResolvedSurface__(visual, isDark);
   const textHex = __statSharedLineChartResolvedTextHex__(visual, isDark);
-  const lineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
+  const defaultLineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
+  const opts = options || {};
+  const requestedLineColor = String(opts.lineColor || '').trim();
+  const lineColor = requestedLineColor || defaultLineColor;
   const compareLineColor = String((options && options.compareLineColor) || (isDark ? '#7dd3fc' : '#2563eb'));
   const gridBaseHex = __graphColorValueToHex__(visual.border || textHex || (isDark ? '#94a3b8' : '#0f172a'), textHex || (isDark ? '#94a3b8' : '#0f172a'));
   const gridColor = hexToRgba(gridBaseHex, isDark ? 0.22 : 0.18);
@@ -17876,7 +17879,6 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const isBoldTrend = !!textUiSettings?.bold;
   const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
-  const opts = options || {};
   const seriesListRaw = Array.isArray(opts.seriesList) ? opts.seriesList.filter(Boolean) : [];
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
   const compareVals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((opts.compareValues || [])[i] || 0) || 0));
