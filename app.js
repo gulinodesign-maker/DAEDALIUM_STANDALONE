@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.569
+ * Build: 2.570
  */
-const BUILD_VERSION = "2.569";
+const BUILD_VERSION = "2.570";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16199,7 +16199,7 @@ function computeStatOrePuliziaGrafico(rows){
     label: name,
     value: Number(totals.get(name) || 0),
     color: getOperatoreColorHexByName(name, palette[i % palette.length] || 'blue')
-  })).filter(x=>x.value > 0);
+  }));
   return slices;
 }
 
@@ -16290,6 +16290,95 @@ function __statGuestDualMonthlySeries__(resolver){
   return { primary, secondary };
 }
 
+
+function __statChartFiltersEnsure__(){
+  if (!state.statChartFilters || typeof state.statChartFilters !== 'object') state.statChartFilters = {};
+  return state.statChartFilters;
+}
+
+function __getStatChartFilter__(pageKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  const filters = __statChartFiltersEnsure__();
+  return String(filters[safePageKey] || '').trim();
+}
+
+function __setStatChartFilter__(pageKey, cardKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  const safeCardKey = String(cardKey || '').trim();
+  const filters = __statChartFiltersEnsure__();
+  filters[safePageKey] = safeCardKey;
+  return safeCardKey;
+}
+
+function __clearStatChartFilter__(pageKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  const filters = __statChartFiltersEnsure__();
+  delete filters[safePageKey];
+}
+
+function __statChartSeriesIsVisible__(pageKey, cardKey){
+  const selected = __getStatChartFilter__(pageKey);
+  if (!selected) return true;
+  return String(selected) === String(cardKey || '').trim();
+}
+
+function __statChartLineColorFromStatCard__(pageKey, cardKey, fallback){
+  try{
+    const pair = __getStatCardColorPair__(pageKey, cardKey, fallback || 'blue-4');
+    const preferred = pair?.fg || fallback || pair?.bg || '#2B7CB4';
+    return __graphColorValueToHex__(preferred, fallback || pair?.bg || '#2B7CB4');
+  }catch(_){ return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4'); }
+}
+
+function __statChartLineColorFromOperatore__(name, fallback){
+  try{
+    const item = getOperatoreCatalogItemByName(name);
+    const bgSpec = item?.colore || fallback || 'blue-4';
+    const preferred = item?.coloreTesto || __tagColorTextHex__(bgSpec, item?.coloreTesto || '', false) || fallback || bgSpec;
+    return __graphColorValueToHex__(preferred || fallback || bgSpec, fallback || bgSpec || '#2B7CB4');
+  }catch(_){ return __graphColorValueToHex__(fallback || '#2B7CB4', '#2B7CB4'); }
+}
+
+function __refreshSpecificStatChart__(pageKey){
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  try{
+    if (safePageKey === 'statprenotazioni') return renderStatRicevute();
+    if (safePageKey === 'statchannel') return renderStatChannel();
+    if (safePageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
+  }catch(_){ }
+}
+
+function __setStatCardSelectionState__(el, pageKey, cardKey){
+  if (!el) return;
+  const selected = __getStatChartFilter__(pageKey) === String(cardKey || '').trim();
+  try{ el.classList.toggle('is-selected', !!selected); }catch(_){ }
+  try{ el.setAttribute('aria-pressed', selected ? 'true' : 'false'); }catch(_){ }
+}
+
+function __bindStatChartCardToggle__(el, pageKey, cardKey){
+  if (!el || el.dataset.statChartToggleBound === '1') return;
+  el.dataset.statChartToggleBound = '1';
+  el.addEventListener('click', (e) => {
+    try{ e.preventDefault(); }catch(_){ }
+    try{ e.stopPropagation(); }catch(_){ }
+    __setStatChartFilter__(pageKey, cardKey);
+    __refreshSpecificStatChart__(pageKey);
+  });
+}
+
+function __bindStatChartWrapReset__(pageKey){
+  const wrap = document.querySelector(`#page-${String(pageKey || '').trim().toLowerCase()} .statgen-line-chart-wrap`);
+  if (!wrap || wrap.dataset.statChartResetBound === '1') return;
+  wrap.dataset.statChartResetBound = '1';
+  wrap.addEventListener('click', (e) => {
+    if (!__getStatChartFilter__(pageKey)) return;
+    try{ e.preventDefault(); }catch(_){ }
+    try{ e.stopPropagation(); }catch(_){ }
+    __clearStatChartFilter__(pageKey);
+    __refreshSpecificStatChart__(pageKey);
+  });
+}
+
 function __statRicevuteMonthlySeries__(){
   return __statGuestDualMonthlySeries__((guest) => {
     const dep = __statGuestMoney__(guest?.acconto_importo ?? guest?.accontoImporto ?? 0);
@@ -16305,8 +16394,10 @@ function __statRicevuteMonthlySeries__(){
 function drawStatRicevuteLineChart(canvasId){
   const series = __statRicevuteMonthlySeries__();
   __drawSharedMonthlyLineChart__(canvasId, series.primary, {
-    compareValues: series.secondary,
-    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#cbd5e1' : '#9aa3af'),
+    seriesList: [
+      { key:'con-ricevuta', label:'Con ricevuta', values: series.primary, color: __statChartLineColorFromStatCard__('statprenotazioni', 'con-ricevuta', '#6aa0b3') },
+      { key:'senza-ricevuta', label:'Senza ricevuta', values: series.secondary, color: __statChartLineColorFromStatCard__('statprenotazioni', 'senza-ricevuta', '#9aa3af') }
+    ].filter((item) => __statChartSeriesIsVisible__('statprenotazioni', item.key)),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
@@ -16326,9 +16417,12 @@ function renderStatRicevute(){
     if (card){
       __applyStatCardTextColor__(card, 'statprenotazioni', row.cardKey, row.fallback);
       __bindStatCardColorLongPress__(card, 'statprenotazioni', row.cardKey, row.fallback);
+      __bindStatChartCardToggle__(card, 'statprenotazioni', row.cardKey);
+      __setStatCardSelectionState__(card, 'statprenotazioni', row.cardKey);
     }
   });
   __prepareStatPiePage__('statprenotazioni');
+  __bindStatChartWrapReset__('statprenotazioni');
   try{ drawStatRicevuteLineChart('statRicevuteCanvas'); }catch(_){ }
 }
 
@@ -16347,8 +16441,10 @@ function __statChannelMonthlySeries__(){
 function drawStatChannelLineChart(canvasId){
   const series = __statChannelMonthlySeries__();
   __drawSharedMonthlyLineChart__(canvasId, series.primary, {
-    compareValues: series.secondary,
-    compareLineColor: (document.body?.classList?.contains('ddae-dark') ? '#fdba74' : '#c9772b'),
+    seriesList: [
+      { key:'channel', label:'Channel', values: series.primary, color: __statChartLineColorFromStatCard__('statchannel', 'channel', '#2b7cb4') },
+      { key:'direct', label:'Direct', values: series.secondary, color: __statChartLineColorFromStatCard__('statchannel', 'direct', '#c9772b') }
+    ].filter((item) => __statChartSeriesIsVisible__('statchannel', item.key)),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
@@ -16368,9 +16464,12 @@ function renderStatChannel(){
     if (card){
       __applyStatCardTextColor__(card, 'statchannel', row.cardKey, row.fallback);
       __bindStatCardColorLongPress__(card, 'statchannel', row.cardKey, row.fallback);
+      __bindStatChartCardToggle__(card, 'statchannel', row.cardKey);
+      __setStatCardSelectionState__(card, 'statchannel', row.cardKey);
     }
   });
   __prepareStatPiePage__('statchannel');
+  __bindStatChartWrapReset__('statchannel');
   try{ drawStatChannelLineChart('statChannelCanvas'); }catch(_){ }
 }
 
@@ -16382,10 +16481,32 @@ function __statPulizieCardKey__(label){
   }
 }
 
-function __statPulizieMonthlyHours__(rows){
+function __statPulizieOperatorNames__(rows){
+  const ordered = [];
+  const seen = new Set();
+  const pushName = (value) => {
+    const clean = String(value || '').trim();
+    if (!clean) return;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    ordered.push(clean);
+  };
+  try{ (getActiveOperatorNames ? (getActiveOperatorNames() || []) : []).forEach(pushName); }catch(_){ }
+  (Array.isArray(rows) ? rows : []).forEach((row) => {
+    const canonical = getCanonicalActiveOperatorName(row?.operatore || row?.nome || '');
+    const fallback = String(row?.operatore || row?.nome || '').trim();
+    pushName(canonical || fallback);
+  });
+  return ordered;
+}
+
+function __statPulizieMonthlySeriesByOperator__(rows){
+  const orderedNames = __statPulizieOperatorNames__(rows);
   const listRaw = Array.isArray(rows) ? rows : [];
   const list = __filterByExerciseYear__(listRaw, state.exerciseYear || loadExerciseYear(), ['data','date','Data','createdAt','created_at','updatedAt','updated_at']);
-  const byMonth = new Array(12).fill(0);
+  const map = new Map();
+  orderedNames.forEach((name) => { map.set(name, new Array(12).fill(0)); });
   list.forEach((row) => {
     if (!row) return;
     let iso = '';
@@ -16394,18 +16515,25 @@ function __statPulizieMonthlyHours__(rows){
     const month = parseInt(iso.slice(5, 7), 10);
     if (!Number.isFinite(month) || month < 1 || month > 12) return;
     const hours = Number(String(row?.ore ?? row?.Ore ?? 0).replace(',', '.'));
-    if (!isFinite(hours) || hours <= 0) return;
-    byMonth[month - 1] += hours;
+    if (!isFinite(hours) || hours < 0) return;
+    const canonical = getCanonicalActiveOperatorName(row?.operatore || row?.nome || '');
+    const operatorName = String(canonical || row?.operatore || row?.nome || '').trim();
+    if (!operatorName) return;
+    if (!map.has(operatorName)) map.set(operatorName, new Array(12).fill(0));
+    map.get(operatorName)[month - 1] += hours;
   });
-  for (let i = 0; i < 12; i += 1){
-    byMonth[i] = Math.round((Number(byMonth[i] || 0) || 0) * 100) / 100;
-  }
-  return byMonth;
+  return Array.from(map.entries()).map(([name, values]) => ({
+    key: __statPulizieCardKey__(name),
+    label: name,
+    values: values.map((value) => Math.round((Number(value || 0) || 0) * 100) / 100),
+    color: __statChartLineColorFromOperatore__(name, '#2b7cb4')
+  }));
 }
 
 function drawStatPulizieLineChart(canvasId, rows){
-  const values = __statPulizieMonthlyHours__(rows);
-  __drawSharedMonthlyLineChart__(canvasId, values, {
+  const seriesList = __statPulizieMonthlySeriesByOperator__(rows).filter((item) => __statChartSeriesIsVisible__('statpulizie', item.key));
+  __drawSharedMonthlyLineChart__(canvasId, new Array(12).fill(0), {
+    seriesList,
     bubbleFormatter: (value) => `${__fmtHours_(value) || '0'}h`,
     yTickFormatter: (value) => `${Math.round(Number(value || 0) || 0)}h`
   });
@@ -16413,15 +16541,15 @@ function drawStatPulizieLineChart(canvasId, rows){
 
 function renderStatPulizie(operatoriRows){
   try{ state.statGraficiOperatoriRows = Array.isArray(operatoriRows) ? operatoriRows.slice() : []; }catch(_){ }
-  const baseSlices = computeStatOrePuliziaGrafico(Array.isArray(operatoriRows) ? operatoriRows : []);
+  const seriesList = __statPulizieMonthlySeriesByOperator__(Array.isArray(operatoriRows) ? operatoriRows : []);
   const container = document.getElementById('statPulizieRows');
   if (container) container.innerHTML = '';
-  const rows = (Array.isArray(baseSlices) && baseSlices.length)
-    ? baseSlices.map((slice) => ({
-        cardKey: __statPulizieCardKey__(slice.label),
-        label: String(slice.label || 'Operatore'),
-        value: Number(slice.value || 0) || 0,
-        fallback: __closestGraphColorSpec__(slice.color || '#2b7cb4')
+  const rows = (Array.isArray(seriesList) && seriesList.length)
+    ? seriesList.map((series) => ({
+        cardKey: series.key,
+        label: String(series.label || 'Operatore'),
+        value: Math.round((series.values || []).reduce((sum, value) => sum + (Number(value || 0) || 0), 0) * 100) / 100,
+        fallback: __closestGraphColorSpec__(series.color || '#2b7cb4')
       }))
     : [{ cardKey:'nessun-dato', label:'Nessun dato', value:0, fallback:'blue-4' }];
 
@@ -16439,10 +16567,13 @@ function renderStatPulizie(operatoriRows){
       container.appendChild(btn);
       __applyStatCardTextColor__(btn, 'statpulizie', row.cardKey, row.fallback);
       __bindStatCardColorLongPress__(btn, 'statpulizie', row.cardKey, row.fallback);
+      __bindStatChartCardToggle__(btn, 'statpulizie', row.cardKey);
+      __setStatCardSelectionState__(btn, 'statpulizie', row.cardKey);
     });
   }
 
   __prepareStatPiePage__('statpulizie');
+  __bindStatChartWrapReset__('statpulizie');
   try{ drawStatPulizieLineChart('statPulizieCanvas', Array.isArray(operatoriRows) ? operatoriRows : []); }catch(_){ }
 }
 
@@ -17111,22 +17242,16 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   if (!canvas) return;
   const parent = canvas.parentElement || canvas;
   const wrap = (canvas.closest && canvas.closest('.statgen-line-chart-wrap')) ? canvas.closest('.statgen-line-chart-wrap') : parent;
-  const pageKey = (wrap && wrap.dataset && wrap.dataset.statLineChartKey) ? __statSharedLineChartPageKeyNormalize__(wrap.dataset.statLineChartKey) : ((canvasId === 'statSpeseLineChart') ? 'statspese' : (canvasId === 'statMensiliLineChart' ? 'statmensili' : (canvasId === 'statCancellazioniLineChart' ? 'statcancellazioni' : 'statgen')));
-  const width = Math.max(220, Math.floor(parent.clientWidth || canvas.clientWidth || 320));
-  let height = 118;
-  const isGraphOnlyLandscape = !!(wrap && __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.has(pageKey) && document.body?.dataset?.page === pageKey && __isLandscapeOrientation__());
-  if (isGraphOnlyLandscape){
-    const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement?.clientHeight || 0, 0);
-    const rect = wrap.getBoundingClientRect();
-    const available = Math.floor(viewportHeight - Math.max(0, rect.top) - 12);
-    height = Math.max(220, Math.floor(parent.clientHeight || wrap.clientHeight || available || 0));
-    try{ wrap.style.setProperty('--stat-landscape-chart-height', `${height}px`); }catch(_){ }
-  }
-  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  canvas.width = Math.floor(width * dpr);
-  canvas.height = Math.floor(height * dpr);
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
+  const pageKey = __statSharedLineChartPageKeyNormalize__(wrap?.dataset?.statLineChartKey || 'statgen');
+  try{ __applyStatLandscapeGraphOnlyLayout__(); }catch(_){ }
+  const parentRect = parent.getBoundingClientRect ? parent.getBoundingClientRect() : { width: parent.clientWidth || 0, height: parent.clientHeight || 0 };
+  const width = Math.max(280, Math.round(parentRect.width || parent.clientWidth || 0));
+  const height = Math.max(118, Math.round(parentRect.height || parent.clientHeight || canvas.clientHeight || 118));
+  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
 
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -17151,13 +17276,50 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
   const opts = options || {};
+  const seriesListRaw = Array.isArray(opts.seriesList) ? opts.seriesList.filter(Boolean) : [];
   const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
   const compareVals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((opts.compareValues || [])[i] || 0) || 0));
-  const compareEnabled = compareVals.some((value) => value > 0);
-  const maxValue = Math.max(
-    vals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0),
-    compareVals.reduce((best, value)=> Math.max(best, Number(value || 0) || 0), 0)
-  );
+  const seriesList = seriesListRaw.length
+    ? seriesListRaw.map((item, idx) => ({
+        key: String(item?.key || `series-${idx+1}`),
+        label: String(item?.label || item?.key || `Serie ${idx+1}`),
+        values: new Array(12).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
+        color: String(item?.color || lineColor),
+        dash: Array.isArray(item?.dash) ? item.dash : [],
+        pointFill: String(item?.pointFill || pointFill),
+        lineWidth: Number(item?.lineWidth || 0) || trendLineWidth,
+        radius: Number(item?.radius || 0) || 3,
+        pointLineWidth: Number(item?.pointLineWidth || 0) || 2,
+        visible: item?.visible !== false
+      })).filter((item) => item.visible !== false)
+    : [{
+        key: 'primary',
+        label: 'Serie principale',
+        values: vals,
+        color: lineColor,
+        dash: [],
+        pointFill,
+        lineWidth: trendLineWidth,
+        radius: 3,
+        pointLineWidth: 2,
+        visible: true
+      }].concat(compareVals.some((value) => value > 0) ? [{
+        key: 'compare',
+        label: 'Confronto',
+        values: compareVals,
+        color: compareLineColor,
+        dash: [5, 4],
+        pointFill: comparePointFill,
+        lineWidth: Math.max(1.5, trendLineWidth - 0.2),
+        radius: 2.5,
+        pointLineWidth: 1.5,
+        visible: true
+      }] : []);
+
+  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
+  const maxValue = activeSeries.reduce((best, item) => {
+    return Math.max(best, ...(item.values || []).map((value) => Number(value || 0) || 0));
+  }, 0);
   const yMax = Math.max(1, Number(opts.yMax || 0) || __statLineChartNiceMax__(maxValue));
   const yTickFormatter = (typeof opts.yTickFormatter === 'function') ? opts.yTickFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
   const bubbleFormatter = (typeof opts.bubbleFormatter === 'function') ? opts.bubbleFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
@@ -17202,8 +17364,6 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     const y = baseY - ((value / yMax) * chartH);
     return { x, y, value, idx };
   });
-  const points = makePoints(vals);
-  const comparePoints = makePoints(compareVals);
 
   const drawSeries = (seriesPoints, cfg = {}) => {
     if (!Array.isArray(seriesPoints) || !seriesPoints.length) return;
@@ -17230,27 +17390,40 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.restore();
   };
 
-  if (compareEnabled){
-    drawSeries(comparePoints, { color: compareLineColor, dash: [5, 4], lineWidth: Math.max(1.5, trendLineWidth - 0.2), pointFill: comparePointFill, radius: 2.5, pointLineWidth: 1.5 });
-  }
-  drawSeries(points, { color: lineColor, lineWidth: trendLineWidth, pointFill, radius: 3, pointLineWidth: 2 });
+  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || []) }));
+  renderedSeries.forEach((item) => {
+    drawSeries(item.points, {
+      color: item.color || lineColor,
+      dash: item.dash || [],
+      lineWidth: item.lineWidth || trendLineWidth,
+      pointFill: item.pointFill || pointFill,
+      radius: item.radius || 3,
+      pointLineWidth: item.pointLineWidth || 2
+    });
+  });
 
   ctx.fillStyle = textColor;
   ctx.font = '800 10px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
-  points.forEach((pt, idx)=>{
+  const labelPoints = renderedSeries[0]?.points || makePoints(new Array(12).fill(0));
+  labelPoints.forEach((pt, idx)=>{
     ctx.fillText(labels[idx] || String(idx + 1), pt.x, height - 5);
   });
 
-  const peak = points.reduce((best, pt)=> (pt.value > best.value ? pt : best), points[0]);
+  let peak = null;
+  renderedSeries.forEach((item) => {
+    (item.points || []).forEach((pt) => {
+      if (!peak || pt.value > peak.value) peak = { ...pt, color: item.color || lineColor };
+    });
+  });
   if (peak && peak.value > 0){
     const bubbleText = bubbleFormatter(peak.value);
     const bubbleW = Math.max(38, Math.min(64, 18 + (String(bubbleText || '').length * 7)));
     const bubbleH = 15;
-    let bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
-    let by = Math.max(2, peak.y - 20);
+    const bx = Math.max(pad.left, Math.min(peak.x - bubbleW / 2, pad.left + chartW - bubbleW));
+    const by = Math.max(2, peak.y - 20);
     ctx.fillStyle = isDark ? surface.bg : 'rgba(255,255,255,0.96)';
     ctx.strokeStyle = axisColor;
     ctx.lineWidth = 1;
@@ -29615,7 +29788,7 @@ function __applyLaundryResetCloseIcon__(){
 })();
 
 
-/* dDAE_2.569 — Menu impostazioni compatto + dark switch + design schede guest list */
+/* dDAE_2.570 — Menu impostazioni compatto + dark switch + design schede guest list */
 function normalizeGuestDialPhone(raw){
   let s = String(raw || '').trim();
   if (!s) return '';
