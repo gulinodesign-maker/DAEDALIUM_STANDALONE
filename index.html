@@ -578,7 +578,7 @@ window.APP_VERSION = "2.585";
 </svg></div>
 <div class="home-main-label">Con/Senza ricevuta</div>
 </button>
-<button aria-label="Channel direct" class="home-main" id="goStatChannel" type="button">
+<button aria-label="PMS" class="home-main" id="goStatChannel" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 7h7v10H4z"></path>
 <path d="M13 5h7v6h-7z"></path>
@@ -586,7 +586,7 @@ window.APP_VERSION = "2.585";
 <path d="M11 10h2"></path>
 <path d="M11 14h2"></path>
 </svg></div>
-<div class="home-main-label">Channel/Direct</div>
+<div class="home-main-label">PMS</div>
 </button>
 <button aria-label="Ore pulizia operatori" class="home-main" id="goStatPulizie" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -847,23 +847,12 @@ window.APP_VERSION = "2.585";
 </section>
 <section class="page" hidden="" id="page-statchannel">
 <div class="stats-gen">
-<div class="stats-title">Channel / Direct</div>
+<div class="stats-title">PMS</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statchannel">
 <canvas id="statChannelCanvas" class="statgen-line-chart" height="118"></canvas>
 </div>
-<div class="stats-stack">
-<button class="stat-row" data-stat-card-key="channel" style="--statbg:#2b7cb4" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h7v10H4z"></path><path d="M13 5h7v6h-7z"></path><path d="M13 13h7v6h-7z"></path></svg></span>
-<span class="stat-name">Channel</span>
-<span class="stat-val" id="scChannel">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="direct" style="--statbg:#c9772b" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 4l7 6v9H5v-9z"></path><path d="M9 19v-5h6v5"></path></svg></span>
-<span class="stat-name">Direct</span>
-<span class="stat-val" id="scDirect">€0,00</span>
-</button>
-</div>
+<div class="stats-stack" id="statPmsRows"></div>
 </div>
 </section>
 <section class="page" hidden="" id="page-statpulizie">
@@ -1843,7 +1832,8 @@ window.APP_VERSION = "2.585";
 <div class="row operatori-editor-actions editor-modal-actions">
 <button class="btn ghost" id="channelEditorDelete" hidden="" type="button">Elimina</button>
 <button class="btn ghost" id="channelEditorCancel" type="button">Annulla</button>
-<button class="btn ghost" id="channelEditorTagColor" type="button">Tag</button>
+<button aria-label="Tag colore channel" class="btn ghost channel-editor-icon-btn" id="channelEditorTagColor" title="Tag colore" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 12h16"></path><path d="M12 4v16"></path></svg></button>
+<button aria-label="Colore grafico PMS" class="btn ghost channel-editor-icon-btn" id="channelEditorGraphColor" title="Colore grafico PMS" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"></circle></svg></button>
 <button class="btn primary" id="channelEditorSave" type="button">Salva</button>
 </div>
 </div>

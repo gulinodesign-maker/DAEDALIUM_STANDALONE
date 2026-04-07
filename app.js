@@ -9668,6 +9668,10 @@ function __normalizeChannelTextColor__(color){
   return __normalizeOptionalOperatoreColor__(color);
 }
 
+function __normalizeChannelGraphColor__(color){
+  return __normalizeOptionalOperatoreColor__(color);
+}
+
 function __channelInitialFromName__(name){
   const clean = String(name || '').trim();
   return clean ? clean.charAt(0).toUpperCase() : 'C';
@@ -9694,6 +9698,7 @@ function getChannelCatalogFromSettings(){
       iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
       colore: __normalizeChannelColor__(item?.colore),
       coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
+      coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
     })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
   }catch(_){
     return [];
@@ -9708,6 +9713,7 @@ async function saveChannelCatalogToSettings(list){
     iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
     colore: __normalizeChannelColor__(item?.colore),
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
+    coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
   })).filter(item => item.nome);
   await api("impostazioni", { method:"POST", body:{ channel_catalogo: clean }, showLoader:true });
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -10752,6 +10758,7 @@ function setupOperatoriPage(){
 const __channelPageUi = {
   color: "orange-2",
   textColor: "",
+  graphColor: "",
   editingId: "",
   tones: {},
 };
@@ -10779,6 +10786,11 @@ function __channelSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
 }
 
+function __channelSetSelectedGraphColor__(color){
+  __channelPageUi.graphColor = __normalizeChannelGraphColor__(color);
+  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.graphColor || (__channelPageUi.textColor || __channelPageUi.color || 'orange-2'), '', false);
+}
+
 function __channelOpenModal__(item){
   const modal = document.getElementById('channelEditorModal');
   if (!modal) return;
@@ -10798,8 +10810,10 @@ function __channelOpenModal__(item){
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
+  __channelPageUi.graphColor = __normalizeChannelGraphColor__(current?.coloreGrafico);
   __channelSetSelectedColor__(current?.colore || 'orange-2');
   __channelSetSelectedTextColor__(__channelPageUi.textColor || '');
+  __channelSetSelectedGraphColor__(__channelPageUi.graphColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -10819,9 +10833,11 @@ function __channelCloseModal__(){
   });
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
+  __channelPageUi.graphColor = '';
   __initColorToneMap__(__channelPageUi, 'orange');
   __channelSetSelectedColor__('orange-2');
   __channelSetSelectedTextColor__('');
+  __channelSetSelectedGraphColor__('');
 }
 
 async function renderChannelPage(){
@@ -10842,6 +10858,7 @@ async function renderChannelPage(){
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
+          <span class="channel-graph-dot" style="background:${__laundryEscapeAttr__(__graphColorValueToHex__(item.coloreGrafico || item.coloreTesto || item.colore || 'orange-4', '#2b7cb4'))}"></span>
         </div>
         <div class="operatori-item-actions">
           <button aria-label="Modifica channel" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
@@ -10874,6 +10891,13 @@ function setupChannelPage(){
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
   const colorBtn = document.getElementById('channelEditorTagColor');
   if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('channel'); });
+  const graphColorBtn = document.getElementById('channelEditorGraphColor');
+  if (graphColorBtn) bindFastTap(graphColorBtn, () => {
+    __tagColorPopupOpen__('channel-graph', { bg: __channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3' }, (payload) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      __channelSetSelectedGraphColor__(colors.bg || __channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3');
+    }, { supportsBg:true, supportsBorder:false, supportsFg:false, supportsOpacity:false, defaultMode:'bg', fallbackBg:(__channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3') });
+  });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
       bindFastTap(btn, () => {
@@ -10906,6 +10930,7 @@ function setupChannelPage(){
         iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
+        coloreGrafico: __channelPageUi.graphColor || '',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -15122,7 +15147,7 @@ function __statCardCategoryLabel__(pageKey){
   if (safePageKey === 'statspese') return 'Spese';
   if (safePageKey === 'statmensili') return 'Mensili';
   if (safePageKey === 'statprenotazioni') return 'Con / senza ricevuta';
-  if (safePageKey === 'statchannel') return 'Channel / Direct';
+  if (safePageKey === 'statchannel') return 'PMS';
   if (safePageKey === 'statpulizie') return 'Ore pulizia';
   if (safePageKey === 'statcancellazioni') return 'Cancellazioni';
   if (safePageKey === 'statazienda') return 'Azienda';
@@ -15811,7 +15836,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
-  'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorSave',
+  'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorGraphColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms'
@@ -15844,6 +15869,7 @@ function __defaultSingleActionButtonVisual__(btn){
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     channelEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
+    channelEditorGraphColor:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     operatoriEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
@@ -17053,53 +17079,134 @@ function __statChannelCommissionPct__(guest){
   return bookingVal > 0 ? 1 : 0;
 }
 
-function __statGuestIsDirectChannel__(guest){
-  const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
-  if (!channelId) return true;
-  return __statChannelCommissionPct__(guest) === 0;
+function __statChannelBucketLabelFromGuest__(guest){
+  const candidates = [guest?.channel_nome, guest?.channelNome, guest?.channel_name, guest?.channelName, guest?.pms, guest?.fonte];
+  for (const raw of candidates){
+    const clean = String(raw || '').trim();
+    if (clean) return clean;
+  }
+  return 'PMS';
+}
+
+function __statChannelSeriesBundle__(){
+  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+  const catalog = getChannelCatalogFromSettings();
+  const bucketMap = new Map();
+  const ensureBucket = (key, cfg = {}) => {
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return null;
+    if (!bucketMap.has(safeKey)){
+      bucketMap.set(safeKey, {
+        key: safeKey,
+        label: String(cfg.label || '').trim() || 'PMS',
+        monthly: new Array(12).fill(0),
+        total: 0,
+        fallback: {
+          bg: cfg.bg || 'blue-4',
+          border: cfg.border || cfg.bg || 'blue-4',
+          fg: cfg.fg || ''
+        }
+      });
+    }
+    const bucket = bucketMap.get(safeKey);
+    if (cfg.label) bucket.label = String(cfg.label).trim() || bucket.label;
+    if (cfg.bg) bucket.fallback.bg = cfg.bg;
+    if (cfg.border || cfg.bg) bucket.fallback.border = cfg.border || cfg.bg || bucket.fallback.border;
+    if (cfg.fg !== undefined) bucket.fallback.fg = cfg.fg || '';
+    return bucket;
+  };
+
+  ensureBucket('direct', { label:'Direct', bg:'sand-4', border:'sand-4', fg:'#c9772b' });
+  catalog.forEach((item) => {
+    const commission = __parseChannelCommissionValue__(item?.commissione, 0);
+    if (commission === 0) return;
+    ensureBucket(`channel:${String(item.id || '').trim()}`, {
+      label: item?.nome || 'PMS',
+      bg: item?.colore || 'blue-4',
+      border: item?.colore || 'blue-4',
+      fg: item?.coloreGrafico || item?.coloreTesto || ''
+    });
+  });
+
+  guests.forEach((guest) => {
+    const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+    if (!isFinite(pren) || pren <= 0) return;
+    const iso = __statGuestMonthIso__(guest);
+    const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
+    if (monthIdx < 0 || monthIdx > 11) return;
+    const commission = __statChannelCommissionPct__(guest);
+    const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+    let bucket = null;
+    if (!channelId || commission === 0){
+      bucket = ensureBucket('direct', { label:'Direct', bg:'sand-4', border:'sand-4', fg:'#c9772b' });
+    } else {
+      const item = channelId ? getChannelCatalogItemById(channelId) : null;
+      bucket = ensureBucket(`channel:${channelId || 'generic'}`, {
+        label: item?.nome || __statChannelBucketLabelFromGuest__(guest),
+        bg: item?.colore || 'blue-4',
+        border: item?.colore || 'blue-4',
+        fg: item?.coloreGrafico || item?.coloreTesto || ''
+      });
+    }
+    if (!bucket) return;
+    bucket.monthly[monthIdx] = Math.round((Number(bucket.monthly[monthIdx] || 0) + pren) * 100) / 100;
+    bucket.total = Math.round((Number(bucket.total || 0) + pren) * 100) / 100;
+  });
+
+  const rows = Array.from(bucketMap.values()).map((item) => ({
+    key: item.key,
+    label: item.label,
+    values: item.monthly.slice(0, 12),
+    value: item.total,
+    fallback: item.fallback || { bg:'blue-4', border:'blue-4', fg:'' }
+  }));
+
+  rows.sort((a, b) => {
+    if (a.key === 'direct') return 1;
+    if (b.key === 'direct') return -1;
+    return String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' });
+  });
+  return rows;
 }
 
 function __statChannelMonthlySeries__(){
-  return __statGuestDualMonthlySeries__((guest) => {
-    const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
-    const isDirect = __statGuestIsDirectChannel__(guest);
-    return {
-      primary: isDirect ? 0 : pren,
-      secondary: isDirect ? pren : 0
-    };
-  });
+  return __statChannelSeriesBundle__();
 }
 
 function drawStatChannelLineChart(canvasId){
-  const series = __statChannelMonthlySeries__();
-  __drawSharedMonthlyLineChart__(canvasId, series.primary, {
-    seriesList: [
-      { key:'channel', label:'Channel', values: series.primary, color: __statChartLineColorFromRenderedCard__('statchannel', 'channel', '#2b7cb4') },
-      { key:'direct', label:'Direct', values: series.secondary, color: __statChartLineColorFromRenderedCard__('statchannel', 'direct', '#c9772b') }
-    ].filter((item) => __statChartSeriesIsVisible__('statchannel', item.key)),
+  const seriesList = __statChannelMonthlySeries__().map((item) => ({
+    key: item.key,
+    label: item.label,
+    values: item.values,
+    color: __statChartLineColorFromRenderedCard__('statchannel', item.key, item.fallback || '#2b7cb4')
+  })).filter((item) => __statChartSeriesIsVisible__('statchannel', item.key));
+  const baseValues = seriesList.length ? (seriesList[0].values || new Array(12).fill(0)) : new Array(12).fill(0);
+  __drawSharedMonthlyLineChart__(canvasId, baseValues, {
+    seriesList,
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
 }
 
 function renderStatChannel(){
-  const s = computeStatPrenotazioni();
-  state.statPrenotazioni = s;
-  const rows = [
-    { cardKey:'channel', label:'Channel', value: Number(s.withBooking || 0), fallback:'#2b7cb4', valueId:'scChannel' },
-    { cardKey:'direct', label:'Direct', value: Number(s.withoutBooking || 0), fallback:'#c9772b', valueId:'scDirect' }
-  ];
-  rows.forEach((row) => {
-    const valueEl = document.getElementById(row.valueId);
-    if (valueEl) valueEl.textContent = euro(row.value || 0);
-    const card = valueEl ? valueEl.closest('.stat-row') : null;
-    if (card){
-      __applyStatCardTextColor__(card, 'statchannel', row.cardKey, row.fallback);
-      __bindStatCardColorLongPress__(card, 'statchannel', row.cardKey, row.fallback);
-      __bindStatChartCardToggle__(card, 'statchannel', row.cardKey);
-      __setStatCardSelectionState__(card, 'statchannel', row.cardKey);
-    }
-  });
+  const rows = __statChannelMonthlySeries__();
+  const stack = document.getElementById('statPmsRows');
+  if (stack){
+    stack.innerHTML = rows.map((row) => `
+      <button class="stat-row" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
+        <span class="stat-name">${escapeHtml(row.label || 'PMS')}</span>
+        <span class="stat-val">${euro(row.value || 0)}</span>
+      </button>
+    `).join('');
+    stack.querySelectorAll('.stat-row').forEach((card) => {
+      const row = rows.find((item) => String(item.key) === String(card.dataset.statCardKey || ''));
+      if (!row) return;
+      __applyStatCardTextColor__(card, 'statchannel', row.key, row.fallback || '#2b7cb4');
+      __bindStatCardColorLongPress__(card, 'statchannel', row.key, row.fallback || '#2b7cb4');
+      __bindStatChartCardToggle__(card, 'statchannel', row.key);
+      __setStatCardSelectionState__(card, 'statchannel', row.key);
+    });
+  }
   __prepareStatPiePage__('statchannel');
   __bindStatChartWrapReset__('statchannel');
   try{ drawStatChannelLineChart('statChannelCanvas'); }catch(_){ }
