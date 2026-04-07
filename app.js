@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.587
+ * Build: 2.585
  */
-const BUILD_VERSION = "2.587";
+const BUILD_VERSION = "2.585";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9668,10 +9668,6 @@ function __normalizeChannelTextColor__(color){
   return __normalizeOptionalOperatoreColor__(color);
 }
 
-function __normalizeChannelGraphColor__(color){
-  return __normalizeOptionalOperatoreColor__(color);
-}
-
 function __channelInitialFromName__(name){
   const clean = String(name || '').trim();
   return clean ? clean.charAt(0).toUpperCase() : 'C';
@@ -9698,7 +9694,6 @@ function getChannelCatalogFromSettings(){
       iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
       colore: __normalizeChannelColor__(item?.colore),
       coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
-      coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
     })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
   }catch(_){
     return [];
@@ -9713,7 +9708,6 @@ async function saveChannelCatalogToSettings(list){
     iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
     colore: __normalizeChannelColor__(item?.colore),
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
-    coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
   })).filter(item => item.nome);
   await api("impostazioni", { method:"POST", body:{ channel_catalogo: clean }, showLoader:true });
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -10758,7 +10752,6 @@ function setupOperatoriPage(){
 const __channelPageUi = {
   color: "orange-2",
   textColor: "",
-  graphColor: "",
   editingId: "",
   tones: {},
 };
@@ -10778,17 +10771,12 @@ function __channelSetSelectedColor__(color){
   });
   __channelPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
-  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
 }
 
 function __channelSetSelectedTextColor__(color){
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
-}
-
-function __channelSetSelectedGraphColor__(color){
-  __channelPageUi.graphColor = __normalizeChannelGraphColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
+  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
 }
 
 function __channelOpenModal__(item){
@@ -10810,10 +10798,8 @@ function __channelOpenModal__(item){
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
-  __channelPageUi.graphColor = __normalizeChannelGraphColor__(current?.coloreGrafico);
   __channelSetSelectedColor__(current?.colore || 'orange-2');
   __channelSetSelectedTextColor__(__channelPageUi.textColor || '');
-  __channelSetSelectedGraphColor__(__channelPageUi.graphColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -10833,11 +10819,9 @@ function __channelCloseModal__(){
   });
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
-  __channelPageUi.graphColor = '';
   __initColorToneMap__(__channelPageUi, 'orange');
   __channelSetSelectedColor__('orange-2');
   __channelSetSelectedTextColor__('');
-  __channelSetSelectedGraphColor__('');
 }
 
 async function renderChannelPage(){
@@ -10858,7 +10842,6 @@ async function renderChannelPage(){
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
-          <span class="channel-graph-dot" style="background:${__laundryEscapeAttr__(__graphColorValueToHex__(item.coloreGrafico || item.coloreTesto || item.colore || 'orange-4', '#2b7cb4'))}"></span>
         </div>
         <div class="operatori-item-actions">
           <button aria-label="Modifica channel" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
@@ -10889,11 +10872,8 @@ function setupChannelPage(){
   if (closeBtn) bindFastTap(closeBtn, __channelCloseModal__);
   const cancelBtn = document.getElementById('channelEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
-  const graphColorBtn = document.getElementById('channelEditorGraphColor');
-  if (graphColorBtn) bindFastTap(graphColorBtn, () => {
-    __channelSetSelectedGraphColor__(__channelPageUi.color || 'orange-3');
-    try{ toast('Colore grafico PMS aggiornato'); }catch(_){}
-  });
+  const colorBtn = document.getElementById('channelEditorTagColor');
+  if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('channel'); });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
       bindFastTap(btn, () => {
@@ -10926,7 +10906,6 @@ function setupChannelPage(){
         iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
-        coloreGrafico: __channelPageUi.graphColor || '',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -15143,7 +15122,7 @@ function __statCardCategoryLabel__(pageKey){
   if (safePageKey === 'statspese') return 'Spese';
   if (safePageKey === 'statmensili') return 'Mensili';
   if (safePageKey === 'statprenotazioni') return 'Con / senza ricevuta';
-  if (safePageKey === 'statchannel') return 'PMS';
+  if (safePageKey === 'statchannel') return 'Channel / Direct';
   if (safePageKey === 'statpulizie') return 'Ore pulizia';
   if (safePageKey === 'statcancellazioni') return 'Cancellazioni';
   if (safePageKey === 'statazienda') return 'Azienda';
@@ -15832,7 +15811,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
-  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
+  'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms'
@@ -15864,7 +15843,7 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsBackupExport:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    channelEditorGraphColor:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.80 },
+    channelEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     operatoriEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
@@ -15918,6 +15897,7 @@ function __singleActionButtonCategoryForId__(id){
     channelEditorCancel:'cancel',
     laundryCatalogEditorCancel:'cancel',
     operatoriEditorTagColor:'tag',
+    channelEditorTagColor:'tag',
     laundryCatalogEditorTagColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
@@ -17073,123 +17053,53 @@ function __statChannelCommissionPct__(guest){
   return bookingVal > 0 ? 1 : 0;
 }
 
-function __statChannelBucketLabelFromGuest__(guest){
-  const candidates = [guest?.channel_nome, guest?.channelNome, guest?.channel_name, guest?.channelName, guest?.pms, guest?.fonte];
-  for (const raw of candidates){
-    const clean = String(raw || '').trim();
-    if (clean) return clean;
-  }
-  return 'PMS';
-}
-
-function __statChannelSeriesBundle__(){
-  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
-  const catalog = getChannelCatalogFromSettings();
-  const bucketMap = new Map();
-  const ensureBucket = (key, cfg = {}) => {
-    const safeKey = String(key || '').trim();
-    if (!safeKey) return null;
-    if (!bucketMap.has(safeKey)){
-      bucketMap.set(safeKey, {
-        key: safeKey,
-        label: String(cfg.label || '').trim() || 'PMS',
-        monthly: new Array(12).fill(0),
-        total: 0,
-        fallback: {
-          bg: cfg.bg || 'blue-4',
-          border: cfg.border || cfg.bg || 'blue-4',
-          fg: cfg.fg || ''
-        }
-      });
-    }
-    const bucket = bucketMap.get(safeKey);
-    if (cfg.label) bucket.label = String(cfg.label).trim() || bucket.label;
-    if (cfg.bg) bucket.fallback.bg = cfg.bg;
-    if (cfg.border || cfg.bg) bucket.fallback.border = cfg.border || cfg.bg || bucket.fallback.border;
-    if (cfg.fg !== undefined) bucket.fallback.fg = cfg.fg || '';
-    return bucket;
-  };
-
-  catalog.forEach((item) => {
-    ensureBucket(`channel:${String(item.id || '').trim()}`, {
-      label: item?.nome || 'PMS',
-      bg: item?.colore || 'blue-4',
-      border: item?.colore || 'blue-4',
-      fg: item?.coloreGrafico || item?.coloreTesto || ''
-    });
-  });
-
-  guests.forEach((guest) => {
-    const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
-    if (!isFinite(pren) || pren <= 0) return;
-    const iso = __statGuestMonthIso__(guest);
-    const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
-    if (monthIdx < 0 || monthIdx > 11) return;
-    const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
-    const item = channelId ? getChannelCatalogItemById(channelId) : null;
-    const fallbackLabel = item?.nome || __statChannelBucketLabelFromGuest__(guest) || 'PMS';
-    const bucketKey = channelId ? `channel:${channelId}` : `channel-name:${String(fallbackLabel).trim().toLowerCase()}`;
-    const bucket = ensureBucket(bucketKey, {
-      label: fallbackLabel,
-      bg: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
-      border: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
-      fg: item?.coloreGrafico || item?.coloreTesto || guest?.channel_colore_testo || guest?.channelColorText || ''
-    });
-    if (!bucket) return;
-    bucket.monthly[monthIdx] = Math.round((Number(bucket.monthly[monthIdx] || 0) + pren) * 100) / 100;
-    bucket.total = Math.round((Number(bucket.total || 0) + pren) * 100) / 100;
-  });
-
-  const rows = Array.from(bucketMap.values()).map((item) => ({
-    key: item.key,
-    label: item.label,
-    values: item.monthly.slice(0, 12),
-    value: item.total,
-    fallback: item.fallback || { bg:'blue-4', border:'blue-4', fg:'' }
-  }));
-
-  rows.sort((a, b) => String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' }));
-  return rows;
+function __statGuestIsDirectChannel__(guest){
+  const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+  if (!channelId) return true;
+  return __statChannelCommissionPct__(guest) === 0;
 }
 
 function __statChannelMonthlySeries__(){
-  return __statChannelSeriesBundle__();
+  return __statGuestDualMonthlySeries__((guest) => {
+    const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+    const isDirect = __statGuestIsDirectChannel__(guest);
+    return {
+      primary: isDirect ? 0 : pren,
+      secondary: isDirect ? pren : 0
+    };
+  });
 }
 
 function drawStatChannelLineChart(canvasId){
-  const seriesList = __statChannelMonthlySeries__().map((item) => ({
-    key: item.key,
-    label: item.label,
-    values: item.values,
-    color: __statChartLineColorFromRenderedCard__('statchannel', item.key, item.fallback || '#2b7cb4')
-  })).filter((item) => __statChartSeriesIsVisible__('statchannel', item.key));
-  const baseValues = seriesList.length ? (seriesList[0].values || new Array(12).fill(0)) : new Array(12).fill(0);
-  __drawSharedMonthlyLineChart__(canvasId, baseValues, {
-    seriesList,
+  const series = __statChannelMonthlySeries__();
+  __drawSharedMonthlyLineChart__(canvasId, series.primary, {
+    seriesList: [
+      { key:'channel', label:'Channel', values: series.primary, color: __statChartLineColorFromRenderedCard__('statchannel', 'channel', '#2b7cb4') },
+      { key:'direct', label:'Direct', values: series.secondary, color: __statChartLineColorFromRenderedCard__('statchannel', 'direct', '#c9772b') }
+    ].filter((item) => __statChartSeriesIsVisible__('statchannel', item.key)),
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value)
   });
 }
 
 function renderStatChannel(){
-  const rows = __statChannelMonthlySeries__();
-  const stack = document.getElementById('statPmsRows');
-  if (stack){
-    stack.innerHTML = rows.map((row) => `
-      <button class="stat-row" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
-        <span class="stat-name">${escapeHtml(row.label || 'PMS')}</span>
-        <span class="stat-val">${euro(row.value || 0)}</span>
-      </button>
-    `).join('');
-    stack.querySelectorAll('.stat-row').forEach((card) => {
-      const row = rows.find((item) => String(item.key) === String(card.dataset.statCardKey || ''));
-      if (!row) return;
-      __applyStatCardTextColor__(card, 'statchannel', row.key, row.fallback || '#2b7cb4');
-      __bindStatCardColorLongPress__(card, 'statchannel', row.key, row.fallback || '#2b7cb4');
-      __bindStatChartCardToggle__(card, 'statchannel', row.key);
-      __setStatCardSelectionState__(card, 'statchannel', row.key);
-    });
-  }
+  const s = computeStatPrenotazioni();
+  state.statPrenotazioni = s;
+  const rows = [
+    { cardKey:'channel', label:'Channel', value: Number(s.withBooking || 0), fallback:'#2b7cb4', valueId:'scChannel' },
+    { cardKey:'direct', label:'Direct', value: Number(s.withoutBooking || 0), fallback:'#c9772b', valueId:'scDirect' }
+  ];
+  rows.forEach((row) => {
+    const valueEl = document.getElementById(row.valueId);
+    if (valueEl) valueEl.textContent = euro(row.value || 0);
+    const card = valueEl ? valueEl.closest('.stat-row') : null;
+    if (card){
+      __applyStatCardTextColor__(card, 'statchannel', row.cardKey, row.fallback);
+      __bindStatCardColorLongPress__(card, 'statchannel', row.cardKey, row.fallback);
+      __bindStatChartCardToggle__(card, 'statchannel', row.cardKey);
+      __setStatCardSelectionState__(card, 'statchannel', row.cardKey);
+    }
+  });
   __prepareStatPiePage__('statchannel');
   __bindStatChartWrapReset__('statchannel');
   try{ drawStatChannelLineChart('statChannelCanvas'); }catch(_){ }
