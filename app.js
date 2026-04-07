@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.585
+ * Build: 2.587
  */
-const BUILD_VERSION = "2.585";
+const BUILD_VERSION = "2.587";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17116,10 +17116,7 @@ function __statChannelSeriesBundle__(){
     return bucket;
   };
 
-  ensureBucket('direct', { label:'Direct', bg:'sand-4', border:'sand-4', fg:'#c9772b' });
   catalog.forEach((item) => {
-    const commission = __parseChannelCommissionValue__(item?.commissione, 0);
-    if (commission === 0) return;
     ensureBucket(`channel:${String(item.id || '').trim()}`, {
       label: item?.nome || 'PMS',
       bg: item?.colore || 'blue-4',
@@ -17134,20 +17131,16 @@ function __statChannelSeriesBundle__(){
     const iso = __statGuestMonthIso__(guest);
     const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
     if (monthIdx < 0 || monthIdx > 11) return;
-    const commission = __statChannelCommissionPct__(guest);
     const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
-    let bucket = null;
-    if (!channelId || commission === 0){
-      bucket = ensureBucket('direct', { label:'Direct', bg:'sand-4', border:'sand-4', fg:'#c9772b' });
-    } else {
-      const item = channelId ? getChannelCatalogItemById(channelId) : null;
-      bucket = ensureBucket(`channel:${channelId || 'generic'}`, {
-        label: item?.nome || __statChannelBucketLabelFromGuest__(guest),
-        bg: item?.colore || 'blue-4',
-        border: item?.colore || 'blue-4',
-        fg: item?.coloreGrafico || item?.coloreTesto || ''
-      });
-    }
+    const item = channelId ? getChannelCatalogItemById(channelId) : null;
+    const fallbackLabel = item?.nome || __statChannelBucketLabelFromGuest__(guest) || 'PMS';
+    const bucketKey = channelId ? `channel:${channelId}` : `channel-name:${String(fallbackLabel).trim().toLowerCase()}`;
+    const bucket = ensureBucket(bucketKey, {
+      label: fallbackLabel,
+      bg: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
+      border: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
+      fg: item?.coloreGrafico || item?.coloreTesto || guest?.channel_colore_testo || guest?.channelColorText || ''
+    });
     if (!bucket) return;
     bucket.monthly[monthIdx] = Math.round((Number(bucket.monthly[monthIdx] || 0) + pren) * 100) / 100;
     bucket.total = Math.round((Number(bucket.total || 0) + pren) * 100) / 100;
@@ -17161,11 +17154,7 @@ function __statChannelSeriesBundle__(){
     fallback: item.fallback || { bg:'blue-4', border:'blue-4', fg:'' }
   }));
 
-  rows.sort((a, b) => {
-    if (a.key === 'direct') return 1;
-    if (b.key === 'direct') return -1;
-    return String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' });
-  });
+  rows.sort((a, b) => String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' }));
   return rows;
 }
 
