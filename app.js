@@ -10778,17 +10778,17 @@ function __channelSetSelectedColor__(color){
   });
   __channelPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
 }
 
 function __channelSetSelectedTextColor__(color){
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorTagColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
 }
 
 function __channelSetSelectedGraphColor__(color){
   __channelPageUi.graphColor = __normalizeChannelGraphColor__(color);
-  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.graphColor || (__channelPageUi.textColor || __channelPageUi.color || 'orange-2'), '', false);
+  __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
 }
 
 function __channelOpenModal__(item){
@@ -10889,14 +10889,10 @@ function setupChannelPage(){
   if (closeBtn) bindFastTap(closeBtn, __channelCloseModal__);
   const cancelBtn = document.getElementById('channelEditorCancel');
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
-  const colorBtn = document.getElementById('channelEditorTagColor');
-  if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('channel'); });
   const graphColorBtn = document.getElementById('channelEditorGraphColor');
   if (graphColorBtn) bindFastTap(graphColorBtn, () => {
-    __tagColorPopupOpen__('channel-graph', { bg: __channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3' }, (payload) => {
-      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      __channelSetSelectedGraphColor__(colors.bg || __channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3');
-    }, { supportsBg:true, supportsBorder:false, supportsFg:false, supportsOpacity:false, defaultMode:'bg', fallbackBg:(__channelPageUi.graphColor || __channelPageUi.textColor || __channelPageUi.color || 'orange-3') });
+    __channelSetSelectedGraphColor__(__channelPageUi.color || 'orange-3');
+    try{ toast('Colore grafico PMS aggiornato'); }catch(_){}
   });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
@@ -15836,7 +15832,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
-  'channelEditorDelete','channelEditorCancel','channelEditorTagColor','channelEditorGraphColor','channelEditorSave',
+  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms'
@@ -15868,8 +15864,7 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsBackupExport:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    channelEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
-    channelEditorGraphColor:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    channelEditorGraphColor:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     operatoriEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
@@ -15923,7 +15918,6 @@ function __singleActionButtonCategoryForId__(id){
     channelEditorCancel:'cancel',
     laundryCatalogEditorCancel:'cancel',
     operatoriEditorTagColor:'tag',
-    channelEditorTagColor:'tag',
     laundryCatalogEditorTagColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
