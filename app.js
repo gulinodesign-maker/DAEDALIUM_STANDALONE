@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.584
+ * Build: 2.585
  */
-const BUILD_VERSION = "2.584";
+const BUILD_VERSION = "2.585";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -9673,6 +9673,13 @@ function __channelInitialFromName__(name){
   return clean ? clean.charAt(0).toUpperCase() : 'C';
 }
 
+function __parseChannelCommissionValue__(value, fallback = 0){
+  const raw = String(value ?? '').trim();
+  if (!raw) return fallback;
+  const n = Number(raw.replace(',', '.'));
+  return isFinite(n) ? Math.round(n * 100) / 100 : fallback;
+}
+
 function getChannelCatalogFromSettings(){
   const row = getSettingRow("channel_catalogo");
   const raw = row ? (row.value ?? row.Value ?? "") : "";
@@ -9683,7 +9690,7 @@ function getChannelCatalogFromSettings(){
     return parsed.map((item, idx) => ({
       id: String(item?.id || `ch-${idx+1}-${Date.now()}`),
       nome: String(item?.nome || item?.name || '').trim(),
-      commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? item?.percentuale ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
+      commissione: __parseChannelCommissionValue__(item?.commissione ?? item?.commission ?? item?.percentuale ?? '', 0),
       iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase(),
       colore: __normalizeChannelColor__(item?.colore),
       coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
@@ -9697,7 +9704,7 @@ async function saveChannelCatalogToSettings(list){
   const clean = (Array.isArray(list) ? list : []).map((item, idx) => ({
     id: String(item?.id || `ch-${Date.now()}-${idx}`),
     nome: String(item?.nome || '').trim(),
-    commissione: (() => { const n = Number(String(item?.commissione ?? item?.commission ?? '').replace(',', '.')); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
+    commissione: __parseChannelCommissionValue__(item?.commissione ?? item?.commission ?? '', 0),
     iniziale: String(item?.iniziale || item?.initial || '').trim().slice(0,1).toUpperCase() || __channelInitialFromName__(item?.nome),
     colore: __normalizeChannelColor__(item?.colore),
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
@@ -10888,7 +10895,7 @@ function setupChannelPage(){
       if (!nome){ toast('Inserisci il nome channel'); return; }
       const commissionRaw = String(document.getElementById('channelEditorCommission')?.value || '').trim().replace(',', '.');
       const commissione = commissionRaw ? Number(commissionRaw) : 0;
-      if (!isFinite(commissione) || commissione < 0){ toast('Commissione non valida'); return; }
+      if (!isFinite(commissione)){ toast('Commissione non valida'); return; }
       const id = String(document.getElementById('channelEditorId')?.value || '').trim();
       const initialRaw = String(document.getElementById('channelEditorInitial')?.value || '').trim();
       const list = getChannelCatalogFromSettings();
@@ -17032,14 +17039,33 @@ function renderStatRicevute(){
   try{ drawStatRicevuteLineChart('statRicevuteCanvas'); }catch(_){ }
 }
 
+function __statChannelCommissionPct__(guest){
+  const directValue = guest?.channel_commissione ?? guest?.channelCommissione ?? guest?.channel_commission_pct ?? guest?.channelCommissionPct;
+  if (directValue !== null && directValue !== undefined && String(directValue).trim() !== ''){
+    return __parseChannelCommissionValue__(directValue, 0);
+  }
+  const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+  if (channelId){
+    const catalogItem = getChannelCatalogItemById(channelId);
+    if (catalogItem) return __parseChannelCommissionValue__(catalogItem?.commissione, 0);
+  }
+  const bookingVal = __statGuestMoney__(guest?.importo_booking ?? guest?.importoBooking ?? guest?.booking ?? null);
+  return bookingVal > 0 ? 1 : 0;
+}
+
+function __statGuestIsDirectChannel__(guest){
+  const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+  if (!channelId) return true;
+  return __statChannelCommissionPct__(guest) === 0;
+}
+
 function __statChannelMonthlySeries__(){
   return __statGuestDualMonthlySeries__((guest) => {
     const pren = __statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
-    const bookingVal = __statGuestMoney__(guest?.importo_booking ?? guest?.importoBooking ?? guest?.booking ?? null);
-    const bookingFilled = bookingVal > 0;
+    const isDirect = __statGuestIsDirectChannel__(guest);
     return {
-      primary: bookingFilled ? pren : 0,
-      secondary: bookingFilled ? 0 : pren
+      primary: isDirect ? 0 : pren,
+      secondary: isDirect ? pren : 0
     };
   });
 }
@@ -18581,11 +18607,9 @@ function computeStatPrenotazioni(){
 
   for (const g of guests){
     const pren = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
-    const rawBooking = (g?.importo_booking ?? g?.importoBooking ?? g?.booking ?? null);
-    const bookingVal = money(rawBooking);
-    const bookingFilled = bookingVal > 0;
-    if (bookingFilled) withBooking += pren;
-    else withoutBooking += pren;
+    const isDirect = __statGuestIsDirectChannel__(g);
+    if (isDirect) withoutBooking += pren;
+    else withBooking += pren;
   }
 
   return { withBooking, withoutBooking };
