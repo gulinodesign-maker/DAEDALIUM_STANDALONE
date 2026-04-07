@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.590
+ * Build: 2.591
  */
-const BUILD_VERSION = "2.590";
+const BUILD_VERSION = "2.591";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -17148,7 +17148,17 @@ function __statChannelSeriesBundle__(){
     fallback: item.fallback || { bg:'blue-4', border:'blue-4', fg:'' }
   }));
 
-  rows.sort((a, b) => String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' }));
+  const catalogOrder = new Map();
+  catalog.forEach((item, idx) => {
+    const key = `channel:${String(item?.id || '').trim()}`;
+    if (!catalogOrder.has(key)) catalogOrder.set(key, idx);
+  });
+  rows.sort((a, b) => {
+    const aOrder = catalogOrder.has(a.key) ? catalogOrder.get(a.key) : Number.MAX_SAFE_INTEGER;
+    const bOrder = catalogOrder.has(b.key) ? catalogOrder.get(b.key) : Number.MAX_SAFE_INTEGER;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' });
+  });
   return rows;
 }
 
