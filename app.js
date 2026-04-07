@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.589
+ * Build: 2.590
  */
-const BUILD_VERSION = "2.589";
+const BUILD_VERSION = "2.590";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -10772,6 +10772,8 @@ function __channelFormatPct__(value){
 function __channelSetSelectedColor__(color){
   const parsed = __parseOperatoreColorSpec__(color || 'orange-2');
   __channelPageUi.color = parsed.spec;
+  __channelPageUi.graphColor = parsed.spec;
+  __channelPageUi.graphColor = parsed.spec;
   if (!__channelPageUi.tones || typeof __channelPageUi.tones !== 'object') __channelPageUi.tones = {};
   __OPERATORI_COLOR_KEYS__.forEach((base) => {
     if (!__channelPageUi.tones[base]) __channelPageUi.tones[base] = __OPERATORI_COLOR_DEFAULT_SHADE__;
@@ -10810,10 +10812,9 @@ function __channelOpenModal__(item){
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
-  __channelPageUi.graphColor = __normalizeChannelGraphColor__(current?.coloreGrafico);
+  __channelPageUi.graphColor = __normalizeChannelGraphColor__(current?.colore || current?.coloreGrafico);
   __channelSetSelectedColor__(current?.colore || 'orange-2');
   __channelSetSelectedTextColor__(__channelPageUi.textColor || '');
-  __channelSetSelectedGraphColor__(__channelPageUi.graphColor || '');
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -10891,8 +10892,7 @@ function setupChannelPage(){
   if (cancelBtn) bindFastTap(cancelBtn, __channelCloseModal__);
   const graphColorBtn = document.getElementById('channelEditorGraphColor');
   if (graphColorBtn) bindFastTap(graphColorBtn, () => {
-    __channelSetSelectedGraphColor__(__channelPageUi.color || 'orange-3');
-    try{ toast('Colore grafico PMS aggiornato'); }catch(_){}
+    __openTagColorPickerFor__('channel');
   });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
@@ -10926,7 +10926,7 @@ function setupChannelPage(){
         iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
-        coloreGrafico: __channelPageUi.graphColor || '',
+        coloreGrafico: __channelPageUi.color || 'orange-2',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -17115,7 +17115,7 @@ function __statChannelSeriesBundle__(){
       label: item?.nome || 'PMS',
       bg: item?.colore || 'blue-4',
       border: item?.colore || 'blue-4',
-      fg: item?.coloreGrafico || item?.coloreTesto || ''
+      fg: item?.colore || item?.coloreGrafico || item?.coloreTesto || ''
     });
   });
 
@@ -17133,7 +17133,7 @@ function __statChannelSeriesBundle__(){
       label: fallbackLabel,
       bg: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
       border: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
-      fg: item?.coloreGrafico || item?.coloreTesto || guest?.channel_colore_testo || guest?.channelColorText || ''
+      fg: item?.colore || item?.coloreGrafico || item?.coloreTesto || guest?.channel_colore || guest?.channelColor || guest?.channel_colore_testo || guest?.channelColorText || ''
     });
     if (!bucket) return;
     bucket.monthly[monthIdx] = Math.round((Number(bucket.monthly[monthIdx] || 0) + pren) * 100) / 100;
