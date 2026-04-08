@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.591
+ * Build: 2.592
  */
-const BUILD_VERSION = "2.591";
+const BUILD_VERSION = "2.592";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2472,22 +2472,61 @@ function __mergeUsers__(existing, incoming){
   return out;
 }
 
+function __pickDbImportFile__(){
+  return new Promise((resolve) => {
+    try{
+      let input = document.getElementById("dbFileInput");
+      let created = false;
+      if (!input){
+        input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json,.json";
+        input.id = "dbFileInput";
+        input.style.position = "fixed";
+        input.style.left = "0";
+        input.style.top = "0";
+        input.style.width = "1px";
+        input.style.height = "1px";
+        input.style.opacity = "0";
+        input.style.pointerEvents = "none";
+        input.style.zIndex = "-1";
+        document.body.appendChild(input);
+        created = true
+      }
+      try{ input.setAttribute("accept", "application/json,.json"); }catch(_){ }
+      try{ input.style.display = "block"; }catch(_){ }
+      try{ input.style.position = "fixed"; input.style.left = "0"; input.style.top = "0"; input.style.width = "1px"; input.style.height = "1px"; input.style.opacity = "0"; input.style.pointerEvents = "none"; input.style.zIndex = "-1"; }catch(_){ }
+      try{ input.value = ""; }catch(_){ }
+      let settled = false;
+      const finish = (file) => {
+        if (settled) return;
+        settled = true;
+        try{ input.onchange = null; }catch(_){ }
+        try{ input.oncancel = null; }catch(_){ }
+        if (created){ try{ document.body.removeChild(input); }catch(_){ } }
+        resolve(file || null);
+      };
+      input.onchange = () => finish((input.files && input.files[0]) ? input.files[0] : null);
+      try{ input.oncancel = () => finish(null); }catch(_){ }
+      const openPicker = () => {
+        try{
+          if (typeof input.showPicker === "function") input.showPicker();
+          else input.click();
+        }catch(_){
+          try{ input.click(); }catch(__){ finish(null); }
+        }
+      };
+      openPicker();
+      setTimeout(() => { if (!settled) openPicker(); }, 120);
+      setTimeout(() => { if (!settled && (!input.files || !input.files.length)) finish(null); }, 120000);
+    }catch(_){ resolve(null); }
+  });
+}
+
 async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "application/json,.json";
-    input.style.position = "fixed";
-    input.style.left = "-9999px";
-    document.body.appendChild(input);
-
-    const file = await new Promise((resolve)=>{
-      input.onchange = () => resolve((input.files && input.files[0]) ? input.files[0] : null);
-      input.click();
-    });
-
-    try{ document.body.removeChild(input); }catch(_){}
+    const file = await __pickDbImportFile__();
 
     if (!file){
       try{ toast("Import annullato"); }catch(_){}
