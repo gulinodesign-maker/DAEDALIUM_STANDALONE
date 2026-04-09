@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.594
+ * Build: 2.595
  */
-const BUILD_VERSION = "2.594";
+const BUILD_VERSION = "2.595";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -20003,7 +20003,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestBookingNumber","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   // reset servizi state
   try{ state.guestServicesItems = []; state.guestServicesComputedTotal = 0; state.guestServicesManualOverride = false; state.guestServicesLoadedFor = null; }catch(_){ }
@@ -20126,6 +20126,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   document.getElementById("guestPhone").value = ospite.telefono ?? ospite.tel ?? ospite.phone ?? "";
   try{ setGuestNationality(__readGuestNationalityFromRecord__(ospite).code || ""); }catch(_){}
   document.getElementById("guestEmail").value = ospite.email ?? ospite.mail ?? "";
+  document.getElementById("guestBookingNumber").value = ospite.numero_prenotazione ?? ospite.numeroPrenotazione ?? ospite.prenotazione_numero ?? ospite.prenotazioneNumero ?? ospite.booking_number ?? ospite.bookingNumber ?? ospite.reservation_number ?? ospite.reservationNumber ?? ospite.id_prenotazione ?? ospite.idPrenotazione ?? ospite.id_booking ?? ospite.idBooking ?? "";
   document.getElementById("guestAdults").value = ospite.adulti ?? ospite.adults ?? 0;
   document.getElementById("guestKidsU10").value = ospite.bambini_u10 ?? ospite.kidsU10 ?? 0;
   document.getElementById("guestCheckIn").value = formatISODateLocal(ospite.check_in || ospite.checkIn || "") || "";
@@ -23139,6 +23140,7 @@ async function saveGuest(opts = {}){
   const telefono = (document.getElementById("guestPhone")?.value || "").trim();
   const nationalityOption = __getGuestNationalityOption__(document.getElementById("guestNationality")?.value || "");
   const email = (document.getElementById("guestEmail")?.value || "").trim();
+  const bookingNumber = (document.getElementById("guestBookingNumber")?.value || "").trim();
   const adults = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
   const kidsU10 = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
   const checkIn = document.getElementById("guestCheckIn")?.value || "";
@@ -23174,6 +23176,12 @@ if (!name) return toast("Inserisci il nome");
     country_name: nationalityOption.name || "",
     country_flag: nationalityOption.flag || "",
     email: email,
+    numero_prenotazione: bookingNumber,
+    numeroPrenotazione: bookingNumber,
+    prenotazione_numero: bookingNumber,
+    booking_number: bookingNumber,
+    reservation_number: bookingNumber,
+    id_prenotazione: bookingNumber,
     adulti: adults,
     bambini_u10: kidsU10,
     check_in: checkIn,
