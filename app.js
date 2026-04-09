@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.592
+ * Build: 2.593
  */
-const BUILD_VERSION = "2.592";
+const BUILD_VERSION = "2.593";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -21944,6 +21944,23 @@ function renderRoomsReadOnly(ospite){
 
 
 // ===== dDAE_1.020 — Multi prenotazioni per stesso nome =====
+function __guestBookingNumberLabel__(guest){
+  try{
+    const candidates = [
+      guest?.numero_prenotazione, guest?.numeroPrenotazione, guest?.prenotazione_numero, guest?.prenotazioneNumero,
+      guest?.booking_number, guest?.bookingNumber, guest?.reservation_number, guest?.reservationNumber,
+      guest?.booking_id, guest?.bookingId, guest?.reservation_id, guest?.reservationId,
+      guest?.id_prenotazione, guest?.idPrenotazione, guest?.id_booking, guest?.idBooking,
+      guest?.id
+    ];
+    for (const raw of candidates){
+      const clean = String(raw == null ? '' : raw).trim();
+      if (clean) return clean;
+    }
+  }catch(_){ }
+  return '';
+}
+
 function normalizeGuestNameKey(name){
   try{ return collapseSpaces(String(name || "").trim()).toLowerCase(); }catch(_){ return String(name||"").trim().toLowerCase(); }
 }
@@ -24258,6 +24275,7 @@ function renderGuestCards(){
     if (__hasCheckoutPending) card.classList.add("checkout-pending");
 
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
+    const bookingNumberLabel = escapeHtml(__guestBookingNumberLabel__(first));
 
     const insNo = (Number(first._displayInsNo) && Number(first._displayInsNo) > 0 && Number(first._displayInsNo) < 1e18) ? Number(first._displayInsNo) : null;
 
@@ -24292,6 +24310,7 @@ function renderGuestCards(){
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
             <span class="guest-name-text">${nome}</span>
+            ${bookingNumberLabel ? `<span class="guest-booking-number-text" aria-label="Numero prenotazione">${bookingNumberLabel}</span>` : ``}
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
             ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
           </div>

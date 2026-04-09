@@ -4528,6 +4528,14 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
   font-weight: 500;
   line-height: 1.12;
 }
+#page-ospiti .guest-booking-number-text{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.12;
+  margin-top: 2px;
+}
 #page-ospiti .guest-meta-right{
   display:flex;
   align-items:center;
