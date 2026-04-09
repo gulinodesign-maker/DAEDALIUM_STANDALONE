@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.593
+ * Build: 2.594
  */
-const BUILD_VERSION = "2.593";
+const BUILD_VERSION = "2.594";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24309,8 +24309,8 @@ function renderGuestCards(){
           ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
-            <span class="guest-name-text">${nome}</span>
-            ${bookingNumberLabel ? `<span class="guest-booking-number-text" aria-label="Numero prenotazione">${bookingNumberLabel}</span>` : ``}
+            <span class="guest-name-tab guest-name-text">${nome}</span>
+            ${bookingNumberLabel ? `<span class="guest-name-tab guest-booking-number-text" aria-label="Numero prenotazione">${bookingNumberLabel}</span>` : ``}
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
             ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
           </div>

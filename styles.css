@@ -4519,7 +4519,23 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
 #page-ospiti .guest-nameblock{
   display:flex;
   flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
   min-width: 0;
+}
+#page-ospiti .guest-name-tab{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  max-width:100%;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,0.10);
+  background:rgba(255,255,255,0.38);
+  box-sizing:border-box;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 #page-ospiti .guest-name-text{
   overflow:hidden;
@@ -4534,7 +4550,6 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
   font-size: 18px;
   font-weight: 500;
   line-height: 1.12;
-  margin-top: 2px;
 }
 #page-ospiti .guest-meta-right{
   display:flex;
@@ -18909,7 +18924,8 @@ body[data-page="impostazioni"] main.wrap{
 #page-ospiti .guest-card{
   transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
-#page-ospiti .guest-card .guest-name-text{
+#page-ospiti .guest-card .guest-name-text,
+#page-ospiti .guest-card .guest-booking-number-text{
   color: var(--guest-list-card-text, inherit) !important;
   -webkit-text-fill-color: var(--guest-list-card-text, currentColor) !important;
 }
@@ -19573,4 +19589,10 @@ body.ddae-dark #page-statpulizie .stat-row.is-selected{
 }
 #page-statchannel .stats-stack{
   padding-bottom: 18px;
+}
+
+
+body.ddae-dark #page-ospiti .guest-name-tab{
+  background:rgba(15,23,42,0.34);
+  border-color:rgba(226,232,240,0.18);
 }
