@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.595
+ * Build: 2.596
  */
-const BUILD_VERSION = "2.595";
+const BUILD_VERSION = "2.596";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24283,7 +24283,6 @@ function renderGuestCards(){
     if (__hasCheckoutPending) card.classList.add("checkout-pending");
 
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
-    const bookingNumberLabel = escapeHtml(__guestBookingNumberLabel__(first));
 
     const insNo = (Number(first._displayInsNo) && Number(first._displayInsNo) > 0 && Number(first._displayInsNo) < 1e18) ? Number(first._displayInsNo) : null;
 
@@ -24318,7 +24317,6 @@ function renderGuestCards(){
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
             <span class="guest-name-tab guest-name-text">${nome}</span>
-            ${bookingNumberLabel ? `<span class="guest-name-tab guest-booking-number-text" aria-label="Numero prenotazione">${bookingNumberLabel}</span>` : ``}
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
             ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
           </div>
