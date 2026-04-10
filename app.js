@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.606
+ * Build: 2.607
  */
-const BUILD_VERSION = "2.606";
+const BUILD_VERSION = "2.607";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24363,9 +24363,13 @@ function __guestReportFormatRange__(lang, checkInValue, checkOutValue){
   return `${d1} ${monthCap(ci)}-${d2} ${monthCap(end)}`;
 }
 function __guestReportGuestsLabel__(lang, guest){
-  const adults = parseInt(guest?.adulti || 0, 10) || 0;
-  const children = parseInt(guest?.bambini_u10 || guest?.kids_u10 || 0, 10) || 0;
-  return `${__guestReportPlural__(lang, adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, children, 'children_one', 'children_other')}`;
+  const bookings = __guestReportResolveBookings__(guest);
+  const totals = bookings.reduce((acc, item) => {
+    acc.adults += parseInt(item?.adulti ?? item?.adults ?? 0, 10) || 0;
+    acc.children += parseInt(item?.bambini_u10 ?? item?.kids_u10 ?? item?.children_u10 ?? 0, 10) || 0;
+    return acc;
+  }, { adults:0, children:0 });
+  return `${__guestReportPlural__(lang, totals.adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, totals.children, 'children_one', 'children_other')}`;
 }
 function __guestReportGuestPhone__(guest){ return String(guest?.telefono ?? guest?.tel ?? guest?.phone ?? document.getElementById('guestPhone')?.value ?? '').trim(); }
 function __guestReportResolveRoomsArr__(guest){
@@ -24593,9 +24597,17 @@ async function __shareGuestReport__(guest){ const safeGuest=guest || state.guest
 async function __shareGuestReportToWhatsApp__(guest){
   const safeGuest = guest || state.guestReportCurrent || __guestReportResolveGuest__();
   if (!safeGuest) return false;
+  const lang = __guestReportResolveLanguage__(safeGuest);
   const phone = normalizeWhatsAppPhone(__guestReportGuestPhone__(safeGuest));
-  if (!phone){ try{ toast(__guestReportT__(__guestReportResolveLanguage__(safeGuest), 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
-  return __shareGuestReport__(safeGuest);
+  if (!phone){ try{ toast(__guestReportT__(lang, 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
+  const message = __guestReportWhatsappText__(safeGuest) || __guestReportT__(lang, 'reportTitle');
+  const url = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message);
+  try{
+    window.location.href = url;
+    return true;
+  }catch(_){
+    try{ window.open(url, '_blank', 'noopener'); return true; }catch(__){ return false; }
+  }
 }
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
