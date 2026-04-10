@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.597
+ * Build: 2.598
  */
-const BUILD_VERSION = "2.597";
+const BUILD_VERSION = "2.598";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -22091,6 +22091,7 @@ function updateOspiteHdActions(){
   hdActions.hidden = false;
 
   const btnCal  = hdActions.querySelector("[data-guest-cal]");
+  const btnReport = hdActions.querySelector("[data-guest-report]");
   const btnBack = hdActions.querySelector("[data-guest-back]");
   const btnEdit = hdActions.querySelector("[data-guest-edit]");
   const btnDel  = hdActions.querySelector("[data-guest-del]");
@@ -22099,6 +22100,7 @@ function updateOspiteHdActions(){
 
   // Indaco: vai al calendario (sempre presente)
   if (btnCal) btnCal.hidden = false;
+  if (btnReport) btnReport.hidden = (mode !== "view");
 
   // Verde: sempre presente (torna alla lista ospiti)
   if (btnBack) btnBack.hidden = false;
@@ -23366,6 +23368,11 @@ function setupOspite(){
         return;
       }
 
+      if (btn.hasAttribute("data-guest-report")){
+        __openGuestReportModal__(state.guestViewItem || null);
+        return;
+      }
+
       // Verde: torna sempre alla lista ospiti (anche in Nuovo/Modifica)
       if (btn.hasAttribute("data-guest-back")){
         // pulisci contesto multi
@@ -24161,6 +24168,57 @@ function sortGuestGroups(groups){
 
 
 
+
+function __guestBookingNumberPresent__(guest){ return !!String(__guestBookingNumberLabel__(guest) || '').trim(); }
+function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.every((item) => __guestBookingNumberPresent__(item)); }
+function __guestReportResolveGuest__(){ return state.guestViewItem || null; }
+function __guestReportResolveRows__(guest){
+  const bookingCount = Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length ? state.guestGroupBookings.length : 1;
+  const roomsArr = _parseRoomsArr(guest?.stanze); let lettoM=0, lettoS=0, culla=0; const gid=_guestIdOf(guest);
+  roomsArr.forEach((n)=>{ const key=`${gid}:${n}`; const info=(state.stanzeByKey&&state.stanzeByKey[key])?state.stanzeByKey[key]:{letto_m:0,letto_s:0,culla:0}; lettoM += Number(info.letto_m||0)||0; lettoS += Number(info.letto_s||0)||0; culla += Number(info.culla||0)||0; });
+  const total=money(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? guest?.total ?? 0);
+  const services=money(guest?.servizi_totale ?? guest?.serviziTotal ?? guest?.importo_servizi ?? 0);
+  const discount=money(guest?.sconto ?? guest?.discount ?? 0); const deposit=money(guest?.acconto_importo ?? guest?.accontoImporto ?? guest?.deposit ?? 0); const saldo=money(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
+  const remaining=Math.round((((total+services)-discount)-deposit-saldo)*100)/100;
+  const channelName=String(guest?.channel_nome ?? guest?.channelNome ?? '').trim() || '—'; const channelPct=Number(guest?.channel_commissione ?? guest?.channel_commission_pct ?? guest?.channelCommission ?? 0) || 0;
+  const servicesLabel=(()=>{ const items=Array.isArray(state.guestServicesItems)?state.guestServicesItems.filter((s)=>{ const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted; return !(String(del)==='1'||del===true); }):[]; if(!items.length) return 'Nessun servizio extra'; return items.map((s)=>String(s?.nome ?? s?.name ?? s?.titolo ?? 'Servizio').trim()).filter(Boolean).join(', '); })();
+  const taxVal=(()=>{ try{ return money(calcTouristTax(guest, calcStayNights(guest))); }catch(_){ return 0; } })();
+  return [
+    { kind:'hero', label:'Prenotazione', value: __guestBookingNumberLabel__(guest) || '—' },
+    { kind:'hero', label:'Soggiorno', value: formatRangeCompactIT(guest?.check_in ?? guest?.checkIn ?? '', guest?.check_out ?? guest?.checkOut ?? '') || '—' },
+    { label:'Numero prenotazioni', value:String(bookingCount) },
+    { label:'Stanze', value: roomsArr.length ? roomsArr.join(', ') : '—' },
+    { label:'Letti', value:`M ${lettoM} · S ${lettoS} · C ${culla}` },
+    { label:'Ospiti', value:`${parseInt(guest?.adulti || 0,10)||0} adulti · ${parseInt(guest?.bambini_u10 || guest?.kids_u10 || 0,10)||0} bambini` },
+    { label:'Servizi extra', value: servicesLabel },
+    { label:'Channel', value: channelPct ? `${channelName} · ${channelPct.toFixed(2)}%` : channelName },
+    { kind:'money', label:'Importo prenotazione', value: total },
+    { kind:'money', label:'Servizi', value: services },
+    { kind:'money', label:'Sconto', value: discount },
+    { kind:'money', label:'Acconto', value: deposit },
+    { kind:'money', label:'Saldo', value: saldo },
+    { kind:'money', label:'Tassa soggiorno', value: taxVal },
+    { kind:'moneyStrong', label:'Rimanenza', value: remaining }
+  ];
+}
+function __guestReportCanvas__(guest){
+  const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null; const rows=__guestReportResolveRows__(safeGuest); const moneyFmt=(v)=>euro(v||0); const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
+  const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80; const height=topPad+180+heroRows.length*(heroH+14)+textRows.length*(rowH+gap)+footerH; const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
+  const radiusRect=(x,y,w,h,r)=>{ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); };
+  ctx.fillStyle='#f5f7fb'; ctx.fillRect(0,0,width,height); radiusRect(34,34,width-68,height-68,42); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(77,156,197,0.18)'; ctx.stroke();
+  const guestName=String(safeGuest?.nome || safeGuest?.name || 'Ospite').trim() || 'Ospite'; const range=formatRangeCompactIT(safeGuest?.check_in ?? safeGuest?.checkIn ?? '', safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '—';
+  ctx.textAlign='left'; ctx.fillStyle='#4d9cc5'; ctx.font='800 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('REPORT OSPITE',88,114); ctx.fillStyle='#0f172a'; ctx.font='900 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,176); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(range,88,220);
+  let y=252; heroRows.forEach((row,idx)=>{ const x=idx===0?88:630, w=522; radiusRect(x,y,w,heroH,30); ctx.fillStyle=idx===0?'#0b1f3a':'#4d9cc5'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label.toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const t=String(row.value || '—'); const pieces=t.length>24?[t.slice(0,24),t.slice(24,48)]:[t]; ctx.fillText(pieces[0],x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } }); y += heroRows.length ? heroH + 30 : 0;
+  textRows.forEach((row,idx)=>{ radiusRect(88,y,width-176,rowH,28); const bgc=row.kind==='moneyStrong'?'#0b1f3a':(idx%2===0?'#eef4fb':'#f6f3ed'); ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':'rgba(77,156,197,0.16)'; ctx.stroke(); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#334155'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+44); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#0f172a'; ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || '—'); ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); ctx.textAlign='left'; y += rowH + gap; });
+  ctx.fillStyle='#94a3b8'; ctx.font='700 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',88,height-82); return canvas;
+}
+async function __guestReportBlob__(guest){ const canvas=__guestReportCanvas__(guest); if(!canvas) return null; const blob=await new Promise((resolve)=>canvas.toBlob(resolve,'image/png',1)); if(blob) return blob; const dataUrl=canvas.toDataURL('image/png'); const base64=dataUrl.split(',')[1] || ''; const bin=atob(base64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:'image/png'}); }
+function __guestReportFileName__(guest){ const safeGuest=guest || __guestReportResolveGuest__() || {}; const name=String(safeGuest?.nome || 'ospite').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'ospite'; const ci=String((safeGuest?.check_in ?? safeGuest?.checkIn ?? '') || '').slice(0,10).replace(/-/g,''); const co=String((safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '').slice(0,10).replace(/-/g,''); return `dDAE_Ospite_${name}_${ci || '00000000'}_${co || '00000000'}.png`; }
+function __openGuestReportModal__(guest){ const safeGuest=guest || __guestReportResolveGuest__(); const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(!safeGuest || !modal || !preview) return; const canvas=__guestReportCanvas__(safeGuest); if(!canvas) return; const closeA=document.getElementById('guestReportClose'); const closeB=document.getElementById('guestReportCloseBtn'); const shareA=document.getElementById('guestReportShare'); const shareB=document.getElementById('guestReportShareBtn'); if(closeA && !closeA.__boundGuestReport){ closeA.__boundGuestReport=true; bindFastTap(closeA, ()=>{ __closeGuestReportModal__(); }); } if(closeB && !closeB.__boundGuestReport){ closeB.__boundGuestReport=true; bindFastTap(closeB, ()=>{ __closeGuestReportModal__(); }); } if(shareA && !shareA.__boundGuestReport){ shareA.__boundGuestReport=true; bindFastTap(shareA, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(shareB && !shareB.__boundGuestReport){ shareB.__boundGuestReport=true; bindFastTap(shareB, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(!modal.__boundGuestReportModal){ modal.__boundGuestReportModal=true; modal.addEventListener('click',(e)=>{ if(e.target===modal) __closeGuestReportModal__(); }); } preview.innerHTML=`<img src="${canvas.toDataURL('image/png')}" alt="Report ospite"/>`; modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); state.guestReportCurrent=safeGuest; }
+function __closeGuestReportModal__(){ const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(preview) preview.innerHTML=''; if(!modal) return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }
+async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const blob=await __guestReportBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'image/png'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:'Report ospite', files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
+  const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast('Report ospite pronto','blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
+}
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
   if (!wrap) return;
@@ -24323,6 +24381,7 @@ function renderGuestCards(){
         </div>
         <div class="guest-meta-right" aria-label="Stato">
           ${buildNightsDotHTML(stayNights)}
+          <span class="guest-bookingnum-led ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"></span>
           ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
