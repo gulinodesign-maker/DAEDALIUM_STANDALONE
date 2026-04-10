@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.605
+ * Build: 2.606
  */
-const BUILD_VERSION = "2.605";
+const BUILD_VERSION = "2.606";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24474,10 +24474,10 @@ function __guestReportResolveRows__(guest){
   }, 0);
   return {
     lang,
+    stayLabel: stayRanges.length ? stayRanges.join(' - ') : __guestReportT__(lang, 'none'),
     roomCards,
     rows:[
       { kind:'hero', label:__guestReportT__(lang, 'booking'), value: bookings.map((item)=>__guestBookingNumberLabel__(item)).filter(Boolean).join(' · ') || __guestReportT__(lang, 'none') },
-      { kind:'hero', label:__guestReportT__(lang, 'stay'), value: stayRanges.length ? stayRanges.join(' - ') : __guestReportT__(lang, 'none') },
       { label:__guestReportT__(lang, 'rooms'), value: roomsFlat.length ? roomsFlat.join(', ') : __guestReportT__(lang, 'none') },
       ...roomCards,
       { label:__guestReportT__(lang, 'guests'), value:__guestReportGuestsLabel__(lang, guest) },
@@ -24499,15 +24499,15 @@ function __guestReportCanvas__(guest){
   const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
   const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80;
   const dynamicHeight=textRows.reduce((sum,row)=>sum + ((row.kind==='roomCard') ? 162 : rowH) + gap, 0);
-  const height=topPad+180+heroRows.length*(heroH+14)+dynamicHeight+footerH;
+  const height=topPad+126+heroRows.length*(heroH+14)+dynamicHeight+footerH;
   const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
   const radiusRect=(x,y,w,h,r)=>{ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); };
   const wrapText=(value,maxChars,maxLines=2)=>{ const txt=String(value || '').trim(); if(!txt) return [__guestReportT__(lang, 'none')]; if(txt.length<=maxChars) return [txt]; const parts=[]; let rest=txt; while(rest.length && parts.length<maxLines){ if(rest.length<=maxChars){ parts.push(rest); break; } let chunk=rest.slice(0,maxChars+1); let cut=Math.max(chunk.lastIndexOf(' '), chunk.lastIndexOf('+'), chunk.lastIndexOf(',')); if(cut<Math.floor(maxChars*0.5)) cut=maxChars; parts.push(rest.slice(0,cut).trim()); rest=rest.slice(cut).trim(); } if(rest.length && parts.length){ const last=parts[parts.length-1] || ''; parts[parts.length-1]=(last.slice(0,Math.max(0,maxChars-1)) + '…').trim(); } return parts.filter(Boolean); };
   ctx.fillStyle='#f5f7fb'; ctx.fillRect(0,0,width,height); radiusRect(34,34,width-68,height-68,42); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(77,156,197,0.18)'; ctx.stroke();
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
-  const stayHero = heroRows.find((row)=>row.label===__guestReportT__(lang, 'stay'))?.value || __guestReportT__(lang, 'none');
-  ctx.textAlign='left'; ctx.fillStyle='#4d9cc5'; ctx.font='800 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(__guestReportT__(lang, 'title'),88,114); ctx.fillStyle='#0f172a'; ctx.font='900 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,176); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; wrapText(stayHero, 52, 2).forEach((line, idx)=>ctx.fillText(line,88,220 + (idx*32)));
-  let y=266; heroRows.forEach((row,idx)=>{ const x=idx===0?88:630, w=522; radiusRect(x,y,w,heroH,30); ctx.fillStyle=idx===0?'#0b1f3a':'#4d9cc5'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || '').toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const pieces=wrapText(String(row.value || __guestReportT__(lang, 'none')), 24, 2); ctx.fillText(pieces[0] || __guestReportT__(lang, 'none'),x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } }); y += heroRows.length ? heroH + 30 : 0;
+  const stayHero = String(payload.stayLabel || __guestReportT__(lang, 'none'));
+  ctx.textAlign='left'; ctx.fillStyle='#0f172a'; ctx.font='900 58px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,132); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; wrapText(stayHero, 56, 2).forEach((line, idx)=>ctx.fillText(line,88,176 + (idx*32)));
+  let y=234; heroRows.forEach((row)=>{ const x=88, w=width-176; radiusRect(x,y,w,heroH,30); ctx.fillStyle='#0b1f3a'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || '').toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const pieces=wrapText(String(row.value || __guestReportT__(lang, 'none')), 44, 2); ctx.fillText(pieces[0] || __guestReportT__(lang, 'none'),x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } y += heroH + 30; });
   textRows.forEach((row,idx)=>{
     const currentH = row.kind==='roomCard' ? 162 : rowH;
     radiusRect(88,y,width-176,currentH,28);
@@ -24527,23 +24527,75 @@ function __guestReportCanvas__(guest){
   });
   ctx.fillStyle='#94a3b8'; ctx.font='700 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',88,height-82); return canvas;
 }
-async function __guestReportBlob__(guest){ const canvas=__guestReportCanvas__(guest); if(!canvas) return null; const blob=await new Promise((resolve)=>canvas.toBlob(resolve,'image/png',1)); if(blob) return blob; const dataUrl=canvas.toDataURL('image/png'); const base64=dataUrl.split(',')[1] || ''; const bin=atob(base64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:'image/png'}); }
-function __guestReportFileName__(guest){ const safeGuest=guest || __guestReportResolveGuest__() || {}; const name=String(safeGuest?.nome || 'ospite').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'ospite'; const ci=String((safeGuest?.check_in ?? safeGuest?.checkIn ?? '') || '').slice(0,10).replace(/-/g,''); const co=String((safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '').slice(0,10).replace(/-/g,''); return `dDAE_Ospite_${name}_${ci || '00000000'}_${co || '00000000'}.png`; }
+function __guestReportBase64ToBytes__(base64){ const bin=atob(base64); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) bytes[i]=bin.charCodeAt(i); return bytes; }
+function __guestReportPdfFromJpegDataUrl__(jpegDataUrl, imgWidth, imgHeight){
+  const base64=String(jpegDataUrl || '').split(',')[1] || '';
+  const imgBytes=__guestReportBase64ToBytes__(base64);
+  const scale=595.28 / Math.max(1, Number(imgWidth) || 1);
+  const pageW=Number(imgWidth) * scale;
+  const pageH=Number(imgHeight) * scale;
+  const enc=new TextEncoder();
+  const chunks=[]; let offset=0; const offsets=[0];
+  const pushText=(txt)=>{ const bytes=enc.encode(txt); chunks.push(bytes); offset += bytes.length; };
+  const pushBytes=(bytes)=>{ chunks.push(bytes); offset += bytes.length; };
+  pushText(`%PDF-1.4
+%ÿÿÿÿ
+`);
+  const addObj=(id, bodyParts)=>{ offsets[id]=offset; pushText(`${id} 0 obj
+`); bodyParts.forEach((part)=>{ if(typeof part==='string') pushText(part); else pushBytes(part); }); pushText(`
+endobj
+`); };
+  addObj(1, [`<< /Type /Catalog /Pages 2 0 R >>
+`]);
+  addObj(2, [`<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+`]);
+  addObj(3, [`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>
+`]);
+  addObj(4, [`<< /Type /XObject /Subtype /Image /Width ${imgWidth} /Height ${imgHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>
+stream
+`, imgBytes, `
+endstream
+`]);
+  const content=`q
+${pageW.toFixed(2)} 0 0 ${pageH.toFixed(2)} 0 0 cm
+/Im0 Do
+Q
+`;
+  addObj(5, [`<< /Length ${content.length} >>
+stream
+${content}endstream
+`]);
+  const xrefOffset=offset;
+  pushText(`xref
+0 6
+0000000000 65535 f 
+`);
+  for(let i=1;i<=5;i+=1) pushText(`${String(offsets[i]).padStart(10,'0')} 00000 n 
+`);
+  pushText(`trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+${xrefOffset}
+%%EOF`);
+  return new Blob(chunks,{type:'application/pdf'});
+}
+async function __guestReportPdfBlob__(guest){
+  const canvas=__guestReportCanvas__(guest); if(!canvas) return null;
+  const jpegDataUrl=canvas.toDataURL('image/jpeg', 0.96);
+  return __guestReportPdfFromJpegDataUrl__(jpegDataUrl, canvas.width, canvas.height);
+}
+function __guestReportFileName__(guest){ const safeGuest=guest || __guestReportResolveGuest__() || {}; const name=String(safeGuest?.nome || 'ospite').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'ospite'; const ci=String((safeGuest?.check_in ?? safeGuest?.checkIn ?? '') || '').slice(0,10).replace(/-/g,''); const co=String((safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '').slice(0,10).replace(/-/g,''); return `dDAE_Ospite_${name}_${ci || '00000000'}_${co || '00000000'}.pdf`; }
 function __openGuestReportModal__(guest){ const safeGuest=guest || __guestReportResolveGuest__(); const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(!safeGuest || !modal || !preview) return; const canvas=__guestReportCanvas__(safeGuest); if(!canvas) return; const closeA=document.getElementById('guestReportClose'); const shareA=document.getElementById('guestReportShare'); const waA=document.getElementById('guestReportWhatsApp'); if(closeA && !closeA.__boundGuestReport){ closeA.__boundGuestReport=true; bindFastTap(closeA, ()=>{ __closeGuestReportModal__(); }); } if(shareA && !shareA.__boundGuestReport){ shareA.__boundGuestReport=true; bindFastTap(shareA, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(waA && !waA.__boundGuestReport){ waA.__boundGuestReport=true; bindFastTap(waA, async ()=>{ await __shareGuestReportToWhatsApp__(state.guestReportCurrent || null); }); } if(!modal.__boundGuestReportModal){ modal.__boundGuestReportModal=true; modal.addEventListener('click',(e)=>{ if(e.target===modal) __closeGuestReportModal__(); }); } preview.innerHTML=`<img src="${canvas.toDataURL('image/png')}" alt="${escapeHtml(__guestReportT__(__guestReportResolveLanguage__(safeGuest), 'reportTitle'))}"/>`; modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); state.guestReportCurrent=safeGuest; }
 function __closeGuestReportModal__(){ const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(preview) preview.innerHTML=''; if(!modal) return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }
-async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const lang=__guestReportResolveLanguage__(safeGuest); const blob=await __guestReportBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'image/png'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
+async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const lang=__guestReportResolveLanguage__(safeGuest); const blob=await __guestReportPdfBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'application/pdf'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
   const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast(__guestReportT__(lang, 'reportReady'),'blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
 }
 async function __shareGuestReportToWhatsApp__(guest){
   const safeGuest = guest || state.guestReportCurrent || __guestReportResolveGuest__();
   if (!safeGuest) return false;
-  const lang = __guestReportResolveLanguage__(safeGuest);
   const phone = normalizeWhatsAppPhone(__guestReportGuestPhone__(safeGuest));
-  if (!phone){ try{ toast(__guestReportT__(lang, 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
-  const text = __guestReportWhatsappText__(safeGuest) || __guestReportT__(lang, 'whatsappHint');
-  const url = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(text);
-  try{ window.location.href = url; }catch(_){ try{ window.open(url, '_blank', 'noopener'); }catch(__){} }
-  return true;
+  if (!phone){ try{ toast(__guestReportT__(__guestReportResolveLanguage__(safeGuest), 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
+  return __shareGuestReport__(safeGuest);
 }
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
