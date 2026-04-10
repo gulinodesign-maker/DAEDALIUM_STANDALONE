@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.603
+ * Build: 2.604
  */
-const BUILD_VERSION = "2.603";
+const BUILD_VERSION = "2.604";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24314,7 +24314,8 @@ function __guestReportTextMap__(){ return {
   reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
   reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
   whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
-  whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' }
+  whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
+  room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' }
 }; }
 function __guestReportT__(lang, key){ const map=__guestReportTextMap__(); const row=map[key] || {}; return String(row[lang] || row.it || key || ''); }
 function __guestReportPlural__(lang, count, oneKey, otherKey){ return `${count} ${__guestReportT__(lang, count===1 ? oneKey : otherKey)}`; }
@@ -24346,23 +24347,46 @@ function __guestReportGuestsLabel__(lang, guest){
   return `${__guestReportPlural__(lang, adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, children, 'children_one', 'children_other')}`;
 }
 function __guestReportGuestPhone__(guest){ return String(guest?.telefono ?? guest?.tel ?? guest?.phone ?? document.getElementById('guestPhone')?.value ?? '').trim(); }
+function __guestReportResolveRoomsArr__(guest){
+  const direct = _parseRoomsArr(guest?.stanze ?? guest?.rooms ?? guest?.stanza ?? guest?.room ?? '');
+  if (direct.length) return direct;
+  if (state.guestRooms && state.guestRooms.size){
+    return Array.from(state.guestRooms).map((n)=>parseInt(n,10)).filter((n)=>Number.isFinite(n)).sort((a,b)=>a-b);
+  }
+  return [];
+}
+function __guestReportRoomBedsValue__(lang, counts){
+  const parts = [];
+  const m = Number(counts?.lettoM || counts?.letto_m || 0) || 0;
+  const s = Number(counts?.lettoS || counts?.letto_s || 0) || 0;
+  const c = Number(counts?.culla || 0) || 0;
+  if (m > 0) parts.push(__guestReportPlural__(lang, m, 'doubleBed_one', 'doubleBed_other'));
+  if (s > 0) parts.push(__guestReportPlural__(lang, s, 'singleBed_one', 'singleBed_other'));
+  if (c > 0) parts.push(__guestReportPlural__(lang, c, 'crib_one', 'crib_other'));
+  return '(' + (parts.length ? parts.join(' + ') : __guestReportT__(lang, 'none')) + ')';
+}
 function __guestReportResolveRows__(guest){
   const lang = __guestReportResolveLanguage__(guest);
-  const roomsArr = _parseRoomsArr(guest?.stanze); let lettoM=0, lettoS=0, culla=0; const gid=_guestIdOf(guest);
-  roomsArr.forEach((n)=>{ const key=`${gid}:${n}`; const info=(state.stanzeByKey&&state.stanzeByKey[key])?state.stanzeByKey[key]:{letto_m:0,letto_s:0,culla:0}; lettoM += Number(info.letto_m||0)||0; lettoS += Number(info.letto_s||0)||0; culla += Number(info.culla||0)||0; });
+  const roomsArr = __guestReportResolveRoomsArr__(guest);
+  const gid = _guestIdOf(guest);
+  const roomRows = roomsArr.map((n)=>{
+    const key = `${gid}:${n}`;
+    const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m:0, letto_s:0, culla:0 };
+    return { kind:'roomCard', label:`${__guestReportT__(lang, 'room')} ${n}`, value:__guestReportRoomBedsValue__(lang, info) };
+  });
   const total=money(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? guest?.total ?? 0);
   const services=money(guest?.servizi_totale ?? guest?.serviziTotal ?? guest?.importo_servizi ?? 0);
   const discount=money(guest?.sconto ?? guest?.discount ?? 0); const deposit=money(guest?.acconto_importo ?? guest?.accontoImporto ?? guest?.deposit ?? 0); const saldo=money(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
   const remaining=Math.round((((total+services)-discount)-deposit-saldo)*100)/100;
   const servicesLabel=(()=>{ const items=Array.isArray(state.guestServicesItems)?state.guestServicesItems.filter((s)=>{ const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted; return !(String(del)==='1'||del===true); }):[]; if(!items.length) return __guestReportT__(lang, 'noExtraServices'); return items.map((s)=>String(s?.nome ?? s?.name ?? s?.titolo ?? 'Servizio').trim()).filter(Boolean).join(', '); })();
-  const taxVal=(()=>{ try{ return money(calcTouristTax(guest, calcStayNights(guest))); }catch(_){ return 0; } })();
+  const taxVal=(()=>{ try{ const tax = calcTouristTax(guest, calcStayNights(guest)); return money(tax?.total ?? tax ?? 0); }catch(_){ return 0; } })();
   return {
     lang,
     rows:[
       { kind:'hero', label:__guestReportT__(lang, 'booking'), value: __guestBookingNumberLabel__(guest) || __guestReportT__(lang, 'none') },
       { kind:'hero', label:__guestReportT__(lang, 'stay'), value: __guestReportFormatRange__(lang, guest?.check_in ?? guest?.checkIn ?? '', guest?.check_out ?? guest?.checkOut ?? '') || __guestReportT__(lang, 'none') },
       { label:__guestReportT__(lang, 'rooms'), value: roomsArr.length ? roomsArr.join(', ') : __guestReportT__(lang, 'none') },
-      { label:__guestReportT__(lang, 'beds'), value:__guestReportBedsLabel__(lang, { lettoM, lettoS, culla }) },
+      ...roomRows,
       { label:__guestReportT__(lang, 'guests'), value:__guestReportGuestsLabel__(lang, guest) },
       { label:__guestReportT__(lang, 'extraServices'), value: servicesLabel },
       { kind:'money', label:__guestReportT__(lang, 'bookingAmount'), value: total },
@@ -24377,13 +24401,14 @@ function __guestReportResolveRows__(guest){
 }
 function __guestReportCanvas__(guest){
   const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null; const payload=__guestReportResolveRows__(safeGuest); const lang=payload.lang || __guestReportResolveLanguage__(safeGuest); const rows=payload.rows || []; const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__I18N_LOCALES__[lang] || 'it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } }; const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
-  const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80; const height=topPad+180+heroRows.length*(heroH+14)+textRows.length*(rowH+gap)+footerH; const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
+  const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80; const dynamicHeight=textRows.reduce((sum,row)=>sum + ((row.kind==='roomCard') ? 132 : rowH) + gap, 0); const height=topPad+180+heroRows.length*(heroH+14)+dynamicHeight+footerH; const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
   const radiusRect=(x,y,w,h,r)=>{ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); };
+  const wrapText=(value,maxChars)=>{ const txt=String(value || '').trim(); if(!txt) return [__guestReportT__(lang, 'none')]; if(txt.length<=maxChars) return [txt]; const parts=[]; let rest=txt; while(rest.length && parts.length<2){ if(rest.length<=maxChars){ parts.push(rest); break; } let chunk=rest.slice(0,maxChars+1); let cut=Math.max(chunk.lastIndexOf(' '), chunk.lastIndexOf('+'), chunk.lastIndexOf(',')); if(cut<Math.floor(maxChars*0.5)) cut=maxChars; parts.push(rest.slice(0,cut).trim()); rest=rest.slice(cut).trim(); } if(rest.length){ const last=parts[parts.length-1] || ''; parts[parts.length-1]=(last.slice(0,Math.max(0,maxChars-1)) + '…').trim(); } return parts.filter(Boolean); };
   ctx.fillStyle='#f5f7fb'; ctx.fillRect(0,0,width,height); radiusRect(34,34,width-68,height-68,42); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(77,156,197,0.18)'; ctx.stroke();
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback'); const range=__guestReportFormatRange__(lang, safeGuest?.check_in ?? safeGuest?.checkIn ?? '', safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || __guestReportT__(lang, 'none');
   ctx.textAlign='left'; ctx.fillStyle='#4d9cc5'; ctx.font='800 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(__guestReportT__(lang, 'title'),88,114); ctx.fillStyle='#0f172a'; ctx.font='900 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,176); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(range,88,220);
   let y=252; heroRows.forEach((row,idx)=>{ const x=idx===0?88:630, w=522; radiusRect(x,y,w,heroH,30); ctx.fillStyle=idx===0?'#0b1f3a':'#4d9cc5'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || '').toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const t=String(row.value || __guestReportT__(lang, 'none')); const pieces=t.length>24?[t.slice(0,24),t.slice(24,48)]:[t]; ctx.fillText(pieces[0],x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } }); y += heroRows.length ? heroH + 30 : 0;
-  textRows.forEach((row,idx)=>{ radiusRect(88,y,width-176,rowH,28); const bgc=row.kind==='moneyStrong'?'#0b1f3a':(idx%2===0?'#eef4fb':'#f6f3ed'); ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':'rgba(77,156,197,0.16)'; ctx.stroke(); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#334155'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+44); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#0f172a'; ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || __guestReportT__(lang, 'none')); ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); ctx.textAlign='left'; y += rowH + gap; });
+  textRows.forEach((row,idx)=>{ const currentH = row.kind==='roomCard' ? 132 : rowH; radiusRect(88,y,width-176,currentH,28); const bgc=row.kind==='moneyStrong'?'#0b1f3a':(row.kind==='roomCard'?'#edf6f2':(idx%2===0?'#eef4fb':'#f6f3ed')); ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':'rgba(77,156,197,0.16)'; ctx.stroke(); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#334155'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+44); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#0f172a'; const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || __guestReportT__(lang, 'none')); if(row.kind==='roomCard'){ const lines=wrapText(val, 42); ctx.textAlign='left'; ctx.font='900 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),122,y+84); if(lines[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],122,y+114); } } else { ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); } ctx.textAlign='left'; y += currentH + gap; });
   ctx.fillStyle='#94a3b8'; ctx.font='700 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',88,height-82); return canvas;
 }
 async function __guestReportBlob__(guest){ const canvas=__guestReportCanvas__(guest); if(!canvas) return null; const blob=await new Promise((resolve)=>canvas.toBlob(resolve,'image/png',1)); if(blob) return blob; const dataUrl=canvas.toDataURL('image/png'); const base64=dataUrl.split(',')[1] || ''; const bin=atob(base64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:'image/png'}); }
