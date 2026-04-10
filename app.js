@@ -91,7 +91,7 @@ try{
 /**
  * Build: 2.599
  */
-const BUILD_VERSION = "2.599";
+const BUILD_VERSION = "2.602";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13097,6 +13097,12 @@ state.page = page;
     // Difesa anti-stato sporco: quando torno alla lista, la scheda ospite NON deve restare in "view"
     // (layout diverso) o con valori vecchi.
     try { enterGuestCreateMode(); } catch (_) {}
+    try{
+      if (prevPage !== "ospiti"){
+        const currentTop = Number((document.scrollingElement && document.scrollingElement.scrollTop) || window.scrollY || window.pageYOffset || 0) || 0;
+        if (currentTop <= 4 && !state.guestListScrollRestorePending) state.guestListScrollTop = 0;
+      }
+    }catch(_){}
     loadOspiti(state.period || {}).catch(e => toast(e.message));
   }
   if (page === "lavanderia") loadLavanderia().catch(e => toast(e.message));
@@ -13400,6 +13406,7 @@ if (btnNewGuestTop){
 
       // Default: torna alla lista ospiti
       try{ state.guestGroupBookings = null; state.guestGroupActiveId = null; state.guestGroupKey = null; clearGuestMulti(); }catch(_){ }
+      try{ state.guestListScrollRestorePending = true; }catch(_){}
       showPage("ospiti");
     };
     bindFastTap(guestBackTop, goGuestBack);
@@ -24169,7 +24176,7 @@ function sortGuestGroups(groups){
 
 
 function __guestBookingNumberPresent__(guest){ return !!String(__guestBookingNumberLabel__(guest) || '').trim(); }
-function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.some((item) => __guestBookingNumberPresent__(item)); }
+function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.every((item) => __guestBookingNumberPresent__(item)); }
 function __guestReportResolveGuest__(){ return state.guestViewItem || null; }
 function __guestReportResolveRows__(guest){
   const bookingCount = Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length ? state.guestGroupBookings.length : 1;
@@ -24218,6 +24225,43 @@ function __closeGuestReportModal__(){ const modal=document.getElementById('guest
 async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const blob=await __guestReportBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'image/png'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:'Report ospite', files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
   const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast('Report ospite pronto','blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
 }
+
+function __guestListScrollContainer__(){
+  try{
+    return document.scrollingElement || document.documentElement || document.body || null;
+  }catch(_){ return null; }
+}
+function __captureGuestListScrollPosition__(){
+  try{
+    const el = __guestListScrollContainer__();
+    const top = Number(el ? el.scrollTop : (window.scrollY || window.pageYOffset || 0)) || 0;
+    state.guestListScrollTop = Math.max(0, top);
+    state.guestListScrollRestorePending = false;
+  }catch(_){}
+}
+function __restoreGuestListScrollPosition__(force){
+  try{
+    const top = Math.max(0, Number(state.guestListScrollTop || 0) || 0);
+    const shouldRestore = !!force || !!state.guestListScrollRestorePending;
+    if (!shouldRestore) return;
+    const apply = () => {
+      try{
+        const el = __guestListScrollContainer__();
+        if (el) el.scrollTop = top;
+        try{ window.scrollTo(0, top); }catch(_){}
+      }catch(_){}
+    };
+    requestAnimationFrame(() => {
+      apply();
+      requestAnimationFrame(() => {
+        apply();
+        setTimeout(apply, 60);
+      });
+    });
+    state.guestListScrollRestorePending = false;
+  }catch(_){}
+}
+
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
   if (!wrap) return;
@@ -24411,6 +24455,7 @@ function renderGuestCards(){
         state.guestGroupActiveId = null;
         try{ clearGuestMulti(); }catch(_){ }
       }
+      try{ __captureGuestListScrollPosition__(); }catch(_){}
       enterGuestViewMode(first);
       showPage("ospite");
     };
@@ -24425,6 +24470,7 @@ function renderGuestCards(){
     frag.appendChild(card);
   });
   wrap.appendChild(frag);
+  try{ __restoreGuestListScrollPosition__(); }catch(_){}
 }
 
 
