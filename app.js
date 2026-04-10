@@ -24169,7 +24169,7 @@ function sortGuestGroups(groups){
 
 
 function __guestBookingNumberPresent__(guest){ return !!String(__guestBookingNumberLabel__(guest) || '').trim(); }
-function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.every((item) => __guestBookingNumberPresent__(item)); }
+function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.some((item) => __guestBookingNumberPresent__(item)); }
 function __guestReportResolveGuest__(){ return state.guestViewItem || null; }
 function __guestReportResolveRows__(guest){
   const bookingCount = Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length ? state.guestGroupBookings.length : 1;
