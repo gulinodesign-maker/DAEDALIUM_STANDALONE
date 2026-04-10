@@ -21950,9 +21950,8 @@ function __guestBookingNumberLabel__(guest){
     const candidates = [
       guest?.numero_prenotazione, guest?.numeroPrenotazione, guest?.prenotazione_numero, guest?.prenotazioneNumero,
       guest?.booking_number, guest?.bookingNumber, guest?.reservation_number, guest?.reservationNumber,
-      guest?.booking_id, guest?.bookingId, guest?.reservation_id, guest?.reservationId,
-      guest?.id_prenotazione, guest?.idPrenotazione, guest?.id_booking, guest?.idBooking,
-      guest?.id
+      guest?.booking_code, guest?.bookingCode, guest?.reservation_code, guest?.reservationCode,
+      guest?.id_prenotazione, guest?.idPrenotazione, guest?.id_booking, guest?.idBooking
     ];
     for (const raw of candidates){
       const clean = String(raw == null ? '' : raw).trim();
