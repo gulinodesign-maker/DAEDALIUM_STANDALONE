@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.599
+ * Build: 2.602
  */
-const BUILD_VERSION = "2.599";
+const BUILD_VERSION = "2.602";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4431,6 +4431,8 @@ guestMarriage: false,
   guestPSRegistered: false,
   guestISTATRegistered: false,
   guestArrivalFilter: "today",
+  guestListScrollState: null,
+  guestListScrollRestorePending: false,
   // Scheda ospite (sola lettura): ultimo ospite aperto
   guestViewItem: null,
 
@@ -12800,7 +12802,96 @@ function __applyVerticalPageLock__(page){
     }, { passive:true, capture:true });
     setTimeout(refresh, 0);
   }catch(_){ }
+
 })();
+
+function __getDocumentScrollTop__(){
+  try{
+    return Math.max(
+      window.scrollY || 0,
+      (document.scrollingElement && document.scrollingElement.scrollTop) || 0,
+      document.documentElement?.scrollTop || 0,
+      document.body?.scrollTop || 0
+    );
+  }catch(_){ return 0; }
+}
+function __setDocumentScrollTop__(top){
+  const value = Math.max(0, Number(top) || 0);
+  try{ window.scrollTo(0, value); }catch(_){ }
+  try{ if (document.scrollingElement) document.scrollingElement.scrollTop = value; }catch(_){ }
+  try{ document.documentElement.scrollTop = value; }catch(_){ }
+  try{ document.body.scrollTop = value; }catch(_){ }
+}
+function __captureGuestListScrollState__(){
+  try{
+    const wrap = document.getElementById('guestCards');
+    const cards = wrap ? Array.from(wrap.querySelectorAll('.guest-card')) : [];
+    const viewportTop = 0;
+    let anchorKey = '';
+    let anchorOffset = 0;
+    for (const card of cards){
+      const rect = card.getBoundingClientRect();
+      if (rect.bottom > viewportTop + 8){
+        anchorKey = String(card.dataset.guestVisualKey || card.dataset.guestId || '').trim();
+        anchorOffset = rect.top;
+        break;
+      }
+    }
+    state.guestListScrollState = {
+      top: __getDocumentScrollTop__(),
+      anchorKey,
+      anchorOffset,
+      ts: Date.now()
+    };
+    state.guestListScrollRestorePending = true;
+  }catch(_){ }
+}
+function __restoreGuestListScrollState__(){
+  try{
+    if (state.page !== 'ospiti' || !state.guestListScrollRestorePending) return false;
+    const saved = state.guestListScrollState || null;
+    if (!saved) {
+      state.guestListScrollRestorePending = false;
+      return true;
+    }
+
+    let targetTop = Math.max(0, Number(saved.top) || 0);
+    const wrap = document.getElementById('guestCards');
+    const cards = wrap ? Array.from(wrap.querySelectorAll('.guest-card')) : [];
+    if (cards.length && saved.anchorKey){
+      const anchor = cards.find((card) => String(card.dataset.guestVisualKey || card.dataset.guestId || '').trim() === String(saved.anchorKey || '').trim());
+      if (anchor){
+        const anchorTop = anchor.getBoundingClientRect().top + __getDocumentScrollTop__();
+        const desiredTop = anchorTop - (Number(saved.anchorOffset) || 0);
+        if (isFinite(desiredTop)) targetTop = Math.max(0, desiredTop);
+      }
+    }
+
+    const scrollingEl = document.scrollingElement || document.documentElement || document.body;
+    const maxTop = Math.max(0, ((scrollingEl && scrollingEl.scrollHeight) || document.documentElement?.scrollHeight || document.body?.scrollHeight || 0) - (window.innerHeight || document.documentElement?.clientHeight || 0));
+    targetTop = Math.min(targetTop, maxTop);
+    __setDocumentScrollTop__(targetTop);
+
+    const currentTop = __getDocumentScrollTop__();
+    const delta = Math.abs(currentTop - targetTop);
+    if (delta <= 2){
+      state.guestListScrollRestorePending = false;
+      return true;
+    }
+  }catch(_){ }
+  return false;
+}
+function __scheduleGuestListScrollRestore__(attempt = 0){
+  try{
+    if (state.page !== 'ospiti' || !state.guestListScrollRestorePending) return;
+    requestAnimationFrame(() => {
+      const ok = __restoreGuestListScrollState__();
+      if (!ok && attempt < 12){
+        setTimeout(() => { try{ __scheduleGuestListScrollRestore__(attempt + 1); }catch(_){ } }, 40);
+      }
+    });
+  }catch(_){ }
+}
 
 function showPage(page){
   // Back-compat: vecchia pagina "colazione" ora è "prodotti"
@@ -12833,6 +12924,9 @@ function showPage(page){
   const navId = ++state.navId;
 
   const prevPage = state.page;
+  if (prevPage === "ospiti" && page === "ospite") {
+    try{ __captureGuestListScrollState__(); }catch(_){ }
+  }
   if (page === "calendario" && prevPage && prevPage !== "calendario") {
     state._calendarPrev = prevPage;
   }
@@ -13098,6 +13192,7 @@ state.page = page;
     // (layout diverso) o con valori vecchi.
     try { enterGuestCreateMode(); } catch (_) {}
     loadOspiti(state.period || {}).catch(e => toast(e.message));
+    try{ if (prevPage === "ospite" && state.guestListScrollRestorePending) __scheduleGuestListScrollRestore__(); }catch(_){ }
   }
   if (page === "lavanderia") loadLavanderia().catch(e => toast(e.message));
 
@@ -24425,6 +24520,7 @@ function renderGuestCards(){
     frag.appendChild(card);
   });
   wrap.appendChild(frag);
+  try{ if (state.page === 'ospiti' && state.guestListScrollRestorePending) __scheduleGuestListScrollRestore__(); }catch(_){ }
 }
 
 
