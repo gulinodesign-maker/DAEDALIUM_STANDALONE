@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.607
+ * Build: 2.608
  */
-const BUILD_VERSION = "2.607";
+const BUILD_VERSION = "2.608";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24279,26 +24279,34 @@ function __guestReportResolveBookings__(guest){
 function __guestReportResolveLanguage__(guest){
   const bookings = __guestReportResolveBookings__(guest);
   const candidates = [];
-  bookings.forEach((item) => {
+  const pushCandidates = (item) => {
+    if (!item) return;
     candidates.push(
       item?.lingua_ospite, item?.linguaOspite, item?.guest_language, item?.guestLanguage,
       item?.language, item?.lang, item?.lingua, item?.locale, item?.preferred_language,
-      item?.preferredLanguage, item?.lingua_cliente, item?.linguaCliente
+      item?.preferredLanguage, item?.lingua_cliente, item?.linguaCliente,
+      item?.guest_lang, item?.guestLang, item?.report_language, item?.reportLanguage,
+      item?.report_lang, item?.reportLang, item?.lingua_report, item?.linguaReport,
+      item?.selected_language, item?.selectedLanguage, item?.list_language, item?.listLanguage,
+      item?.guest_list_language, item?.guestListLanguage, item?.guest_language_code, item?.guestLanguageCode
     );
-  });
+  };
+  bookings.forEach(pushCandidates);
+  pushCandidates(guest);
   try{
     const domCandidates = [
       document.getElementById('guestLanguage')?.value,
       document.getElementById('guestLingua')?.value,
       document.getElementById('guestPreferredLanguage')?.value,
-      document.getElementById('guestLanguageSelect')?.value
+      document.getElementById('guestLanguageSelect')?.value,
+      document.getElementById('guestReportLanguage')?.value
     ];
     candidates.push(...domCandidates);
   }catch(_){ }
   for (const value of candidates){
     const raw = String(value || '').trim().toLowerCase();
     if (!raw) continue;
-    if (raw.startsWith('it')) return 'it';
+    if (raw.startsWith('it') || raw === 'italiano') return 'it';
     if (raw.startsWith('en') || raw.includes('ingles')) return 'en';
     if (raw.startsWith('fr') || raw.includes('fran')) return 'fr';
     if (raw.startsWith('de') || raw.includes('tede') || raw.includes('deut')) return 'de';
@@ -24396,10 +24404,9 @@ function __guestReportRoomVisual__(roomNumber){
     const pair = __roomsUiVisualNormalize__(cfg.rooms?.[String(roomNumber)] || 'blue-4', 'blue-4');
     const bg = __operatoreColorHex__(pair.bg || 'blue-4');
     const border = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
-    const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.88);
-    return { bg:hexToRgba(bg, opacity), border:hexToRgba(border, Math.min(1, opacity + 0.06)), fg:__roomsUiTextColor__(pair) || '#ffffff' };
+    return { bg:hexToRgba(bg, 0.30), border:hexToRgba(border, 0.30), fg:'#000000' };
   }catch(_){
-    return { bg:'#edf6f2', border:'rgba(77,156,197,0.16)', fg:'#0f172a' };
+    return { bg:'rgba(77,156,197,0.30)', border:'rgba(77,156,197,0.30)', fg:'#000000' };
   }
 }
 function __guestReportResolveStayRanges__(lang, guest){
@@ -24458,7 +24465,6 @@ function __guestReportResolveRows__(guest){
   const bookings = __guestReportResolveBookings__(guest);
   const stayRanges = __guestReportResolveStayRanges__(lang, guest);
   const roomCards = __guestReportResolveRoomCards__(lang, guest);
-  const roomsFlat = roomCards.map((row)=>row.roomNumber).filter((n)=>Number.isFinite(n));
   const total = bookings.reduce((sum, item)=> sum + money(item?.importo_prenotazione ?? item?.importo_prenota ?? item?.importoPrenotazione ?? item?.importoPrenota ?? item?.total ?? 0), 0);
   const services = bookings.reduce((sum, item)=> sum + money(item?.servizi_totale ?? item?.serviziTotal ?? item?.importo_servizi ?? 0), 0);
   const discount = bookings.reduce((sum, item)=> sum + money(item?.sconto ?? item?.discount ?? 0), 0);
@@ -24473,7 +24479,7 @@ function __guestReportResolveRows__(guest){
   const taxVal = bookings.reduce((sum, item) => {
     try{
       const tax = calcTouristTax(item, calcStayNights(item));
-      return sum + money(tax?.total ?? tax ?? 0);
+      return sum + money(tax?.total ?? tax?.amount ?? tax?.value ?? tax ?? 0);
     }catch(_){ return sum; }
   }, 0);
   return {
@@ -24482,7 +24488,6 @@ function __guestReportResolveRows__(guest){
     roomCards,
     rows:[
       { kind:'hero', label:__guestReportT__(lang, 'booking'), value: bookings.map((item)=>__guestBookingNumberLabel__(item)).filter(Boolean).join(' · ') || __guestReportT__(lang, 'none') },
-      { label:__guestReportT__(lang, 'rooms'), value: roomsFlat.length ? roomsFlat.join(', ') : __guestReportT__(lang, 'none') },
       ...roomCards,
       { label:__guestReportT__(lang, 'guests'), value:__guestReportGuestsLabel__(lang, guest) },
       { label:__guestReportT__(lang, 'extraServices'), value: servicesLabel },
@@ -24500,34 +24505,31 @@ function __guestReportCanvas__(guest){
   const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null;
   const payload=__guestReportResolveRows__(safeGuest); const lang=payload.lang || __guestReportResolveLanguage__(safeGuest); const rows=payload.rows || [];
   const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__I18N_LOCALES__[lang] || 'it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
-  const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
-  const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80;
-  const dynamicHeight=textRows.reduce((sum,row)=>sum + ((row.kind==='roomCard') ? 162 : rowH) + gap, 0);
-  const height=topPad+126+heroRows.length*(heroH+14)+dynamicHeight+footerH;
+  const width=1240, cardH=136, gap=18, topPad=54, footerH=80;
+  const height=topPad+126+rows.length*(cardH+gap)+footerH;
   const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
   const radiusRect=(x,y,w,h,r)=>{ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); };
   const wrapText=(value,maxChars,maxLines=2)=>{ const txt=String(value || '').trim(); if(!txt) return [__guestReportT__(lang, 'none')]; if(txt.length<=maxChars) return [txt]; const parts=[]; let rest=txt; while(rest.length && parts.length<maxLines){ if(rest.length<=maxChars){ parts.push(rest); break; } let chunk=rest.slice(0,maxChars+1); let cut=Math.max(chunk.lastIndexOf(' '), chunk.lastIndexOf('+'), chunk.lastIndexOf(',')); if(cut<Math.floor(maxChars*0.5)) cut=maxChars; parts.push(rest.slice(0,cut).trim()); rest=rest.slice(cut).trim(); } if(rest.length && parts.length){ const last=parts[parts.length-1] || ''; parts[parts.length-1]=(last.slice(0,Math.max(0,maxChars-1)) + '…').trim(); } return parts.filter(Boolean); };
   ctx.fillStyle='#f5f7fb'; ctx.fillRect(0,0,width,height); radiusRect(34,34,width-68,height-68,42); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(77,156,197,0.18)'; ctx.stroke();
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
-  const stayHero = String(payload.stayLabel || __guestReportT__(lang, 'none'));
-  ctx.textAlign='left'; ctx.fillStyle='#0f172a'; ctx.font='900 58px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,132); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; wrapText(stayHero, 56, 2).forEach((line, idx)=>ctx.fillText(line,88,176 + (idx*32)));
-  let y=234; heroRows.forEach((row)=>{ const x=88, w=width-176; radiusRect(x,y,w,heroH,30); ctx.fillStyle='#0b1f3a'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || '').toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const pieces=wrapText(String(row.value || __guestReportT__(lang, 'none')), 44, 2); ctx.fillText(pieces[0] || __guestReportT__(lang, 'none'),x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } y += heroH + 30; });
-  textRows.forEach((row,idx)=>{
-    const currentH = row.kind==='roomCard' ? 162 : rowH;
-    radiusRect(88,y,width-176,currentH,28);
-    const bgc=row.kind==='moneyStrong'?'#0b1f3a':(row.kind==='roomCard'?(row.visual?.bg || '#edf6f2'):(idx%2===0?'#eef4fb':'#f6f3ed'));
-    ctx.fillStyle=bgc; ctx.fill();
-    ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':(row.kind==='roomCard'?(row.visual?.border || 'rgba(77,156,197,0.16)'):'rgba(77,156,197,0.16)');
-    ctx.stroke();
-    ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':(row.kind==='roomCard'?(row.visual?.fg || '#0f172a'):'#334155');
-    if(row.kind==='roomCard' && row.dateLabel){ ctx.font='800 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.dateLabel,122,y+32); }
-    ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+(row.kind==='roomCard'?66:44));
-    ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':(row.kind==='roomCard'?(row.visual?.fg || '#0f172a'):'#0f172a');
+  ctx.textAlign='left'; ctx.fillStyle='#0f172a'; ctx.font='900 58px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,132);
+  let y=190;
+  rows.forEach((row,idx)=>{
+    radiusRect(88,y,width-176,cardH,28);
+    const isRoom = row.kind==='roomCard';
+    const isHero = row.kind==='hero';
+    const isStrong = row.kind==='moneyStrong';
+    const bgc = isHero ? '#0b1f3a' : (isStrong ? '#0b1f3a' : (isRoom ? (row.visual?.bg || 'rgba(77,156,197,0.30)') : (idx%2===0?'#eef4fb':'#f6f3ed')));
+    const stroke = isHero || isStrong ? '#0b1f3a' : (isRoom ? (row.visual?.border || 'rgba(77,156,197,0.30)') : 'rgba(77,156,197,0.16)');
+    ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=stroke; ctx.stroke();
+    ctx.fillStyle=(isHero||isStrong)?'#ffffff':(isRoom?'#000000':'#334155');
+    if(isRoom && row.dateLabel){ ctx.font='800 18px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.dateLabel,122,y+30); }
+    ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || ''),122,y+(isRoom?58:48));
+    ctx.fillStyle=(isHero||isStrong)?'#ffffff':(isRoom?'#000000':'#0f172a');
     const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || __guestReportT__(lang, 'none'));
-    if(row.kind==='roomCard'){
-      const lines=wrapText(val, 42, 2); ctx.textAlign='left'; ctx.font='900 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),122,y+108); if(lines[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],122,y+138); }
-    } else { ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); }
-    ctx.textAlign='left'; y += currentH + gap;
+    if(isRoom){ const lines=wrapText(val, 48, 2); ctx.textAlign='left'; ctx.font='900 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),122,y+92); if(lines[1]){ ctx.font='900 22px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],122,y+120); } }
+    else { const lines=wrapText(val, 40, 2); ctx.textAlign='right'; ctx.font='900 32px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),width-122,y+62); if(lines[1]){ ctx.font='900 22px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],width-122,y+98); } }
+    ctx.textAlign='left'; y += cardH + gap;
   });
   ctx.fillStyle='#94a3b8'; ctx.font='700 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',88,height-82); return canvas;
 }
@@ -24600,14 +24602,23 @@ async function __shareGuestReportToWhatsApp__(guest){
   const lang = __guestReportResolveLanguage__(safeGuest);
   const phone = normalizeWhatsAppPhone(__guestReportGuestPhone__(safeGuest));
   if (!phone){ try{ toast(__guestReportT__(lang, 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
-  const message = __guestReportWhatsappText__(safeGuest) || __guestReportT__(lang, 'reportTitle');
-  const url = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message);
+  const blob = await __guestReportPdfBlob__(safeGuest);
+  const filename = __guestReportFileName__(safeGuest);
+  const file = blob ? new File([blob], filename, { type:'application/pdf' }) : null;
   try{
-    window.location.href = url;
-    return true;
-  }catch(_){
-    try{ window.open(url, '_blank', 'noopener'); return true; }catch(__){ return false; }
+    if (file && navigator.canShare && navigator.canShare({ files:[file] })){
+      await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), text:__guestReportT__(lang, 'whatsappHint'), files:[file] });
+      return true;
+    }
+  }catch(err){ if (err && err.name === 'AbortError') return false; }
+  const directUrl = 'whatsapp://send?phone=' + encodeURIComponent(phone);
+  try{ window.location.href = directUrl; return true; }catch(_){ }
+  try{ window.open('https://wa.me/' + encodeURIComponent(phone), '_blank', 'noopener'); return true; }catch(__){ }
+  if (blob){
+    const url = URL.createObjectURL(blob);
+    try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
   }
+  return false;
 }
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
