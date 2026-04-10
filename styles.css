@@ -2364,7 +2364,7 @@ body.ddae-dark .guest-nationality-option.is-selected{
 }
 #page-ospite .toggle-check:checked + .pill-toggle .dot{
   background: var(--blue);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
 }
 
 
@@ -3230,7 +3230,7 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospite .pay-elec.selected{
   opacity: 1 !important; /* LED sempre al 100% */
   background-color: var(--ico-sky);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
@@ -4301,17 +4301,28 @@ border-color: rgba(255,255,255,.16);
   margin-right: 10px;
   border-radius: 999px;
   border: 1px solid rgba(148,163,184,0.24);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
   font-size: 24px;
   font-weight: 600;
   line-height: 1;
   opacity: 0.85;
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
 #page-ospiti .guest-main .guest-insno{
   margin-right: 0;
+}
+
+#page-ospiti .guest-insno.is-missing{
+  background: rgba(250,204,21,0.92);
+  border-color: rgba(234,179,8,0.65);
+  color: rgba(15,23,42,0.92);
+}
+#page-ospiti .guest-insno.is-ready{
+  background: rgba(34,197,94,0.92);
+  border-color: rgba(22,163,74,0.65);
+  color: rgba(255,255,255,0.98);
 }
 
 #page-ospiti .guest-nationality-dot{
@@ -4483,7 +4494,7 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
 
 #page-ospite .pay-istat.selected{
   background: var(--ico-sky);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
@@ -4601,7 +4612,7 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
   border-radius: 16px;
   padding: 10px 10px;
   border: 1px solid rgba(15,23,42,0.06);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
 }
 
 body.perf-lite .guest-booking-block{
@@ -5392,7 +5403,7 @@ grid-template-rows: 34px repeat(7, 54px);
   place-items:center;
   border-radius: 12px;
   border: 1px solid rgba(148,163,184,0.24);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
 }
 .laundry-tile-icon svg{ width:18px; height:18px; }
 .laundry-code{
@@ -7850,7 +7861,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
 }
 .prod-rectbtn.prod-green{
   border-color: rgba(52,199,89,0.70);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
   color: #ffffff;
   -webkit-text-fill-color: #ffffff;
 }
@@ -19620,3 +19631,6 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 .guest-report-preview img{ width:100%; height:auto; display:block; border-radius:28px; box-shadow:0 12px 30px rgba(15,23,42,0.12); }
 .guest-report-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:16px; }
 .ddae-dark .guest-report-card{ background: rgba(15,23,42,0.98); }
+
+#guestReportModal{ z-index: 9000 !important; }
+#guestReportModal .guest-report-card{ position:relative; z-index:9001; }

@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.598
+ * Build: 2.599
  */
-const BUILD_VERSION = "2.598";
+const BUILD_VERSION = "2.599";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24371,7 +24371,7 @@ function renderGuestCards(){
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
         <div class="guest-main">
-          ${insNo ? `<span class="guest-insno${hasNotes ? ` has-notes` : ``}"${hasNotes ? ` aria-label="Note presenti" title="Note presenti"` : ``}>${insNo}</span>` : ``}
+          ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
             <span class="guest-name-tab guest-name-text">${nome}</span>
@@ -24381,7 +24381,6 @@ function renderGuestCards(){
         </div>
         <div class="guest-meta-right" aria-label="Stato">
           ${buildNightsDotHTML(stayNights)}
-          <span class="guest-bookingnum-led ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"></span>
           ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
           ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
           ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
