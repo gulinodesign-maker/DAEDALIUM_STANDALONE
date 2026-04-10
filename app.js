@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.602
+ * Build: 2.603
  */
-const BUILD_VERSION = "2.602";
+const BUILD_VERSION = "2.603";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24266,52 +24266,156 @@ function sortGuestGroups(groups){
 function __guestBookingNumberPresent__(guest){ return !!String(__guestBookingNumberLabel__(guest) || '').trim(); }
 function __guestBookingStatusForGroup__(guest){ const list = Array.isArray(guest?._groupBookings) && guest._groupBookings.length ? guest._groupBookings : [guest]; return list.some((item) => __guestBookingNumberPresent__(item)); }
 function __guestReportResolveGuest__(){ return state.guestViewItem || null; }
+function __guestReportResolveLanguage__(guest){
+  const candidates = [
+    guest?.lingua_ospite, guest?.linguaOspite, guest?.guest_language, guest?.guestLanguage,
+    guest?.language, guest?.lang, guest?.lingua, guest?.locale, guest?.preferred_language,
+    guest?.preferredLanguage, guest?.lingua_cliente, guest?.linguaCliente
+  ];
+  for (const value of candidates){
+    const raw = String(value || '').trim().toLowerCase();
+    if (!raw) continue;
+    if (raw.startsWith('it')) return 'it';
+    if (raw.startsWith('en') || raw.includes('ingles')) return 'en';
+    if (raw.startsWith('fr') || raw.includes('fran')) return 'fr';
+    if (raw.startsWith('de') || raw.includes('tede') || raw.includes('deut')) return 'de';
+    if (raw.startsWith('es') || raw.includes('spagn') || raw.includes('espa')) return 'es';
+  }
+  try{ return __getAppLanguage__(); }catch(_){ return 'it'; }
+}
+function __guestReportTextMap__(){ return {
+  title:{ it:'REPORT OSPITE', en:'GUEST REPORT', fr:'RAPPORT CLIENT', de:'GASTBERICHT', es:'REPORTE HUÉSPED' },
+  guestFallback:{ it:'Ospite', en:'Guest', fr:'Client', de:'Gast', es:'Huésped' },
+  booking:{ it:'Prenotazione', en:'Booking', fr:'Réservation', de:'Buchung', es:'Reserva' },
+  stay:{ it:'Soggiorno', en:'Stay', fr:'Séjour', de:'Aufenthalt', es:'Estancia' },
+  rooms:{ it:'Stanze', en:'Rooms', fr:'Chambres', de:'Zimmer', es:'Habitaciones' },
+  beds:{ it:'Letti', en:'Beds', fr:'Lits', de:'Betten', es:'Camas' },
+  guests:{ it:'Ospiti', en:'Guests', fr:'Clients', de:'Gäste', es:'Huéspedes' },
+  extraServices:{ it:'Servizi extra', en:'Extra services', fr:'Services supplémentaires', de:'Extras', es:'Servicios extra' },
+  bookingAmount:{ it:'Importo prenotazione', en:'Booking amount', fr:'Montant réservation', de:'Buchungsbetrag', es:'Importe reserva' },
+  services:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
+  discount:{ it:'Sconto', en:'Discount', fr:'Remise', de:'Rabatt', es:'Descuento' },
+  deposit:{ it:'Acconto', en:'Deposit', fr:'Acompte', de:'Anzahlung', es:'Depósito' },
+  balancePaid:{ it:'Saldo', en:'Paid balance', fr:'Solde payé', de:'Bezahlter Saldo', es:'Saldo pagado' },
+  touristTax:{ it:'Tassa soggiorno', en:'Tourist tax', fr:'Taxe de séjour', de:'Kurtaxe', es:'Tasa turística' },
+  remaining:{ it:'Rimanenza', en:'Remaining', fr:'Reste à payer', de:'Restbetrag', es:'Pendiente' },
+  noExtraServices:{ it:'Nessun servizio extra', en:'No extra services', fr:'Aucun service supplémentaire', de:'Keine Extras', es:'Sin servicios extra' },
+  adults_one:{ it:'adulto', en:'adult', fr:'adulte', de:'Erwachsener', es:'adulto' },
+  adults_other:{ it:'adulti', en:'adults', fr:'adultes', de:'Erwachsene', es:'adultos' },
+  children_one:{ it:'bambino', en:'child', fr:'enfant', de:'Kind', es:'niño' },
+  children_other:{ it:'bambini', en:'children', fr:'enfants', de:'Kinder', es:'niños' },
+  doubleBed_one:{ it:'letto matrimoniale', en:'double bed', fr:'lit double', de:'Doppelbett', es:'cama doble' },
+  doubleBed_other:{ it:'letti matrimoniali', en:'double beds', fr:'lits doubles', de:'Doppelbetten', es:'camas dobles' },
+  singleBed_one:{ it:'letto singolo', en:'single bed', fr:'lit simple', de:'Einzelbett', es:'cama individual' },
+  singleBed_other:{ it:'letti singoli', en:'single beds', fr:'lits simples', de:'Einzelbetten', es:'camas individuales' },
+  crib_one:{ it:'culla', en:'crib', fr:'lit bébé', de:'Kinderbett', es:'cuna' },
+  crib_other:{ it:'culle', en:'cribs', fr:'lits bébé', de:'Kinderbetten', es:'cunas' },
+  none:{ it:'—', en:'—', fr:'—', de:'—', es:'—' },
+  reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
+  reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+  whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+  whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' }
+}; }
+function __guestReportT__(lang, key){ const map=__guestReportTextMap__(); const row=map[key] || {}; return String(row[lang] || row.it || key || ''); }
+function __guestReportPlural__(lang, count, oneKey, otherKey){ return `${count} ${__guestReportT__(lang, count===1 ? oneKey : otherKey)}`; }
+function __guestReportFormatRange__(lang, checkInValue, checkOutValue){
+  const ciIso = formatISODateLocal(checkInValue); const coIso = formatISODateLocal(checkOutValue);
+  if (!ciIso || !coIso) return '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(ciIso) || !/^\d{4}-\d{2}-\d{2}$/.test(coIso)) return '';
+  const ci = new Date(ciIso + 'T00:00:00'); const co = new Date(coIso + 'T00:00:00');
+  if (isNaN(ci) || isNaN(co)) return '';
+  let end = new Date(co); if (end < ci) end = new Date(ci);
+  const locale = __I18N_LOCALES__[lang] || 'it-IT';
+  const monthCap = (dt) => { const s = dt.toLocaleDateString(locale, { month:'long' }); return __capitalizeLocale__(s); };
+  const d1 = ci.getDate(), d2 = end.getDate(), m1 = ci.getMonth(), m2 = end.getMonth(), y1 = ci.getFullYear(), y2 = end.getFullYear();
+  if (y1 === y2 && m1 === m2) return `${d1}-${d2} ${monthCap(ci)}`;
+  if (y1 === y2) return `${d1} ${monthCap(ci)}-${d2} ${monthCap(end)}`;
+  return `${d1} ${monthCap(ci)}-${d2} ${monthCap(end)}`;
+}
+function __guestReportBedsLabel__(lang, counts){
+  const parts = [];
+  const m = Number(counts?.lettoM || 0) || 0, s = Number(counts?.lettoS || 0) || 0, c = Number(counts?.culla || 0) || 0;
+  if (m > 0) parts.push(__guestReportPlural__(lang, m, 'doubleBed_one', 'doubleBed_other'));
+  if (s > 0) parts.push(__guestReportPlural__(lang, s, 'singleBed_one', 'singleBed_other'));
+  if (c > 0) parts.push(__guestReportPlural__(lang, c, 'crib_one', 'crib_other'));
+  return parts.length ? parts.join(', ') : __guestReportT__(lang, 'none');
+}
+function __guestReportGuestsLabel__(lang, guest){
+  const adults = parseInt(guest?.adulti || 0, 10) || 0;
+  const children = parseInt(guest?.bambini_u10 || guest?.kids_u10 || 0, 10) || 0;
+  return `${__guestReportPlural__(lang, adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, children, 'children_one', 'children_other')}`;
+}
+function __guestReportGuestPhone__(guest){ return String(guest?.telefono ?? guest?.tel ?? guest?.phone ?? document.getElementById('guestPhone')?.value ?? '').trim(); }
 function __guestReportResolveRows__(guest){
-  const bookingCount = Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length ? state.guestGroupBookings.length : 1;
+  const lang = __guestReportResolveLanguage__(guest);
   const roomsArr = _parseRoomsArr(guest?.stanze); let lettoM=0, lettoS=0, culla=0; const gid=_guestIdOf(guest);
   roomsArr.forEach((n)=>{ const key=`${gid}:${n}`; const info=(state.stanzeByKey&&state.stanzeByKey[key])?state.stanzeByKey[key]:{letto_m:0,letto_s:0,culla:0}; lettoM += Number(info.letto_m||0)||0; lettoS += Number(info.letto_s||0)||0; culla += Number(info.culla||0)||0; });
   const total=money(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? guest?.total ?? 0);
   const services=money(guest?.servizi_totale ?? guest?.serviziTotal ?? guest?.importo_servizi ?? 0);
   const discount=money(guest?.sconto ?? guest?.discount ?? 0); const deposit=money(guest?.acconto_importo ?? guest?.accontoImporto ?? guest?.deposit ?? 0); const saldo=money(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
   const remaining=Math.round((((total+services)-discount)-deposit-saldo)*100)/100;
-  const channelName=String(guest?.channel_nome ?? guest?.channelNome ?? '').trim() || '—'; const channelPct=Number(guest?.channel_commissione ?? guest?.channel_commission_pct ?? guest?.channelCommission ?? 0) || 0;
-  const servicesLabel=(()=>{ const items=Array.isArray(state.guestServicesItems)?state.guestServicesItems.filter((s)=>{ const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted; return !(String(del)==='1'||del===true); }):[]; if(!items.length) return 'Nessun servizio extra'; return items.map((s)=>String(s?.nome ?? s?.name ?? s?.titolo ?? 'Servizio').trim()).filter(Boolean).join(', '); })();
+  const servicesLabel=(()=>{ const items=Array.isArray(state.guestServicesItems)?state.guestServicesItems.filter((s)=>{ const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted; return !(String(del)==='1'||del===true); }):[]; if(!items.length) return __guestReportT__(lang, 'noExtraServices'); return items.map((s)=>String(s?.nome ?? s?.name ?? s?.titolo ?? 'Servizio').trim()).filter(Boolean).join(', '); })();
   const taxVal=(()=>{ try{ return money(calcTouristTax(guest, calcStayNights(guest))); }catch(_){ return 0; } })();
-  return [
-    { kind:'hero', label:'Prenotazione', value: __guestBookingNumberLabel__(guest) || '—' },
-    { kind:'hero', label:'Soggiorno', value: formatRangeCompactIT(guest?.check_in ?? guest?.checkIn ?? '', guest?.check_out ?? guest?.checkOut ?? '') || '—' },
-    { label:'Numero prenotazioni', value:String(bookingCount) },
-    { label:'Stanze', value: roomsArr.length ? roomsArr.join(', ') : '—' },
-    { label:'Letti', value:`M ${lettoM} · S ${lettoS} · C ${culla}` },
-    { label:'Ospiti', value:`${parseInt(guest?.adulti || 0,10)||0} adulti · ${parseInt(guest?.bambini_u10 || guest?.kids_u10 || 0,10)||0} bambini` },
-    { label:'Servizi extra', value: servicesLabel },
-    { label:'Channel', value: channelPct ? `${channelName} · ${channelPct.toFixed(2)}%` : channelName },
-    { kind:'money', label:'Importo prenotazione', value: total },
-    { kind:'money', label:'Servizi', value: services },
-    { kind:'money', label:'Sconto', value: discount },
-    { kind:'money', label:'Acconto', value: deposit },
-    { kind:'money', label:'Saldo', value: saldo },
-    { kind:'money', label:'Tassa soggiorno', value: taxVal },
-    { kind:'moneyStrong', label:'Rimanenza', value: remaining }
-  ];
+  return {
+    lang,
+    rows:[
+      { kind:'hero', label:__guestReportT__(lang, 'booking'), value: __guestBookingNumberLabel__(guest) || __guestReportT__(lang, 'none') },
+      { kind:'hero', label:__guestReportT__(lang, 'stay'), value: __guestReportFormatRange__(lang, guest?.check_in ?? guest?.checkIn ?? '', guest?.check_out ?? guest?.checkOut ?? '') || __guestReportT__(lang, 'none') },
+      { label:__guestReportT__(lang, 'rooms'), value: roomsArr.length ? roomsArr.join(', ') : __guestReportT__(lang, 'none') },
+      { label:__guestReportT__(lang, 'beds'), value:__guestReportBedsLabel__(lang, { lettoM, lettoS, culla }) },
+      { label:__guestReportT__(lang, 'guests'), value:__guestReportGuestsLabel__(lang, guest) },
+      { label:__guestReportT__(lang, 'extraServices'), value: servicesLabel },
+      { kind:'money', label:__guestReportT__(lang, 'bookingAmount'), value: total },
+      { kind:'money', label:__guestReportT__(lang, 'services'), value: services },
+      { kind:'money', label:__guestReportT__(lang, 'discount'), value: discount },
+      { kind:'money', label:__guestReportT__(lang, 'deposit'), value: deposit },
+      { kind:'money', label:__guestReportT__(lang, 'balancePaid'), value: saldo },
+      { kind:'money', label:__guestReportT__(lang, 'touristTax'), value: taxVal },
+      { kind:'moneyStrong', label:__guestReportT__(lang, 'remaining'), value: remaining }
+    ]
+  };
 }
 function __guestReportCanvas__(guest){
-  const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null; const rows=__guestReportResolveRows__(safeGuest); const moneyFmt=(v)=>euro(v||0); const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
+  const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null; const payload=__guestReportResolveRows__(safeGuest); const lang=payload.lang || __guestReportResolveLanguage__(safeGuest); const rows=payload.rows || []; const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__I18N_LOCALES__[lang] || 'it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } }; const textRows=rows.filter((row)=>row.kind!=='hero'); const heroRows=rows.filter((row)=>row.kind==='hero');
   const width=1240,rowH=118,gap=18,topPad=54,heroH=122,footerH=80; const height=topPad+180+heroRows.length*(heroH+14)+textRows.length*(rowH+gap)+footerH; const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
   const radiusRect=(x,y,w,h,r)=>{ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); };
   ctx.fillStyle='#f5f7fb'; ctx.fillRect(0,0,width,height); radiusRect(34,34,width-68,height-68,42); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(77,156,197,0.18)'; ctx.stroke();
-  const guestName=String(safeGuest?.nome || safeGuest?.name || 'Ospite').trim() || 'Ospite'; const range=formatRangeCompactIT(safeGuest?.check_in ?? safeGuest?.checkIn ?? '', safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '—';
-  ctx.textAlign='left'; ctx.fillStyle='#4d9cc5'; ctx.font='800 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('REPORT OSPITE',88,114); ctx.fillStyle='#0f172a'; ctx.font='900 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,176); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(range,88,220);
-  let y=252; heroRows.forEach((row,idx)=>{ const x=idx===0?88:630, w=522; radiusRect(x,y,w,heroH,30); ctx.fillStyle=idx===0?'#0b1f3a':'#4d9cc5'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label.toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const t=String(row.value || '—'); const pieces=t.length>24?[t.slice(0,24),t.slice(24,48)]:[t]; ctx.fillText(pieces[0],x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } }); y += heroRows.length ? heroH + 30 : 0;
-  textRows.forEach((row,idx)=>{ radiusRect(88,y,width-176,rowH,28); const bgc=row.kind==='moneyStrong'?'#0b1f3a':(idx%2===0?'#eef4fb':'#f6f3ed'); ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':'rgba(77,156,197,0.16)'; ctx.stroke(); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#334155'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+44); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#0f172a'; ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || '—'); ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); ctx.textAlign='left'; y += rowH + gap; });
+  const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback'); const range=__guestReportFormatRange__(lang, safeGuest?.check_in ?? safeGuest?.checkIn ?? '', safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || __guestReportT__(lang, 'none');
+  ctx.textAlign='left'; ctx.fillStyle='#4d9cc5'; ctx.font='800 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(__guestReportT__(lang, 'title'),88,114); ctx.fillStyle='#0f172a'; ctx.font='900 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(guestName,88,176); ctx.fillStyle='#475569'; ctx.font='800 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(range,88,220);
+  let y=252; heroRows.forEach((row,idx)=>{ const x=idx===0?88:630, w=522; radiusRect(x,y,w,heroH,30); ctx.fillStyle=idx===0?'#0b1f3a':'#4d9cc5'; ctx.fill(); ctx.fillStyle='#ffffff'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(String(row.label || '').toUpperCase(),x+28,y+42); ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const t=String(row.value || __guestReportT__(lang, 'none')); const pieces=t.length>24?[t.slice(0,24),t.slice(24,48)]:[t]; ctx.fillText(pieces[0],x+28,y+82); if(pieces[1]){ ctx.font='900 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(pieces[1],x+28,y+110); } }); y += heroRows.length ? heroH + 30 : 0;
+  textRows.forEach((row,idx)=>{ radiusRect(88,y,width-176,rowH,28); const bgc=row.kind==='moneyStrong'?'#0b1f3a':(idx%2===0?'#eef4fb':'#f6f3ed'); ctx.fillStyle=bgc; ctx.fill(); ctx.strokeStyle=row.kind==='moneyStrong'?'#0b1f3a':'rgba(77,156,197,0.16)'; ctx.stroke(); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#334155'; ctx.font='800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(row.label,122,y+44); ctx.fillStyle=row.kind==='moneyStrong'?'#ffffff':'#0f172a'; ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; const val=row.kind&&row.kind.indexOf('money')===0?moneyFmt(row.value):String(row.value || __guestReportT__(lang, 'none')); ctx.textAlign='right'; ctx.fillText(val,width-122,y+66); ctx.textAlign='left'; y += rowH + gap; });
   ctx.fillStyle='#94a3b8'; ctx.font='700 20px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',88,height-82); return canvas;
 }
 async function __guestReportBlob__(guest){ const canvas=__guestReportCanvas__(guest); if(!canvas) return null; const blob=await new Promise((resolve)=>canvas.toBlob(resolve,'image/png',1)); if(blob) return blob; const dataUrl=canvas.toDataURL('image/png'); const base64=dataUrl.split(',')[1] || ''; const bin=atob(base64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:'image/png'}); }
 function __guestReportFileName__(guest){ const safeGuest=guest || __guestReportResolveGuest__() || {}; const name=String(safeGuest?.nome || 'ospite').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'ospite'; const ci=String((safeGuest?.check_in ?? safeGuest?.checkIn ?? '') || '').slice(0,10).replace(/-/g,''); const co=String((safeGuest?.check_out ?? safeGuest?.checkOut ?? '') || '').slice(0,10).replace(/-/g,''); return `dDAE_Ospite_${name}_${ci || '00000000'}_${co || '00000000'}.png`; }
-function __openGuestReportModal__(guest){ const safeGuest=guest || __guestReportResolveGuest__(); const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(!safeGuest || !modal || !preview) return; const canvas=__guestReportCanvas__(safeGuest); if(!canvas) return; const closeA=document.getElementById('guestReportClose'); const closeB=document.getElementById('guestReportCloseBtn'); const shareA=document.getElementById('guestReportShare'); const shareB=document.getElementById('guestReportShareBtn'); if(closeA && !closeA.__boundGuestReport){ closeA.__boundGuestReport=true; bindFastTap(closeA, ()=>{ __closeGuestReportModal__(); }); } if(closeB && !closeB.__boundGuestReport){ closeB.__boundGuestReport=true; bindFastTap(closeB, ()=>{ __closeGuestReportModal__(); }); } if(shareA && !shareA.__boundGuestReport){ shareA.__boundGuestReport=true; bindFastTap(shareA, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(shareB && !shareB.__boundGuestReport){ shareB.__boundGuestReport=true; bindFastTap(shareB, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(!modal.__boundGuestReportModal){ modal.__boundGuestReportModal=true; modal.addEventListener('click',(e)=>{ if(e.target===modal) __closeGuestReportModal__(); }); } preview.innerHTML=`<img src="${canvas.toDataURL('image/png')}" alt="Report ospite"/>`; modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); state.guestReportCurrent=safeGuest; }
+function __openGuestReportModal__(guest){ const safeGuest=guest || __guestReportResolveGuest__(); const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(!safeGuest || !modal || !preview) return; const canvas=__guestReportCanvas__(safeGuest); if(!canvas) return; const closeA=document.getElementById('guestReportClose'); const closeB=document.getElementById('guestReportCloseBtn'); const shareA=document.getElementById('guestReportShare'); const shareB=document.getElementById('guestReportShareBtn'); const waA=document.getElementById('guestReportWhatsApp'); const waB=document.getElementById('guestReportWhatsAppBtn'); if(closeA && !closeA.__boundGuestReport){ closeA.__boundGuestReport=true; bindFastTap(closeA, ()=>{ __closeGuestReportModal__(); }); } if(closeB && !closeB.__boundGuestReport){ closeB.__boundGuestReport=true; bindFastTap(closeB, ()=>{ __closeGuestReportModal__(); }); } if(shareA && !shareA.__boundGuestReport){ shareA.__boundGuestReport=true; bindFastTap(shareA, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(shareB && !shareB.__boundGuestReport){ shareB.__boundGuestReport=true; bindFastTap(shareB, async ()=>{ await __shareGuestReport__(state.guestReportCurrent || null); }); } if(waA && !waA.__boundGuestReport){ waA.__boundGuestReport=true; bindFastTap(waA, async ()=>{ await __shareGuestReportToWhatsApp__(state.guestReportCurrent || null); }); } if(waB && !waB.__boundGuestReport){ waB.__boundGuestReport=true; bindFastTap(waB, async ()=>{ await __shareGuestReportToWhatsApp__(state.guestReportCurrent || null); }); } if(!modal.__boundGuestReportModal){ modal.__boundGuestReportModal=true; modal.addEventListener('click',(e)=>{ if(e.target===modal) __closeGuestReportModal__(); }); } preview.innerHTML=`<img src="${canvas.toDataURL('image/png')}" alt="${escapeHtml(__guestReportT__(__guestReportResolveLanguage__(safeGuest), 'reportTitle'))}"/>`; modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); state.guestReportCurrent=safeGuest; }
 function __closeGuestReportModal__(){ const modal=document.getElementById('guestReportModal'); const preview=document.getElementById('guestReportPreview'); if(preview) preview.innerHTML=''; if(!modal) return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }
-async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const blob=await __guestReportBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'image/png'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:'Report ospite', files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
-  const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast('Report ospite pronto','blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
+async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const lang=__guestReportResolveLanguage__(safeGuest); const blob=await __guestReportBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'image/png'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
+  const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast(__guestReportT__(lang, 'reportReady'),'blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
+}
+async function __shareGuestReportToWhatsApp__(guest){
+  const safeGuest = guest || state.guestReportCurrent || __guestReportResolveGuest__();
+  if (!safeGuest) return false;
+  const lang = __guestReportResolveLanguage__(safeGuest);
+  const phone = normalizeWhatsAppPhone(__guestReportGuestPhone__(safeGuest));
+  if (!phone){ try{ toast(__guestReportT__(lang, 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
+  const openedChat = () => {
+    const url = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(__guestReportT__(lang, 'whatsappHint'));
+    try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
+  };
+  const blob = await __guestReportBlob__(safeGuest);
+  if (!blob){ openedChat(); return true; }
+  const filename = __guestReportFileName__(safeGuest);
+  const file = new File([blob], filename, { type:'image/png' });
+  try{
+    if (navigator.canShare && navigator.canShare({ files:[file] }) && navigator.share){
+      await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), text:__guestReportT__(lang, 'whatsappHint'), files:[file] });
+      return true;
+    }
+  }catch(err){ if (err && err.name === 'AbortError') return false; }
+  try{ await __shareGuestReport__(safeGuest); }catch(_){}
+  openedChat();
+  return true;
 }
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
