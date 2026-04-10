@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.608
+ * Build: 2.609
  */
-const BUILD_VERSION = "2.608";
+const BUILD_VERSION = "2.609";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -24602,22 +24602,13 @@ async function __shareGuestReportToWhatsApp__(guest){
   const lang = __guestReportResolveLanguage__(safeGuest);
   const phone = normalizeWhatsAppPhone(__guestReportGuestPhone__(safeGuest));
   if (!phone){ try{ toast(__guestReportT__(lang, 'whatsappMissingPhone'), 'orange'); }catch(_){} return false; }
-  const blob = await __guestReportPdfBlob__(safeGuest);
-  const filename = __guestReportFileName__(safeGuest);
-  const file = blob ? new File([blob], filename, { type:'application/pdf' }) : null;
-  try{
-    if (file && navigator.canShare && navigator.canShare({ files:[file] })){
-      await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), text:__guestReportT__(lang, 'whatsappHint'), files:[file] });
-      return true;
-    }
-  }catch(err){ if (err && err.name === 'AbortError') return false; }
-  const directUrl = 'whatsapp://send?phone=' + encodeURIComponent(phone);
+  const text = String(__guestReportWhatsappText__(safeGuest) || __guestReportT__(lang, 'whatsappHint') || '').trim();
+  const encodedPhone = encodeURIComponent(phone);
+  const encodedText = encodeURIComponent(text);
+  const directUrl = 'whatsapp://send?phone=' + encodedPhone + (encodedText ? '&text=' + encodedText : '');
+  const webUrl = 'https://wa.me/' + encodedPhone + (encodedText ? '?text=' + encodedText : '');
   try{ window.location.href = directUrl; return true; }catch(_){ }
-  try{ window.open('https://wa.me/' + encodeURIComponent(phone), '_blank', 'noopener'); return true; }catch(__){ }
-  if (blob){
-    const url = URL.createObjectURL(blob);
-    try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
-  }
+  try{ window.open(webUrl, '_blank', 'noopener'); return true; }catch(__){ }
   return false;
 }
 function renderGuestCards(){
