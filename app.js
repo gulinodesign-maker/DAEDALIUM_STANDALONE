@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.609
+ * Build: 2.610
  */
-const BUILD_VERSION = "2.609";
+const BUILD_VERSION = "2.610";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -22475,7 +22475,12 @@ function renderGuestNationalityModal(){
     const list = document.getElementById('guestNationalityList');
     if (!list) return;
     const current = __normalizeGuestNationalityCode__(document.getElementById('guestNationality')?.value || '');
-    list.innerHTML = __GUEST_NATIONALITY_OPTIONS__.map((item) => {
+    const options = [...__GUEST_NATIONALITY_OPTIONS__].sort((a, b) => {
+      const nameA = String(a?.name || '').trim();
+      const nameB = String(b?.name || '').trim();
+      return nameA.localeCompare(nameB, 'it', { sensitivity:'base' });
+    });
+    list.innerHTML = options.map((item) => {
       const selected = String(item.code || '').toUpperCase() === current;
       return `<button type="button" class="guest-nationality-option${selected ? ' is-selected' : ''}" data-code="${escapeHtml(item.code || '')}" aria-selected="${selected ? 'true' : 'false'}"><span aria-hidden="true" class="guest-nationality-option-flag">${escapeHtml(item.flag || '🏳️')}</span><span class="guest-nationality-option-name">${escapeHtml(item.name || '')}</span></button>`;
     }).join('');
