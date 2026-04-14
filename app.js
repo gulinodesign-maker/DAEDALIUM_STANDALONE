@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.611
+ * Build: 2.610
  */
-const BUILD_VERSION = "2.611";
+const BUILD_VERSION = "2.610";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -2809,101 +2809,6 @@ async function __exportRosterOperators__(){
 }
 
 
-const __BACKUP_DIRECTORY_HANDLE_KEY__ = "settings:backupDirectoryHandle";
-const __BACKUP_DIRECTORY_NAME_KEY__ = "settings:backupDirectoryName";
-
-async function __getBackupDirectoryHandle__(){
-  try{ return await __kvGet__(__BACKUP_DIRECTORY_HANDLE_KEY__); }catch(_){ return null; }
-}
-
-async function __setBackupDirectoryHandle__(handle, label){
-  try{
-    if (handle) await __kvSet__(__BACKUP_DIRECTORY_HANDLE_KEY__, handle);
-    else await __kvDel__(__BACKUP_DIRECTORY_HANDLE_KEY__);
-  }catch(_){ }
-  try{
-    const nextLabel = String(label || handle?.name || '').trim();
-    if (nextLabel) localStorage.setItem(__BACKUP_DIRECTORY_NAME_KEY__, nextLabel);
-    else localStorage.removeItem(__BACKUP_DIRECTORY_NAME_KEY__);
-  }catch(_){ }
-}
-
-function __getBackupDirectoryLabel__(){
-  try{ return String(localStorage.getItem(__BACKUP_DIRECTORY_NAME_KEY__) || '').trim(); }catch(_){ return ''; }
-}
-
-async function __ensureBackupDirectoryWritePermission__(handle){
-  try{
-    if (!handle) return false;
-    if (typeof handle.queryPermission === 'function'){
-      const current = await handle.queryPermission({ mode:'readwrite' });
-      if (current === 'granted') return true;
-    }
-    if (typeof handle.requestPermission === 'function'){
-      const requested = await handle.requestPermission({ mode:'readwrite' });
-      return requested === 'granted';
-    }
-    return true;
-  }catch(_){ return false; }
-}
-
-async function __saveBackupBlobToDirectory__(blob, filename){
-  try{
-    const handle = await __getBackupDirectoryHandle__();
-    if (!handle || typeof handle.getFileHandle !== 'function') return false;
-    const allowed = await __ensureBackupDirectoryWritePermission__(handle);
-    if (!allowed) return false;
-    const fileHandle = await handle.getFileHandle(filename, { create:true });
-    const writable = await fileHandle.createWritable();
-    await writable.write(blob);
-    await writable.close();
-    return true;
-  }catch(_){ return false; }
-}
-
-async function __refreshSettingsBackupFolderStatus__(){
-  try{
-    const node = document.getElementById('settingsBackupFolderStatus');
-    if (!node) return;
-    const supported = (typeof window !== 'undefined') && (typeof window.showDirectoryPicker === 'function');
-    if (!supported){
-      node.textContent = 'Cartella automatica: non supportata su questo browser. Il backup usera il salvataggio classico.';
-      return;
-    }
-    const label = __getBackupDirectoryLabel__();
-    node.textContent = label ? `Cartella automatica: ${label}` : 'Cartella automatica: non selezionata';
-  }catch(_){ }
-}
-
-async function __selectSettingsBackupDirectory__(){
-  try{
-    if (!(typeof window !== 'undefined' && typeof window.showDirectoryPicker === 'function')){
-      try{ toast('Cartella fissa non supportata su questo dispositivo', 'orange'); }catch(_){ }
-      await __refreshSettingsBackupFolderStatus__();
-      return false;
-    }
-    const handle = await window.showDirectoryPicker({ mode:'readwrite' });
-    if (!handle) return false;
-    const allowed = await __ensureBackupDirectoryWritePermission__(handle);
-    if (!allowed){
-      try{ toast('Permesso cartella non concesso', 'orange'); }catch(_){ }
-      return false;
-    }
-    await __setBackupDirectoryHandle__(handle, handle?.name || 'Cartella backup');
-    await __refreshSettingsBackupFolderStatus__();
-    try{ toast('Cartella backup selezionata', 'green'); }catch(_){ }
-    return true;
-  }catch(e){
-    if (e && (e.name === 'AbortError' || e.name === 'SecurityError')){
-      await __refreshSettingsBackupFolderStatus__();
-      return false;
-    }
-    try{ toast('Errore cartella backup', 'orange'); }catch(_){ }
-    await __refreshSettingsBackupFolderStatus__();
-    return false;
-  }
-}
-
 async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -2964,14 +2869,6 @@ async function __dbExport__(kind, preopenWin){
     }
     const accountTag = __safeFileName__(accountName || "nome_account");
     const filename = `${dt}_${accountTag}.json`;
-
-    try{
-      const savedToDirectory = await __saveBackupBlobToDirectory__(blob, filename);
-      if (savedToDirectory){
-        try{ toast('Backup salvato nella cartella selezionata', 'green'); }catch(_){ }
-        return true;
-      }
-    }catch(_){ }
 
     let usedPreopenDownload = false;
 
@@ -10208,7 +10105,6 @@ function __openSettingsBackupModal__(){
   __settingsBackupModalSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute("aria-hidden", "false");
-  try{ __refreshSettingsBackupFolderStatus__(); }catch(_){ }
 }
 
 function __closeSettingsBackupModal__(){
@@ -11761,14 +11657,6 @@ const cfg = document.getElementById("settingsConfigBtn");
   const backupCancel = document.getElementById("settingsBackupCancel");
   if (backupCancel) bindFastTap(backupCancel, __closeSettingsBackupModal__);
   const backupImport = document.getElementById("settingsBackupImport");
-  const backupFolder = document.getElementById("settingsBackupFolder");
-  if (backupFolder) bindFastTap(backupFolder, async () => {
-    try{
-      await __selectSettingsBackupDirectory__();
-    }catch(e){
-      try{ toast("Errore cartella backup", "orange"); }catch(_){ }
-    }
-  });
   if (backupImport) bindFastTap(backupImport, async () => {
     try{
       __closeSettingsBackupModal__();
@@ -16077,7 +15965,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'confirmYesNoYes','confirmYesNoNo',
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
-  'settingsBackupCancel','settingsBackupImport','settingsBackupFolder','settingsBackupExport',
+  'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
   'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
@@ -16107,7 +15995,6 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsConfigSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsBackupCancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     settingsBackupImport:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    settingsBackupFolder:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     settingsBackupExport:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
