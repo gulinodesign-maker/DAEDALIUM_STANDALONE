@@ -5370,7 +5370,7 @@ grid-template-rows: 34px repeat(7, 54px);
 }
 .laundry-grid{
   display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   align-items: stretch;
 }
@@ -11627,6 +11627,24 @@ body[data-role="operatore"] #page-home .home-grid{
   width: 100%;
   min-width: 0;
 }
+.settings-backup-folder-status{
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(15,23,42,0.12);
+  background: rgba(255,255,255,0.96);
+  color: rgba(15,23,42,0.74);
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 800;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+body.ddae-dark .settings-backup-folder-status{
+  background: rgba(15,23,42,0.96);
+  border-color: rgba(148,163,184,0.22);
+  color: rgba(226,232,240,0.82);
+}
 @media (max-width: 560px){
   .settings-popup-body .settings-main-row-modal{
     flex-direction: column;
@@ -11636,7 +11654,12 @@ body[data-role="operatore"] #page-home .home-grid{
     max-width: none;
   }
 }
-@media (max-width: 420px){
+@media (max-width: 560px){
+  .settings-backup-actions{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 360px){
   .settings-backup-actions{
     grid-template-columns: 1fr;
   }
@@ -12209,6 +12232,7 @@ body.ddae-dark .language-option:active{
 .editor-modal-actions > .btn.primary,
 .settings-popup-actions .btn.primary,
 #settingsBackupImport.btn,
+#settingsBackupFolder.btn,
 #settingsBackupExport.btn{
   background:rgba(72,170,96,0.75) !important;
   border-color:rgba(72,170,96,0.75) !important;
@@ -12487,6 +12511,12 @@ body.ddae-dark .language-option:active{
 
 
 /* dDAE_2.231 — Backup: tasto Esporta azzurro */
+#settingsBackupFolder.btn{
+  background: rgba(111,183,214,0.80) !important;
+  border-color: rgba(111,183,214,0.80) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
 #settingsBackupExport.btn{
   background: rgba(77,156,197,0.80) !important;
   border-color: rgba(77,156,197,0.80) !important;
