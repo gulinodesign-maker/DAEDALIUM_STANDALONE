@@ -757,13 +757,15 @@ input[type="date"]{
 
 /* Spese: tasto elimina = pallino rosso con X bianca */
 .delbtn.delbtn-x{
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   padding: 0;
   border-radius: 999px;
   background: rgba(220, 38, 38, 0.95);
   border: 1px solid rgba(185, 28, 28, 0.85);
-  box-shadow: 0 10px 26px rgba(15,23,42,0.14);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.14);
   position: relative;
   color: transparent;
   font-size: 0;
@@ -774,8 +776,8 @@ input[type="date"]{
   position:absolute;
   left:50%;
   top:50%;
-  width: 18px;
-  height: 2.6px;
+  width: 14px;
+  height: 2.2px;
   background: rgba(255,255,255,0.98);
   border-radius: 999px;
   transform-origin: center;
@@ -13780,7 +13782,7 @@ body.ddae-dark #page-tassa .tax-result-sub{
 body.ddae-dark #page-orepulizia .opcal-cell:not(.is-empty){
   background: rgba(15,23,42,0.96) !important;
   border: 1px solid rgba(148,163,184,0.26) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.30) !important;
 }
 body.ddae-dark #page-orepulizia .opcal-day{
   background: rgba(30,41,59,0.96) !important;
@@ -15581,7 +15583,7 @@ body.ddae-dark #page-spese .item-sub{
 body.ddae-dark #page-spese .delbtn.delbtn-x{
   background: rgba(220,38,38,0.96) !important;
   border-color: rgba(248,113,113,0.46) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.30) !important;
 }
 
 
@@ -19965,17 +19967,32 @@ body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-tr
 #page-spese .spese-date-range-field{
   margin-top:0;
   margin-bottom:10px;
+  border-radius:20px;
 }
 #page-spese .spese-date-range-trigger{
   width:100%;
   min-height:56px;
+  border-radius:20px;
+  border:1px solid var(--ddae-range-trigger-border, rgba(15,23,42,0.12));
+  background:var(--ddae-range-trigger-bg, rgba(255,255,255,0.80));
+  color:var(--ddae-range-trigger-text, var(--text));
   align-items:center;
+  justify-content:center;
   text-align:center;
   gap:0;
+  padding:12px 16px;
+  box-shadow:none;
 }
 #page-spese .spese-date-range-trigger .guest-date-range-value{
   width:100%;
   text-align:center;
+  font-size:16px;
+  font-weight:700;
+}
+body.ddae-dark #page-spese .spese-date-range-trigger{
+  border-color:rgba(148,163,184,0.24);
+  background:rgba(15,23,42,0.72);
+  color:#f8fbff;
 }
 body.ddae-dark .guest-date-range-actions .btn{
   background:rgba(15,23,42,0.86) !important;
