@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.615");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.615");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.616");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.616");
 }
 html{
   background-color:#ececec;
@@ -11300,6 +11300,17 @@ body[data-role="operatore"] #page-home .home-main{
 #page-lavanderia .laundry-dateText{
   font-size: 13px;
 }
+#page-lavanderia .laundry-date-range-field{
+  margin-top:0;
+}
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  width:100%;
+  min-height:50px;
+  border-radius:18px;
+}
+#page-lavanderia .laundry-date-range-field input[type="hidden"]{
+  display:none !important;
+}
 #page-lavanderia .laundry-history-wrap{
   margin-top: 18px;
   padding-top: 4px;
@@ -19663,7 +19674,7 @@ body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
 }
 
 
-/* dDAE_2.615 — Range date unificato scheda nuovo ospite */
+/* dDAE_2.616 — Range date unificato scheda nuovo ospite */
 #guestDatesRow.guest-dates-native{
   display:none !important;
 }

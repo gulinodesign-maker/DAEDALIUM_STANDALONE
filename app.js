@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.615
+ * Build: 2.616
  */
-const BUILD_VERSION = "2.615";
+const BUILD_VERSION = "2.616";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -28417,8 +28417,34 @@ if (cleanResetAll){
   try{
     const fromEl = document.getElementById("laundryFrom");
     const toEl   = document.getElementById("laundryTo");
+    const trigger = document.getElementById("laundryDateRangeTrigger");
+    const modal = document.getElementById("laundryDateRangeModal");
     if (fromEl){ fromEl.addEventListener("change", syncLaundryDateText_); fromEl.addEventListener("input", syncLaundryDateText_); }
     if (toEl){ toEl.addEventListener("change", syncLaundryDateText_); toEl.addEventListener("input", syncLaundryDateText_); }
+    if (trigger && !trigger.__boundLaundryRangeModal){
+      trigger.__boundLaundryRangeModal = true;
+      bindFastTap(trigger, () => { try{ __openLaundryDateRangeModal__(); }catch(_){ } });
+    }
+    if (modal && !modal.__boundLaundryRangeModal){
+      modal.__boundLaundryRangeModal = true;
+      const closeModal = () => { try{ __closeLaundryDateRangeModal__(); }catch(_){ } };
+      ["laundryDateRangeModalClose","laundryDateRangeCancel"].forEach((id) => { const el = document.getElementById(id); if (el) bindFastTap(el, closeModal); });
+      const applyBtn = document.getElementById("laundryDateRangeApply");
+      if (applyBtn) bindFastTap(applyBtn, () => { try{ __applyLaundryDateRangeModal__(); }catch(_){ } });
+      const prevBtn = document.getElementById("laundryDateRangePrev");
+      if (prevBtn) bindFastTap(prevBtn, () => { try{ const m = __laundryDateRangeState__.month || __guestDateRangeMonthStart__(); __laundryDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()-1, 1); __renderLaundryDateRangeCalendar__(); }catch(_){ } });
+      const nextBtn = document.getElementById("laundryDateRangeNext");
+      if (nextBtn) bindFastTap(nextBtn, () => { try{ const m = __laundryDateRangeState__.month || __guestDateRangeMonthStart__(); __laundryDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()+1, 1); __renderLaundryDateRangeCalendar__(); }catch(_){ } });
+      modal.addEventListener("click", (ev) => { try{ if (ev.target === modal) closeModal(); }catch(_){ } });
+      const grid = document.getElementById("laundryDateRangeGrid");
+      if (grid) grid.addEventListener("click", (ev) => {
+        const btn = ev.target.closest?.('.guest-date-range-day[data-date]');
+        if (!btn) return;
+        const iso = String(btn.dataset.date || '').trim();
+        if (!iso) return;
+        __selectLaundryDateRangeDay__(iso);
+      });
+    }
     syncLaundryDateText_();
   }catch(_){ }
 
@@ -29799,6 +29825,22 @@ function setLaundryLabels_(){
       if (el) el.textContent = __laundryDisplayTitle__(item, code) || code;
     });
   }catch(_){ }
+  try{
+    const title = document.getElementById('laundryDateRangeModalTitle');
+    const hint = document.getElementById('laundryDateRangeModalHint');
+    const startLegend = document.getElementById('laundryDateRangeLegendStart');
+    const endLegend = document.getElementById('laundryDateRangeLegendEnd');
+    const cancelBtn = document.getElementById('laundryDateRangeCancel');
+    const applyBtn = document.getElementById('laundryDateRangeApply');
+    if (title) title.textContent = __designTranslate__('Intervallo report lavanderia', { en:'Laundry report range', fr:'Plage du rapport blanchisserie', de:'Wäschereibericht-Zeitraum', es:'Rango del informe de lavandería' });
+    if (hint) hint.textContent = __designTranslate__('Seleziona il range di date nello stesso calendario', { en:'Select the date range in the same calendar', fr:'Sélectionnez la plage de dates dans le même calendrier', de:'Wählen Sie den Datumsbereich im selben Kalender', es:'Selecciona el rango de fechas en el mismo calendario' });
+    if (startLegend) startLegend.textContent = __designTranslate__('Da', { en:'From', fr:'Du', de:'Von', es:'Desde' });
+    if (endLegend) endLegend.textContent = __designTranslate__('A', { en:'To', fr:'Au', de:'Bis', es:'Hasta' });
+    if (cancelBtn) cancelBtn.textContent = __designTranslate__('Annulla', { en:'Cancel', fr:'Annuler', de:'Abbrechen', es:'Cancelar' });
+    if (applyBtn) applyBtn.textContent = __designTranslate__('Conferma', { en:'Confirm', fr:'Confirmer', de:'Bestätigen', es:'Confirmar' });
+    __syncLaundryDateRangeUi__();
+    if (!document.getElementById('laundryDateRangeModal')?.hidden) __renderLaundryDateRangeCalendar__();
+  }catch(_){ }
 }
 
 function __laundryDisplayPricesForCurrentView__(){
@@ -30423,15 +30465,129 @@ function renderLaundryHistory_(list){
   });
 }
 
-function syncLaundryDateText_(){
+const __laundryDateRangeState__ = { month:null, start:'', end:'', draftStart:'', draftEnd:'' };
+
+function __laundryDateRangeFormatDisplay__(startDate, endDate){
+  const a = String(startDate || '').trim();
+  const b = String(endDate || '').trim();
+  if (!a && !b) return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+  if (a && !b) return formatShortDateIT(a);
+  if (a && b) return `${formatShortDateIT(a)} → ${formatShortDateIT(b)}`;
+  return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+}
+
+function __syncLaundryDateRangeUi__(){
   try{
-    const fromEl = document.getElementById("laundryFrom");
-    const toEl = document.getElementById("laundryTo");
-    const fromTxt = document.getElementById("laundryFromText");
-    const toTxt = document.getElementById("laundryToText");
-    if (fromTxt) fromTxt.textContent = fromEl && fromEl.value ? formatShortDateIT(fromEl.value) : "--/--/--";
-    if (toTxt) toTxt.textContent = toEl && toEl.value ? formatShortDateIT(toEl.value) : "--/--/--";
+    const fromEl = document.getElementById('laundryFrom');
+    const toEl = document.getElementById('laundryTo');
+    const value = document.getElementById('laundryDateRangeValue');
+    const label = document.getElementById('laundryDateRangeLabel');
+    const startDate = String(fromEl?.value || '').trim();
+    const endDate = String(toEl?.value || '').trim();
+    if (label) label.textContent = __designTranslate__('Intervallo report lavanderia', { en:'Laundry report range', fr:'Plage du rapport blanchisserie', de:'Wäschereibericht-Zeitraum', es:'Rango del informe de lavandería' });
+    if (value) value.textContent = __laundryDateRangeFormatDisplay__(startDate, endDate);
   }catch(_){ }
+}
+
+function __renderLaundryDateRangeCalendar__(){
+  try{
+    const grid = document.getElementById('laundryDateRangeGrid');
+    const title = document.getElementById('laundryDateRangeMonthTitle');
+    const summary = document.getElementById('laundryDateRangeSummary');
+    const weekdaysWrap = document.getElementById('laundryDateRangeWeekdays');
+    if (!grid || !title || !summary || !weekdaysWrap) return;
+    weekdaysWrap.innerHTML = __guestDateRangeWeekdayLabels__().map((d)=>`<span>${d}</span>`).join('');
+    const monthDate = __laundryDateRangeState__.month || __guestDateRangeMonthStart__();
+    __laundryDateRangeState__.month = __guestDateRangeMonthStart__(monthDate);
+    const year = __laundryDateRangeState__.month.getFullYear();
+    const month = __laundryDateRangeState__.month.getMonth();
+    title.textContent = __laundryDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const leading = (firstDay.getDay() + 6) % 7;
+    const cells = [];
+    const todayIso = isoLocalDate(new Date());
+    const startIso = String(__laundryDateRangeState__.draftStart || '');
+    const endIso = String(__laundryDateRangeState__.draftEnd || '');
+    for (let i = 0; i < leading; i += 1) cells.push('<span class="guest-date-range-day is-muted" aria-hidden="true"></span>');
+    for (let day = 1; day <= daysInMonth; day += 1){
+      const iso = isoLocalDate(new Date(year, month, day));
+      const classes = ['guest-date-range-day'];
+      if (__guestDateRangeSameDay__(iso, todayIso)) classes.push('is-today');
+      if (__guestDateRangeSameDay__(iso, startIso) || __guestDateRangeSameDay__(iso, endIso)) classes.push('is-selected','is-edge');
+      else if (__guestDateRangeInBetween__(iso, startIso, endIso)) classes.push('is-in-range');
+      cells.push(`<button type="button" class="${classes.join(' ')}" data-date="${iso}">${day}</button>`);
+    }
+    grid.innerHTML = cells.join('');
+    summary.textContent = __laundryDateRangeFormatDisplay__(startIso, endIso);
+  }catch(_){ }
+}
+
+function __openLaundryDateRangeModal__(){
+  try{
+    const modal = document.getElementById('laundryDateRangeModal');
+    const fromEl = document.getElementById('laundryFrom');
+    const toEl = document.getElementById('laundryTo');
+    if (!modal || !fromEl || !toEl) return;
+    const startDate = String(fromEl.value || '').trim();
+    const endDate = String(toEl.value || '').trim();
+    __laundryDateRangeState__.start = startDate;
+    __laundryDateRangeState__.end = endDate;
+    __laundryDateRangeState__.draftStart = startDate;
+    __laundryDateRangeState__.draftEnd = endDate;
+    __laundryDateRangeState__.month = __guestDateRangeMonthStart__(parseDateTs(startDate) != null ? new Date(parseDateTs(startDate)) : new Date());
+    __renderLaundryDateRangeCalendar__();
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }catch(_){ }
+}
+
+function __closeLaundryDateRangeModal__(){
+  try{
+    const modal = document.getElementById('laundryDateRangeModal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }catch(_){ }
+}
+
+function __applyLaundryDateRangeModal__(){
+  try{
+    const fromEl = document.getElementById('laundryFrom');
+    const toEl = document.getElementById('laundryTo');
+    if (!fromEl || !toEl) return;
+    let startDate = String(__laundryDateRangeState__.draftStart || '').trim();
+    let endDate = String(__laundryDateRangeState__.draftEnd || '').trim();
+    if (startDate && endDate && startDate > endDate){ const tmp = startDate; startDate = endDate; endDate = tmp; }
+    __laundryDateRangeState__.start = startDate;
+    __laundryDateRangeState__.end = endDate;
+    fromEl.value = startDate;
+    toEl.value = endDate;
+    syncLaundryDateText_();
+    __closeLaundryDateRangeModal__();
+  }catch(_){ }
+}
+
+function __selectLaundryDateRangeDay__(iso){
+  try{
+    const startDate = String(__laundryDateRangeState__.draftStart || '');
+    const endDate = String(__laundryDateRangeState__.draftEnd || '');
+    if (!startDate || (startDate && endDate)){
+      __laundryDateRangeState__.draftStart = iso;
+      __laundryDateRangeState__.draftEnd = '';
+    } else if (iso < startDate){
+      __laundryDateRangeState__.draftStart = iso;
+    } else {
+      __laundryDateRangeState__.draftEnd = iso;
+    }
+    __renderLaundryDateRangeCalendar__();
+  }catch(_){ }
+}
+
+function syncLaundryDateText_(){
+  try{ __syncLaundryDateRangeUi__(); }catch(_){ }
 }
 
 async function loadLavanderia() {
