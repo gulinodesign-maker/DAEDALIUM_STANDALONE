@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.622
+ * Build: 2.623
  */
-const BUILD_VERSION = "2.622";
+const BUILD_VERSION = "2.623";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -14585,6 +14585,7 @@ function setPeriod(from, to){
 
   const chip = $("#periodChip");
   if (chip && state.page !== "home") chip.textContent = `${from} → ${to}`;
+  try{ __syncSpeseDateRangeUi__(); }catch(_){ }
 }
 
 
@@ -14988,6 +14989,7 @@ function resetInserisci(){
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
+  try{ __bindSpeseDateRangeUi__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -20679,7 +20681,7 @@ function enterGuestCreateMode(){
   try{ __updateGuestDateRangeTrigger__(); }catch(_){ }
   try{ populateGuestChannelOptions(); }catch(_){ }
   try{ applySelectedChannelToGuestForm(""); }catch(_){ }
-  try{ setGuestNationality(""); }catch(_){ }
+  try{ setGuestNationality("", { manual:false }); }catch(_){ }
 
   setMarriage(false);
   setGroup(false);
@@ -20790,7 +20792,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
 
   document.getElementById("guestName").value = ospite.nome || ospite.name || "";
   document.getElementById("guestPhone").value = ospite.telefono ?? ospite.tel ?? ospite.phone ?? "";
-  try{ setGuestNationality(__readGuestNationalityFromRecord__(ospite).code || ""); }catch(_){}
+  try{ setGuestNationality(__readGuestNationalityFromRecord__(ospite).code || "", { manual:true }); }catch(_){}
   document.getElementById("guestEmail").value = ospite.email ?? ospite.mail ?? "";
   document.getElementById("guestBookingNumber").value = ospite.numero_prenotazione ?? ospite.numeroPrenotazione ?? ospite.prenotazione_numero ?? ospite.prenotazioneNumero ?? ospite.booking_number ?? ospite.bookingNumber ?? ospite.reservation_number ?? ospite.reservationNumber ?? ospite.id_prenotazione ?? ospite.idPrenotazione ?? ospite.id_booking ?? ospite.idBooking ?? "";
   document.getElementById("guestAdults").value = ospite.adulti ?? ospite.adults ?? 0;
@@ -23029,12 +23031,13 @@ function updateGuestNationalityButton(){
     btn.setAttribute('aria-label', option.name ? ('Nazionalità: ' + option.name) : 'Seleziona nazionalità');
   }catch(_){ }
 }
-function setGuestNationality(code){
+function setGuestNationality(code, { manual = true } = {}){
   try{
     const hidden = document.getElementById('guestNationality');
     if (!hidden) return;
     const option = __getGuestNationalityOption__(code);
     hidden.value = option.code || '';
+    hidden.dataset.manual = manual ? '1' : '0';
     updateGuestNationalityButton();
   }catch(_){ }
 }
@@ -23104,7 +23107,7 @@ function __bindGuestNationalityUI__(){
         const pick = e.target && e.target.closest ? e.target.closest('.guest-nationality-option') : null;
         if (pick){
           const code = pick.getAttribute('data-code') || '';
-          setGuestNationality(code);
+          setGuestNationality(code, { manual:true });
           closeGuestNationalityModal();
           return;
         }
@@ -23116,6 +23119,7 @@ function __bindGuestNationalityUI__(){
       closeBtn.__boundGuestNationality = true;
       bindFastTap(closeBtn, () => { closeGuestNationalityModal(); });
     }
+    try{ __bindGuestPhoneNationalityAuto__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -23132,6 +23136,52 @@ function normalizeWhatsAppPhone(raw){
   if (s.startsWith('39')) return s;
   if (s.startsWith('0')) return '39' + s.slice(1);
   return '39' + s;
+}
+
+const __GUEST_NATIONALITY_PHONE_PREFIXES__ = [
+  ['972','IL'], ['971','AE'], ['966','SA'], ['972','IL'], ['972','IL'], ['995','GE'], ['994','AZ'],
+  ['90','TR'], ['81','JP'], ['82','KR'], ['86','CN'], ['91','IN'], ['212','MA'], ['213','DZ'], ['216','TN'], ['20','EG'], ['27','ZA'],
+  ['1','US'], ['7','RU'], ['30','GR'], ['31','NL'], ['32','BE'], ['33','FR'], ['34','ES'], ['39','IT'], ['40','RO'], ['41','CH'], ['43','AT'], ['44','GB'], ['45','DK'], ['46','SE'], ['47','NO'], ['48','PL'], ['49','DE'],
+  ['351','PT'], ['352','LU'], ['353','IE'], ['354','IS'], ['358','FI'], ['36','HU'], ['380','UA'], ['381','RS'], ['385','HR'], ['386','SI'], ['389','MK'], ['420','CZ'], ['421','SK'], ['355','AL'], ['356','MT'],
+  ['52','MX'], ['54','AR'], ['55','BR'], ['61','AU'], ['64','NZ'], ['972','IL']
+];
+function __detectGuestNationalityFromPhone__(raw){
+  try{
+    let s = String(raw || '').trim();
+    if (!s) return '';
+    s = s.replace(/[^\d+]/g, '');
+    if (!s) return '';
+    if (s.startsWith('00')) s = '+' + s.slice(2);
+    if (s.startsWith('+')) s = s.slice(1);
+    else if (s.startsWith('0')) s = '39' + s.slice(1);
+    s = s.replace(/\D/g, '');
+    if (!s) return '';
+    const hit = __GUEST_NATIONALITY_PHONE_PREFIXES__.slice().sort((a,b)=>b[0].length-a[0].length).find(([prefix]) => s.startsWith(prefix));
+    return hit ? String(hit[1] || '').trim().toUpperCase() : '';
+  }catch(_){ return ''; }
+}
+function __syncGuestNationalityFromPhone__(force=false){
+  try{
+    const phoneEl = document.getElementById('guestPhone');
+    const hidden = document.getElementById('guestNationality');
+    if (!phoneEl || !hidden) return;
+    const manual = String(hidden.dataset.manual || '0') === '1';
+    if (manual && !force) return;
+    const code = __detectGuestNationalityFromPhone__(phoneEl.value || '');
+    if (!code) return;
+    setGuestNationality(code, { manual:false });
+  }catch(_){ }
+}
+function __bindGuestPhoneNationalityAuto__(){
+  try{
+    const phoneEl = document.getElementById('guestPhone');
+    if (!phoneEl || phoneEl.dataset.nationalityAutoBound === '1') return;
+    phoneEl.dataset.nationalityAutoBound = '1';
+    const handler = () => { try{ __syncGuestNationalityFromPhone__(); }catch(_){ } };
+    phoneEl.addEventListener('input', handler);
+    phoneEl.addEventListener('change', handler);
+    phoneEl.addEventListener('blur', handler);
+  }catch(_){ }
 }
 
 function openGuestPhoneWhatsApp(){
@@ -24254,7 +24304,7 @@ function setupOspite(){
         try {
           document.getElementById("guestName").value = nameNow;
           document.getElementById("guestPhone").value = phoneNow;
-          setGuestNationality(nationalityNow);
+          setGuestNationality(nationalityNow, { manual:true });
           document.getElementById("guestEmail").value = emailNow;
           document.getElementById("guestAdults").value = adultsNow;
           document.getElementById("guestKidsU10").value = kidsNow;
@@ -30758,6 +30808,152 @@ function __closeLaundryDateRangeModal__(restore = false){
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
+  }catch(_){ }
+}
+
+const __speseDateRangeState__ = { month:null, start:'', end:'', draftStart:'', draftEnd:'' };
+function __speseDateRangeFormatDisplay__(fromDate, toDate){
+  const a = String(fromDate || '').trim();
+  const b = String(toDate || '').trim();
+  if (!a && !b) return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+  if (a && !b) return formatShortDateIT(a);
+  if (a && b) return `${formatShortDateIT(a)} → ${formatShortDateIT(b)}`;
+  return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+}
+function __syncSpeseDateRangeUi__(){
+  try{
+    const value = document.getElementById('speseDateRangeValue');
+    const fromDate = String(state?.period?.from || '').trim();
+    const toDate = String(state?.period?.to || '').trim();
+    if (value) value.textContent = __speseDateRangeFormatDisplay__(fromDate, toDate);
+  }catch(_){ }
+}
+function __renderSpeseDateRangeCalendar__(){
+  try{
+    const grid = document.getElementById('speseDateRangeGrid');
+    const monthTitle = document.getElementById('speseDateRangeMonthTitle');
+    const rangeTitle = document.getElementById('speseDateRangeModalTitle');
+    const weekdaysWrap = document.getElementById('speseDateRangeWeekdays');
+    if (!grid || !monthTitle || !weekdaysWrap) return;
+    weekdaysWrap.innerHTML = __guestDateRangeWeekdayLabels__().map((d)=>`<span>${d}</span>`).join('');
+    const monthDate = __speseDateRangeState__.month || __guestDateRangeMonthStart__();
+    __speseDateRangeState__.month = __guestDateRangeMonthStart__(monthDate);
+    const year = __speseDateRangeState__.month.getFullYear();
+    const month = __speseDateRangeState__.month.getMonth();
+    monthTitle.textContent = __speseDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const start = new Date(year, month, 1 - offset);
+    const todayIso = todayISO();
+    const startIso = String(__speseDateRangeState__.draftStart || '');
+    const endIso = String(__speseDateRangeState__.draftEnd || '');
+    const parts = [];
+    for(let i=0;i<42;i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const inMonth = d.getMonth() === month;
+      const classes = ['guest-date-range-day'];
+      if (!inMonth) classes.push('is-muted');
+      if (__guestDateRangeSameDay__(iso, todayIso)) classes.push('is-today');
+      if (__guestDateRangeSameDay__(iso, startIso) || __guestDateRangeSameDay__(iso, endIso)) classes.push('is-selected','is-edge');
+      else if (__guestDateRangeInBetween__(iso, startIso, endIso)) classes.push('is-in-range');
+      parts.push(`<button class="${classes.join(' ')}" data-date="${iso}" type="button">${d.getDate()}</button>`);
+    }
+    grid.innerHTML = parts.join('');
+    if (rangeTitle) rangeTitle.textContent = __speseDateRangeFormatDisplay__(startIso, endIso);
+  }catch(_){ }
+}
+function __selectSpeseDateRangeDay__(iso){
+  const start = String(__speseDateRangeState__.draftStart || '');
+  const end = String(__speseDateRangeState__.draftEnd || '');
+  if (!start || (start && end)){
+    __speseDateRangeState__.draftStart = iso;
+    __speseDateRangeState__.draftEnd = '';
+  } else if (iso < start){
+    __speseDateRangeState__.draftStart = iso;
+  } else {
+    __speseDateRangeState__.draftEnd = iso;
+  }
+  __renderSpeseDateRangeCalendar__();
+}
+function __openSpeseDateRangeModal__(){
+  try{
+    const modal = document.getElementById('speseDateRangeModal');
+    if (!modal) return;
+    const fromDate = String(state?.period?.from || '').trim() || todayISO();
+    const toDateRaw = String(state?.period?.to || '').trim();
+    const toDate = (toDateRaw && toDateRaw >= fromDate) ? toDateRaw : fromDate;
+    __speseDateRangeState__.start = fromDate;
+    __speseDateRangeState__.end = toDate;
+    __speseDateRangeState__.draftStart = fromDate;
+    __speseDateRangeState__.draftEnd = toDate;
+    __speseDateRangeState__.month = __guestDateRangeMonthStart__(parseDateTs(fromDate) != null ? new Date(parseDateTs(fromDate)) : new Date());
+    __renderSpeseDateRangeCalendar__();
+    modal.hidden = false;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }catch(_){ }
+}
+function __closeSpeseDateRangeModal__(restore = false){
+  try{
+    const modal = document.getElementById('speseDateRangeModal');
+    if (!modal) return;
+    if (restore){
+      __speseDateRangeState__.draftStart = __speseDateRangeState__.start || '';
+      __speseDateRangeState__.draftEnd = __speseDateRangeState__.end || '';
+    }
+    modal.classList.remove('is-open');
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }catch(_){ }
+}
+async function __applySpeseDateRangeModal__(){
+  try{
+    let start = String(__speseDateRangeState__.draftStart || '').trim();
+    let end = String(__speseDateRangeState__.draftEnd || '').trim();
+    if (!start && !end) return __closeSpeseDateRangeModal__(true);
+    if (start && !end) end = start;
+    if (end && !start) start = end;
+    if (end < start){ const swap = start; start = end; end = swap; }
+    __speseDateRangeState__.start = start;
+    __speseDateRangeState__.end = end;
+    setPeriod(start, end);
+    __closeSpeseDateRangeModal__(false);
+    await onPeriodChanged({ showLoader:false });
+  }catch(_){ }
+}
+function __bindSpeseDateRangeUi__(){
+  try{
+    const trigger = document.getElementById('speseDateRangeTrigger');
+    const modal = document.getElementById('speseDateRangeModal');
+    if (trigger && !trigger.__boundSpeseRangeModal){
+      trigger.__boundSpeseRangeModal = true;
+      bindFastTap(trigger, () => { try{ __openSpeseDateRangeModal__(); }catch(_){ } });
+    }
+    if (modal && !modal.__boundSpeseRangeModal){
+      modal.__boundSpeseRangeModal = true;
+      const closeModal = () => { try{ __closeSpeseDateRangeModal__(true); }catch(_){ } };
+      ['speseDateRangeModalClose','speseDateRangeCancel'].forEach((id) => { const el = document.getElementById(id); if (el) bindFastTap(el, closeModal); });
+      const applyBtn = document.getElementById('speseDateRangeApply');
+      if (applyBtn) bindFastTap(applyBtn, () => { try{ __applySpeseDateRangeModal__(); }catch(_){ } });
+      const prevBtn = document.getElementById('speseDateRangePrev');
+      if (prevBtn) bindFastTap(prevBtn, () => { try{ const m = __speseDateRangeState__.month || __guestDateRangeMonthStart__(); __speseDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()-1, 1); __renderSpeseDateRangeCalendar__(); }catch(_){ } });
+      const nextBtn = document.getElementById('speseDateRangeNext');
+      if (nextBtn) bindFastTap(nextBtn, () => { try{ const m = __speseDateRangeState__.month || __guestDateRangeMonthStart__(); __speseDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()+1, 1); __renderSpeseDateRangeCalendar__(); }catch(_){ } });
+      modal.addEventListener('click', (ev) => { try{ if (ev.target === modal) closeModal(); }catch(_){ } });
+      const grid = document.getElementById('speseDateRangeGrid');
+      try{ __bindDateRangeCalendarHold__(grid); }catch(_){ }
+      if (grid) grid.addEventListener('click', (ev) => {
+        const btn = ev.target.closest?.('.guest-date-range-day[data-date]');
+        if (!btn) return;
+        const iso = String(btn.dataset.date || '').trim();
+        if (!iso) return;
+        __selectSpeseDateRangeDay__(iso);
+      });
+    }
+    __syncSpeseDateRangeUi__();
   }catch(_){ }
 }
 

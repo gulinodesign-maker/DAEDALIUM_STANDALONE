@@ -19960,3 +19960,31 @@ body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-tr
   font-weight:900;
 }
 .guest-date-range-monthbar{ margin-top:4px; }
+
+
+#page-spese .spese-date-range-field{
+  margin-top:0;
+  margin-bottom:10px;
+}
+#page-spese .spese-date-range-trigger{
+  width:100%;
+  min-height:56px;
+  align-items:center;
+  text-align:center;
+  gap:0;
+}
+#page-spese .spese-date-range-trigger .guest-date-range-value{
+  width:100%;
+  text-align:center;
+}
+body.ddae-dark .guest-date-range-actions .btn{
+  background:rgba(15,23,42,0.86) !important;
+  border-color:rgba(148,163,184,0.28) !important;
+  color:#f8fbff !important;
+  box-shadow:none !important;
+}
+body.ddae-dark .guest-date-range-actions .btn.primary{
+  background:rgba(96,165,250,0.26) !important;
+  border-color:rgba(96,165,250,0.42) !important;
+  color:#f8fbff !important;
+}
