@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.451");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.451");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.615");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.615");
 }
 html{
   background-color:#ececec;
@@ -19660,4 +19660,194 @@ body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
   .spesa-category-row{ gap:5px; }
   .spesa-category-btn{ min-height:56px; padding:6px 1px; }
   .spesa-category-btn span{ font-size:8.5px; }
+}
+
+
+/* dDAE_2.615 — Range date unificato scheda nuovo ospite */
+#guestDatesRow.guest-dates-native{
+  display:none !important;
+}
+#guestDateRangeField{
+  margin-top:0;
+}
+#guestDateRangeField .guest-date-range-trigger{
+  width:100%;
+  min-height:56px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.80);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:4px;
+  padding:10px 14px;
+  text-align:left;
+  color:var(--text);
+  box-shadow:none;
+}
+#guestDateRangeField .guest-date-range-trigger:active{ transform:scale(0.995); }
+#guestDateRangeField .guest-date-range-label{
+  font-size:12px;
+  line-height:1;
+  opacity:0.72;
+}
+#guestDateRangeField .guest-date-range-value{
+  font-size:16px;
+  font-weight:700;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.guest-form-card.is-view #guestDateRangeField{
+  display:none !important;
+}
+#guestDateRangeModal{
+  z-index:12000;
+}
+#guestDateRangeModal .guest-date-range-modal-card{
+  margin:0;
+  width:min(420px,92vw);
+  border-radius:24px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid rgba(15,23,42,0.08);
+  background:rgba(255,255,255,0.98);
+}
+.guest-date-range-modal-hd{
+  padding:14px 16px 10px;
+}
+.guest-date-range-modal-body{
+  padding:0 16px 16px;
+}
+.guest-date-range-modal-hint{
+  font-size:13px;
+  line-height:1.35;
+  opacity:0.72;
+  margin-bottom:12px;
+}
+.guest-date-range-monthbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.guest-date-range-nav{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.80);
+  font-size:24px;
+  line-height:1;
+}
+.guest-date-range-monthtitle{
+  flex:1;
+  text-align:center;
+  font-weight:800;
+  font-size:16px;
+}
+.guest-date-range-weekdays,
+.guest-date-range-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:6px;
+}
+.guest-date-range-weekdays{
+  margin-bottom:6px;
+}
+.guest-date-range-weekdays span{
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+  opacity:0.62;
+}
+.guest-date-range-day{
+  min-height:42px;
+  border-radius:14px;
+  border:1px solid rgba(15,23,42,0.08);
+  background:rgba(255,255,255,0.80);
+  font-weight:700;
+}
+.guest-date-range-day.is-muted{
+  opacity:0.32;
+}
+.guest-date-range-day.is-selected,
+.guest-date-range-day.is-edge{
+  border-color:rgba(43,124,180,0.45);
+  background:rgba(169,220,255,0.95);
+}
+.guest-date-range-day.is-in-range{
+  border-color:rgba(43,124,180,0.16);
+  background:rgba(169,220,255,0.45);
+}
+.guest-date-range-day.is-today{
+  box-shadow:inset 0 0 0 2px rgba(43,124,180,0.30);
+}
+.guest-date-range-legend{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.guest-date-range-legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:700;
+  opacity:0.78;
+}
+.guest-date-range-legend-dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,0.16);
+  background:rgba(169,220,255,0.45);
+}
+.guest-date-range-legend-dot.is-start,
+.guest-date-range-legend-dot.is-end{
+  background:rgba(169,220,255,0.95);
+}
+.guest-date-range-summary{
+  margin-top:12px;
+  min-height:22px;
+  font-size:14px;
+  font-weight:700;
+}
+.guest-date-range-actions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.guest-date-range-actions .btn{
+  flex:1 1 0;
+}
+body.ddae-dark #guestDateRangeField .guest-date-range-trigger,
+body.ddae-dark #guestDateRangeModal .guest-date-range-modal-card,
+body.ddae-dark #guestDateRangeModal .guest-date-range-nav,
+body.ddae-dark #guestDateRangeModal .guest-date-range-day{
+  background:rgba(22,28,36,0.96) !important;
+  color:#f3f6fb !important;
+  border-color:rgba(255,255,255,0.10) !important;
+}
+body.ddae-dark #guestDateRangeField .guest-date-range-label{
+  opacity:0.78;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-modal-hint,
+body.ddae-dark #guestDateRangeModal .guest-date-range-weekdays span,
+body.ddae-dark #guestDateRangeModal .guest-date-range-legend-item{
+  color:rgba(243,246,251,0.82) !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-selected,
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-edge{
+  background:rgba(67,181,255,0.38) !important;
+  border-color:rgba(169,220,255,0.55) !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-in-range{
+  background:rgba(67,181,255,0.20) !important;
+  border-color:rgba(169,220,255,0.22) !important;
 }
