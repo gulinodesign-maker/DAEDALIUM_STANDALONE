@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.619
+ * Build: 2.620
  */
-const BUILD_VERSION = "2.619";
+const BUILD_VERSION = "2.620";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -8569,7 +8569,7 @@ function __headerActionThemeVisual__(){
 }
 
 function __headerActionVisualFor__(id){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return __headerActionThemeVisual__();
   const map = __headerActionColorMapRead__();
   const base = __headerActionThemeVisual__();
@@ -8583,7 +8583,7 @@ function __headerActionVisualFor__(id){
 }
 
 function __headerActionSaveColor__(id, spec, mode = 'fg'){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return;
   const rawMode = String(mode || 'fg').trim().toLowerCase();
   const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
@@ -8982,7 +8982,7 @@ function __pillThemeVisual__(){
 
 
 function __pillDefaultVisualForId__(id, base){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   const defaults = {
     taxYearBtn:{ fg:'sky-5', bg:'gray-1', border:'sky-2', opacity:0.80 },
     taxEstimateBtn:{ fg:'sky-5', bg:'gray-1', border:'sky-2', opacity:0.80 }
@@ -8997,7 +8997,7 @@ function __pillDefaultVisualForId__(id, base){
 }
 
 function __pillVisualFor__(id){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   const base = __pillThemeVisual__();
   const fallback = __pillDefaultVisualForId__(key, base);
   if (!key) return fallback;
@@ -9012,7 +9012,7 @@ function __pillVisualFor__(id){
 }
 
 function __pillSaveColor__(id, spec, mode = 'fg'){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return;
   const rawMode = String(mode || 'fg').trim().toLowerCase();
   const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
@@ -9561,7 +9561,7 @@ function __openLauncherGridThemePicker__(){
 }
 
 function __launcherIconVisualFor__(id){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return { fg:'blue-4', bg:'', border:'', opacity:0.80 };
   const map = __launcherIconColorMapRead__();
   if (key === 'goDbSync'){
@@ -9585,7 +9585,7 @@ function __launcherIconSpecFor__(id){
 }
 
 function __launcherIconResolveHex__(id, fallbackHex){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return fallbackHex || __operatoreColorHex__('blue-4');
   try{
     return __operatoreColorHex__(__launcherIconVisualFor__(key).fg) || fallbackHex || __operatoreColorHex__('blue-4');
@@ -9788,7 +9788,7 @@ function __launcherIconApplyAll__(){
 }
 
 function __launcherIconSaveColor__(id, spec, mode = 'fg'){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return;
   const rawMode = String(mode || 'fg').trim().toLowerCase();
   const normalizedMode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : 'fg');
@@ -10101,7 +10101,7 @@ async function saveChannelCatalogToSettings(list){
 }
 
 function getChannelCatalogItemById(id){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return null;
   return getChannelCatalogFromSettings().find(item => String(item.id) === key) || null;
 }
@@ -14997,6 +14997,7 @@ function resetInserisci(){
   __setSpesaCategoriaValue__("");
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
+  try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -15109,7 +15110,7 @@ function renderSpese(){
 
   const items = __getStatsSpese();
   if (!items.length){
-    list.innerHTML = '<div style="font-size:13px; opacity:.75; padding:8px 2px;">Nessuna spesa nel periodo.</div>';
+    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     return;
   }
 
@@ -16313,7 +16314,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms',
-  'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget'
+  'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget',
+  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -16328,8 +16330,29 @@ function __saveSingleActionButtonVisualMap__(map){
   try{ localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
 }
 
+function __singleActionButtonSharedKey__(btnOrId){
+  try{
+    if (btnOrId && typeof btnOrId === 'object') return String(btnOrId.dataset?.singleActionKey || btnOrId.id || '').trim();
+    return String(btnOrId || '').trim();
+  }catch(_){ return String(btnOrId || '').trim(); }
+}
+
+function __singleActionButtonsForSharedKey__(btnOrId){
+  try{
+    const key = __singleActionButtonSharedKey__(btnOrId);
+    if (!key) return [];
+    return Array.from(document.querySelectorAll(`[data-single-action-key="${key}"], #${key}`)).filter(Boolean);
+  }catch(_){ return []; }
+}
+
+function __refreshSingleActionButtonSharedKey__(btnOrId){
+  try{
+    __singleActionButtonsForSharedKey__(btnOrId).forEach((node) => { try{ __applySingleActionButtonVisual__(node); }catch(_){ } });
+  }catch(_){ }
+}
+
 function __defaultSingleActionButtonVisual__(btn){
-  const id = String(btn?.id || '').trim();
+  const id = __singleActionButtonSharedKey__(btn);
   const defaults = {
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
@@ -16369,7 +16392,7 @@ function __defaultSingleActionButtonStateVisuals__(btn){
 }
 
 function __singleActionButtonVisualStateMapFor__(btn){
-  const id = String(btn?.id || '').trim();
+  const id = __singleActionButtonSharedKey__(btn);
   const map = __loadSingleActionButtonVisualMap__();
   const raw = map[id];
   const defaults = __defaultSingleActionButtonStateVisuals__(btn);
@@ -16400,7 +16423,7 @@ function __singleActionButtonVisualFor__(btn, forcedStateKey, forcedVisual){
 
 function __saveSingleActionButtonVisual__(btn, visual, stateKey){
   try{
-    const id = String(btn?.id || '').trim();
+    const id = __singleActionButtonSharedKey__(btn);
     if (!id) return;
     const map = __loadSingleActionButtonVisualMap__();
     const fallback = __defaultSingleActionButtonVisual__(btn);
@@ -16429,7 +16452,7 @@ function __saveSingleActionButtonVisual__(btn, visual, stateKey){
 
 
 function __singleActionButtonCategoryForId__(id){
-  const key = String(id || '').trim();
+  const key = __singleActionButtonSharedKey__(id);
   if (!key) return '';
   const map = {
     operatoriEditorDelete:'delete',
@@ -16455,7 +16478,7 @@ function __singleActionButtonIdsForCategory__(category){
 
 function __applySingleActionButtonVisualToCategory__(btn, payload, changed, forcedStateKey){
   try{
-    const category = __singleActionButtonCategoryForId__(btn?.id || '');
+    const category = __singleActionButtonCategoryForId__(btn);
     if (!category) return;
     const ids = __singleActionButtonIdsForCategory__(category);
     if (!ids.length) return;
@@ -16474,7 +16497,7 @@ function __applySingleActionButtonVisualToCategory__(btn, payload, changed, forc
           opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80) : __designBgOpacityNormalize__(current.opacity ?? 0.80)
         };
         __saveSingleActionButtonVisual__(node || { id }, next, editState);
-        if (node) __applySingleActionButtonVisual__(node);
+        __refreshSingleActionButtonSharedKey__(node || { id });
       }catch(_){ }
     });
   }catch(_){ }
@@ -16547,7 +16570,7 @@ async function __openSingleActionButtonColorPicker__(btn){
       : ((__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off');
     if (!editState) return;
     const current = __singleActionButtonVisualFor__(btn, editState);
-    const category = __singleActionButtonCategoryForId__(btn.id);
+    const category = __singleActionButtonCategoryForId__(btn);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
@@ -16557,9 +16580,9 @@ async function __openSingleActionButtonColorPicker__(btn){
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
       };
       __saveSingleActionButtonVisual__(btn, next, editState);
-      __applySingleActionButtonVisual__(btn, editState, next);
+      __refreshSingleActionButtonSharedKey__(btn);
     };
-    const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current, editState); __applySingleActionButtonVisual__(btn); };
+    const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current, editState); __refreshSingleActionButtonSharedKey__(btn); };
     const popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual };
     if (category){
       popupOptions.applyCategory = {
@@ -16680,6 +16703,46 @@ function __setupSpesaCategoryButtons__(){
       }
     }catch(_){ }
     __syncSpesaCategoryButtons__(select.value || '');
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+  }catch(_){ }
+}
+
+function __speseCategoryFilterButtons__(){
+  return Array.from(document.querySelectorAll('#speseCategoryFilterButtons .spesa-category-btn[data-value]'));
+}
+
+function __syncSpeseCategoryFilterButtons__(selectedValue){
+  const safe = String(selectedValue || '').trim();
+  __speseCategoryFilterButtons__().forEach((btn) => {
+    const on = String(btn.dataset.value || '') === safe;
+    btn.classList.toggle('is-selected', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+  });
+}
+
+function __setSpeseCategoryFilter__(value){
+  try{ state.speseCategoryFilter = String(value || '').trim(); }catch(_){ }
+  __syncSpeseCategoryFilterButtons__(value);
+  try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
+}
+
+function __setupSpeseCategoryFilterButtons__(){
+  try{
+    const buttons = __speseCategoryFilterButtons__();
+    if (!buttons.length) return;
+    buttons.forEach((btn) => {
+      if (btn.dataset.speseFilterBound === '1') return;
+      btn.dataset.speseFilterBound = '1';
+      bindFastTap(btn, (ev) => {
+        try{ if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+        try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
+        const value = String(btn.dataset.value || '').trim();
+        const current = String(state.speseCategoryFilter || '').trim();
+        __setSpeseCategoryFilter__(current === value ? '' : value);
+      });
+    });
+    __syncSpeseCategoryFilterButtons__(state.speseCategoryFilter || '');
     try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   }catch(_){ }
 }
@@ -20338,7 +20401,7 @@ function renderStatSpese(){
     });
 
     if (!items.length){
-      list.innerHTML = '<div style="font-size:13px; opacity:.75; padding:8px 2px;">Nessuna spesa nel periodo.</div>';
+      list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     } else {
       items.forEach((sp) => {
         const el = document.createElement("div");
@@ -27498,6 +27561,7 @@ try{
 
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
+  try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -31000,6 +31064,10 @@ function renderSpese(){
   list.innerHTML = "";
 
   let items = Array.isArray(state.spese) ? [...state.spese] : [];
+  const categoryFilter = String(state.speseCategoryFilter || '').trim().toLowerCase();
+  if (categoryFilter){
+    items = items.filter((row) => String(row?.categoria || row?.cat || '').trim().toLowerCase() === categoryFilter);
+  }
 
   // Ordina: data / inserimento / motivazione
   const mode = String(state.speseSort || "date");
@@ -31043,7 +31111,7 @@ function renderSpese(){
 
   items = withIdx.map(x => x.s);
   if (!items.length){
-    list.innerHTML = '<div style="font-size:13px; opacity:.75; padding:8px 2px;">Nessuna spesa nel periodo.</div>';
+    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     return;
   }
 

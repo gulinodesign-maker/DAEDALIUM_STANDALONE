@@ -19683,6 +19683,9 @@ body.ddae-dark .spesa-category-btn.is-selected{ outline-color:rgba(248,250,252,0
 #page-statspese .stat-row:nth-child(7){ --mcol: #8b5cf6 !important; }
 
 #page-inserisci .spesa-category-row{margin-left:0;margin-right:0;width:100%;}
+#page-spese .spesa-category-filter-field{ margin-top:10px; }
+#page-spese .spesa-category-row{ margin-top:0; }
+#page-spese .spesa-category-btn{ min-height:58px; }
 #page-inserisci .spesa-category-btn .ui-ico{flex:0 0 auto;}
 body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
 
