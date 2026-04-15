@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.617
+ * Build: 2.618
  */
-const BUILD_VERSION = "2.617";
+const BUILD_VERSION = "2.618";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5271,6 +5271,152 @@ function endRequest(){
     loadingState.hideTimer = null;
     if (loadingState.requestCount === 0) hideLoading();
   }, delay);
+}
+
+
+const __DATE_RANGE_CALENDAR_THEME_STORAGE_KEY__ = 'dDAE_date_range_calendar_theme_v1';
+
+function __dateRangeCalendarThemeDefault__(){
+  return __launcherVisualNormalize__({ bg:'gray-1', border:'gray-2', fg:'blue-6', opacity:0.18 }, 'blue-6');
+}
+
+function __dateRangeCalendarThemeNormalize__(visual){
+  const fallback = __dateRangeCalendarThemeDefault__();
+  const current = __launcherVisualNormalize__(visual || {}, fallback.fg || 'blue-6');
+  return {
+    bg: current.bg || fallback.bg || 'gray-1',
+    border: current.border || current.bg || fallback.border || fallback.bg || 'gray-2',
+    fg: current.fg || fallback.fg || 'blue-6',
+    opacity: __designBgOpacityNormalize__(current.opacity ?? fallback.opacity ?? 0.18)
+  };
+}
+
+function __dateRangeCalendarThemeRead__(){
+  try{
+    const raw = localStorage.getItem(__DATE_RANGE_CALENDAR_THEME_STORAGE_KEY__);
+    if (!raw) return __dateRangeCalendarThemeDefault__();
+    return __dateRangeCalendarThemeNormalize__(JSON.parse(raw));
+  }catch(_){ return __dateRangeCalendarThemeDefault__(); }
+}
+
+function __dateRangeCalendarThemeWrite__(visual){
+  try{ localStorage.setItem(__DATE_RANGE_CALENDAR_THEME_STORAGE_KEY__, JSON.stringify(__dateRangeCalendarThemeNormalize__(visual))); }catch(_){ }
+}
+
+function __setDateRangeCalendarCssVar__(name, value){
+  try{
+    const root = document.documentElement;
+    if (!root || !name) return;
+    root.style.setProperty(name, String(value == null ? '' : value));
+  }catch(_){ }
+}
+
+function __dateRangeCalendarApplyTheme__(){
+  try{
+    const visual = __dateRangeCalendarThemeRead__();
+    const bgHex = __operatoreColorHex__(visual.bg || 'gray-1');
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'gray-2');
+    const fgHex = __tagColorTextHex__(visual.bg || 'gray-1', visual.fg || 'blue-6', false) || __operatoreColorHex__(visual.fg || 'blue-6');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.18);
+    const dark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
+    if (dark){
+      const text = __darkModeReadableTextHex__(fgHex, '#f8fbff');
+      const subtle = hexToRgba(text, 0.82);
+      __setDateRangeCalendarCssVar__('--ddae-range-trigger-bg', hexToRgba(bgHex, Math.max(0.16, Math.min(0.24, opacity))));
+      __setDateRangeCalendarCssVar__('--ddae-range-trigger-border', hexToRgba(borderHex, 0.34));
+      __setDateRangeCalendarCssVar__('--ddae-range-trigger-text', text);
+      __setDateRangeCalendarCssVar__('--ddae-range-trigger-label', subtle);
+      __setDateRangeCalendarCssVar__('--ddae-range-modal-bg', 'rgba(15,23,42,0.98)');
+      __setDateRangeCalendarCssVar__('--ddae-range-modal-border', hexToRgba(borderHex, 0.28));
+      __setDateRangeCalendarCssVar__('--ddae-range-modal-text', text);
+      __setDateRangeCalendarCssVar__('--ddae-range-modal-subtle', subtle);
+      __setDateRangeCalendarCssVar__('--ddae-range-nav-bg', hexToRgba(bgHex, Math.max(0.14, Math.min(0.22, opacity))));
+      __setDateRangeCalendarCssVar__('--ddae-range-nav-border', hexToRgba(borderHex, 0.30));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-bg', hexToRgba(bgHex, Math.max(0.14, Math.min(0.22, opacity))));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-border', hexToRgba(borderHex, 0.26));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-text', text);
+      __setDateRangeCalendarCssVar__('--ddae-range-day-muted', hexToRgba(text, 0.48));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-selected-bg', hexToRgba(fgHex, 0.42));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-selected-border', hexToRgba(fgHex, 0.78));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-selected-text', '#f8fbff');
+      __setDateRangeCalendarCssVar__('--ddae-range-day-range-bg', hexToRgba(fgHex, 0.20));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-range-border', hexToRgba(fgHex, 0.36));
+      __setDateRangeCalendarCssVar__('--ddae-range-day-range-text', '#eaf4ff');
+      __setDateRangeCalendarCssVar__('--ddae-range-day-today-ring', hexToRgba(fgHex, 0.38));
+      __setDateRangeCalendarCssVar__('--ddae-range-legend-bg', hexToRgba(fgHex, 0.20));
+      __setDateRangeCalendarCssVar__('--ddae-range-legend-edge-bg', hexToRgba(fgHex, 0.42));
+      return;
+    }
+    __setDateRangeCalendarCssVar__('--ddae-range-trigger-bg', hexToRgba(bgHex, Math.max(0.28, Math.min(0.80, opacity + 0.22))));
+    __setDateRangeCalendarCssVar__('--ddae-range-trigger-border', hexToRgba(borderHex, 0.28));
+    __setDateRangeCalendarCssVar__('--ddae-range-trigger-text', fgHex);
+    __setDateRangeCalendarCssVar__('--ddae-range-trigger-label', hexToRgba(fgHex, 0.72));
+    __setDateRangeCalendarCssVar__('--ddae-range-modal-bg', 'rgba(255,255,255,0.98)');
+    __setDateRangeCalendarCssVar__('--ddae-range-modal-border', hexToRgba(borderHex, 0.16));
+    __setDateRangeCalendarCssVar__('--ddae-range-modal-text', fgHex);
+    __setDateRangeCalendarCssVar__('--ddae-range-modal-subtle', hexToRgba(fgHex, 0.72));
+    __setDateRangeCalendarCssVar__('--ddae-range-nav-bg', hexToRgba(bgHex, Math.max(0.24, Math.min(0.72, opacity + 0.16))));
+    __setDateRangeCalendarCssVar__('--ddae-range-nav-border', hexToRgba(borderHex, 0.20));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-bg', hexToRgba(bgHex, Math.max(0.18, Math.min(0.72, opacity + 0.10))));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-border', hexToRgba(borderHex, 0.14));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-text', fgHex);
+    __setDateRangeCalendarCssVar__('--ddae-range-day-muted', hexToRgba(fgHex, 0.34));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-selected-bg', hexToRgba(fgHex, 0.22));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-selected-border', hexToRgba(fgHex, 0.46));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-selected-text', fgHex);
+    __setDateRangeCalendarCssVar__('--ddae-range-day-range-bg', hexToRgba(fgHex, 0.10));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-range-border', hexToRgba(fgHex, 0.18));
+    __setDateRangeCalendarCssVar__('--ddae-range-day-range-text', fgHex);
+    __setDateRangeCalendarCssVar__('--ddae-range-day-today-ring', hexToRgba(fgHex, 0.30));
+    __setDateRangeCalendarCssVar__('--ddae-range-legend-bg', hexToRgba(fgHex, 0.10));
+    __setDateRangeCalendarCssVar__('--ddae-range-legend-edge-bg', hexToRgba(fgHex, 0.22));
+  }catch(_){ }
+}
+
+function __openDateRangeCalendarThemePicker__(){
+  try{
+    const current = __dateRangeCalendarThemeRead__();
+    const applyVisual = (payload, changed = { bg:true, border:true, fg:true, opacity:true }) => {
+      const next = __applyDesignPayloadToVisual__(__dateRangeCalendarThemeRead__(), payload, changed, current.bg || 'gray-1');
+      __dateRangeCalendarThemeWrite__(next);
+      __dateRangeCalendarApplyTheme__();
+      try{ __renderGuestDateRangeCalendar__(); }catch(_){ }
+      try{ __renderLaundryDateRangeCalendar__(); }catch(_){ }
+    };
+    __tagColorPopupOpen__('date-range-calendar-theme', current, (payload) => { applyVisual(payload); }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:current.opacity ?? 0.18,
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'gray-1'),
+      onPreview:(payload, changed) => { applyVisual(payload, changed || { bg:true, border:true, fg:true, opacity:true }); },
+      onRevert:() => { __dateRangeCalendarThemeWrite__(current); __dateRangeCalendarApplyTheme__(); try{ __renderGuestDateRangeCalendar__(); }catch(_){ } try{ __renderLaundryDateRangeCalendar__(); }catch(_){ } }
+    });
+  }catch(_){ }
+}
+
+function __bindDateRangeCalendarHold__(grid){
+  try{ if (!grid || grid.dataset.rangeCalendarHoldBound === '1') return; grid.dataset.rangeCalendarHoldBound = '1'; }catch(_){ if (!grid) return; }
+  let timer = null;
+  let fired = false;
+  const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
+  const block = (e)=>{ try{ e.preventDefault(); }catch(_){ } try{ e.stopPropagation(); }catch(_){ } try{ e.stopImmediatePropagation(); }catch(_){ } };
+  const start = (e)=>{
+    const btn = e?.target?.closest?.('.guest-date-range-day[data-date]');
+    if (!btn) return;
+    try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+    fired = false;
+    clear();
+    timer = setTimeout(()=>{ fired = true; try{ grid.__rangeCalendarSuppressClickUntil = Date.now() + 900; }catch(_){ } __openDateRangeCalendarThemePicker__(); }, 500);
+  };
+  const stop = (e)=>{ clear(); if (fired){ block(e); setTimeout(()=>{ fired = false; }, 0); } };
+  const swallow = (e)=>{ try{ if ((grid.__rangeCalendarSuppressClickUntil || 0) > Date.now()) block(e); }catch(_){ } };
+  ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ grid.addEventListener(evt, start, { passive:true, capture:true }); }catch(_){ } });
+  ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ grid.addEventListener(evt, stop, { passive:false, capture:true }); }catch(_){ } });
+  try{ grid.addEventListener('click', swallow, true); }catch(_){ }
+  try{ grid.addEventListener('contextmenu', (e)=>{ const btn = e?.target?.closest?.('.guest-date-range-day[data-date]'); if (btn){ block(e); __openDateRangeCalendarThemePicker__(); } }, true); }catch(_){ }
 }
 
 
@@ -11540,6 +11686,7 @@ function __applyDarkMode__(enabled){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
   try{ __applyGuestListCardAll__(); }catch(_){ }
 }
 
@@ -21794,7 +21941,8 @@ function __roomSettingsThemePayloadBuild__(){
     singleActionButtonVisuals: __loadSingleActionButtonVisualMap__(),
     statsThemeStorage: __roomSettingsThemeStatsStorageCollect__(),
     roomThemeButtonVisuals: __roomSettingsThemeButtonVisualMapRead__(),
-    textButtonVisuals: __roomSettingsTextButtonVisualMapRead__()
+    textButtonVisuals: __roomSettingsTextButtonVisualMapRead__(),
+    dateRangeCalendarTheme: __dateRangeCalendarThemeRead__()
   };
 }
 
@@ -21843,7 +21991,8 @@ function __roomSettingsThemePayloadNormalize__(payload){
     singleActionButtonVisuals: (src.singleActionButtonVisuals && typeof src.singleActionButtonVisuals === 'object') ? src.singleActionButtonVisuals : {},
     statsThemeStorage,
     roomThemeButtonVisuals: (src.roomThemeButtonVisuals && typeof src.roomThemeButtonVisuals === 'object') ? src.roomThemeButtonVisuals : {},
-    textButtonVisuals: (src.textButtonVisuals && typeof src.textButtonVisuals === 'object') ? src.textButtonVisuals : {}
+    textButtonVisuals: (src.textButtonVisuals && typeof src.textButtonVisuals === 'object') ? src.textButtonVisuals : {},
+    dateRangeCalendarTheme: __dateRangeCalendarThemeNormalize__(src.dateRangeCalendarTheme || src.calendarRangeTheme || src.dateRangeTheme || {})
   };
 }
 
@@ -21892,6 +22041,7 @@ async function __roomSettingsThemeSlotApply__(slot){
     __saveSingleActionButtonVisualMap__((payload.singleActionButtonVisuals && typeof payload.singleActionButtonVisuals === 'object') ? payload.singleActionButtonVisuals : {});
     __roomSettingsThemeButtonVisualMapWrite__((payload.roomThemeButtonVisuals && typeof payload.roomThemeButtonVisuals === 'object') ? payload.roomThemeButtonVisuals : {});
     __roomSettingsTextButtonVisualMapWrite__((payload.textButtonVisuals && typeof payload.textButtonVisuals === 'object') ? payload.textButtonVisuals : {});
+    __dateRangeCalendarThemeWrite__(payload.dateRangeCalendarTheme || __dateRangeCalendarThemeDefault__());
   }catch(_){ }
   try{ __roomSettingsThemeStatsStorageApply__(statsThemeStorage); }catch(_){ }
   try{ applyAppTextUi(document.body); }catch(_){ }
@@ -21901,6 +22051,7 @@ async function __roomSettingsThemeSlotApply__(slot){
   try{ __launcherIconApplyAll__(); }catch(_){ }
   try{ __headerActionApplyAll__(); }catch(_){ }
   try{ __pillApplyAll__(); }catch(_){ }
+  try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
   try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
   try{ __roomSettingsThemeActiveSlotWrite__(key); }catch(_){ }
   try{ renderRoomSettingsPage(); }catch(_){ }
@@ -24548,6 +24699,7 @@ function setupOspite(){
   try { syncGuestCheckoutPickerMonth(); } catch (_) {}
   try { refreshRoomsAvailability(); } catch (_) {}
   try { __updateGuestDateRangeTrigger__(); } catch (_) {}
+  try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
 
   const guestDateRangeTrigger = document.getElementById("guestDateRangeTrigger");
   if (guestDateRangeTrigger && !guestDateRangeTrigger.__boundRangeModal){
@@ -24567,6 +24719,7 @@ function setupOspite(){
     if (nextBtn) bindFastTap(nextBtn, () => { try{ const m = __guestDateRangeState__.month || __guestDateRangeMonthStart__(); __guestDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()+1, 1); __renderGuestDateRangeCalendar__(); }catch(_){ } });
     guestDateRangeModal.addEventListener("click", (ev) => { try{ if (ev.target === guestDateRangeModal) closeRangeModal(); }catch(_){ } });
     const grid = document.getElementById("guestDateRangeGrid");
+    try{ __bindDateRangeCalendarHold__(grid); }catch(_){ }
     grid?.addEventListener("click", (ev) => {
       const btn = ev.target.closest?.('.guest-date-range-day[data-date]');
       if (!btn) return;
@@ -28437,6 +28590,7 @@ if (cleanResetAll){
       if (nextBtn) bindFastTap(nextBtn, () => { try{ const m = __laundryDateRangeState__.month || __guestDateRangeMonthStart__(); __laundryDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()+1, 1); __renderLaundryDateRangeCalendar__(); }catch(_){ } });
       modal.addEventListener("click", (ev) => { try{ if (ev.target === modal) closeModal(); }catch(_){ } });
       const grid = document.getElementById("laundryDateRangeGrid");
+      try{ __bindDateRangeCalendarHold__(grid); }catch(_){ }
       if (grid) grid.addEventListener("click", (ev) => {
         const btn = ev.target.closest?.('.guest-date-range-day[data-date]');
         if (!btn) return;
@@ -29833,7 +29987,7 @@ function setLaundryLabels_(){
     const cancelBtn = document.getElementById('laundryDateRangeCancel');
     const applyBtn = document.getElementById('laundryDateRangeApply');
     if (title) title.textContent = __designTranslate__('Intervallo report lavanderia', { en:'Laundry report range', fr:'Plage du rapport blanchisserie', de:'Wäschereibericht-Zeitraum', es:'Rango del informe de lavandería' });
-    if (hint) hint.textContent = __designTranslate__('Seleziona il range di date nello stesso calendario', { en:'Select the date range in the same calendar', fr:'Sélectionnez la plage de dates dans le même calendrier', de:'Wählen Sie den Datumsbereich im selben Kalender', es:'Selecciona el rango de fechas en el mismo calendario' });
+    if (hint) hint.textContent = '';
     if (startLegend) startLegend.textContent = __designTranslate__('Da', { en:'From', fr:'Du', de:'Von', es:'Desde' });
     if (endLegend) endLegend.textContent = __designTranslate__('A', { en:'To', fr:'Au', de:'Bis', es:'Hasta' });
     if (cancelBtn) cancelBtn.textContent = __designTranslate__('Annulla', { en:'Cancel', fr:'Annuler', de:'Abbrechen', es:'Cancelar' });
