@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.611
+ * Build: 2.612
  */
-const BUILD_VERSION = "2.611";
+const BUILD_VERSION = "2.612";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -15008,6 +15008,9 @@ function drawMonthlyPctBars(canvasId, pctValues, colors, opts){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,cssW,cssH);
 
+  const isDark = !!(document && document.body && document.body.classList && document.body.classList.contains('ddae-dark'));
+  const holeTextSoft = isDark ? "rgba(226,232,240,0.82)" : "rgba(15,23,42,0.75)";
+
   const vals = Array.isArray(pctValues) ? pctValues : [];
   const v12 = new Array(12).fill(0).map((_,i)=>Math.max(0, Math.min(100, Number(vals[i]||0)||0)));
   const cols = Array.isArray(colors) ? colors : [];
@@ -16002,26 +16005,16 @@ function __saveSingleActionButtonVisualMap__(map){
 function __defaultSingleActionButtonVisual__(btn){
   const id = String(btn?.id || '').trim();
   const defaults = {
-    confirmYesNoYes:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    confirmYesNoNo:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    rc_cancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    rc_save:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    settingsConfigCancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    settingsConfigSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    settingsBackupCancel:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    settingsBackupImport:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    settingsBackupExport:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    channelEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    channelEditorGraphColor:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.80 },
-    channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    operatoriEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    operatoriEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
-    operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
-    laundryCatalogEditorCancel:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    laundryCatalogEditorTagColor:{ bg:'indigo-6', border:'indigo-6', fg:'white', opacity:0.80 },
+    operatoriEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    channelEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    laundryCatalogEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    operatoriEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
+    laundryCatalogEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
+    operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionCall:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionWhatsApp:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -16037,6 +16030,43 @@ function __defaultSingleActionButtonVisual__(btn){
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
 }
 
+function __singleActionButtonSupportsDualState__(btn){
+  try{ return !!(btn && btn.classList && btn.classList.contains('spesa-category-btn')); }catch(_){ return false; }
+}
+
+function __defaultSingleActionButtonStateVisuals__(btn){
+  const base = __defaultSingleActionButtonVisual__(btn);
+  if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
+  const off = { ...base, opacity:0.52 };
+  const on = { ...base, opacity:0.88 };
+  return { off, on };
+}
+
+function __singleActionButtonVisualStateMapFor__(btn){
+  const id = String(btn?.id || '').trim();
+  const map = __loadSingleActionButtonVisualMap__();
+  const raw = map[id];
+  const defaults = __defaultSingleActionButtonStateVisuals__(btn);
+  if (!__singleActionButtonSupportsDualState__(btn)){
+    const single = __launcherVisualNormalize__(raw || defaults.off, defaults.off.bg || 'blue-4');
+    return { off: single, on: single };
+  }
+  if (raw && typeof raw === 'object' && (raw.off || raw.on)){
+    const off = __launcherVisualNormalize__(raw.off || defaults.off, defaults.off.bg || 'blue-4');
+    const on = __launcherVisualNormalize__(raw.on || raw.off || defaults.on, defaults.on.bg || defaults.off.bg || 'blue-4');
+    return { off, on };
+  }
+  const legacy = __launcherVisualNormalize__(raw || defaults.off, defaults.off.bg || 'blue-4');
+  return { off: { ...defaults.off, ...legacy, opacity: __designBgOpacityNormalize__(legacy.opacity ?? defaults.off.opacity ?? 0.52) }, on: { ...defaults.on, ...legacy, opacity: __designBgOpacityNormalize__(defaults.on.opacity ?? 0.88) } };
+}
+
+function __singleActionButtonVisualFor__(btn){
+  const states = __singleActionButtonVisualStateMapFor__(btn);
+  const on = !!(btn && btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn));
+  const fallback = __defaultSingleActionButtonVisual__(btn);
+  const active = on ? states.on : states.off;
+  return __launcherVisualNormalize__(active || fallback, fallback.bg || 'blue-4');
+}
 function __singleActionButtonVisualFor__(btn){
   const id = String(btn?.id || '').trim();
   const map = __loadSingleActionButtonVisualMap__();
@@ -16044,19 +16074,31 @@ function __singleActionButtonVisualFor__(btn){
   return __launcherVisualNormalize__(map[id] || fallback, fallback.bg || 'blue-4');
 }
 
-function __saveSingleActionButtonVisual__(btn, visual){
+function __saveSingleActionButtonVisual__(btn, visual, stateKey){
   try{
     const id = String(btn?.id || '').trim();
     if (!id) return;
     const map = __loadSingleActionButtonVisualMap__();
     const fallback = __defaultSingleActionButtonVisual__(btn);
     const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
-    map[id] = {
-      bg: clean.bg || fallback.bg || 'blue-4',
-      border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
-      fg: clean.fg || fallback.fg || 'white',
-      opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
-    };
+    if (__singleActionButtonSupportsDualState__(btn)){
+      const states = __singleActionButtonVisualStateMapFor__(btn);
+      const safeStateKey = String(stateKey || ((btn && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off')).trim().toLowerCase() === 'on' ? 'on' : 'off';
+      states[safeStateKey] = {
+        bg: clean.bg || fallback.bg || 'blue-4',
+        border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+        fg: clean.fg || fallback.fg || 'white',
+        opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? (safeStateKey === 'on' ? 0.88 : 0.52))
+      };
+      map[id] = { off: states.off, on: states.on };
+    } else {
+      map[id] = {
+        bg: clean.bg || fallback.bg || 'blue-4',
+        border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
+        fg: clean.fg || fallback.fg || 'white',
+        opacity: __designBgOpacityNormalize__(clean.opacity ?? fallback.opacity ?? 0.80)
+      };
+    }
     __saveSingleActionButtonVisualMap__(map);
   }catch(_){ }
 }
@@ -16094,17 +16136,18 @@ function __applySingleActionButtonVisualToCategory__(btn, payload, changed){
     const ids = __singleActionButtonIdsForCategory__(category);
     if (!ids.length) return;
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const editState = (__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off';
     ids.forEach((id) => {
       try{
         const node = document.getElementById(id);
-        const current = __singleActionButtonVisualFor__(node || { id });
+        const current = __singleActionButtonVisualFor__(node || btn || { id });
         const next = {
           bg: changed?.bg ? (colors.bg || current.bg || 'blue-4') : current.bg,
           border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || 'blue-4') : current.border,
           fg: changed?.fg ? (colors.fg || current.fg || 'white') : current.fg,
           opacity: changed?.opacity ? __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80) : __designBgOpacityNormalize__(current.opacity ?? 0.80)
         };
-        __saveSingleActionButtonVisual__(node || { id }, next);
+        __saveSingleActionButtonVisual__(node || { id }, next, editState);
         if (node) __applySingleActionButtonVisual__(node);
       }catch(_){ }
     });
@@ -16119,25 +16162,36 @@ function __applySingleActionButtonVisual__(btn){
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
     const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
+    const selected = !!(btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn));
     btn.dataset.designStandaloneButton = '1';
-    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
-    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
-    btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
-    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
-    btn.style.setProperty('color', fgHex, 'important');
-    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
-    btn.style.setProperty('box-shadow', 'none', 'important');
-    btn.style.setProperty('backdrop-filter', 'none', 'important');
-    btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    btn.dataset.designState = selected ? 'on' : 'off';
+    if (__isDarkModeEnabled__ && __isDarkModeEnabled__()){
+      const resolved = __applyDarkAdaptiveSurface__(btn, visual, { fallbackBg: visual.bg || 'blue-4', bgOpacity: Math.max(0.14, Math.min(0.28, opacity)), borderOpacity: selected ? 0.40 : 0.28 }) || {};
+      const darkText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
+      btn.style.setProperty('color', darkText, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', darkText, 'important');
+    } else {
+      btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+      btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+      btn.style.setProperty('border', '1px solid ' + hexToRgba(borderHex, 1), 'important');
+      btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+      btn.style.setProperty('color', fgHex, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+      btn.style.setProperty('box-shadow', 'none', 'important');
+      btn.style.setProperty('backdrop-filter', 'none', 'important');
+      btn.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    }
     btn.querySelectorAll('svg, .ui-ico, .tl-ico, .tag-color-mode-ico').forEach((node) => {
       try{
-        node.style.setProperty('color', fgHex, 'important');
-        node.style.setProperty('stroke', fgHex, 'important');
+        const applied = (btn.style.getPropertyValue('color') || fgHex || '').trim() || fgHex;
+        node.style.setProperty('color', applied, 'important');
+        node.style.setProperty('stroke', applied, 'important');
         node.style.setProperty('fill', 'none', 'important');
       }catch(_){ }
       try{
         node.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((child) => {
-          child.style.setProperty('stroke', fgHex, 'important');
+          const applied = (btn.style.getPropertyValue('color') || fgHex || '').trim() || fgHex;
+          child.style.setProperty('stroke', applied, 'important');
           if (String(child.getAttribute('fill') || '').toLowerCase() !== 'none') child.style.setProperty('fill', 'none', 'important');
         });
       }catch(_){ }
@@ -16148,6 +16202,7 @@ function __applySingleActionButtonVisual__(btn){
 function __openSingleActionButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
+    const editState = (__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off';
     const current = __singleActionButtonVisualFor__(btn);
     const category = __singleActionButtonCategoryForId__(btn.id);
     const applyVisual = (payload) => {
@@ -16158,10 +16213,10 @@ function __openSingleActionButtonColorPicker__(btn){
         fg: colors.fg || current.fg || 'white',
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
       };
-      __saveSingleActionButtonVisual__(btn, next);
+      __saveSingleActionButtonVisual__(btn, next, editState);
       __applySingleActionButtonVisual__(btn);
     };
-    const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current); __applySingleActionButtonVisual__(btn); };
+    const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current, editState); __applySingleActionButtonVisual__(btn); };
     const popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual };
     if (category){
       popupOptions.applyCategory = {
@@ -16246,6 +16301,7 @@ function __syncSpesaCategoryButtons__(selectedValue){
     const on = String(btn.dataset.value || '') === safe;
     btn.classList.toggle('is-selected', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
   });
 }
 
@@ -18386,7 +18442,11 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 
 function drawStatGenRegistrationsLineChart(canvasId){
   const selected = __getStatChartFilter__('statgen');
-  const seriesList = __statGenSeriesList__().filter((item) => __statChartSeriesIsVisible__('statgen', item.key));
+  let seriesList = __statGenSeriesList__().filter((item) => __statChartSeriesIsVisible__('statgen', item.key));
+  if (!seriesList.length){
+    try{ __clearStatChartFilter__('statgen'); }catch(_){ }
+    seriesList = __statGenSeriesList__();
+  }
   if (selected && __ensureStatGenCompareEnabled__()){
     try{
       const compareSource = state.statGenCompareSnapshot || { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], spese: [], report: null, servizi: [] };
@@ -18445,7 +18505,7 @@ function __statSpeseMonthlyPercentages__(){
 
 function drawStatSpesePercentLineChart(canvasId){
   const data = __statSpeseMonthlyBreakdown__();
-  const seriesList = [
+  let seriesList = [
     { key:'totale-spese', label:'Totale spese', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.totale)), color: __statChartLineColorFromRenderedCard__('statspese', 'totale-spese', '#2b7cb4') },
     { key:'contanti', label:'Contanti', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.contanti)), color: __statChartLineColorFromRenderedCard__('statspese', 'contanti', '#2563eb') },
     { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.tassa)), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
@@ -18454,6 +18514,18 @@ function drawStatSpesePercentLineChart(canvasId){
     { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva4)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') },
     { key:'fuori-budget', label:'Fuori Budget', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.fuoriBudget)), color: __statChartLineColorFromRenderedCard__('statspese', 'fuori-budget', '#8b5cf6') }
   ].filter((item) => __statChartSeriesIsVisible__('statspese', item.key));
+  if (!seriesList.length){
+    try{ __clearStatChartFilter__('statspese'); }catch(_){ }
+    seriesList = [
+      { key:'totale-spese', label:'Totale spese', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.totale)), color: __statChartLineColorFromRenderedCard__('statspese', 'totale-spese', '#2b7cb4') },
+      { key:'contanti', label:'Contanti', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.contanti)), color: __statChartLineColorFromRenderedCard__('statspese', 'contanti', '#2563eb') },
+      { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.tassa)), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
+      { key:'iva-22', label:'IVA 22%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva22)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-22', '#f29c50') },
+      { key:'iva-10', label:'IVA 10%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva10)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-10', '#6aa0b3') },
+      { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva4)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') },
+      { key:'fuori-budget', label:'Fuori Budget', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.fuoriBudget)), color: __statChartLineColorFromRenderedCard__('statspese', 'fuori-budget', '#8b5cf6') }
+    ];
+  }
   __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
     mode: 'currency',
     seriesList,
@@ -19952,7 +20024,7 @@ function openStatSpesePieModal(){
   state.statSpese = s;
   const slices = __speseGraphSlicesCustom__().map((slice)=>({
     ...slice,
-    value: ({ CONTANTI:s.contanti, TASSA_SOGGIORNO:s.tassaSoggiorno, IVA_22:s.iva22, IVA_10:s.iva10, IVA_4:s.iva4 }[slice.key] ?? slice.value ?? 0)
+    value: ({ CONTANTI:s.contanti, TASSA_SOGGIORNO:s.tassaSoggiorno, IVA_22:s.iva22, IVA_10:s.iva10, IVA_4:s.iva4, FUORI_BUDGET:s.fuoriBudget }[slice.key] ?? slice.value ?? 0)
   }));
 
   drawPie("statSpesePieCanvas", slices);
