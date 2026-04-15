@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.620
+ * Build: 2.622
  */
-const BUILD_VERSION = "2.620";
+const BUILD_VERSION = "2.622";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -5322,10 +5322,6 @@ function __dateRangeCalendarApplyTheme__(){
     if (dark){
       const text = __darkModeReadableTextHex__(fgHex, '#f8fbff');
       const subtle = hexToRgba(text, 0.82);
-      __setDateRangeCalendarCssVar__('--ddae-range-trigger-bg', hexToRgba(bgHex, Math.max(0.16, Math.min(0.24, opacity))));
-      __setDateRangeCalendarCssVar__('--ddae-range-trigger-border', hexToRgba(borderHex, 0.34));
-      __setDateRangeCalendarCssVar__('--ddae-range-trigger-text', text);
-      __setDateRangeCalendarCssVar__('--ddae-range-trigger-label', subtle);
       __setDateRangeCalendarCssVar__('--ddae-range-modal-bg', 'rgba(15,23,42,0.98)');
       __setDateRangeCalendarCssVar__('--ddae-range-modal-border', hexToRgba(borderHex, 0.28));
       __setDateRangeCalendarCssVar__('--ddae-range-modal-text', text);
@@ -5347,10 +5343,6 @@ function __dateRangeCalendarApplyTheme__(){
       __setDateRangeCalendarCssVar__('--ddae-range-legend-edge-bg', hexToRgba(fgHex, 0.42));
       return;
     }
-    __setDateRangeCalendarCssVar__('--ddae-range-trigger-bg', hexToRgba(bgHex, Math.max(0.28, Math.min(0.80, opacity + 0.22))));
-    __setDateRangeCalendarCssVar__('--ddae-range-trigger-border', hexToRgba(borderHex, 0.28));
-    __setDateRangeCalendarCssVar__('--ddae-range-trigger-text', fgHex);
-    __setDateRangeCalendarCssVar__('--ddae-range-trigger-label', hexToRgba(fgHex, 0.72));
     __setDateRangeCalendarCssVar__('--ddae-range-modal-bg', 'rgba(255,255,255,0.98)');
     __setDateRangeCalendarCssVar__('--ddae-range-modal-border', hexToRgba(borderHex, 0.16));
     __setDateRangeCalendarCssVar__('--ddae-range-modal-text', fgHex);
@@ -5436,12 +5428,10 @@ function __guestDateRangeFormatDisplay__(checkIn, checkOut){
 }
 function __updateGuestDateRangeTrigger__(){
   try{
-    const label = document.getElementById('guestDateRangeLabel');
     const value = document.getElementById('guestDateRangeValue');
     const btn = document.getElementById('guestDateRangeTrigger');
     const ci = document.getElementById('guestCheckIn')?.value || '';
     const co = document.getElementById('guestCheckOut')?.value || '';
-    if (label) label.textContent = __translateExactText__('Periodo pernottamento') || 'Periodo pernottamento';
     if (value) value.textContent = __guestDateRangeFormatDisplay__(ci, co);
     if (btn) btn.setAttribute('aria-label', __translateExactText__('Seleziona periodo pernottamento') || 'Seleziona periodo pernottamento');
   }catch(_){ }
@@ -5472,16 +5462,16 @@ function __guestDateRangeWeekdayLabels__(){
 function __renderGuestDateRangeCalendar__(){
   try{
     const grid = document.getElementById('guestDateRangeGrid');
-    const title = document.getElementById('guestDateRangeMonthTitle');
-    const summary = document.getElementById('guestDateRangeSummary');
+    const monthTitle = document.getElementById('guestDateRangeMonthTitle');
+    const rangeTitle = document.getElementById('guestDateRangeModalTitle');
     const weekdaysWrap = document.getElementById('guestDateRangeWeekdays');
-    if (!grid || !title || !summary || !weekdaysWrap) return;
+    if (!grid || !monthTitle || !weekdaysWrap) return;
     weekdaysWrap.innerHTML = __guestDateRangeWeekdayLabels__().map((d)=>`<span>${d}</span>`).join('');
     const monthDate = __guestDateRangeState__.month || __guestDateRangeMonthStart__();
     __guestDateRangeState__.month = __guestDateRangeMonthStart__(monthDate);
     const year = __guestDateRangeState__.month.getFullYear();
     const month = __guestDateRangeState__.month.getMonth();
-    title.textContent = __guestDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
+    monthTitle.textContent = __guestDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
     const first = new Date(year, month, 1);
     const offset = (first.getDay() + 6) % 7;
     const start = new Date(year, month, 1 - offset);
@@ -5501,7 +5491,7 @@ function __renderGuestDateRangeCalendar__(){
       parts.push(`<button class="${classes.join(' ')}" data-date="${iso}" type="button">${d.getDate()}</button>`);
     }
     grid.innerHTML = parts.join('');
-    summary.textContent = __guestDateRangeFormatDisplay__(startIso, endIso);
+    if (rangeTitle) rangeTitle.textContent = __guestDateRangeFormatDisplay__(startIso, endIso);
   }catch(_){ }
 }
 function __openGuestDateRangeModal__(){
@@ -30044,16 +30034,8 @@ function setLaundryLabels_(){
     });
   }catch(_){ }
   try{
-    const title = document.getElementById('laundryDateRangeModalTitle');
-    const hint = document.getElementById('laundryDateRangeModalHint');
-    const startLegend = document.getElementById('laundryDateRangeLegendStart');
-    const endLegend = document.getElementById('laundryDateRangeLegendEnd');
     const cancelBtn = document.getElementById('laundryDateRangeCancel');
     const applyBtn = document.getElementById('laundryDateRangeApply');
-    if (title) title.textContent = __designTranslate__('Intervallo report lavanderia', { en:'Laundry report range', fr:'Plage du rapport blanchisserie', de:'Wäschereibericht-Zeitraum', es:'Rango del informe de lavandería' });
-    if (hint) hint.textContent = '';
-    if (startLegend) startLegend.textContent = __designTranslate__('Da', { en:'From', fr:'Du', de:'Von', es:'Desde' });
-    if (endLegend) endLegend.textContent = __designTranslate__('A', { en:'To', fr:'Au', de:'Bis', es:'Hasta' });
     if (cancelBtn) cancelBtn.textContent = __designTranslate__('Annulla', { en:'Cancel', fr:'Annuler', de:'Abbrechen', es:'Cancelar' });
     if (applyBtn) applyBtn.textContent = __designTranslate__('Conferma', { en:'Confirm', fr:'Confirmer', de:'Bestätigen', es:'Confirmar' });
     __syncLaundryDateRangeUi__();
@@ -30699,10 +30681,8 @@ function __syncLaundryDateRangeUi__(){
     const fromEl = document.getElementById('laundryFrom');
     const toEl = document.getElementById('laundryTo');
     const value = document.getElementById('laundryDateRangeValue');
-    const label = document.getElementById('laundryDateRangeLabel');
     const startDate = String(fromEl?.value || '').trim();
     const endDate = String(toEl?.value || '').trim();
-    if (label) label.textContent = __designTranslate__('Intervallo report lavanderia', { en:'Laundry report range', fr:'Plage du rapport blanchisserie', de:'Wäschereibericht-Zeitraum', es:'Rango del informe de lavandería' });
     if (value) value.textContent = __laundryDateRangeFormatDisplay__(startDate, endDate);
   }catch(_){ }
 }
@@ -30710,16 +30690,16 @@ function __syncLaundryDateRangeUi__(){
 function __renderLaundryDateRangeCalendar__(){
   try{
     const grid = document.getElementById('laundryDateRangeGrid');
-    const title = document.getElementById('laundryDateRangeMonthTitle');
-    const summary = document.getElementById('laundryDateRangeSummary');
+    const monthTitle = document.getElementById('laundryDateRangeMonthTitle');
+    const rangeTitle = document.getElementById('laundryDateRangeModalTitle');
     const weekdaysWrap = document.getElementById('laundryDateRangeWeekdays');
-    if (!grid || !title || !summary || !weekdaysWrap) return;
+    if (!grid || !monthTitle || !weekdaysWrap) return;
     weekdaysWrap.innerHTML = __guestDateRangeWeekdayLabels__().map((d)=>`<span>${d}</span>`).join('');
     const monthDate = __laundryDateRangeState__.month || __guestDateRangeMonthStart__();
     __laundryDateRangeState__.month = __guestDateRangeMonthStart__(monthDate);
     const year = __laundryDateRangeState__.month.getFullYear();
     const month = __laundryDateRangeState__.month.getMonth();
-    title.textContent = __laundryDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
+    monthTitle.textContent = __laundryDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
     const first = new Date(year, month, 1);
     const offset = (first.getDay() + 6) % 7;
     const start = new Date(year, month, 1 - offset);
@@ -30739,7 +30719,7 @@ function __renderLaundryDateRangeCalendar__(){
       parts.push(`<button class="${classes.join(' ')}" data-date="${iso}" type="button">${d.getDate()}</button>`);
     }
     grid.innerHTML = parts.join('');
-    summary.textContent = __laundryDateRangeFormatDisplay__(startIso, endIso);
+    if (rangeTitle) rangeTitle.textContent = __laundryDateRangeFormatDisplay__(startIso, endIso);
   }catch(_){ }
 }
 

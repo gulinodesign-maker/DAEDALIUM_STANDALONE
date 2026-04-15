@@ -19918,3 +19918,45 @@ body.ddae-dark #page-ospiti .guest-meta-right .c-dot,
 body.ddae-dark #page-ospiti .guest-meta-right .nights-dot{
   box-shadow:none !important;
 }
+
+#guestDateRangeField .guest-date-range-trigger,
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.80);
+  color:var(--text);
+}
+body.ddae-dark #guestDateRangeField .guest-date-range-trigger,
+body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  border-color:rgba(148,163,184,0.24);
+  background:rgba(15,23,42,0.72);
+  color:#f8fbff;
+}
+#guestDateRangeField .guest-date-range-trigger,
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  align-items:center;
+  text-align:center;
+  gap:0;
+}
+#guestDateRangeField .guest-date-range-value,
+#page-lavanderia .laundry-date-range-field .guest-date-range-value{
+  width:100%;
+  text-align:center;
+  color:inherit;
+}
+.guest-date-range-modal-hd{
+  justify-content:center;
+  position:relative;
+  padding:14px 52px 8px;
+}
+.guest-date-range-modal-hd .operatori-editor-close{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+}
+.guest-date-range-modal-range-title{
+  width:100%;
+  text-align:center;
+  font-weight:900;
+}
+.guest-date-range-monthbar{ margin-top:4px; }
