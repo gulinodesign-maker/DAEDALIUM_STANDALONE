@@ -19637,11 +19637,14 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 #guestReportModal .guest-report-card{ position:relative; z-index:9001; }
 
 
-.spesa-category-row{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); align-items:stretch; gap:8px; margin-top:10px; width:100%; overflow:visible; padding-bottom:0; -webkit-overflow-scrolling:touch; }
+.spesa-category-field{ padding-top:0 !important; }
+.spesa-category-field label, .spesa-category-field .floating-label, .spesa-category-field::before, .spesa-category-field::after{ display:none !important; content:none !important; }
+.spesa-category-field select[hidden]{ display:none !important; }
+.spesa-category-row{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); align-items:stretch; gap:6px; margin-top:0; width:100%; max-width:100%; overflow:visible; padding:0; box-sizing:border-box; -webkit-overflow-scrolling:touch; }
 .spesa-category-row::-webkit-scrollbar{ display:none; }
-.spesa-category-btn{ min-width:0; width:100%; flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 4px; border-radius:14px; white-space:nowrap; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; overflow:hidden; }
+.spesa-category-btn{ min-width:0; width:100%; min-height:58px; flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:7px 2px; border-radius:14px; white-space:nowrap; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; overflow:hidden; }
 .spesa-category-btn .ui-ico{ width:18px; height:18px; stroke-width:2; }
-.spesa-category-btn span{ font-size:10px; line-height:1; font-weight:700; display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.spesa-category-btn span{ font-size:9px; line-height:1; font-weight:700; display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
 .spesa-category-btn.is-selected{ outline:2px solid rgba(15,23,42,0.16); outline-offset:0; transform:none; }
 body.ddae-dark .spesa-category-btn.is-selected{ outline-color:rgba(248,250,252,0.26); }
 .item.spesa-bg-fuoribudget::before{ background: var(--spesa-accent) !important; }
@@ -19649,6 +19652,12 @@ body.ddae-dark .spesa-category-btn.is-selected{ outline-color:rgba(248,250,252,0
 #page-statgen .stat-row:nth-child(7),
 #page-statspese .stat-row:nth-child(7){ --mcol: #8b5cf6 !important; }
 
-#page-inserisci .spesa-category-row{margin-left:0;margin-right:0;}
+#page-inserisci .spesa-category-row{margin-left:0;margin-right:0;width:100%;}
 #page-inserisci .spesa-category-btn .ui-ico{flex:0 0 auto;}
 body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
+
+@media (max-width: 390px){
+  .spesa-category-row{ gap:5px; }
+  .spesa-category-btn{ min-height:56px; padding:6px 1px; }
+  .spesa-category-btn span{ font-size:8.5px; }
+}

@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.612
+ * Build: 2.613
  */
-const BUILD_VERSION = "2.612";
+const BUILD_VERSION = "2.613";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16067,12 +16067,6 @@ function __singleActionButtonVisualFor__(btn){
   const active = on ? states.on : states.off;
   return __launcherVisualNormalize__(active || fallback, fallback.bg || 'blue-4');
 }
-function __singleActionButtonVisualFor__(btn){
-  const id = String(btn?.id || '').trim();
-  const map = __loadSingleActionButtonVisualMap__();
-  const fallback = __defaultSingleActionButtonVisual__(btn);
-  return __launcherVisualNormalize__(map[id] || fallback, fallback.bg || 'blue-4');
-}
 
 function __saveSingleActionButtonVisual__(btn, visual, stateKey){
   try{
@@ -16318,6 +16312,7 @@ function __setupSpesaCategoryButtons__(){
     const select = document.getElementById('spesaCategoria');
     const buttons = __spesaCategoryButtons__();
     if (!select || !buttons.length) return;
+    try{ const field = document.getElementById('spesaCategoryField'); if (field) field.classList.add('spesa-category-field-ready'); }catch(_){ }
     buttons.forEach((btn) => {
       if (btn.dataset.spesaCategoryBound === '1') return;
       btn.dataset.spesaCategoryBound = '1';
@@ -18590,6 +18585,19 @@ function drawStatCancellazioniPercentLineChart(canvasId){
     lineColor: __statChartSelectedLineColor__('statcancellazioni', '#2B7CB4')
   });
 }
+function __scheduleStatsLineChartRedraw__(pageKey){
+  const safe = String(pageKey || '').trim().toLowerCase();
+  const draw = ()=>{
+    try{
+      if (safe === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart');
+      else if (safe === 'statspese') drawStatSpesePercentLineChart('statSpeseLineChart');
+    }catch(_){ }
+  };
+  try{ requestAnimationFrame(()=>requestAnimationFrame(draw)); }catch(_){ setTimeout(draw, 0); }
+  try{ setTimeout(draw, 120); }catch(_){ }
+  try{ setTimeout(draw, 320); }catch(_){ }
+}
+
 function renderStatGen(){
   bindStatFiscalModeToggle();
   updateStatFiscalModeUI();
@@ -18643,6 +18651,7 @@ function renderStatGen(){
     }
   }catch(_){ }
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
+  try{ __scheduleStatsLineChartRedraw__('statgen'); }catch(_){ }
   try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
   try{ __loadStatGenCompareGuests__({ force:false }); }catch(_){ }
 }
@@ -19950,6 +19959,7 @@ function renderStatSpese(){
     }
   }catch(_){ }
   try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
+  try{ __scheduleStatsLineChartRedraw__('statspese'); }catch(_){ }
   try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
 
   if (list){
