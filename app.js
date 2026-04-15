@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.610
+ * Build: 2.611
  */
-const BUILD_VERSION = "2.610";
+const BUILD_VERSION = "2.611";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -4472,6 +4472,7 @@ const COLORS = {
   IVA_22: "#c9772b",            // palette
   IVA_10: "#6fb7d6",            // palette
   IVA_4: "#4d9cc5",             // palette
+  FUORI_BUDGET: "#8b5cf6",      // palette
 };
 
 const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
@@ -7147,6 +7148,13 @@ function toISODateLocal(d){
 
 
 
+function __isFuoriBudgetSpesa__(row){
+  try{
+    const catRaw = (row?.categoria ?? row?.cat ?? "").toString().trim().toLowerCase();
+    return catRaw.includes('fuori') && catRaw.includes('budget');
+  }catch(_){ return false; }
+}
+
 function spesaCategoryClass(s){
   const key = spesaGraphKeyForItem(s);
   if (key === "CONTANTI") return "spesa-bg-contanti";
@@ -7154,12 +7162,14 @@ function spesaCategoryClass(s){
   if (key === "IVA_22") return "spesa-bg-iva22";
   if (key === "IVA_10") return "spesa-bg-iva10";
   if (key === "IVA_4") return "spesa-bg-iva4";
+  if (key === "FUORI_BUDGET") return "spesa-bg-fuoribudget";
   return ""; // nessun colore
 }
 
 function spesaGraphKeyForItem(s){
   const catRaw = (s?.categoria ?? s?.cat ?? "").toString().trim().toLowerCase();
   const aliq = (s?.aliquotaIva ?? s?.aliquota_iva ?? "").toString().trim();
+  if (__isFuoriBudgetSpesa__(s)) return "FUORI_BUDGET";
   if (catRaw.includes("contant")) return "CONTANTI";
   if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "TASSA_SOGGIORNO";
   if (catRaw.includes("iva")){
@@ -7197,10 +7207,12 @@ function __spesaVisualFallbackSpecForRow__(row){
       TASSA_SOGGIORNO: (COLORS.TASSA_SOGGIORNO || '#d8bd97'),
       IVA_22: (COLORS.IVA_22 || '#c9772b'),
       IVA_10: (COLORS.IVA_10 || '#7ac0db'),
-      IVA_4: (COLORS.IVA_4 || '#1f2937')
+      IVA_4: (COLORS.IVA_4 || '#1f2937'),
+      FUORI_BUDGET: (COLORS.FUORI_BUDGET || '#8b5cf6')
     };
     if (graphKey && fallbackMap[graphKey]) return fallbackMap[graphKey];
     const cat = (row?.categoria ?? row?.cat ?? '').toString().trim().toLowerCase();
+    if (__isFuoriBudgetSpesa__(row)) return fallbackMap.FUORI_BUDGET;
     if (cat.includes('contant')) return fallbackMap.CONTANTI;
     if (cat.includes('tassa') && cat.includes('sogg')) return fallbackMap.TASSA_SOGGIORNO;
     return '#2B7CB4';
@@ -7448,6 +7460,7 @@ function categoriaLabel(cat){
     IVA_22: "IVA 22%",
     IVA_10: "IVA 10%",
     IVA_4: "IVA 4%",
+    FUORI_BUDGET: "Fuori Budget",
   })[cat] || cat;
 }
 
@@ -9055,7 +9068,7 @@ function __statisticsCardThemeVisual__(){
 
 function __statisticsCardThemeTargetKeys__(){
   const statGenKeys = ['fatturato-totale','spese-totali','senza-ricevuta','con-ricevuta','iva-da-versare','guadagno-totale','giacenza-in-cassa'];
-  const statSpeseKeys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
+  const statSpeseKeys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4','fuori-budget'];
   const statMensiliKeys = (Array.isArray(__MONTHS_IT) ? __MONTHS_IT : []).map((m)=>String(m || '').trim()).filter(Boolean);
   const statRicevuteKeys = ['senza-ricevuta','con-ricevuta'];
   const statChannelKeys = ['channel','direct'];
@@ -14655,8 +14668,9 @@ async function loadData({ showLoader=true } = {}){
 function resetInserisci(){
   $("#spesaImporto").value = "";
   $("#spesaMotivazione").value = "";
-  $("#spesaCategoria").value = "";
+  __setSpesaCategoriaValue__("");
   $("#spesaData").value = todayISO();
+  try{ __setupSpesaCategoryButtons__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -14834,7 +14848,7 @@ function renderRiepilogo(){
   if (!container) return;
 
   const by = r.byCategoria || {};
-  const order = ["CONTANTI","TASSA_SOGGIORNO","IVA_22","IVA_10","IVA_4"];
+  const order = ["CONTANTI","TASSA_SOGGIORNO","IVA_22","IVA_10","IVA_4","FUORI_BUDGET"];
 
   container.innerHTML = "";
   for (const k of order){
@@ -14859,7 +14873,7 @@ function renderGrafico(){
   state.report = r;
 
   const by = r.byCategoria || {};
-  const order = ["CONTANTI","TASSA_SOGGIORNO","IVA_22","IVA_10","IVA_4"];
+  const order = ["CONTANTI","TASSA_SOGGIORNO","IVA_22","IVA_10","IVA_4","FUORI_BUDGET"];
   const values = order.map(k => Number(by[k]?.importoLordo || 0));
   const total = values.reduce((a,b)=>a+b,0);
 
@@ -15969,7 +15983,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms'
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms',
+  'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -16010,7 +16025,13 @@ function __defaultSingleActionButtonVisual__(btn){
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionCall:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionWhatsApp:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    guestPhoneActionSms:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
+    guestPhoneActionSms:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    spesaCatBtnContanti:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    spesaCatBtnTassa:{ bg:'sand-4', border:'sand-4', fg:'white', opacity:0.80 },
+    spesaCatBtnIva22:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    spesaCatBtnIva10:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
+    spesaCatBtnIva4:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.80 },
+    spesaCatBtnFuoriBudget:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 }
   };
   const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
@@ -16211,6 +16232,55 @@ function __setupSingleActionButtonPaletteBindings__(){
       __applySingleActionButtonVisual__(btn);
       __bindSingleActionButtonColorHold__(btn);
     });
+  }catch(_){ }
+}
+
+
+function __spesaCategoryButtons__(){
+  return Array.from(document.querySelectorAll('#spesaCategoryButtons .spesa-category-btn[data-value]'));
+}
+
+function __syncSpesaCategoryButtons__(selectedValue){
+  const safe = String(selectedValue || '').trim();
+  __spesaCategoryButtons__().forEach((btn) => {
+    const on = String(btn.dataset.value || '') === safe;
+    btn.classList.toggle('is-selected', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
+function __setSpesaCategoriaValue__(value){
+  try{
+    const select = document.getElementById('spesaCategoria');
+    if (select) select.value = String(value || '');
+  }catch(_){ }
+  __syncSpesaCategoryButtons__(value);
+}
+
+function __setupSpesaCategoryButtons__(){
+  try{
+    const select = document.getElementById('spesaCategoria');
+    const buttons = __spesaCategoryButtons__();
+    if (!select || !buttons.length) return;
+    buttons.forEach((btn) => {
+      if (btn.dataset.spesaCategoryBound === '1') return;
+      btn.dataset.spesaCategoryBound = '1';
+      bindFastTap(btn, (ev) => {
+        try{
+          if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
+        }catch(_){ }
+        try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
+        __setSpesaCategoriaValue__(btn.dataset.value || '');
+      });
+    });
+    try{
+      if (!select.dataset.spesaCategorySyncBound){
+        select.dataset.spesaCategorySyncBound = '1';
+        select.addEventListener('change', () => { __syncSpesaCategoryButtons__(select.value || ''); });
+      }
+    }catch(_){ }
+    __syncSpesaCategoryButtons__(select.value || '');
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -16797,6 +16867,7 @@ function __statSpeseMonthlyBreakdownForRows__(rows){
     const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
     const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
     const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
+    if (__isFuoriBudgetSpesa__(row)) { out.fuoriBudget[idx] += lordo; return; }
     out.totale[idx] += lordo;
     if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
     if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
@@ -16836,7 +16907,10 @@ function __computeStatGenFromData__(data){
     if (dep > 0) depRec ? (conRicevuta += dep) : (senzaRicevuta += dep);
     if (saldo > 0) saldoRec ? (conRicevuta += saldo) : (senzaRicevuta += saldo);
   });
-  const speseTot = speseRows.reduce((sum, it) => sum + __statGuestMoney__(it?.importoLordo ?? it?.lordo ?? it?.importo ?? 0), 0);
+  const speseTot = speseRows.reduce((sum, it) => {
+    if (__isFuoriBudgetSpesa__(it)) return sum;
+    return sum + __statGuestMoney__(it?.importoLordo ?? it?.lordo ?? it?.importo ?? 0);
+  }, 0);
   giacenza = (__statGuestMoney__(conRicevuta) + __statGuestMoney__(senzaRicevuta)) - __statGuestMoney__(speseTot);
   let ivaSpese = __statGuestMoney__(report?.totals?.ivaDetraibile ?? 0);
   if (!isFinite(ivaSpese) || ivaSpese === 0){
@@ -17100,6 +17174,7 @@ function __statSpeseMonthlyBreakdown__(){
     const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
     const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
     const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
+    if (__isFuoriBudgetSpesa__(row)) { out.fuoriBudget[idx] += lordo; return; }
     out.totale[idx] += lordo;
     if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
     if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
@@ -17558,6 +17633,7 @@ function computeStatGen(){
     const items = __getStatsSpese();
     let sum = 0;
     for (const it of items){
+      if (__isFuoriBudgetSpesa__(it)) continue;
       sum += money(it?.importoLordo ?? it?.lordo ?? 0);
     }
     speseTot = sum;
@@ -18375,7 +18451,8 @@ function drawStatSpesePercentLineChart(canvasId){
     { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.tassa)), color: __statChartLineColorFromRenderedCard__('statspese', 'tassa-soggiorno', '#c7b198') },
     { key:'iva-22', label:'IVA 22%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva22)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-22', '#f29c50') },
     { key:'iva-10', label:'IVA 10%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva10)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-10', '#6aa0b3') },
-    { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva4)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') }
+    { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.iva4)), color: __statChartLineColorFromRenderedCard__('statspese', 'iva-4', '#2b7cb4') },
+    { key:'fuori-budget', label:'Fuori Budget', values: __statZeroFutureMonths__(__statMonthlyCumulative__(data.fuoriBudget)), color: __statChartLineColorFromRenderedCard__('statspese', 'fuori-budget', '#8b5cf6') }
   ].filter((item) => __statChartSeriesIsVisible__('statspese', item.key));
   __drawSharedMonthlyLineChart__(canvasId, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
     mode: 'currency',
@@ -19527,7 +19604,7 @@ function saveIrapModal(){
 
 function computeStatSpese(){
   const items = __getStatsSpese();
-  const acc = { CONTANTI:0, TASSA_SOGGIORNO:0, IVA_22:0, IVA_10:0, IVA_4:0 };
+  const acc = { CONTANTI:0, TASSA_SOGGIORNO:0, IVA_22:0, IVA_10:0, IVA_4:0, FUORI_BUDGET:0 };
 
   const money = (v) => {
     if (v === null || v === undefined) return 0;
@@ -19546,6 +19623,7 @@ function computeStatSpese(){
 
     const catRaw = (s?.categoria ?? s?.cat ?? "").toString().trim().toLowerCase();
 
+    if (__isFuoriBudgetSpesa__(s)) { acc.FUORI_BUDGET += lordo; continue; }
     if (catRaw.includes("contant")) { acc.CONTANTI += lordo; continue; }
     if (catRaw.includes("tassa") && catRaw.includes("sogg")) { acc.TASSA_SOGGIORNO += lordo; continue; }
 
@@ -19571,6 +19649,7 @@ function computeStatSpese(){
     iva22: acc.IVA_22,
     iva10: acc.IVA_10,
     iva4: acc.IVA_4,
+    fuoriBudget: acc.FUORI_BUDGET,
   };
 }// ===== Report locale (per-account): calcolato dalla lista spese corrente =====
 function buildReportFromSpese(items){
@@ -19590,6 +19669,7 @@ function buildReportFromSpese(items){
     const catRaw = (row?.categoria ?? row?.cat ?? "").toString().trim().toLowerCase();
     const aliqRaw = (row?.aliquotaIva ?? row?.aliquota_iva ?? "").toString().trim();
 
+    if (__isFuoriBudgetSpesa__(row)) return "FUORI_BUDGET";
     if (catRaw.includes("contant")) return "CONTANTI";
     if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "TASSA_SOGGIORNO";
 
@@ -19615,6 +19695,7 @@ function buildReportFromSpese(items){
     IVA_22:{ importoLordo:0, imponibile:0, iva:0, ivaDetraibile:0 },
     IVA_10:{ importoLordo:0, imponibile:0, iva:0, ivaDetraibile:0 },
     IVA_4:{ importoLordo:0, imponibile:0, iva:0, ivaDetraibile:0 },
+    FUORI_BUDGET:{ importoLordo:0, imponibile:0, iva:0, ivaDetraibile:0 },
   };
 
   for (const row of list){
@@ -19663,6 +19744,7 @@ function __speseGraphSlicesBase__(){
     { key:"IVA_22", label: categoriaLabel("IVA_22"), value:Number((state && state.statSpese && state.statSpese.iva22) || 0), color:(COLORS.IVA_22 || "#c9772b") },
     { key:"IVA_10", label: categoriaLabel("IVA_10"), value:Number((state && state.statSpese && state.statSpese.iva10) || 0), color:(COLORS.IVA_10 || "#7ac0db") },
     { key:"IVA_4", label: categoriaLabel("IVA_4"), value:Number((state && state.statSpese && state.statSpese.iva4) || 0), color:(COLORS.IVA_4 || "#1f2937") },
+    { key:"FUORI_BUDGET", label: categoriaLabel("FUORI_BUDGET"), value:Number((state && state.statSpese && state.statSpese.fuoriBudget) || 0), color:(COLORS.FUORI_BUDGET || "#8b5cf6") },
   ];
 }
 
@@ -19676,7 +19758,8 @@ function __syncStatSpeseCardColors__(){
     TASSA_SOGGIORNO: document.getElementById('ssRowTassa'),
     IVA_22: document.getElementById('ssRowIva22'),
     IVA_10: document.getElementById('ssRowIva10'),
-    IVA_4: document.getElementById('ssRowIva4')
+    IVA_4: document.getElementById('ssRowIva4'),
+    FUORI_BUDGET: document.getElementById('ssRowFuoriBudget')
   };
   const custom = __speseGraphSlicesCustom__();
   custom.forEach((slice)=>{
@@ -19764,10 +19847,11 @@ function renderStatSpese(){
   set("ssIva22", s.iva22);
   set("ssIva10", s.iva10);
   set("ssIva4", s.iva4);
+  set("ssFuoriBudget", s.fuoriBudget);
   __syncStatSpeseCardColors__();
   try{
     const rows = Array.from(document.querySelectorAll('#page-statspese .stat-row'));
-    const keys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4'];
+    const keys = ['totale-spese','contanti','tassa-soggiorno','iva-22','iva-10','iva-4','fuori-budget'];
     rows.forEach((row, idx)=>{
       const explicitKey = String(keys[idx] || `statspese-${idx+1}`);
       const cardKey = explicitKey;
@@ -26943,6 +27027,7 @@ try{
   setupGuestListControls();
 
   $("#spesaData").value = todayISO();
+  try{ __setupSpesaCategoryButtons__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
