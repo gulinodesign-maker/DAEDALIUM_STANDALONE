@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.623
+ * Build: 2.624
  */
-const BUILD_VERSION = "2.623";
+const BUILD_VERSION = "2.624";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -13314,6 +13314,8 @@ state.page = page;
   // Sotto-viste della pagina Spese (lista ↔ grafico+riepilogo)
   if (page === "spese") {
     try { setSpeseView(state.speseView || "list"); } catch (_) {}
+    try{ __bindSpeseDateRangeUi__(); }catch(_){ }
+    try{ __syncSpeseDateRangeUi__(); }catch(_){ }
   }
 
   // Period chip: nascosto in HOME (per rispettare "nessun altro testo" sulla home)
