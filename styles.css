@@ -15818,7 +15818,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 
 /* dDAE_2.334 — Tag palette popup above the top bar */
 #tagColorModal{
-  z-index: 6500 !important;
+  z-index: 13050 !important;
 }
 #tagColorModal[hidden]{
   display:none !important;
