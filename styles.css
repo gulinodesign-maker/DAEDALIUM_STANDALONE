@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.616");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.616");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.617");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.617");
 }
 html{
   background-color:#ececec;
@@ -19674,7 +19674,7 @@ body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
 }
 
 
-/* dDAE_2.616 — Range date unificato scheda nuovo ospite */
+/* dDAE_2.617 — Range date unificato scheda nuovo ospite */
 #guestDatesRow.guest-dates-native{
   display:none !important;
 }
@@ -19861,4 +19861,119 @@ body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-edge{
 body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-in-range{
   background:rgba(67,181,255,0.20) !important;
   border-color:rgba(169,220,255,0.22) !important;
+}
+
+
+/* dDAE_2.617 — Dark mode range calendars + guest cards */
+body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-trigger,
+body.ddae-dark #page-ospite .guest-date-range-trigger,
+body.ddae-dark #guestDateRangeModal .guest-date-range-modal-card,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-modal-card,
+body.ddae-dark #guestDateRangeModal .guest-date-range-nav,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-nav,
+body.ddae-dark #guestDateRangeModal .guest-date-range-day,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day{
+  background: rgba(15,23,42,0.96) !important;
+  color:#f8fbff !important;
+  border-color:rgba(148,163,184,0.24) !important;
+  box-shadow:none !important;
+}
+body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-trigger,
+body.ddae-dark #page-ospite .guest-date-range-trigger{
+  background: rgba(15,23,42,0.92) !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-monthtitle,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-monthtitle,
+body.ddae-dark #guestDateRangeModal .guest-date-range-summary,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-summary{
+  color:#f8fbff !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-weekdays span,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-weekdays span,
+body.ddae-dark #guestDateRangeModal .guest-date-range-legend-item,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-legend-item,
+body.ddae-dark #page-lavanderia .laundry-date-range-field .guest-date-range-label,
+body.ddae-dark #page-ospite #guestDateRangeField .guest-date-range-label{
+  color:rgba(226,232,240,0.82) !important;
+  opacity:1 !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-muted,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day.is-muted{
+  color:rgba(148,163,184,0.52) !important;
+  border-color:rgba(71,85,105,0.24) !important;
+  background:rgba(15,23,42,0.72) !important;
+  opacity:1 !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-selected,
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-edge,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day.is-selected,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day.is-edge{
+  background:rgba(59,130,246,0.40) !important;
+  border-color:rgba(147,197,253,0.72) !important;
+  color:#f8fbff !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-in-range,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day.is-in-range{
+  background:rgba(59,130,246,0.18) !important;
+  border-color:rgba(96,165,250,0.34) !important;
+  color:#eaf4ff !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-day.is-today,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-day.is-today{
+  box-shadow: inset 0 0 0 2px rgba(191,219,254,0.34) !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-legend-dot,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-legend-dot{
+  border-color:rgba(148,163,184,0.34) !important;
+  background:rgba(59,130,246,0.18) !important;
+}
+body.ddae-dark #guestDateRangeModal .guest-date-range-legend-dot.is-start,
+body.ddae-dark #guestDateRangeModal .guest-date-range-legend-dot.is-end,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-legend-dot.is-start,
+body.ddae-dark #laundryDateRangeModal .guest-date-range-legend-dot.is-end{
+  background:rgba(59,130,246,0.42) !important;
+}
+body.ddae-dark #page-ospiti .guest-card{
+  background: rgba(15,23,42,0.90) !important;
+  border-color: rgba(71,85,105,0.42) !important;
+}
+body.ddae-dark #page-ospiti .guest-card.checkout-pending{
+  border-color: rgba(248,113,113,0.48) !important;
+}
+body.ddae-dark #page-ospiti .guest-card.checkout-pending::before{
+  background: rgba(248,113,113,0.26) !important;
+}
+body.ddae-dark #page-ospiti .guest-name-tab{
+  background: rgba(30,41,59,0.92) !important;
+  border-color: rgba(96,165,250,0.24) !important;
+}
+body.ddae-dark #page-ospiti .guest-card .guest-name-text,
+body.ddae-dark #page-ospiti .guest-card .guest-booking-number-text{
+  color: var(--guest-list-card-text, #f8fbff) !important;
+  -webkit-text-fill-color: var(--guest-list-card-text, #f8fbff) !important;
+}
+body.ddae-dark #page-ospiti .guest-card .guest-arrivo,
+body.ddae-dark #page-ospiti .guest-card .guest-contact{
+  color: var(--guest-list-card-subtext, #dbe7f4) !important;
+  -webkit-text-fill-color: var(--guest-list-card-subtext, #dbe7f4) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno{
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno.is-missing{
+  background: rgba(250,204,21,0.90) !important;
+  border-color: rgba(250,204,21,0.52) !important;
+  color: rgba(15,23,42,0.94) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno.is-ready{
+  background: rgba(34,197,94,0.90) !important;
+  border-color: rgba(74,222,128,0.46) !important;
+  color: #f8fbff !important;
+}
+body.ddae-dark #page-ospiti .guest-meta-right .guest-channel-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .marriage-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .g-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .c-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .nights-dot{
+  box-shadow:none !important;
 }

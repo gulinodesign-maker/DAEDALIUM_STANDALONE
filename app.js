@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.616
+ * Build: 2.617
  */
-const BUILD_VERSION = "2.616";
+const BUILD_VERSION = "2.617";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16062,7 +16062,7 @@ function __applyGuestListCardVisual__(card){
     if (dark){
       const resolved = __applyDarkAdaptiveSurface__(card, visual, { fallbackBg:'gray-1', bgOpacity:Math.max(0.14, Math.min(0.24, opacity)), borderOpacity:0.28 }) || {};
       mainText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
-      secondaryText = resolved.accentHex || mainText;
+      secondaryText = __darkModeReadableTextHex__(resolved.accentHex || mainText, '#dbe7f4');
     } else {
       card.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
       card.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
@@ -28427,7 +28427,7 @@ if (cleanResetAll){
     }
     if (modal && !modal.__boundLaundryRangeModal){
       modal.__boundLaundryRangeModal = true;
-      const closeModal = () => { try{ __closeLaundryDateRangeModal__(); }catch(_){ } };
+      const closeModal = () => { try{ __closeLaundryDateRangeModal__(true); }catch(_){ } };
       ["laundryDateRangeModalClose","laundryDateRangeCancel"].forEach((id) => { const el = document.getElementById(id); if (el) bindFastTap(el, closeModal); });
       const applyBtn = document.getElementById("laundryDateRangeApply");
       if (applyBtn) bindFastTap(applyBtn, () => { try{ __applyLaundryDateRangeModal__(); }catch(_){ } });
@@ -30502,23 +30502,25 @@ function __renderLaundryDateRangeCalendar__(){
     const year = __laundryDateRangeState__.month.getFullYear();
     const month = __laundryDateRangeState__.month.getMonth();
     title.textContent = __laundryDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
-    const firstDay = new Date(year, month, 1);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const leading = (firstDay.getDay() + 6) % 7;
-    const cells = [];
-    const todayIso = isoLocalDate(new Date());
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const start = new Date(year, month, 1 - offset);
+    const todayIso = todayISO();
     const startIso = String(__laundryDateRangeState__.draftStart || '');
     const endIso = String(__laundryDateRangeState__.draftEnd || '');
-    for (let i = 0; i < leading; i += 1) cells.push('<span class="guest-date-range-day is-muted" aria-hidden="true"></span>');
-    for (let day = 1; day <= daysInMonth; day += 1){
-      const iso = isoLocalDate(new Date(year, month, day));
+    const parts = [];
+    for(let i=0;i<42;i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const inMonth = d.getMonth() === month;
       const classes = ['guest-date-range-day'];
+      if (!inMonth) classes.push('is-muted');
       if (__guestDateRangeSameDay__(iso, todayIso)) classes.push('is-today');
       if (__guestDateRangeSameDay__(iso, startIso) || __guestDateRangeSameDay__(iso, endIso)) classes.push('is-selected','is-edge');
       else if (__guestDateRangeInBetween__(iso, startIso, endIso)) classes.push('is-in-range');
-      cells.push(`<button type="button" class="${classes.join(' ')}" data-date="${iso}">${day}</button>`);
+      parts.push(`<button class="${classes.join(' ')}" data-date="${iso}" type="button">${d.getDate()}</button>`);
     }
-    grid.innerHTML = cells.join('');
+    grid.innerHTML = parts.join('');
     summary.textContent = __laundryDateRangeFormatDisplay__(startIso, endIso);
   }catch(_){ }
 }
@@ -30529,8 +30531,10 @@ function __openLaundryDateRangeModal__(){
     const fromEl = document.getElementById('laundryFrom');
     const toEl = document.getElementById('laundryTo');
     if (!modal || !fromEl || !toEl) return;
-    const startDate = String(fromEl.value || '').trim();
-    const endDate = String(toEl.value || '').trim();
+    const startDateRaw = String(fromEl.value || '').trim();
+    const startDate = startDateRaw || todayISO();
+    const endRaw = String(toEl.value || '').trim();
+    const endDate = (endRaw && endRaw >= startDate) ? endRaw : startDate;
     __laundryDateRangeState__.start = startDate;
     __laundryDateRangeState__.end = endDate;
     __laundryDateRangeState__.draftStart = startDate;
@@ -30538,15 +30542,21 @@ function __openLaundryDateRangeModal__(){
     __laundryDateRangeState__.month = __guestDateRangeMonthStart__(parseDateTs(startDate) != null ? new Date(parseDateTs(startDate)) : new Date());
     __renderLaundryDateRangeCalendar__();
     modal.hidden = false;
+    modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
   }catch(_){ }
 }
 
-function __closeLaundryDateRangeModal__(){
+function __closeLaundryDateRangeModal__(restore = false){
   try{
     const modal = document.getElementById('laundryDateRangeModal');
     if (!modal) return;
+    if (restore){
+      __laundryDateRangeState__.draftStart = __laundryDateRangeState__.start || '';
+      __laundryDateRangeState__.draftEnd = __laundryDateRangeState__.end || '';
+    }
+    modal.classList.remove('is-open');
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
@@ -30560,13 +30570,14 @@ function __applyLaundryDateRangeModal__(){
     if (!fromEl || !toEl) return;
     let startDate = String(__laundryDateRangeState__.draftStart || '').trim();
     let endDate = String(__laundryDateRangeState__.draftEnd || '').trim();
-    if (startDate && endDate && startDate > endDate){ const tmp = startDate; startDate = endDate; endDate = tmp; }
+    if (!startDate) startDate = todayISO();
+    if (!endDate || endDate < startDate) endDate = startDate;
     __laundryDateRangeState__.start = startDate;
     __laundryDateRangeState__.end = endDate;
     fromEl.value = startDate;
     toEl.value = endDate;
     syncLaundryDateText_();
-    __closeLaundryDateRangeModal__();
+    __closeLaundryDateRangeModal__(false);
   }catch(_){ }
 }
 
