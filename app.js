@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.613
+ * Build: 2.614
  */
-const BUILD_VERSION = "2.613";
+const BUILD_VERSION = "2.614";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -16060,12 +16060,16 @@ function __singleActionButtonVisualStateMapFor__(btn){
   return { off: { ...defaults.off, ...legacy, opacity: __designBgOpacityNormalize__(legacy.opacity ?? defaults.off.opacity ?? 0.52) }, on: { ...defaults.on, ...legacy, opacity: __designBgOpacityNormalize__(defaults.on.opacity ?? 0.88) } };
 }
 
-function __singleActionButtonVisualFor__(btn){
+function __singleActionButtonVisualFor__(btn, forcedStateKey, forcedVisual){
   const states = __singleActionButtonVisualStateMapFor__(btn);
-  const on = !!(btn && btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn));
   const fallback = __defaultSingleActionButtonVisual__(btn);
-  const active = on ? states.on : states.off;
-  return __launcherVisualNormalize__(active || fallback, fallback.bg || 'blue-4');
+  const safeStateKey = String(forcedStateKey || '').trim().toLowerCase() === 'on'
+    ? 'on'
+    : ((forcedStateKey === 'off') ? 'off' : (((btn && btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn))) ? 'on' : 'off'));
+  const resolved = forcedVisual
+    ? __launcherVisualNormalize__(forcedVisual, (forcedVisual && forcedVisual.bg) || fallback.bg || 'blue-4')
+    : (safeStateKey === 'on' ? states.on : states.off);
+  return __launcherVisualNormalize__(resolved || fallback, fallback.bg || 'blue-4');
 }
 
 function __saveSingleActionButtonVisual__(btn, visual, stateKey){
@@ -16123,18 +16127,20 @@ function __singleActionButtonIdsForCategory__(category){
   return __SINGLE_ACTION_BUTTON_TARGET_IDS__.filter((id) => __singleActionButtonCategoryForId__(id) === key);
 }
 
-function __applySingleActionButtonVisualToCategory__(btn, payload, changed){
+function __applySingleActionButtonVisualToCategory__(btn, payload, changed, forcedStateKey){
   try{
     const category = __singleActionButtonCategoryForId__(btn?.id || '');
     if (!category) return;
     const ids = __singleActionButtonIdsForCategory__(category);
     if (!ids.length) return;
     const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    const editState = (__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off';
+    const editState = String(forcedStateKey || '').trim().toLowerCase() === 'on'
+      ? 'on'
+      : (((__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected'))) ? 'on' : 'off');
     ids.forEach((id) => {
       try{
         const node = document.getElementById(id);
-        const current = __singleActionButtonVisualFor__(node || btn || { id });
+        const current = __singleActionButtonVisualFor__(node || btn || { id }, editState);
         const next = {
           bg: changed?.bg ? (colors.bg || current.bg || 'blue-4') : current.bg,
           border: changed?.border ? (colors.border || current.border || colors.bg || current.bg || 'blue-4') : current.border,
@@ -16148,17 +16154,22 @@ function __applySingleActionButtonVisualToCategory__(btn, payload, changed){
   }catch(_){ }
 }
 
-function __applySingleActionButtonVisual__(btn){
+function __applySingleActionButtonVisual__(btn, forcedStateKey, forcedVisual){
   try{
     if (!btn || !btn.id) return;
-    const visual = __singleActionButtonVisualFor__(btn);
+    const selected = String(forcedStateKey || '').trim().toLowerCase() === 'on'
+      ? true
+      : (String(forcedStateKey || '').trim().toLowerCase() === 'off'
+          ? false
+          : !!(btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn)));
+    const stateKey = selected ? 'on' : 'off';
+    const visual = __singleActionButtonVisualFor__(btn, stateKey, forcedVisual);
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || 'blue-4');
     const fgHex = __tagColorTextHex__(visual.bg || 'blue-4', visual.fg || 'white', false) || __operatoreColorHex__(visual.fg || 'white');
     const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.80);
-    const selected = !!(btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn));
     btn.dataset.designStandaloneButton = '1';
-    btn.dataset.designState = selected ? 'on' : 'off';
+    btn.dataset.designState = stateKey;
     if (__isDarkModeEnabled__ && __isDarkModeEnabled__()){
       const resolved = __applyDarkAdaptiveSurface__(btn, visual, { fallbackBg: visual.bg || 'blue-4', bgOpacity: Math.max(0.14, Math.min(0.28, opacity)), borderOpacity: selected ? 0.40 : 0.28 }) || {};
       const darkText = resolved.textHex || __darkModeReadableTextHex__(fgHex, '#f8fbff');
@@ -16193,11 +16204,23 @@ function __applySingleActionButtonVisual__(btn){
   }catch(_){ }
 }
 
-function __openSingleActionButtonColorPicker__(btn){
+async function __openSingleActionButtonColorPicker__(btn){
   try{
     if (!btn || !btn.id) return;
-    const editState = (__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off';
-    const current = __singleActionButtonVisualFor__(btn);
+    const label = __guestFilterButtonLocalizedLabel__(btn);
+    const editState = __singleActionButtonSupportsDualState__(btn)
+      ? await (async()=>{
+          const choice = await __confirmTwoActions__(
+            __guestFilterButtonEditStatePrompt__(label),
+            __guestFilterButtonStateLabel__('active'),
+            __guestFilterButtonStateLabel__('distractive')
+          );
+          if (choice !== 'yes' && choice !== 'no') return '';
+          return choice === 'yes' ? 'on' : 'off';
+        })()
+      : ((__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off');
+    if (!editState) return;
+    const current = __singleActionButtonVisualFor__(btn, editState);
     const category = __singleActionButtonCategoryForId__(btn.id);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
@@ -16208,14 +16231,14 @@ function __openSingleActionButtonColorPicker__(btn){
         opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80)
       };
       __saveSingleActionButtonVisual__(btn, next, editState);
-      __applySingleActionButtonVisual__(btn);
+      __applySingleActionButtonVisual__(btn, editState, next);
     };
     const revertVisual = () => { __saveSingleActionButtonVisual__(btn, current, editState); __applySingleActionButtonVisual__(btn); };
     const popupOptions = { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:current.opacity ?? 0.80, defaultMode:'bg', fallbackBg:(current.bg || 'blue-4'), onPreview:applyVisual, onRevert:revertVisual };
     if (category){
       popupOptions.applyCategory = {
         message:'Applicare le modifiche a tutti i tasti della stessa categoria?',
-        apply: async(payload, changed) => { __applySingleActionButtonVisualToCategory__(btn, payload, changed); }
+        apply: async(payload, changed) => { __applySingleActionButtonVisualToCategory__(btn, payload, changed, editState); }
       };
     }
     __tagColorPopupOpen__('single-action-button', current, (payload) => { applyVisual(payload); }, popupOptions);
@@ -17202,7 +17225,8 @@ function __statSpeseMonthlyBreakdown__(){
     tassa: new Array(12).fill(0),
     iva22: new Array(12).fill(0),
     iva10: new Array(12).fill(0),
-    iva4: new Array(12).fill(0)
+    iva4: new Array(12).fill(0),
+    fuoriBudget: new Array(12).fill(0)
   };
   const toNumber = (v) => {
     if (v === null || v === undefined) return 0;
