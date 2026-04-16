@@ -21,9 +21,9 @@
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.626";
+window.APP_VERSION = "2.654";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.653";
+  const LOCAL_BUILD = "dDAE_2.654";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -492,7 +492,7 @@ window.APP_VERSION = "2.626";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.653</div></div></section>
+<div class="build" id="buildText">dDAE_2.654</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1019,6 +1019,12 @@ window.APP_VERSION = "2.626";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path></svg>
 <span class="settings-btn-label">Dark Mode</span>
 </button>
+<button aria-label="Logout" class="settings-btn settings-btn-logout settings-btn-logout-pill" id="opSettingsLogoutBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
+<span class="settings-btn-label">Logout</span>
+</button>
+</div>
+<div class="settings-bottom-stack settings-bottom-stack-under-grid settings-bottom-stack-operator-dedicated">
 <button aria-label="Licenza" class="settings-btn settings-btn-roster settings-btn-opcode" id="opSettingsCodeBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 4h6v6H4z"></path>
@@ -1029,12 +1035,6 @@ window.APP_VERSION = "2.626";
 <path d="M18 14v6"></path>
 </svg>
 <span class="settings-btn-label">Licenza</span>
-</button>
-</div>
-<div class="settings-bottom-stack settings-bottom-stack-under-grid settings-bottom-stack-operator-dedicated">
-<button aria-label="Logout" class="settings-btn settings-btn-logout settings-btn-logout-pill" id="opSettingsLogoutBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
-<span class="settings-btn-label">Logout</span>
 </button>
 </div>
 </div></section>
