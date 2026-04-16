@@ -20131,7 +20131,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 }
 
 
-.settings-license-card{width:min(92vw,420px);padding:18px 16px 16px;border-radius:24px}.settings-license-status{font-weight:800;text-align:center;margin:12px 0 10px;font-size:16px}.settings-license-actions{display:grid;gap:10px;margin-top:8px}.settings-license-actions .auth-btn{width:100%;min-height:52px;border-radius:18px}.settings-license-hint{min-height:18px;margin-top:10px;text-align:center;font-size:12px;opacity:.8}.settings-master-stack{display:block}.settings-master-stack .settings-btn{width:100%}
+.settings-license-card{width:min(92vw,420px);padding:18px 16px 16px;border-radius:24px}.settings-license-card .db-menu-title{text-align:center !important;width:100%}.settings-license-status{font-weight:800;text-align:center;margin:12px 0 10px;font-size:16px}.settings-license-actions{display:grid;gap:12px;margin-top:8px}.settings-license-actions .auth-btn{width:100%;min-height:73px;height:73px;border-radius:18px;font-size:24px;line-height:1;font-weight:800;padding:10px 12px}.settings-license-hint{display:none !important}.settings-master-stack{display:block}.settings-master-stack .settings-btn{width:100%}
 
 
 /* dDAE_2.633 — Licenza: popup figli sopra popup padre */
