@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.627
+ * Build: 2.628
  */
-const BUILD_VERSION = "2.627";
+const BUILD_VERSION = "2.628";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -330,7 +330,7 @@ function __normBool01(v){
 
 const __MASTER_CODE__ = "8472163950842716";
 const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
-const __LICENSE_HASH_SALT__ = "dDAE_2.627_LICENSE";
+const __LICENSE_HASH_SALT__ = "dDAE_2.628_LICENSE";
 const __LICENSE_REQUEST_PREFIX__ = "7";
 const __LICENSE_UNLOCK_PREFIX__ = "8";
 const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
@@ -3366,7 +3366,7 @@ function __fitHomeSyncBtn__(){
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   const isMaster = __isMasterSession__(state && state.session ? state.session : null);
-  try{ const wrap = document.getElementById("settingsMasterWrap"); if (wrap){ wrap.hidden = !(!!(state && state.session && !isOp && isMaster)); try{ wrap.style.display = wrap.hidden ? "none" : "flex"; }catch(_){ } } }catch(_){ }
+  try{ const wrap = document.getElementById("settingsMasterWrap"); if (wrap){ wrap.hidden = !(!!(state && state.session && !isOp && isMaster)); try{ wrap.style.display = wrap.hidden ? "none" : ""; }catch(_){ } } }catch(_){ }
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
   try{
     const shoppingBtn = document.getElementById("goProdotti");

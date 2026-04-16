@@ -20027,3 +20027,91 @@ body.ddae-dark .auth-activation-title,
 body.ddae-dark .auth-activation-user,
 body.ddae-dark .auth-activation-text{ color:rgba(255,255,255,.92); }
 
+
+
+/* dDAE_2.628 — Licenze master + calendario generator uniformati */
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack{
+  display:contents !important;
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:1 / 1 !important;
+  border-radius:clamp(23px, 6.5vw, 44px) !important;
+  padding:14px 10px 12px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master .ui-ico{
+  width:clamp(36px, 10vw, 48px) !important;
+  height:clamp(36px, 10vw, 48px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master .settings-btn-label{
+  display:block;
+  max-width:100%;
+  font-size:15px;
+  line-height:1.1;
+  font-weight:900;
+  color:#fff;
+  text-align:center;
+  white-space:nowrap !important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack[hidden]{ display:none !important; }
+
+.license-date-range-field{
+  margin-top:0 !important;
+}
+#licenseGeneratorModal .db-menu-body{
+  gap:12px !important;
+}
+#licenseDateRangeField .license-date-range-trigger{
+  width:100% !important;
+  min-height:44px !important;
+  border-radius:14px !important;
+  border:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:0 !important;
+  padding:12px 8px !important;
+  box-shadow:none !important;
+}
+#licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  width:100% !important;
+  text-align:center !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+  color:rgba(12,20,28,0.9) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  color:#f8fbff !important;
+}
+#licenseGeneratorModal .auth-action-row .auth-btn{
+  min-height:44px !important;
+  height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#licenseGeneratorModal #licenseGeneratorCancel,
+#licenseGeneratorModal #licenseGeneratorConfirm{
+  padding-top:12px !important;
+  padding-bottom:12px !important;
+}
+#licenseGeneratorHint,
+#licenseRequestModalHint,
+#licenseUnlockHint,
+#authActivationText{
+  display:none !important;
+}

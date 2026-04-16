@@ -23,7 +23,7 @@
 <script>
 window.APP_VERSION = "2.626";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.627";
+  const LOCAL_BUILD = "dDAE_2.628";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -492,7 +492,7 @@ window.APP_VERSION = "2.626";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.627</div></div></section>
+<div class="build" id="buildText">dDAE_2.628</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -985,12 +985,12 @@ window.APP_VERSION = "2.626";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
-</div>
 <div class="settings-bottom-stack settings-master-stack" hidden="" id="settingsMasterWrap">
 <button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
 <span class="settings-btn-label">Licenze</span>
 </button>
+</div>
 </div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
@@ -2413,7 +2413,7 @@ window.APP_VERSION = "2.626";
 </div>
 <div class="db-menu-body" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px">
 <div class="code-box" id="licenseRequestCodeText" style="width:100%;max-width:360px;text-align:center;word-break:break-all">—</div>
-<div id="licenseRequestModalHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Tocca il codice per copiarlo</div>
+
 <div class="auth-action-row" style="width:100%;margin-top:4px;">
 <button class="auth-btn auth-btn-azure" id="licenseRequestEmailBtn" type="button">email</button>
 <button class="auth-btn auth-btn-gray" id="licenseRequestDoneBtn" type="button">chiudi</button>
@@ -2439,7 +2439,7 @@ window.APP_VERSION = "2.626";
 <button class="auth-btn auth-btn-gray" id="licenseUnlockCancel" type="button">annulla</button>
 <button class="auth-btn auth-btn-green" id="licenseUnlockConfirm" type="button">ok</button>
 </div>
-<div id="licenseUnlockHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Incolla il codice numerico ricevuto</div>
+
 </div>
 </div>
 </div>
@@ -2460,16 +2460,16 @@ window.APP_VERSION = "2.626";
 <input id="licenseStartDate" type="hidden"/>
 <input id="licenseEndDate" type="hidden"/>
 <div class="field float guest-date-range-field license-date-range-field" id="licenseDateRangeField">
-<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger" id="licenseDateRangeTrigger" type="button">
+<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger auth-btn auth-btn-azure" id="licenseDateRangeTrigger" type="button">
 <span class="guest-date-range-value" id="licenseDateRangeValue">Seleziona date</span>
 </button>
-<label class="guest-date-range-label" for="licenseDateRangeTrigger">Periodo attivazione</label>
+
 </div>
 <div class="auth-action-row" style="width:100%;margin-top:4px;">
 <button class="auth-btn auth-btn-gray" id="licenseGeneratorCancel" type="button">annulla</button>
 <button class="auth-btn auth-btn-green" id="licenseGeneratorConfirm" type="button">genera</button>
 </div>
-<div id="licenseGeneratorHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Inserisci il codice richiesta e scegli il periodo</div>
+
 </div>
 </div>
 </div>
