@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.631
+ * Build: 2.632
  */
-const BUILD_VERSION = "2.631";
+const BUILD_VERSION = "2.632";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -330,7 +330,7 @@ function __normBool01(v){
 
 const __MASTER_CODE__ = "8472163950842716";
 const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
-const __LICENSE_HASH_SALT__ = "dDAE_2.631_LICENSE";
+const __LICENSE_HASH_SALT__ = "dDAE_2.632_LICENSE";
 const __LICENSE_REQUEST_PREFIX__ = "7";
 const __LICENSE_UNLOCK_PREFIX__ = "8";
 const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
