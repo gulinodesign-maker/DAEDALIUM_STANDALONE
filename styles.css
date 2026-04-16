@@ -20018,11 +20018,12 @@ body.ddae-dark .guest-date-range-actions .btn.primary{
 .auth-activation-actions .auth-btn{ max-width:180px; }
 #page-impostazioni .settings-master-stack{ width:100% !important; margin-top:16px !important; align-items:center !important; }
 #page-impostazioni .settings-master-stack[hidden]{ display:none !important; }
-#page-impostazioni .settings-master-stack .settings-btn-master{ width:min(220px, 100%) !important; min-height:82px !important; border-radius:22px !important; background:#7f7bf2 !important; border-color:rgba(127,123,242,0.24) !important; }
-#page-impostazioni .settings-master-stack .settings-btn-master .settings-btn-label{ white-space:nowrap !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master{ width:clamp(83px, 23.4vw, 153px) !important; height:clamp(83px, 23.4vw, 153px) !important; min-width:clamp(83px, 23.4vw, 153px) !important; min-height:clamp(83px, 23.4vw, 153px) !important; aspect-ratio:1 / 1 !important; border-radius:clamp(23px, 6.5vw, 44px) !important; padding:14px 10px 12px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:10px !important; box-shadow:none !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master .ui-ico{ width:clamp(36px, 10vw, 48px) !important; height:clamp(36px, 10vw, 48px) !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master .settings-btn-label{ display:block; max-width:100%; font-size:15px; line-height:1.1; font-weight:900; color:#fff; text-align:center; white-space:nowrap !important; overflow:hidden; text-overflow:ellipsis; }
 .license-date-range-field{ margin-top:4px; }
 .license-date-range-trigger{ width:100%; }
 body.ddae-dark .auth-activation-title,
 body.ddae-dark .auth-activation-user,
 body.ddae-dark .auth-activation-text{ color:rgba(255,255,255,.92); }
-body.ddae-dark #page-impostazioni .settings-master-stack .settings-btn-master{ background: rgba(63,58,140,0.92) !important; border-color: rgba(255,255,255,0.12) !important; }
+

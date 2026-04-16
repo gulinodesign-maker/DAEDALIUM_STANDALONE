@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.626
+ * Build: 2.627
  */
-const BUILD_VERSION = "2.626";
+const BUILD_VERSION = "2.627";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -330,7 +330,7 @@ function __normBool01(v){
 
 const __MASTER_CODE__ = "8472163950842716";
 const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
-const __LICENSE_HASH_SALT__ = "dDAE_2.626_LICENSE";
+const __LICENSE_HASH_SALT__ = "dDAE_2.627_LICENSE";
 const __LICENSE_REQUEST_PREFIX__ = "7";
 const __LICENSE_UNLOCK_PREFIX__ = "8";
 const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
@@ -8618,7 +8618,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsDarkBtn','opSettingsCodeBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni'
 ];
@@ -8644,6 +8644,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsLanguageBtn: 'sky-4',
   settingsYearPill: 'sky-4',
   settingsLogoutBtn: 'red-4',
+  settingsMasterBtn: 'violet-4',
   opSettingsLanguageBtn: 'sky-4',
   opSettingsDarkBtn: 'gray-6',
   opSettingsCodeBtn: 'violet-4',
