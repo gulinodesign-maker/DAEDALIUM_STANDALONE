@@ -20161,3 +20161,53 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
   z-index: 12201;
 }
 
+
+
+/* dDAE_2.637 — Licenza popup text sizing and child popup button heights */
+#settingsLicenseModal .settings-license-card{
+  width:min(92vw,420px) !important;
+}
+#settingsLicenseModal #settingsLicenseTitle{
+  width:100% !important;
+  text-align:center !important;
+  font-size:48px !important;
+  line-height:1 !important;
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-status{
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-actions .auth-btn{
+  font-size:19.2px !important;
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-hint{
+  display:none !important;
+}
+#settingsLicenseModal #settingsLicenseHint{
+  display:none !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn,
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger{
+  min-height:88px !important;
+  height:88px !important;
+  padding-top:18px !important;
+  padding-bottom:18px !important;
+  font-weight:400 !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn{
+  font-size:18px !important;
+}
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  font-size:18px !important;
+  font-weight:400 !important;
+}
+#licenseUnlockModal .db-menu-title,
+#licenseRequestModal .db-menu-title,
+#licenseGeneratorModal .db-menu-title{
+  font-weight:400 !important;
+}
