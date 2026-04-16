@@ -20280,3 +20280,12 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #themeTransferModal .settings-license-actions .auth-btn{min-height:56px !important;height:56px !important;font-size:16px !important;line-height:1 !important;}
 #themeTransferModal .db-menu-head .icon-btn,#themeTransferClose{display:none !important;}
 @media (max-width: 430px){#themeTransferModal .theme-transfer-actions{gap:8px !important;}#themeTransferModal .settings-license-actions .auth-btn{font-size:14px !important;padding:8px 6px !important;}#themeTransferModal .theme-transfer-btn .ui-ico{width:16px !important;height:16px !important;}}
+
+
+.room-settings-square-preview-upload{display:flex;align-items:center;justify-content:center;}
+.room-settings-square-preview-upload .ui-ico{width:22px;height:22px;stroke-width:2.2;stroke:currentColor;fill:none;}
+#themeTransferModal .theme-transfer-btn{padding:10px !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-label{display:none !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-icon{width:100% !important;height:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+#themeTransferModal .theme-transfer-btn .ui-ico{width:24px !important;height:24px !important;stroke-width:2.4 !important;stroke:currentColor !important;fill:none !important;}
+#themeTransferModal .theme-transfer-actions{grid-template-columns:repeat(3,minmax(72px,1fr)) !important;}
