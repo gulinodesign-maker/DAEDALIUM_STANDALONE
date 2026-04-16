@@ -20163,7 +20163,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 
 
 
-/* dDAE_2.639 — Licenza popup text sizing and child popup button heights */
+/* dDAE_2.640 — Licenza popup text sizing and child popup button heights */
 #settingsLicenseModal .settings-license-card{
   width:min(92vw,420px) !important;
 }
@@ -20213,7 +20213,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 }
 
 
-/* dDAE_2.639 — Tema import/export + popup licenza heights */
+/* dDAE_2.640 — Tema import/export + popup licenza heights */
 #settingsLicenseModal .settings-license-actions .auth-btn{
   min-height:51px !important;
   height:51px !important;
@@ -20244,3 +20244,27 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 }
 
 .tag-color-mode-ico-bold{font-weight:800;letter-spacing:-0.02em;}
+
+
+/* dDAE_2.640 — popup colore bold inline + no overlap in Design text section */
+#tagColorModal .tag-color-modebar{
+  display:grid !important;
+  grid-template-columns:repeat(var(--tag-color-mode-count, 5), minmax(0, 1fr)) !important;
+  grid-auto-flow:column !important;
+  grid-auto-rows:1fr !important;
+  gap:6px !important;
+  align-items:stretch !important;
+  flex-wrap:nowrap !important;
+  white-space:nowrap !important;
+}
+#tagColorModal .tag-color-mode-btn{
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+#page-roomsettings #roomSettingsTextControls{
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+}
+#page-roomsettings #roomSettingsTextSubtitle{
+  white-space:normal !important;
+}
