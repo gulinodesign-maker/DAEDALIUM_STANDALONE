@@ -23,7 +23,7 @@
 <script>
 window.APP_VERSION = "2.626";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.629";
+  const LOCAL_BUILD = "dDAE_2.630";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -492,7 +492,7 @@ window.APP_VERSION = "2.626";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.629</div></div></section>
+<div class="build" id="buildText">dDAE_2.630</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2448,9 +2448,6 @@ window.APP_VERSION = "2.626";
 <div aria-label="Key generator" aria-modal="true" class="modal-card" role="dialog">
 <div class="db-menu-head">
 <div class="db-menu-title">KEY GENERATOR</div>
-<button aria-label="Chiudi" class="icon-btn" id="licenseGeneratorClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
-</button>
 </div>
 <div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
 <div class="field float">
@@ -2460,14 +2457,14 @@ window.APP_VERSION = "2.626";
 <input id="licenseStartDate" type="hidden"/>
 <input id="licenseEndDate" type="hidden"/>
 <div class="field float guest-date-range-field license-date-range-field" id="licenseDateRangeField">
-<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger auth-btn auth-btn-azure" id="licenseDateRangeTrigger" type="button">
+<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger auth-btn auth-btn-azure" data-single-action-key="licenseDateRangeTrigger" id="licenseDateRangeTrigger" type="button">
 <span class="guest-date-range-value" id="licenseDateRangeValue">Seleziona date</span>
 </button>
 
 </div>
 <div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-gray" id="licenseGeneratorCancel" type="button">annulla</button>
-<button class="auth-btn auth-btn-green" id="licenseGeneratorConfirm" type="button">genera</button>
+<button class="auth-btn auth-btn-gray" data-single-action-key="licenseGeneratorCancel" id="licenseGeneratorCancel" type="button">annulla</button>
+<button class="auth-btn auth-btn-green" data-single-action-key="licenseGeneratorConfirm" id="licenseGeneratorConfirm" type="button">genera</button>
 </div>
 
 </div>
@@ -2478,19 +2475,18 @@ window.APP_VERSION = "2.626";
 <div aria-labelledby="licenseDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
 <div class="operatori-editor-hd guest-date-range-modal-hd">
 <div class="operatori-editor-title guest-date-range-modal-range-title" id="licenseDateRangeModalTitle">&nbsp;</div>
-<button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue" id="licenseDateRangeModalClose" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
 </div>
 <div class="operatori-editor-body guest-date-range-modal-body">
 <div class="guest-date-range-monthbar">
-<button aria-label="Mese precedente" class="guest-date-range-nav" id="licenseDateRangePrev" type="button">‹</button>
+<button aria-label="Mese precedente" class="guest-date-range-nav" data-single-action-key="licenseDateRangePrev" id="licenseDateRangePrev" type="button">‹</button>
 <div class="guest-date-range-monthtitle" id="licenseDateRangeMonthTitle">&nbsp;</div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" id="licenseDateRangeNext" type="button">›</button>
+<button aria-label="Mese successivo" class="guest-date-range-nav" data-single-action-key="licenseDateRangeNext" id="licenseDateRangeNext" type="button">›</button>
 </div>
 <div class="guest-date-range-weekdays" id="licenseDateRangeWeekdays"></div>
 <div class="guest-date-range-grid" id="licenseDateRangeGrid"></div>
 <div class="guest-date-range-actions">
-<button class="btn ghost" id="licenseDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" id="licenseDateRangeApply" type="button">OK</button>
+<button class="btn ghost" data-single-action-key="licenseDateRangeCancel" id="licenseDateRangeCancel" type="button">Annulla</button>
+<button class="btn primary" data-single-action-key="licenseDateRangeApply" id="licenseDateRangeApply" type="button">OK</button>
 </div>
 </div>
 </div>

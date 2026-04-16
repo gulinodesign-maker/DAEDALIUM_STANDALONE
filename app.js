@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.629
+ * Build: 2.630
  */
-const BUILD_VERSION = "2.629";
+const BUILD_VERSION = "2.630";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -330,7 +330,7 @@ function __normBool01(v){
 
 const __MASTER_CODE__ = "8472163950842716";
 const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
-const __LICENSE_HASH_SALT__ = "dDAE_2.629_LICENSE";
+const __LICENSE_HASH_SALT__ = "dDAE_2.630_LICENSE";
 const __LICENSE_REQUEST_PREFIX__ = "7";
 const __LICENSE_UNLOCK_PREFIX__ = "8";
 const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
@@ -12950,7 +12950,7 @@ function __bindLicenseUi__(){
     const modal = document.getElementById('licenseDateRangeModal');
     if (modal && !modal.__boundLicenseRange){
       modal.__boundLicenseRange = true;
-      ['licenseDateRangeModalClose','licenseDateRangeCancel'].forEach((id)=>{ const el = document.getElementById(id); if (el) bindFastTap(el, ()=>__closeLicenseDateRangeModal__(true)); });
+      ['licenseDateRangeCancel'].forEach((id)=>{ const el = document.getElementById(id); if (el) bindFastTap(el, ()=>__closeLicenseDateRangeModal__(true)); });
       const applyBtn = document.getElementById('licenseDateRangeApply');
       if (applyBtn) bindFastTap(applyBtn, ()=>__applyLicenseDateRangeModal__());
       const prevBtn = document.getElementById('licenseDateRangePrev');
@@ -12990,7 +12990,7 @@ function __closeLicenseGeneratorModal__(){ __modalHideById__('licenseGeneratorMo
 function __initLicenseGeneratorBindings__(){
   try{
     __bindLicenseUi__();
-    const closeIds = ['licenseGeneratorClose','licenseGeneratorCancel'];
+    const closeIds = ['licenseGeneratorCancel'];
     closeIds.forEach((id)=>{ const el = document.getElementById(id); if (el && !el.__boundLicenseClose){ el.__boundLicenseClose = true; bindFastTap(el, __closeLicenseGeneratorModal__); } });
     const ok = document.getElementById('licenseGeneratorConfirm');
     if (ok && !ok.__boundLicenseGenerate){
@@ -16880,7 +16880,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget',
-  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget'
+  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
+  'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -16938,7 +16939,14 @@ function __defaultSingleActionButtonVisual__(btn){
     spesaCatBtnIva22:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva10:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva4:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.80 },
-    spesaCatBtnFuoriBudget:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 }
+    spesaCatBtnFuoriBudget:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
+    licenseDateRangeTrigger:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
+    licenseGeneratorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    licenseGeneratorConfirm:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    licenseDateRangePrev:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
+    licenseDateRangeNext:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
+    licenseDateRangeCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    licenseDateRangeApply:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
   };
   const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
@@ -17030,7 +17038,14 @@ function __singleActionButtonCategoryForId__(id){
     laundryCatalogEditorTagColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
-    laundryCatalogEditorSave:'save'
+    laundryCatalogEditorSave:'save',
+    licenseGeneratorCancel:'cancel',
+    licenseDateRangeCancel:'cancel',
+    licenseGeneratorConfirm:'save',
+    licenseDateRangeApply:'save',
+    licenseDateRangeTrigger:'trigger',
+    licenseDateRangePrev:'nav',
+    licenseDateRangeNext:'nav'
   };
   return map[key] || '';
 }
