@@ -20211,3 +20211,34 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #licenseGeneratorModal .db-menu-title{
   font-weight:400 !important;
 }
+
+
+/* dDAE_2.638 — Tema import/export + popup licenza heights */
+#settingsLicenseModal .settings-license-actions .auth-btn{
+  min-height:51px !important;
+  height:51px !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn,
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger{
+  min-height:62px !important;
+  height:62px !important;
+  padding-top:12px !important;
+  padding-bottom:12px !important;
+}
+#roomSettingsThemeSlots{
+  flex-wrap:wrap !important;
+}
+#themeTransferModal{
+  z-index:12150 !important;
+}
+#themeTransferModal .modal-card{
+  position:relative;
+  z-index:12151 !important;
+}
+#themeTransferModal .settings-license-actions .auth-btn{
+  min-height:54px !important;
+  height:54px !important;
+  font-size:18px !important;
+}

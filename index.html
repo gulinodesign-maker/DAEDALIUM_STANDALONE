@@ -1181,6 +1181,7 @@ window.APP_VERSION = "2.626";
 <button aria-label="Tema 2" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="2" id="roomSettingsThemeBtn2" type="button">2</button>
 <button aria-label="Tema 3" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="3" id="roomSettingsThemeBtn3" type="button">3</button>
 <button aria-label="Tema 4" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="4" id="roomSettingsThemeBtn4" type="button">4</button>
+<button aria-label="Importa o esporta tema" class="room-settings-square-btn room-settings-theme-btn" id="roomSettingsThemeTransferBtn" type="button">5</button>
 </div>
 </div>
 </div>
@@ -2488,6 +2489,23 @@ window.APP_VERSION = "2.626";
 <button class="btn ghost" data-single-action-key="licenseDateRangeCancel" id="licenseDateRangeCancel" type="button">Annulla</button>
 <button class="btn primary" data-single-action-key="licenseDateRangeApply" id="licenseDateRangeApply" type="button">OK</button>
 </div>
+</div>
+</div>
+</div>
+
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="themeTransferModal">
+<div aria-label="Importa o esporta tema" aria-modal="true" class="modal-card settings-license-card" role="dialog">
+<div class="db-menu-head">
+<div class="db-menu-title" style="width:100%;text-align:center;">TEMA</div>
+<button aria-label="Chiudi" class="icon-btn" id="themeTransferClose" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="settings-license-actions">
+<button class="auth-btn auth-btn-azure" id="themeTransferImport" type="button">importa tema</button>
+<button class="auth-btn auth-btn-green" id="themeTransferExport" type="button">esporta tema</button>
+<button class="auth-btn auth-btn-gray" id="themeTransferCancel" type="button">annulla</button>
 </div>
 </div>
 </div>
