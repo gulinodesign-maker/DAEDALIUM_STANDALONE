@@ -20163,7 +20163,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 
 
 
-/* dDAE_2.637 — Licenza popup text sizing and child popup button heights */
+/* dDAE_2.639 — Licenza popup text sizing and child popup button heights */
 #settingsLicenseModal .settings-license-card{
   width:min(92vw,420px) !important;
 }
@@ -20213,7 +20213,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 }
 
 
-/* dDAE_2.638 — Tema import/export + popup licenza heights */
+/* dDAE_2.639 — Tema import/export + popup licenza heights */
 #settingsLicenseModal .settings-license-actions .auth-btn{
   min-height:51px !important;
   height:51px !important;
@@ -20242,3 +20242,5 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
   height:54px !important;
   font-size:18px !important;
 }
+
+.tag-color-mode-ico-bold{font-weight:800;letter-spacing:-0.02em;}
