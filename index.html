@@ -23,7 +23,7 @@
 <script>
 window.APP_VERSION = "2.626";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.630";
+  const LOCAL_BUILD = "dDAE_2.631";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -377,10 +377,10 @@ window.APP_VERSION = "2.626";
 <div class="auth-activation" hidden="" id="authActivation">
 <div class="auth-activation-title" id="authActivationTitle">Attivazione account</div>
 <div class="auth-activation-user" id="authActivationUser">—</div>
-<div class="auth-activation-text" id="authActivationText">Genera il codice richiesta o inserisci il codice sblocco.</div>
+<div class="auth-activation-text" id="authActivationText">Accedi e gestisci la licenza da Impostazioni → Licenza.</div>
 <div class="auth-grid auth-grid-2 auth-activation-grid">
-<button class="auth-btn auth-btn-azure" id="btnAuthRequestCode" type="button">codice richiesta</button>
-<button class="auth-btn auth-btn-green" id="btnAuthUnlockCode" type="button">codice sblocco</button>
+<button class="auth-btn auth-btn-azure" id="btnAuthRequestCode" type="button">licenza</button>
+<button class="auth-btn auth-btn-green" id="btnAuthUnlockCode" type="button">accedi</button>
 </div>
 <div aria-live="polite" class="auth-hint auth-activation-hint" id="authActivationHint"></div>
 <div class="auth-action-row auth-activation-actions">
@@ -492,7 +492,7 @@ window.APP_VERSION = "2.626";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.630</div></div></section>
+<div class="build" id="buildText">dDAE_2.631</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -988,7 +988,7 @@ window.APP_VERSION = "2.626";
 <div class="settings-bottom-stack settings-master-stack" hidden="" id="settingsMasterWrap">
 <button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
-<span class="settings-btn-label">Licenze</span>
+<span class="settings-btn-label">Licenza</span>
 </button>
 </div>
 </div>
@@ -1019,7 +1019,7 @@ window.APP_VERSION = "2.626";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path></svg>
 <span class="settings-btn-label">Dark Mode</span>
 </button>
-<button aria-label="Codice" class="settings-btn settings-btn-roster settings-btn-opcode" id="opSettingsCodeBtn" type="button">
+<button aria-label="Licenza" class="settings-btn settings-btn-roster settings-btn-opcode" id="opSettingsCodeBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 4h6v6H4z"></path>
 <path d="M14 4h6v6h-6z"></path>
@@ -1028,7 +1028,7 @@ window.APP_VERSION = "2.626";
 <path d="M14 18h6"></path>
 <path d="M18 14v6"></path>
 </svg>
-<span class="settings-btn-label">Codice Ope...</span>
+<span class="settings-btn-label">Licenza</span>
 </button>
 </div>
 <div class="settings-bottom-stack settings-bottom-stack-under-grid settings-bottom-stack-operator-dedicated">
@@ -2493,6 +2493,21 @@ window.APP_VERSION = "2.626";
 </div>
 
 <!-- YES/NO CONFIRM MODAL -->
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsLicenseModal">
+<div aria-label="Licenza" aria-modal="true" class="modal-card settings-license-card" role="dialog">
+<div class="db-menu-title" id="settingsLicenseTitle">LICENZA</div>
+<div class="settings-license-status" id="settingsLicenseStatus">Licenza non attiva</div>
+<div class="settings-license-actions">
+<button class="auth-btn auth-btn-green" id="settingsLicenseUnlockBtn" type="button">inserisci codice</button>
+<button class="auth-btn auth-btn-azure" id="settingsLicensePayBtn" type="button">abbonati</button>
+<button class="auth-btn auth-btn-orange" id="settingsLicenseRequestBtn" type="button">genera codice richiesta</button>
+<button class="auth-btn auth-btn-orange" hidden="" id="settingsLicenseGeneratorBtn" type="button">key generator</button>
+<button class="auth-btn auth-btn-gray" id="settingsLicenseCloseBtn" type="button">annulla</button>
+</div>
+<div class="settings-license-hint" id="settingsLicenseHint"></div>
+</div>
+</div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="confirmYesNoModal">
 <div aria-label="Conferma" aria-modal="true" class="modal-card confirm-card" role="dialog">
 <div class="confirm-text" id="confirmYesNoText">—</div>

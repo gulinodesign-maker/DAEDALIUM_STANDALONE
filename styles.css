@@ -20029,7 +20029,7 @@ body.ddae-dark .auth-activation-text{ color:rgba(255,255,255,.92); }
 
 
 
-/* dDAE_2.630 — Licenze master: stesso formato lungo dei pulsanti impostazioni */
+/* dDAE_2.631 — Licenze master: stesso formato lungo dei pulsanti impostazioni */
 #page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack{
   display:block !important;
   width:100% !important;
@@ -20129,3 +20129,6 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #authActivationText{
   display:none !important;
 }
+
+
+.settings-license-card{width:min(92vw,420px);padding:18px 16px 16px;border-radius:24px}.settings-license-status{font-weight:800;text-align:center;margin:12px 0 10px;font-size:16px}.settings-license-actions{display:grid;gap:10px;margin-top:8px}.settings-license-actions .auth-btn{width:100%;min-height:52px;border-radius:18px}.settings-license-hint{min-height:18px;margin-top:10px;text-align:center;font-size:12px;opacity:.8}.settings-master-stack{display:block}.settings-master-stack .settings-btn{width:100%}

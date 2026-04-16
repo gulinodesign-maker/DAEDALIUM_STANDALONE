@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.630
+ * Build: 2.631
  */
-const BUILD_VERSION = "2.630";
+const BUILD_VERSION = "2.631";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -330,7 +330,7 @@ function __normBool01(v){
 
 const __MASTER_CODE__ = "8472163950842716";
 const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
-const __LICENSE_HASH_SALT__ = "dDAE_2.630_LICENSE";
+const __LICENSE_HASH_SALT__ = "dDAE_2.631_LICENSE";
 const __LICENSE_REQUEST_PREFIX__ = "7";
 const __LICENSE_UNLOCK_PREFIX__ = "8";
 const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
@@ -517,17 +517,17 @@ async function __ensureSessionLicenseOnBoot__(){
     return { valid:false, session:null };
   }
   const merged = await __refreshSessionFromStorage__(sess);
+  try{ saveSession(merged); }catch(_){ }
+  try{ if (state) state.session = merged; }catch(_){ }
   const lic = __licenseStateForRow__(row);
-  if (lic.valid){
-    try{ saveSession(merged); }catch(_){ }
-    try{ if (state) state.session = merged; }catch(_){ }
-    return { valid:true, session:merged };
+  if (!lic.valid){
+    __authPendingUser__ = merged;
+    __authPendingReason__ = lic.expired ? "Licenza scaduta" : "Inserisci codice sblocco";
+  } else {
+    __authPendingUser__ = null;
+    __authPendingReason__ = "";
   }
-  try{ clearSession(); }catch(_){ }
-  try{ if (state) state.session = null; }catch(_){ }
-  __authPendingUser__ = merged;
-  __authPendingReason__ = lic.expired ? "Licenza scaduta" : "Inserisci codice sblocco";
-  return { valid:false, session:merged };
+  return { valid:true, session:merged };
 }
 
 async function __localApiUtenti__(method, body){
@@ -3366,7 +3366,7 @@ function __fitHomeSyncBtn__(){
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
   const isMaster = __isMasterSession__(state && state.session ? state.session : null);
-  try{ const wrap = document.getElementById("settingsMasterWrap"); if (wrap){ wrap.hidden = !(!!(state && state.session && !isOp && isMaster)); try{ wrap.style.display = wrap.hidden ? "none" : ""; }catch(_){ } } }catch(_){ }
+  try{ const wrap = document.getElementById("settingsMasterWrap"); if (wrap){ wrap.hidden = !(!!(state && state.session && !isOp)); try{ wrap.style.display = wrap.hidden ? "none" : ""; }catch(_){ } } }catch(_){ }
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
   try{
     const shoppingBtn = document.getElementById("goProdotti");
@@ -11944,9 +11944,8 @@ function setupImpostazioni() {
   const opCodeBtn = document.getElementById("opSettingsCodeBtn");
   if (opCodeBtn) bindFastTap(opCodeBtn, async () => {
     try{ if (__languageModalGhostTapActive__()) return; }catch(_){ }
-    try{ await __qrScanAndLink__(); }catch(e){
-      try{ toast(String((e && e.message) ? e.message : "Errore codice"), "orange"); }catch(_){ }
-      try{ console.error("Operator code error:", e); }catch(_){ }
+    try{ await __openSettingsLicenseModalForSession__(); }catch(e){
+      try{ toast(String((e && e.message) ? e.message : "Errore licenza"), "orange"); }catch(_){ }
     }
   });
   const opLogoutPageBtn = document.getElementById("opSettingsLogoutBtn");
@@ -11980,14 +11979,12 @@ function setupImpostazioni() {
     });
     const masterBtn = document.getElementById("settingsMasterBtn");
     if (masterBtn) bindFastTap(masterBtn, async () => {
-      try{
-        if (!__isMasterSession__()) throw new Error("Accesso riservato");
-        __openLicenseGeneratorModal__();
-      }catch(e){
-        try{ toast(String((e && e.message) ? e.message : "Accesso riservato"), "orange"); }catch(_){ }
+      try{ await __openSettingsLicenseModalForSession__(); }catch(e){
+        try{ toast(String((e && e.message) ? e.message : "Errore licenza"), "orange"); }catch(_){ }
       }
     });
     try{ __initLicenseGeneratorBindings__(); }catch(_){ }
+    try{ __initSettingsLicenseBindings__(); }catch(_){ }
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -12710,7 +12707,11 @@ function setupAuth(){
         const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
         setHint("");
-        await showActivationForUser(data.user, "create");
+        const row = await __updateUserLicense__(data.user, { licenseRequestCode: __licenseRequestCodeForUser__(data.user), licenseStatus: "pending", licenseType: "time", isMaster:false, masterEnabledAt:"" });
+        state.session = await __refreshSessionFromStorage__(row || data.user) || data.user;
+        saveSession(state.session);
+        setHint("");
+        goAfterLogin();
         return;
       }
 
@@ -12736,13 +12737,10 @@ function setupAuth(){
         if (mode === "login_admin" && isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi come operatore."); return; }
         if (mode === "login_operator" && !isOperatoreSession(data.user)) { setHint("Questo account è un admin. Accedi come admin."); return; }
         const row = await __findUserRowByIdentity__(data.user);
-        const lic = __licenseStateForRow__(row || {});
-        if (lic.valid){
-          await finishLicensedLogin(row || data.user);
-        } else {
-          setHint("");
-          await showActivationForUser(row || data.user, lic.expired ? "Licenza scaduta" : "unlock");
-        }
+        state.session = await __refreshSessionFromStorage__(row || data.user) || data.user;
+        saveSession(state.session);
+        setHint("");
+        goAfterLogin();
         return;
       }
 
@@ -13009,6 +13007,59 @@ function __initLicenseGeneratorBindings__(){
         }
       });
     }
+  }catch(_){ }
+}
+
+
+function __initSettingsLicenseBindings__(){
+  try{
+    const closeBtn = document.getElementById('settingsLicenseCloseBtn');
+    if (closeBtn && !closeBtn.__boundSettingsLicenseClose){ closeBtn.__boundSettingsLicenseClose = true; bindFastTap(closeBtn, ()=>__modalHideById__('settingsLicenseModal')); }
+    const unlockBtn = document.getElementById('settingsLicenseUnlockBtn');
+    if (unlockBtn && !unlockBtn.__boundSettingsLicenseUnlock){ unlockBtn.__boundSettingsLicenseUnlock = true; bindFastTap(unlockBtn, async()=>{
+      try{
+        const sess = state?.session || loadSession();
+        if (!sess) throw new Error('Accedi prima');
+        const code = await __openLicenseUnlockModal__();
+        if (!code) return;
+        if (String(code).trim() === __MASTER_CODE__){
+          if (isOperatoreSession(sess)) throw new Error('Il codice master è consentito solo agli account admin');
+          const row = await __updateUserLicense__(sess, { isMaster:true, licenseType:'master', licenseStatus:'master', licenseStart:todayISO(), licenseEnd:'2099-12-31', licenseUnlockCode:__MASTER_CODE__, masterEnabledAt:__nowIso__() });
+          const merged = await __refreshSessionFromStorage__(row) || row;
+          state.session = merged; saveSession(merged);
+          try{ applyRoleMode(); }catch(_){ }
+          try{ __modalHideById__('settingsLicenseModal'); }catch(_){ }
+          try{ toast('Account master attivato', 'green'); }catch(_){ }
+        }else{
+          const parsed = __licenseParseUnlockCodeForUser__(code, sess);
+          if (!parsed || parsed.type !== 'license') throw new Error('Codice sblocco non valido');
+          const row = await __updateUserLicense__(sess, { isMaster:false, licenseType:'time', licenseStatus:'active', licenseStart:parsed.startDate, licenseEnd:parsed.endDate, licenseUnlockCode:parsed.code, licenseRequestCode:__licenseRequestCodeForUser__(sess), masterEnabledAt:'' });
+          const merged = await __refreshSessionFromStorage__(row) || row;
+          state.session = merged; saveSession(merged);
+          try{ applyRoleMode(); }catch(_){ }
+          try{ __modalHideById__('settingsLicenseModal'); }catch(_){ }
+          try{ toast('Licenza attivata', 'green'); }catch(_){ }
+        }
+      }catch(e){ const hint = document.getElementById('settingsLicenseHint'); if (hint) hint.textContent = String((e&&e.message)?e.message:e); else try{ toast(String((e&&e.message)?e.message:e), 'orange'); }catch(_){ } }
+    }); }
+    const reqBtn = document.getElementById('settingsLicenseRequestBtn');
+    if (reqBtn && !reqBtn.__boundSettingsLicenseReq){ reqBtn.__boundSettingsLicenseReq = true; bindFastTap(reqBtn, async()=>{
+      try{
+        const sess = state?.session || loadSession();
+        if (!sess) throw new Error('Accedi prima');
+        const row = await __updateUserLicense__(sess, { licenseRequestCode: __licenseRequestCodeForUser__(sess), licenseStatus:'pending' });
+        __showLicenseRequestModal__(__licenseRequestCodeForUser__(row), row, { email:true, title:'CODICE RICHIESTA', hint:'Tocca il codice per copiarlo' });
+      }catch(e){ const hint = document.getElementById('settingsLicenseHint'); if (hint) hint.textContent = String((e&&e.message)?e.message:e); }
+    }); }
+    const payBtn = document.getElementById('settingsLicensePayBtn');
+    if (payBtn && !payBtn.__boundSettingsLicensePay){ payBtn.__boundSettingsLicensePay = true; bindFastTap(payBtn, async()=>{
+      try{
+        if (typeof DDAE_LICENSE_PAYMENT_URL === 'undefined' || !String(DDAE_LICENSE_PAYMENT_URL||'').trim()) throw new Error('Pagamento non configurato');
+        window.open(String(DDAE_LICENSE_PAYMENT_URL).trim(), '_blank', 'noopener');
+      }catch(e){ const hint = document.getElementById('settingsLicenseHint'); if (hint) hint.textContent = String((e&&e.message)?e.message:e); }
+    }); }
+    const genBtn = document.getElementById('settingsLicenseGeneratorBtn');
+    if (genBtn && !genBtn.__boundSettingsLicenseGen){ genBtn.__boundSettingsLicenseGen = true; bindFastTap(genBtn, ()=>{ try{ __modalHideById__('settingsLicenseModal'); __openLicenseGeneratorModal__(); }catch(_){ } }); }
   }catch(_){ }
 }
 
@@ -13793,6 +13844,49 @@ function __scheduleGuestListScrollRestore__(attempt = 0){
   }catch(_){ }
 }
 
+function __licenseAllowsAccess__(){
+  try{
+    const row = __findUserRowByIdentity__;
+  }catch(_){ }
+  try{
+    const sess = state?.session || loadSession();
+    if (!sess || !sess.user_id) return false;
+    const info = __licenseStateForRow__(sess || {});
+    if (info.valid) return true;
+  }catch(_){ }
+  try{
+    const sess = state?.session || loadSession();
+    return !!(sess && (__normBool01(sess?.isMaster) || String(sess?.licenseStatus||'').toLowerCase()==='active' || String(sess?.licenseStatus||'').toLowerCase()==='master') && (!sess.licenseEnd || String(sess.licenseEnd) >= todayISO()));
+  }catch(_){ }
+  return false;
+}
+function __pageNeedsLicense__(page){
+  const allowed = new Set(["auth","home","impostazioni","opsettings"]);
+  return !allowed.has(String(page || '').trim().toLowerCase());
+}
+async function __openSettingsLicenseModalForSession__(){
+  try{
+    const sess = state?.session || loadSession();
+    if (!sess || !sess.user_id) { try{ toast('Accedi prima', 'orange'); }catch(_){ } return; }
+    const row = await __findUserRowByIdentity__(sess) || sess;
+    const merged = await __refreshSessionFromStorage__(row) || row;
+    try{ state.session = merged; saveSession(merged); }catch(_){ }
+    const lic = __licenseStateForRow__(row);
+    const statusEl = document.getElementById('settingsLicenseStatus');
+    const hintEl = document.getElementById('settingsLicenseHint');
+    const genBtn = document.getElementById('settingsLicenseGeneratorBtn');
+    const reqBtn = document.getElementById('settingsLicenseRequestBtn');
+    const payBtn = document.getElementById('settingsLicensePayBtn');
+    if (statusEl){
+      statusEl.textContent = lic.master ? 'Account master attivo' : (lic.valid ? `Licenza attiva ${lic.start ? formatShortDateIT(lic.start) : ''}${lic.end ? ' → ' + formatShortDateIT(lic.end) : ''}`.trim() : (lic.expired ? 'Licenza scaduta' : 'Licenza non attiva'));
+    }
+    if (hintEl) hintEl.textContent = lic.master ? "Il key generator è disponibile solo per l'account master." : "Inserisci un codice sblocco oppure attiva l'abbonamento.";
+    if (genBtn) genBtn.hidden = !__isMasterSession__(merged);
+    if (reqBtn) reqBtn.hidden = false;
+    if (payBtn) payBtn.hidden = false;
+    __modalShowById__('settingsLicenseModal');
+  }catch(e){ try{ toast(String((e&&e.message)?e.message:e), 'orange'); }catch(_){ } }
+}
 function showPage(page){
   // Back-compat: vecchia pagina "colazione" ora è "prodotti"
   if (page === "colazione") page = "prodotti";
@@ -13810,6 +13904,14 @@ function showPage(page){
       page = "auth";
     }
   }catch(_){ page = "auth"; }
+
+  try{
+    if (__pageNeedsLicense__(page) && state.session && !__licenseAllowsAccess__()) {
+      try{ toast('Sblocca da Impostazioni → Licenza', 'orange'); }catch(_){ }
+      try{ setTimeout(()=>{ __openSettingsLicenseModalForSession__(); }, 40); }catch(_){ }
+      page = isOperatoreSession(state.session) ? 'opsettings' : 'impostazioni';
+    }
+  }catch(_){ }
 
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
@@ -16881,7 +16983,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
-  'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply'
+  'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -16946,7 +17048,12 @@ function __defaultSingleActionButtonVisual__(btn){
     licenseDateRangePrev:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
     licenseDateRangeNext:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
     licenseDateRangeCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
-    licenseDateRangeApply:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 }
+    licenseDateRangeApply:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    settingsLicenseUnlockBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    settingsLicensePayBtn:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
+    settingsLicenseRequestBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    settingsLicenseGeneratorBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    settingsLicenseCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 }
   };
   const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
@@ -17045,7 +17152,12 @@ function __singleActionButtonCategoryForId__(id){
     licenseDateRangeApply:'save',
     licenseDateRangeTrigger:'trigger',
     licenseDateRangePrev:'nav',
-    licenseDateRangeNext:'nav'
+    licenseDateRangeNext:'nav',
+    settingsLicenseCloseBtn:'cancel',
+    settingsLicenseUnlockBtn:'save',
+    settingsLicensePayBtn:'trigger',
+    settingsLicenseRequestBtn:'trigger',
+    settingsLicenseGeneratorBtn:'trigger'
   };
   return map[key] || '';
 }
@@ -28228,7 +28340,7 @@ try{
     : "auth";
   showPage(targetPage);
   if (!state.session && __authPendingUser__ && __authUiApi && typeof __authUiApi__.showActivationForUser === 'function'){
-    try{ await __authUiApi__.showActivationForUser(__authPendingUser__, __authPendingReason__ || 'unlock'); }catch(_){ }
+    try{ /* activation flow disabled: license managed from settings */ }catch(_){ }
   }
   if (__restore) setTimeout(() => { try { __applyUiState(__restore); } catch(_) {} }, 0);
 

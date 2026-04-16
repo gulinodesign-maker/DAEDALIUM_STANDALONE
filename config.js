@@ -1,4 +1,5 @@
-/* dDAE_2.185 - Firebase frontend config */
+/* dDAE_2.631 - Firebase frontend config */
+const DDAE_LICENSE_PAYMENT_URL = "";
 const FIREBASE_ENABLED = true;
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDYG-TqrzfN5kDUH9GYWmYbqnwoqEnWMkM",
