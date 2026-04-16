@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.625" rel="stylesheet"/>
-<link href="./manifest.json?v=2.625" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.625" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.625" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.625" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.625" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" href="./bg-daedalium.jpeg?v=2.625" rel="preload" fetchpriority="high"/>
-<link as="image" href="./bg-daedalium_dark.PNG?v=2.625" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
+<link href="./styles.css?v=2.626" rel="stylesheet"/>
+<link href="./manifest.json?v=2.626" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.626" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.626" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.626" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.626" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.626" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.626" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.625";
+window.APP_VERSION = "2.626";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.625";
+  const LOCAL_BUILD = "dDAE_2.626";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.625";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.625")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.625")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.626")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.626")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -157,7 +157,7 @@ window.APP_VERSION = "2.625";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.625"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.626"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -284,7 +284,7 @@ window.APP_VERSION = "2.625";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.625"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.626"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -372,6 +372,19 @@ window.APP_VERSION = "2.625";
 <div class="auth-action-row">
 <button class="auth-btn auth-btn-gray" id="btnAuthBack" type="button">indietro</button>
 <button class="auth-btn auth-btn-orange" id="btnAuthSubmit" type="button">continua</button>
+</div>
+</div>
+<div class="auth-activation" hidden="" id="authActivation">
+<div class="auth-activation-title" id="authActivationTitle">Attivazione account</div>
+<div class="auth-activation-user" id="authActivationUser">—</div>
+<div class="auth-activation-text" id="authActivationText">Genera il codice richiesta o inserisci il codice sblocco.</div>
+<div class="auth-grid auth-grid-2 auth-activation-grid">
+<button class="auth-btn auth-btn-azure" id="btnAuthRequestCode" type="button">codice richiesta</button>
+<button class="auth-btn auth-btn-green" id="btnAuthUnlockCode" type="button">codice sblocco</button>
+</div>
+<div aria-live="polite" class="auth-hint auth-activation-hint" id="authActivationHint"></div>
+<div class="auth-action-row auth-activation-actions">
+<button class="auth-btn auth-btn-gray" id="btnAuthActivationBack" type="button">indietro</button>
 </div>
 </div>
 </div>
@@ -479,7 +492,7 @@ window.APP_VERSION = "2.625";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.625</div></div></section>
+<div class="build" id="buildText">dDAE_2.626</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -971,6 +984,12 @@ window.APP_VERSION = "2.625";
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
+</button>
+</div>
+<div class="settings-bottom-stack settings-master-stack" hidden="" id="settingsMasterWrap">
+<button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
+<span class="settings-btn-label">Licenze</span>
 </button>
 </div>
 <div class="settings-db-actions" hidden=""></div>
@@ -2384,6 +2403,99 @@ window.APP_VERSION = "2.625";
 </div>
 </div>
 
+<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseRequestModal">
+<div aria-label="Codice richiesta" aria-modal="true" class="modal-card" role="dialog">
+<div class="db-menu-head">
+<div class="db-menu-title" id="licenseRequestModalTitle">CODICE RICHIESTA</div>
+<button aria-label="Chiudi" class="icon-btn" id="licenseRequestClose" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="db-menu-body" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px">
+<div class="code-box" id="licenseRequestCodeText" style="width:100%;max-width:360px;text-align:center;word-break:break-all">—</div>
+<div id="licenseRequestModalHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Tocca il codice per copiarlo</div>
+<div class="auth-action-row" style="width:100%;margin-top:4px;">
+<button class="auth-btn auth-btn-azure" id="licenseRequestEmailBtn" type="button">email</button>
+<button class="auth-btn auth-btn-gray" id="licenseRequestDoneBtn" type="button">chiudi</button>
+</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseUnlockModal">
+<div aria-label="Inserisci codice sblocco" aria-modal="true" class="modal-card" role="dialog">
+<div class="db-menu-head">
+<div class="db-menu-title" id="licenseUnlockModalTitle">CODICE SBLOCCO</div>
+<button aria-label="Chiudi" class="icon-btn" id="licenseUnlockClose" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+<div class="field float">
+<input autocapitalize="characters" autocomplete="off" id="licenseUnlockInput" placeholder=" " spellcheck="false" type="text"/>
+<label for="licenseUnlockInput">Codice</label>
+</div>
+<div class="auth-action-row" style="width:100%;margin-top:4px;">
+<button class="auth-btn auth-btn-gray" id="licenseUnlockCancel" type="button">annulla</button>
+<button class="auth-btn auth-btn-green" id="licenseUnlockConfirm" type="button">ok</button>
+</div>
+<div id="licenseUnlockHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Incolla il codice numerico ricevuto</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseGeneratorModal">
+<div aria-label="Key generator" aria-modal="true" class="modal-card" role="dialog">
+<div class="db-menu-head">
+<div class="db-menu-title">KEY GENERATOR</div>
+<button aria-label="Chiudi" class="icon-btn" id="licenseGeneratorClose" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+<div class="field float">
+<input autocapitalize="characters" autocomplete="off" id="licenseRequestInput" placeholder=" " spellcheck="false" type="text"/>
+<label for="licenseRequestInput">Codice richiesta</label>
+</div>
+<input id="licenseStartDate" type="hidden"/>
+<input id="licenseEndDate" type="hidden"/>
+<div class="field float guest-date-range-field license-date-range-field" id="licenseDateRangeField">
+<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger" id="licenseDateRangeTrigger" type="button">
+<span class="guest-date-range-value" id="licenseDateRangeValue">Seleziona date</span>
+</button>
+<label class="guest-date-range-label" for="licenseDateRangeTrigger">Periodo attivazione</label>
+</div>
+<div class="auth-action-row" style="width:100%;margin-top:4px;">
+<button class="auth-btn auth-btn-gray" id="licenseGeneratorCancel" type="button">annulla</button>
+<button class="auth-btn auth-btn-green" id="licenseGeneratorConfirm" type="button">genera</button>
+</div>
+<div id="licenseGeneratorHint" style="margin-top:2px;font-size:12px;opacity:0.75;text-align:center">Inserisci il codice richiesta e scegli il periodo</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" class="modal modal-center guest-date-range-modal" hidden="" id="licenseDateRangeModal">
+<div aria-labelledby="licenseDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
+<div class="operatori-editor-hd guest-date-range-modal-hd">
+<div class="operatori-editor-title guest-date-range-modal-range-title" id="licenseDateRangeModalTitle">&nbsp;</div>
+<button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue" id="licenseDateRangeModalClose" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
+</div>
+<div class="operatori-editor-body guest-date-range-modal-body">
+<div class="guest-date-range-monthbar">
+<button aria-label="Mese precedente" class="guest-date-range-nav" id="licenseDateRangePrev" type="button">‹</button>
+<div class="guest-date-range-monthtitle" id="licenseDateRangeMonthTitle">&nbsp;</div>
+<button aria-label="Mese successivo" class="guest-date-range-nav" id="licenseDateRangeNext" type="button">›</button>
+</div>
+<div class="guest-date-range-weekdays" id="licenseDateRangeWeekdays"></div>
+<div class="guest-date-range-grid" id="licenseDateRangeGrid"></div>
+<div class="guest-date-range-actions">
+<button class="btn ghost" id="licenseDateRangeCancel" type="button">Annulla</button>
+<button class="btn primary" id="licenseDateRangeApply" type="button">OK</button>
+</div>
+</div>
+</div>
+</div>
+
 <!-- YES/NO CONFIRM MODAL -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="confirmYesNoModal">
 <div aria-label="Conferma" aria-modal="true" class="modal-card confirm-card" role="dialog">
@@ -2515,7 +2627,7 @@ window.APP_VERSION = "2.625";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.625"></script>
-<script defer="" src="./app.js?v=2.625"></script>
+<script defer="" src="./config.js?v=2.626"></script>
+<script defer="" src="./app.js?v=2.626"></script>
 </body>
 </html>

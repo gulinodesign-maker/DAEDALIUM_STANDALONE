@@ -20005,3 +20005,24 @@ body.ddae-dark .guest-date-range-actions .btn.primary{
   border-color:rgba(96,165,250,0.42) !important;
   color:#f8fbff !important;
 }
+
+
+/* dDAE_2.626 — Licenze account + key generator */
+.auth-activation[hidden]{ display:none !important; }
+.auth-activation{ margin-top:12px; }
+.auth-activation-title{ font-size:20px; font-weight:900; text-align:center; color:rgba(12,20,28,.92); }
+.auth-activation-user{ margin-top:8px; text-align:center; font-size:15px; font-weight:800; color:rgba(43,124,180,.96); word-break:break-word; }
+.auth-activation-text{ margin-top:8px; text-align:center; font-size:12px; line-height:1.35; opacity:.78; }
+.auth-activation-grid .auth-btn{ padding:24px 8px; }
+.auth-activation-actions{ justify-content:center; }
+.auth-activation-actions .auth-btn{ max-width:180px; }
+#page-impostazioni .settings-master-stack{ width:100% !important; margin-top:16px !important; align-items:center !important; }
+#page-impostazioni .settings-master-stack[hidden]{ display:none !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master{ width:min(220px, 100%) !important; min-height:82px !important; border-radius:22px !important; background:#7f7bf2 !important; border-color:rgba(127,123,242,0.24) !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master .settings-btn-label{ white-space:nowrap !important; }
+.license-date-range-field{ margin-top:4px; }
+.license-date-range-trigger{ width:100%; }
+body.ddae-dark .auth-activation-title,
+body.ddae-dark .auth-activation-user,
+body.ddae-dark .auth-activation-text{ color:rgba(255,255,255,.92); }
+body.ddae-dark #page-impostazioni .settings-master-stack .settings-btn-master{ background: rgba(63,58,140,0.92) !important; border-color: rgba(255,255,255,0.12) !important; }

@@ -89,9 +89,9 @@ try{
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.625
+ * Build: 2.626
  */
-const BUILD_VERSION = "2.625";
+const BUILD_VERSION = "2.626";
 
 // Local DB keys (local-first)
 const __DB_KEYS__ = {
@@ -328,6 +328,208 @@ function __normBool01(v){
   return (s === "1" || s === "true" || s === "yes" || s === "y");
 }
 
+const __MASTER_CODE__ = "8472163950842716";
+const __MASTER_EMAIL__ = "kwdp2nq2px@privaterelay.appleid.com";
+const __LICENSE_HASH_SALT__ = "dDAE_2.626_LICENSE";
+const __LICENSE_REQUEST_PREFIX__ = "7";
+const __LICENSE_UNLOCK_PREFIX__ = "8";
+const __LICENSE_SERIAL_EPOCH__ = Date.UTC(2020, 0, 1) / 86400000;
+let __authPendingUser__ = null;
+let __authPendingReason__ = "";
+let __authUiApi__ = null;
+
+function __licenseDigitsHash__(input, len){
+  const size = Math.max(1, Number(len) || 1);
+  let acc = 0;
+  const mod = 10 ** Math.min(size, 12);
+  const src = String(input || "");
+  for (let i = 0; i < src.length; i++){
+    acc = (acc * 131 + src.charCodeAt(i) + 17) % mod;
+  }
+  return String(acc).padStart(size, "0").slice(-size);
+}
+function __licenseNormalizeDigits__(value){ return String(value || "").replace(/\D+/g, ""); }
+function __licenseAccountDigitsFromUser__(user){
+  const uid = String(user?.user_id || user?.id || user?.userId || user?.username || "").trim();
+  const uname = String(user?.username || user?.user || "").trim().toLowerCase();
+  const role = String(user?.ruolo || user?.role || "admin").trim().toLowerCase();
+  return __licenseDigitsHash__([__LICENSE_HASH_SALT__, uid, uname, role].join("|"), 10);
+}
+function __licenseRequestCodeForUser__(user){
+  const account = __licenseAccountDigitsFromUser__(user);
+  const base = `${__LICENSE_REQUEST_PREFIX__}${account}`;
+  const check = __licenseDigitsHash__(["REQ", base, __LICENSE_HASH_SALT__].join("|"), 6);
+  return `${base}${check}`;
+}
+function __licenseParseRequestCode__(code){
+  const digits = __licenseNormalizeDigits__(code);
+  if (!digits || !digits.startsWith(__LICENSE_REQUEST_PREFIX__) || digits.length !== 17) return null;
+  const base = digits.slice(0, 11);
+  const account = digits.slice(1, 11);
+  const check = digits.slice(11);
+  const expected = __licenseDigitsHash__(["REQ", base, __LICENSE_HASH_SALT__].join("|"), 6);
+  if (check !== expected) return null;
+  return { code: digits, account };
+}
+function __licenseDateToSerial__(iso){
+  const s = String(iso || "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return "";
+  const ts = Date.parse(`${s}T00:00:00Z`);
+  if (!Number.isFinite(ts)) return "";
+  const days = Math.round(ts / 86400000 - __LICENSE_SERIAL_EPOCH__);
+  if (days < 0 || days > 99999) return "";
+  return String(days).padStart(5, "0");
+}
+function __licenseSerialToDate__(serial){
+  const n = parseInt(String(serial || "").trim(), 10);
+  if (!Number.isFinite(n) || n < 0) return "";
+  const ts = (n + __LICENSE_SERIAL_EPOCH__) * 86400000;
+  const d = new Date(ts);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+function __licenseGenerateUnlockCode__(requestCode, startDate, endDate){
+  const parsed = __licenseParseRequestCode__(requestCode);
+  if (!parsed) throw new Error("Codice richiesta non valido");
+  let start = String(startDate || "").trim();
+  let end = String(endDate || "").trim();
+  if (!start && !end) throw new Error("Seleziona il periodo");
+  if (start && !end) end = start;
+  if (end && !start) start = end;
+  if (end < start){ const swap = start; start = end; end = swap; }
+  const startSerial = __licenseDateToSerial__(start);
+  const endSerial = __licenseDateToSerial__(end);
+  if (!startSerial || !endSerial) throw new Error("Periodo non valido");
+  const base = `${__LICENSE_UNLOCK_PREFIX__}${parsed.account}${startSerial}${endSerial}`;
+  const check = __licenseDigitsHash__(["UNLOCK", base, __LICENSE_HASH_SALT__].join("|"), 6);
+  return `${base}${check}`;
+}
+function __licenseParseUnlockCodeForUser__(code, user){
+  const digits = __licenseNormalizeDigits__(code);
+  if (digits === __MASTER_CODE__) return { type:"master" };
+  if (!digits || !digits.startsWith(__LICENSE_UNLOCK_PREFIX__) || digits.length !== 27) return null;
+  const account = digits.slice(1, 11);
+  const expectedAccount = __licenseAccountDigitsFromUser__(user);
+  if (account !== expectedAccount) return null;
+  const startSerial = digits.slice(11, 16);
+  const endSerial = digits.slice(16, 21);
+  const base = digits.slice(0, 21);
+  const check = digits.slice(21);
+  const expected = __licenseDigitsHash__(["UNLOCK", base, __LICENSE_HASH_SALT__].join("|"), 6);
+  if (check !== expected) return null;
+  const startDate = __licenseSerialToDate__(startSerial);
+  const endDate = __licenseSerialToDate__(endSerial);
+  if (!startDate || !endDate || endDate < startDate) return null;
+  return { type:"license", code: digits, startDate, endDate, account };
+}
+function __licenseInfoFromRow__(row){
+  const start = String(row?.licenseStart || row?.license_start || "").trim();
+  const end = String(row?.licenseEnd || row?.license_end || "").trim();
+  return {
+    unlockCode: String(row?.licenseUnlockCode || row?.license_unlock_code || "").trim(),
+    requestCode: String(row?.licenseRequestCode || row?.license_request_code || "").trim(),
+    start,
+    end,
+    status: String(row?.licenseStatus || row?.license_status || "").trim().toLowerCase(),
+    isMaster: __normBool01(row?.isMaster) || String(row?.licenseType || row?.license_type || "").trim().toLowerCase() === "master"
+  };
+}
+function __licenseStateForRow__(row, refDate){
+  const info = __licenseInfoFromRow__(row || {});
+  if (info.isMaster) return { valid:true, master:true, expired:false, pending:false, start:info.start, end:info.end };
+  const today = String(refDate || todayISO()).trim() || todayISO();
+  const hasRange = !!(info.start && info.end);
+  const valid = !!(hasRange && info.status !== "revoked" && info.start <= today && info.end >= today);
+  const expired = !!(hasRange && info.end < today);
+  return { valid, master:false, expired, pending:!valid, start:info.start, end:info.end };
+}
+function __isMasterSession__(session){
+  const s = session || state?.session || loadSession();
+  return !!(s && (__normBool01(s?.isMaster) || String(s?.licenseType || "").trim().toLowerCase() === "master"));
+}
+async function __getUsersRows__(){
+  const rows = await __tblGet__("utenti", []);
+  return Array.isArray(rows) ? rows : [];
+}
+async function __findUserRowByIdentity__(identity){
+  const rows = await __getUsersRows__();
+  const uid = String(identity?.user_id || identity?.id || identity?.userId || "").trim();
+  const uname = String(identity?.username || identity?.user || "").trim().toLowerCase();
+  return rows.find((row) => {
+    const rid = String(row?.id || row?.user_id || row?.userId || "").trim();
+    const run = String(row?.username || row?.user || "").trim().toLowerCase();
+    return (uid && rid && uid === rid) || (uname && run && uname === run);
+  }) || null;
+}
+async function __saveUserRow__(nextRow){
+  const rows = await __getUsersRows__();
+  const uid = String(nextRow?.id || nextRow?.user_id || nextRow?.userId || nextRow?.username || "").trim();
+  const uname = String(nextRow?.username || nextRow?.user || "").trim().toLowerCase();
+  const idx = rows.findIndex((row) => {
+    const rid = String(row?.id || row?.user_id || row?.userId || row?.username || "").trim();
+    const run = String(row?.username || row?.user || "").trim().toLowerCase();
+    return (uid && rid && uid === rid) || (uname && run && uname === run);
+  });
+  if (idx >= 0) rows[idx] = nextRow;
+  else rows.push(nextRow);
+  await __tblSet__("utenti", rows);
+  return nextRow;
+}
+async function __updateUserLicense__(identity, patch){
+  const row = await __findUserRowByIdentity__(identity);
+  if (!row) throw new Error("Account non trovato");
+  const now = __nowIso__();
+  const next = Object.assign({}, row, patch || {}, { updatedAt: now });
+  if (!next.licenseRequestCode) next.licenseRequestCode = __licenseRequestCodeForUser__(next);
+  await __saveUserRow__(next);
+  return next;
+}
+function __sessionExtrasFromUserRow__(row){
+  const info = __licenseInfoFromRow__(row || {});
+  return {
+    isMaster: !!info.isMaster,
+    licenseType: info.isMaster ? "master" : "time",
+    licenseStatus: info.status || (info.isMaster ? "master" : (info.unlockCode ? "active" : "pending")),
+    licenseStart: info.start || "",
+    licenseEnd: info.end || "",
+    licenseUnlockCode: info.unlockCode || "",
+    licenseRequestCode: info.requestCode || __licenseRequestCodeForUser__(row || {})
+  };
+}
+async function __refreshSessionFromStorage__(identity){
+  const row = await __findUserRowByIdentity__(identity || state?.session || loadSession() || {});
+  if (!row) return null;
+  const sess = Object.assign({}, identity || state?.session || loadSession() || {}, __sessionExtrasFromUserRow__(row));
+  try{ if (!sess.user_id) sess.user_id = String(row?.id || row?.user_id || row?.username || "").trim(); }catch(_){ }
+  try{ if (!sess.username) sess.username = String(row?.username || "").trim(); }catch(_){ }
+  try{ if (!sess.ruolo) sess.ruolo = String(row?.ruolo || row?.role || "admin").trim().toLowerCase().startsWith("op") ? "operatore" : "admin"; }catch(_){ }
+  return sess;
+}
+async function __ensureSessionLicenseOnBoot__(){
+  const sess = state?.session || loadSession();
+  if (!sess || !sess.user_id) return { valid:false, session:null };
+  const row = await __findUserRowByIdentity__(sess);
+  if (!row) {
+    try{ clearSession(); }catch(_){ }
+    try{ if (state) state.session = null; }catch(_){ }
+    return { valid:false, session:null };
+  }
+  const merged = await __refreshSessionFromStorage__(sess);
+  const lic = __licenseStateForRow__(row);
+  if (lic.valid){
+    try{ saveSession(merged); }catch(_){ }
+    try{ if (state) state.session = merged; }catch(_){ }
+    return { valid:true, session:merged };
+  }
+  try{ clearSession(); }catch(_){ }
+  try{ if (state) state.session = null; }catch(_){ }
+  __authPendingUser__ = merged;
+  __authPendingReason__ = lic.expired ? "Licenza scaduta" : "Inserisci codice sblocco";
+  return { valid:false, session:merged };
+}
+
 async function __localApiUtenti__(method, body){
   const op = String(body?.op || "").trim();
   const rows0 = await __tblGet__("utenti", []);
@@ -343,11 +545,11 @@ async function __localApiUtenti__(method, body){
   const okLogin = (u) => {
     const user_id = String(u?.id || u?.user_id || u?.userId || "").trim() || String(u?.username || "").trim();
     const ruolo = String(u?.ruolo || u?.role || "").trim() || (String(u?.isOperatore||"")==="1" ? "operatore" : "amministratore");
-    return {
+    return Object.assign({
       user_id,
       username: String(u?.username || "").trim(),
       ruolo
-    };
+    }, __sessionExtrasFromUserRow__(u || {}));
   };
 
   if (method === "POST" && op === "login"){
@@ -371,9 +573,12 @@ async function __localApiUtenti__(method, body){
       username,
       password,
       ruolo,
+      licenseStatus: "pending",
+      licenseType: "time",
       createdAt: __nowIso__(),
       updatedAt: __nowIso__(),
     };
+    try{ u.licenseRequestCode = __licenseRequestCodeForUser__(u); }catch(_){ }
     rows.push(u);
     await saveAll();
     return { user: okLogin(u) };
@@ -2445,12 +2650,12 @@ function __sessionFromUserRow__(u){
       ? (ruoloRaw.startsWith("op") ? "operatore" : "admin")
       : ((String(u?.isOperatore || u?.is_operatore || "").trim() === "1" || u?.isOperatore === true) ? "operatore" : "admin");
     if (!user_id || !username) return null;
-    return {
+    return Object.assign({
       user_id,
       username,
       ruolo,
       name: String(u?.name || u?.nome || username).trim()
-    };
+    }, __sessionExtrasFromUserRow__(u || {}));
   }catch(_){ return null; }
 }
 
@@ -3160,6 +3365,8 @@ function __fitHomeSyncBtn__(){
 
 function applyRoleMode(){
   const isOp = !!(state && state.session && isOperatoreSession(state.session));
+  const isMaster = __isMasterSession__(state && state.session ? state.session : null);
+  try{ const wrap = document.getElementById("settingsMasterWrap"); if (wrap){ wrap.hidden = !(!!(state && state.session && !isOp && isMaster)); try{ wrap.style.display = wrap.hidden ? "none" : "flex"; }catch(_){ } } }catch(_){ }
   try{ document.body.dataset.role = isOp ? "operatore" : "user"; }catch(_){ }
   try{
     const shoppingBtn = document.getElementById("goProdotti");
@@ -11770,6 +11977,16 @@ function setupImpostazioni() {
         try{ console.error("Roster/Firebase error:", e); }catch(_){ }
       }
     });
+    const masterBtn = document.getElementById("settingsMasterBtn");
+    if (masterBtn) bindFastTap(masterBtn, async () => {
+      try{
+        if (!__isMasterSession__()) throw new Error("Accesso riservato");
+        __openLicenseGeneratorModal__();
+      }catch(e){
+        try{ toast(String((e && e.message) ? e.message : "Accesso riservato"), "orange"); }catch(_){ }
+      }
+    });
+    try{ __initLicenseGeneratorBindings__(); }catch(_){ }
 
     // fallback (se presenti in DOM, ma di norma nascosti)
     const dbA = document.getElementById("dbAdminBtn");
@@ -12226,8 +12443,8 @@ const cfg = document.getElementById("settingsConfigBtn");
 function setupAuth(){
   const menu = document.getElementById("authMenu");
   const form = document.getElementById("authForm");
+  const activation = document.getElementById("authActivation");
 
-  // Menu (landing login) — 4 pulsanti
   const btnCreate = document.getElementById("btnMenuCreate");
   const btnUpdate = document.getElementById("btnMenuUpdate");
   const btnLoginAdmin = document.getElementById("btnMenuLoginAdmin");
@@ -12235,8 +12452,14 @@ function setupAuth(){
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");
+  const btnRequestCode = document.getElementById("btnAuthRequestCode");
+  const btnUnlockCode = document.getElementById("btnAuthUnlockCode");
+  const btnActivationBack = document.getElementById("btnAuthActivationBack");
+  const activationTitle = document.getElementById("authActivationTitle");
+  const activationUser = document.getElementById("authActivationUser");
+  const activationText = document.getElementById("authActivationText");
+  const activationHint = document.getElementById("authActivationHint");
 
-  // Crea account: selezione tipologia + tag
   const createRoleWrap = document.getElementById("authCreateRoleWrap");
   const createRoleAdmin = document.getElementById("authCreateRoleAdmin");
   const createRoleOperator = document.getElementById("authCreateRoleOperator");
@@ -12259,8 +12482,9 @@ function setupAuth(){
 
   const hint = document.getElementById("authHint");
   const setHint = (msg)=>{ try{ if (hint) hint.textContent = msg || ""; }catch(_ ){} };
+  const setActivationHint = (msg)=>{ try{ if (activationHint) activationHint.textContent = msg || ""; }catch(_ ){} };
 
-  let mode = "menu"; // menu | create | update | login_admin | login_operator
+  let mode = "menu";
 
   const getCreateRole = ()=>{
     try{ if (createRoleOperator && createRoleOperator.checked) return "operatore"; }catch(_ ){}
@@ -12294,10 +12518,16 @@ function setupAuth(){
     }catch(_ ){}
   };
 
+  const hideActivation = ()=>{
+    try{ if (activation) activation.hidden = true; }catch(_ ){}
+    setActivationHint("");
+  };
+
   const showMenu = ()=>{
     mode = "menu";
     try{ if (menu) menu.hidden = false; }catch(_ ){}
     try{ if (form) form.hidden = true; }catch(_ ){}
+    hideActivation();
     setHint("");
     try{ if (createRoleWrap) createRoleWrap.hidden = true; }catch(_ ){}
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
@@ -12306,15 +12536,17 @@ function setupAuth(){
     try{ if (npWrap) npWrap.hidden = true; }catch(_ ){}
     try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
     clearFields();
+    __authPendingUser__ = null;
+    __authPendingReason__ = "";
   };
 
   const setMode = (m)=>{
     mode = m;
     try{ if (menu) menu.hidden = true; }catch(_ ){}
     try{ if (form) form.hidden = false; }catch(_ ){}
+    hideActivation();
     setHint("");
 
-    // base reset
     try{ if (createRoleWrap) createRoleWrap.hidden = true; }catch(_ ){}
     try{ if (tenantWrap) tenantWrap.hidden = true; }catch(_ ){}
     try{ if (extra) extra.hidden = true; }catch(_ ){}
@@ -12343,13 +12575,7 @@ function setupAuth(){
       return;
     }
 
-    if (m === "login_admin"){
-      try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
-      try{ u && u.focus(); }catch(_ ){}
-      return;
-    }
-
-    if (m === "login_operator"){
+    if (m === "login_admin" || m === "login_operator"){
       try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
@@ -12371,18 +12597,102 @@ function setupAuth(){
     return m || "Errore";
   };
 
-  // Bind menu
+  const showActivationForUser = async (user, reason)=>{
+    const merged = await __refreshSessionFromStorage__(user || {}) || user || null;
+    __authPendingUser__ = merged;
+    __authPendingReason__ = String(reason || "").trim();
+    try{ if (menu) menu.hidden = true; }catch(_ ){}
+    try{ if (form) form.hidden = true; }catch(_ ){}
+    try{ if (activation) activation.hidden = false; }catch(_ ){}
+    try{ if (activationTitle) activationTitle.textContent = (__authPendingReason__ === "Licenza scaduta") ? "Licenza scaduta" : "Attivazione account"; }catch(_ ){}
+    try{ if (activationUser) activationUser.textContent = String(merged?.username || user?.username || "—").trim() || "—"; }catch(_ ){}
+    try{
+      if (activationText){
+        activationText.textContent = (__authPendingReason__ === "Licenza scaduta")
+          ? "Inserisci un nuovo codice sblocco oppure genera il codice richiesta."
+          : "Se hai già il codice sblocco inseriscilo. Altrimenti genera il codice richiesta e invialo via email.";
+      }
+    }catch(_ ){}
+    setActivationHint("");
+  };
+
+  const finishLicensedLogin = async (user)=>{
+    const merged = await __refreshSessionFromStorage__(user || {}) || user || null;
+    if (!merged) throw new Error("Account non trovato");
+    state.session = merged;
+    saveSession(state.session);
+    __authPendingUser__ = null;
+    __authPendingReason__ = "";
+    setHint("");
+    setActivationHint("");
+    goAfterLogin();
+  };
+
+  __authUiApi__ = {
+    showMenu,
+    showActivationForUser,
+    finishLicensedLogin
+  };
+
   if (btnCreate) bindFastTap(btnCreate, ()=>setMode("create"));
   if (btnUpdate) bindFastTap(btnUpdate, ()=>setMode("update"));
   if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>setMode("login_admin"));
   if (btnLoginOperator) bindFastTap(btnLoginOperator, ()=>setMode("login_operator"));
   if (btnBack) bindFastTap(btnBack, showMenu);
+  if (btnActivationBack) bindFastTap(btnActivationBack, showMenu);
 
-  // Radio create role -> tag
   try{
     if (createRoleAdmin) createRoleAdmin.addEventListener("change", syncCreateTag);
     if (createRoleOperator) createRoleOperator.addEventListener("change", syncCreateTag);
   }catch(_ ){}
+
+  if (btnRequestCode) bindFastTap(btnRequestCode, async ()=>{
+    try{
+      const user = __authPendingUser__;
+      if (!user) throw new Error("Nessun account selezionato");
+      const row = await __updateUserLicense__(user, { licenseRequestCode: __licenseRequestCodeForUser__(user), licenseStatus: "pending", licenseType: __isMasterSession__(user) ? "master" : "time" });
+      const refreshed = await __refreshSessionFromStorage__(row);
+      __authPendingUser__ = refreshed || user;
+      __showLicenseRequestModal__(__licenseRequestCodeForUser__(row), refreshed || row, { email:true });
+      setActivationHint("Codice richiesta generato");
+    }catch(e){ setActivationHint(mapAuthError(e && e.message ? e.message : e)); }
+  });
+
+  if (btnUnlockCode) bindFastTap(btnUnlockCode, async ()=>{
+    try{
+      const user = __authPendingUser__;
+      if (!user) throw new Error("Nessun account selezionato");
+      const code = await __openLicenseUnlockModal__();
+      if (!code) return;
+      if (String(code).trim() === __MASTER_CODE__){
+        if (isOperatoreSession(user)) throw new Error("Il master code è consentito solo agli account admin");
+        const row = await __updateUserLicense__(user, {
+          isMaster: true,
+          licenseType: "master",
+          licenseStatus: "master",
+          licenseStart: todayISO(),
+          licenseEnd: "2099-12-31",
+          licenseUnlockCode: __MASTER_CODE__,
+          masterEnabledAt: __nowIso__()
+        });
+        await finishLicensedLogin(row);
+        return;
+      }
+      const parsed = __licenseParseUnlockCodeForUser__(code, user);
+      if (!parsed || parsed.type !== "license") throw new Error("Codice sblocco non valido");
+      const row = await __updateUserLicense__(user, {
+        isMaster: false,
+        licenseType: "time",
+        licenseStatus: "active",
+        licenseStart: parsed.startDate,
+        licenseEnd: parsed.endDate,
+        licenseUnlockCode: parsed.code,
+        licenseRequestCode: __licenseRequestCodeForUser__(user),
+        masterEnabledAt: ""
+      });
+      await finishLicensedLogin(row);
+    }catch(e){ setActivationHint(mapAuthError(e && e.message ? e.message : e)); }
+  });
 
   if (btnSubmit) bindFastTap(btnSubmit, async ()=>{
     try{
@@ -12398,10 +12708,8 @@ function setupAuth(){
         const role = getCreateRole();
         const data = await api("utenti", { method:"POST", body:{ op:"create", role, username, password } });
         if (!data || !data.user) throw new Error("Errore creazione account");
-        state.session = data.user;
-        saveSession(state.session);
         setHint("");
-        goAfterLogin();
+        await showActivationForUser(data.user, "create");
         return;
       }
 
@@ -12426,10 +12734,14 @@ function setupAuth(){
         if (!data || !data.user) throw new Error("Credenziali non valide");
         if (mode === "login_admin" && isOperatoreSession(data.user)) { setHint("Questo account è un operatore. Accedi come operatore."); return; }
         if (mode === "login_operator" && !isOperatoreSession(data.user)) { setHint("Questo account è un admin. Accedi come admin."); return; }
-        state.session = data.user;
-        saveSession(state.session);
-        setHint("");
-        goAfterLogin();
+        const row = await __findUserRowByIdentity__(data.user);
+        const lic = __licenseStateForRow__(row || {});
+        if (lic.valid){
+          await finishLicensedLogin(row || data.user);
+        } else {
+          setHint("");
+          await showActivationForUser(row || data.user, lic.expired ? "Licenza scaduta" : "unlock");
+        }
         return;
       }
 
@@ -12441,6 +12753,264 @@ function setupAuth(){
 
   showMenu();
 }
+
+function __modalShowById__(id){
+  try{
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.hidden = false;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }catch(_){ }
+}
+function __modalHideById__(id){
+  try{
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }catch(_){ }
+}
+function __showLicenseRequestModal__(code, user, opts){
+  try{
+    const title = document.getElementById('licenseRequestModalTitle');
+    const txt = document.getElementById('licenseRequestCodeText');
+    const hint = document.getElementById('licenseRequestModalHint');
+    const emailBtn = document.getElementById('licenseRequestEmailBtn');
+    if (title) title.textContent = (opts && opts.title) ? String(opts.title) : 'CODICE RICHIESTA';
+    if (txt){
+      txt.textContent = String(code || '');
+      txt.onclick = async () => {
+        try{
+          if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(String(code || ''));
+          else {
+            const r = document.createRange();
+            r.selectNodeContents(txt);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(r);
+            document.execCommand('copy');
+            sel.removeAllRanges();
+          }
+          try{ toast('Codice copiato', 'blue'); }catch(_){ }
+        }catch(_){ try{ toast('Copia non disponibile', 'orange'); }catch(__){ } }
+      };
+    }
+    if (hint) hint.textContent = (opts && opts.hint) ? String(opts.hint) : 'Tocca il codice per copiarlo';
+    if (emailBtn){
+      const visible = !!(opts && opts.email);
+      emailBtn.hidden = !visible;
+      emailBtn.style.display = visible ? '' : 'none';
+      emailBtn.onclick = () => {
+        try{
+          const uname = String(user?.username || 'account').trim();
+          const subject = encodeURIComponent(`dDAE codice richiesta ${uname}`);
+          const body = encodeURIComponent(`Account: ${uname}
+Codice richiesta: ${String(code || '')}
+Build: ${BUILD_VERSION}`);
+          window.location.href = `mailto:${encodeURIComponent(__MASTER_EMAIL__)}?subject=${subject}&body=${body}`;
+        }catch(_){ }
+      };
+    }
+    ['licenseRequestClose','licenseRequestDoneBtn'].forEach((id)=>{ const el = document.getElementById(id); if (el) el.onclick = ()=>__modalHideById__('licenseRequestModal'); });
+    __modalShowById__('licenseRequestModal');
+  }catch(_){ }
+}
+function __openLicenseUnlockModal__(){
+  return new Promise((resolve)=>{
+    try{
+      const input = document.getElementById('licenseUnlockInput');
+      const finish = (val)=>{ __modalHideById__('licenseUnlockModal'); resolve(String(val || '').trim()); };
+      ['licenseUnlockClose','licenseUnlockCancel'].forEach((id)=>{ const el = document.getElementById(id); if (el) el.onclick = ()=>finish(''); });
+      const ok = document.getElementById('licenseUnlockConfirm');
+      if (ok) ok.onclick = ()=>finish(input ? input.value : '');
+      if (input){
+        input.value = '';
+        input.onkeydown = (e)=>{ if (e && e.key === 'Enter'){ try{ e.preventDefault(); }catch(_){ } finish(input.value); } };
+        setTimeout(()=>{ try{ input.focus(); }catch(_){ } }, 80);
+      }
+      __modalShowById__('licenseUnlockModal');
+    }catch(_){ resolve(''); }
+  });
+}
+const __licenseDateRangeState__ = { month:null, start:'', end:'', draftStart:'', draftEnd:'' };
+function __licenseDateRangeFormatDisplay__(startDate, endDate){
+  const a = String(startDate || '').trim();
+  const b = String(endDate || '').trim();
+  if (!a && !b) return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+  if (a && !b) return formatShortDateIT(a);
+  if (a && b) return `${formatShortDateIT(a)} → ${formatShortDateIT(b)}`;
+  return __designTranslate__('Seleziona date', { en:'Select dates', fr:'Sélectionnez les dates', de:'Daten auswählen', es:'Selecciona fechas' });
+}
+function __syncLicenseDateRangeUi__(){
+  try{
+    const start = String(document.getElementById('licenseStartDate')?.value || '').trim();
+    const end = String(document.getElementById('licenseEndDate')?.value || '').trim();
+    const value = document.getElementById('licenseDateRangeValue');
+    if (value) value.textContent = __licenseDateRangeFormatDisplay__(start, end);
+  }catch(_){ }
+}
+function __renderLicenseDateRangeCalendar__(){
+  try{
+    const grid = document.getElementById('licenseDateRangeGrid');
+    const monthTitle = document.getElementById('licenseDateRangeMonthTitle');
+    const rangeTitle = document.getElementById('licenseDateRangeModalTitle');
+    const weekdaysWrap = document.getElementById('licenseDateRangeWeekdays');
+    if (!grid || !monthTitle || !weekdaysWrap) return;
+    weekdaysWrap.innerHTML = __guestDateRangeWeekdayLabels__().map((d)=>`<span>${d}</span>`).join('');
+    const monthDate = __licenseDateRangeState__.month || __guestDateRangeMonthStart__();
+    __licenseDateRangeState__.month = __guestDateRangeMonthStart__(monthDate);
+    const year = __licenseDateRangeState__.month.getFullYear();
+    const month = __licenseDateRangeState__.month.getMonth();
+    monthTitle.textContent = __licenseDateRangeState__.month.toLocaleDateString(__getCurrentLocale__(), { month:'long', year:'numeric' });
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const start = new Date(year, month, 1 - offset);
+    const todayIso = todayISO();
+    const startIso = String(__licenseDateRangeState__.draftStart || '');
+    const endIso = String(__licenseDateRangeState__.draftEnd || '');
+    const parts = [];
+    for(let i=0;i<42;i++){
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const inMonth = d.getMonth() === month;
+      const classes = ['guest-date-range-day'];
+      if (!inMonth) classes.push('is-muted');
+      if (__guestDateRangeSameDay__(iso, todayIso)) classes.push('is-today');
+      if (__guestDateRangeSameDay__(iso, startIso) || __guestDateRangeSameDay__(iso, endIso)) classes.push('is-selected','is-edge');
+      else if (__guestDateRangeInBetween__(iso, startIso, endIso)) classes.push('is-in-range');
+      parts.push(`<button class="${classes.join(' ')}" data-date="${iso}" type="button">${d.getDate()}</button>`);
+    }
+    grid.innerHTML = parts.join('');
+    if (rangeTitle) rangeTitle.textContent = __licenseDateRangeFormatDisplay__(startIso, endIso);
+  }catch(_){ }
+}
+function __selectLicenseDateRangeDay__(iso){
+  const start = String(__licenseDateRangeState__.draftStart || '');
+  const end = String(__licenseDateRangeState__.draftEnd || '');
+  if (!start || (start && end)){
+    __licenseDateRangeState__.draftStart = iso;
+    __licenseDateRangeState__.draftEnd = '';
+  } else if (iso < start){
+    __licenseDateRangeState__.draftStart = iso;
+  } else {
+    __licenseDateRangeState__.draftEnd = iso;
+  }
+  __renderLicenseDateRangeCalendar__();
+}
+function __openLicenseDateRangeModal__(){
+  try{
+    const start = String(document.getElementById('licenseStartDate')?.value || '').trim() || todayISO();
+    const endRaw = String(document.getElementById('licenseEndDate')?.value || '').trim();
+    const end = (endRaw && endRaw >= start) ? endRaw : start;
+    __licenseDateRangeState__.start = start;
+    __licenseDateRangeState__.end = end;
+    __licenseDateRangeState__.draftStart = start;
+    __licenseDateRangeState__.draftEnd = end;
+    __licenseDateRangeState__.month = __guestDateRangeMonthStart__(parseDateTs(start) != null ? new Date(parseDateTs(start)) : new Date());
+    __renderLicenseDateRangeCalendar__();
+    __modalShowById__('licenseDateRangeModal');
+  }catch(_){ }
+}
+function __closeLicenseDateRangeModal__(restore){
+  try{
+    if (restore){
+      __licenseDateRangeState__.draftStart = __licenseDateRangeState__.start || '';
+      __licenseDateRangeState__.draftEnd = __licenseDateRangeState__.end || '';
+    }
+    __modalHideById__('licenseDateRangeModal');
+  }catch(_){ }
+}
+function __applyLicenseDateRangeModal__(){
+  try{
+    let start = String(__licenseDateRangeState__.draftStart || '').trim();
+    let end = String(__licenseDateRangeState__.draftEnd || '').trim();
+    if (!start && !end) return __closeLicenseDateRangeModal__(true);
+    if (start && !end) end = start;
+    if (end && !start) start = end;
+    if (end < start){ const swap = start; start = end; end = swap; }
+    const startEl = document.getElementById('licenseStartDate');
+    const endEl = document.getElementById('licenseEndDate');
+    if (startEl) startEl.value = start;
+    if (endEl) endEl.value = end;
+    __licenseDateRangeState__.start = start;
+    __licenseDateRangeState__.end = end;
+    __syncLicenseDateRangeUi__();
+    __closeLicenseDateRangeModal__(false);
+  }catch(_){ }
+}
+function __bindLicenseUi__(){
+  try{
+    const trigger = document.getElementById('licenseDateRangeTrigger');
+    if (trigger && !trigger.__boundLicenseRange){ trigger.__boundLicenseRange = true; bindFastTap(trigger, ()=>{ try{ __openLicenseDateRangeModal__(); }catch(_){ } }); }
+    const modal = document.getElementById('licenseDateRangeModal');
+    if (modal && !modal.__boundLicenseRange){
+      modal.__boundLicenseRange = true;
+      ['licenseDateRangeModalClose','licenseDateRangeCancel'].forEach((id)=>{ const el = document.getElementById(id); if (el) bindFastTap(el, ()=>__closeLicenseDateRangeModal__(true)); });
+      const applyBtn = document.getElementById('licenseDateRangeApply');
+      if (applyBtn) bindFastTap(applyBtn, ()=>__applyLicenseDateRangeModal__());
+      const prevBtn = document.getElementById('licenseDateRangePrev');
+      if (prevBtn) bindFastTap(prevBtn, ()=>{ try{ const m = __licenseDateRangeState__.month || __guestDateRangeMonthStart__(); __licenseDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()-1, 1); __renderLicenseDateRangeCalendar__(); }catch(_){ } });
+      const nextBtn = document.getElementById('licenseDateRangeNext');
+      if (nextBtn) bindFastTap(nextBtn, ()=>{ try{ const m = __licenseDateRangeState__.month || __guestDateRangeMonthStart__(); __licenseDateRangeState__.month = new Date(m.getFullYear(), m.getMonth()+1, 1); __renderLicenseDateRangeCalendar__(); }catch(_){ } });
+      modal.addEventListener('click', (ev)=>{ try{ if (ev.target === modal) __closeLicenseDateRangeModal__(true); }catch(_){ } });
+      const grid = document.getElementById('licenseDateRangeGrid');
+      try{ __bindDateRangeCalendarHold__(grid); }catch(_){ }
+      if (grid) grid.addEventListener('click', (ev)=>{
+        const btn = ev.target.closest?.('.guest-date-range-day[data-date]');
+        if (!btn) return;
+        const iso = String(btn.dataset.date || '').trim();
+        if (!iso) return;
+        __selectLicenseDateRangeDay__(iso);
+      });
+    }
+    __syncLicenseDateRangeUi__();
+  }catch(_){ }
+}
+function __openLicenseGeneratorModal__(){
+  try{
+    const req = document.getElementById('licenseRequestInput');
+    const start = document.getElementById('licenseStartDate');
+    const end = document.getElementById('licenseEndDate');
+    const hint = document.getElementById('licenseGeneratorHint');
+    if (req) req.value = '';
+    if (start) start.value = todayISO();
+    if (end) end.value = todayISO();
+    if (hint) hint.textContent = 'Inserisci il codice richiesta e scegli il periodo';
+    __syncLicenseDateRangeUi__();
+    __modalShowById__('licenseGeneratorModal');
+    setTimeout(()=>{ try{ req && req.focus(); }catch(_){ } }, 80);
+  }catch(_){ }
+}
+function __closeLicenseGeneratorModal__(){ __modalHideById__('licenseGeneratorModal'); }
+function __initLicenseGeneratorBindings__(){
+  try{
+    __bindLicenseUi__();
+    const closeIds = ['licenseGeneratorClose','licenseGeneratorCancel'];
+    closeIds.forEach((id)=>{ const el = document.getElementById(id); if (el && !el.__boundLicenseClose){ el.__boundLicenseClose = true; bindFastTap(el, __closeLicenseGeneratorModal__); } });
+    const ok = document.getElementById('licenseGeneratorConfirm');
+    if (ok && !ok.__boundLicenseGenerate){
+      ok.__boundLicenseGenerate = true;
+      bindFastTap(ok, ()=>{
+        try{
+          const requestCode = String(document.getElementById('licenseRequestInput')?.value || '').trim();
+          const start = String(document.getElementById('licenseStartDate')?.value || '').trim();
+          const end = String(document.getElementById('licenseEndDate')?.value || '').trim();
+          const code = __licenseGenerateUnlockCode__(requestCode, start, end);
+          __closeLicenseGeneratorModal__();
+          __showLicenseRequestModal__(code, null, { title:'CODICE SBLOCCO', hint:'Tocca il codice per copiarlo', email:false });
+        }catch(e){
+          const hint = document.getElementById('licenseGeneratorHint');
+          if (hint) hint.textContent = String((e && e.message) ? e.message : 'Errore codice');
+        }
+      });
+    }
+  }catch(_){ }
+}
+
 // ===== API Cache (speed + dedupe richieste) =====
 const __apiCache = new Map();      // key -> { t:number, data:any }
 const __apiInflight = new Map();   // key -> Promise
@@ -27518,12 +28088,13 @@ async function init(){
   try{ applyAppTextUi(document.body); }catch(_){ }
   try{ initAppTextUiObserver(); }catch(_){ }
   const __restore = __readRestoreState();
-  // Session + anno
   state.session = loadSession();
+  if (state.session && state.session.user_id){
+    try{ const bootCheck = await __ensureSessionLicenseOnBoot__(); if (bootCheck && bootCheck.valid) state.session = bootCheck.session || state.session; }catch(_){ }
+  }
   state.exerciseYear = loadExerciseYear();
   updateYearPill();
 
-  // Imposta una pagina di default (poi showPage verrà chiamata UNA sola volta)
   document.body.dataset.page = (state.session && state.session.user_id) ? "home" : "auth";
   setupHeader();
   setupAuth();
@@ -27640,6 +28211,9 @@ try{
     ? (restoredPage || "home")
     : "auth";
   showPage(targetPage);
+  if (!state.session && __authPendingUser__ && __authUiApi && typeof __authUiApi__.showActivationForUser === 'function'){
+    try{ await __authUiApi__.showActivationForUser(__authPendingUser__, __authPendingReason__ || 'unlock'); }catch(_){ }
+  }
   if (__restore) setTimeout(() => { try { __applyUiState(__restore); } catch(_) {} }, 0);
 
 
