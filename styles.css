@@ -153,7 +153,7 @@ body.ddae-dark.bg-dark-ready{
   overflow: hidden;
 }
 
-/* dDAE_2.661 — Titolo topbar sempre in riga tra LED e tasti */
+/* dDAE_2.663 — Titolo topbar sempre in riga tra LED e tasti */
 .topbar-year{
   position: static;
   flex: 1 1 auto;
@@ -20343,7 +20343,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #page-opsettings #opSettingsLogoutBtn{ order: 11 !important; }
 
 
-/* dDAE_2.662 - bold removed globally */
+/* dDAE_2.663 - bold removed globally */
 html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(polyline):not(polygon):not(g):not(defs):not(clippath):not(use):not(stop){
   font-weight: 400 !important;
 }
