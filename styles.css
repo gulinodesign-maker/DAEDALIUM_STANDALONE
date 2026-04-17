@@ -20341,3 +20341,14 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #page-impostazioni #settingsLogoutBtn{ order: 11 !important; }
 #page-opsettings #opSettingsCodeBtn{ order: 10 !important; }
 #page-opsettings #opSettingsLogoutBtn{ order: 11 !important; }
+
+
+/* dDAE_2.662 - bold removed globally */
+html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(polyline):not(polygon):not(g):not(defs):not(clippath):not(use):not(stop){
+  font-weight: 400 !important;
+}
+#tagColorModeBold,
+#roomSettingsTextBoldBtn,
+.tag-color-mode-btn[data-mode="bold"]{
+  display:none !important;
+}
