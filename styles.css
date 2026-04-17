@@ -119,6 +119,7 @@ body.ddae-dark.bg-dark-ready{
   background: var(--glass);
   backdrop-filter: blur(14px);
   border-bottom: 0;
+  overflow: hidden;
 }
 
 /* dDAE_1.020 — Linea sotto la topbar (sfumata colori app) */
@@ -133,13 +134,14 @@ body.ddae-dark.bg-dark-ready{
 }
 
 .brand{
-    position: relative;
-display:flex;
+  position: relative;
+  display:flex;
   align-items:center;
   justify-content:space-between;
-  gap: 12px;
+  gap: 10px;
   padding: 10px 14px;
   flex-wrap: nowrap;
+  min-width: 0;
 }
 .brand-left{
   display:flex;
@@ -148,23 +150,25 @@ display:flex;
   min-width: 0;
   flex: 1 1 auto;
   flex-wrap: nowrap;
+  overflow: hidden;
 }
 
-/* dDAE_2.008 — Anno corrente centrato in topbar (sostituisce titolo) */
+/* dDAE_2.661 — Titolo topbar sempre in riga tra LED e tasti */
 .topbar-year{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: static;
+  flex: 1 1 auto;
+  min-width: 0;
   height: 28px;
   display:flex;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   font-weight: 800;
-  font-size: 20px;
+  font-size: clamp(18px, 4.6vw, 20px);
   letter-spacing: 0.6px;
   color: rgba(15,23,42,0.92);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
   user-select: none;
 }
@@ -176,9 +180,50 @@ display:flex;
   flex-wrap: nowrap;
   flex: 0 0 auto;
   flex-shrink: 0;
+  margin-left: auto;
+  min-width: 0;
 }
 
 .brand-right > *{ flex-shrink: 0; }
+
+.brand-left > *,
+.brand-right > *{
+  min-width: 0;
+}
+.topbar .logo,
+.topbar .top-led-grid,
+.topbar-year,
+.topbar .icon-btn,
+.topbar [id$="TopTools"]{
+  align-self: center;
+}
+.topbar [id$="TopTools"]{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap;
+}
+.topbar [id$="TopTools"][hidden]{
+  display:none !important;
+}
+.topbar .icon-btn{
+  flex: 0 0 auto;
+}
+.prodotti-title-row,
+.hd-actions,
+.guest-hd-actions,
+.clean-topbar,
+.app-section-head-row,
+.stats-head-actions,
+.prodotti-grid-tabs,
+.room-settings-line,
+.settings-actions,
+.settings-top-row,
+.settings-bottom-stack,
+.pill-row,
+.tab-row{
+  align-items:center;
+}
 
 
 /* dDAE_2.134 — Topbar buttons: white (80%) + azure icons (palette) */
