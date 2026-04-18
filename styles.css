@@ -153,7 +153,7 @@ body.ddae-dark.bg-dark-ready{
   overflow: hidden;
 }
 
-/* dDAE_2.664 — Titolo topbar sempre in riga tra LED e tasti */
+/* dDAE_2.665 — Titolo topbar sempre in riga tra LED e tasti */
 .topbar-year{
   position: static;
   flex: 1 1 auto;
@@ -20343,7 +20343,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 #page-opsettings #opSettingsLogoutBtn{ order: 11 !important; }
 
 
-/* dDAE_2.664 - bold removed globally */
+/* dDAE_2.665 - bold removed globally */
 html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(polyline):not(polygon):not(g):not(defs):not(clippath):not(use):not(stop){
   font-weight: 400 !important;
 }
@@ -20351,4 +20351,21 @@ html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(po
 #roomSettingsTextBoldBtn,
 .tag-color-mode-btn[data-mode="bold"]{
   display:none !important;
+}
+
+/* dDAE_2.665 — Report ospite più leggibile su smartphone */
+.guest-report-card{ width:min(96vw,860px); max-height:min(88vh,1100px); border-radius:34px; padding:16px 16px 20px; overflow:auto; }
+.guest-report-preview{ display:flex; justify-content:center; align-items:flex-start; padding:4px 0 0; }
+.guest-report-preview img{ width:100%; max-width:760px; height:auto; display:block; border-radius:30px; box-shadow:0 10px 24px rgba(15,23,42,0.10); background:#f8fbfd; }
+@media (max-width: 820px){
+  .guest-report-card{ width:min(97vw,820px); padding:14px 14px 18px; border-radius:32px; }
+  .guest-report-toolbar{ gap:10px; margin-bottom:12px; }
+  .guest-report-tool{ width:58px; height:58px; border-radius:18px; }
+  .guest-report-preview img{ width:100%; max-width:none; border-radius:26px; }
+}
+@media (max-width: 480px){
+  .guest-report-card{ width:min(98vw,760px); max-height:min(90vh,1100px); padding:12px 12px 16px; border-radius:30px; }
+  .guest-report-toolbar{ justify-content:center; gap:10px; }
+  .guest-report-tool{ width:60px; height:60px; border-radius:18px; }
+  .guest-report-preview img{ width:100%; border-radius:24px; box-shadow:0 8px 18px rgba(15,23,42,0.10); }
 }
