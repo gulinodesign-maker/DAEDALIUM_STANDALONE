@@ -20380,3 +20380,28 @@ html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(po
   .guest-report-tool{ width:54px; height:54px; border-radius:18px; }
   .guest-report-preview img{ border-radius:24px; }
 }
+
+
+/* dDAE_2.670 — Popup licenza davvero modale: nessun click-through su iOS */
+#settingsLicenseModal,
+#licenseRequestModal,
+#licenseUnlockModal,
+#licenseGeneratorModal,
+#licenseDateRangeModal{
+  pointer-events:auto !important;
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#settingsLicenseModal .modal-card,
+#licenseRequestModal .modal-card,
+#licenseUnlockModal .modal-card,
+#licenseGeneratorModal .modal-card,
+#licenseDateRangeModal .guest-date-range-modal-card{
+  pointer-events:auto !important;
+  touch-action:manipulation;
+}
+body.modal-open{
+  overflow:hidden;
+  overscroll-behavior:contain;
+}
