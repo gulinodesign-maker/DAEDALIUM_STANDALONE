@@ -19701,11 +19701,11 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 .guest-bookingnum-led{ width:12px; height:12px; border-radius:999px; display:inline-block; box-shadow:0 0 0 1px rgba(15,23,42,0.08) inset,0 2px 8px rgba(15,23,42,0.10);} 
 .guest-bookingnum-led.is-missing{ background:#facc15; }
 .guest-bookingnum-led.is-ready{ background:#22c55e; }
-.guest-report-card{ width:min(92vw,760px); max-height:min(86vh,980px); border-radius:34px; padding:18px 18px 22px; overflow:auto; }
+.guest-report-card{ width:min(92vw,700px); max-height:min(84vh,920px); border-radius:30px; padding:14px 14px 18px; overflow:auto; }
 .guest-report-toolbar{ display:flex; justify-content:flex-end; gap:12px; margin-bottom:10px; flex-wrap:nowrap; }
 .guest-report-tool{ width:56px; height:56px; border-radius:18px; flex:0 0 auto; }
 .guest-report-preview{ display:flex; justify-content:center; }
-.guest-report-preview img{ width:100%; height:auto; display:block; border-radius:28px; box-shadow:0 12px 30px rgba(15,23,42,0.12); }
+.guest-report-preview img{ width:100%; height:auto; display:block; border-radius:24px; box-shadow:0 10px 24px rgba(15,23,42,0.10); }
 .guest-report-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:16px; flex-wrap:nowrap; }
 .guest-report-actions .btn{ flex:1 1 0; min-width:0; white-space:nowrap; padding-inline:12px; }
 .ddae-dark .guest-report-card{ background: rgba(15,23,42,0.98); }
