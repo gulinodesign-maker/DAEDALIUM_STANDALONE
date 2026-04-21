@@ -28728,7 +28728,7 @@ async function __piscinaReportCanvas__(viewMonth){
     const y = tableTop + headerH + (idx * rowH);
     ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : 'rgba(77,156,197,0.05)';
     ctx.fillRect(pad, y, contentW, rowH);
-    ctx.strokeStyle = 'rgba(15,23,42,0.06)';
+    ctx.strokeStyle = 'rgba(15,23,42,0.10)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(pad, y + rowH);
@@ -33427,34 +33427,11 @@ async function __orePuliziaReportCanvas__(){
     ctx.restore();
   };
 
-  ctx.fillStyle = '#ececec';
+  ctx.fillStyle = '#f7f8fa';
   ctx.fillRect(0, 0, W, H);
 
-  const drawWave = (cfg) => {
-    ctx.save();
-    ctx.globalAlpha = cfg.alpha;
-    ctx.lineWidth = cfg.lineWidth;
-    ctx.strokeStyle = cfg.color;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(cfg.points[0][0], cfg.points[0][1]);
-    for (let i = 1; i < cfg.points.length; i += 3){
-      const c1 = cfg.points[i];
-      const c2 = cfg.points[i + 1];
-      const p = cfg.points[i + 2];
-      if (!c1 || !c2 || !p) break;
-      ctx.bezierCurveTo(c1[0], c1[1], c2[0], c2[1], p[0], p[1]);
-    }
-    ctx.stroke();
-    ctx.restore();
-  };
-  drawWave({ color:'#6FB7D6', alpha:0.70, lineWidth:56, points:[[10,H*0.55],[180,H*0.50],[330,H*0.57],[470,H*0.50],[650,H*0.42],[840,H*0.49],[1230,H*0.40]] });
-  drawWave({ color:'#4D9CC5', alpha:0.95, lineWidth:44, points:[[20,H*0.62],[180,H*0.60],[320,H*0.67],[470,H*0.60],[650,H*0.51],[860,H*0.59],[1230,H*0.48]] });
-  drawWave({ color:'#2B7CB4', alpha:0.98, lineWidth:40, points:[[40,H*0.71],[220,H*0.70],[340,H*0.76],[520,H*0.69],[690,H*0.62],[920,H*0.67],[1210,H*0.59]] });
-  drawWave({ color:'#D6B286', alpha:0.38, lineWidth:78, points:[[-20,H*0.84],[180,H*0.78],[320,H*0.82],[520,H*0.75],[760,H*0.68],[980,H*0.74],[1280,H*0.62]] });
-  drawWave({ color:'#C9772B', alpha:0.22, lineWidth:92, points:[[-30,H*0.92],[180,H*0.86],[360,H*0.89],[560,H*0.82],[780,H*0.76],[1010,H*0.82],[1290,H*0.70]] });
-  drawWave({ color:'#ffffff', alpha:0.48, lineWidth:28, points:[[-10,H*0.80],[180,H*0.74],[360,H*0.80],[560,H*0.72],[790,H*0.66],[1010,H*0.71],[1270,H*0.62]] });
-  drawWave({ color:'#ffffff', alpha:0.42, lineWidth:24, points:[[-30,H*0.66],[150,H*0.60],[320,H*0.66],[510,H*0.58],[720,H*0.50],[930,H*0.56],[1270,H*0.44]] });
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(padX - 8, topY - 18, contentW + 16, H - topY - 54);
 
   const topColors = ['#2B7CB4','#6FB7D6','#BFBEA9','#C9772B'];
   const segW = W / topColors.length;
@@ -33497,8 +33474,8 @@ async function __orePuliziaReportCanvas__(){
     ctx.fill();
     ctx.stroke();
   };
-  fieldStyle(padX, fieldY, cardW, fieldH, 'rgba(255,255,255,0.82)');
-  fieldStyle(padX + cardW + cardGap, fieldY, cardW, fieldH, 'rgba(255,255,255,0.82)');
+  fieldStyle(padX, fieldY, cardW, fieldH, '#ffffff');
+  fieldStyle(padX + cardW + cardGap, fieldY, cardW, fieldH, '#ffffff');
   fit(String(payload.monthLabel || '').toUpperCase(), padX + 24, fieldY + 59, cardW - 78, { font:'800 26px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif', color:'#0f172a' });
   fit(String(payload.operatorLabel || '').toUpperCase(), padX + cardW + cardGap + 24, fieldY + 59, cardW - 78, { font:'800 26px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif', color:'#0f172a' });
   const drawChev = (x, y) => {
@@ -33514,8 +33491,8 @@ async function __orePuliziaReportCanvas__(){
 
   const statY = fieldY + fieldH + 22;
   const statH = 104;
-  fieldStyle(padX, statY, cardW, statH, 'rgba(111,183,214,0.18)');
-  fieldStyle(padX + cardW + cardGap, statY, cardW, statH, 'rgba(214,178,134,0.18)');
+  fieldStyle(padX, statY, cardW, statH, '#f3f8fb');
+  fieldStyle(padX + cardW + cardGap, statY, cardW, statH, '#faf6f1');
   fit('Ore totali', padX + 22, statY + 31, cardW - 44, { font:'800 19px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif', color:'rgba(0,0,0,0.60)' });
   fit('Spese Benzina', padX + cardW + cardGap + 22, statY + 31, cardW - 44, { font:'800 19px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif', color:'rgba(0,0,0,0.60)' });
   fit(payload.totalHoursLabel, padX + 22, statY + 70, cardW - 44, { font:'800 24px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif', color:'rgba(43,124,180,0.95)' });
@@ -33532,8 +33509,8 @@ async function __orePuliziaReportCanvas__(){
     const x = padX + col * (cellW + cellGap);
     const y = gridTop + row * (cellH + cellGap);
     if (cell.empty) return;
-    ctx.fillStyle = 'rgba(235,235,235,0.74)';
-    ctx.strokeStyle = 'rgba(15,23,42,0.06)';
+    ctx.fillStyle = '#f2f4f7';
+    ctx.strokeStyle = 'rgba(15,23,42,0.10)';
     ctx.lineWidth = 2;
     round(x, y, cellW, cellH, 18);
     ctx.fill();
