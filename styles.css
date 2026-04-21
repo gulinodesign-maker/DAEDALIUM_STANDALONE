@@ -153,14 +153,14 @@ body.ddae-dark.bg-dark-ready{
   overflow: hidden;
 }
 
-/* dDAE_2.676 — Titolo topbar centrato nella pagina senza rompere la riga */
+/* dDAE_2.677 — Titolo topbar centrato nella pagina e sempre visibile */
 .topbar-year{
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: calc(var(--safe-top) + 24px);
   transform: translate(-50%, -50%);
-  width: min(52vw, calc(100% - 176px));
-  max-width: calc(100% - 176px);
+  width: min(56vw, calc(100vw - 192px));
+  max-width: calc(100vw - 192px);
   min-width: 0;
   height: 28px;
   display:flex;
@@ -176,7 +176,7 @@ body.ddae-dark.bg-dark-ready{
   text-overflow: ellipsis;
   pointer-events: none;
   user-select: none;
-  z-index: 0;
+  z-index: 2;
 }
 
 .brand-right{
