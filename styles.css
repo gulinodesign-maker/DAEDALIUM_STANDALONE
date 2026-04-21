@@ -173,7 +173,7 @@ body.ddae-dark.bg-dark-ready{
   max-width: var(--topbar-center-width);
 }
 
-/* dDAE_2.676 — Titolo topbar sempre centrato nella barra */
+/* dDAE_2.677 — Titolo topbar sempre centrato nella barra */
 .topbar-year{
   position: static;
   flex: 0 1 auto;
