@@ -12869,11 +12869,11 @@ body[data-role="operatore"] #page-home .home-main-label{
 }
 .settings-year-wheel-fade-top{
   top:0;
-  background: transparent;
+  background:linear-gradient(to bottom, rgba(248,250,252,0.98), rgba(248,250,252,0));
 }
 .settings-year-wheel-fade-bottom{
   bottom:0;
-  background: transparent;
+  background:linear-gradient(to top, rgba(248,250,252,0.98), rgba(248,250,252,0));
 }
 
 
@@ -13231,10 +13231,10 @@ body.ddae-dark .settings-year-wheel-highlight{
   border-color: rgba(88,183,244,0.28) !important;
 }
 body.ddae-dark .settings-year-wheel-fade-top{
-  background: transparent !important;
+  background: linear-gradient(to bottom, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
 }
 body.ddae-dark .settings-year-wheel-fade-bottom{
-  background: transparent !important;
+  background: linear-gradient(to top, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
 }
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
@@ -20473,100 +20473,4 @@ html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(po
 body.modal-open{
   overflow:hidden;
   overscroll-behavior:contain;
-}
-
-/* dDAE_2.691 — Tutorial + allineamenti topbar/pill flat */
-.topbar, .topbar *{
-  box-sizing: border-box;
-}
-.topbar .brand{
-  min-height: 60px;
-  flex-wrap: nowrap !important;
-  overflow: hidden;
-}
-.topbar .brand-left,
-.topbar .brand-right,
-.topbar [id$="TopTools"]{
-  flex-wrap: nowrap !important;
-  white-space: nowrap;
-}
-.topbar .brand-right{
-  justify-content: flex-end;
-  overflow: hidden;
-}
-.topbar #hamburgerBtn{
-  order: 9999;
-  margin-left: 2px;
-}
-.topbar #tutorialToggleTop{
-  order: 9998;
-}
-.topbar #tutorialToggleTop.is-on{
-  outline: 2px solid rgba(234,179,8,0.92);
-  outline-offset: 1px;
-}
-.topbar .top-led-grid{
-  display:grid !important;
-  grid-template-columns: repeat(2, 10px) !important;
-  grid-template-rows: repeat(2, 10px) !important;
-  gap: 3px !important;
-  flex: 0 0 23px !important;
-  width: 23px !important;
-  height: 23px !important;
-  min-width: 23px !important;
-  min-height: 23px !important;
-  max-width: 23px !important;
-  max-height: 23px !important;
-  align-items:center !important;
-  justify-items:center !important;
-  overflow: visible !important;
-}
-.topbar .top-led{ width:10px !important; height:10px !important; min-width:10px !important; min-height:10px !important; }
-.hd-actions, .guest-hd-actions, .clean-topbar, .app-section-head-row, .stats-head-actions, .prodotti-grid-tabs, .room-settings-line, .settings-actions, .settings-top-row, .settings-bottom-stack, .pill-row, .tab-row, .prodotti-title-row{
-  display:flex;
-  align-items:center !important;
-  flex-wrap: nowrap;
-}
-.tutorial-postit{
-  position: fixed;
-  z-index: 999999;
-  max-width: min(260px, calc(100vw - 24px));
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(120, 83, 0, 0.24);
-  background: #fff2a8;
-  color: #3f3200;
-  font-weight: 750;
-  font-size: 13px;
-  line-height: 1.25;
-  box-shadow: none;
-  pointer-events: none;
-}
-.tutorial-postit::after{
-  content:"";
-  position:absolute;
-  top: -7px;
-  left: 18px;
-  width: 12px;
-  height: 12px;
-  background:#fff2a8;
-  border-left:1px solid rgba(120,83,0,0.24);
-  border-top:1px solid rgba(120,83,0,0.24);
-  transform: rotate(45deg);
-}
-.tutorial-highlight{
-  outline: 2px solid rgba(234,179,8,0.95) !important;
-  outline-offset: 2px !important;
-}
-button, .btn, .pill, .icon-btn, .auth-btn, .settings-btn, .tab, [role="button"]{
-  background-image: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.settings-year-wheel-fade-top,
-.settings-year-wheel-fade-bottom,
-body.ddae-dark .settings-year-wheel-fade-top,
-body.ddae-dark .settings-year-wheel-fade-bottom{
-  background: transparent !important;
 }
