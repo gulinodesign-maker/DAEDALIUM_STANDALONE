@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.690" rel="stylesheet"/>
-<link href="./manifest.json?v=2.690" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.690" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.690" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.690" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.690" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" href="./bg-daedalium.jpeg?v=2.690" rel="preload" fetchpriority="high"/>
-<link as="image" href="./bg-daedalium_dark.PNG?v=2.690" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
+<link href="./styles.css?v=2.691" rel="stylesheet"/>
+<link href="./manifest.json?v=2.691" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.691" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.691" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.691" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.691" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.691" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.691" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.690";
+window.APP_VERSION = "2.691";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.690";
+  const LOCAL_BUILD = "dDAE_2.691";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.690";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.690")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.690")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.691")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.691")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -157,7 +157,7 @@ window.APP_VERSION = "2.690";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.690"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.691"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -276,6 +276,7 @@ window.APP_VERSION = "2.690";
 <div hidden="" id="lavanderiaTopTools"></div>
 <button aria-label="Ospiti" class="icon-btn icon-btn-whitegreen" hidden="" id="guestBackTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg></button>
 <button aria-label="Carica backup" class="icon-btn icon-btn-whiteblue" hidden="" id="authImportBackupTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3v11"></path><path d="M8 10l4 4 4-4"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg></button>
+<button aria-label="Tutorial" aria-pressed="false" class="icon-btn icon-btn-whiteorange tutorial-toggle-btn" id="tutorialToggleTop" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 5.2 2.05c-.8.72-1.2 1.1-1.2 2.45"></path><path d="M12 17h.01"></path><path d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Z"></path></svg></button>
 <button aria-label="Home" class="icon-btn icon-btn-whiteorange" id="hamburgerBtn"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 10v11h14V10"></path><path d="M9 21v-6h6v6"></path></svg></button>
 </div>
 </div>
@@ -286,7 +287,7 @@ window.APP_VERSION = "2.690";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.690"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.691"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -494,7 +495,7 @@ window.APP_VERSION = "2.690";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.690</div></div></section>
+<div class="build" id="buildText">dDAE_2.691</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2665,7 +2666,7 @@ window.APP_VERSION = "2.690";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.690"></script>
-<script defer="" src="./app.js?v=2.690"></script>
+<script defer="" src="./config.js?v=2.691"></script>
+<script defer="" src="./app.js?v=2.691"></script>
 </body>
 </html>
