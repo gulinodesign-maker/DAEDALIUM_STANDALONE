@@ -20475,7 +20475,7 @@ body.modal-open{
   overscroll-behavior:contain;
 }
 
-/* dDAE_2.691 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
+/* dDAE_2.692 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
 .topbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden!important;}
 .topbar .brand-left{order:1!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;flex-wrap:nowrap!important;overflow:visible!important;}
 .topbar .top-led-grid{display:grid!important;grid-template-columns:repeat(2,7px)!important;grid-template-rows:repeat(2,7px)!important;gap:3px!important;flex:0 0 auto!important;width:17px!important;min-width:17px!important;height:17px!important;margin:0 2px!important;align-items:center!important;justify-items:center!important;}
@@ -20489,3 +20489,102 @@ body.modal-open{
 .home-main,.settings-btn,.auth-btn,.btn,.pill,.tab,button{background-image:none;box-shadow:none;}
 .tab-row,.tabs,.pill-row,.filter-row,.actions-row,.auth-action-row,.settings-license-actions,.theme-transfer-actions,.clean-nav,.hd-actions,.guest-hd-actions,.stats-head-actions{align-items:center!important;}
 .tab-row>*,.tabs>*,.pill-row>*,.filter-row>*,.actions-row>*,.auth-action-row>*,.settings-license-actions>*,.theme-transfer-actions>*,.clean-nav>*,.hd-actions>*,.guest-hd-actions>*,.stats-head-actions>*{align-self:center!important;}
+
+/* dDAE_2.692 — Correzione topbar: titolo centrato reale, Home estrema destra */
+.topbar{
+  display:block!important;
+  overflow:hidden!important;
+}
+.topbar .brand{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  min-width:0!important;
+}
+.topbar .brand-left{
+  order:1!important;
+  flex:0 1 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  max-width:calc(50% - 58px)!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.topbar .top-led-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,7px)!important;
+  grid-template-rows:repeat(2,7px)!important;
+  gap:3px!important;
+  flex:0 0 auto!important;
+  width:17px!important;
+  min-width:17px!important;
+  height:17px!important;
+  margin:0 2px!important;
+  align-items:center!important;
+  justify-items:center!important;
+}
+.topbar .top-led-grid .top-led{
+  width:7px!important;
+  height:7px!important;
+  min-width:7px!important;
+  min-height:7px!important;
+  max-width:7px!important;
+  max-height:7px!important;
+  margin:0!important;
+}
+.topbar .topbar-center{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:calc(100% - 164px)!important;
+  max-width:calc(100% - 164px)!important;
+  min-width:0!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+  z-index:1!important;
+}
+.topbar .topbar-year{
+  justify-content:center!important;
+  text-align:center!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.topbar .brand-right{
+  order:3!important;
+  margin-left:auto!important;
+  flex:0 0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  flex-wrap:nowrap!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  max-width:calc(50% - 14px)!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.topbar #hamburgerBtn{
+  order:9999!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  flex:0 0 auto!important;
+}
+.topbar .brand-right > *:not(#hamburgerBtn){
+  flex:0 0 auto!important;
+}
+.topbar .icon-btn,.topbar [id$="TopTools"],.topbar [id$="TopTools"]>*{
+  flex:0 0 auto!important;
+}
