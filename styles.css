@@ -20475,7 +20475,7 @@ body.modal-open{
   overscroll-behavior:contain;
 }
 
-/* dDAE_2.695 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
+/* dDAE_2.696 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
 .topbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden!important;}
 .topbar .brand-left{order:1!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;flex-wrap:nowrap!important;overflow:visible!important;}
 .topbar .top-led-grid{display:grid!important;grid-template-columns:repeat(2,7px)!important;grid-template-rows:repeat(2,7px)!important;gap:3px!important;flex:0 0 auto!important;width:17px!important;min-width:17px!important;height:17px!important;margin:0 2px!important;align-items:center!important;justify-items:center!important;}
@@ -20490,7 +20490,7 @@ body.modal-open{
 .tab-row,.tabs,.pill-row,.filter-row,.actions-row,.auth-action-row,.settings-license-actions,.theme-transfer-actions,.clean-nav,.hd-actions,.guest-hd-actions,.stats-head-actions{align-items:center!important;}
 .tab-row>*,.tabs>*,.pill-row>*,.filter-row>*,.actions-row>*,.auth-action-row>*,.settings-license-actions>*,.theme-transfer-actions>*,.clean-nav>*,.hd-actions>*,.guest-hd-actions>*,.stats-head-actions>*{align-self:center!important;}
 
-/* dDAE_2.695 — Correzione topbar: titolo centrato reale, Home estrema destra */
+/* dDAE_2.696 — Correzione topbar: titolo centrato reale, Home estrema destra */
 .topbar{
   display:block!important;
   overflow:hidden!important;
@@ -20589,7 +20589,7 @@ body.modal-open{
   flex:0 0 auto!important;
 }
 
-/* dDAE_2.695 — Fix topbar: Home non mozzato, titolo centrato, nessun cambio grafico */
+/* dDAE_2.696 — Fix topbar: Home non mozzato, titolo centrato, nessun cambio grafico */
 .topbar{
   overflow:visible!important;
   box-sizing:border-box!important;
@@ -20637,7 +20637,7 @@ body.modal-open{
   max-width:calc(100% - 176px)!important;
 }
 
-/* dDAE_2.695 — Spese: tab totale sotto i filtri e delete compatto bianco/rosso */
+/* dDAE_2.696 — Spese: tab totale sotto i filtri e delete compatto bianco/rosso */
 #page-spese .spese-total-tab{
   margin:10px 0 8px;
   min-height:48px;
@@ -20696,7 +20696,7 @@ body.ddae-dark #page-spese .delbtn.delbtn-x::after{
   background:rgba(220,38,38,.98) !important;
 }
 
-/* dDAE_2.695 — Campi input: nessuna sovrapposizione tra label e testo */
+/* dDAE_2.696 — Campi input: nessuna sovrapposizione tra label e testo */
 #page-inserisci .field.float{
   min-height:70px;
   position:relative;
@@ -20726,6 +20726,33 @@ body.ddae-dark #page-spese .delbtn.delbtn-x::after{
   text-align:center;
 }
 
-/* dDAE_2.695 — Spese: filtro data sotto i tasti categoria */
+/* dDAE_2.696 — Spese: filtro data sotto i tasti categoria */
 #page-spese #speseCategoryFilterField{ margin-bottom: 14px; }
 #page-spese #speseDateRangeField{ margin-top: 0; margin-bottom: 14px; }
+
+/* dDAE_2.696 — Spese: totale sopra i filtri, tab più alto, testo centrato e grassetto */
+#page-spese .spese-total-tab{
+  margin:0 0 12px !important;
+  min-height:64px !important;
+  padding:14px 18px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:4px !important;
+}
+#page-spese .spese-total-label,
+#page-spese .spese-total-value{
+  width:100% !important;
+  text-align:center !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+}
+#page-spese .spese-total-label{
+  font-size:14px !important;
+  opacity:.9 !important;
+}
+#page-spese .spese-total-value{
+  font-size:22px !important;
+}
