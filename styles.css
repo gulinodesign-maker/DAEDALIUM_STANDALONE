@@ -20475,7 +20475,7 @@ body.modal-open{
   overscroll-behavior:contain;
 }
 
-/* dDAE_2.693 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
+/* dDAE_2.694 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
 .topbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden!important;}
 .topbar .brand-left{order:1!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;flex-wrap:nowrap!important;overflow:visible!important;}
 .topbar .top-led-grid{display:grid!important;grid-template-columns:repeat(2,7px)!important;grid-template-rows:repeat(2,7px)!important;gap:3px!important;flex:0 0 auto!important;width:17px!important;min-width:17px!important;height:17px!important;margin:0 2px!important;align-items:center!important;justify-items:center!important;}
@@ -20490,7 +20490,7 @@ body.modal-open{
 .tab-row,.tabs,.pill-row,.filter-row,.actions-row,.auth-action-row,.settings-license-actions,.theme-transfer-actions,.clean-nav,.hd-actions,.guest-hd-actions,.stats-head-actions{align-items:center!important;}
 .tab-row>*,.tabs>*,.pill-row>*,.filter-row>*,.actions-row>*,.auth-action-row>*,.settings-license-actions>*,.theme-transfer-actions>*,.clean-nav>*,.hd-actions>*,.guest-hd-actions>*,.stats-head-actions>*{align-self:center!important;}
 
-/* dDAE_2.693 — Correzione topbar: titolo centrato reale, Home estrema destra */
+/* dDAE_2.694 — Correzione topbar: titolo centrato reale, Home estrema destra */
 .topbar{
   display:block!important;
   overflow:hidden!important;
@@ -20589,7 +20589,7 @@ body.modal-open{
   flex:0 0 auto!important;
 }
 
-/* dDAE_2.693 — Fix topbar: Home non mozzato, titolo centrato, nessun cambio grafico */
+/* dDAE_2.694 — Fix topbar: Home non mozzato, titolo centrato, nessun cambio grafico */
 .topbar{
   overflow:visible!important;
   box-sizing:border-box!important;
@@ -20635,4 +20635,93 @@ body.modal-open{
 .topbar .topbar-center{
   width:calc(100% - 176px)!important;
   max-width:calc(100% - 176px)!important;
+}
+
+/* dDAE_2.694 — Spese: tab totale sotto i filtri e delete compatto bianco/rosso */
+#page-spese .spese-total-tab{
+  margin:10px 0 8px;
+  min-height:48px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.78);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 16px;
+  box-sizing:border-box;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#page-spese .spese-total-label{
+  font-size:13px;
+  font-weight:700;
+  opacity:.78;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-spese .spese-total-value{
+  font-size:20px;
+  font-weight:900;
+  white-space:nowrap;
+}
+#page-spese .delbtn.delbtn-x{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  background:#fff !important;
+  border:1.5px solid rgba(220,38,38,.72) !important;
+  box-shadow:none !important;
+}
+#page-spese .delbtn.delbtn-x::before,
+#page-spese .delbtn.delbtn-x::after{
+  width:13px !important;
+  height:2.2px !important;
+  background:rgba(220,38,38,.98) !important;
+}
+body.ddae-dark #page-spese .spese-total-tab{
+  background:rgba(15,23,42,0.82);
+  border-color:rgba(248,250,252,0.16);
+}
+body.ddae-dark #page-spese .delbtn.delbtn-x{
+  background:#fff !important;
+  border-color:rgba(248,113,113,.80) !important;
+}
+body.ddae-dark #page-spese .delbtn.delbtn-x::before,
+body.ddae-dark #page-spese .delbtn.delbtn-x::after{
+  background:rgba(220,38,38,.98) !important;
+}
+
+/* dDAE_2.694 — Campi input: nessuna sovrapposizione tra label e testo */
+#page-inserisci .field.float{
+  min-height:70px;
+  position:relative;
+}
+#page-inserisci .field.float input,
+#page-inserisci .field.float select{
+  height:70px !important;
+  line-height:1.25 !important;
+  padding:30px 20px 12px !important;
+  box-sizing:border-box !important;
+}
+#page-inserisci .field.float > label{
+  top:13px !important;
+  left:20px !important;
+  transform:none !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  max-width:calc(100% - 40px) !important;
+  pointer-events:none !important;
+}
+#page-inserisci .field.float.has-value > label,
+#page-inserisci .field.float input:focus + label,
+#page-inserisci .field.float select:focus + label{
+  transform:none !important;
+}
+#page-inserisci #spesaData{
+  text-align:center;
 }
