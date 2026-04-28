@@ -20474,3 +20474,318 @@ body.modal-open{
   overflow:hidden;
   overscroll-behavior:contain;
 }
+
+/* dDAE_2.697 — Topbar iOS: logo, LED 2x2, titolo, comandi; Home a destra; flat */
+.topbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:6px!important;overflow:hidden!important;}
+.topbar .brand-left{order:1!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;flex-wrap:nowrap!important;overflow:visible!important;}
+.topbar .top-led-grid{display:grid!important;grid-template-columns:repeat(2,7px)!important;grid-template-rows:repeat(2,7px)!important;gap:3px!important;flex:0 0 auto!important;width:17px!important;min-width:17px!important;height:17px!important;margin:0 2px!important;align-items:center!important;justify-items:center!important;}
+.topbar .top-led-grid .top-led{width:7px!important;height:7px!important;min-width:7px!important;min-height:7px!important;max-width:7px!important;max-height:7px!important;margin:0!important;}
+.topbar .topbar-center{order:2!important;position:static!important;left:auto!important;top:auto!important;transform:none!important;flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0!important;justify-content:flex-start!important;pointer-events:none!important;overflow:hidden!important;}
+.topbar .topbar-year{justify-content:flex-start!important;text-align:left!important;min-width:0!important;max-width:100%!important;}
+.topbar .brand-right{order:3!important;margin-left:auto!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;overflow:visible!important;}
+.topbar #hamburgerBtn{order:9999!important;margin-left:0!important;}
+.topbar .icon-btn,.topbar [id$="TopTools"],.topbar [id$="TopTools"]>*{flex:0 0 auto!important;}
+.topbar .icon-btn,.clean-topbar .icon-btn,.hd-actions .icon-btn,.guest-hd-actions .icon-btn,.app-section-head-row .cal-nav-btn{background-image:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.home-main,.settings-btn,.auth-btn,.btn,.pill,.tab,button{background-image:none;box-shadow:none;}
+.tab-row,.tabs,.pill-row,.filter-row,.actions-row,.auth-action-row,.settings-license-actions,.theme-transfer-actions,.clean-nav,.hd-actions,.guest-hd-actions,.stats-head-actions{align-items:center!important;}
+.tab-row>*,.tabs>*,.pill-row>*,.filter-row>*,.actions-row>*,.auth-action-row>*,.settings-license-actions>*,.theme-transfer-actions>*,.clean-nav>*,.hd-actions>*,.guest-hd-actions>*,.stats-head-actions>*{align-self:center!important;}
+
+/* dDAE_2.697 — Correzione topbar: titolo centrato reale, Home estrema destra */
+.topbar{
+  display:block!important;
+  overflow:hidden!important;
+}
+.topbar .brand{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  min-width:0!important;
+}
+.topbar .brand-left{
+  order:1!important;
+  flex:0 1 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  max-width:calc(50% - 58px)!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.topbar .top-led-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,7px)!important;
+  grid-template-rows:repeat(2,7px)!important;
+  gap:3px!important;
+  flex:0 0 auto!important;
+  width:17px!important;
+  min-width:17px!important;
+  height:17px!important;
+  margin:0 2px!important;
+  align-items:center!important;
+  justify-items:center!important;
+}
+.topbar .top-led-grid .top-led{
+  width:7px!important;
+  height:7px!important;
+  min-width:7px!important;
+  min-height:7px!important;
+  max-width:7px!important;
+  max-height:7px!important;
+  margin:0!important;
+}
+.topbar .topbar-center{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:calc(100% - 164px)!important;
+  max-width:calc(100% - 164px)!important;
+  min-width:0!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+  z-index:1!important;
+}
+.topbar .topbar-year{
+  justify-content:center!important;
+  text-align:center!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.topbar .brand-right{
+  order:3!important;
+  margin-left:auto!important;
+  flex:0 0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  flex-wrap:nowrap!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  max-width:calc(50% - 14px)!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.topbar #hamburgerBtn{
+  order:9999!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  flex:0 0 auto!important;
+}
+.topbar .brand-right > *:not(#hamburgerBtn){
+  flex:0 0 auto!important;
+}
+.topbar .icon-btn,.topbar [id$="TopTools"],.topbar [id$="TopTools"]>*{
+  flex:0 0 auto!important;
+}
+
+/* dDAE_2.697 — Fix topbar: Home non mozzato, titolo centrato, nessun cambio grafico */
+.topbar{
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.topbar .brand{
+  box-sizing:border-box!important;
+  overflow:visible!important;
+  padding-left:max(14px, calc(env(safe-area-inset-left, 0px) + 10px))!important;
+  padding-right:max(14px, calc(env(safe-area-inset-right, 0px) + 10px))!important;
+}
+.topbar .brand-left{
+  overflow:hidden!important;
+  max-width:calc(50% - 62px)!important;
+}
+.topbar .brand-right{
+  overflow:visible!important;
+  max-width:calc(50% - 10px)!important;
+  padding:0!important;
+}
+.topbar .brand-right > *{
+  overflow:visible!important;
+}
+.topbar #hamburgerBtn{
+  width:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+  box-sizing:border-box!important;
+  padding:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  border-radius:14px!important;
+  overflow:visible!important;
+  flex:0 0 44px!important;
+}
+.topbar #hamburgerBtn .ui-ico{
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+}
+.topbar .topbar-center{
+  width:calc(100% - 176px)!important;
+  max-width:calc(100% - 176px)!important;
+}
+
+/* dDAE_2.697 — Spese: tab totale sotto i filtri e delete compatto bianco/rosso */
+#page-spese .spese-total-tab{
+  margin:10px 0 8px;
+  min-height:48px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.78);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 16px;
+  box-sizing:border-box;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#page-spese .spese-total-label{
+  font-size:13px;
+  font-weight:700;
+  opacity:.78;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-spese .spese-total-value{
+  font-size:20px;
+  font-weight:900;
+  white-space:nowrap;
+}
+#page-spese .delbtn.delbtn-x{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  background:#fff !important;
+  border:1.5px solid rgba(220,38,38,.72) !important;
+  box-shadow:none !important;
+}
+#page-spese .delbtn.delbtn-x::before,
+#page-spese .delbtn.delbtn-x::after{
+  width:13px !important;
+  height:2.2px !important;
+  background:rgba(220,38,38,.98) !important;
+}
+body.ddae-dark #page-spese .spese-total-tab{
+  background:rgba(15,23,42,0.82);
+  border-color:rgba(248,250,252,0.16);
+}
+body.ddae-dark #page-spese .delbtn.delbtn-x{
+  background:#fff !important;
+  border-color:rgba(248,113,113,.80) !important;
+}
+body.ddae-dark #page-spese .delbtn.delbtn-x::before,
+body.ddae-dark #page-spese .delbtn.delbtn-x::after{
+  background:rgba(220,38,38,.98) !important;
+}
+
+/* dDAE_2.697 — Campi input: nessuna sovrapposizione tra label e testo */
+#page-inserisci .field.float{
+  min-height:70px;
+  position:relative;
+}
+#page-inserisci .field.float input,
+#page-inserisci .field.float select{
+  height:70px !important;
+  line-height:1.25 !important;
+  padding:30px 20px 12px !important;
+  box-sizing:border-box !important;
+}
+#page-inserisci .field.float > label{
+  top:13px !important;
+  left:20px !important;
+  transform:none !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  max-width:calc(100% - 40px) !important;
+  pointer-events:none !important;
+}
+#page-inserisci .field.float.has-value > label,
+#page-inserisci .field.float input:focus + label,
+#page-inserisci .field.float select:focus + label{
+  transform:none !important;
+}
+#page-inserisci #spesaData{
+  text-align:center;
+}
+
+/* dDAE_2.697 — Spese: filtro data sotto i tasti categoria */
+#page-spese #speseCategoryFilterField{ margin-bottom: 14px; }
+#page-spese #speseDateRangeField{ margin-top: 0; margin-bottom: 14px; }
+
+/* dDAE_2.697 — Spese: totale sopra i filtri, tab più alto, testo centrato e grassetto */
+#page-spese .spese-total-tab{
+  margin:0 0 12px !important;
+  min-height:64px !important;
+  padding:14px 18px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:4px !important;
+}
+#page-spese .spese-total-label,
+#page-spese .spese-total-value{
+  width:100% !important;
+  text-align:center !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+}
+#page-spese .spese-total-label{
+  font-size:14px !important;
+  opacity:.9 !important;
+}
+#page-spese .spese-total-value{
+  font-size:22px !important;
+}
+
+/* dDAE_2.697 — Spese: ordine Totale > Data > Filtri > separatore > lista */
+#page-spese #speseDateRangeField{ margin-top:0 !important; margin-bottom:14px !important; }
+#page-spese #speseCategoryFilterField{ margin-top:0 !important; margin-bottom:12px !important; }
+#page-spese .spese-list-separator{
+  height:1px !important;
+  background:#000 !important;
+  margin:8px 10px 14px !important;
+  border:0 !important;
+  flex:0 0 auto !important;
+}
+body.ddae-dark #page-spese .spese-list-separator{ background:#000 !important; }
+
+/* dDAE_2.699 — Ospiti: reset stati colore filtri e un solo ordinamento attivo */
+#page-ospiti .gf-sort-btn:not(.is-active),
+#page-ospiti .gf-sort-btn[data-guest-filter-state="distractive"]{
+  box-shadow:none !important;
+}
+
+#page-ospiti .gf-sort-btn[data-guest-filter-state="distractive"]{
+  background: rgba(255,255,255,.85) !important;
+  background-color: rgba(255,255,255,.85) !important;
+  border: 1px solid rgba(209,213,219,1) !important;
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
+}
+#page-ospiti .gf-sort-btn.is-active[data-guest-filter-state="active"]{
+  background: rgba(52,199,89,1) !important;
+  background-color: rgba(52,199,89,1) !important;
+  border: 1px solid rgba(52,199,89,1) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
