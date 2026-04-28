@@ -20769,7 +20769,7 @@ body.ddae-dark #page-spese .delbtn.delbtn-x::after{
 }
 body.ddae-dark #page-spese .spese-list-separator{ background:#000 !important; }
 
-/* dDAE_2.698 — Ospiti: reset stati colore filtri e un solo ordinamento attivo */
+/* dDAE_2.699 — Ospiti: reset stati colore filtri e un solo ordinamento attivo */
 #page-ospiti .gf-sort-btn:not(.is-active),
 #page-ospiti .gf-sort-btn[data-guest-filter-state="distractive"]{
   box-shadow:none !important;
