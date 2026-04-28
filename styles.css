@@ -20769,8 +20769,23 @@ body.ddae-dark #page-spese .delbtn.delbtn-x::after{
 }
 body.ddae-dark #page-spese .spese-list-separator{ background:#000 !important; }
 
-/* dDAE_2.697 — Ospiti: un solo filtro ordinamento attivo all'apertura */
+/* dDAE_2.698 — Ospiti: reset stati colore filtri e un solo ordinamento attivo */
 #page-ospiti .gf-sort-btn:not(.is-active),
 #page-ospiti .gf-sort-btn[data-guest-filter-state="distractive"]{
   box-shadow:none !important;
+}
+
+#page-ospiti .gf-sort-btn[data-guest-filter-state="distractive"]{
+  background: rgba(255,255,255,.85) !important;
+  background-color: rgba(255,255,255,.85) !important;
+  border: 1px solid rgba(209,213,219,1) !important;
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
+}
+#page-ospiti .gf-sort-btn.is-active[data-guest-filter-state="active"]{
+  background: rgba(52,199,89,1) !important;
+  background-color: rgba(52,199,89,1) !important;
+  border: 1px solid rgba(52,199,89,1) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
