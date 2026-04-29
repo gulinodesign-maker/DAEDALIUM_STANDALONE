@@ -20800,7 +20800,7 @@ body.ddae-dark #page-spese .spese-list-separator{
     padding-bottom: 12px !important;
   }
 }
-/* dDAE_2.696 — Dark Mode in topbar accanto al titolo */
+/* dDAE_2.698 — Dark Mode in topbar accanto al titolo */
 .topbar-center{
   gap: 6px;
   pointer-events: none;
@@ -20823,4 +20823,89 @@ body.ddae-dark #page-spese .spese-list-separator{
 @media (max-width: 380px){
   .topbar-center .topbar-dark-btn{ width: 28px; height: 28px; min-width: 28px; }
   .topbar-center{ gap: 4px; }
+}
+
+
+/* dDAE_2.698 — Dark mode solo in Impostazioni + operatore con toggle a slide e griglia 1x3 */
+#topDarkModeBtn,
+.topbar-dark-btn{
+  display:none !important;
+}
+#page-opsettings .settings-title-row.settings-title-row-operator{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  width:100% !important;
+}
+#page-opsettings .settings-header-toggles.settings-header-toggles-operator{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+  flex:0 0 auto !important;
+  margin-left:auto !important;
+}
+#page-opsettings .settings-title-row.settings-title-row-operator .settings-title{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+#page-opsettings .settings-audio-header.settings-audio-header-operator,
+#page-opsettings .settings-dark-header.settings-dark-header-operator{
+  margin-left:0 !important;
+  justify-content:flex-end !important;
+  flex:0 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:repeat(3, auto) !important;
+  justify-content:center !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  width:min(360px, 96vw) !important;
+  margin:28px auto 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-language,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-opcode,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-logout-pill{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  height:56px !important;
+  min-height:56px !important;
+  aspect-ratio:auto !important;
+  border-radius:999px !important;
+  padding:0 22px !important;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  box-shadow:none !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn .ui-ico{
+  width:24px !important;
+  height:24px !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-label{
+  font-size:17px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+#page-opsettings #opSettingsLanguageBtn{ order:1 !important; }
+#page-opsettings #opSettingsCodeBtn{ order:2 !important; }
+#page-opsettings #opSettingsLogoutBtn{ order:3 !important; }
+#page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid.settings-bottom-stack-operator-dedicated{
+  display:none !important;
+}
+body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-operator .settings-audio-label{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+@media (max-width:390px){
+  #page-opsettings .settings-header-toggles.settings-header-toggles-operator{ gap:8px !important; }
+  #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{ width:min(320px, 94vw) !important; }
+  #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-label{ font-size:15px !important; }
 }
