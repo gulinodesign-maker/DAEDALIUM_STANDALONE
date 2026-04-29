@@ -20911,7 +20911,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 }
 
 
-/* dDAE_2.699 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
+/* dDAE_2.700 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
 #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
   display:grid !important;
   grid-template-columns:1fr !important;
