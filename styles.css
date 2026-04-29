@@ -20594,3 +20594,209 @@ body.ddae-dark #page-spese .spese-list-separator{
 #page-spese #speseList{
   margin-top: 0 !important;
 }
+
+/* dDAE_2.695 — Statistiche landscape: grafici compatti + card numeriche visibili */
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    position: relative !important;
+    padding: 6px 12px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-title,
+  body[data-page="statmensili"] #page-statmensili .stats-title,
+  body[data-page="statspese"] #page-statspese .stats-title,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-title,
+  body[data-page="statchannel"] #page-statchannel .stats-title,
+  body[data-page="statpulizie"] #page-statpulizie .stats-title,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-title{
+    display: block !important;
+    margin: 2px 4px 6px !important;
+    font-size: 17px !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-divider,
+  body[data-page="statmensili"] #page-statmensili .stats-divider,
+  body[data-page="statspese"] #page-statspese .stats-divider,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-divider,
+  body[data-page="statchannel"] #page-statchannel .stats-divider,
+  body[data-page="statpulizie"] #page-statpulizie .stats-divider,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-divider{
+    display: block !important;
+    margin: 0 4px 6px !important;
+    width: calc(100% - 8px) !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-head-row{
+    position: static !important;
+    width: auto !important;
+    margin: 2px 4px 6px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    pointer-events: auto !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-title{
+    display: block !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-head-actions,
+  body[data-page="statgen"] #page-statgen .statgen-regime-switch{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    pointer-events: auto !important;
+  }
+  body[data-page="statgen"] #page-statgen #statFiscalModeBtn,
+  body[data-page="statgen"] #page-statgen #statGenCompareToggleBtn,
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn{
+    min-width: 70px !important;
+    height: 38px !important;
+    padding: 0 10px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
+    display: block !important;
+    width: calc(100% - 8px) !important;
+    min-height: 76px !important;
+    height: var(--stat-landscape-chart-height, 88px) !important;
+    max-height: 104px !important;
+    margin: 0 4px 8px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart{
+    display: block !important;
+    height: 100% !important;
+    max-height: 104px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-stack,
+  body[data-page="statspese"] #page-statspese .stats-stack,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-stack,
+  body[data-page="statchannel"] #page-statchannel .stats-stack,
+  body[data-page="statpulizie"] #page-statpulizie .stats-stack{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 0 4px 8px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-stack{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 0 4px 8px !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-stack{
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 4px 8px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stat-row,
+  body[data-page="statspese"] #page-statspese .stat-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row,
+  body[data-page="statchannel"] #page-statchannel .stat-row,
+  body[data-page="statpulizie"] #page-statpulizie .stat-row{
+    min-height: 46px !important;
+    padding: 8px 14px !important;
+    border-radius: 16px !important;
+    align-items: center !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-row::after,
+  body[data-page="statspese"] #page-statspese .stat-row::after,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row::after,
+  body[data-page="statchannel"] #page-statchannel .stat-row::after,
+  body[data-page="statpulizie"] #page-statpulizie .stat-row::after{
+    border-radius: 16px !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-name,
+  body[data-page="statspese"] #page-statspese .stat-name,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-name,
+  body[data-page="statchannel"] #page-statchannel .stat-name,
+  body[data-page="statpulizie"] #page-statpulizie .stat-name{
+    font-size: 16px !important;
+    line-height: 1.05 !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-val,
+  body[data-page="statspese"] #page-statspese .stat-val,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-val,
+  body[data-page="statchannel"] #page-statchannel .stat-val,
+  body[data-page="statpulizie"] #page-statpulizie .stat-val{
+    font-size: 17px !important;
+    line-height: 1.05 !important;
+  }
+
+  body[data-page="statmensili"] #page-statmensili .month-row{
+    display: flex !important;
+    min-height: 48px !important;
+    padding: 8px 14px !important;
+    border-radius: 16px !important;
+    gap: 10px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-row::after{
+    border-radius: 16px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-occ{
+    flex-basis: 88px !important;
+    font-size: 28px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-val{
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-card{
+    display: block !important;
+    padding: 9px 10px !important;
+    border-radius: 16px !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-label{
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-value{
+    font-size: 20px !important;
+    line-height: 1.05 !important;
+  }
+
+  body[data-page="statpiscina"] #page-statpiscina .stats-page{
+    padding-top: 6px !important;
+  }
+  body[data-page="statpiscina"] #page-statpiscina .stats-head-row{
+    margin-bottom: 6px !important;
+  }
+  body[data-page="statpiscina"] #page-statpiscina .piscina-wrap{
+    margin-top: 6px !important;
+    gap: 6px !important;
+    padding-bottom: 12px !important;
+  }
+}
