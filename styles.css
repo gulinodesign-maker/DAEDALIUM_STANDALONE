@@ -20475,7 +20475,7 @@ body.modal-open{
   overscroll-behavior:contain;
 }
 
-/* dDAE_2.692 — Spese: totale dinamico sopra data, filtri sotto data */
+/* dDAE_2.693 — Spese: totale dinamico sopra data, filtri sotto data */
 #page-spese .card{
   padding-left: 14px !important;
   padding-right: 14px !important;
@@ -20573,7 +20573,7 @@ body.ddae-dark #page-spese .spese-total-value{
   #page-spese .spese-total-label{ font-size: 17px; }
 }
 
-/* dDAE_2.692 — Spese: linea separatrice tra filtri e lista */
+/* dDAE_2.693 — Spese: linea separatrice tra filtri e lista */
 #page-spese .spese-list-separator{
   display: block !important;
   height: 1px !important;
