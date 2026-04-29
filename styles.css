@@ -20475,7 +20475,7 @@ body.modal-open{
   overscroll-behavior:contain;
 }
 
-/* dDAE_2.692 — Spese: totale dinamico sopra data, filtri sotto data */
+/* dDAE_2.693 — Spese: totale dinamico sopra data, filtri sotto data */
 #page-spese .card{
   padding-left: 14px !important;
   padding-right: 14px !important;
@@ -20573,7 +20573,7 @@ body.ddae-dark #page-spese .spese-total-value{
   #page-spese .spese-total-label{ font-size: 17px; }
 }
 
-/* dDAE_2.692 — Spese: linea separatrice tra filtri e lista */
+/* dDAE_2.693 — Spese: linea separatrice tra filtri e lista */
 #page-spese .spese-list-separator{
   display: block !important;
   height: 1px !important;
@@ -20593,4 +20593,197 @@ body.ddae-dark #page-spese .spese-list-separator{
 }
 #page-spese #speseList{
   margin-top: 0 !important;
+}
+
+/* dDAE_2.693 — orientamento manuale calendario/statistiche */
+.ddae-orientation-toggle{
+  flex:0 0 auto;
+  min-width:42px;
+  width:42px;
+  height:42px;
+  padding:0 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:14px;
+  box-shadow:none !important;
+  background-image:none !important;
+  white-space:nowrap;
+}
+.ddae-orientation-toggle .ddae-orientation-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  line-height:1;
+  font-weight:800;
+  font-size:13px;
+  pointer-events:none;
+}
+#page-calendario .app-section-head-row{
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;
+}
+#page-calendario #calOrientationToggleBtn{
+  justify-self:end;
+}
+.stats-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:100%;
+  flex-wrap:nowrap;
+}
+.stats-head-row .stats-title{
+  min-width:0;
+  flex:1 1 auto;
+}
+.stats-head-row .stats-head-actions{
+  flex:0 0 auto;
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+body:not(.cal-month-landscape) #page-calendario.is-month-view .cal-grid-wrap{
+  overflow-x:auto !important;
+}
+body:not(.cal-month-landscape) #page-calendario.is-month-view #calGridMonth{
+  width:100% !important;
+  max-width:none !important;
+}
+body.cal-month-landscape #page-calendario.is-month-view .cal-grid-wrap{
+  overflow-x:hidden !important;
+  padding-left:10px;
+  padding-right:10px;
+  box-sizing:border-box;
+}
+body.cal-month-landscape #page-calendario.is-month-view #calGridMonth{
+  width:100% !important;
+  max-width:100% !important;
+}
+body.cal-month-landscape .wrap{
+  max-width:none;
+  padding-left:10px;
+  padding-right:10px;
+}
+body:not(.ddae-stat-graph-landscape)[data-page="statgen"] #page-statgen .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statmensili"] #page-statmensili .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statspese"] #page-statspese .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statchannel"] #page-statchannel .stats-gen > *,
+body:not(.ddae-stat-graph-landscape)[data-page="statpulizie"] #page-statpulizie .stats-gen > *{
+  display:block !important;
+}
+body:not(.ddae-stat-graph-landscape)[data-page="statgen"] #page-statgen .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statmensili"] #page-statmensili .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statspese"] #page-statspese .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statcancellazioni"] #page-statcancellazioni .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statprenotazioni"] #page-statprenotazioni .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statchannel"] #page-statchannel .stats-head-row,
+body:not(.ddae-stat-graph-landscape)[data-page="statpulizie"] #page-statpulizie .stats-head-row{
+  display:flex !important;
+  position:static !important;
+  width:100% !important;
+  pointer-events:auto !important;
+}
+body:not(.ddae-stat-graph-landscape) .statgen-line-chart-wrap{
+  height:auto !important;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .stats-gen,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .stats-gen{
+  position:relative;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row),
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .stats-gen > :not(.statgen-line-chart-wrap):not(.stats-head-row){
+  display:none !important;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .stats-head-row,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .stats-head-row{
+  position:absolute !important;
+  top:16px;
+  right:14px;
+  left:auto;
+  width:auto !important;
+  margin:0;
+  padding:0;
+  z-index:4;
+  pointer-events:none;
+  display:flex !important;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .stats-title,
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .stats-title,
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .stats-title,
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .stats-title,
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .stats-title,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .stats-title,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .stats-title{
+  display:none !important;
+}
+body.ddae-stat-graph-landscape .stats-head-row .stats-head-actions{
+  display:flex !important;
+  align-items:center;
+  gap:8px;
+  margin:0;
+  pointer-events:auto;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap{
+  width:100% !important;
+  margin:0 !important;
+  min-height:220px;
+  height:var(--stat-landscape-chart-height, calc(100dvh - 132px)) !important;
+  border-radius:18px;
+}
+body.ddae-stat-graph-landscape[data-page="statgen"] #page-statgen .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statspese"] #page-statspese .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .statgen-line-chart{
+  height:100% !important;
+  max-height:none !important;
+}
+body.ddae-stat-graph-landscape[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+body.ddae-stat-graph-landscape[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
+body.ddae-stat-graph-landscape[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
+  min-height:100%;
+  height:100%;
+  padding:8px;
+}
+body:not(.ddae-stat-graph-landscape)[data-page="statgen"] #page-statgen .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statmensili"] #page-statmensili .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statspese"] #page-statspese .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statcancellazioni"] #page-statcancellazioni .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statprenotazioni"] #page-statprenotazioni .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statchannel"] #page-statchannel .stats-head-row .stats-title,
+body:not(.ddae-stat-graph-landscape)[data-page="statpulizie"] #page-statpulizie .stats-head-row .stats-title{
+  display:block !important;
 }

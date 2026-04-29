@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.692" rel="stylesheet"/>
-<link href="./manifest.json?v=2.692" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.692" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.692" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.692" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.692" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" href="./bg-daedalium.jpeg?v=2.692" rel="preload" fetchpriority="high"/>
-<link as="image" href="./bg-daedalium_dark.PNG?v=2.692" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
+<link href="./styles.css?v=2.693" rel="stylesheet"/>
+<link href="./manifest.json?v=2.693" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.693" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.693" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.693" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.693" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.693" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.693" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.692";
+window.APP_VERSION = "2.693";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.692";
+  const LOCAL_BUILD = "dDAE_2.693";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.692";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.692")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.692")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.693")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.693")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -157,7 +157,7 @@ window.APP_VERSION = "2.692";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.692"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.693"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
 <span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
 <span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
@@ -286,7 +286,7 @@ window.APP_VERSION = "2.692";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.692"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.693"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -494,7 +494,7 @@ window.APP_VERSION = "2.692";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.692</div></div></section>
+<div class="build" id="buildText">dDAE_2.693</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -661,6 +661,7 @@ window.APP_VERSION = "2.692";
 <button aria-label="Seleziona anno confronto grafico generali" class="piscina-action-btn statgen-compare-year-btn" id="statGenCompareYearBtn" type="button">
 <span class="statgen-compare-year-value" id="statGenCompareYearBtnLabel">2025</span>
 </button>
+<button aria-label="Vista grafico generali landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statgen" id="statGenOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button>
 </div>
 </div>
 <div aria-hidden="true" class="stats-divider"></div>
@@ -723,7 +724,7 @@ window.APP_VERSION = "2.692";
 <!-- STATISTICHE: INCASSI MENSILI -->
 <section class="page" hidden="" id="page-statmensili">
 <div class="stats-gen">
-<div class="stats-title">Mensili</div>
+<div class="stats-head-row"><div class="stats-title">Mensili</div><div class="stats-head-actions"><button aria-label="Vista grafico mensili landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statmensili" id="statMensiliOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" aria-label="Percentuale occupazione mensile room nights">
 <canvas id="statMensiliLineChart" class="statgen-line-chart" height="118"></canvas>
@@ -734,7 +735,7 @@ window.APP_VERSION = "2.692";
 <!-- STATISTICHE: SPESE GENERALI -->
 <section class="page" hidden="" id="page-statspese">
 <div class="stats-gen">
-<div class="stats-title">Spese generali</div>
+<div class="stats-head-row"><div class="stats-title">Spese generali</div><div class="stats-head-actions"><button aria-label="Vista grafico spese landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statspese" id="statSpeseOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" aria-label="Percentuale spese mensili">
 <canvas id="statSpeseLineChart" class="statgen-line-chart" height="118"></canvas>
@@ -845,7 +846,7 @@ window.APP_VERSION = "2.692";
 <!-- STATISTICHE: CON / SENZA RICEVUTA -->
 <section class="page" hidden="" id="page-statprenotazioni">
 <div class="stats-gen">
-<div class="stats-title">Con / Senza ricevuta</div>
+<div class="stats-head-row"><div class="stats-title">Con / Senza ricevuta</div><div class="stats-head-actions"><button aria-label="Vista grafico ricevute landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statprenotazioni" id="statPrenOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statricevute">
 <canvas id="statRicevuteCanvas" class="statgen-line-chart" height="118"></canvas>
@@ -866,7 +867,7 @@ window.APP_VERSION = "2.692";
 </section>
 <section class="page" hidden="" id="page-statchannel">
 <div class="stats-gen">
-<div class="stats-title">PMS</div>
+<div class="stats-head-row"><div class="stats-title">PMS</div><div class="stats-head-actions"><button aria-label="Vista grafico PMS landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statchannel" id="statChannelOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statchannel">
 <canvas id="statChannelCanvas" class="statgen-line-chart" height="118"></canvas>
@@ -876,7 +877,7 @@ window.APP_VERSION = "2.692";
 </section>
 <section class="page" hidden="" id="page-statpulizie">
 <div class="stats-gen">
-<div class="stats-title">Ore pulizia operatori</div>
+<div class="stats-head-row"><div class="stats-title">Ore pulizia operatori</div><div class="stats-head-actions"><button aria-label="Vista grafico ore pulizia landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statpulizie" id="statPulizieOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statpulizie">
 <canvas id="statPulizieCanvas" class="statgen-line-chart" height="118"></canvas>
@@ -886,7 +887,7 @@ window.APP_VERSION = "2.692";
 </section>
 <section class="page" hidden="" id="page-statcancellazioni">
 <div class="stats-gen">
-<div class="stats-title">Cancellazioni</div>
+<div class="stats-head-row"><div class="stats-title">Cancellazioni</div><div class="stats-head-actions"><button aria-label="Vista grafico cancellazioni landscape" aria-pressed="false" class="piscina-action-btn ddae-orientation-toggle" data-orientation-target="statcancellazioni" id="statCancOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button></div></div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statcancellazioni" style="margin-top:12px;">
 <canvas id="statCancellazioniLineChart" class="statgen-line-chart" height="118"></canvas>
@@ -1502,6 +1503,7 @@ window.APP_VERSION = "2.692";
 </button>
 </div>
 <input aria-label="Data" class="cal-date-input" id="calDateInput" type="date"/>
+<button aria-label="Vista calendario landscape" aria-pressed="false" class="icon-btn icon-btn-whiteblue ddae-orientation-toggle" data-orientation-target="calendario" id="calOrientationToggleBtn" title="Portrait / Landscape" type="button"><span aria-hidden="true" class="ddae-orientation-label">P</span></button>
 </div>
 </div>
 <div class="cal-body">
@@ -2670,7 +2672,7 @@ window.APP_VERSION = "2.692";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.692"></script>
-<script defer="" src="./app.js?v=2.692"></script>
+<script defer="" src="./config.js?v=2.693"></script>
+<script defer="" src="./app.js?v=2.693"></script>
 </body>
 </html>
