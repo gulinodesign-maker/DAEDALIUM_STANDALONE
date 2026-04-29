@@ -20909,3 +20909,35 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{ width:min(320px, 94vw) !important; }
   #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-label{ font-size:15px !important; }
 }
+
+
+/* dDAE_2.699 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:repeat(3, auto) !important;
+  width:min(360px, 96vw) !important;
+  gap:12px !important;
+}
+#page-opsettings #opSettingsLanguageBtn,
+#page-opsettings #opSettingsCodeBtn,
+#page-opsettings #opSettingsLogoutBtn{
+  display:flex !important;
+  visibility:visible !important;
+  width:100% !important;
+  max-width:none !important;
+  height:56px !important;
+  min-height:56px !important;
+  aspect-ratio:auto !important;
+  border-radius:999px !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+}
+#page-opsettings #opSettingsLanguageBtn{ order:1 !important; }
+#page-opsettings #opSettingsCodeBtn{ order:2 !important; }
+#page-opsettings #opSettingsLogoutBtn{ order:3 !important; }
+#page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid.settings-bottom-stack-operator-dedicated{
+  display:none !important;
+}
