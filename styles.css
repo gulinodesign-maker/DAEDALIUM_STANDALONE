@@ -20800,3 +20800,27 @@ body.ddae-dark #page-spese .spese-list-separator{
     padding-bottom: 12px !important;
   }
 }
+/* dDAE_2.696 — Dark Mode in topbar accanto al titolo */
+.topbar-center{
+  gap: 6px;
+  pointer-events: none;
+}
+.topbar-center .topbar-dark-btn{
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  flex: 0 0 auto;
+}
+.topbar-center .topbar-dark-btn .ui-ico{
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 380px){
+  .topbar-center .topbar-dark-btn{ width: 28px; height: 28px; min-width: 28px; }
+  .topbar-center{ gap: 4px; }
+}
