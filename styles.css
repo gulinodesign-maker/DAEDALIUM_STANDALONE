@@ -20911,7 +20911,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 }
 
 
-/* dDAE_2.700 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
+/* dDAE_2.701 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
 #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
   display:grid !important;
   grid-template-columns:1fr !important;
@@ -20940,4 +20940,19 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 #page-opsettings #opSettingsLogoutBtn{ order:3 !important; }
 #page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid.settings-bottom-stack-operator-dedicated{
   display:none !important;
+}
+
+
+/* dDAE_2.701 — Nuovo ospite: ripristino apertura e compilazione note in creazione */
+#page-ospite .guest-form-card.is-create #guestNotesWrap:not([hidden]){
+  display:block !important;
+  margin:12px 0 10px !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesWrap:not([hidden]) #guestNotes{
+  display:block !important;
+  width:100% !important;
+  min-height:120px !important;
+  pointer-events:auto !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
 }
