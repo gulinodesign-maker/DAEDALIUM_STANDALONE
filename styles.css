@@ -299,7 +299,7 @@ body.ddae-dark.bg-dark-ready{
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_2.709 — LED topbar in griglia 4x1, +50% dimensione */
+/* dDAE_2.710 — LED topbar in griglia 4x1, +50% dimensione */
 .top-led-grid{
   display: grid;
   grid-template-columns: repeat(4, 15px);
@@ -20957,4 +20957,79 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   pointer-events:auto !important;
   user-select:text !important;
   -webkit-user-select:text !important;
+}
+
+/* dDAE_2.710 — Ospiti: testata/filtri fissi, scroll solo card */
+#page-ospiti .content{
+  height: calc(100dvh - 64px - var(--safe-top));
+  max-height: calc(100dvh - 64px - var(--safe-top));
+  overflow: hidden;
+  padding-bottom: calc(74px + var(--safe-bottom));
+}
+#page-ospiti .ospite-wrap,
+#page-ospiti .guest-cards-card{
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#page-ospiti .guest-cards-card > .hd{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+}
+#page-ospiti .guest-cards-card > .bd{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#page-ospiti .guest-filter-grid{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+#page-ospiti .guest-cards{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  padding-bottom: calc(22px + var(--safe-bottom));
+}
+#page-ospiti .guest-scroll-today-btn{
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#page-ospiti .guest-scroll-today-btn[hidden]{
+  display: none !important;
+}
+#page-ospiti .guest-cards-card > .hd > .page-title{
+  flex: 0 0 auto;
+}
+#page-ospiti .guest-cards-card > .hd > .hd-actions{
+  flex: 0 0 auto;
+}
+
+@media (orientation: landscape){
+  #page-ospiti .content{
+    height: calc(100dvh - 64px - var(--safe-top));
+    max-height: calc(100dvh - 64px - var(--safe-top));
+    padding-bottom: calc(54px + var(--safe-bottom));
+  }
+  #page-ospiti .guest-filter-grid{
+    margin-bottom: 8px;
+  }
+  #page-ospiti .guest-cards{
+    padding-bottom: calc(18px + var(--safe-bottom));
+  }
 }
