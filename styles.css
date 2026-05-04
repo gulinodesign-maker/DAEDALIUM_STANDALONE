@@ -301,7 +301,7 @@ body.ddae-dark.bg-dark-ready{
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_2.719 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
+/* dDAE_2.720 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
   grid-template-columns: repeat(6, 15px);
@@ -21054,7 +21054,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   outline: none;
 }
 
-/* dDAE_2.719 — scheda ospite in lettura: il nome si comporta come un tasto copia, senza selezione testo */
+/* dDAE_2.720 — scheda ospite in lettura: il nome si comporta come un tasto copia, senza selezione testo */
 .guest-form-card.is-view .guest-name-field,
 .guest-form-card.is-view .guest-name-field label[for="guestName"],
 .guest-form-card.is-view #guestName{
@@ -21069,7 +21069,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   caret-color:transparent !important;
 }
 
-/* dDAE_2.719 — popup LED: chiusura sempre in alto a destra e titolo non sovrapposto */
+/* dDAE_2.720 — popup LED: chiusura sempre in alto a destra e titolo non sovrapposto */
 .guest-alert-modal-card{
   position: relative;
   padding-top: 46px;
