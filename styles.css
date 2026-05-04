@@ -301,7 +301,7 @@ body.ddae-dark.bg-dark-ready{
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_2.717 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
+/* dDAE_2.718 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
   grid-template-columns: repeat(6, 15px);
@@ -21052,4 +21052,19 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 }
 .guest-form-card.is-view #guestName:focus{
   outline: none;
+}
+
+/* dDAE_2.718 — scheda ospite in lettura: il nome si comporta come un tasto copia, senza selezione testo */
+.guest-form-card.is-view .guest-name-field,
+.guest-form-card.is-view .guest-name-field label[for="guestName"],
+.guest-form-card.is-view #guestName{
+  pointer-events:auto !important;
+  cursor:pointer;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+  touch-action:manipulation;
+}
+.guest-form-card.is-view #guestName{
+  caret-color:transparent !important;
 }
