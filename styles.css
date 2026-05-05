@@ -21138,3 +21138,36 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
     min-height: 14px !important;
   }
 }
+
+/* dDAE_2.728 — Lista spesa: intestazione fissa, scroll solo card, selezionati in cima */
+body.page-lock-vertical #page-prodotti{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-page{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding-bottom: calc(var(--safe-bottom) + 16px) !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-header,
+body.page-lock-vertical #page-prodotti .prodotti-grid-tabs{
+  flex: 0 0 auto !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-list{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  padding-bottom: calc(var(--safe-bottom) + 96px) !important;
+  box-sizing: border-box !important;
+}
