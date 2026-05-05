@@ -21139,7 +21139,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   }
 }
 
-/* dDAE_2.728 — Lista spesa: intestazione fissa, scroll solo card, selezionati in cima */
+/* dDAE_2.729 — Lista spesa: fissi solo titolo/tasti/tab, scroll verticale solo sulle card */
 body.page-lock-vertical #page-prodotti{
   height: 100% !important;
   max-height: 100% !important;
@@ -21151,23 +21151,30 @@ body.page-lock-vertical #page-prodotti .prodotti-page{
   height: 100% !important;
   max-height: 100% !important;
   min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  align-content: stretch !important;
   overflow: hidden !important;
   padding-bottom: calc(var(--safe-bottom) + 16px) !important;
   box-sizing: border-box !important;
 }
 body.page-lock-vertical #page-prodotti .prodotti-header,
 body.page-lock-vertical #page-prodotti .prodotti-grid-tabs{
-  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 body.page-lock-vertical #page-prodotti .prodotti-list{
-  flex: 1 1 auto !important;
   min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: contain !important;
-  padding-bottom: calc(var(--safe-bottom) + 96px) !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+  padding-bottom: calc(var(--safe-bottom) + 112px) !important;
   box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-list .prod-item-block{
+  flex: 0 0 auto !important;
 }
