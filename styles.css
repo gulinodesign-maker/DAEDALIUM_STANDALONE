@@ -21139,7 +21139,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   }
 }
 
-/* dDAE_2.729 — Lista spesa: fissi solo titolo/tasti/tab, scroll verticale solo sulle card */
+/* dDAE_2.730 — Lista spesa: fissi solo titolo/tasti/tab, scroll verticale solo sulle card */
 body.page-lock-vertical #page-prodotti{
   height: 100% !important;
   max-height: 100% !important;
@@ -21176,5 +21176,59 @@ body.page-lock-vertical #page-prodotti .prodotti-list{
   box-sizing: border-box !important;
 }
 body.page-lock-vertical #page-prodotti .prodotti-list .prod-item-block{
+  flex: 0 0 auto !important;
+}
+
+
+/* dDAE_2.730 — Lista spesa: header/tab fissi, SOLO le card scrollano davvero su iOS */
+body.page-lock-vertical[data-page="prodotti"] main.wrap{
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow: hidden !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-page{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  padding: 8px 0 0 !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-header,
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-grid-tabs{
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+  padding-bottom: calc(var(--safe-bottom) + 28px) !important;
+  margin-top: 0 !important;
+  box-sizing: border-box !important;
+  transform: translateZ(0);
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list .prod-item-block{
   flex: 0 0 auto !important;
 }
