@@ -301,7 +301,7 @@ body.ddae-dark.bg-dark-ready{
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_2.724 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
+/* dDAE_2.725 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
   grid-template-columns: repeat(6, 15px);
@@ -21080,7 +21080,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 }
 
 
-/* dDAE_2.724 — Popup LED pagamenti: layer sopra tutti e scroll interno */
+/* dDAE_2.725 — Popup LED pagamenti: layer sopra tutti e scroll interno */
 #guestAlertModal{
   z-index: 20050 !important;
 }
