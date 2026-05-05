@@ -21096,3 +21096,44 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 132px);
   padding-right: 2px;
 }
+
+/* dDAE_2.726 — Guest list: LED alert PS / ISTAT / pagamento / ricevuta sotto i badge card */
+#page-ospiti .guest-meta-right{
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+}
+#page-ospiti .guest-meta-dots,
+#page-ospiti .guest-card-alert-leds{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+#page-ospiti .guest-card-alert-leds{
+  width: 100%;
+  padding-right: 1px;
+}
+#page-ospiti .guest-card-alert-led{
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  min-height: 15px !important;
+  border-radius: 999px;
+  margin: 0;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+@media (max-width: 480px){
+  #page-ospiti .guest-meta-dots{ gap: 7px; }
+  #page-ospiti .guest-card-alert-leds{ gap: 7px; }
+  #page-ospiti .guest-card-alert-led{
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+  }
+}
