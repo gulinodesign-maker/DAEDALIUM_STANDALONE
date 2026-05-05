@@ -5467,11 +5467,11 @@ function clearDismissedGuestAlert(side, guestId){
 function _guestStayFinancials(g){
   const total = money(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.total ?? g?.importo_booking ?? 0);
   const services = money(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? 0);
-  const discount = money(g?.sconto ?? g?.discount ?? g?.importo_sconto ?? g?.sconto_importo ?? 0);
   const dep = money(g?.acconto_importo ?? g?.accontoImporto ?? g?.deposit ?? 0);
   const saldo = money(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
-  const rawRemaining = (total + services) - discount - dep - saldo;
-  const remaining = Math.max(0, isFinite(rawRemaining) ? rawRemaining : 0);
+  const discount = money(g?.sconto ?? g?.discount ?? g?.sconto_importo ?? g?.scontoImporto ?? 0);
+  const remainingRaw = (total + services) - discount - dep - saldo;
+  const remaining = Math.max(0, Math.round((isFinite(remainingRaw) ? remainingRaw : 0) * 100) / 100);
   return { total, services, discount, dep, saldo, remaining };
 }
 function _guestReceiptMissingNow(g){
@@ -27720,7 +27720,9 @@ function renderGuestCards(){
     const services = money(first?.servizi_totale ?? first?.serviziTotal ?? first?.importo_servizi ?? 0);
     const dep = money(first?.acconto_importo ?? first?.accontoImporto ?? first?.deposit ?? 0);
     const saldo = money(first?.saldo_pagato ?? first?.saldoPagato ?? first?.saldo ?? 0);
-    const remaining = (total + services) - dep - saldo;
+    const discount = money(first?.sconto ?? first?.discount ?? first?.sconto_importo ?? first?.scontoImporto ?? 0);
+    const remainingRaw = (total + services) - discount - dep - saldo;
+    const remaining = Math.max(0, Math.round((isFinite(remainingRaw) ? remainingRaw : 0) * 100) / 100);
     const __hasCheckoutPending = !!(outISO && outISO === __today && isFinite(remaining) && remaining > 0.0001);
 
     const card = document.createElement("div");
