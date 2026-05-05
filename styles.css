@@ -21097,7 +21097,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   padding-right: 2px;
 }
 
-/* dDAE_2.727 — Guest list: LED alert PS / ISTAT / pagamento / ricevuta sotto i badge card, posizione aggiornata */
+/* dDAE_2.727 — Guest list: LED alert PS / ISTAT / pagamento / ricevuta sotto i badge card */
 #page-ospiti .guest-meta-right{
   flex-direction: column;
   align-items: flex-end;
@@ -21116,9 +21116,7 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
 #page-ospiti .guest-card-alert-leds{
   width: 100%;
   padding-right: 1px;
-  position: relative;
-  left: -10px;
-  top: 10px;
+  transform: translate(-7px, 15px);
 }
 #page-ospiti .guest-card-alert-led{
   width: 15px !important;
