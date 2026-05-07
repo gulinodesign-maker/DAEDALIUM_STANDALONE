@@ -2722,27 +2722,6 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospiti .guest-led.led-yellow{ background: #ffcc00; box-shadow: 0 0 0 3px rgba(255,204,0,0.16), 0 0 12px rgba(255,204,0,0.42); }
 
 #page-ospiti .guest-led.led-red{ background: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 0 12px rgba(255,59,48,0.42); }
-#page-ospiti .guest-led.is-checkin-due-blink{
-  animation: guestCheckInDueBlink 0.86s infinite;
-}
-
-@keyframes guestCheckInDueBlink{
-  0%, 48%{ opacity:1; transform:scale(1); }
-  49%, 100%{ opacity:0.28; transform:scale(0.86); }
-}
-
-/* dDAE_2.746 — Il lampeggio check-in deve funzionare anche in modalità prestazioni iOS. */
-body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
-#page-ospiti .guest-led.is-checkin-due-blink{
-  animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
-  -webkit-animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
-}
-
-@-webkit-keyframes guestCheckInDueBlink{
-  0%, 48%{ opacity:1; -webkit-transform:scale(1); transform:scale(1); }
-  49%, 100%{ opacity:0.28; -webkit-transform:scale(0.86); transform:scale(0.86); }
-}
-
 #page-ospiti .guest-led.led-greenorange-blink{
   animation: ledGreenOrangeBlink 1.05s infinite;
 }
@@ -3033,9 +3012,6 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 
 
 .tl-green{ background: rgba(52,199,89,0.92); }
-.tl-checkin{ background: rgba(148,163,184,0.92); }
-.tl-checkin.is-on{ background: rgba(52,199,89,0.92); }
-.tl-checkin.is-off{ background: rgba(148,163,184,0.92); }
 .tl-indigo{ background: rgba(79,70,229,0.92); }
 .tl-yellow{ background: rgba(255,204,0,0.92); }
 .tl-red{ background: rgba(255,59,48,0.92); }
