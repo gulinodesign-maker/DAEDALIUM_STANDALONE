@@ -9803,8 +9803,8 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 .operatori-metrics{
   display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap:10px;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:8px;
 }
 .operatori-metric{
   min-width:0;
@@ -21255,4 +21255,97 @@ body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list{
 }
 body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list .prod-item-block{
   flex: 0 0 auto !important;
+}
+
+
+/* dDAE_2.749 — Operatori: card metriche 3x1, chiusura popup con pallino X, saldo nello zoom calendario */
+.operatori-metrics{
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap:8px !important;
+}
+.operatori-metric{
+  padding:10px 8px !important;
+  text-align:center;
+}
+.operatori-metric-label{
+  font-size:10px !important;
+  line-height:1.12;
+}
+.operatori-metric-value{
+  font-size:15px !important;
+}
+.operatori-editor-close{
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  min-height:34px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:16px !important;
+  line-height:1 !important;
+}
+#operatoriEditorCancel{
+  display:none !important;
+}
+.calendar-cell-zoom .cal-cell-balance{
+  position:relative;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.10);
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+  line-height:1;
+}
+.calendar-cell-zoom .cal-cell-balance span{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  opacity:.72;
+}
+.calendar-cell-zoom .cal-cell-balance strong{
+  font-size:14px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-balance{
+  margin-top:14px;
+  padding:9px 14px;
+  font-size:15px;
+}
+body.ddae-dark .calendar-cell-zoom .cal-cell-balance{
+  background:rgba(15,23,42,.72);
+  border-color:rgba(148,163,184,.24);
+  color:#f8fafc;
+  -webkit-text-fill-color:#f8fafc;
+}
+@media (max-width: 380px){
+  .operatori-metric{ padding:9px 5px !important; }
+  .operatori-metric-label{ font-size:9px !important; }
+  .operatori-metric-value{ font-size:13px !important; }
+}
+
+
+/* dDAE_2.750 — account operatore: sotto il titolo restano solo i LED spesa Colazione/Prodotti, centrati */
+body[data-role="operatore"] .top-led-grid,
+.top-led-grid.is-operator-leds{
+  grid-template-columns: repeat(2, 15px) !important;
+  justify-content: center;
+  justify-items: center;
+}
+body[data-role="operatore"] .top-led-grid .top-led-alert,
+.top-led-grid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+body[data-role="operatore"] .top-led-grid .top-led-product,
+.top-led-grid.is-operator-leds .top-led-product{
+  display: inline-block !important;
 }
