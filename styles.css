@@ -21334,7 +21334,7 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-balance{
 }
 
 
-/* dDAE_2.750 — account operatore: sotto il titolo restano solo i LED spesa Colazione/Prodotti, centrati */
+/* dDAE_2.751 — account operatore: sotto il titolo restano solo i LED spesa Colazione/Prodotti, centrati */
 body[data-role="operatore"] .top-led-grid,
 .top-led-grid.is-operator-leds{
   grid-template-columns: repeat(2, 15px) !important;
