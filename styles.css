@@ -2731,7 +2731,7 @@ body[data-page="ospiti"] .guest-card .actions {
   49%, 100%{ opacity:0.28; transform:scale(0.86); }
 }
 
-/* dDAE_2.746 — Il lampeggio check-in deve funzionare anche in modalità prestazioni iOS. */
+/* dDAE_2.747 — Il lampeggio check-in deve funzionare anche in modalità prestazioni iOS. */
 body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 #page-ospiti .guest-led.is-checkin-due-blink{
   animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
@@ -21257,5 +21257,5 @@ body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list .pro
   flex: 0 0 auto !important;
 }
 
-/* dDAE_2.746 — icona check-in più riconoscibile dentro il tasto tondo. */
+/* dDAE_2.747 — icona check-in più riconoscibile dentro il tasto tondo. */
 .tl-ico-checkin{ width:18px; height:18px; stroke-width:2.2; }
