@@ -2720,6 +2720,7 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospiti .guest-led.led-green{ background: #34c759; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 #page-ospiti .guest-led.led-orange{ background: #ff9500; box-shadow: 0 0 0 3px rgba(255,149,0,0.16), 0 0 12px rgba(255,149,0,0.42); }
 #page-ospiti .guest-led.led-yellow{ background: #ffcc00; box-shadow: 0 0 0 3px rgba(255,204,0,0.16), 0 0 12px rgba(255,204,0,0.42); }
+#page-ospiti .guest-led.led-blue{ background: #32ade6; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 
 #page-ospiti .guest-led.led-red{ background: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 0 12px rgba(255,59,48,0.42); }
 #page-ospiti .guest-led.is-checkin-due-blink{
@@ -21351,7 +21352,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.752 — Guest list: e-mail sotto il telefono, mai sovrapposta ai LED */
+/* dDAE_2.753 — Guest list: e-mail sotto il telefono, mai sovrapposta ai LED */
 #page-ospiti .guest-row.guest-row-compact{
   width:100%;
 }
