@@ -94,7 +94,8 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.756";
+// Aggiornato alla build 2.757
+const BUILD_VERSION = "2.757";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -2333,10 +2334,6 @@ async function __fbImportAdmin__(opts){
             if ((state?.session && isOperatoreSession(state.session)) && k === "app_language") return;
             const prev = byKey.get(k);
             if (!prev){ byKey.set(k, row); return; }
-            if (k === "operatori_catalogo"){
-              byKey.set(k, Object.assign({}, prev, row));
-              return;
-            }
             const up = pickU(prev);
             const ur = pickU(row);
             const takeRemote = (!up && !ur) ? true : (!!ur && (!up || ur >= up));
@@ -3694,7 +3691,6 @@ function applyRoleMode(){
     try{ const statPrenTopTools = document.getElementById("statPrenTopTools"); if (statPrenTopTools) statPrenTopTools.hidden = true; }catch(_){ }
     try{ const statChannelTopTools = document.getElementById("statChannelTopTools"); if (statChannelTopTools) statChannelTopTools.hidden = true; }catch(_){ }
     try{ const statPulizieTopTools = document.getElementById("statPulizieTopTools"); if (statPulizieTopTools) statPulizieTopTools.hidden = true; }catch(_){ }
-    try{ const orePuliziaTopTools = document.getElementById("orePuliziaTopTools"); if (orePuliziaTopTools) orePuliziaTopTools.hidden = true; }catch(_){ }
     try{ const statCancTopTools = document.getElementById("statCancTopTools"); if (statCancTopTools) statCancTopTools.hidden = true; }catch(_){ }
   }
 }
@@ -4948,7 +4944,6 @@ guestMarriage: false,
   guestSaldoType: "contante",
   guestPSRegistered: false,
   guestISTATRegistered: false,
-  guestCheckInDone: false,
   guestArrivalFilter: "today",
   guestListScrollState: null,
   guestListScrollRestorePending: false,
@@ -5494,91 +5489,6 @@ function _guestReceiptMissingNow(g){
   }
   return missing;
 }
-
-function __guestCheckInDone__(g){
-  try{
-    return truthy(g?.checkin_effettuato ?? g?.checkInEffettuato ?? g?.check_in_effettuato ?? g?.checkInDone ?? g?.checkinDone ?? g?.check_in_done ?? g?.checked_in ?? g?.checkedIn ?? g?.arrivato ?? g?.arrived);
-  }catch(_){ return false; }
-}
-
-function __guestCheckInExpectedToday__(g){
-  try{
-    const todayDay = _dayNumFromISO(todayISO());
-    const checkInDay = _dayNumFromISO(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-    return todayDay != null && checkInDay != null && todayDay === checkInDay && !__guestCheckInDone__(g);
-  }catch(_){ return false; }
-}
-
-function __guestGroupCheckInExpectedToday__(guest){
-  try{
-    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
-    return rows.some(g => __guestCheckInExpectedToday__(g));
-  }catch(_){ return false; }
-}
-
-function __syncGuestCheckInButton__(){
-  try{
-    const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
-    if (!btn) return;
-    const on = !!state.guestCheckInDone;
-    btn.classList.toggle('is-on', on);
-    btn.classList.toggle('is-off', !on);
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.setAttribute('title', on ? 'Check-in effettuato' : 'Check-in non effettuato');
-    btn.setAttribute('aria-label', on ? 'Check-in effettuato' : 'Check-in non effettuato');
-  }catch(_){ }
-}
-
-function _guestPaymentMissingNow(g){
-  try{
-    const fin = _guestStayFinancials(g);
-    if (!(isFinite(fin.remaining) && fin.remaining > 0.0001)) return false;
-    // dDAE_2.755 — Alert pagamento: subito dopo check-in effettuato
-    // e finché la rimanenza da pagare non torna a zero.
-    return __guestCheckInDone__(g);
-  }catch(_){
-    return false;
-  }
-}
-
-function __guestCardAlertFlags__(guest){
-  const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
-  const now = Date.now();
-  const twelveHoursMs = 12 * 60 * 60 * 1000;
-  const todayDay = _dayNumFromISO(todayISO());
-  const flags = { ps:false, istat:false, payment:false, receipt:false };
-  try{
-    rows.forEach((g) => {
-      if (!g) return;
-      const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-      const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
-      const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
-      const checkInDone = __guestCheckInDone__(g);
-      if (checkInDone){
-        if (!psReg) flags.ps = true;
-        if (!istatReg) flags.istat = true;
-      }
-
-      if (_guestPaymentMissingNow(g)){
-        flags.payment = true;
-      }
-      if (_guestReceiptMissingNow(g).length > 0){
-        flags.receipt = true;
-      }
-    });
-  }catch(_){ }
-  return flags;
-}
-function buildGuestCardAlertLedsHTML(guest){
-  const f = __guestCardAlertFlags__(guest);
-  const led = (on, cls, labelOn, labelOff) => `<span class="guest-card-alert-led top-led top-led-alert ${on ? cls : 'is-off'}" aria-label="${escapeHtml(on ? labelOn : labelOff)}" title="${escapeHtml(on ? labelOn : labelOff)}"></span>`;
-  return `<div class="guest-card-alert-leds" aria-label="Alert ospite">
-    ${led(!!f.ps, 'is-black', 'Polizia di Stato mancante', 'Polizia di Stato ok')}
-    ${led(!!f.istat, 'is-sky', 'ISTAT mancante', 'ISTAT ok')}
-    ${led(!!f.payment, 'is-yellow', 'Pagamento mancante', 'Pagamento ok')}
-    ${led(!!f.receipt, 'is-red', 'Ricevuta mancante', 'Ricevuta ok')}
-  </div>`;
-}
 function computeTopGuestAlerts(guests){
   const now = Date.now();
   const twelveHoursMs = 12 * 60 * 60 * 1000;
@@ -5597,9 +5507,8 @@ function computeTopGuestAlerts(guests){
     const checkOutTs = parseDateTs(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
     const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
     const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
-    const checkInDone = __guestCheckInDone__(g);
 
-    if (checkInDone){
+    if (checkInTs && now >= (checkInTs + twelveHoursMs)){
       const missingPs = !psReg;
       const missingIstat = !istatReg;
       if (missingPs || missingIstat){
@@ -5630,7 +5539,12 @@ function computeTopGuestAlerts(guests){
 
     const fin = _guestStayFinancials(g);
     const receiptMissing = _guestReceiptMissingNow(g);
-    const paymentMissing = _guestPaymentMissingNow(g);
+    const basePaymentMissing = !!(isFinite(fin.remaining) && fin.remaining > 0.0001);
+    const todayDay = _dayNumFromISO(todayISO());
+    const checkOutDay = _dayNumFromISO(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
+    // dDAE_2.725 — Alert pagamenti: mostra solo pagamenti non eseguiti
+    // con scadenza oggi o passata; non mostra pagamenti futuri.
+    const paymentMissing = !!(basePaymentMissing && (checkOutDay == null || todayDay == null || checkOutDay <= todayDay));
     const receiptAlert = receiptMissing.length > 0;
     const canDismissRightAlert = !paymentMissing && rightDismissed.has(guestId);
     if ((paymentMissing || receiptAlert) && !canDismissRightAlert){
@@ -5639,7 +5553,7 @@ function computeTopGuestAlerts(guests){
         name,
         guest: g,
         details: [
-          paymentMissing ? `Pagamento mancante — Rimanenza da pagare: ${euro(fin.remaining)}` : '',
+          paymentMissing ? `Pagamento mancante — Saldo da far pagare: ${euro(fin.remaining)}` : '',
           ...receiptMissing
         ].filter(Boolean),
         mode: (paymentMissing && receiptAlert) ? 'dual' : (receiptAlert ? 'red' : 'yellow'),
@@ -7895,30 +7809,28 @@ function guestLedStatus(item){
   const t = _dayNumFromISO(todayISO());
   const dIn = _dayNumFromISO(ci);
   const dOut = _dayNumFromISO(co);
-  const checkInDone = __guestCheckInDone__(item);
+
+  const isOneNight = (dIn != null && dOut != null && (dOut - dIn) === 1);
 
   if (t == null) return { cls: "led-gray", label: "Nessuna scadenza" };
 
-  // dDAE_2.754 — Nuove regole LED multifunzione guest list:
-  // arrivo oggi = verde (lampeggiante finché manca check-in); dopo check-in
-  // diventa arancione se il checkout è domani, altrimenti verde fisso.
-  // Il giorno prima del checkout = arancione, checkout = rosso, dopo checkout = azzurro.
+  // Priorità: check-out (rosso) > giorno prima check-out (arancione) > dopo check-in (verde) > grigio
   if (dOut != null) {
     if (t === dOut) return { cls: "led-red", label: "Check-out oggi" };
-    if (t > dOut) return { cls: "led-blue", label: "Ospite andato via" };
-  }
+    if (t > dOut) return { cls: "led-red", label: "Check-out passato" };
 
-  if (dIn != null && t === dIn) {
-    if (!checkInDone) return { cls: "led-green", label: "Check-in oggi da confermare" };
-    if (dOut != null && t === (dOut - 1)) return { cls: "led-orange", label: "Check-out domani" };
-    return { cls: "led-green", label: "Check-in effettuato" };
-  }
-
-  if (dOut != null && t === (dOut - 1)) {
-    return { cls: "led-orange", label: "Check-out domani" };
+    // Giorno prima del check-out
+    if (t === (dOut - 1)) {
+      // Caso speciale: 1 notte -> il giorno prima del check-out coincide col check-in
+      if (isOneNight && dIn === (dOut - 1)) {
+        return { cls: "led-yellow", label: "1 notte: arrivo oggi (LED giallo)" };
+      }
+      return { cls: "led-orange", label: "Check-out domani" };
+    }
   }
 
   if (dIn != null) {
+    if (t === dIn) return { cls: "led-green", label: "Check-in oggi" };
     if (t > dIn) return { cls: "led-green", label: "In soggiorno" };
     return { cls: "led-gray", label: "In arrivo" };
   }
@@ -9067,7 +8979,7 @@ const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn',
-  'opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'opSettingsLanguageBtn','opSettingsCodeBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
@@ -9459,7 +9371,6 @@ function __applyDesignPayloadToVisual__(current, payload, changed, fallback){
   if (changed?.bold) base.bold = !!payload?.bold;
   if (!base.border) base.border = base.bg || fallback || 'blue-4';
   return base;
-}
 
 function __designVisualFromPayload__(current, payload, fallback){
   const base = __launcherVisualNormalize__(current || {}, fallback || 'blue-4');
@@ -9523,6 +9434,8 @@ function __writeLauncherIconVisual__(id, visual){
     };
     __launcherIconColorMapWrite__(map);
   }catch(_){ }
+}
+
 }
 
 async function __applyHeaderActionChangesToCategory__(payload, changed){
@@ -10296,7 +10209,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni'
 ];
 
@@ -10378,8 +10291,8 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
-      'opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn',
+      'opSettingsLanguageBtn','opSettingsCodeBtn'
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -10473,23 +10386,23 @@ function __launcherIconApplyToButton__(btn){
       setImp(btn, 'background-color', 'transparent');
       setImp(btn, 'border-color', 'transparent');
       if (glyph){
-        setImp(glyph, 'color', hex);
-        setImp(glyph, '-webkit-text-fill-color', hex);
-        setImp(glyph, 'background', resolvedBg);
-        setImp(glyph, 'background-color', resolvedBg);
-        setImp(glyph, 'border-color', resolvedBorder);
-        setImp(glyph, 'border-width', '1px');
-        setImp(glyph, 'border-style', 'solid');
-        setImp(glyph, 'box-shadow', 'none');
-        setImp(glyph, 'backdrop-filter', bgHex ? 'none' : '');
-        setImp(glyph, '-webkit-backdrop-filter', bgHex ? 'none' : '');
+        glyph.style.color = hex;
+        glyph.style.webkitTextFillColor = hex;
+        glyph.style.background = resolvedBg;
+        glyph.style.backgroundColor = resolvedBg;
+        glyph.style.borderColor = resolvedBorder;
+        glyph.style.borderWidth = '1px';
+        glyph.style.borderStyle = 'solid';
+        glyph.style.boxShadow = 'none';
+        glyph.style.backdropFilter = bgHex ? 'none' : '';
+        glyph.style.webkitBackdropFilter = bgHex ? 'none' : '';
       }
       const svg = btn.querySelector('svg.ui-ico');
       if (svg){
-        setImp(svg, 'color', hex);
+        svg.style.color = hex;
         svg.querySelectorAll('path, circle, rect, line, polyline, polygon, ellipse').forEach((node) => {
-          try{ node.style.setProperty('stroke', 'currentColor', 'important'); }catch(_){ node.style.stroke = 'currentColor'; }
-          try{ node.style.setProperty('fill', 'none', 'important'); }catch(_){ node.style.fill = 'none'; }
+          node.style.stroke = 'currentColor';
+          node.style.fill = 'none';
         });
       }
       btn.style.setProperty('--ico-color', hex);
@@ -10961,7 +10874,6 @@ function getOperatoriCatalogFromSettings(){
       benzina: (() => { const n = Number(String(item?.benzina ?? "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
       colore: __normalizeOperatoreColor__(item?.colore),
       coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor),
-      mostraSaldo: !!(item?.mostraSaldo ?? item?.showBalance ?? item?.saldoCalendario),
     })).filter(item => item.nome);
   }catch(_){
     return __operatoriCatalogDefaultFromLegacy__();
@@ -10976,7 +10888,6 @@ async function saveOperatoriCatalogToSettings(list){
     benzina: (() => { const n = Number(String(item?.benzina ?? "").replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; })(),
     colore: __normalizeOperatoreColor__(item?.colore),
     coloreTesto: __normalizeOptionalOperatoreColor__(item?.coloreTesto ?? item?.textColor),
-    mostraSaldo: !!(item?.mostraSaldo ?? item?.showBalance ?? item?.saldoCalendario),
   })).filter(item => item.nome);
   const firstThree = clean.slice(0, 3).map(item => item.nome);
   await api("impostazioni", {
@@ -11870,7 +11781,6 @@ function __operatoriOpenModal__(item){
   const tariffaEl = document.getElementById('operatoriEditorTariffa');
   const benzinaEl = document.getElementById('operatoriEditorBenzina');
   const delBtn = document.getElementById('operatoriEditorDelete');
-  const saldoBtn = document.getElementById('operatoriEditorSaldoBtn');
   if (title) title.textContent = current ? 'Modifica operatore' : 'Nuovo operatore';
   if (idEl) idEl.value = current?.id ? String(current.id) : '';
   if (nomeEl) nomeEl.value = current?.nome ? String(current.nome) : '';
@@ -11878,12 +11788,6 @@ function __operatoriOpenModal__(item){
   if (benzinaEl) benzinaEl.value = current && isFinite(Number(current.benzina)) ? String(Number(current.benzina)) : '';
   if (!__operatoriPageUi.tones || !Object.keys(__operatoriPageUi.tones).length) __initColorToneMap__(__operatoriPageUi, 'blue');
   if (delBtn) delBtn.hidden = !current;
-  if (saldoBtn){
-    const on = !!(current && (current.mostraSaldo || current.showBalance || current.saldoCalendario));
-    saldoBtn.classList.toggle('is-selected', on);
-    saldoBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    try{ __applySingleActionButtonVisual__(saldoBtn, on ? 'on' : 'off'); }catch(_){}
-  }
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
   __operatoriSetSelectedColor__(current?.colore || 'blue-2');
   __operatoriSetSelectedTextColor__(__operatoriPageUi.textColor || '');
@@ -11910,7 +11814,6 @@ function __operatoriCloseModal__(){
   __initColorToneMap__(__operatoriPageUi, 'blue');
   __operatoriSetSelectedColor__('blue-2');
   __operatoriSetSelectedTextColor__('');
-  try{ const b=document.getElementById('operatoriEditorSaldoBtn'); if(b){ b.classList.remove('is-selected'); b.setAttribute('aria-pressed','false'); __applySingleActionButtonVisual__(b,'off'); } }catch(_){}
 }
 
 async function renderOperatoriPage(){
@@ -11946,10 +11849,6 @@ async function renderOperatoriPage(){
           <div class="operatori-metric-label">Benzina</div>
           <div class="operatori-metric-value">${__operatoriFormatMoney__(item.benzina)}</div>
         </div>
-        <div class="operatori-metric">
-          <div class="operatori-metric-label">Saldo calendario</div>
-          <div class="operatori-metric-value">${item.mostraSaldo ? 'ON' : 'OFF'}</div>
-        </div>
       </div>
     </article>
   `).join('');
@@ -11973,13 +11872,6 @@ function setupOperatoriPage(){
   if (cancelBtn) bindFastTap(cancelBtn, __operatoriCloseModal__);
   const colorBtn = document.getElementById('operatoriEditorTagColor');
   if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('operatore'); });
-  const saldoToggleBtn = document.getElementById('operatoriEditorSaldoBtn');
-  if (saldoToggleBtn) bindFastTap(saldoToggleBtn, () => {
-    const on = !saldoToggleBtn.classList.contains('is-selected');
-    saldoToggleBtn.classList.toggle('is-selected', on);
-    saldoToggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    try{ __applySingleActionButtonVisual__(saldoToggleBtn, on ? 'on' : 'off'); }catch(_){}
-  });
 
   try{
     document.querySelectorAll('#operatoriColorGrid .operatori-color-option').forEach(btn => {
@@ -12016,7 +11908,6 @@ function setupOperatoriPage(){
         benzina: Math.round(benzina * 100) / 100,
         colore: __operatoriPageUi.color || 'blue',
         coloreTesto: __operatoriPageUi.textColor || '',
-        mostraSaldo: !!document.getElementById('operatoriEditorSaldoBtn')?.classList.contains('is-selected'),
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -14271,7 +14162,7 @@ function bindHomeStrongTap(){
   go("goPulizie", "pulizie");
   go("goLavanderia", "lavanderia");
   go("goStatistiche", "statistiche");
-  go("goStatPiscina", "orepulizia");
+  go("goStatPiscina", "statpiscina");
   go("openLauncher", "spese", { before: ()=>{ try{ setSpeseView("list"); }catch(_){} } });
 }
 
@@ -14399,7 +14290,7 @@ const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.cl
     const s6 = e.target.closest && e.target.closest("#goStatAmministratore");
     if (s6){ hideLauncher(); showPage("statamministratore"); return; }
     const s7 = e.target.closest && e.target.closest("#goStatPiscina");
-    if (s7){ hideLauncher(); showPage("orepulizia"); return; }
+    if (s7){ hideLauncher(); showPage("statpiscina"); return; }
     const s8 = e.target.closest && e.target.closest("#goStatCancellazioni");
     if (s8){ hideLauncher(); showPage("statcancellazioni"); return; }
 });
@@ -14505,7 +14396,7 @@ function ensureTopbarIconContrast(){
 }
 
 
-const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings","prodotti"]);
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","impostazioni","opsettings"]);
 function __isVerticalLockPage__(page){
   return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
 }
@@ -14563,7 +14454,7 @@ function __applyVerticalPageLock__(page){
     const allowVerticalMove = (target) => {
       try{
         if (!target || !target.closest) return false;
-        return !!target.closest('.prodotti-list, .settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
+        return !!target.closest('.settings-year-wheel, .modal:not([hidden]) .laundry-detail-list, .modal:not([hidden]) .stat-graph-modal-legend, .modal:not([hidden]) [data-allow-vertical-scroll="true"]');
       }catch(_){
         return false;
       }
@@ -14842,16 +14733,11 @@ state.page = page;
   try{
     const hb2 = document.getElementById("hamburgerBtn");
     const hs2 = document.getElementById("homeSettingsTop");
-    const leds2 = document.getElementById("topLedGrid") || document.getElementById("prodTopLeds");
+    const leds2 = document.getElementById("prodTopLeds");
     const authImportTop = document.getElementById("authImportBackupTop");
     const isHome = (page === "home");
     const isAuth = (page === "auth");
     const isOp = !!(state.session && isOperatoreSession(state.session));
-    if (leds2){
-      leds2.hidden = isAuth;
-      leds2.classList.toggle('is-operator-leds', !!isOp);
-      leds2.classList.toggle('is-admin-leds', !isOp);
-    }
     if (hb2) hb2.hidden = isHome || isAuth;
     if (hs2){
       hs2.hidden = !isHome;
@@ -14859,11 +14745,7 @@ state.page = page;
       hs2.classList.add("icon-btn-whiteblue");
     }
     if (authImportTop) authImportTop.hidden = !isAuth;
-    if (leds2) leds2.hidden = isAuth;
-    try{
-      ['dbLedRead','dbLedIstat','dbLedWrite','dbLedReceipt'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = !!isOp; });
-      ['prodLedColazione','prodLedPulizia'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = false; });
-    }catch(_){ }
+    if (leds2) leds2.hidden = (page !== "home") || isOp;
     try{ const opImpTop = document.getElementById("opImportRosterTop"); if (opImpTop) opImpTop.hidden = true; }catch(_){ }
     try{ const opLogoutTopBtn = document.getElementById("opLogoutTop"); if (opLogoutTopBtn) opLogoutTopBtn.hidden = true; }catch(_){ }
 
@@ -14974,11 +14856,6 @@ state.page = page;
   const statPulizieTopTools = $("#statPulizieTopTools");
   if (statPulizieTopTools){
     statPulizieTopTools.hidden = (page !== "statpulizie");
-  }
-
-  const orePuliziaTopTools = $("#orePuliziaTopTools");
-  if (orePuliziaTopTools){
-    orePuliziaTopTools.hidden = (page !== "orepulizia");
   }
 
   const statCancTopTools = $("#statCancTopTools");
@@ -15170,7 +15047,6 @@ if (page === "orepulizia") { initOrePuliziaPage().catch(e=>toast(e.message)); }
 
   // Palette icone (launcher)
   applyIconPalette();
-  try{ __launcherIconApplyAll__(); }catch(_){}
 
 
 }
@@ -15414,7 +15290,7 @@ if (guestScrollTodayBtn){
   }
   const goOrePulHome = $("#goOrePuliziaHome");
   if (goOrePulHome){
-    bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("statpiscina"); });
+    bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("orepulizia"); });
   }
   try{ __applyHomeIconGradients__(); }catch(_){ }
   try{
@@ -15485,7 +15361,7 @@ if (guestScrollTodayBtn){
   const s6 = $("#goStatAmministratore");
   if (s6){ bindFastTap(s6, () => { hideLauncher(); showPage("statamministratore"); }); }
   const s7 = $("#goStatPiscina");
-  if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("orepulizia"); }); }
+  if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("statpiscina"); }); }
   const s8 = $("#goStatCancellazioni");
   if (s8){ bindFastTap(s8, () => { hideLauncher(); showPage("statcancellazioni"); }); }
 // STATGEN: topbar tools
@@ -15500,8 +15376,6 @@ if (guestScrollTodayBtn){
   if (btnBackStatsChannel){ bindFastTap(btnBackStatsChannel, () => { showPage("statistiche"); }); }
   const btnBackStatsPulizie = $("#btnBackStatistichePulizie");
   if (btnBackStatsPulizie){ bindFastTap(btnBackStatsPulizie, () => { showPage("statistiche"); }); }
-  const btnBackStatsOrePulizia = $("#btnBackStatisticheOrePulizia");
-  if (btnBackStatsOrePulizia){ bindFastTap(btnBackStatsOrePulizia, () => { showPage("statistiche"); }); }
 
   const btnPieMensili = $("#btnStatMensiliPie");
   if (btnPieMensili){ bindFastTap(btnPieMensili, () => { openStatMensiliPieModal(); }); }
@@ -18006,7 +17880,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
   'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
-  'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorSave',
+  'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorTagColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget',
@@ -18058,7 +17932,6 @@ function __defaultSingleActionButtonVisual__(btn){
     channelEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     operatoriEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
-    operatoriEditorSaldoBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 },
     laundryCatalogEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
     operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -18094,12 +17967,11 @@ function __defaultSingleActionButtonVisual__(btn){
 }
 
 function __singleActionButtonSupportsDualState__(btn){
-  try{ return !!(btn && btn.classList && (btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle'))); }catch(_){ return false; }
+  try{ return !!(btn && btn.classList && btn.classList.contains('spesa-category-btn')); }catch(_){ return false; }
 }
 
 function __defaultSingleActionButtonStateVisuals__(btn){
   const base = __defaultSingleActionButtonVisual__(btn);
-  try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
   const on = { ...base, opacity:0.88 };
@@ -18179,7 +18051,6 @@ function __singleActionButtonCategoryForId__(id){
     channelEditorCancel:'cancel',
     laundryCatalogEditorCancel:'cancel',
     operatoriEditorTagColor:'tag',
-    operatoriEditorSaldoBtn:'operator-balance',
     laundryCatalogEditorTagColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
@@ -19162,8 +19033,8 @@ function __computeStatGenFromData__(data){
     const dep = __statGuestMoney__(g?.acconto_importo ?? g?.accontoImporto ?? 0);
     const saldo = __statGuestMoney__(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
     giacenza += (dep + saldo);
-    const depRec = _isRicevutaFlag(g, 'acconto');
-    const saldoRec = _isRicevutaFlag(g, 'saldo');
+    const depRec = truthy(g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? g?.acconto_ricevutain);
+    const saldoRec = truthy(g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? g?.saldo_ricevutain);
     if (dep > 0) depRec ? (conRicevuta += dep) : (senzaRicevuta += dep);
     if (saldo > 0) saldoRec ? (conRicevuta += saldo) : (senzaRicevuta += saldo);
   });
@@ -19213,8 +19084,8 @@ function __statGenSeriesListFromData__(data){
   const ricevute = __statGuestDualMonthlySeriesForRows__(Array.isArray(data?.guests) ? data.guests : [], (guest) => {
     const dep = __statGuestMoney__(guest?.acconto_importo ?? guest?.accontoImporto ?? 0);
     const saldo = __statGuestMoney__(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
-    const depRec = _isRicevutaFlag(guest, 'acconto');
-    const saldoRec = _isRicevutaFlag(guest, 'saldo');
+    const depRec = truthy(guest?.acconto_ricevuta ?? guest?.accontoRicevuta ?? guest?.ricevuta_acconto ?? guest?.ricevutaAcconto ?? guest?.acconto_ricevutain);
+    const saldoRec = truthy(guest?.saldo_ricevuta ?? guest?.saldoRicevuta ?? guest?.ricevuta_saldo ?? guest?.ricevutaSaldo ?? guest?.saldo_ricevutain);
     return { primary: (depRec ? dep : 0) + (saldoRec ? saldo : 0), secondary: (depRec ? 0 : dep) + (saldoRec ? 0 : saldo) };
   });
   const revenueCum = __statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0));
@@ -19486,8 +19357,8 @@ function __statRicevuteMonthlySeries__(){
   return __statGuestDualMonthlySeries__((guest) => {
     const dep = __statGuestMoney__(guest?.acconto_importo ?? guest?.accontoImporto ?? 0);
     const saldo = __statGuestMoney__(guest?.saldo_pagato ?? guest?.saldoPagato ?? guest?.saldo ?? 0);
-    const depRec = _isRicevutaFlag(guest, 'acconto');
-    const saldoRec = _isRicevutaFlag(guest, 'saldo');
+    const depRec = truthy(guest?.acconto_ricevuta ?? guest?.accontoRicevuta ?? guest?.ricevuta_acconto ?? guest?.ricevutaAcconto ?? guest?.acconto_ricevutain);
+    const saldoRec = truthy(guest?.saldo_ricevuta ?? guest?.saldoRicevuta ?? guest?.ricevuta_saldo ?? guest?.ricevutaSaldo ?? guest?.saldo_ricevutain);
     const withReceipt = (depRec ? dep : 0) + (saldoRec ? saldo : 0);
     const withoutReceipt = (depRec ? 0 : dep) + (saldoRec ? 0 : saldo);
     return { primary: withReceipt, secondary: withoutReceipt };
@@ -19852,8 +19723,8 @@ function computeStatGen(){
     giacenza += (dep + saldo);
 
     // receipt flags
-    const depRec = _isRicevutaFlag(g, 'acconto');
-    const saldoRec = _isRicevutaFlag(g, 'saldo');
+    const depRec = truthy(g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? g?.acconto_ricevutain);
+    const saldoRec = truthy(g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? g?.saldo_ricevutain);
 
     if (dep > 0){
       if (depRec) conRicevuta += dep;
@@ -21355,86 +21226,17 @@ function _lsSetNum(key, value){
   try{ localStorage.setItem(key, String(value)); }catch(_){}
 }
 
-function __ricevutaValueTruthy__(v){
-  try{
-    if (v === true) return true;
-    if (v === false || v === undefined || v === null) return false;
-    if (typeof v === "number") return isFinite(v) && v !== 0;
-    const s = String(v).trim().toLowerCase();
-    if (!s) return false;
-    if (["0","false","no","non","none","null","undefined","off","n","f","ko"].includes(s)) return false;
-    if (s.includes("senza") || s.includes("mancant") || s.includes("non emess") || s.includes("no ricev")) return false;
-    return true;
-  }catch(_){ }
-  return false;
-}
-
-function __ricevutaDynamicFieldTruthy__(g, kind){
-  try{
-    if (!g || typeof g !== "object") return false;
-    const knd = String(kind || "").trim().toLowerCase();
-    const kindNeedles = knd === "acconto"
-      ? ["acconto","deposit","deposito","caparra"]
-      : ["saldo","balance","finale","restante"];
-    for (const key of Object.keys(g)){
-      const lk = String(key || "").toLowerCase();
-      if (!lk.includes("ricev")) continue;
-      if (!kindNeedles.some((needle) => lk.includes(needle))) continue;
-      if (__ricevutaValueTruthy__(g[key])) return true;
-    }
-  }catch(_){ }
-  return false;
-}
-
 function _isRicevutaFlag(g, kind){
   try{
-    if (!g || typeof g !== "object") return false;
-    const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
-    const firstExplicit = (keys) => {
-      for (const key of keys){
-        if (!hasOwn(g, key)) continue;
-        const v = g[key];
-        if (v === undefined || v === null) continue;
-        return __ricevutaValueTruthy__(v);
-      }
-      return null;
-    };
-
     if (kind === "acconto"){
-      // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
-      // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
-      const explicit = firstExplicit([
-        "acconto_ricevuta", "accontoRicevuta", "ricevuta_acconto", "ricevutaAcconto",
-        "acconto_ricevutain", "accontoRicevutaIn", "ricevutaAccontoIn"
-      ]);
-      if (explicit !== null) return explicit;
-
-      const values = [
-        g?.numero_ricevuta_acconto, g?.numeroRicevutaAcconto, g?.acconto_numero_ricevuta,
-        g?.accontoNumeroRicevuta, g?.ricevuta_acconto_numero, g?.ricevutaAccontoNumero,
-        g?.url_ricevuta_acconto, g?.pdf_ricevuta_acconto, g?.file_ricevuta_acconto
-      ];
-      if (values.some(__ricevutaValueTruthy__)) return true;
-      if (__ricevutaDynamicFieldTruthy__(g, "acconto")) return true;
+      const b = truthy(g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? g?.acconto_ricevutain);
+      if (b) return true;
       const t = (g?.acconto_tipo ?? g?.accontoTipo ?? "").toString().toLowerCase();
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
     } else {
-      // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
-      // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
-      const explicit = firstExplicit([
-        "saldo_ricevuta", "saldoRicevuta", "ricevuta_saldo", "ricevutaSaldo",
-        "saldo_ricevutain", "saldoRicevutaIn", "ricevutaSaldoIn"
-      ]);
-      if (explicit !== null) return explicit;
-
-      const values = [
-        g?.numero_ricevuta_saldo, g?.numeroRicevutaSaldo, g?.saldo_numero_ricevuta,
-        g?.saldoNumeroRicevuta, g?.ricevuta_saldo_numero, g?.ricevutaSaldoNumero,
-        g?.url_ricevuta_saldo, g?.pdf_ricevuta_saldo, g?.file_ricevuta_saldo
-      ];
-      if (values.some(__ricevutaValueTruthy__)) return true;
-      if (__ricevutaDynamicFieldTruthy__(g, "saldo")) return true;
+      const b = truthy(g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? g?.saldo_ricevutain);
+      if (b) return true;
       const t = (g?.saldo_tipo ?? g?.saldoTipo ?? "").toString().toLowerCase();
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
@@ -22597,9 +22399,7 @@ function enterGuestCreateMode(){
   // Registrazioni (PS/ISTAT): default OFF
   state.guestPSRegistered = false;
   state.guestISTATRegistered = false;
-  state.guestCheckInDone = false;
   setRegFlags("regTags", state.guestPSRegistered, state.guestISTATRegistered);
-  try{ __syncGuestCheckInButton__(); }catch(_){ }
   // refresh rooms UI if present
   try {
     document.querySelectorAll("#roomsPicker .room-dot").forEach(btn => {
@@ -22745,9 +22545,7 @@ refreshFloatingLabels();
   const istatReg = truthy(ospite.istat_registrato ?? ospite.istatRegistrato);
   state.guestPSRegistered = psReg;
   state.guestISTATRegistered = istatReg;
-  state.guestCheckInDone = __guestCheckInDone__(ospite);
   setRegFlags("regTags", psReg, istatReg);
-  try{ __syncGuestCheckInButton__(); }catch(_){ }
   // stanze: in lettura possono arrivare in vari formati (legacy, JSON, date-convertite da Sheets)
   try {
     const roomsArr = _parseRoomsArr(ospite?.stanze);
@@ -24952,7 +24750,6 @@ function updateOspiteHdActions(){
   // Mostra il contenitore (poi nascondiamo i singoli pallini senza azione)
   hdActions.hidden = false;
 
-  const btnCheckIn = hdActions.querySelector("[data-guest-checkin]");
   const btnCal  = hdActions.querySelector("[data-guest-cal]");
   const btnReport = hdActions.querySelector("[data-guest-report]");
   const btnBack = hdActions.querySelector("[data-guest-back]");
@@ -24960,10 +24757,6 @@ function updateOspiteHdActions(){
   const btnDel  = hdActions.querySelector("[data-guest-del]");
 
   const mode = state.guestMode; // "create" | "edit" | "view"
-
-  // Check-in: solo in sola lettura
-  if (btnCheckIn) btnCheckIn.hidden = (mode !== "view");
-  try{ __syncGuestCheckInButton__(); }catch(_){ }
 
   // Indaco: vai al calendario (sempre presente)
   if (btnCal) btnCal.hidden = false;
@@ -26137,7 +25930,6 @@ if (!name) return toast("Inserisci il nome");
     saldo_pagato: saldoPagato,
     saldo_tipo: saldoTipo,
     acconto_ricevuta: !!state.guestDepositReceipt,
-    acconto_ricevutain: !!state.guestDepositReceipt,
     saldo_ricevuta: !!state.guestSaldoReceipt,
     saldo_ricevutain: !!state.guestSaldoReceipt,
     note: notes,
@@ -26149,10 +25941,6 @@ if (!name) return toast("Inserisci il nome");
     c: (state.guestColC ? "1" : ""),
     ps_registrato: state.guestPSRegistered ? "1" : "",
     istat_registrato: state.guestISTATRegistered ? "1" : "",
-    checkin_effettuato: state.guestCheckInDone ? "1" : "",
-    check_in_effettuato: state.guestCheckInDone ? "1" : "",
-    checkInEffettuato: state.guestCheckInDone ? "1" : "",
-    checked_in: state.guestCheckInDone ? "1" : "",
     stanze: JSON.stringify(rooms)
   };
 
@@ -26217,16 +26005,10 @@ if (!name) return toast("Inserisci il nome");
     }
   }catch(_){ }
 
-  // Invalida cache in-memory/locali (ospiti/stanze/statistiche) e forza refresh Calendario.
-  // Le statistiche devono rispecchiare subito la scheda ospite appena salvata,
-  // soprattutto quando una spunta ricevuta viene tolta.
+  // Invalida cache in-memory (ospiti/stanze) e forza refresh Calendario.
+  // Questo evita che il calendario rimanga "stale" finche' non riavvii la PWA.
   try{ invalidateApiCache("ospiti|"); }catch(_){ }
   try{ invalidateApiCache("stanze|"); }catch(_){ }
-  try{ state._statsDataKey = ""; state.statGen = null; state.statMensili = null; state.statPrenotazioni = null; }catch(_){ }
-  try{ if (Array.isArray(state.statsGuests)){
-    const ix = state.statsGuests.findIndex(x => String(guestIdOf(x) || x?.id || "") === String(ospiteId || ""));
-    if (ix >= 0) state.statsGuests[ix] = Object.assign({}, state.statsGuests[ix] || {}, payload);
-  } }catch(_){ }
   try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; state.calendar.winFrom = ""; state.calendar.winTo = ""; } state._roomsAvailKey = ""; }catch(_){ }
 
   if (instantGoList){
@@ -26475,64 +26257,6 @@ function setupOspite(){
     hdActions.addEventListener("click", async (e) => {
       const btn = e.target.closest("button");
       if (!btn || !hdActions.contains(btn) || btn.hidden) return;
-
-      if (btn.hasAttribute("data-guest-checkin")){
-        const item = state.guestViewItem || null;
-        const id = guestIdOf(item) || item?.id || state.guestEditId || '';
-        if (!item || !id) return;
-        const next = !__guestCheckInDone__(item);
-        state.guestCheckInDone = next;
-        item.checkin_effettuato = next ? "1" : "";
-        item.check_in_effettuato = next ? "1" : "";
-        item.checkInEffettuato = next ? "1" : "";
-        item.checked_in = next ? "1" : "";
-        try{ __syncGuestCheckInButton__(); }catch(_){ }
-        try{
-          const patchCheckInState = (row) => {
-            if (!row) return;
-            row.checkin_effettuato = next ? "1" : "";
-            row.check_in_effettuato = next ? "1" : "";
-            row.checkInEffettuato = next ? "1" : "";
-            row.checked_in = next ? "1" : "";
-          };
-          const gid = String(id || '').trim();
-          try{
-            const lists = [state.ospiti, state.guests, state.bookings, state.guestList];
-            lists.forEach((list) => {
-              if (!Array.isArray(list)) return;
-              list.forEach((row) => {
-                try{ if (String(guestIdOf(row) || row?.id || '').trim() === gid) patchCheckInState(row); }catch(_){ }
-              });
-            });
-          }catch(_){ }
-          try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
-          try{ renderOspiti && renderOspiti(); }catch(_){ }
-        }catch(_){ }
-        try{
-          const payload = Object.assign({}, item, {
-            id,
-            checkin_effettuato: next ? "1" : "",
-            check_in_effettuato: next ? "1" : "",
-            checkInEffettuato: next ? "1" : "",
-            checked_in: next ? "1" : ""
-          });
-          await api("ospiti", { method:"PUT", body: payload });
-          try{ invalidateApiCache("ospiti|"); }catch(_){ }
-          try{ await loadOspiti({ ...(state.period || {}), force:true }); }catch(_){ }
-          try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
-          try{ renderOspiti && renderOspiti(); }catch(_){ }
-          toast(next ? "Check-in effettuato" : "Check-in non effettuato");
-        }catch(err){
-          state.guestCheckInDone = !next;
-          item.checkin_effettuato = !next ? "1" : "";
-          item.check_in_effettuato = !next ? "1" : "";
-          item.checkInEffettuato = !next ? "1" : "";
-          item.checked_in = !next ? "1" : "";
-          try{ __syncGuestCheckInButton__(); }catch(_){ }
-          toast(err?.message || "Errore salvataggio check-in");
-        }
-        return;
-      }
 
       // Indaco: vai al calendario
       if (btn.hasAttribute("data-guest-cal")){
@@ -27839,67 +27563,22 @@ function __closeGuestReportModal__(){ const modal=document.getElementById('guest
 async function __shareGuestReport__(guest){ const safeGuest=guest || state.guestReportCurrent || __guestReportResolveGuest__(); if(!safeGuest) return false; const lang=__guestReportResolveLanguage__(safeGuest); const blob=await __guestReportPdfBlob__(safeGuest); if(!blob) return false; const filename=__guestReportFileName__(safeGuest); const file=new File([blob],filename,{type:'application/pdf'}); try{ if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), files:[file] }); return true; } }catch(err){ if(err && err.name==='AbortError') return false; }
   const url=URL.createObjectURL(blob); try{ const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); try{ a.click(); }catch(_){} try{ document.body.removeChild(a); }catch(_){} try{ toast(__guestReportT__(lang, 'reportReady'),'blue'); }catch(_){} return true; } finally { setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} },1200); }
 }
-
-function __guestReportResolveWhatsAppPhone__(guest){
-  try{
-    const candidates = [];
-    const push = (v) => {
-      const raw = String(v ?? '').trim();
-      if (raw) candidates.push(raw);
-    };
-    const addFrom = (item) => {
-      if (!item || typeof item !== 'object') return;
-      [
-        item.whatsapp, item.whatsApp, item.WhatsApp, item.numero_whatsapp, item.numeroWhatsapp,
-        item.telefono_whatsapp, item.telefonoWhatsApp, item.phone_whatsapp, item.phoneWhatsApp,
-        item.cellulare, item.mobile, item.telefono, item.tel, item.phone, item.numeroTelefono, item.numero_telefono
-      ].forEach(push);
-    };
-    addFrom(guest);
-    try{ (__guestReportResolveBookings__(guest) || []).forEach(addFrom); }catch(_){ }
-    try{
-      const phoneEl = document.getElementById('guestPhone');
-      if (phoneEl) push(phoneEl.value);
-    }catch(_){ }
-    for (const raw of candidates){
-      const normalized = normalizeWhatsAppPhone(raw);
-      if (normalized) return normalized;
-    }
-  }catch(_){ }
-  return '';
-}
-function __openGuestReportWhatsAppChat__(guest){
-  try{
-    const safeGuest = guest || state.guestReportCurrent || __guestReportResolveGuest__();
-    const normalized = __guestReportResolveWhatsAppPhone__(safeGuest);
-    if (!normalized){
-      try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ }
-      return false;
-    }
-    const url = 'https://wa.me/' + encodeURIComponent(normalized);
-    try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
-    return true;
-  }catch(_){ return false; }
-}
 async function __shareGuestReportToWhatsApp__(guest){
   const safeGuest = guest || state.guestReportCurrent || __guestReportResolveGuest__();
   if (!safeGuest) return false;
-  const normalized = __guestReportResolveWhatsAppPhone__(safeGuest);
-  if (!normalized){
-    try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ }
-    return false;
-  }
   const lang = __guestReportResolveLanguage__(safeGuest);
   const blob = await __guestReportPdfBlob__(safeGuest);
   if (!blob) return false;
   const filename = __guestReportFileName__(safeGuest);
-  const guestName = String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
-
-  // Il tasto WhatsApp deve essere distinto dal tasto Condividi:
-  // non apre il pannello generico di condivisione, ma prepara il PDF e apre
-  // direttamente la chat WhatsApp dell'ospite. Le PWA/iOS non permettono
-  // l'allegato automatico di un PDF dentro una chat WhatsApp via URL.
-  let downloaded = false;
+  const file = new File([blob], filename, { type:'application/pdf' });
+  try{
+    if (navigator.canShare && navigator.canShare({ files:[file] })){
+      await navigator.share({ title:__guestReportT__(lang, 'reportTitle'), files:[file] });
+      return true;
+    }
+  }catch(err){
+    if (err && err.name === 'AbortError') return false;
+  }
   const url = URL.createObjectURL(blob);
   try{
     const a = document.createElement('a');
@@ -27908,22 +27587,13 @@ async function __shareGuestReportToWhatsApp__(guest){
     a.target = '_blank';
     a.rel = 'noopener';
     document.body.appendChild(a);
-    try{ a.click(); downloaded = true; }catch(_){}
+    try{ a.click(); }catch(_){}
     try{ document.body.removeChild(a); }catch(_){}
+    try{ toast(__guestReportT__(lang, 'reportReady'), 'blue'); }catch(_){}
+    return true;
   } finally {
-    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} }, 3500);
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){} }, 1200);
   }
-
-  const msg = `${__guestReportT__(lang, 'reportTitle')} - ${guestName}`;
-  const waUrl = 'https://wa.me/' + encodeURIComponent(normalized) + '?text=' + encodeURIComponent(msg);
-  try{
-    if (downloaded) toast('PDF report pronto: allegalo nella chat WhatsApp aperta', 'blue');
-  }catch(_){ }
-  setTimeout(()=>{
-    try{ window.location.href = waUrl; }
-    catch(_){ try{ window.open(waUrl, '_blank', 'noopener'); }catch(__){} }
-  }, downloaded ? 250 : 0);
-  return true;
 }
 function renderGuestCards(){
   const wrap = document.getElementById("guestCards");
@@ -28069,16 +27739,27 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_2.748 — Il LED stato della guest list deve lampeggiare per gli arrivi di oggi
-    // quando il check-in non è ancora stato confermato. Include anche eventuali classi
-    // stato composte/legacy, evitando solo stati grigi/rossi.
-    const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
     const stayNights = calcStayNights(first);
 
-    const arrivoText = formatArrivalDayIT(first.check_in || first.checkIn || "") || "—";
+    // Calcola l'intervallo di soggiorno in formato compatto (es. "9-12 maggio").
+    // Se non sono disponibili sia check-in che check-out, usa la data di arrivo come fallback.
+    const checkInRaw = first?.check_in ?? first?.checkIn ?? first?.arrivo ?? first?.arrival ?? "";
+    const checkOutRaw = first?.check_out ?? first?.checkOut ?? first?.partenza ?? first?.departure ?? "";
+    let arrivoText;
+    if (checkInRaw && checkOutRaw) {
+      try {
+        const range = formatRangeCompactIT(checkInRaw, checkOutRaw);
+        // Il requisito richiede il nome del mese in minuscolo (es. "9-12 maggio").
+        arrivoText = range ? String(range).toLowerCase() : "";
+      } catch (_) {
+        arrivoText = formatArrivalDayIT(checkInRaw) || "—";
+      }
+    } else {
+      arrivoText = formatArrivalDayIT(checkInRaw) || "—";
+    }
 
     const tel = escapeHtml(String(first?.telefono ?? first?.tel ?? first?.phone ?? "").trim());
     const em = escapeHtml(String(first?.email ?? first?.mail ?? "").trim());
@@ -28101,19 +27782,16 @@ function renderGuestCards(){
           <div class="guest-nameblock">
             <span class="guest-name-tab guest-name-text">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
-            ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${tel ? `<span class="guest-contact-line guest-contact-phone">${tel}</span>` : ``}${em ? `<span class="guest-contact-line guest-contact-email">${em}</span>` : ``}</span>` : ``)}
+            ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
           </div>
         </div>
         <div class="guest-meta-right" aria-label="Stato">
-          <div class="guest-meta-dots">
-            ${buildNightsDotHTML(stayNights)}
-            ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
-            ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
-            ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
-            ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
-            <span class="guest-led ${led.cls}${checkInDueBlink ? ' is-checkin-due-blink' : ''}" aria-label="${led.label}${checkInDueBlink ? ' — check-in non effettuato' : ''}" title="${led.label}${checkInDueBlink ? ' — check-in non effettuato' : ''}"></span>
-          </div>
-          ${buildGuestCardAlertLedsHTML(first)}
+          ${buildNightsDotHTML(stayNights)}
+          ${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}
+          ${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}
+          ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
+          ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
+          <span class="guest-led ${led.cls}" aria-label="${led.label}" title="${led.label}"></span>
         </div>
       </div>
     `;
@@ -28496,71 +28174,6 @@ function updateProdottiControls_(){
   }catch(_){}
 }
 
-
-function __prodottiScrollToFirst_(){
-  try{
-    const list = document.getElementById("prodottiList");
-    if (!list) return;
-    const reset = () => {
-      try{
-        list.scrollTop = 0;
-        if (typeof list.scrollTo === "function") list.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      }catch(_){ try{ list.scrollTop = 0; }catch(__){} }
-    };
-    reset();
-    try{ requestAnimationFrame(reset); }catch(_){ }
-    try{ setTimeout(reset, 0); }catch(_){ }
-    try{ setTimeout(reset, 80); }catch(_){ }
-  }catch(_){}
-}
-
-
-function __prodCurrentDomOrderMap_(){
-  const map = new Map();
-  try{
-    const wrap = document.getElementById("prodottiList");
-    if (!wrap) return map;
-    Array.from(wrap.querySelectorAll(".prod-item-block[data-id]")).forEach((el, idx) => {
-      const id = String(el?.dataset?.id || "");
-      if (id && !map.has(id)) map.set(id, idx);
-    });
-  }catch(_){}
-  return map;
-}
-
-function __prodHoldSortForMultiTap_(delayMs = 2000){
-  try{
-    const now = Date.now();
-    state._prodSpesaSortHold = state._prodSpesaSortHold || {};
-    state._prodSpesaSortHold.until = now + Math.max(0, parseInt(String(delayMs || 0), 10) || 0);
-    state._prodSpesaSortHold.order = Array.from(__prodCurrentDomOrderMap_().entries());
-    if (state._prodSpesaSortHold.timer){
-      try{ clearTimeout(state._prodSpesaSortHold.timer); }catch(_){}
-      state._prodSpesaSortHold.timer = null;
-    }
-    state._prodSpesaSortHold.timer = setTimeout(() => {
-      try{
-        if (state._prodSpesaSortHold){
-          state._prodSpesaSortHold.until = 0;
-          state._prodSpesaSortHold.order = [];
-          state._prodSpesaSortHold.timer = null;
-        }
-        if (state && state.page === "prodotti") renderProdotti();
-      }catch(_){}
-    }, Math.max(0, parseInt(String(delayMs || 0), 10) || 0));
-  }catch(_){}
-}
-
-function __prodHeldOrderMap_(){
-  try{
-    const h = state && state._prodSpesaSortHold;
-    if (!h || !(Number(h.until || 0) > Date.now())) return null;
-    const entries = Array.isArray(h.order) ? h.order : [];
-    if (!entries.length) return null;
-    return new Map(entries.map(([id, idx]) => [String(id), Number(idx)]));
-  }catch(_){ return null; }
-}
-
 function renderProdotti(){
   const wrap = document.getElementById("prodottiList");
   if (!wrap) return;
@@ -28569,26 +28182,7 @@ function renderProdotti(){
   const items = (bucket.items || []).filter(r => !__normBool01(r.isDeleted));
 
   let arr = items.slice();
-  const __prodEffectiveQtyForSort__ = (it) => {
-    try{
-      const draftQty = __prodDraftGetQty_(it && it.id);
-      const src = (draftQty !== null && draftQty !== undefined) ? draftQty : (it?.qty ?? 0);
-      const n = parseInt(String(src ?? 0), 10);
-      return isNaN(n) ? 0 : Math.max(0, n);
-    }catch(_){ return 0; }
-  };
-  const __heldOrderMap__ = __prodHeldOrderMap_();
-  arr.sort((a,b)=> {
-    if (__heldOrderMap__){
-      const ia = __heldOrderMap__.has(String(a?.id || "")) ? __heldOrderMap__.get(String(a?.id || "")) : 999999;
-      const ib = __heldOrderMap__.has(String(b?.id || "")) ? __heldOrderMap__.get(String(b?.id || "")) : 999999;
-      if (ia !== ib) return ia - ib;
-    }
-    const sa = __prodEffectiveQtyForSort__(a) > 0 ? 0 : 1;
-    const sb = __prodEffectiveQtyForSort__(b) > 0 ? 0 : 1;
-    if (sa !== sb) return sa - sb;
-    return __prodNameKey_(a).localeCompare(__prodNameKey_(b), "it", { sensitivity:"base" });
-  });
+  arr.sort((a,b)=> __prodNameKey_(a).localeCompare(__prodNameKey_(b), "it", { sensitivity:"base" }));
 
   wrap.innerHTML = "";
   const frag = document.createDocumentFragment();
@@ -28714,19 +28308,15 @@ function setupProdotti(){
   if (tabC) bindFastTap(tabC, async () => {
     state.prodottiUI = state.prodottiUI || { list:"colazione" };
     state.prodottiUI.list = "colazione";
-    __prodottiScrollToFirst_();
     await loadProdotti({ force:false, showLoader:true });
     renderProdotti();
-    __prodottiScrollToFirst_();
   });
 
   if (tabP) bindFastTap(tabP, async () => {
     state.prodottiUI = state.prodottiUI || { list:"colazione" };
     state.prodottiUI.list = "pulizia";
-    __prodottiScrollToFirst_();
     await loadProdotti({ force:false, showLoader:true });
     renderProdotti();
-    __prodottiScrollToFirst_();
   });
 
   if (btnReset) bindFastTap(btnReset, async () => {
@@ -28755,40 +28345,6 @@ function setupProdotti(){
   
 
   if (!list) return;
-
-  // dDAE_2.736 — iOS PWA: fix interferenza scope funzioni popup colore launcher.
-  try{
-    if (!list.dataset.ddaeTouchScrollBound){
-      list.dataset.ddaeTouchScrollBound = "1";
-      let __spesaTouchY = 0;
-      let __spesaMoved = false;
-      list.addEventListener("touchstart", (e) => {
-        try{
-          if (!e.touches || !e.touches.length) return;
-          __spesaTouchY = e.touches[0].clientY;
-          __spesaMoved = false;
-        }catch(_){}
-      }, { passive:true, capture:true });
-      list.addEventListener("touchmove", (e) => {
-        try{
-          if (!e.touches || !e.touches.length) return;
-          if (list.scrollHeight <= list.clientHeight + 2) return;
-          const y = e.touches[0].clientY;
-          const dy = __spesaTouchY - y;
-          if (Math.abs(dy) < 3) return;
-          __spesaMoved = true;
-          __spesaTouchY = y;
-          clearProdQtyPress && clearProdQtyPress();
-          clearProdCardPress && clearProdCardPress();
-          list.scrollTop = Math.max(0, Math.min(list.scrollHeight - list.clientHeight, list.scrollTop + dy));
-          e.preventDefault();
-          e.stopPropagation();
-        }catch(_){}
-      }, { passive:false, capture:true });
-      list.addEventListener("touchend", () => { try{ __spesaTouchY = 0; __spesaMoved = false; }catch(_){} }, { passive:true, capture:true });
-      list.addEventListener("touchcancel", () => { try{ __spesaTouchY = 0; __spesaMoved = false; }catch(_){} }, { passive:true, capture:true });
-    }
-  }catch(_){}
 
   const findItem = (id) => {
     const sid = String(id || "");
@@ -28913,7 +28469,6 @@ function setupProdotti(){
   const cycleProdQty = (id) => {
     const it = findItem(id);
     if (!it) return;
-    __prodHoldSortForMultiTap_(2000);
     const base = getProdBaseQty(id);
     const next = (base >= 9) ? 0 : (base + 1);
     __prodApplyLocal__(id, { qty: next, saved: (next > 0 ? 1 : 0) });
@@ -32262,15 +31817,11 @@ function buildCalendarCellZoomMarkup(payload){
   for (let i = 0; i < (data.beds?.culla || 0); i++) dots.push('<span class="bed-dot bed-dot-c"></span>');
   const flags = (Array.isArray(data.mgc) ? data.mgc : []).filter(x => x.on).map(x => `<span class="cal-flag cal-flag-${x.short.toLowerCase()}">${x.short}</span>`).join('');
   const channel = data.channelInitial ? `<span class="cal-channel-tag operatori-tag color-${escapeHtml(data.channelColor || 'orange')}" style="${escapeHtml(data.channelStyle || __tagColorInlineStyle__(data.channelColor || 'orange', data.channelTextColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}">${escapeHtml(String(data.channelInitial || '').slice(0,1).toUpperCase())}</span>` : '';
-  const saldoLine = (!data.isEmpty && __currentOperatorCanViewGuestBalance__())
-    ? `<div class="cal-cell-balance"><span>Rimanenza da pagare</span><strong>${escapeHtml(__calendarGuestRemainingBalanceText__(data.guest))}</strong></div>`
-    : '';
   return `
     <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
       <div class="cal-cell-inner">
         <div class="cal-fullname is-span-cell">${escapeHtml(data.guestName || '')}</div>
-        ${saldoLine}
         <div class="cal-dots">${dots.join('')}</div>
       </div>
     </div>`;
@@ -32309,15 +31860,6 @@ function openCalendarCellZoom(cell, payload){
   if (!layer || !stage) return;
   try{ closeCalendarCellModal(); }catch(_){ }
   try{
-    const currentKey = layer.dataset.zoomKey || '';
-    const nextKey = cell ? (cell.dataset.zoomKey || `${payload?.room || ''}|${payload?.dateIso || ''}|${payload?.guest ? guestIdOf(payload.guest) : ''}`) : '';
-    if (nextKey && currentKey === nextKey && !layer.hidden && layer.classList.contains('is-open')){
-      closeCalendarCellZoom();
-      return;
-    }
-    layer.dataset.zoomKey = nextKey || '';
-  }catch(_){ }
-  try{
     document.querySelectorAll('.cal-cell.is-zoom-source').forEach((el) => el.classList.remove('is-zoom-source'));
     if (cell) cell.classList.add('is-zoom-source');
   }catch(_){ }
@@ -32327,11 +31869,6 @@ function openCalendarCellZoom(cell, payload){
     if (zoomCard){
       const room = String(payload?.room || '').trim();
       if (room) zoomCard.classList.add(`room-${room}`);
-      // dDAE_2.755 — Secondo tap sulla cella zoomata = chiusura zoom.
-      zoomCard.addEventListener('click', (ev) => {
-        try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
-        closeCalendarCellZoom();
-      }, { once:true });
     }
   }catch(_){ }
   layer.hidden = false;
@@ -32346,7 +31883,6 @@ function closeCalendarCellZoom(){
   const layer = document.getElementById('calendarCellZoomLayer');
   if (!layer) return;
   try{ layer.classList.remove('is-open'); }catch(_){ }
-  try{ layer.dataset.zoomKey = ''; }catch(_){ }
   layer.setAttribute('aria-hidden', 'true');
   try{ document.body.classList.remove('calendar-cell-zoom-open'); }catch(_){ }
   try{ document.querySelectorAll('.cal-cell.is-zoom-source').forEach((el) => el.classList.remove('is-zoom-source')); }catch(_){ }
@@ -32357,72 +31893,6 @@ function closeCalendarCellZoom(){
       layer.hidden = true;
     }catch(_){ }
   }, 180);
-}
-
-
-function __currentOperatorCanViewGuestBalance__(){
-  try{
-    if (!state || !state.session) return false;
-    // dDAE_2.754 — Admin: la rimanenza da pagare nel calendario è sempre visibile
-    // nella cella zoomata. Operatori: resta vincolata al permesso "Saldo calendario".
-    if (!isOperatoreSession(state.session)) return true;
-    const me = String(__operatorName__() || state?.session?.nome || state?.session?.name || '').trim().toLowerCase();
-    if (!me) return false;
-    const catalog = (typeof getOperatoriCatalogFromSettings === 'function') ? getOperatoriCatalogFromSettings() : [];
-    return (Array.isArray(catalog) ? catalog : []).some((op) => {
-      const name = String(op?.nome || op?.name || op?.username || '').trim().toLowerCase();
-      return name === me && !!(op?.mostraSaldo || op?.showBalance || op?.saldoCalendario);
-    });
-  }catch(_){ return false; }
-}
-function __calendarGuestRemainingBalanceValue__(guest){
-  const n = (x)=>{
-    if (typeof x === 'number' && isFinite(x)) return x;
-    const v = Number(String(x ?? '0').replace(',', '.'));
-    return isFinite(v) ? v : 0;
-  };
-  const compute = (g)=>{
-    if (!g || typeof g !== 'object') return 0;
-    try{
-      if (typeof _guestStayFinancials === 'function'){
-        const fin = _guestStayFinancials(g);
-        const val = Number(fin && fin.remaining);
-        if (isFinite(val)) return Math.max(0, Math.round(val * 100) / 100);
-      }
-    }catch(_){ }
-    const explicit = g?.rimanenza_da_pagare ?? g?.rimanenzaDaPagare ?? g?.remaining_to_pay ?? g?.remainingToPay ?? g?.guestRemaining ?? g?.remaining;
-    if (explicit !== undefined && explicit !== null && String(explicit).trim() !== '') return Math.max(0, Math.round(n(explicit) * 100) / 100);
-    const total = n(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? g?.total ?? g?.totale ?? g?.importo ?? g?.prezzo);
-    const services = n(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? g?.servizi ?? g?.services);
-    const discount = n(g?.sconto ?? g?.discount ?? g?.sconto_importo ?? g?.scontoImporto);
-    const dep = n(g?.acconto_importo ?? g?.accontoImporto ?? g?.acconto_pagato ?? g?.accontoPagato ?? g?.deposit ?? g?.deposito ?? g?.acconto);
-    const saldo = n(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo);
-    return Math.max(0, Math.round(((total + services - discount - dep - saldo) * 100)) / 100);
-  };
-  try{
-    const id = (typeof guestIdOf === 'function') ? guestIdOf(guest) : String(guest?.id || guest?.ID || '').trim();
-    if (id){
-      const sources = [state?.calendar?.guests, state?.guestRows, state?.guests, state?.ospitiRows, state?.ospiti];
-      let best = guest || null;
-      let bestVal = compute(best);
-      for (const src of sources){
-        if (!Array.isArray(src)) continue;
-        for (const row of src){
-          try{
-            if ((typeof guestIdOf === 'function' ? guestIdOf(row) : String(row?.id || row?.ID || '').trim()) !== id) continue;
-            const val = compute(row);
-            if (val > bestVal){ best = row; bestVal = val; }
-          }catch(_){ }
-        }
-      }
-      return bestVal;
-    }
-  }catch(_){ }
-  return compute(guest || {});
-}
-
-function __calendarGuestRemainingBalanceText__(guest){
-  try{ return euro(__calendarGuestRemainingBalanceValue__(guest)); }catch(_){ return euro(0); }
 }
 
 function openCalendarCellModal(payload, mode){
@@ -32446,13 +31916,11 @@ function openCalendarCellModal(payload, mode){
   }else if (isOperatorMode){
     const activeMgc = Array.isArray(payload.mgc) ? payload.mgc.filter(item => !!item.on) : [];
     const mgcRows = activeMgc.map(item => `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${item.short}</span><strong>${item.label}</strong></div>`).join('');
-    const saldoRow = __currentOperatorCanViewGuestBalance__() ? `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Rimanenza da pagare</span><strong>${escapeHtml(__calendarGuestRemainingBalanceText__(payload.guest))}</strong></div>` : '';
     content.innerHTML = `
       <div class="calendar-cell-modal-grid">
         ${mgcRows}
         <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>
         <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Channel</span><strong>${escapeHtml(payload.channelName || 'Non impostato')}</strong></div>
-        ${saldoRow}
       </div>`;
   }else{
     const badges = payload.mgc.map(item => `<span class="calendar-cell-status ${item.on ? 'is-on' : ''}">${item.label}</span>`).join('');
@@ -32531,7 +31999,7 @@ function bindCalendarCellActions(cell, options){
         showPage('ospite');
         return;
       }
-      openCalendarCellZoom(cell, payload);
+      openCalendarCellModal(payload, 'operator-detail');
     }, 500);
   };
   const endHold = () => {
@@ -32546,7 +32014,6 @@ function bindCalendarCellActions(cell, options){
       return;
     }
     const payload = buildCalendarCellPayload(info, room, dateIso);
-    try{ cell.dataset.zoomKey = `${room || ''}|${dateIso || ''}|${payload?.guest ? guestIdOf(payload.guest) : ''}`; }catch(_){ }
     openCalendarCellZoom(cell, payload);
   };
   try{ cell.addEventListener('pointerdown', startHold, { passive:true }); }catch(_){ cell.addEventListener('pointerdown', startHold); }
@@ -34967,7 +34434,6 @@ function __renderOrePuliziaCalendar_(){
   const titleEl = document.getElementById("opcalTitleMain");
   const totalEl = document.getElementById("opcalTotalHours");
   const daysEl = document.getElementById("opcalDaysWithHours");
-  const grandTotalEl = document.getElementById("opcalGrandTotal");
 
   const monthLabel = formatMonthYearIT_(monthKey) || monthKey;
   const op = String(state.orepulizia.operatore || "").trim();
@@ -35025,12 +34491,7 @@ function __renderOrePuliziaCalendar_(){
   const hoursStr = __fmtHours_(totalHours);
   const totalImportoStr = totalImporto > 0 ? __fmtMoneyNoSpace_(totalImporto) : '—';
   const presenzeImportoStr = presenzeImporto > 0 ? __fmtMoneyNoSpace_(presenzeImporto) : '—';
-  const grandTotal = Math.round((Number(totalImporto || 0) + Number(presenzeImporto || 0)) * 100) / 100;
-  const grandTotalStr = grandTotal > 0 ? __fmtMoneyNoSpace_(grandTotal) : '—';
 
-  if (grandTotalEl) {
-    grandTotalEl.textContent = grandTotalStr;
-  }
   if (totalEl) {
     totalEl.textContent = hoursStr ? `${hoursStr} ore - ${totalImportoStr}` : "—";
   }

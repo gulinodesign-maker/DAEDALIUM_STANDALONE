@@ -2720,30 +2720,8 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospiti .guest-led.led-green{ background: #34c759; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 #page-ospiti .guest-led.led-orange{ background: #ff9500; box-shadow: 0 0 0 3px rgba(255,149,0,0.16), 0 0 12px rgba(255,149,0,0.42); }
 #page-ospiti .guest-led.led-yellow{ background: #ffcc00; box-shadow: 0 0 0 3px rgba(255,204,0,0.16), 0 0 12px rgba(255,204,0,0.42); }
-#page-ospiti .guest-led.led-blue{ background: #32ade6; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 
 #page-ospiti .guest-led.led-red{ background: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 0 12px rgba(255,59,48,0.42); }
-#page-ospiti .guest-led.is-checkin-due-blink{
-  animation: guestCheckInDueBlink 0.86s infinite;
-}
-
-@keyframes guestCheckInDueBlink{
-  0%, 48%{ opacity:1; transform:scale(1); }
-  49%, 100%{ opacity:0.28; transform:scale(0.86); }
-}
-
-/* dDAE_2.747 — Il lampeggio check-in deve funzionare anche in modalità prestazioni iOS. */
-body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
-#page-ospiti .guest-led.is-checkin-due-blink{
-  animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
-  -webkit-animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
-}
-
-@-webkit-keyframes guestCheckInDueBlink{
-  0%, 48%{ opacity:1; -webkit-transform:scale(1); transform:scale(1); }
-  49%, 100%{ opacity:0.28; -webkit-transform:scale(0.86); transform:scale(0.86); }
-}
-
 #page-ospiti .guest-led.led-greenorange-blink{
   animation: ledGreenOrangeBlink 1.05s infinite;
 }
@@ -3034,9 +3012,6 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 
 
 .tl-green{ background: rgba(52,199,89,0.92); }
-.tl-checkin{ background: rgba(148,163,184,0.92); }
-.tl-checkin.is-on{ background: rgba(52,199,89,0.92); }
-.tl-checkin.is-off{ background: rgba(148,163,184,0.92); }
 .tl-indigo{ background: rgba(79,70,229,0.92); }
 .tl-yellow{ background: rgba(255,204,0,0.92); }
 .tl-red{ background: rgba(255,59,48,0.92); }
@@ -9568,30 +9543,6 @@ html, body{
   align-items: stretch;
   margin-top: 20px;
 }
-#page-orepulizia .opcal-summaryTotal{
-  grid-column: 1 / -1;
-  min-height: 64px;
-  height: 64px;
-  border-radius: 18px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: #ffffff;
-  box-shadow: 0 12px 26px rgba(0,0,0,0.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding: 0 16px;
-}
-#page-orepulizia .opcal-summaryTotalValue{
-  width:100%;
-  text-align:center;
-  font-size: 24px;
-  font-weight: 800;
-  color: #3f83bf;
-  line-height: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 #page-orepulizia .opcal-filterRow{
   margin: 0;
   padding: 0;
@@ -9641,13 +9592,6 @@ html, body{
   #page-orepulizia .opcal-filter select,
   #page-orepulizia .opcal-stat{
     min-height: 60px;
-  }
-  #page-orepulizia .opcal-summaryTotal{
-    min-height: 60px;
-    height: 60px;
-  }
-  #page-orepulizia .opcal-summaryTotalValue{
-    font-size: 21px;
   }
   #page-orepulizia .opcal-filter select{
     height: 60px;
@@ -9835,8 +9779,8 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 .operatori-metrics{
   display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap:8px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:10px;
 }
 .operatori-metric{
   min-width:0;
@@ -21151,277 +21095,4 @@ body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-opera
   -webkit-overflow-scrolling: touch;
   max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 132px);
   padding-right: 2px;
-}
-
-/* dDAE_2.727 — Guest list: LED alert PS / ISTAT / pagamento / ricevuta sotto i badge card */
-#page-ospiti .guest-meta-right{
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 5px;
-}
-#page-ospiti .guest-meta-dots,
-#page-ospiti .guest-card-alert-leds{
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-#page-ospiti .guest-card-alert-leds{
-  width: 100%;
-  padding-right: 1px;
-  transform: translate(-7px, 15px);
-}
-#page-ospiti .guest-card-alert-led{
-  width: 15px !important;
-  height: 15px !important;
-  min-width: 15px !important;
-  min-height: 15px !important;
-  border-radius: 999px;
-  margin: 0;
-  flex: 0 0 auto;
-  pointer-events: none;
-}
-@media (max-width: 480px){
-  #page-ospiti .guest-meta-dots{ gap: 7px; }
-  #page-ospiti .guest-card-alert-leds{ gap: 7px; }
-  #page-ospiti .guest-card-alert-led{
-    width: 14px !important;
-    height: 14px !important;
-    min-width: 14px !important;
-    min-height: 14px !important;
-  }
-}
-
-/* dDAE_2.730 — Lista spesa: fissi solo titolo/tasti/tab, scroll verticale solo sulle card */
-body.page-lock-vertical #page-prodotti{
-  height: 100% !important;
-  max-height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-page{
-  height: 100% !important;
-  max-height: 100% !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-rows: auto auto minmax(0, 1fr) !important;
-  align-content: stretch !important;
-  overflow: hidden !important;
-  padding-bottom: calc(var(--safe-bottom) + 16px) !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-header,
-body.page-lock-vertical #page-prodotti .prodotti-grid-tabs{
-  min-height: 0 !important;
-  overflow: visible !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-list{
-  min-height: 0 !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: contain !important;
-  touch-action: pan-y !important;
-  padding-bottom: calc(var(--safe-bottom) + 112px) !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical #page-prodotti .prodotti-list .prod-item-block{
-  flex: 0 0 auto !important;
-}
-
-
-/* dDAE_2.730 — Lista spesa: header/tab fissi, SOLO le card scrollano davvero su iOS */
-body.page-lock-vertical[data-page="prodotti"] main.wrap{
-  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
-  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
-  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
-  overflow: hidden !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti{
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-page{
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  overflow: hidden !important;
-  padding: 8px 0 0 !important;
-  box-sizing: border-box !important;
-}
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-header,
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-grid-tabs{
-  flex: 0 0 auto !important;
-  min-height: 0 !important;
-  overflow: visible !important;
-}
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list{
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  height: auto !important;
-  max-height: none !important;
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: contain !important;
-  touch-action: pan-y !important;
-  padding-bottom: calc(var(--safe-bottom) + 28px) !important;
-  margin-top: 0 !important;
-  box-sizing: border-box !important;
-  transform: translateZ(0);
-}
-body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list .prod-item-block{
-  flex: 0 0 auto !important;
-}
-
-
-/* dDAE_2.749 — Operatori: card metriche 3x1, chiusura popup con pallino X, saldo nello zoom calendario */
-.operatori-metrics{
-  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
-  gap:8px !important;
-}
-.operatori-metric{
-  padding:10px 8px !important;
-  text-align:center;
-}
-.operatori-metric-label{
-  font-size:10px !important;
-  line-height:1.12;
-}
-.operatori-metric-value{
-  font-size:15px !important;
-}
-.operatori-editor-close{
-  width:34px !important;
-  height:34px !important;
-  min-width:34px !important;
-  min-height:34px !important;
-  border-radius:999px !important;
-  padding:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  font-size:16px !important;
-  line-height:1 !important;
-}
-#operatoriEditorCancel{
-  display:none !important;
-}
-.calendar-cell-zoom .cal-cell-balance{
-  position:relative;
-  z-index:2;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  margin-top:10px;
-  padding:7px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.10);
-  color:#0f172a;
-  font-size:13px;
-  font-weight:800;
-  line-height:1;
-}
-.calendar-cell-zoom .cal-cell-balance span{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  opacity:.72;
-}
-.calendar-cell-zoom .cal-cell-balance strong{
-  font-size:14px;
-}
-.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-balance{
-  margin-top:14px;
-  padding:9px 14px;
-  font-size:15px;
-}
-body.ddae-dark .calendar-cell-zoom .cal-cell-balance{
-  background:rgba(15,23,42,.72);
-  border-color:rgba(148,163,184,.24);
-  color:#f8fafc;
-  -webkit-text-fill-color:#f8fafc;
-}
-@media (max-width: 380px){
-  .operatori-metric{ padding:9px 5px !important; }
-  .operatori-metric-label{ font-size:9px !important; }
-  .operatori-metric-value{ font-size:13px !important; }
-}
-
-
-/* dDAE_2.751 — account operatore: sotto il titolo restano solo i LED spesa Colazione/Prodotti, centrati */
-body[data-role="operatore"] .top-led-grid,
-.top-led-grid.is-operator-leds{
-  grid-template-columns: repeat(2, 15px) !important;
-  justify-content: center;
-  justify-items: center;
-}
-body[data-role="operatore"] .top-led-grid .top-led-alert,
-.top-led-grid.is-operator-leds .top-led-alert{
-  display: none !important;
-}
-body[data-role="operatore"] .top-led-grid .top-led-product,
-.top-led-grid.is-operator-leds .top-led-product{
-  display: inline-block !important;
-}
-
-
-/* dDAE_2.753 — Guest list: e-mail sotto il telefono, mai sovrapposta ai LED */
-#page-ospiti .guest-row.guest-row-compact{
-  width:100%;
-}
-#page-ospiti .guest-main{
-  flex:1 1 auto;
-  min-width:0;
-  max-width:calc(100% - 132px);
-}
-#page-ospiti .guest-nameblock{
-  flex:1 1 auto;
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-}
-#page-ospiti .guest-contact{
-  display:block;
-  width:100%;
-  max-width:100%;
-  overflow:hidden;
-  white-space:normal;
-  line-height:1.18;
-}
-#page-ospiti .guest-contact-line{
-  display:block;
-  width:100%;
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-#page-ospiti .guest-contact-email{
-  margin-top:2px;
-}
-#page-ospiti .guest-meta-right{
-  flex:0 0 auto;
-  min-width:124px;
-}
-@media (max-width:480px){
-  #page-ospiti .guest-main{ max-width:calc(100% - 118px); }
-  #page-ospiti .guest-meta-right{ min-width:112px; }
 }
