@@ -21349,3 +21349,47 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 .top-led-grid.is-operator-leds .top-led-product{
   display: inline-block !important;
 }
+
+
+/* dDAE_2.752 — Guest list: e-mail sotto il telefono, mai sovrapposta ai LED */
+#page-ospiti .guest-row.guest-row-compact{
+  width:100%;
+}
+#page-ospiti .guest-main{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:calc(100% - 132px);
+}
+#page-ospiti .guest-nameblock{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
+#page-ospiti .guest-contact{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  white-space:normal;
+  line-height:1.18;
+}
+#page-ospiti .guest-contact-line{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#page-ospiti .guest-contact-email{
+  margin-top:2px;
+}
+#page-ospiti .guest-meta-right{
+  flex:0 0 auto;
+  min-width:124px;
+}
+@media (max-width:480px){
+  #page-ospiti .guest-main{ max-width:calc(100% - 118px); }
+  #page-ospiti .guest-meta-right{ min-width:112px; }
+}

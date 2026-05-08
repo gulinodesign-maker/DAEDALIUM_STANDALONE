@@ -28101,7 +28101,7 @@ function renderGuestCards(){
           <div class="guest-nameblock">
             <span class="guest-name-tab guest-name-text">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="Arrivo">${arrivoText}</span>
-            ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${[tel, em].filter(Boolean).join(" • ")}</span>` : ``)}
+            ${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${tel ? `<span class="guest-contact-line guest-contact-phone">${tel}</span>` : ``}${em ? `<span class="guest-contact-line guest-contact-email">${em}</span>` : ``}</span>` : ``)}
           </div>
         </div>
         <div class="guest-meta-right" aria-label="Stato">
