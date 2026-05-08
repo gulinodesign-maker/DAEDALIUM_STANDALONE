@@ -9568,6 +9568,30 @@ html, body{
   align-items: stretch;
   margin-top: 20px;
 }
+#page-orepulizia .opcal-summaryTotal{
+  grid-column: 1 / -1;
+  min-height: 64px;
+  height: 64px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 0 16px;
+}
+#page-orepulizia .opcal-summaryTotalValue{
+  width:100%;
+  text-align:center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #3f83bf;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #page-orepulizia .opcal-filterRow{
   margin: 0;
   padding: 0;
@@ -9617,6 +9641,13 @@ html, body{
   #page-orepulizia .opcal-filter select,
   #page-orepulizia .opcal-stat{
     min-height: 60px;
+  }
+  #page-orepulizia .opcal-summaryTotal{
+    min-height: 60px;
+    height: 60px;
+  }
+  #page-orepulizia .opcal-summaryTotalValue{
+    font-size: 21px;
   }
   #page-orepulizia .opcal-filter select{
     height: 60px;
