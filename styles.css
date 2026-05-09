@@ -21427,7 +21427,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.760 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+/* dDAE_2.761 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 112px)) !important;
@@ -21481,7 +21481,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.760 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
+/* dDAE_2.761 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
@@ -21554,3 +21554,5 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
     font-size:17px !important;
   }
 }
+
+/* dDAE_2.761 — Amministratore: fatturato senza ricevuta, netto mensile e calcolo forfettario affittacamere */
