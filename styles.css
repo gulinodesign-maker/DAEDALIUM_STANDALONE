@@ -21427,7 +21427,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.758 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+/* dDAE_2.759 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 112px)) !important;
