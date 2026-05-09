@@ -4286,7 +4286,7 @@ border-color: rgba(255,255,255,.16);
 }
 
 .guest-filter-row-1{
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .guest-filter-row-dir{
@@ -4329,7 +4329,7 @@ border-color: rgba(255,255,255,.16);
   background: rgba(111,183,214,0.80);
   background-color: rgba(111,183,214,0.80);
   color:#ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-align:center;
   white-space: nowrap;
@@ -4386,8 +4386,14 @@ border-color: rgba(255,255,255,.16);
 
 @media (max-width: 380px){
   .gf-chip-btn{
-    font-size: 12px;
-    padding: 0 4px;
+    font-size: 11px;
+    padding: 0 3px;
+  }
+}
+@media (max-width: 340px){
+  .gf-chip-btn{
+    font-size: 10px;
+    padding: 0 2px;
   }
 }
 
@@ -6501,7 +6507,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
 #page-lavanderia .card .hd h2{
   width: auto;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: inherit;
   letter-spacing: normal;
