@@ -21427,7 +21427,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.762 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+/* dDAE_2.763 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 112px)) !important;
@@ -21481,7 +21481,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.762 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
+/* dDAE_2.763 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
@@ -21555,9 +21555,9 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
   }
 }
 
-/* dDAE_2.762 — Amministratore: fatturato senza ricevuta, netto mensile e calcolo forfettario affittacamere */
+/* dDAE_2.763 — Amministratore: fatturato senza ricevuta, netto mensile e calcolo forfettario affittacamere */
 
-/* dDAE_2.762 — Statistiche Ricavi: tasto TFM dentro la pagina accanto al titolo */
+/* dDAE_2.763 — Statistiche Ricavi: tasto TFM dentro la pagina accanto al titolo */
 #page-statamministratore .statamm-head-row{
   display:flex !important;
   align-items:center !important;
@@ -21614,5 +21614,100 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
     min-width:62px !important;
     height:36px !important;
     padding:0 8px !important;
+  }
+}
+
+
+/* dDAE_2.763 — Ricavi: titolo breve e quattro tasti uniformi/editabili */
+#page-statamministratore .statamm-head-row{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  margin:6px 6px 14px !important;
+}
+#page-statamministratore .statamm-title-group{
+  display:flex !important;
+  align-items:center !important;
+  flex:0 1 auto !important;
+  min-width:0 !important;
+}
+#page-statamministratore .statamm-title-group .stats-title{
+  min-width:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-statamministratore .statgen-head-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+  margin-left:auto !important;
+}
+#page-statamministratore .statgen-head-actions .statgen-regime-switch{
+  display:flex !important;
+  align-items:center !important;
+  flex:0 0 auto !important;
+}
+#page-statamministratore #btnAdminInputsTop,
+#page-statamministratore #statAmmFiscalModeBtn,
+#page-statamministratore #statAmmCompareToggleBtn,
+#page-statamministratore #statAmmCompareYearBtn{
+  width:62px !important;
+  min-width:62px !important;
+  max-width:62px !important;
+  height:38px !important;
+  min-height:38px !important;
+  padding:0 8px !important;
+  border-radius:14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+  flex:0 0 62px !important;
+  line-height:1 !important;
+}
+#page-statamministratore #btnAdminInputsTop .ui-ico{
+  width:22px !important;
+  height:22px !important;
+}
+@media (max-width:390px){
+  #page-statamministratore .statamm-head-row{
+    gap:6px !important;
+    margin-left:2px !important;
+    margin-right:2px !important;
+  }
+  #page-statamministratore .statgen-head-actions{
+    gap:6px !important;
+  }
+  #page-statamministratore #btnAdminInputsTop,
+  #page-statamministratore #statAmmFiscalModeBtn,
+  #page-statamministratore #statAmmCompareToggleBtn,
+  #page-statamministratore #statAmmCompareYearBtn{
+    width:56px !important;
+    min-width:56px !important;
+    max-width:56px !important;
+    height:36px !important;
+    min-height:36px !important;
+    flex-basis:56px !important;
+    padding:0 6px !important;
+  }
+}
+@media (max-width:360px){
+  #page-statamministratore .statgen-head-actions{
+    gap:4px !important;
+  }
+  #page-statamministratore #btnAdminInputsTop,
+  #page-statamministratore #statAmmFiscalModeBtn,
+  #page-statamministratore #statAmmCompareToggleBtn,
+  #page-statamministratore #statAmmCompareYearBtn{
+    width:52px !important;
+    min-width:52px !important;
+    max-width:52px !important;
+    flex-basis:52px !important;
   }
 }
