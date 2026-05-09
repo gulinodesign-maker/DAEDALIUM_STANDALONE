@@ -21427,7 +21427,7 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
 }
 
 
-/* dDAE_2.759 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+/* dDAE_2.760 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
 #page-statistiche .home-grid{
   display:grid !important;
   grid-template-columns:repeat(3, minmax(0, 112px)) !important;
@@ -21477,5 +21477,80 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
   }
   #page-statistiche .home-main-label{
     font-size:12px !important;
+  }
+}
+
+
+/* dDAE_2.760 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  width:min(460px, 92vw) !important;
+  max-width:460px !important;
+  margin:10px auto 0 !important;
+  padding:10px 10px !important;
+  column-gap:18px !important;
+  row-gap:18px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:210px !important;
+  min-width:0 !important;
+  margin:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main-glyph{
+  width:clamp(83px, 23.4vw, 153px) !important;
+  height:clamp(83px, 23.4vw, 153px) !important;
+  border-radius:clamp(23px, 6.5vw, 44px) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:clamp(39px, 9.1vw, 70px) !important;
+}
+#page-statistiche .home-main-glyph .ui-ico{
+  width:58% !important;
+  height:58% !important;
+}
+#page-statistiche .home-main-label{
+  font-size:17px !important;
+  line-height:1.15 !important;
+  min-height:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    width:min(460px, 92vw) !important;
+    max-width:460px !important;
+    column-gap:18px !important;
+    row-gap:18px !important;
+    margin-top:10px !important;
+    padding:10px 10px !important;
+  }
+  #page-statistiche .home-main{
+    width:100% !important;
+    max-width:210px !important;
+  }
+  #page-statistiche .home-main-glyph{
+    width:clamp(83px, 23.4vw, 153px) !important;
+    height:clamp(83px, 23.4vw, 153px) !important;
+  }
+  #page-statistiche .home-main-label{
+    font-size:17px !important;
   }
 }
