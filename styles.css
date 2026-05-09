@@ -21425,3 +21425,57 @@ body[data-role="operatore"] .top-led-grid .top-led-product,
   #page-ospiti .guest-main{ max-width:calc(100% - 118px); }
   #page-ospiti .guest-meta-right{ min-width:112px; }
 }
+
+
+/* dDAE_2.758 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 112px)) !important;
+  width:min(360px, calc(100vw - 24px)) !important;
+  max-width:360px !important;
+  column-gap:8px !important;
+  row-gap:8px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  margin:18px auto 0 !important;
+}
+#page-statistiche .home-main{
+  width:112px !important;
+  max-width:112px !important;
+  min-width:0 !important;
+}
+#page-statistiche .home-main-glyph{
+  width:clamp(64px, 18vw, 90px) !important;
+  height:clamp(64px, 18vw, 90px) !important;
+}
+#page-statistiche .home-main-label{
+  font-size:13px !important;
+  line-height:1.05 !important;
+  min-height:28px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    grid-template-columns:repeat(3, minmax(0, 104px)) !important;
+    width:min(336px, calc(100vw - 18px)) !important;
+    max-width:336px !important;
+    column-gap:6px !important;
+    row-gap:7px !important;
+    margin-top:14px !important;
+  }
+  #page-statistiche .home-main{
+    width:104px !important;
+    max-width:104px !important;
+  }
+  #page-statistiche .home-main-glyph{
+    width:clamp(58px, 17vw, 76px) !important;
+    height:clamp(58px, 17vw, 76px) !important;
+  }
+  #page-statistiche .home-main-label{
+    font-size:12px !important;
+  }
+}

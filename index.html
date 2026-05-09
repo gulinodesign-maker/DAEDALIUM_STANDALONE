@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.757" rel="stylesheet"/>
-<link href="./manifest.json?v=2.757" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.757" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.757" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.757" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.757" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.757" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.757" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.758" rel="stylesheet"/>
+<link href="./manifest.json?v=2.758" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.758" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.758" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.758" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.758" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.758" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.758" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.757";
+window.APP_VERSION = "2.758";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.757";
+  const LOCAL_BUILD = "dDAE_2.758";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.757";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.757")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.757")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.758")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.758")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.757";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.757"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.758"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -295,7 +295,7 @@ window.APP_VERSION = "2.757";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.757"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.758"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -503,7 +503,7 @@ window.APP_VERSION = "2.757";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.757</div></div></section>
+<div class="build" id="buildText">dDAE_2.758</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -623,6 +623,15 @@ window.APP_VERSION = "2.757";
 </svg></div>
 <div class="home-main-label small">Grafici pulizie</div>
 </button>
+<button aria-label="AMMINISTRATORE" class="home-main" id="goStatAmministratore" type="button">
+<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+<path d="M4 21a8 8 0 0 1 16 0"></path>
+<path d="M12 14v4"></path>
+<path d="M9.5 16h5"></path>
+</svg></div>
+<div class="home-main-label small">AMMINISTRATORE</div>
+</button>
 </div>
 </div>
 </section>
@@ -641,15 +650,53 @@ window.APP_VERSION = "2.757";
 </div>
 </div>
 </section><section class="page" hidden="" id="page-statamministratore">
-<div class="stats-page">
-<div class="stats-title">Amministratore</div>
-<div aria-hidden="true" class="stats-divider"></div>
-<div class="fin-card">
-<div class="fin-head">
-<div>Voce Personale</div>
-<div class="fin-right">Importo (€)</div>
+<div class="stats-gen">
+<div class="stats-head-row">
+<div class="stats-title">AMMINISTRATORE</div>
+<div aria-label="Azioni amministratore" class="stats-head-actions statgen-head-actions">
+<div class="statgen-regime-switch">
+<button aria-label="Regime fiscale amministratore" class="piscina-action-btn statgen-regime-btn" id="statAmmFiscalModeBtn" type="button">
+<span class="statgen-regime-btn-label" id="statAmmFiscalModeLabel">Società</span>
+</button>
 </div>
-<div id="amministratoreRows"></div>
+<button aria-label="Confronto anno grafico amministratore" class="piscina-action-btn statgen-compare-toggle-btn" id="statAmmCompareToggleBtn" type="button">
+<span class="statgen-compare-toggle-label" id="statAmmCompareToggleBtnLabel">ON</span>
+</button>
+<button aria-label="Seleziona anno confronto grafico amministratore" class="piscina-action-btn statgen-compare-year-btn" id="statAmmCompareYearBtn" type="button">
+<span class="statgen-compare-year-value" id="statAmmCompareYearBtnLabel">2025</span>
+</button>
+</div>
+</div>
+<div aria-hidden="true" class="stats-divider"></div>
+<div aria-label="Andamento tasse amministratore cumulativo per mese" class="statgen-line-chart-wrap" data-stat-line-chart-key="statamministratore">
+<canvas class="statgen-line-chart" height="118" id="statAmmRegChart"></canvas>
+</div>
+<div class="stats-stack">
+<button class="stat-row" data-stat-card-key="fatturato-ricevute" style="--statbg:#2b7cb4" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 19h16M6 16l4-4 3 3 5-7"></path></svg></span>
+<span class="stat-name">Fatturato ricevute</span>
+<span class="stat-val" id="saFatturato">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="irpef" style="--statbg:#c9772b" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M19 5L5 19"></path><path d="M7 7h.01"></path><path d="M17 17h.01"></path></svg></span>
+<span class="stat-name">IRPEF</span>
+<span class="stat-val" id="saIrpef">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="inps" style="--statbg:#7a3d9b" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 7h14M7 12h14M7 17h14M3.5 7h.01M3.5 12h.01M3.5 17h.01"></path></svg></span>
+<span class="stat-name">INPS</span>
+<span class="stat-val" id="saInps">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="iva-da-versare" id="saIvaRow" style="--statbg:#d39b3b" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 14l2 2 4-4"></path></svg></span>
+<span class="stat-name">IVA da versare</span>
+<span class="stat-val" id="saIva">€0,00</span>
+</button>
+<button class="stat-row" data-stat-card-key="totale-tasse" style="--statbg:#e05a4f" type="button">
+<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 1v22"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
+<span class="stat-name">Totale tasse</span>
+<span class="stat-val" id="saTotaleTasse">€0,00</span>
+</button>
 </div>
 </div>
 </section>
@@ -2663,7 +2710,7 @@ window.APP_VERSION = "2.757";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.757"></script>
-<script defer="" src="./app.js?v=2.757"></script>
+<script defer="" src="./config.js?v=2.758"></script>
+<script defer="" src="./app.js?v=2.758"></script>
 </body>
 </html>
