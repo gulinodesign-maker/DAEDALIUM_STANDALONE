@@ -21959,3 +21959,16 @@ body.ddae-dark #page-calendario .cal-today-column-outline{
 body.ddae-dark #page-calendario .cal-today-column-outline::after{
   background: rgba(255,255,255,0.04);
 }
+
+/* dDAE_2.790 — Ospiti iOS: forza layer stabile per lista card dopo riordino */
+#page-ospiti .guest-cards{
+  contain: layout paint style;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+#page-ospiti .guest-card{
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
