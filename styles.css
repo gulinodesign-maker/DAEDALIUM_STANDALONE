@@ -21780,3 +21780,37 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
   color:#f8fafc;
   -webkit-text-fill-color:#f8fafc;
 }
+
+
+/* dDAE_2.772 — Scheda ospite sola lettura: tab Uomo/Donna sotto Telefono/Email */
+#page-ospite #guestGenderTabsRow.guest-gender-tabs-row{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+  align-items:start !important;
+  margin-top:-2px !important;
+}
+#page-ospite #guestGenderTabsRow.guest-gender-tabs-row[hidden]{
+  display:none !important;
+}
+#page-ospite #guestGenderTabsRow .guest-gender-tab{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  height:56px !important;
+  min-height:56px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:16px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+.guest-form-card.is-view #guestGenderTabsRow,
+.guest-form-card.is-view #guestGenderTabsRow .guest-gender-tab{
+  pointer-events:auto !important;
+}
