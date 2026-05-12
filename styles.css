@@ -21924,24 +21924,26 @@ body.ddae-settings-modal-open main{
 #page-statmensili .piscina-action-btn{min-width:44px;}
 
 
-/* dDAE_2.779 — Calendario: bordo unico continuo per la colonna del giorno corrente */
+/* dDAE_2.780 — Calendario: bordo giorno corrente come layer sovrapposto, senza spostare celle */
+#page-calendario #calGrid,
+#page-calendario #calGridMonth{
+  position: relative;
+}
 #page-calendario .cal-cell.is-today-col,
 #page-calendario .cal-cell.cal-head.is-today-col{
   border-color: rgba(15,23,42,0.12) !important;
   box-shadow: none !important;
 }
 #page-calendario .cal-today-column-outline{
-  align-self: stretch;
-  justify-self: stretch;
-  position: relative;
-  z-index: 18;
+  position: absolute;
+  z-index: 28;
   pointer-events: none;
   border: 2px solid rgba(148,163,184,0.76);
   border-radius: 15px;
   box-shadow: none;
   background: transparent;
   box-sizing: border-box;
-  margin: -2px -2px;
+  transform: translateZ(0);
 }
 #page-calendario .cal-today-column-outline::after{
   content: "";
