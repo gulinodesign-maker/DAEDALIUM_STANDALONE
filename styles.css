@@ -21922,3 +21922,37 @@ body.ddae-settings-modal-open main{
 #page-statmensili .stats-head-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 #page-statmensili .stats-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
 #page-statmensili .piscina-action-btn{min-width:44px;}
+
+
+/* dDAE_2.778 — Calendario: evidenzia meglio il giorno corrente con bordo discreto */
+#page-calendario .cal-cell.is-today-col{
+  border-color: rgba(148,163,184,0.78) !important;
+  box-shadow: inset 0 0 0 2px rgba(148,163,184,0.62) !important;
+}
+#page-calendario .cal-cell.cal-head.is-today-col{
+  border-color: rgba(148,163,184,0.82) !important;
+  box-shadow: inset 0 0 0 2px rgba(148,163,184,0.68) !important;
+}
+#page-calendario .cal-cell.has-booking.booking-span-merged.is-today-col{
+  box-shadow: none !important;
+}
+#page-calendario .cal-cell.has-booking.booking-span-merged.is-today-col::after{
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: calc((100% / var(--today-span, 1)) * var(--today-offset, 0) + 4px);
+  width: calc((100% / var(--today-span, 1)) - 8px);
+  border: 2px solid rgba(148,163,184,0.70);
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 5;
+}
+body.ddae-dark #page-calendario .cal-cell.is-today-col,
+body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
+  border-color: rgba(203,213,225,0.78) !important;
+  box-shadow: inset 0 0 0 2px rgba(203,213,225,0.62) !important;
+}
+body.ddae-dark #page-calendario .cal-cell.has-booking.booking-span-merged.is-today-col::after{
+  border-color: rgba(203,213,225,0.70);
+}
