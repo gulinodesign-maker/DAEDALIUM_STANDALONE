@@ -21782,7 +21782,7 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
 }
 
 
-/* dDAE_2.772 — Scheda ospite sola lettura: tab Uomo/Donna sotto Telefono/Email */
+/* dDAE_2.773 — Scheda ospite sola lettura: tab Uomo/Donna sotto Telefono/Email */
 #page-ospite #guestGenderTabsRow.guest-gender-tabs-row{
   display:grid !important;
   grid-template-columns:repeat(2,minmax(0,1fr)) !important;
@@ -21813,4 +21813,59 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
 .guest-form-card.is-view #guestGenderTabsRow,
 .guest-form-card.is-view #guestGenderTabsRow .guest-gender-tab{
   pointer-events:auto !important;
+}
+
+/* dDAE_2.773 — Check-in: conteggio Uomini/Donne sotto Telefono/Email */
+#page-ospite #guestSexCountRow{
+  margin-top: 8px;
+  align-items: stretch;
+}
+#page-ospite #guestSexCountRow .subfield{
+  min-height: 56px;
+}
+#page-ospite #guestSexCountRow input,
+#page-ospite #guestSexCountRow label{
+  font-weight: 900 !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow{
+  display: grid !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow input{
+  opacity: 1 !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+
+/* dDAE_2.774 — Uomini/Donne solo in scheda ospite in sola lettura, multitap come Adulti/<10 */
+#page-ospite .guest-form-card:not(.is-view) #guestSexCountRow{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow input{
+  pointer-events:auto !important;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+
+/* dDAE_2.775 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
+#page-ospite #guestGenderTabsRow{
+  display:none !important;
+}
+#page-ospite .guest-booking-block,
+#page-ospite .guest-booking-block.guest-booking-block--primary{
+  background:#ffffff !important;
+  background-color:#ffffff !important;
+  background-image:none !important;
+}
+body.ddae-dark #page-ospite .guest-booking-block,
+body.ddae-dark #page-ospite .guest-booking-block.guest-booking-block--primary{
+  background:rgba(15,23,42,.72) !important;
+  background-color:rgba(15,23,42,.72) !important;
+  background-image:none !important;
 }
