@@ -21924,7 +21924,7 @@ body.ddae-settings-modal-open main{
 #page-statmensili .piscina-action-btn{min-width:44px;}
 
 
-/* dDAE_2.780 — Calendario: bordo giorno corrente come layer sovrapposto, senza spostare celle */
+/* dDAE_2.781 — Calendario: bordo giorno corrente azzurro con offset esterno 2px */
 #page-calendario #calGrid,
 #page-calendario #calGridMonth{
   position: relative;
@@ -21938,7 +21938,7 @@ body.ddae-settings-modal-open main{
   position: absolute;
   z-index: 28;
   pointer-events: none;
-  border: 2px solid rgba(148,163,184,0.76);
+  border: 2px solid rgba(56,189,248,0.86);
   border-radius: 15px;
   box-shadow: none;
   background: transparent;
@@ -21954,7 +21954,7 @@ body.ddae-settings-modal-open main{
   pointer-events: none;
 }
 body.ddae-dark #page-calendario .cal-today-column-outline{
-  border-color: rgba(203,213,225,0.78);
+  border-color: rgba(125,211,252,0.88);
 }
 body.ddae-dark #page-calendario .cal-today-column-outline::after{
   background: rgba(255,255,255,0.04);
