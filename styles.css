@@ -21853,7 +21853,7 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
 }
 
 
-/* dDAE_2.776 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
+/* dDAE_2.777 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
 #page-ospite #guestGenderTabsRow{
   display:none !important;
 }
@@ -21870,7 +21870,7 @@ body.ddae-dark #page-ospite .guest-booking-block.guest-booking-block--primary{
   background-image:none !important;
 }
 
-/* dDAE_2.776 — Impostazioni: popup realmente modali, nessun click-through sui tasti sottostanti */
+/* dDAE_2.777 — Impostazioni: popup realmente modali, nessun click-through sui tasti sottostanti */
 #settingsConfigModal:not([hidden]),
 #settingsBackupModal:not([hidden]),
 #settingsYearModal:not([hidden]),
@@ -21913,3 +21913,12 @@ body.ddae-settings-modal-open #app,
 body.ddae-settings-modal-open main{
   overscroll-behavior:contain !important;
 }
+
+
+/* dDAE_2.777 — Statistiche Mensili: stanze occupate e confronto anni precedenti */
+.month-occ{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:72px;text-align:center;line-height:1.05;}
+.month-occ-pct{font-weight:900;}
+.month-occ-rooms{font-size:11px;font-weight:800;opacity:.82;white-space:nowrap;}
+#page-statmensili .stats-head-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#page-statmensili .stats-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+#page-statmensili .piscina-action-btn{min-width:44px;}
