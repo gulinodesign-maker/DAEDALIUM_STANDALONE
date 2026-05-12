@@ -21972,3 +21972,13 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
+
+/* dDAE_2.791 — Ospiti iOS: lo scroller non deve usare layer/contain persistenti
+   perché su Safari possono restare invisibili ma cliccabili dopo il riordino. */
+#page-ospiti .guest-cards{
+  contain: none !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+}
