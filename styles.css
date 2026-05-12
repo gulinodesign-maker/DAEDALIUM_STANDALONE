@@ -21853,7 +21853,7 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
 }
 
 
-/* dDAE_2.775 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
+/* dDAE_2.776 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
 #page-ospite #guestGenderTabsRow{
   display:none !important;
 }
@@ -21868,4 +21868,48 @@ body.ddae-dark #page-ospite .guest-booking-block.guest-booking-block--primary{
   background:rgba(15,23,42,.72) !important;
   background-color:rgba(15,23,42,.72) !important;
   background-image:none !important;
+}
+
+/* dDAE_2.776 — Impostazioni: popup realmente modali, nessun click-through sui tasti sottostanti */
+#settingsConfigModal:not([hidden]),
+#settingsBackupModal:not([hidden]),
+#settingsYearModal:not([hidden]),
+#tagColorModal:not([hidden]),
+#operatoriEditorModal:not([hidden]),
+#channelEditorModal:not([hidden]),
+#laundryCatalogEditorModal:not([hidden]),
+#languageModal:not([hidden]),
+#settingsLicenseModal:not([hidden]),
+#licenseRequestModal:not([hidden]),
+#licenseUnlockModal:not([hidden]),
+#licenseGeneratorModal:not([hidden]),
+#licenseDateRangeModal:not([hidden]),
+#themeTransferModal:not([hidden]),
+#settingsLicenseModal:not([hidden]){
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#settingsConfigModal:not([hidden]) .modal-card,
+#settingsBackupModal:not([hidden]) .modal-card,
+#settingsYearModal:not([hidden]) .modal-card,
+#tagColorModal:not([hidden]) .modal-card,
+#operatoriEditorModal:not([hidden]) .modal-card,
+#channelEditorModal:not([hidden]) .modal-card,
+#laundryCatalogEditorModal:not([hidden]) .modal-card,
+#languageModal:not([hidden]) .modal-card,
+#settingsLicenseModal:not([hidden]) .modal-card,
+#licenseRequestModal:not([hidden]) .modal-card,
+#licenseUnlockModal:not([hidden]) .modal-card,
+#licenseGeneratorModal:not([hidden]) .modal-card,
+#licenseDateRangeModal:not([hidden]) .modal-card,
+#themeTransferModal:not([hidden]) .modal-card{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+body.ddae-settings-modal-open,
+body.ddae-settings-modal-open #app,
+body.ddae-settings-modal-open main{
+  overscroll-behavior:contain !important;
 }
