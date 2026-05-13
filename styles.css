@@ -21988,7 +21988,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   -webkit-backface-visibility: visible !important;
 }
 
-/* dDAE_2.792 — Calendario: punti tipologia letto in basso, orizzontali e centrati nella cella */
+/* dDAE_2.793 — Calendario: punti tipologia letto in basso, orizzontali e centrati nella cella */
 #page-calendario .calendar-event-bar .cal-dots,
 #page-calendario.is-month-view .calendar-event-bar .cal-dots{
   left: 50%;
@@ -22009,4 +22009,44 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 #page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   position: relative;
   padding-bottom: 24px;
+}
+
+
+/* dDAE_2.793 — Calendario: M/G/C in alto a sinistra, channel in alto a destra */
+#page-calendario .cal-corner-chrome{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:4;
+}
+#page-calendario .cal-flags,
+#page-calendario .calendar-event-bar .cal-flags,
+#page-calendario.is-month-view .calendar-event-bar .cal-flags{
+  position:absolute !important;
+  left:4px !important;
+  right:auto !important;
+  top:4px !important;
+  bottom:auto !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:3px !important;
+  pointer-events:none !important;
+  z-index:5 !important;
+}
+#page-calendario .cal-channel-tag,
+#page-calendario .calendar-event-bar .cal-channel-tag,
+#page-calendario.is-month-view .calendar-event-bar .cal-channel-tag{
+  position:absolute !important;
+  top:4px !important;
+  right:4px !important;
+  left:auto !important;
+  bottom:auto !important;
+  z-index:6 !important;
+}
+#page-calendario .cal-cell.has-booking .cal-cell-inner,
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
+  padding-top:24px !important;
 }
