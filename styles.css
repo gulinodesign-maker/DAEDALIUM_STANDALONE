@@ -22283,3 +22283,103 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
     padding:10px !important;
   }
 }
+
+/* dDAE_2.798 — Home/Statistiche: griglie 3x3 identiche, centrate in portrait e landscape */
+:root{
+  --ddae-homestat-grid-width: min(520px, 96vw);
+  --ddae-homestat-grid-gap: 10px;
+  --ddae-homestat-grid-pad: 14px;
+  --ddae-homestat-glyph: clamp(83px, 23.4vw, 153px);
+  --ddae-homestat-radius: clamp(23px, 6.5vw, 44px);
+  --ddae-homestat-font: clamp(39px, 9.1vw, 70px);
+}
+#page-home .home-grid,
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  width:var(--ddae-homestat-grid-width) !important;
+  max-width:var(--ddae-homestat-grid-width) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  padding:var(--ddae-homestat-grid-pad) !important;
+  gap:var(--ddae-homestat-grid-gap) !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:stretch !important;
+  align-content:start !important;
+  box-sizing:border-box !important;
+  float:none !important;
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  transform:none !important;
+}
+#page-home .home-grid{ margin-top:0 !important; }
+#page-statistiche .home-grid{ margin-top:10px !important; }
+#page-home .home-main,
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  justify-self:stretch !important;
+  box-sizing:border-box !important;
+}
+#page-home .home-main-glyph,
+#page-statistiche .home-main-glyph{
+  width:var(--ddae-homestat-glyph) !important;
+  height:var(--ddae-homestat-glyph) !important;
+  border-radius:var(--ddae-homestat-radius) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:var(--ddae-homestat-font) !important;
+  margin:0 auto !important;
+  box-sizing:border-box !important;
+}
+#page-home .home-main-glyph .ui-ico,
+#page-statistiche .home-main-glyph .ui-ico{
+  width:52px !important;
+  height:52px !important;
+}
+#page-home .home-main-label,
+#page-statistiche .home-main-label{
+  font-size:17px !important;
+  line-height:1.15 !important;
+  min-height:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  width:100% !important;
+}
+@media (orientation: landscape){
+  :root{
+    --ddae-homestat-grid-width: min(520px, 96vw);
+    --ddae-homestat-grid-gap: 10px;
+    --ddae-homestat-grid-pad: 14px;
+    --ddae-homestat-glyph: clamp(83px, 23.4vw, 153px);
+  }
+  #page-home .home-grid,
+  #page-statistiche .home-grid{
+    margin-left:auto !important;
+    margin-right:auto !important;
+    left:auto !important;
+    right:auto !important;
+    transform:none !important;
+  }
+}
+@media (max-width:390px){
+  :root{
+    --ddae-homestat-grid-width: min(520px, 96vw);
+    --ddae-homestat-grid-gap: 10px;
+    --ddae-homestat-grid-pad: 14px;
+    --ddae-homestat-glyph: clamp(83px, 23.4vw, 153px);
+  }
+}
