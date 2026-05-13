@@ -22050,3 +22050,61 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 #page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   padding-top:24px !important;
 }
+
+
+/* dDAE_2.794 — Calendario: stessa configurazione nella cella zoomata
+   M/G/C in alto a sinistra, channel in alto a destra, letti in basso centrati. */
+.calendar-cell-zoom .cal-corner-chrome,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-corner-chrome{
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  z-index:6 !important;
+}
+.calendar-cell-zoom .cal-flags,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-flags{
+  position:absolute !important;
+  left:14px !important;
+  right:auto !important;
+  top:14px !important;
+  bottom:auto !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  pointer-events:none !important;
+  z-index:8 !important;
+}
+.calendar-cell-zoom .cal-channel-tag,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-channel-tag{
+  position:absolute !important;
+  top:14px !important;
+  right:14px !important;
+  left:auto !important;
+  bottom:auto !important;
+  z-index:9 !important;
+}
+.calendar-cell-zoom .cal-dots,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots{
+  position:absolute !important;
+  left:50% !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:18px !important;
+  transform:translateX(-50%) !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  pointer-events:none !important;
+  z-index:7 !important;
+}
+.calendar-cell-zoom .cal-dots .bed-dot,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots .bed-dot{
+  position:static !important;
+}
