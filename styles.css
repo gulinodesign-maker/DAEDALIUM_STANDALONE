@@ -3848,17 +3848,22 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 #page-calendario .cal-cell.has-booking .cal-cell-inner{
   position: relative;
   justify-content: center;
-  padding: 18px 8px 18px 8px;
+  padding: 16px 8px 24px 8px;
 }
 #page-calendario .cal-cell.has-booking .cal-fullname + .cal-dots{
   margin-top: 0;
 }
 #page-calendario .cal-dots{
   position: absolute;
-  top: 5px;
-  left: 5px;
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%);
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   width: auto;
   height: 8px;
@@ -21981,4 +21986,27 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   -webkit-transform: none !important;
   backface-visibility: visible !important;
   -webkit-backface-visibility: visible !important;
+}
+
+/* dDAE_2.792 — Calendario: punti tipologia letto in basso, orizzontali e centrati nella cella */
+#page-calendario .calendar-event-bar .cal-dots,
+#page-calendario.is-month-view .calendar-event-bar .cal-dots{
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  height: 8px;
+  margin: 0;
+}
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
+  position: relative;
+  padding-bottom: 24px;
 }
