@@ -22143,3 +22143,57 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
     max-width:none !important;
   }
 }
+
+/* dDAE_2.796 — Statistiche: griglia 3x3 centrata orizzontalmente rispetto alla pagina */
+#page-statistiche .stats-page{
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-grid{
+  --ddae-stat-grid-gap: 18px;
+  --ddae-stat-grid-item: minmax(0, 1fr);
+  display:grid !important;
+  grid-template-columns:repeat(3, var(--ddae-stat-grid-item)) !important;
+  width:min(520px, calc(100vw - 28px)) !important;
+  max-width:520px !important;
+  box-sizing:border-box !important;
+  margin:10px auto 0 !important;
+  padding:14px !important;
+  gap:var(--ddae-stat-grid-gap) !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  float:none !important;
+  position:relative !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:150px !important;
+  justify-self:center !important;
+  margin:0 !important;
+}
+@media (orientation: landscape){
+  #page-statistiche .home-grid{
+    width:min(640px, calc(100vw - 96px)) !important;
+    max-width:640px !important;
+    gap:22px !important;
+    padding:14px !important;
+    margin-top:10px !important;
+  }
+  #page-statistiche .home-main{
+    max-width:170px !important;
+  }
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    width:min(500px, calc(100vw - 18px)) !important;
+    padding:10px !important;
+    gap:12px !important;
+  }
+  #page-statistiche .home-main{
+    max-width:124px !important;
+  }
+}
