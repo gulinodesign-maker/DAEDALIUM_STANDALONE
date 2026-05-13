@@ -22108,3 +22108,38 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 .calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots .bed-dot{
   position:static !important;
 }
+
+/* dDAE_2.795 — Statistiche: griglia 3x3 standardizzata sulla Home anche in landscape */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  width:min(520px, 96vw) !important;
+  max-width:520px !important;
+  margin:10px auto 0 !important;
+  padding:14px !important;
+  gap:10px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:stretch !important;
+  align-content:start !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+@media (orientation: landscape){
+  #page-statistiche .home-grid{
+    width:min(520px, 96vw) !important;
+    max-width:520px !important;
+    padding:14px !important;
+    gap:10px !important;
+  }
+  #page-statistiche .home-main{
+    width:100% !important;
+    max-width:none !important;
+  }
+}
