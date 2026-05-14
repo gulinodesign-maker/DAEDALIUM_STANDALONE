@@ -22197,3 +22197,91 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
     max-width:124px !important;
   }
 }
+
+/* dDAE_2.800 — Popup Impostazioni: tasti creazione/modifica in grassetto + Statistiche landscape full display */
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button{
+  font-weight: 900 !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .content,
+  body[data-page="statmensili"] #page-statmensili .content,
+  body[data-page="statspese"] #page-statspese .content,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .content,
+  body[data-page="statchannel"] #page-statchannel .content,
+  body[data-page="statpulizie"] #page-statpulizie .content,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .content{
+    height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    max-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    height: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    padding: 6px 8px calc(6px + var(--safe-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart canvas,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart canvas,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart canvas,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart canvas,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart canvas,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart{
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
