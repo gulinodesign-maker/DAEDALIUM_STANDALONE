@@ -22286,7 +22286,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   }
 }
 
-/* dDAE_2.805 — Preventivi: archivio parallelo e UI azzurra */
+/* dDAE_2.806 — Preventivi: archivio parallelo e UI azzurra */
 .preventivi-home-glyph{
   font-weight:800;
   font-size:clamp(24px, 6vw, 34px);
@@ -22336,7 +22336,7 @@ body[data-page="ospite"].quote-mode #periodChip{ display:none !important; }
 .tl-btn .tl-text{font-weight:800;font-size:12px;line-height:1;}
 
 
-/* dDAE_2.805 — Preventivi: pagina clonata da Ospiti + occupazione gialla */
+/* dDAE_2.806 — Preventivi: pagina clonata da Ospiti + occupazione gialla */
 #page-preventivi .guest-cards-card{
   background: var(--glass) !important;
   background-image: none !important;
@@ -22365,6 +22365,126 @@ body.quote-mode #page-ospite .room-dot.occupied{
 }
 #page-ospite.is-preventivo .room-dot[disabled].occupied,
 body.quote-mode #page-ospite .room-dot[disabled].occupied{
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* dDAE_2.806 — Preventivi: clone visivo reale della pagina Ospiti */
+#page-preventivi .content{
+  height: calc(100dvh - 64px - var(--safe-top));
+  max-height: calc(100dvh - 64px - var(--safe-top));
+  overflow: hidden;
+  padding-bottom: calc(74px + var(--safe-bottom));
+}
+#page-preventivi .ospite-wrap,
+#page-preventivi .guest-cards-card{
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#page-preventivi .guest-cards-card{
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-preventivi .guest-cards-card > .hd{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+  background: transparent !important;
+  border-bottom: none !important;
+}
+#page-preventivi .guest-cards-card > .bd{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0 !important;
+}
+#page-preventivi .guest-filter-grid{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+#page-preventivi .guest-cards{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  padding-bottom: calc(22px + var(--safe-bottom));
+}
+#page-preventivi .guest-scroll-today-btn{
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#page-preventivi .guest-scroll-today-btn[hidden]{ display: none !important; }
+#page-preventivi .guest-cards-card > .hd > .page-title,
+#page-preventivi .guest-cards-card > .hd > .hd-actions{ flex: 0 0 auto; }
+#page-preventivi .guest-card.preventivo-card{
+  background: rgba(148,163,184,0.20) !important;
+  background-image: none !important;
+  border: 1px solid rgba(15,23,42,0.10) !important;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-preventivi .guest-filter-grid .field input,
+#page-preventivi .guest-filter-grid .field select,
+#page-preventivi .gf-dir{ background: rgba(148,163,184,0.20) !important; }
+#page-preventivi .preventivo-insno{
+  background: #36a9e1 !important;
+  border-color: #36a9e1 !important;
+  color: #fff !important;
+}
+.preventivi-home-glyph .ui-ico{ width: 34px; height: 34px; }
+@media (orientation: landscape){
+  #page-preventivi .content{
+    height: calc(100dvh - 64px - var(--safe-top));
+    max-height: calc(100dvh - 64px - var(--safe-top));
+    padding-bottom: calc(54px + var(--safe-bottom));
+  }
+  #page-preventivi .guest-filter-grid{ margin-bottom: 8px; }
+  #page-preventivi .guest-cards{ padding-bottom: calc(18px + var(--safe-bottom)); }
+}
+body.ddae-dark #page-preventivi .guest-card.preventivo-card{
+  background: rgba(15,23,42,0.32) !important;
+  border-color: rgba(226,232,240,0.12) !important;
+}
+
+/* dDAE_2.806 — Pallini stanza: rosso reale, giallo preventivo/prenotazione non concretizzata */
+#page-ospite .room-dot.occupied-real,
+#page-ospite .room-dot.occupied.occupied-real{
+  background:#ff0000 !important;
+  background-image:none !important;
+  border-color:#b40000 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+#page-ospite .room-dot.occupied-quote:not(.occupied-real),
+#page-ospite .room-dot.occupied.occupied-quote:not(.occupied-real),
+#page-ospite.is-preventivo .room-dot.occupied:not(.occupied-real),
+body.quote-mode #page-ospite .room-dot.occupied:not(.occupied-real){
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
   opacity:1 !important;
   filter:none !important;
 }
