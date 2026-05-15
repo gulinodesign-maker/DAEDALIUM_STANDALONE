@@ -22624,3 +22624,126 @@ body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestBookin
   display:revert !important;
   visibility:visible !important;
 }
+
+
+/* dDAE_2.823 — Impostazioni: popup editor buttons bold + stable color editor overlay */
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button{
+  font-weight:900 !important;
+}
+#operatoriEditorModal button span,
+#channelEditorModal button span,
+#laundryCatalogEditorModal button span{
+  font-weight:900 !important;
+}
+#tagColorModal{
+  z-index:5000 !important;
+  touch-action:manipulation;
+}
+#tagColorModal .tag-color-modal-card{
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
+body.tag-color-modal-open #operatoriEditorModal,
+body.tag-color-modal-open #channelEditorModal,
+body.tag-color-modal-open #laundryCatalogEditorModal{
+  pointer-events:none;
+}
+body.tag-color-modal-open #tagColorModal{
+  pointer-events:auto;
+}
+
+/* dDAE_2.823 — popup colore sopra ai modali impostazioni, sempre cliccabile/toccabile */
+#tagColorModal{
+  z-index:99999 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#tagColorModal .tag-color-modal-card,
+#tagColorModal .tag-color-modal-card *,
+#tagColorModal button,
+#tagColorModal .tag-color-option,
+#tagColorModal .tag-opacity-option,
+#tagColorModal .tag-color-mode-btn{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button,
+#operatoriEditorModal button *,
+#channelEditorModal button *,
+#laundryCatalogEditorModal button *{
+  font-weight:900 !important;
+}
+
+
+/* dDAE_2.823 — popup colore sempre sopra e interattivo su iOS */
+body.tag-color-modal-open #operatoriEditorModal:not([hidden]),
+body.tag-color-modal-open #channelEditorModal:not([hidden]),
+body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
+  pointer-events:none !important;
+}
+#tagColorModal:not([hidden]){
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:auto !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#tagColorModal:not([hidden]) .tag-color-modal-card,
+#tagColorModal:not([hidden]) .tag-color-modal-card *,
+#tagColorModal:not([hidden]) button,
+#tagColorModal:not([hidden]) .tag-color-option,
+#tagColorModal:not([hidden]) .tag-opacity-option,
+#tagColorModal:not([hidden]) .tag-color-mode-btn{
+  pointer-events:auto !important;
+  touch-action:auto !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button,
+#operatoriEditorModal button *,
+#channelEditorModal button *,
+#laundryCatalogEditorModal button *{
+  font-weight:900 !important;
+}
+
+/* dDAE_2.824 — Ospiti reali: layout lettura/modifica ripristinato, non contaminato dai Preventivi */
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestBookingNumberField,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #servicesRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #depositRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #saldoRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #discountRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #remainingRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow > .subfield,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow > .subfield.field.float,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestBooking,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannel{
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow{
+  grid-template-columns: minmax(0, 1fr) 220px !important;
+  align-items:center !important;
+  gap:16px !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:first-child,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:first-child{
+  display:block !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
+  display:block !important;
+}

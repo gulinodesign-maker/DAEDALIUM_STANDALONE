@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.820";
+const BUILD_VERSION = "2.823";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -11496,6 +11496,7 @@ function __openSettingsConfigModal__(){
   try{ refreshFloatingLabels(); }catch(_){ }
   try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
   try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
+  try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
 }
 
 
@@ -11912,9 +11913,6 @@ function __tagColorPopupEmitPreview__(){
 }
 
 function __tagColorPopupOpen__(target, currentColor, onSelect, options){
-  try{
-    if (typeof __settingsEditorColorPopupIsSuppressed__ === 'function' && __settingsEditorColorPopupIsSuppressed__()) return;
-  }catch(_){ }
   const modal = document.getElementById('tagColorModal');
   const grid = document.getElementById('tagColorGrid');
   const opts = (options && typeof options === 'object') ? options : {};
@@ -11959,6 +11957,8 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
+  try{ modal.style.setProperty('z-index','5000','important'); }catch(_){ }
+  try{ document.body.classList.add('tag-color-modal-open'); }catch(_){ }
 }
 
 
@@ -12079,12 +12079,20 @@ async function __tagColorPopupConfirm__(){
   }catch(_){ }
   try{ await __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg); }catch(_){ }
   try{ __refreshDesignUiImmediately__(); }catch(_){ }
-  try{ if (changed?.any) __rerenderActivePageAfterThemeChange__(); }catch(_){ }
+  try{
+    if (changed?.any){
+      if (typeof __settingsEditorModalIsOpen__ === 'function' && __settingsEditorModalIsOpen__()){
+        try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+      } else {
+        __rerenderActivePageAfterThemeChange__();
+      }
+    }
+  }catch(_){ }
   try{ toast('Colore aggiornato'); }catch(_){ }
 }
 
 
-/* dDAE_2.820 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
+/* dDAE_2.823 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
 let __settingsEditorColorPopupSuppressUntil__ = 0;
 let __settingsEditorModalOpenedAt__ = 0;
 function __suppressSettingsEditorColorPopups__(ms){
@@ -12116,6 +12124,8 @@ function __isSettingsEditorDesignTarget__(node){
 }
 function __blockSettingsEditorGhostDesignEvent__(e){
   try{
+    const colorModal = document.getElementById('tagColorModal');
+    if (colorModal && !colorModal.hidden && colorModal.getAttribute('aria-hidden') !== 'true') return false;
     if (!__settingsEditorModalIsOpen__()) return false;
     if (!__settingsEditorColorPopupIsSuppressed__() && !__settingsEditorModalRecentlyOpened__(2400)) return false;
     if (!__isSettingsEditorDesignTarget__(e && e.target)) return false;
@@ -12132,6 +12142,22 @@ function __blockSettingsEditorGhostDesignEvent__(e){
     try{ document.addEventListener(evt, __blockSettingsEditorGhostDesignEvent__, true); }catch(_){ }
   });
 })();
+
+function __applySettingsEditorButtonBoldAndVisuals__(){
+  try{
+    [
+      'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor',
+      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor',
+      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor'
+    ].forEach((id)=>{
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){}
+      btn.style.setProperty('font-weight','900','important');
+      btn.querySelectorAll('span,.btn-label,.ui-label').forEach((el)=>{ try{ el.style.setProperty('font-weight','900','important'); }catch(_){} });
+    });
+  }catch(_){ }
+}
 
 function __tagColorPopupClose__(){
   const modal = document.getElementById('tagColorModal');
@@ -12151,6 +12177,7 @@ function __tagColorPopupClose__(){
   };
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
+  try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
     __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
@@ -12238,6 +12265,7 @@ function __operatoriOpenModal__(item){
   try{ refreshFloatingLabels(); }catch(_){ }
   try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
   try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
+  try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
 }
 
 
@@ -12485,6 +12513,7 @@ function __channelOpenModal__(item){
   try{ refreshFloatingLabels(); }catch(_){ }
   try{ __syncSettingsConfigModalGrid__(); }catch(_){ }
   try{ requestAnimationFrame(() => { try{ __syncSettingsConfigModalGrid__(); }catch(_){} }); }catch(_){ }
+  try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
 }
 
 
@@ -36696,7 +36725,7 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ setInterval(updateBodyState, 500); }catch(_){ }
 })();
 
-/* dDAE_2.820 — PREVENTIVI: archivio parallelo locale/backup, UI identica agli ospiti */
+/* dDAE_2.823 — PREVENTIVI: archivio parallelo locale/backup, UI identica agli ospiti */
 const __PREVENTIVI_CACHE_KEY_PREFIX__ = 'preventivi';
 
 function __preventivoIdOf__(p){
@@ -36793,7 +36822,7 @@ function __syncPreventivoModeUi__(){
     page.classList.toggle('preventivo-non-confermato', isQuote && !confirmed && String(state.guestMode||'') === 'view');
   }
   try{ document.body.classList.toggle('quote-mode', isQuote); }catch(_){ }
-  // dDAE_2.820 — Preventivi: rimuovi davvero Channel/commissione anche quando i campi
+  // dDAE_2.823 — Preventivi: rimuovi davvero Channel/commissione anche quando i campi
   // vengono riposizionati nel layout create stack. Il solo CSS sul row non basta su iOS.
   try{
     const ids = ['guestChannelRow','guestChannelCommissionWrap','guestBookingNumberField'];
@@ -37082,7 +37111,7 @@ if (__syncPreventivoModeUi__orig){
 }
 
 
-/* dDAE_2.820 — Preventivi: clone operativo/visivo della pagina Ospiti */
+/* dDAE_2.823 — Preventivi: clone operativo/visivo della pagina Ospiti */
 (function(){
   const P2G = {
     preventiviToday:'guestToday',
@@ -37297,7 +37326,7 @@ if (__syncPreventivoModeUi__orig){
   setTimeout(bind, 300); setTimeout(bind, 900);
 })();
 
-/* dDAE_2.820 — Preventivi: traduzioni, conferma come ospite reale, rifinitura clone Ospiti */
+/* dDAE_2.823 — Preventivi: traduzioni, conferma come ospite reale, rifinitura clone Ospiti */
 try{
   Object.assign(__I18N_PHRASES__, {
     "Preventivi": { "en":"Quotes", "fr":"Devis", "de":"Angebote", "es":"Presupuestos" },
@@ -37398,7 +37427,7 @@ async function confirmPreventivoCurrent(){
 
 try{ __applyAppLanguageToDom__(); }catch(_){ }
 
-/* dDAE_2.820 — Preventivi: pallini stanza globali, conversione guidata, campi quote essenziali */
+/* dDAE_2.823 — Preventivi: pallini stanza globali, conversione guidata, campi quote essenziali */
 try{
   Object.assign(__I18N_PHRASES__, {
     "Completa prenotazione": { "en":"Complete booking", "fr":"Compléter la réservation", "de":"Buchung vervollständigen", "es":"Completar reserva" },
@@ -37564,7 +37593,7 @@ try{
 
 try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 
-/* dDAE_2.820 — Preventivi dentro Ospiti + report su schede preventivo */
+/* dDAE_2.823 — Preventivi dentro Ospiti + report su schede preventivo */
 (function(){
   function bindPreventiviFromOspiti(){
     try{
@@ -37637,7 +37666,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   }catch(_){ }
 })();
 
-/* dDAE_2.820 — Design tasto Preventivi dentro Ospiti */
+/* dDAE_2.823 — Design tasto Preventivi dentro Ospiti */
 (function(){
   function applyPreventiviOspitiButtonDesign(){
     try{
@@ -37653,7 +37682,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   setTimeout(applyPreventiviOspitiButtonDesign, 300);
 })();
 
-/* dDAE_2.820 — Preventivi: nascondi righe economiche in modifica + occupazioni reali sempre rosse */
+/* dDAE_2.823 — Preventivi: nascondi righe economiche in modifica + occupazioni reali sempre rosse */
 (function(){
   function __ddae2809SetHidden(id, hidden){
     try{
@@ -37763,7 +37792,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ window.__ddae2809HidePreventivoEconomicRows = __ddae2809HidePreventivoEconomicRows; window.__ddae2809ForceRealRoomOccupancyRed = __ddae2809ForceRealRoomOccupancyRed; }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: report funzionante + rimozione definitiva commissione/channel */
+/* dDAE_2.823 — Preventivi: report funzionante + rimozione definitiva commissione/channel */
 (function(){
   function __ddae2810IsQuoteMode(){
     try{ return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo'); }catch(_){ return false; }
@@ -37884,7 +37913,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ setInterval(function(){ if (__ddae2810IsQuoteMode()) __ddae2810HideQuoteRows(); }, 700); }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: report Note, gruppi multipli, numerazione P progressiva */
+/* dDAE_2.823 — Preventivi: report Note, gruppi multipli, numerazione P progressiva */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__==='function' ? __preventivoIdOf__(p) : (p && (p.id||p.preventivo_id||p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx||0) || '').trim().toUpperCase(); }catch(_){ return 'P'+((idx||0)+1); } }
@@ -38108,7 +38137,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 })();
 
 
-/* dDAE_2.820 — Preventivi: ogni nuovo preventivo crea una card separata; gruppi solo da modifica interna */
+/* dDAE_2.823 — Preventivi: ogni nuovo preventivo crea una card separata; gruppi solo da modifica interna */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx || 0) || '').trim().toUpperCase(); }catch(_){ return 'P' + ((idx || 0) + 1); } }
@@ -38347,7 +38376,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: sola lettura completa, conversione verde, gruppi interni come ospiti */
+/* dDAE_2.823 — Preventivi: sola lettura completa, conversione verde, gruppi interni come ospiti */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){ try{ return String((typeof __preventivoNumberText__ === 'function' ? __preventivoNumberText__(p, idx || 0) : (p && (p.numero_preventivo || p.preventivo_numero))) || ('P' + ((idx || 0) + 1))).trim().toUpperCase(); }catch(_){ return 'P' + ((idx || 0) + 1); } }
@@ -38559,7 +38588,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ setInterval(function(){ if(quoteMode()) applyQuoteViewFields(); }, 700); }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: ogni nuovo preventivo crea una card distinta */
+/* dDAE_2.823 — Preventivi: ogni nuovo preventivo crea una card distinta */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
@@ -38686,7 +38715,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: tasto Indietro torna sempre alla pagina Preventivi */
+/* dDAE_2.823 — Preventivi: tasto Indietro torna sempre alla pagina Preventivi */
 (function(){
   function hasQuoteShape(obj){
     try{
@@ -38769,7 +38798,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 })();
 
 
-/* dDAE_2.820 — Preventivi: tasto Indietro lista verso Ospiti */
+/* dDAE_2.823 — Preventivi: tasto Indietro lista verso Ospiti */
 (function(){
   function goOspitiFromPreventivi(ev){
     try{ if(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); } }catch(_){ }
@@ -38812,7 +38841,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 })();
 
 
-/* dDAE_2.820 — Preventivi: tasto Indietro verso Ospiti spostato in top bar accanto a Home */
+/* dDAE_2.823 — Preventivi: tasto Indietro verso Ospiti spostato in top bar accanto a Home */
 (function(){
   function isPreventiviPage(){
     try{ return !!(window.state && state.page === 'preventivi'); }catch(_){ return false; }
@@ -38863,7 +38892,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ setTimeout(bind, 250); setTimeout(bind, 900); }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi: back topbar visibile + gruppi interni non sdoppiati */
+/* dDAE_2.823 — Preventivi: back topbar visibile + gruppi interni non sdoppiati */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){
@@ -39065,7 +39094,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ setTimeout(bindBack, 250); setTimeout(bindBack, 900); }catch(_){ }
 })();
 
-/* dDAE_2.820 — Preventivi indipendenti: gruppi visibili in scheda + ripristino Channel Ospiti */
+/* dDAE_2.823 — Preventivi indipendenti: gruppi visibili in scheda + ripristino Channel Ospiti */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){
@@ -39250,6 +39279,547 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
     }
   }catch(_){ }
   function boot(){ try{ if (state && state.page === 'ospite'){ if (inQuoteMode()) hideQuoteChannel(); else showNormalGuestChannel(); } }catch(_){ } }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
+})();
+
+/* dDAE_2.823 — iOS: popup colore realmente interattivo + cancellazione preventivo multi-gruppo in un solo gesto */
+(function(){
+  function __ddae2822ColorModalOpen__(){
+    try{
+      const modal = document.getElementById('tagColorModal');
+      return !!(modal && !modal.hidden && modal.getAttribute('aria-hidden') !== 'true');
+    }catch(_){ return false; }
+  }
+  function __ddae2822Stop__(ev){
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  let __ddae2822LastColorTap__ = { t:0, key:'' };
+  function __ddae2822Debounce__(key){
+    try{
+      const now = Date.now();
+      if (__ddae2822LastColorTap__.key === key && (now - __ddae2822LastColorTap__.t) < 280) return true;
+      __ddae2822LastColorTap__ = { t: now, key: key };
+    }catch(_){ }
+    return false;
+  }
+  function __ddae2822ApplyColorSpec__(btn){
+    try{
+      if (!btn) return;
+      const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
+      const mode = String(__tagColorPopupState__.mode || 'bg').trim().toLowerCase();
+      if (mode === 'bg') __tagColorPopupState__.colors.bg = spec;
+      else if (mode === 'border') __tagColorPopupState__.colors.border = spec;
+      else __tagColorPopupState__.colors.fg = spec;
+      __tagColorPopupReadyAt__ = 0;
+      __tagColorPopupSuppressUntil__ = 0;
+      try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+      __tagColorPopupRefreshSelection__();
+      __tagColorPopupEmitPreview__();
+    }catch(_){ }
+  }
+  function __ddae2822ApplyOpacity__(btn){
+    try{
+      if (!btn) return;
+      __tagColorPopupState__.opacity = __designBgOpacityNormalize__(parseFloat(btn.dataset.opacity || '0.80'));
+      __tagColorPopupReadyAt__ = 0;
+      __tagColorPopupSuppressUntil__ = 0;
+      try{ if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){ }
+      __tagColorPopupRefreshSelection__();
+      __tagColorPopupEmitPreview__();
+    }catch(_){ }
+  }
+  function __ddae2822ApplyMode__(btn){
+    try{
+      if (!btn) return;
+      const raw = String(btn.dataset.mode || '').trim().toLowerCase();
+      const mode = raw === 'bg' ? 'bg' : (raw === 'border' ? 'border' : (raw === 'opacity' ? 'opacity' : (raw === 'bold' ? 'bold' : 'fg')));
+      if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
+      if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
+      if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
+      if (mode === 'opacity' && !__tagColorPopupState__.supportsOpacity) return;
+      if (mode === 'bold' && !__tagColorPopupState__.supportsBold) return;
+      __tagColorPopupReadyAt__ = 0;
+      __tagColorPopupSuppressUntil__ = 0;
+      if (mode === 'bold'){
+        __tagColorPopupState__.mode = 'bold';
+        __tagColorPopupState__.bold = !__tagColorPopupState__.bold;
+        __tagColorPopupRefreshSelection__();
+        __tagColorPopupEmitPreview__();
+        try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
+        return;
+      }
+      __tagColorPopupState__.mode = mode;
+      if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) __tagColorPopupLastDualMode__ = mode;
+      __tagColorPopupRefreshSelection__();
+      try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
+    }catch(_){ }
+  }
+  function __ddae2822HandleColorModalInput__(ev){
+    try{
+      if (!__ddae2822ColorModalOpen__()) return;
+      const modal = document.getElementById('tagColorModal');
+      const target = ev && ev.target;
+      if (!modal || !target || !modal.contains(target)) return;
+      const close = target.closest && target.closest('#tagColorModalClose');
+      const ok = target.closest && target.closest('#tagColorModalConfirm');
+      const opt = target.closest && target.closest('#tagColorGrid .tag-color-option');
+      const mode = target.closest && target.closest('#tagColorModeBar .tag-color-mode-btn');
+      const op = target.closest && target.closest('#tagOpacityGrid .tag-opacity-option');
+      const actionable = close || ok || opt || mode || op;
+      if (!actionable) return;
+      __ddae2822Stop__(ev);
+      const key = (close ? 'close' : ok ? 'ok' : opt ? ('c:' + (opt.dataset.spec || '')) : mode ? ('m:' + (mode.dataset.mode || '')) : ('o:' + (op.dataset.opacity || '')));
+      if (__ddae2822Debounce__(key)) return;
+      if (close) return __tagColorPopupClose__();
+      if (ok) return void __tagColorPopupConfirm__();
+      if (mode) return __ddae2822ApplyMode__(mode);
+      if (op) return __ddae2822ApplyOpacity__(op);
+      if (opt) return __ddae2822ApplyColorSpec__(opt);
+    }catch(_){ }
+  }
+  try{
+    if (!window.__ddae2822ColorModalInputBound__){
+      window.__ddae2822ColorModalInputBound__ = true;
+      ['pointerup','touchend','click'].forEach(function(evt){
+        try{ document.addEventListener(evt, __ddae2822HandleColorModalInput__, true); }catch(_){ }
+      });
+    }
+  }catch(_){ }
+  try{
+    const oldOpen = (typeof __tagColorPopupOpen__ === 'function') ? __tagColorPopupOpen__ : null;
+    if (oldOpen && !oldOpen.__ddae2822InstantReady){
+      const wrappedOpen = function(){
+        const out = oldOpen.apply(this, arguments);
+        try{
+          __tagColorPopupReadyAt__ = 0;
+          __tagColorPopupSuppressUntil__ = 0;
+          const modal = document.getElementById('tagColorModal');
+          if (modal){
+            modal.style.setProperty('z-index','99999','important');
+            modal.style.setProperty('pointer-events','auto','important');
+            const card = modal.querySelector('.tag-color-modal-card');
+            if (card) card.style.setProperty('pointer-events','auto','important');
+            modal.querySelectorAll('button').forEach(function(btn){
+              try{ btn.style.setProperty('pointer-events','auto','important'); btn.style.setProperty('touch-action','manipulation','important'); }catch(_){ }
+            });
+          }
+        }catch(_){ }
+        return out;
+      };
+      wrappedOpen.__ddae2822InstantReady = true;
+      __tagColorPopupOpen__ = wrappedOpen;
+    }
+  }catch(_){ }
+  function __ddae2822QId__(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function __ddae2822QNum__(p, idx){
+    try{
+      const raw = String((p && (p.numero_preventivo || p.preventivo_numero || p.quote_number)) || '').trim().toUpperCase();
+      if (raw) return raw;
+      return String((typeof __preventivoNumberText__ === 'function' ? __preventivoNumberText__(p, idx || 0) : '') || '').trim().toUpperCase();
+    }catch(_){ return ''; }
+  }
+  function __ddae2822QGroupId__(p){ try{ return String(p && (p.preventivo_group_id || p.quote_group_id || p.gruppo_preventivo_id || '') || '').trim(); }catch(_){ return ''; } }
+  function __ddae2822QuoteGroupMembers__(src){
+    try{
+      const rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+      const explicit = [];
+      try{ if (Array.isArray(src && src._groupBookings)) explicit.push(...src._groupBookings); }catch(_){ }
+      try{ if (Array.isArray(state && state.guestGroupBookings)) explicit.push(...state.guestGroupBookings); }catch(_){ }
+      const ids = new Set(explicit.map(__ddae2822QId__).filter(Boolean));
+      const gid = __ddae2822QGroupId__(src) || __ddae2822QId__(src);
+      const num = __ddae2822QNum__(src, 0) || String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase();
+      const out = rows.filter(function(x, idx){
+        const xid = __ddae2822QId__(x);
+        const xgid = __ddae2822QGroupId__(x);
+        const xn = __ddae2822QNum__(x, idx);
+        if (xid && ids.has(xid)) return true;
+        if (gid && (xgid === gid || xid === gid)) return true;
+        if (num && xn === num) return true;
+        return false;
+      });
+      return out.length ? out : (src ? [src] : []);
+    }catch(_){ return src ? [src] : []; }
+  }
+  async function __ddae2822DeleteWholeQuote__(src){
+    try{
+      const rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+      const members = __ddae2822QuoteGroupMembers__(src);
+      const ids = new Set(members.map(__ddae2822QId__).filter(Boolean));
+      const nums = new Set(members.map(function(x, i){ return __ddae2822QNum__(x, i); }).filter(Boolean));
+      const gids = new Set(members.map(__ddae2822QGroupId__).filter(Boolean));
+      const srcId = __ddae2822QId__(src); if (srcId) ids.add(srcId);
+      const srcGid = __ddae2822QGroupId__(src); if (srcGid) gids.add(srcGid);
+      const srcNum = __ddae2822QNum__(src, 0) || String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase(); if (srcNum) nums.add(srcNum);
+      const next = rows.filter(function(x, idx){
+        const xid = __ddae2822QId__(x);
+        const xgid = __ddae2822QGroupId__(x);
+        const xn = __ddae2822QNum__(x, idx);
+        if (xid && ids.has(xid)) return false;
+        if (xgid && gids.has(xgid)) return false;
+        if (xid && gids.has(xid)) return false;
+        if (xn && nums.has(xn)) return false;
+        return true;
+      });
+      state.preventivi = (typeof __preventiviSort__ === 'function') ? __preventiviSort__(next) : next;
+      try{ await __setPreventiviRows__(state.preventivi); }catch(_){ }
+      try{ invalidateApiCache('preventivi|'); }catch(_){ }
+      try{ state.guestGroupBookings = null; state.guestQuoteSourceItem = null; state.guestViewItem = null; state.guestEditSourceItem = null; }catch(_){ }
+      try{ toast('Preventivo eliminato'); }catch(_){ }
+      try{ showPage('preventivi'); }catch(_){ }
+      try{ renderPreventiviCards(); }catch(_){ }
+    }catch(_){ }
+  }
+  function __ddae2822IsQuoteMode__(){
+    try{
+      return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo');
+    }catch(_){ return false; }
+  }
+  try{
+    if (!window.__ddae2822QuoteDeleteBound__){
+      window.__ddae2822QuoteDeleteBound__ = true;
+      document.addEventListener('click', function(ev){
+        try{
+          if (!__ddae2822IsQuoteMode__()) return;
+          const btn = ev.target && ev.target.closest ? ev.target.closest('[data-guest-del]') : null;
+          if (!btn) return;
+          __ddae2822Stop__(ev);
+          const src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
+          if (!src) return;
+          if (!confirm('Eliminare definitivamente questo preventivo?')) return;
+          __ddae2822DeleteWholeQuote__(src);
+        }catch(_){ }
+      }, true);
+    }
+  }catch(_){ }
+  function __ddae2822BoldSettingsButtons__(){
+    try{
+      ['#operatoriEditorModal','#channelEditorModal','#laundryCatalogEditorModal'].forEach(function(sel){
+        document.querySelectorAll(sel + ' button, ' + sel + ' button *').forEach(function(el){
+          try{ el.style.setProperty('font-weight','900','important'); }catch(_){ }
+        });
+      });
+    }catch(_){ }
+  }
+  try{ __ddae2822BoldSettingsButtons__(); setInterval(__ddae2822BoldSettingsButtons__, 900); }catch(_){ }
+})();
+
+
+/* dDAE_2.823 — iOS: input reale sul popup colore sopra modali Impostazioni */
+(function(){
+  function modalOpen(){
+    try{
+      var m=document.getElementById('tagColorModal');
+      return !!(m && !m.hidden && m.getAttribute('aria-hidden') !== 'true');
+    }catch(_){ return false; }
+  }
+  function stop(ev){
+    try{ ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function xy(ev){
+    try{
+      var t=(ev.changedTouches && ev.changedTouches[0]) || (ev.touches && ev.touches[0]);
+      if (t) return {x:t.clientX, y:t.clientY};
+      return {x:ev.clientX, y:ev.clientY};
+    }catch(_){ return {x:null,y:null}; }
+  }
+  function byHit(selector, ev){
+    try{
+      var p=xy(ev); if (p.x == null || p.y == null) return null;
+      var nodes=[].slice.call(document.querySelectorAll(selector));
+      for (var i=nodes.length-1;i>=0;i--){
+        var el=nodes[i];
+        if (!el || el.disabled || el.hidden) continue;
+        var cs=getComputedStyle(el);
+        if (cs.display === 'none' || cs.visibility === 'hidden' || cs.pointerEvents === 'none') continue;
+        var r=el.getBoundingClientRect();
+        if (p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom) return el;
+      }
+    }catch(_){ }
+    return null;
+  }
+  function closestOrHit(ev, selector){
+    try{
+      var t=ev && ev.target;
+      var el=t && t.closest ? t.closest(selector) : null;
+      if (el) return el;
+    }catch(_){ }
+    return byHit(selector, ev);
+  }
+  function setMode(btn){
+    try{
+      var raw=String(btn && btn.dataset && btn.dataset.mode || '').trim().toLowerCase();
+      var mode = raw === 'bg' ? 'bg' : (raw === 'border' ? 'border' : (raw === 'opacity' ? 'opacity' : (raw === 'bold' ? 'bold' : 'fg')));
+      if (mode === 'bg' && !__tagColorPopupState__.supportsBg) return;
+      if (mode === 'border' && !__tagColorPopupState__.supportsBorder) return;
+      if (mode === 'fg' && !__tagColorPopupState__.supportsFg) return;
+      if (mode === 'opacity' && !__tagColorPopupState__.supportsOpacity) return;
+      if (mode === 'bold' && !__tagColorPopupState__.supportsBold) return;
+      __tagColorPopupReadyAt__=0; __tagColorPopupSuppressUntil__=0;
+      if (mode === 'bold'){
+        __tagColorPopupState__.mode='bold';
+        __tagColorPopupState__.bold=!__tagColorPopupState__.bold;
+        __tagColorPopupRefreshSelection__();
+        __tagColorPopupEmitPreview__();
+        try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
+        return;
+      }
+      __tagColorPopupState__.mode=mode;
+      if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) __tagColorPopupLastDualMode__=mode;
+      __tagColorPopupRefreshSelection__();
+      try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ }
+    }catch(_){ }
+  }
+  function setColor(btn){
+    try{
+      var spec=__parseOperatoreColorSpec__((btn && btn.dataset && btn.dataset.spec) || 'blue-3').spec;
+      var mode=String(__tagColorPopupState__.mode || 'bg').trim().toLowerCase();
+      __tagColorPopupReadyAt__=0; __tagColorPopupSuppressUntil__=0;
+      if (mode === 'bg') __tagColorPopupState__.colors.bg=spec;
+      else if (mode === 'border') __tagColorPopupState__.colors.border=spec;
+      else __tagColorPopupState__.colors.fg=spec;
+      __tagColorPopupRefreshSelection__();
+      __tagColorPopupEmitPreview__();
+    }catch(_){ }
+  }
+  function setOpacity(btn){
+    try{
+      __tagColorPopupReadyAt__=0; __tagColorPopupSuppressUntil__=0;
+      __tagColorPopupState__.opacity=__designBgOpacityNormalize__(parseFloat((btn && btn.dataset && btn.dataset.opacity) || '0.80'));
+      __tagColorPopupRefreshSelection__();
+      __tagColorPopupEmitPreview__();
+    }catch(_){ }
+  }
+  var last={t:0,k:''};
+  function debounce(k){
+    try{ var n=Date.now(); if (last.k===k && n-last.t<180) return true; last={t:n,k:k}; }catch(_){ }
+    return false;
+  }
+  function normalizeLayer(){
+    try{
+      var modal=document.getElementById('tagColorModal'); if (!modal) return;
+      if (modal.parentNode !== document.body) document.body.appendChild(modal);
+      modal.style.setProperty('z-index','2147483647','important');
+      modal.style.setProperty('pointer-events','auto','important');
+      modal.style.setProperty('touch-action','auto','important');
+      var card=modal.querySelector('.tag-color-modal-card');
+      if (card){
+        card.style.setProperty('pointer-events','auto','important');
+        card.style.setProperty('touch-action','auto','important');
+        card.style.setProperty('-webkit-transform','translateZ(0)','important');
+        card.style.setProperty('transform','translateZ(0)','important');
+      }
+      modal.querySelectorAll('button,.tag-color-option,.tag-opacity-option,.tag-color-mode-btn').forEach(function(el){
+        try{
+          el.style.setProperty('pointer-events','auto','important');
+          el.style.setProperty('touch-action','auto','important');
+          el.style.setProperty('-webkit-user-select','none','important');
+          el.style.setProperty('user-select','none','important');
+        }catch(_){ }
+      });
+      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+        try{ var e=document.getElementById(id); if (e && !e.hidden) e.style.setProperty('pointer-events','none','important'); }catch(_){ }
+      });
+    }catch(_){ }
+  }
+  function clearLayer(){
+    try{
+      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+        try{ var e=document.getElementById(id); if (e) e.style.removeProperty('pointer-events'); }catch(_){ }
+      });
+    }catch(_){ }
+  }
+  function handle(ev){
+    try{
+      if (!modalOpen()) return;
+      normalizeLayer();
+      var close=closestOrHit(ev, '#tagColorModalClose');
+      var ok=closestOrHit(ev, '#tagColorModalConfirm');
+      var mode=closestOrHit(ev, '#tagColorModeBar .tag-color-mode-btn');
+      var op=closestOrHit(ev, '#tagOpacityGrid .tag-opacity-option');
+      var opt=closestOrHit(ev, '#tagColorGrid .tag-color-option');
+      var action=close||ok||mode||op||opt;
+      if (!action) return;
+      stop(ev);
+      var key=close?'close':ok?'ok':mode?('m:'+mode.dataset.mode):op?('o:'+op.dataset.opacity):('c:'+opt.dataset.spec);
+      if (debounce(key)) return;
+      if (close){ clearLayer(); return __tagColorPopupClose__(); }
+      if (ok){ clearLayer(); return void __tagColorPopupConfirm__(); }
+      if (mode) return setMode(mode);
+      if (op) return setOpacity(op);
+      if (opt) return setColor(opt);
+    }catch(_){ }
+  }
+  function bind(){
+    try{
+      if (window.__ddae2823ColorFallbackBound__) return;
+      window.__ddae2823ColorFallbackBound__=true;
+      ['touchstart','touchend','pointerdown','pointerup','mousedown','mouseup','click'].forEach(function(evt){
+        try{ document.addEventListener(evt, handle, true); }catch(_){ }
+      });
+    }catch(_){ }
+  }
+  try{
+    var oldOpen=(typeof __tagColorPopupOpen__ === 'function') ? __tagColorPopupOpen__ : null;
+    if (oldOpen && !oldOpen.__ddae2823LayerFix){
+      var wrapped=function(){
+        var out=oldOpen.apply(this, arguments);
+        try{ __tagColorPopupReadyAt__=0; __tagColorPopupSuppressUntil__=0; normalizeLayer(); setTimeout(normalizeLayer,0); setTimeout(normalizeLayer,160); }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2823LayerFix=true;
+      __tagColorPopupOpen__=wrapped;
+    }
+  }catch(_){ }
+  try{
+    var oldClose=(typeof __tagColorPopupClose__ === 'function') ? __tagColorPopupClose__ : null;
+    if (oldClose && !oldClose.__ddae2823LayerFix){
+      var c=function(){ var out=oldClose.apply(this, arguments); try{ clearLayer(); }catch(_){ } return out; };
+      c.__ddae2823LayerFix=true;
+      __tagColorPopupClose__=c;
+    }
+  }catch(_){ }
+  bind();
+})();
+
+/* dDAE_2.824 — Ripristino schede Ospiti reali: isolamento definitivo Preventivi */
+(function(){
+  function __ddae2824IsQuoteObj__(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
+      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
+    }catch(_){ return false; }
+  }
+  function __ddae2824ShowNormalGuestFields__(){
+    try{
+      document.body.classList.remove('quote-mode');
+      const page = document.getElementById('page-ospite');
+      if (page && page.classList){
+        page.classList.remove('is-preventivo');
+        page.classList.remove('preventivo-non-confermato');
+      }
+      const ids = [
+        'guestBookingNumberField','guestDateRangeField','guestContactRow','guestSexCountRow','guestPeopleRow','guestDatesRow','roomsPicker','roomsReadOnly','mgcRow','guestMulti',
+        'guestNotesWrap','guestChannelRow','guestChannelCommissionWrap','servicesRow','depositRow','saldoRow','discountRow','remainingRow','servicesListWrap','guestTaxTotal'
+      ];
+      ids.forEach(function(id){
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === 'guestDatesRow') return; // resta gestito dal trigger date esistente
+        if (id === 'guestNotesWrap' || id === 'servicesListWrap') return; // apertura gestita dai rispettivi tasti
+        if (id === 'guestChannelCommissionWrap') return; // wrapper tecnico nascosto, non visuale
+        el.style.removeProperty('display');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('pointer-events');
+        if (id === 'guestSexCountRow') return; // visibile solo quando previsto dal genere
+        if (id === 'roomsReadOnly') return;    // visibile solo in sola lettura
+        if (id === 'guestTaxTotal') return;    // visibile secondo tassa soggiorno/mode
+        el.removeAttribute('data-quote-hidden');
+        if (el.hidden && !['guestMulti'].includes(id)) { try{ el.hidden = false; el.removeAttribute('hidden'); }catch(_){} }
+      });
+      const channelRow = document.getElementById('guestChannelRow');
+      if (channelRow){ channelRow.hidden = false; channelRow.removeAttribute('hidden'); }
+      const bookingInput = document.getElementById('guestBooking');
+      const bookingSub = bookingInput && (bookingInput.closest('.subfield') || bookingInput.closest('.field'));
+      if (bookingSub){ bookingSub.hidden = false; bookingSub.removeAttribute('hidden'); bookingSub.style.removeProperty('display'); }
+      const channelSub = document.getElementById('guestChannel') && (document.getElementById('guestChannel').closest('.subfield') || document.getElementById('guestChannel').closest('.field'));
+      if (channelSub){ channelSub.hidden = false; channelSub.removeAttribute('hidden'); channelSub.style.removeProperty('display'); }
+      try{ populateGuestChannelOptions(document.getElementById('guestChannel')?.value || ''); }catch(_){ }
+      try{ updateGuestFormModeClass(); }catch(_){ }
+      try{ updateOspiteHdActions(); }catch(_){ }
+    }catch(_){ }
+  }
+  function __ddae2824ClearQuoteContextForGuest__(item){
+    try{
+      if (__ddae2824IsQuoteObj__(item)) return false;
+      if (!state) return true;
+      state.guestIsQuote = false;
+      state.guestQuoteConfirmed = false;
+      state.guestQuoteSourceItem = null;
+      state.guestCreateFromQuoteGroup = false;
+      state.guestQuoteGroupNumber = '';
+      __ddae2824ShowNormalGuestFields__();
+      return true;
+    }catch(_){ return true; }
+  }
+  try{
+    const oldCreate = (typeof enterGuestCreateMode === 'function') ? enterGuestCreateMode : null;
+    if (oldCreate && !oldCreate.__ddae2824GuestRestore){
+      const wrapped = function(){
+        try{ __ddae2824ClearQuoteContextForGuest__(null); }catch(_){ }
+        const out = oldCreate.apply(this, arguments);
+        try{ __ddae2824ClearQuoteContextForGuest__(null); }
+        catch(_){ }
+        try{ const title=document.getElementById('ospiteFormTitle'); if(title) title.textContent='Nuovo ospite'; const btn=document.getElementById('createGuestCard'); if(btn) btn.textContent='Crea ospite'; }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2824GuestRestore = true;
+      enterGuestCreateMode = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldEdit = (typeof enterGuestEditMode === 'function') ? enterGuestEditMode : null;
+    if (oldEdit && !oldEdit.__ddae2824GuestRestore){
+      const wrapped = function(item){
+        const isQuote = __ddae2824IsQuoteObj__(item);
+        if (!isQuote) __ddae2824ClearQuoteContextForGuest__(item);
+        const out = oldEdit.apply(this, arguments);
+        if (!isQuote){
+          try{ __ddae2824ClearQuoteContextForGuest__(item); }catch(_){ }
+          try{ const title=document.getElementById('ospiteFormTitle'); if(title) title.textContent='Modifica ospite'; const btn=document.getElementById('createGuestCard'); if(btn) btn.textContent='Salva modifiche'; }catch(_){ }
+          try{ updateGuestPriceVisibility(); }catch(_){ }
+        }
+        return out;
+      };
+      wrapped.__ddae2824GuestRestore = true;
+      enterGuestEditMode = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldView = (typeof enterGuestViewMode === 'function') ? enterGuestViewMode : null;
+    if (oldView && !oldView.__ddae2824GuestRestore){
+      const wrapped = function(item){
+        const isQuote = __ddae2824IsQuoteObj__(item);
+        if (!isQuote) __ddae2824ClearQuoteContextForGuest__(item);
+        const out = oldView.apply(this, arguments);
+        if (!isQuote){
+          try{ __ddae2824ClearQuoteContextForGuest__(item); }catch(_){ }
+          try{ const title=document.getElementById('ospiteFormTitle'); if(title) title.textContent='Scheda ospite'; }catch(_){ }
+          try{ setGuestFormViewOnly(true, item); }catch(_){ }
+          try{ renderRoomsReadOnly(item); }catch(_){ }
+          try{ updateOspiteHdActions(); }catch(_){ }
+        }
+        return out;
+      };
+      wrapped.__ddae2824GuestRestore = true;
+      enterGuestViewMode = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldShow = (typeof showPage === 'function') ? showPage : null;
+    if (oldShow && !oldShow.__ddae2824GuestRestore){
+      const wrappedShow = function(page){
+        if (String(page || '').toLowerCase() === 'ospiti'){
+          try{ __ddae2824ClearQuoteContextForGuest__(null); }catch(_){ }
+        }
+        return oldShow.apply(this, arguments);
+      };
+      wrappedShow.__ddae2824GuestRestore = true;
+      showPage = wrappedShow;
+    }
+  }catch(_){ }
+  function boot(){
+    try{
+      if (state && state.page === 'ospite' && !__ddae2824IsQuoteObj__(state.guestViewItem || state.guestEditSourceItem)){
+        __ddae2824ClearQuoteContextForGuest__(state.guestViewItem || state.guestEditSourceItem || null);
+      }
+    }catch(_){ }
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
 })();
