@@ -22285,3 +22285,52 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
     max-height: none !important;
   }
 }
+
+/* dDAE_2.804 — Preventivi: archivio parallelo e UI azzurra */
+.preventivi-home-glyph{
+  font-weight:800;
+  font-size:clamp(24px, 6vw, 34px);
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+body[data-page="preventivi"] #periodChip,
+body[data-page="ospite"].quote-mode #periodChip{ display:none !important; }
+#page-preventivi .guest-cards-card,
+#page-ospite.is-preventivo .guest-form-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+#page-preventivi .page-title,
+#page-ospite.is-preventivo #ospiteFormTitle{ color:#12618f !important; }
+.preventivo-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+.preventivo-insno{
+  background:#36a9e1 !important;
+  color:#fff !important;
+  border-color:#36a9e1 !important;
+  font-weight:800 !important;
+}
+.preventivo-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:84px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid rgba(18,97,143,.28);
+  background:rgba(54,169,225,.18);
+  color:#12618f;
+  font-size:12px;
+  font-weight:800;
+}
+#page-ospite.is-preventivo.preventivo-non-confermato .quote-hide-before-confirm{ display:none !important; }
+#page-ospite.is-preventivo.preventivo-non-confermato .payment-row,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow,
+#page-ospite.is-preventivo.preventivo-non-confermato #servicesListWrap{ display:none !important; }
+.tl-btn .tl-text{font-weight:800;font-size:12px;line-height:1;}

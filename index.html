@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.803" rel="stylesheet"/>
-<link href="./manifest.json?v=2.803" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.803" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.803" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.803" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.803" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.803" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.803" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.804" rel="stylesheet"/>
+<link href="./manifest.json?v=2.804" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.804" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.804" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.804" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.804" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.804" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.804" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.803";
+window.APP_VERSION = "2.804";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.803";
+  const LOCAL_BUILD = "dDAE_2.804";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.803";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.803")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.803")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.804")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.804")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.803";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.803"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.804"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -294,7 +294,7 @@ window.APP_VERSION = "2.803";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.803"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.804"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -410,6 +410,10 @@ window.APP_VERSION = "2.803";
 </svg></div>
 <div class="home-main-label">Ospiti</div>
 </button>
+<button aria-label="Preventivi" class="home-main" id="goPreventivi" type="button">
+<div aria-hidden="true" class="home-main-glyph alt preventivi-home-glyph">P</div>
+<div class="home-main-label">Preventivi</div>
+</button>
 <button aria-label="Calendario" class="home-main" data-go="calendario" id="goCalendario" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 3v3"></path>
@@ -502,7 +506,7 @@ window.APP_VERSION = "2.803";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.803</div></div></section>
+<div class="build" id="buildText">dDAE_2.804</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1360,6 +1364,7 @@ window.APP_VERSION = "2.803";
 <button aria-label="Crea report ospite" class="tl-btn tl-cyan" data-guest-report="" title="Report ospite" type="button">
 <svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 11h6"></path><path d="M9 15h6"></path><path d="M9 19h4"></path></svg><span class="sr-only">Report</span>
 </button>
+<button aria-label="Conferma preventivo" class="tl-btn tl-cyan" data-quote-confirm="" hidden="" type="button"><span class="tl-text">OK</span><span class="sr-only">Conferma preventivo</span></button>
 <button aria-label="Modifica ospite" class="tl-btn tl-yellow" data-guest-edit="" type="button"><svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg><span class="sr-only">Modifica</span></button>
 <button aria-label="Elimina ospite" class="tl-btn tl-red" data-guest-del="" type="button"><svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg><span class="sr-only">Elimina</span></button>
 </div>
@@ -1574,6 +1579,9 @@ window.APP_VERSION = "2.803";
 </div>
 </div>
 <div class="guest-cards" id="guestCards"></div></div></div></div></div></section>
+<section aria-label="Preventivi" class="page" hidden="" id="page-preventivi"><div class="content"><div class="ospite-wrap preventivi-wrap"><div class="card guest-cards-card preventivi-cards-card"><div class="hd"><h2 class="page-title">Preventivi</h2><div class="hd-actions" id="preventiviTopTools"><button aria-label="Nuovo preventivo" class="icon-btn icon-btn-whiteblue" id="btnNewPreventivoTop" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+</button></div></div><div class="bd"><div class="guest-cards" id="preventiviCards"></div></div></div></div></div></section>
 <!-- CALENDARIO -->
 <section aria-label="Calendario" class="page" hidden="" id="page-calendario">
 <div class="content calendar-page">
@@ -2742,7 +2750,7 @@ window.APP_VERSION = "2.803";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.803"></script>
-<script defer="" src="./app.js?v=2.803"></script>
+<script defer="" src="./config.js?v=2.804"></script>
+<script defer="" src="./app.js?v=2.804"></script>
 </body>
 </html>
