@@ -22748,7 +22748,7 @@ body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view 
   display:block !important;
 }
 
-/* dDAE_2.826 — Ospiti reali: Importo commissione e Channel dimensionati come le altre righe */
+/* dDAE_2.827 — Ospiti reali: Importo commissione e Channel dimensionati come le altre righe */
 body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow,
 body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
@@ -22787,7 +22787,7 @@ body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view 
 }
 
 
-/* dDAE_2.826 — Ospiti: centra realmente il tasto data corrente rispetto alla pagina */
+/* dDAE_2.827 — Ospiti: centra realmente il tasto data corrente rispetto alla pagina */
 #page-ospiti .guest-cards-card > .hd{
   position: relative !important;
 }
@@ -22802,4 +22802,25 @@ body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view 
 }
 #page-ospiti .guest-cards-card > .hd > .hd-actions{
   margin-left: auto !important;
+}
+
+/* dDAE_2.827 — Nuovo ospite: elimina sezioni servizi/pagamenti solo in creazione */
+#page-ospite .guest-form-card.is-create #servicesRow,
+#page-ospite .guest-form-card.is-create #depositRow,
+#page-ospite .guest-form-card.is-create #saldoRow,
+#page-ospite .guest-form-card.is-create #discountRow,
+#page-ospite .guest-form-card.is-create #remainingRow,
+#page-ospite .guest-form-card.is-create #servicesListWrap,
+#page-ospite .guest-form-card.is-create .ddae-create-hidden{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+#page-ospite .guest-form-card.is-create #createGuestCard{
+  margin-top:18px !important;
 }

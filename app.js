@@ -23280,35 +23280,40 @@ function recalcGuestCommission(){
 
 function updateGuestPriceVisibility(){
   try{
-    const hide = (String(state.guestMode || '').toLowerCase() === 'create' && !!state.guestCreateFromGroup);
+    const mode = String(state.guestMode || '').toLowerCase();
+    const isCreate = (mode === 'create');
+    const isCreateFromGroup = !!state.guestCreateFromGroup;
 
-    // Campi prezzi: nascondi l'intera riga/campo
-    ['guestTotal','guestBooking','guestDeposit','guestSaldo','guestDiscount'].forEach((id) => {
+    // dDAE_2.827 — nella sola scheda di creazione nuovo ospite
+    // non devono comparire sezioni servizi/pagamenti extra.
+    const createOnlyRows = ['servicesRow','depositRow','saldoRow','discountRow','remainingRow','servicesListWrap'];
+    createOnlyRows.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
-      const field = el.closest('.field');
-      if (field) field.hidden = hide;
-    });
-
-    // Rimanenza/Sconto: in create-from-group nascondi le righe dedicate
-    ['guestDiscount','guestRemaining'].forEach((fieldId) => {
-      const fieldEl = document.getElementById(fieldId);
-      if (!fieldEl) return;
-      const row = fieldEl.closest('.field.two-col.payment-row');
-      if (row) row.hidden = hide;
-      else {
-        const sub = fieldEl.closest('.subfield');
-        if (sub) sub.hidden = hide;
+      el.hidden = !!isCreate;
+      el.classList.toggle('ddae-create-hidden', !!isCreate);
+      if (isCreate){
+        el.setAttribute('aria-hidden', 'true');
+      } else {
+        el.removeAttribute('aria-hidden');
       }
     });
 
-    // Multi prenotazioni: quando si crea un nuovo gruppo dentro una prenotazione esistente,
-    // non mostrare le pillole (Acconto/Saldo/Registrazioni).
+    // In create da gruppo esistente restano nascosti anche totale/commissione
+    // come da comportamento precedente, senza impattare creazione normale.
+    const hideGroupPrice = (isCreate && isCreateFromGroup);
+    ['guestTotal','guestBooking'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const field = el.closest('.field');
+      if (field) field.hidden = hideGroupPrice;
+    });
+
     ['depositType','saldoType','regTags'].forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       const row = el.closest('.field.two-col.payment-row');
-      if (row) row.hidden = hide;
+      if (row) row.hidden = !!isCreate;
     });
   }catch(_){ }
 }
