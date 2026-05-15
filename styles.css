@@ -22747,3 +22747,41 @@ body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit 
 body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
   display:block !important;
 }
+
+/* dDAE_2.825 — Ospiti reali: Importo commissione e Channel dimensionati come le altre righe */
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:first-child,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:first-child{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  justify-self:stretch !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannel,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
