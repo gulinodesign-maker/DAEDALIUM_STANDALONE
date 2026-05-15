@@ -22568,3 +22568,35 @@ body.quote-mode #page-ospite #guestBookingNumberField,
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+
+/* dDAE_2.812 — Preventivi: nessun Channel/commissione nel form nuovo/modifica preventivo anche se riposizionato */
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannel,
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannel + label,
+body.quote-mode #page-ospite #guestCreatePrimaryStack label[for="guestChannel"],
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannelCreateAnchor,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow *,
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestBooking,
+body.quote-mode #page-ospite #guestBooking + label,
+#page-ospite.is-preventivo #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-preventivo #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite.is-preventivo #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelRow *,
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestBooking,
+#page-ospite.is-preventivo #guestBooking + label{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestChannel),
+body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestBooking),
+#page-ospite.is-preventivo #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-preventivo #guestCreatePrimaryStack .subfield:has(#guestBooking){
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
