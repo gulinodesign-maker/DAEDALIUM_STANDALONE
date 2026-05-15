@@ -22286,7 +22286,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   }
 }
 
-/* dDAE_2.804 — Preventivi: archivio parallelo e UI azzurra */
+/* dDAE_2.805 — Preventivi: archivio parallelo e UI azzurra */
 .preventivi-home-glyph{
   font-weight:800;
   font-size:clamp(24px, 6vw, 34px);
@@ -22334,3 +22334,37 @@ body[data-page="ospite"].quote-mode #periodChip{ display:none !important; }
 #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow,
 #page-ospite.is-preventivo.preventivo-non-confermato #servicesListWrap{ display:none !important; }
 .tl-btn .tl-text{font-weight:800;font-size:12px;line-height:1;}
+
+
+/* dDAE_2.805 — Preventivi: pagina clonata da Ospiti + occupazione gialla */
+#page-preventivi .guest-cards-card{
+  background: var(--glass) !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+}
+#page-preventivi .page-title{ color: inherit !important; }
+#page-preventivi .preventivi-filter-grid{ margin-bottom: 10px; }
+#page-preventivi .guest-card.preventivo-card{
+  background: var(--glass) !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+}
+#page-ospite.is-preventivo .guest-form-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+#page-ospite.is-preventivo .room-dot.occupied,
+body.quote-mode #page-ospite .room-dot.occupied{
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+#page-ospite.is-preventivo .room-dot[disabled].occupied,
+body.quote-mode #page-ospite .room-dot[disabled].occupied{
+  opacity:1 !important;
+  filter:none !important;
+}
