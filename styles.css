@@ -22489,7 +22489,7 @@ body.quote-mode #page-ospite .room-dot.occupied:not(.occupied-real){
   filter:none !important;
 }
 
-/* dDAE_2.808 — Preventivi: card e strumenti clonati graficamente da Ospiti */
+/* dDAE_2.809 — Preventivi: card e strumenti clonati graficamente da Ospiti */
 #page-preventivi .guest-card{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
 #page-preventivi .guest-card:active{ transform:scale(0.995); }
 #page-preventivi .guest-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -22518,3 +22518,41 @@ body.quote-mode #page-ospite .room-dot.occupied:not(.occupied-real){
 body.ddae-dark #page-preventivi .guest-nationality-dot{ border-color:rgba(88,183,244,0.48) !important; background:rgba(15,23,42,0.92) !important; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04) !important; }
 body.ddae-dark #page-preventivi .guest-nationality-flag{ filter:saturate(.92) brightness(.94); }
 body.ddae-dark #page-preventivi .guest-name-tab{ background:rgba(15,23,42,0.42); border-color:rgba(226,232,240,0.12); }
+
+/* dDAE_2.809 — Preventivi: righe economiche eliminate e priorità rosso reale */
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #servicesRow,
+#page-ospite.is-preventivo #depositRow,
+#page-ospite.is-preventivo #saldoRow,
+#page-ospite.is-preventivo #discountRow,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #servicesRow,
+body.quote-mode #page-ospite #depositRow,
+body.quote-mode #page-ospite #saldoRow,
+body.quote-mode #page-ospite #discountRow{ display:none !important; }
+#page-ospite .room-dot.occupied-real,
+#page-ospite .room-dot.occupied.occupied-real,
+#page-ospite.is-preventivo .room-dot.occupied-real,
+#page-ospite.is-preventivo .room-dot.occupied.occupied-real,
+body.quote-mode #page-ospite .room-dot.occupied-real,
+body.quote-mode #page-ospite .room-dot.occupied.occupied-real{
+  background:#ff0000 !important;
+  background-image:none !important;
+  border-color:#b40000 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+#page-ospite .room-dot.occupied-quote:not(.occupied-real),
+#page-ospite .room-dot.occupied.occupied-quote:not(.occupied-real),
+#page-ospite.is-preventivo .room-dot.occupied-quote:not(.occupied-real),
+body.quote-mode #page-ospite .room-dot.occupied-quote:not(.occupied-real){
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
