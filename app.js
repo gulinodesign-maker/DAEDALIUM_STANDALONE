@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.803";
+const BUILD_VERSION = "2.813";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -176,6 +176,7 @@ const __ALL_TABLES__ = [
   "utenti",
   "impostazioni",
   "ospiti",
+  "preventivi",
   "stanze",
   "servizi",
   "spese",
@@ -197,6 +198,7 @@ const __OP_TABLES__ = [
   "utenti",
   "impostazioni",
   "ospiti",
+  "preventivi",
   "stanze",
   "servizi",
   "pulizie",
@@ -12082,7 +12084,7 @@ async function __tagColorPopupConfirm__(){
 }
 
 
-/* dDAE_2.803 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
+/* dDAE_2.813 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
 let __settingsEditorColorPopupSuppressUntil__ = 0;
 let __settingsEditorModalOpenedAt__ = 0;
 function __suppressSettingsEditorColorPopups__(ms){
@@ -14646,6 +14648,7 @@ function bindHomeStrongTap(){
 
   go("goOspite", "ospiti");
   go("goOspiti", "ospiti");
+  go("goPreventivi", "preventivi");
   go("goCalendario", "calendario");
   go("goTassaSoggiorno", "tassa");
   go("goPulizie", "pulizie");
@@ -15154,7 +15157,7 @@ state.page = page;
   // Sync footer: nascosto SOLO in Calendario (admin + operatore)
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || String(page || "").startsWith("stat");
+    const hideSync = (page === "calendario") || (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || (page === "preventivi") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -15208,7 +15211,7 @@ state.page = page;
   // Period chip: nascosto in HOME (per rispettare "nessun altro testo" sulla home)
   const chip = $("#periodChip");
   if (chip){
-    if (page === "home" || page === "ospite" || page === "ospiti") {
+    if (page === "home" || page === "ospite" || page === "ospiti" || page === "preventivi") {
       chip.hidden = true;
     } else {
       chip.hidden = false;
@@ -15425,9 +15428,13 @@ state.page = page;
   if (page === "ospiti") {
     // Difesa anti-stato sporco: quando torno alla lista, la scheda ospite NON deve restare in "view"
     // (layout diverso) o con valori vecchi.
-    try { enterGuestCreateMode(); } catch (_) {}
+    try { state.guestIsQuote = false; enterGuestCreateMode(); } catch (_) {}
     loadOspiti(state.period || {}).catch(e => toast(e.message));
     try{ if (prevPage === "ospite" && state.guestListScrollRestorePending) __scheduleGuestListScrollRestore__(); }catch(_){ }
+  }
+  if (page === "preventivi") {
+    try { state.guestIsQuote = false; enterGuestCreateMode(); } catch (_) {}
+    try { loadPreventivi({ force:false }); } catch(e){ try{ toast(e.message || "Errore preventivi"); }catch(_){} }
   }
   if (page === "lavanderia") loadLavanderia().catch(e => toast(e.message));
 
@@ -15685,14 +15692,14 @@ function setupHome(){
 // OSPITI: pulsante + (nuovo ospite)
 const btnNewGuestOspiti = $("#btnNewGuestOspiti");
 if (btnNewGuestOspiti){
-  btnNewGuestOspiti.addEventListener("click", () => { enterGuestCreateMode(); showPage("ospite"); });
+  btnNewGuestOspiti.addEventListener("click", () => { state.guestIsQuote = false; enterGuestCreateMode(); showPage("ospite"); });
 }
 
 
 // OSPITI: topbar — nuovo ospite + calendario
 const btnNewGuestTop = $("#btnNewGuestTop");
 if (btnNewGuestTop){
-  btnNewGuestTop.addEventListener("click", () => { enterGuestCreateMode(); showPage("ospite"); });
+  btnNewGuestTop.addEventListener("click", () => { state.guestIsQuote = false; enterGuestCreateMode(); showPage("ospite"); });
 }
 const guestScrollTodayBtn = document.getElementById("guestScrollTodayBtn");
 if (guestScrollTodayBtn){
@@ -23366,6 +23373,7 @@ function enterGuestCreateMode(){
   try{ syncGuestNotesUI(null, { open:false }); }catch(_){}
 
   // (Create mode) nulla da fare sulle stanze: la disponibilita' si aggiorna quando l'utente inserisce le date.
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
 }
 
 function enterGuestEditMode(ospite){
@@ -25791,7 +25799,9 @@ function syncGuestCreatePrimaryStack(){
 
     if (isCreate){
       stack.hidden = false;
-      const orderedEls = defs.map((def) => def.el).filter(Boolean);
+      const orderedEls = defs.map((def) => def.el).filter(Boolean).filter((el) => {
+        try{ return !(state && state.guestIsQuote && el && el.contains && el.contains(document.getElementById('guestChannel'))); }catch(_){ return true; }
+      });
       orderedEls.forEach((el) => {
         try{ stack.appendChild(el); }catch(_){ }
       });
@@ -26470,6 +26480,7 @@ function setGuestFormViewOnly(isView, ospite){
   }catch(_){ }
 // Aggiorna i pallini in testata in base alla modalità corrente
   try { updateOspiteHdActions(); } catch (_) {}
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
 }
 
 function enterGuestViewMode(ospite){
@@ -26505,7 +26516,7 @@ function enterGuestViewMode(ospite){
   }catch(_){ }
 
 const title = document.getElementById("ospiteFormTitle");
-  if (title) title.textContent = "Scheda ospite";
+  if (title) title.textContent = (state && state.guestIsQuote) ? "Scheda preventivo" : "Scheda ospite";
 
   setGuestFormViewOnly(true, ospite);
   // Multi prenotazioni: mostra prenotazioni aggiuntive sotto la prima
@@ -26518,6 +26529,7 @@ const title = document.getElementById("ospiteFormTitle");
     }
   }catch(_){ }
   try { updateOspiteHdActions(); } catch (_) {}
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -27057,6 +27069,7 @@ function initServiziUI(){
 
 
 async function saveGuest(opts = {}){
+  try{ if (state && state.guestIsQuote && typeof savePreventivo === "function") return await savePreventivo(opts || {}); }catch(_){ }
   try{ __syncGuestNationalityFromPhone__(true); }catch(_){ }
   const name = (document.getElementById("guestName")?.value || "").trim();
   const telefono = (document.getElementById("guestPhone")?.value || "").trim();
@@ -27877,7 +27890,7 @@ function setupOspite(){
       return;
     }
 
-    const key = `${range.ci}|${range.co}|${editId}`;
+    const key = `${range.ci}|${range.co}|${editId}|${state && state.guestIsQuote ? 'quote' : 'guest'}|${(Array.isArray(state.preventivi)?state.preventivi.length:0)}`;
     if (state._roomsAvailKey === key && state.occupiedRooms instanceof Set) {
       renderRooms();
       return;
@@ -27894,6 +27907,12 @@ function setupOspite(){
     }
 
     let occ = __calendarOccupiedRoomsForRange__(rows, range, editId);
+    let quoteOcc = new Set();
+    try{
+      const qRows = Array.isArray(state.preventivi) ? state.preventivi.slice() : (await cachedGet("preventivi", {}, { showLoader:false, ttlMs:0, swrMs:0, force:true }) || []);
+      const qEditId = (state && state.guestIsQuote) ? editId : "";
+      quoteOcc = __calendarOccupiedRoomsForRange__(Array.isArray(qRows) ? qRows.filter(q => !__preventivoIsConfirmed__(q)) : [], range, qEditId) || new Set();
+    }catch(_){ quoteOcc = new Set(); }
 
     // Fallback protettivo: se il recupero a finestra non restituisce righe utili,
     // prova la lista ospiti completa senza usare cache vecchie, cosi i pallini rossi
@@ -27911,6 +27930,12 @@ function setupOspite(){
     }
 
     state.occupiedRooms = occ;
+    state.occupiedRoomsReal = occ;
+    state.occupiedRoomsQuote = quoteOcc;
+    try{
+      const mergedOcc = new Set([...(occ || new Set()), ...(quoteOcc || new Set())]);
+      state.occupiedRooms = mergedOcc;
+    }catch(_){ }
 
     // Se l'utente aveva selezionato stanze che ora risultano occupate, le togliamo
     let removed = false;
@@ -27935,6 +27960,8 @@ function setupOspite(){
     const range = _getGuestDateRange();
     const locked = !range;
     const occSet = (state.occupiedRooms instanceof Set) ? state.occupiedRooms : new Set();
+    const occRealSet = (state.occupiedRoomsReal instanceof Set) ? state.occupiedRoomsReal : new Set();
+    const occQuoteSet = (state.occupiedRoomsQuote instanceof Set) ? state.occupiedRoomsQuote : new Set();
 
     roomsWrap?.querySelectorAll(".room-dot").forEach(btn => {
       // Il pallino "M" non è una stanza numerata
@@ -27943,11 +27970,15 @@ function setupOspite(){
       const n = parseInt(btn.getAttribute("data-room"), 10);
       const on = state.guestRooms.has(n);
       const occ = !locked && occSet.has(n);
+      const occReal = !locked && occRealSet.has(n);
+      const occQuote = !locked && occQuoteSet.has(n);
 
       btn.classList.toggle("selected", on);
       btn.classList.toggle("occupied", occ);
+      btn.classList.toggle("occupied-real", occReal);
+      btn.classList.toggle("occupied-quote", occQuote && !occReal);
 
-      const dis = locked || occ;
+      const dis = locked || occReal;
       btn.disabled = !!dis;
       btn.setAttribute("aria-disabled", dis ? "true" : "false");
       btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -28047,7 +28078,7 @@ function setupOspite(){
       try{ toast('Seleziona prima check-in e check-out'); }catch(_){ }
       return false;
     }
-    if (b.classList.contains('occupied') || b.disabled){
+    if (b.classList.contains('occupied-real') || b.disabled){
       try{ toast('Stanza occupata'); }catch(_){ }
       return false;
     }
@@ -36657,4 +36688,1655 @@ function syncGuestPhoneWhatsAppLink(isView){
   else setTimeout(setup, 0);
   try{ window.addEventListener('pageshow', setup, { passive:true }); }catch(_){ }
   try{ setInterval(updateBodyState, 500); }catch(_){ }
+})();
+
+/* dDAE_2.813 — PREVENTIVI: archivio parallelo locale/backup, UI identica agli ospiti */
+const __PREVENTIVI_CACHE_KEY_PREFIX__ = 'preventivi';
+
+function __preventivoIdOf__(p){
+  try{ return String(p?.id ?? p?.preventivo_id ?? p?.quote_id ?? '').trim(); }catch(_){ return ''; }
+}
+function __preventivoIsConfirmed__(p){
+  try{ return truthy(p?.preventivo_confermato ?? p?.confirmed ?? p?.confermato); }catch(_){ return false; }
+}
+function __preventivoNumberText__(p, idx){
+  try{
+    const raw = String(p?.numero_preventivo ?? p?.preventivo_numero ?? p?.quote_number ?? '').trim();
+    if (/^P\d+$/i.test(raw)) return raw.toUpperCase();
+    const n = parseInt(String(raw || '').replace(/\D+/g,''),10);
+    if (isFinite(n) && n > 0) return 'P' + n;
+  }catch(_){ }
+  return 'P' + (Number(idx || 0) + 1);
+}
+function __preventiviSort__(arr){
+  return (Array.isArray(arr) ? arr.slice() : []).sort((a,b)=>{
+    const na = parseInt(String(__preventivoNumberText__(a, 0)).replace(/\D+/g,''),10) || 0;
+    const nb = parseInt(String(__preventivoNumberText__(b, 0)).replace(/\D+/g,''),10) || 0;
+    if (na !== nb) return na - nb;
+    const ta = Date.parse(a?.createdAt || a?.created_at || '') || 0;
+    const tb = Date.parse(b?.createdAt || b?.created_at || '') || 0;
+    return ta - tb;
+  });
+}
+async function loadPreventivi(opts = {}){
+  try{
+    const data = await cachedGet('preventivi', {}, { showLoader:false, ttlMs: opts.force ? 0 : 45000, swrMs: 120000, force: !!opts.force });
+    state.preventivi = __preventiviSort__(Array.isArray(data) ? data : []);
+  }catch(_){
+    try{ state.preventivi = __preventiviSort__(await api('preventivi', { method:'GET' })); }catch(__){ state.preventivi = Array.isArray(state.preventivi) ? state.preventivi : []; }
+  }
+  try{ renderPreventiviCards(); }catch(_){ }
+  return state.preventivi;
+}
+async function __setPreventiviRows__(rows){
+  try{ await __tblSet__('preventivi', Array.isArray(rows) ? rows : []); }catch(_){ }
+}
+function __nextPreventivoNumber__(rows){
+  let max = 0;
+  (Array.isArray(rows) ? rows : []).forEach((p, i)=>{
+    const n = parseInt(String(__preventivoNumberText__(p, i)).replace(/\D+/g,''),10) || 0;
+    if (n > max) max = n;
+  });
+  return 'P' + (max + 1);
+}
+function __enterPreventivoCreateMode__(){
+  state.guestIsQuote = true;
+  state.guestQuoteConfirmed = false;
+  state.guestQuoteSourceItem = null;
+  try{ enterGuestCreateMode(); }catch(_){ }
+  state.guestIsQuote = true;
+  state.guestQuoteConfirmed = false;
+  const title = document.getElementById('ospiteFormTitle');
+  if (title) title.textContent = 'Nuovo preventivo';
+  const btn = document.getElementById('createGuestCard');
+  if (btn) btn.textContent = 'Crea preventivo';
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
+}
+function __enterPreventivoViewMode__(item){
+  state.guestIsQuote = true;
+  state.guestQuoteSourceItem = item || null;
+  state.guestQuoteConfirmed = __preventivoIsConfirmed__(item);
+  try{ enterGuestViewMode(item); }catch(_){ }
+  state.guestIsQuote = true;
+  state.guestQuoteSourceItem = item || null;
+  state.guestQuoteConfirmed = __preventivoIsConfirmed__(item);
+  const title = document.getElementById('ospiteFormTitle');
+  if (title) title.textContent = 'Scheda preventivo';
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
+}
+function __enterPreventivoEditMode__(item){
+  state.guestIsQuote = true;
+  state.guestQuoteSourceItem = item || null;
+  state.guestQuoteConfirmed = __preventivoIsConfirmed__(item);
+  try{ enterGuestEditMode(item); }catch(_){ }
+  state.guestIsQuote = true;
+  state.guestQuoteSourceItem = item || null;
+  state.guestQuoteConfirmed = __preventivoIsConfirmed__(item);
+  const title = document.getElementById('ospiteFormTitle');
+  if (title) title.textContent = 'Modifica preventivo';
+  const btn = document.getElementById('createGuestCard');
+  if (btn) btn.textContent = 'Salva preventivo';
+  try{ __syncPreventivoModeUi__(); }catch(_){ }
+}
+function __syncPreventivoModeUi__(){
+  const isQuote = !!(state && state.guestIsQuote);
+  const confirmed = !!(state && state.guestQuoteConfirmed);
+  const page = document.getElementById('page-ospite');
+  if (page){
+    page.classList.toggle('is-preventivo', isQuote);
+    page.classList.toggle('preventivo-non-confermato', isQuote && !confirmed && String(state.guestMode||'') === 'view');
+  }
+  try{ document.body.classList.toggle('quote-mode', isQuote); }catch(_){ }
+  // dDAE_2.813 — Preventivi: rimuovi davvero Channel/commissione anche quando i campi
+  // vengono riposizionati nel layout create stack. Il solo CSS sul row non basta su iOS.
+  try{
+    const ids = ['guestChannelRow','guestChannelCommissionWrap','guestBookingNumberField'];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.hidden = !!isQuote;
+      el.style.setProperty('display', isQuote ? 'none' : '', isQuote ? 'important' : '');
+      el.style.visibility = isQuote ? 'hidden' : '';
+      el.style.pointerEvents = isQuote ? 'none' : '';
+    });
+    const channel = document.getElementById('guestChannel');
+    const channelField = channel ? (channel.closest('.subfield') || channel.closest('.field')) : null;
+    if (channelField){
+      channelField.hidden = !!isQuote;
+      channelField.style.setProperty('display', isQuote ? 'none' : '', isQuote ? 'important' : '');
+      channelField.style.visibility = isQuote ? 'hidden' : '';
+      channelField.style.pointerEvents = isQuote ? 'none' : '';
+    }
+    const booking = document.getElementById('guestBooking');
+    const bookingField = booking ? (booking.closest('.subfield') || booking.closest('.field')) : null;
+    if (bookingField){
+      bookingField.hidden = !!isQuote;
+      bookingField.style.setProperty('display', isQuote ? 'none' : '', isQuote ? 'important' : '');
+      bookingField.style.visibility = isQuote ? 'hidden' : '';
+      bookingField.style.pointerEvents = isQuote ? 'none' : '';
+    }
+    if (isQuote){
+      try{ if (channel) channel.value = ''; }catch(_){}
+      try{ const comm = document.getElementById('guestChannelCommission'); if (comm) comm.value = ''; }catch(_){}
+      try{ if (booking) booking.value = ''; }catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const confirmBtn = document.querySelector('[data-quote-confirm]');
+    if (confirmBtn){
+      confirmBtn.hidden = !(isQuote && String(state.guestMode||'') === 'view' && !confirmed);
+      if (!confirmBtn.__quoteBound){
+        confirmBtn.__quoteBound = true;
+        bindFastTap(confirmBtn, async (ev)=>{ try{ ev && ev.preventDefault && ev.preventDefault(); ev && ev.stopPropagation && ev.stopPropagation(); }catch(_){} await confirmPreventivoCurrent(); });
+      }
+    }
+  }catch(_){ }
+  try{
+    const editBtn = document.querySelector('[data-guest-edit]');
+    if (editBtn && isQuote && !editBtn.__quoteEditBound){
+      editBtn.__quoteEditBound = true;
+      editBtn.addEventListener('click', (ev)=>{
+        try{ if (!state.guestIsQuote) return; ev.preventDefault(); ev.stopPropagation(); const src = state.guestQuoteSourceItem || state.guestViewItem || null; if (src) __enterPreventivoEditMode__(src); }catch(_){ }
+      }, true);
+    }
+  }catch(_){ }
+}
+function __collectPreventivoPayload__(){
+  try{ __syncGuestNationalityFromPhone__(true); }catch(_){ }
+  const nationalityOption = __getGuestNationalityOption__(document.getElementById('guestNationality')?.value || '');
+  const channelId = '';
+  const channelItem = null;
+  const rooms = Array.from(state.guestRooms || []).map(n=>parseInt(n,10)).filter(n=>Number.isFinite(n)).sort((a,b)=>a-b);
+  const name = String(document.getElementById('guestName')?.value || '').trim();
+  if (!name){ toast('Inserisci il nome'); return null; }
+  const total = parseFloat(document.getElementById('guestTotal')?.value || '0') || 0;
+  const serviziTotale = parseFloat(document.getElementById('guestServices')?.value || '0') || 0;
+  const discount = parseFloat(document.getElementById('guestDiscount')?.value || '0') || 0;
+  const deposit = parseFloat(document.getElementById('guestDeposit')?.value || '0') || 0;
+  const saldoPagato = parseFloat(document.getElementById('guestSaldo')?.value || '0') || 0;
+  const payload = {
+    id: state.guestEditId || genId('p'),
+    preventivo: '1',
+    is_preventivo: '1',
+    nome: name,
+    telefono: String(document.getElementById('guestPhone')?.value || '').trim(),
+    email: String(document.getElementById('guestEmail')?.value || '').trim(),
+    nazionalita: nationalityOption.code || '',
+    nazione: nationalityOption.code || '',
+    nazionalita_code: nationalityOption.code || '',
+    nazionalita_nome: nationalityOption.name || '',
+    country_code: nationalityOption.code || '',
+    country_name: nationalityOption.name || '',
+    country_flag: nationalityOption.flag || '',
+    sesso: String(state.guestGender || '').trim(),
+    gender: String(state.guestGender || '').trim(),
+    uomini: parseInt(document.getElementById('guestMen')?.value || '0',10) || 0,
+    donne: parseInt(document.getElementById('guestWomen')?.value || '0',10) || 0,
+    numero_prenotazione: String(document.getElementById('guestBookingNumber')?.value || '').trim(),
+    adulti: parseInt(document.getElementById('guestAdults')?.value || '0',10) || 0,
+    bambini_u10: parseInt(document.getElementById('guestKidsU10')?.value || '0',10) || 0,
+    check_in: document.getElementById('guestCheckIn')?.value || '',
+    check_out: document.getElementById('guestCheckOut')?.value || '',
+    importo_prenotazione: total,
+    channel_id: channelItem ? String(channelItem.id) : '',
+    channel_nome: channelItem ? String(channelItem.nome) : '',
+    channel_colore: channelItem ? String(channelItem.colore) : '',
+    channel_colore_testo: channelItem ? String(channelItem.coloreTesto || '') : '',
+    channel_iniziale: channelItem ? String(channelItem.iniziale || __channelInitialFromName__(channelItem.nome)) : '',
+    channel_commissione: parseFloat(document.getElementById('guestChannelCommission')?.value || '0') || 0,
+    importo_booking: parseFloat(document.getElementById('guestBooking')?.value || '0') || 0,
+    servizi_totale: serviziTotale,
+    servizi_json: JSON.stringify(Array.isArray(state.guestServicesItems) ? state.guestServicesItems : []),
+    servizi_preview: serviziPreviewText(state.guestServicesItems || []),
+    sconto: discount,
+    discount: discount,
+    acconto_importo: deposit,
+    acconto_tipo: deposit > 0 ? (state.guestDepositType || '') : '',
+    saldo_pagato: saldoPagato,
+    saldo_tipo: saldoPagato > 0 ? (state.guestSaldoType || '') : '',
+    acconto_ricevuta: !!(deposit > 0 && state.guestDepositReceipt),
+    saldo_ricevuta: !!(saldoPagato > 0 && state.guestSaldoReceipt),
+    note: String(document.getElementById('guestNotes')?.value || '').trim(),
+    matrimonio: !!state.guestMarriage,
+    g: state.guestGroup ? '1' : '',
+    col_c: state.guestColC ? '1' : '',
+    stanze: JSON.stringify(rooms),
+    preventivo_confermato: state.guestQuoteConfirmed ? '1' : '',
+    confirmed: state.guestQuoteConfirmed ? '1' : '',
+    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  if (state.guestEditSourceItem && (state.guestEditSourceItem.createdAt || state.guestEditSourceItem.created_at)){
+    payload.createdAt = state.guestEditSourceItem.createdAt || state.guestEditSourceItem.created_at;
+    payload.created_at = payload.createdAt;
+    payload.numero_preventivo = state.guestEditSourceItem.numero_preventivo || state.guestEditSourceItem.preventivo_numero || '';
+  } else {
+    payload.createdAt = new Date().toISOString();
+    payload.created_at = payload.createdAt;
+  }
+  return payload;
+}
+async function savePreventivo(opts = {}){
+  const payload = __collectPreventivoPayload__();
+  if (!payload) return;
+  let rows = [];
+  try{ rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : (await cachedGet('preventivi', {}, { showLoader:false, ttlMs:0, force:true }) || []); }catch(_){ rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }
+  const isEdit = String(state.guestMode || '') === 'edit' && state.guestEditId;
+  if (!isEdit && !payload.numero_preventivo) payload.numero_preventivo = __nextPreventivoNumber__(rows);
+  payload.preventivo_numero = payload.numero_preventivo;
+  const id = __preventivoIdOf__(payload);
+  const ix = rows.findIndex(x => __preventivoIdOf__(x) === id);
+  if (ix >= 0) rows[ix] = Object.assign({}, rows[ix] || {}, payload);
+  else rows.push(payload);
+  rows = __preventiviSort__(rows);
+  state.preventivi = rows;
+  try{ invalidateApiCache('preventivi|'); }catch(_){ }
+  await __setPreventiviRows__(rows);
+  if (opts && opts.instantGoList){ try{ showPage('preventivi'); }catch(_){ } }
+  try{ renderPreventiviCards(); }catch(_){ }
+  try{ __sfxSave(); }catch(_){ }
+  toast(isEdit ? 'Preventivo salvato' : 'Preventivo creato');
+  if (!(opts && opts.instantGoList)) showPage('preventivi');
+}
+async function confirmPreventivoCurrent(){
+  const src = state.guestQuoteSourceItem || state.guestViewItem || null;
+  if (!src) return;
+  const id = __preventivoIdOf__(src);
+  let rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+  const ix = rows.findIndex(x => __preventivoIdOf__(x) === id);
+  if (ix < 0) return;
+  rows[ix] = Object.assign({}, rows[ix] || {}, { preventivo_confermato:'1', confirmed:'1', confermato:'1', confirmedAt:new Date().toISOString() });
+  state.preventivi = __preventiviSort__(rows);
+  await __setPreventiviRows__(state.preventivi);
+  try{ invalidateApiCache('preventivi|'); }catch(_){ }
+  toast('Preventivo confermato');
+  __enterPreventivoViewMode__(state.preventivi.find(x => __preventivoIdOf__(x) === id) || rows[ix]);
+}
+function renderPreventiviCards(){
+  const wrap = document.getElementById('preventiviCards');
+  if (!wrap) return;
+  wrap.replaceChildren();
+  const rows = __preventiviSort__(Array.isArray(state.preventivi) ? state.preventivi : []);
+  if (!rows.length){
+    const empty = document.createElement('div');
+    empty.style.opacity = '.7';
+    empty.style.fontSize = '14px';
+    empty.style.padding = '8px';
+    empty.textContent = 'Nessun preventivo.';
+    wrap.appendChild(empty);
+    return;
+  }
+  rows.forEach((p, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'guest-card preventivo-card';
+    card.tabIndex = 0;
+    card.setAttribute('role','button');
+    const nome = escapeHtml(p?.nome || p?.name || 'Preventivo');
+    const number = escapeHtml(__preventivoNumberText__(p, idx));
+    const flag = escapeHtml(String(p?.country_flag || '🏳️'));
+    const range = escapeHtml(__guestCardStayRangeLabel__(p) || formatArrivalDayIT(p?.check_in || p?.checkIn || '') || '—');
+    const confirmed = __preventivoIsConfirmed__(p);
+    const channelBadge = getGuestChannelBadgeData(p);
+    const tel = escapeHtml(String(p?.telefono ?? p?.tel ?? p?.phone ?? '').trim());
+    const em = escapeHtml(String(p?.email ?? p?.mail ?? '').trim());
+    card.innerHTML = `<div class="guest-row guest-row-compact"><div class="guest-main"><span class="guest-insno preventivo-insno">${number}</span><span class="guest-nationality-dot"><span class="guest-nationality-flag" aria-hidden="true">${flag}</span></span><div class="guest-nameblock"><span class="guest-name-tab guest-name-text">${nome}</span><span class="guest-arrivo guest-arrivo-under" aria-label="Periodo">${range}</span>${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${tel ? `<span class="guest-contact-line guest-contact-phone">${tel}</span>` : ``}${em ? `<span class="guest-contact-line guest-contact-email">${em}</span>` : ``}</span>` : ``)}</div></div><div class="guest-meta-right"><div class="guest-meta-dots">${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'sky', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}<span class="preventivo-status">${confirmed ? 'Confermato' : 'Preventivo'}</span></div></div></div>`;
+    const open = ()=>{ __enterPreventivoViewMode__(p); showPage('ospite'); };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+    wrap.appendChild(card);
+  });
+}
+try{
+  const __bindPreventiviUi__ = () => {
+    const btnHome = document.getElementById('goPreventivi');
+    if (btnHome && !btnHome.__preventiviBound){ btnHome.__preventiviBound = true; bindFastTap(btnHome, ()=>{ hideLauncher(); showPage('preventivi'); }); }
+    const btn = document.getElementById('btnNewPreventivoTop');
+    if (btn && !btn.__preventiviBound){ btn.__preventiviBound = true; bindFastTap(btn, ()=>{ __enterPreventivoCreateMode__(); showPage('ospite'); }); }
+    try{ if (btn) { __bindHeaderActionLongPress__(btn); __headerActionApplyToButton__(btn); } }catch(_){ }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', __bindPreventiviUi__);
+  else __bindPreventiviUi__();
+  setTimeout(__bindPreventiviUi__, 250);
+}catch(_){ }
+
+try{
+  const __bindPreventivoGuestActions__ = () => {
+    const root = document.getElementById('ospiteHdActions');
+    if (root && !root.__preventivoCaptureBound){
+      root.__preventivoCaptureBound = true;
+      root.addEventListener('click', async (ev)=>{
+        try{
+          if (!state.guestIsQuote) return;
+          const btn = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+          if (!btn) return;
+          if (btn.hasAttribute('data-guest-edit')){
+            ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            const src = state.guestQuoteSourceItem || state.guestViewItem || null; if (src) __enterPreventivoEditMode__(src);
+            return;
+          }
+          if (btn.hasAttribute('data-guest-del')){
+            ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            const src = state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem || null;
+            const id = __preventivoIdOf__(src) || String(state.guestEditId || '').trim();
+            if (!id) return;
+            if (!confirm('Eliminare definitivamente questo preventivo?')) return;
+            const rows = (Array.isArray(state.preventivi) ? state.preventivi : []).filter(x => __preventivoIdOf__(x) !== id);
+            state.preventivi = rows;
+            await __setPreventiviRows__(rows);
+            try{ invalidateApiCache('preventivi|'); }catch(_){ }
+            toast('Preventivo eliminato');
+            showPage('preventivi');
+            return;
+          }
+          if (btn.hasAttribute('data-guest-checkin') || btn.hasAttribute('data-guest-cal') || btn.hasAttribute('data-guest-report')){
+            ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            return;
+          }
+        }catch(_){ }
+      }, true);
+    }
+    const topBack = document.getElementById('guestBackTop');
+    if (topBack && !topBack.__preventivoBackCaptureBound){
+      topBack.__preventivoBackCaptureBound = true;
+      topBack.addEventListener('click', (ev)=>{
+        try{
+          if (!state.guestIsQuote) return;
+          ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+          if (String(state.guestMode || '') === 'edit'){
+            const src = state.guestQuoteSourceItem || state.guestEditSourceItem || null;
+            if (src){ __enterPreventivoViewMode__(src); showPage('ospite'); return; }
+          }
+          showPage('preventivi');
+        }catch(_){ }
+      }, true);
+    }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', __bindPreventivoGuestActions__);
+  else __bindPreventivoGuestActions__();
+  setTimeout(__bindPreventivoGuestActions__, 250);
+}catch(_){ }
+
+const __syncPreventivoModeUi__orig = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+if (__syncPreventivoModeUi__orig){
+  __syncPreventivoModeUi__ = function(){
+    try{ __syncPreventivoModeUi__orig(); }catch(_){ }
+    try{
+      const isQuote = !!(state && state.guestIsQuote);
+      const mode = String(state.guestMode || '').toLowerCase();
+      const root = document.getElementById('ospiteHdActions');
+      if (!root) return;
+      const check = root.querySelector('[data-guest-checkin]');
+      const cal = root.querySelector('[data-guest-cal]');
+      const report = root.querySelector('[data-guest-report]');
+      if (check) check.hidden = isQuote ? true : (mode !== 'view');
+      if (cal) cal.hidden = !!isQuote;
+      if (report) report.hidden = isQuote ? true : (mode !== 'view');
+    }catch(_){ }
+  };
+}
+
+
+/* dDAE_2.813 — Preventivi: clone operativo/visivo della pagina Ospiti */
+(function(){
+  const P2G = {
+    preventiviToday:'guestToday',
+    preventiviSortByArrivo:'guestSortByArrivo',
+    preventiviSortByCheckout:'guestSortByCheckout',
+    preventiviSortByInserimento:'guestSortByInserimento',
+    preventiviSortByNome:'guestSortByNome',
+    preventiviScrollTodayBtn:'guestScrollTodayBtn'
+  };
+  const sortIds = ['preventiviSortByArrivo','preventiviSortByCheckout','preventiviSortByInserimento','preventiviSortByNome'];
+  function pState(){
+    state.preventiviSortBy = state.preventiviSortBy || localStorage.getItem('dDAE_preventiviSortBy') || localStorage.getItem('dDAE_guestSortBy') || 'arrivo';
+    state.preventiviSortDir = state.preventiviSortDir || localStorage.getItem('dDAE_preventiviSortDir') || localStorage.getItem('dDAE_guestSortDir') || 'asc';
+    const saved = localStorage.getItem('dDAE_preventiviArrivalFilter') || localStorage.getItem('dDAE_guestArrivalFilter') || '';
+    state.preventiviArrivalFilter = state.preventiviArrivalFilter || (/^(today|3days|7days|-3days|-7days|all)$/.test(saved) ? saved : 'today');
+  }
+  function pDateISO(v){ try{ return __parseDateFlexibleToISO(v) || String(v||'').trim().slice(0,10); }catch(_){ return String(v||'').trim().slice(0,10); } }
+  function pArrivalISO(p){ return pDateISO(p?.check_in ?? p?.checkIn ?? p?.arrivo ?? p?.dataArrivo ?? p?.arrival ?? p?.guestCheckIn ?? ''); }
+  function pCheckoutISO(p){ return pDateISO(p?.check_out ?? p?.checkOut ?? p?.checkout ?? p?.data_check_out ?? p?.dataPartenza ?? p?.partenza ?? p?.departure ?? p?.guestCheckOut ?? ''); }
+  function pCreatedTs(p){ return Date.parse(p?.createdAt || p?.created_at || p?.updatedAt || p?.updated_at || '') || 0; }
+  function pSort(rows){
+    pState();
+    const by = String(state.preventiviSortBy || 'arrivo');
+    const dir = String(state.preventiviSortDir || 'asc') === 'desc' ? -1 : 1;
+    return (Array.isArray(rows)?rows.slice():[]).sort((a,b)=>{
+      if (by === 'nome') return String(a?.nome||a?.name||'').trim().toLowerCase().localeCompare(String(b?.nome||b?.name||'').trim().toLowerCase(), 'it') * dir;
+      if (by === 'inserimento'){
+        const na = parseInt(String(__preventivoNumberText__(a,0)).replace(/\D+/g,''),10) || 1e18;
+        const nb = parseInt(String(__preventivoNumberText__(b,0)).replace(/\D+/g,''),10) || 1e18;
+        if (na !== nb) return (na-nb) * dir;
+        return (pCreatedTs(a)-pCreatedTs(b)) * dir;
+      }
+      if (by === 'checkout'){
+        const ta = Date.parse(pCheckoutISO(a)) || null, tb = Date.parse(pCheckoutISO(b)) || null;
+        if (ta == null && tb == null) return 0; if (ta == null) return 1; if (tb == null) return -1; return (ta-tb)*dir;
+      }
+      const ta = Date.parse(pArrivalISO(a)) || null, tb = Date.parse(pArrivalISO(b)) || null;
+      if (ta == null && tb == null) return 0; if (ta == null) return 1; if (tb == null) return -1; return (ta-tb)*dir;
+    });
+  }
+  function pFiltered(rows){
+    pState();
+    let items = Array.isArray(rows) ? rows.slice() : [];
+    try{
+      const y = state.exerciseYear || loadExerciseYear();
+      items = __filterByExerciseYear__(items, y, ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at']);
+    }catch(_){ }
+    const mode = String(state.preventiviArrivalFilter || 'today');
+    if (mode !== 'all'){
+      const today = todayISO();
+      const soon3 = addDaysISO(today, 3), soon7 = addDaysISO(today, 7), prev3 = addDaysISO(today, -3), prev7 = addDaysISO(today, -7);
+      const useCheckout = String(state.preventiviSortBy || '').trim() === 'checkout';
+      items = items.filter(p=>{
+        const d = (useCheckout ? pCheckoutISO(p) : pArrivalISO(p)).slice(0,10);
+        if (!d) return false;
+        if (mode === '3days') return d >= today && d <= soon3;
+        if (mode === '7days') return d >= today && d <= soon7;
+        if (mode === '-3days') return d >= prev3 && d <= today;
+        if (mode === '-7days') return d >= prev7 && d <= today;
+        return d === today;
+      });
+    }
+    return pSort(items);
+  }
+  function pLabel(){
+    const mode = String(state.preventiviArrivalFilter || 'today');
+    if (mode === '3days') return '3 giorni';
+    if (mode === '7days') return '7 giorni';
+    if (mode === '-3days') return '-3 giorni';
+    if (mode === '-7days') return '-7 giorni';
+    if (mode === 'all') return 'Tutti';
+    return 'Oggi';
+  }
+  function pVisualState(btn){
+    if (!btn) return 'distractive';
+    if (btn.id === 'preventiviToday') return String(state.preventiviArrivalFilter || 'today');
+    if (btn.id === 'preventiviScrollTodayBtn') return (btn.hidden || btn.getAttribute('aria-hidden') === 'true') ? 'distractive' : 'active';
+    return String(btn.dataset.preventiviSortBy || '') === String(state.preventiviSortBy || '') ? 'active' : 'distractive';
+  }
+  function pApplyBtn(btn){
+    try{
+      if (!btn || !btn.id) return;
+      const gid = P2G[btn.id] || btn.id;
+      const stateKey = pVisualState(btn);
+      const visual = (typeof __guestFilterButtonVisualForState__ === 'function') ? __guestFilterButtonVisualForState__(gid, stateKey) : null;
+      const oldId = btn.id;
+      btn.id = gid;
+      try{ if (typeof __applyGuestFilterButtonVisual__ === 'function') __applyGuestFilterButtonVisual__(btn, stateKey, visual); }catch(_){ }
+      btn.id = oldId;
+      if (btn.dataset.preventiviSortBy){
+        const active = String(btn.dataset.preventiviSortBy) === String(state.preventiviSortBy || '');
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      }
+    }catch(_){ try{ if (btn && P2G[btn.id]) btn.id = Object.keys(P2G).find(k=>P2G[k]===btn.id) || btn.id; }catch(__){} }
+  }
+  function pApplyVisuals(){
+    pState();
+    const today = document.getElementById('preventiviToday');
+    if (today){
+      today.textContent = pLabel();
+      today.dataset.filterState = String(state.preventiviArrivalFilter || 'today');
+      today.setAttribute('aria-pressed', state.preventiviArrivalFilter === 'all' ? 'false':'true');
+      today.classList.toggle('is-active', state.preventiviArrivalFilter !== 'all');
+      pApplyBtn(today);
+    }
+    sortIds.forEach(id=>pApplyBtn(document.getElementById(id)));
+    pUpdateTodayButton();
+  }
+  function pOpenColor(btn){
+    try{
+      if (!btn || !btn.id || typeof __tagColorPopupOpen__ !== 'function') return;
+      const gid = P2G[btn.id] || btn.id;
+      const stateKey = pVisualState(btn);
+      const current = __guestFilterButtonVisualForState__(gid, stateKey);
+      const applyVisual = (payload)=>{
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        const next = { bg: colors.bg || current.bg || 'sky-4', border: colors.border || current.border || colors.bg || current.bg || 'sky-4', fg: colors.fg || current.fg || 'white', opacity: __designBgOpacityNormalize__(payload?.opacity ?? current.opacity ?? 0.80), bold:false };
+        __saveGuestFilterButtonVisualState__(gid, stateKey, next);
+        pApplyVisuals(); try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
+      };
+      __tagColorPopupOpen__('guest-filter-button', current, (payload)=>{ applyVisual(payload); try{ toast('Design preventivi aggiornato'); }catch(_){} }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:(current.opacity ?? 0.80), defaultMode:'bg', fallbackBg:(current.bg || 'sky-4'), onPreview:applyVisual, onRevert:()=>{ __saveGuestFilterButtonVisualState__(gid, stateKey, current); pApplyVisuals(); } });
+    }catch(_){ }
+  }
+  function pBindColor(btn){
+    try{ if (!btn || btn.dataset.preventiviColorBound === '1') return; btn.dataset.preventiviColorBound = '1'; }catch(_){ return; }
+    let timer=null, fired=false;
+    const clear=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+    const block=e=>{ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} };
+    const start=e=>{ try{ if(e && e.type==='pointerdown' && e.pointerType==='mouse' && e.button!==0) return; }catch(_){} fired=false; clear(); timer=setTimeout(()=>{ fired=true; pOpenColor(btn); },500); };
+    const stop=e=>{ clear(); if(fired){ block(e); setTimeout(()=>{ fired=false; },0); } };
+    ['pointerdown','touchstart','mousedown'].forEach(ev=>{ try{ btn.addEventListener(ev,start,{passive:true}); }catch(_){} });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach(ev=>{ try{ btn.addEventListener(ev,stop,{passive:false}); }catch(_){} });
+    try{ btn.addEventListener('click', e=>{ if(fired){ block(e); fired=false; } }, true); }catch(_){}
+    try{ btn.addEventListener('contextmenu', e=>{ block(e); pOpenColor(btn); }, true); }catch(_){}
+  }
+  function pUpdateTodayButton(){
+    try{
+      const btn = document.getElementById('preventiviScrollTodayBtn'); if (!btn) return;
+      const show = (state && state.page === 'preventivi' && (state.preventiviSortBy === 'arrivo' || state.preventiviSortBy === 'checkout'));
+      btn.hidden = !show; btn.classList.toggle('is-visible', !!show); btn.classList.toggle('is-active', !!show); btn.setAttribute('aria-hidden', show?'false':'true'); pApplyBtn(btn); pBindColor(btn);
+    }catch(_){ }
+  }
+  function pScrollToday(){
+    try{
+      const wrap = document.getElementById('preventiviCards'); if (!wrap) return;
+      const today = todayISO(); const key = String(state.preventiviSortBy||'') === 'checkout' ? 'checkoutIso' : 'arrivalIso';
+      const cards = Array.from(wrap.querySelectorAll('.guest-card')).filter(c=>String(c.dataset[key]||'').trim());
+      let target = cards.find(c=>String(c.dataset[key]||'').slice(0,10) === today) || cards.find(c=>String(c.dataset[key]||'').slice(0,10) >= today);
+      if (!target){ try{ toast(state.preventiviSortBy === 'checkout' ? 'Nessun check-out preventivo da oggi in poi.' : 'Nessun check-in preventivo da oggi in poi.'); }catch(_){} return; }
+      const top = Math.max(0, target.offsetTop - wrap.offsetTop); try{ wrap.scrollTo({top, behavior:'smooth'}); }catch(_){ wrap.scrollTop = top; }
+    }catch(_){ }
+  }
+  function setupPreventiviListControls(){
+    try{
+      pState();
+      const sel = document.getElementById('preventiviSortBy'); if (sel) sel.value = state.preventiviSortBy;
+      const today = document.getElementById('preventiviToday');
+      if (today && !today.__preventiviCtlBound){ today.__preventiviCtlBound=true; today.addEventListener('click', ()=>{ const c=String(state.preventiviArrivalFilter||'today'); state.preventiviArrivalFilter = c==='today'?'3days':(c==='3days'?'7days':(c==='7days'?'-3days':(c==='-3days'?'-7days':(c==='-7days'?'all':'today')))); localStorage.setItem('dDAE_preventiviArrivalFilter', state.preventiviArrivalFilter); pApplyVisuals(); renderPreventiviCards(); }); pBindColor(today); }
+      let last='', lastTs=0;
+      sortIds.forEach(id=>{ const btn=document.getElementById(id); if(!btn || btn.__preventiviCtlBound) return; btn.__preventiviCtlBound=true; btn.addEventListener('click', ()=>{ const by=String(btn.dataset.preventiviSortBy||''); const now=Date.now(); if(state.preventiviSortBy===by && last===by && now-lastTs<420){ state.preventiviSortDir = state.preventiviSortDir === 'desc' ? 'asc':'desc'; } else { state.preventiviSortBy=by; state.preventiviSortDir='asc'; } last=by; lastTs=now; localStorage.setItem('dDAE_preventiviSortBy', state.preventiviSortBy); localStorage.setItem('dDAE_preventiviSortDir', state.preventiviSortDir); if(sel) sel.value=state.preventiviSortBy; pApplyVisuals(); renderPreventiviCards(); try{ document.getElementById('preventiviCards').scrollTop=0; }catch(_){} }); pBindColor(btn); });
+      const scroll = document.getElementById('preventiviScrollTodayBtn'); if (scroll && !scroll.__preventiviCtlBound){ scroll.__preventiviCtlBound=true; bindFastTap(scroll, pScrollToday); pBindColor(scroll); }
+      pApplyVisuals();
+    }catch(_){ }
+  }
+  const oldLoadPreventivi = (typeof loadPreventivi === 'function') ? loadPreventivi : null;
+  if (oldLoadPreventivi){
+    loadPreventivi = async function(opts={}){ const out = await oldLoadPreventivi(opts||{}); try{ setupPreventiviListControls(); renderPreventiviCards(); }catch(_){} return out; };
+  }
+  renderPreventiviCards = function(){
+    const wrap = document.getElementById('preventiviCards'); if (!wrap) return;
+    pState(); setupPreventiviListControls();
+    wrap.replaceChildren();
+    const frag = document.createDocumentFragment();
+    const rows = pFiltered(Array.isArray(state.preventivi) ? state.preventivi : []);
+    if (!rows.length){
+      const empty=document.createElement('div'); empty.style.opacity='.7'; empty.style.fontSize='14px'; empty.style.padding='8px';
+      const mode=String(state.preventiviArrivalFilter||'today');
+      empty.textContent = mode==='all' ? 'Nessun preventivo nel periodo.' : (mode==='3days' ? 'Nessun preventivo nei prossimi 3 giorni.' : (mode==='7days' ? 'Nessun preventivo nei prossimi 7 giorni.' : (mode==='-3days' ? 'Nessun preventivo negli ultimi 3 giorni.' : (mode==='-7days' ? 'Nessun preventivo negli ultimi 7 giorni.' : 'Nessun preventivo per oggi.'))));
+      frag.appendChild(empty); wrap.appendChild(frag); pApplyVisuals(); return;
+    }
+    rows.forEach((p, idx)=>{
+      const card=document.createElement('div'); card.className='guest-card preventivo-card'; card.tabIndex=0; card.setAttribute('role','button');
+      const nome=escapeHtml(p?.nome || p?.name || 'Preventivo');
+      const number=escapeHtml(__preventivoNumberText__(p, idx));
+      const nationalityOption = (typeof __readGuestNationalityFromRecord__ === 'function') ? __readGuestNationalityFromRecord__(p) : null;
+      const flag=escapeHtml(String(p?.country_flag ?? nationalityOption?.flag ?? '🏳️').trim() || '🏳️');
+      const natName=escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
+      const range=escapeHtml(__guestCardStayRangeLabel__(p) || formatArrivalDayIT(p?.check_in || p?.checkIn || '') || '—');
+      const confirmed=__preventivoIsConfirmed__(p);
+      const channelBadge=getGuestChannelBadgeData(p);
+      const tel=escapeHtml(String(p?.telefono ?? p?.tel ?? p?.phone ?? '').trim());
+      const em=escapeHtml(String(p?.email ?? p?.mail ?? '').trim());
+      const stayNights=calcStayNights(p);
+      const marriageOn=!!(p?.matrimonio);
+      const hasNotes=guestHasNotes(p);
+      const ledCls=confirmed ? 'led-green' : 'led-yellow';
+      const ledLabel=confirmed ? 'Preventivo confermato' : 'Preventivo non confermato';
+      try{ card.dataset.arrivalIso = pArrivalISO(p); card.dataset.checkoutIso = pCheckoutISO(p); }catch(_){}
+      card.setAttribute('aria-label', `Apri scheda preventivo: ${nome}`);
+      card.innerHTML = `<div class="guest-row guest-row-compact"><div class="guest-main"><span class="guest-insno preventivo-insno is-ready${hasNotes ? ' has-notes' : ''}" aria-label="Numero preventivo" title="Numero preventivo"${hasNotes ? ' data-has-notes="1"' : ''}>${number}</span><span class="guest-nationality-dot" aria-label="Nazionalità: ${natName}" title="${natName}"><span class="guest-nationality-flag" aria-hidden="true">${flag}</span></span><div class="guest-nameblock"><span class="guest-name-tab guest-name-text">${nome}</span><span class="guest-arrivo guest-arrivo-under" aria-label="Periodo">${range}</span>${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${tel ? `<span class="guest-contact-line guest-contact-phone">${tel}</span>` : ``}${em ? `<span class="guest-contact-line guest-contact-email">${em}</span>` : ``}</span>` : ``)}</div></div><div class="guest-meta-right" aria-label="Stato"><div class="guest-meta-dots">${buildNightsDotHTML(stayNights)}${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}${(truthy(p?.g ?? p?.flag_g ?? p?.gruppo_g ?? p?.group ?? p?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}${(truthy(p?.col_c ?? p?.colC ?? p?.c ?? p?.C ?? p?.flag_c ?? p?.flagC ?? p?.colc ?? p?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}<span class="guest-led ${ledCls}" aria-label="${ledLabel}" title="${ledLabel}"></span></div></div></div>`;
+      try{ __applyGuestListCardVisual__(card); }catch(_){ }
+      try{ __bindGuestListCardColorHold__(card); }catch(_){ }
+      const open=()=>{ try{ __enterPreventivoViewMode__(p); showPage('ospite'); }catch(_){ } };
+      card.addEventListener('click', open); card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+      frag.appendChild(card);
+    });
+    wrap.appendChild(frag); pApplyVisuals();
+  };
+  const bind = ()=>{ try{ setupPreventiviListControls(); renderPreventiviCards(); }catch(_){} };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+  setTimeout(bind, 300); setTimeout(bind, 900);
+})();
+
+/* dDAE_2.813 — Preventivi: traduzioni, conferma come ospite reale, rifinitura clone Ospiti */
+try{
+  Object.assign(__I18N_PHRASES__, {
+    "Preventivi": { "en":"Quotes", "fr":"Devis", "de":"Angebote", "es":"Presupuestos" },
+    "Preventivo": { "en":"Quote", "fr":"Devis", "de":"Angebot", "es":"Presupuesto" },
+    "Nuovo preventivo": { "en":"New quote", "fr":"Nouveau devis", "de":"Neues Angebot", "es":"Nuevo presupuesto" },
+    "Crea preventivo": { "en":"Create quote", "fr":"Créer le devis", "de":"Angebot erstellen", "es":"Crear presupuesto" },
+    "Salva preventivo": { "en":"Save quote", "fr":"Enregistrer le devis", "de":"Angebot speichern", "es":"Guardar presupuesto" },
+    "Modifica preventivo": { "en":"Edit quote", "fr":"Modifier le devis", "de":"Angebot bearbeiten", "es":"Editar presupuesto" },
+    "Scheda preventivo": { "en":"Quote card", "fr":"Fiche devis", "de":"Angebotskarte", "es":"Ficha presupuesto" },
+    "Conferma preventivo": { "en":"Confirm quote", "fr":"Confirmer le devis", "de":"Angebot bestätigen", "es":"Confirmar presupuesto" },
+    "Preventivo confermato": { "en":"Quote confirmed", "fr":"Devis confirmé", "de":"Angebot bestätigt", "es":"Presupuesto confirmado" },
+    "Preventivo non confermato": { "en":"Quote not confirmed", "fr":"Devis non confirmé", "de":"Angebot nicht bestätigt", "es":"Presupuesto no confirmado" },
+    "Nessun preventivo per oggi.": { "en":"No quotes for today.", "fr":"Aucun devis pour aujourd’hui.", "de":"Keine Angebote für heute.", "es":"No hay presupuestos para hoy." },
+    "Nessun preventivo nel periodo.": { "en":"No quotes in the period.", "fr":"Aucun devis sur la période.", "de":"Keine Angebote im Zeitraum.", "es":"No hay presupuestos en el periodo." },
+    "Nessun preventivo nei prossimi 3 giorni.": { "en":"No quotes in the next 3 days.", "fr":"Aucun devis dans les 3 prochains jours.", "de":"Keine Angebote in den nächsten 3 Tagen.", "es":"No hay presupuestos en los próximos 3 días." },
+    "Nessun preventivo nei prossimi 7 giorni.": { "en":"No quotes in the next 7 days.", "fr":"Aucun devis dans les 7 prochains jours.", "de":"Keine Angebote in den nächsten 7 Tagen.", "es":"No hay presupuestos en los próximos 7 días." },
+    "Nessun preventivo negli ultimi 3 giorni.": { "en":"No quotes in the last 3 days.", "fr":"Aucun devis dans les 3 derniers jours.", "de":"Keine Angebote in den letzten 3 Tagen.", "es":"No hay presupuestos en los últimos 3 días." },
+    "Nessun preventivo negli ultimi 7 giorni.": { "en":"No quotes in the last 7 days.", "fr":"Aucun devis dans les 7 derniers jours.", "de":"Keine Angebote in den letzten 7 Tagen.", "es":"No hay presupuestos en los últimos 7 días." },
+    "Preventivo concretizzato": { "en":"Quote converted", "fr":"Devis concrétisé", "de":"Angebot übernommen", "es":"Presupuesto convertido" }
+  });
+}catch(_){ }
+
+try{
+  const __oldRenderPreventiviCards806 = (typeof renderPreventiviCards === 'function') ? renderPreventiviCards : null;
+  if (__oldRenderPreventiviCards806){
+    renderPreventiviCards = function(){
+      const out = __oldRenderPreventiviCards806.apply(this, arguments);
+      try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+try{
+  const __oldShowPage806 = (typeof showPage === 'function') ? showPage : null;
+  if (__oldShowPage806){
+    showPage = function(page){
+      const out = __oldShowPage806.apply(this, arguments);
+      try{ if (String(page||'') === 'preventivi') __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+async function confirmPreventivoCurrent(){
+  const src = (state && (state.guestQuoteSourceItem || state.guestViewItem)) || null;
+  if (!src) return;
+  const quoteId = __preventivoIdOf__(src);
+  let rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+  const ix = rows.findIndex(x => __preventivoIdOf__(x) === quoteId);
+  if (ix < 0) return;
+  const now = new Date().toISOString();
+  const base = Object.assign({}, rows[ix] || src || {});
+  const guestId = genId('o');
+  const guest = Object.assign({}, base, {
+    id: guestId,
+    preventivo: '',
+    is_preventivo: '',
+    preventivo_confermato: '',
+    confirmed: '',
+    confermato: '',
+    preventivo_origine_id: quoteId,
+    preventivo_numero_origine: base.numero_preventivo || base.preventivo_numero || '',
+    createdAt: now,
+    created_at: now,
+    updatedAt: now,
+    updated_at: now,
+    checkin_effettuato: base.checkin_effettuato || '',
+    check_in_effettuato: base.check_in_effettuato || '',
+    checked_in: base.checked_in || ''
+  });
+  try{ delete guest.numero_preventivo; delete guest.preventivo_numero; delete guest.quote_number; }catch(_){ }
+  try{ await api('ospiti', { method:'POST', body: guest }); }catch(e){ try{ toast(e.message || 'Errore conferma preventivo', 'orange'); }catch(_){} return; }
+  try{
+    let rooms = [];
+    try{ rooms = JSON.parse(base.stanze || base.rooms || '[]'); }catch(_){ rooms = Array.isArray(base.stanze) ? base.stanze : []; }
+    rooms = (Array.isArray(rooms) ? rooms : []).map(n=>parseInt(n,10)).filter(n=>Number.isFinite(n));
+    if (rooms.length) await api('stanze', { method:'POST', body:{ ospite_id: guestId, stanze: rooms } });
+  }catch(_){ }
+  try{
+    let servizi = [];
+    try{ servizi = JSON.parse(base.servizi_json || base.services_json || '[]'); }catch(_){ servizi = Array.isArray(base.servizi) ? base.servizi : []; }
+    servizi = (Array.isArray(servizi) ? servizi : []).filter(s=>!(String(s?.isDeleted||s?.deleted||'')==='1'||s?.isDeleted===true||s?.deleted===true));
+    if (servizi.length) await api('servizi', { method:'POST', body:{ ospite_id: guestId, servizi: servizi.map(s=>({ servizio:String(s.servizio??s.name??'').trim(), descrizione:String(s.descrizione??s.desc??'').trim(), importo:parseFloat(s.importo??s.amount??0)||0, qty:parseFloat(s.qty??1)||1 })) } });
+  }catch(_){ }
+  rows = rows.filter(x => __preventivoIdOf__(x) !== quoteId);
+  state.preventivi = __preventiviSort__(rows);
+  await __setPreventiviRows__(state.preventivi);
+  try{ invalidateApiCache('preventivi|'); invalidateApiCache('ospiti|'); invalidateApiCache('stanze|'); invalidateApiCache('servizi|'); }catch(_){ }
+  try{ if (state.calendar){ state.calendar.ready=false; state.calendar.rangeKey=''; state.calendar.winFrom=''; state.calendar.winTo=''; } state._roomsAvailKey=''; }catch(_){ }
+  try{ await loadOspiti({ ...(state.period || {}), force:true }); }catch(_){ }
+  try{ renderPreventiviCards(); }catch(_){ }
+  try{ __sfxSave(); }catch(_){ }
+  try{ toast('Preventivo concretizzato', 'green'); }catch(_){ }
+  try{ state.guestIsQuote = false; state.guestQuoteSourceItem = null; state.guestQuoteConfirmed = false; }catch(_){ }
+  showPage('ospiti');
+}
+
+try{ __applyAppLanguageToDom__(); }catch(_){ }
+
+/* dDAE_2.813 — Preventivi: pallini stanza globali, conversione guidata, campi quote essenziali */
+try{
+  Object.assign(__I18N_PHRASES__, {
+    "Completa prenotazione": { "en":"Complete booking", "fr":"Compléter la réservation", "de":"Buchung vervollständigen", "es":"Completar reserva" },
+    "Stanza occupata da preventivo": { "en":"Room held by a quote", "fr":"Chambre réservée par un devis", "de":"Zimmer durch Angebot belegt", "es":"Habitación ocupada por presupuesto" }
+  });
+}catch(_){ }
+
+function __ddae807HideQuoteOnlyFields__(){
+  try{
+    const isQuote = !!(state && state.guestIsQuote);
+    const mode = String(state && state.guestMode || '').toLowerCase();
+    const hideInQuoteEdit = isQuote && (mode === 'create' || mode === 'edit' || mode === 'view');
+    const bookingField = document.getElementById('guestBookingNumberField') || document.getElementById('guestBookingNumber')?.closest('.field');
+    const channelRow = document.getElementById('guestChannelRow') || document.getElementById('guestChannel')?.closest('.field');
+    if (bookingField) bookingField.hidden = !!hideInQuoteEdit;
+    if (channelRow) channelRow.hidden = !!hideInQuoteEdit;
+    const commWrap = document.getElementById('guestChannelCommissionWrap');
+    if (commWrap && hideInQuoteEdit) commWrap.hidden = true;
+  }catch(_){ }
+}
+try{
+  const __oldSyncPreventivoModeUi807 = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+  if (__oldSyncPreventivoModeUi807){
+    __syncPreventivoModeUi__ = function(){
+      const out = __oldSyncPreventivoModeUi807.apply(this, arguments);
+      try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+try{
+  const __oldEnterGuestCreate807 = (typeof enterGuestCreateMode === 'function') ? enterGuestCreateMode : null;
+  if (__oldEnterGuestCreate807){
+    enterGuestCreateMode = function(){
+      const out = __oldEnterGuestCreate807.apply(this, arguments);
+      try{ if (!(state && state.guestIsQuote)) __ddae807HideQuoteOnlyFields__(); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+function __ddae807FillGuestFormFromPreventivo__(src){
+  try{
+    if (!src) return;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = (val == null ? '' : String(val)); };
+    set('guestName', src.nome ?? src.name ?? '');
+    try{ __applyGuestNameUppercase__(document.getElementById('guestName')); }catch(_){ }
+    set('guestPhone', src.telefono ?? src.tel ?? src.phone ?? '');
+    try{ setGuestNationality(__readGuestNationalityFromRecord__(src).code || src.nazionalita || src.country_code || '', { manual:true }); }catch(_){ }
+    set('guestEmail', src.email ?? src.mail ?? '');
+    set('guestMen', __readGuestPeopleCount__(src, 'men'));
+    set('guestWomen', __readGuestPeopleCount__(src, 'women'));
+    try{ state.guestGender = __readGuestGender__(src); __syncGuestGenderTabs__(); }catch(_){ }
+    set('guestAdults', src.adulti ?? src.adults ?? 0);
+    set('guestKidsU10', src.bambini_u10 ?? src.kidsU10 ?? 0);
+    set('guestCheckIn', formatISODateLocal(src.check_in || src.checkIn || '') || '');
+    set('guestCheckOut', formatISODateLocal(src.check_out || src.checkOut || '') || '');
+    set('guestTotal', src.importo_prenotazione ?? src.total ?? 0);
+    set('guestBooking', src.importo_booking ?? src.booking ?? 0);
+    set('guestServices', src.servizi_totale ?? src.serviziTotal ?? src.importo_servizi ?? 0);
+    set('guestDiscount', src.sconto ?? src.discount ?? 0);
+    set('guestDeposit', src.acconto_importo ?? src.deposit ?? 0);
+    set('guestSaldo', src.saldo_pagato ?? src.saldoPagato ?? src.saldo ?? 0);
+    try{ syncGuestNotesUI(src, { open:false }); }catch(_){ set('guestNotes', src.note ?? src.notes ?? ''); }
+    try{ setMarriage(!!src.matrimonio); }catch(_){ }
+    try{ setGroup(truthy(src.g ?? src.flag_g ?? src.gruppo_g ?? src.group ?? src.g_flag)); }catch(_){ }
+    try{ setColC(truthy(src.col_c ?? src.colC ?? src.c ?? src.C ?? src.flag_c ?? src.flagC ?? src.colc ?? src.c_flag)); }catch(_){ }
+    try{
+      state.guestRooms = state.guestRooms || new Set();
+      state.guestRooms.clear();
+      _parseRoomsArr(src.stanze ?? src.rooms).forEach(n => state.guestRooms.add(n));
+      let next = {};
+      try{
+        const raw = src.letti_per_stanza || src.lettiPerStanza || '';
+        if (raw) next = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+      }catch(_){ next = {}; }
+      state.lettiPerStanza = next || {};
+    }catch(_){ }
+    try{ __updateGuestDateRangeTrigger__(); }catch(_){ }
+    try{ refreshFloatingLabels(); }catch(_){ }
+    try{ updateGuestRemaining(); }catch(_){ }
+    try{ window.__ddae_renderRooms && window.__ddae_renderRooms(); }catch(_){ }
+    try{ state._roomsAvailKey = ''; window.__ddae_refreshRoomsAvailability && window.__ddae_refreshRoomsAvailability(); }catch(_){ }
+  }catch(_){ }
+}
+
+async function confirmPreventivoCurrent(){
+  const src = (state && (state.guestQuoteSourceItem || state.guestViewItem)) || null;
+  if (!src) return;
+  const quoteId = __preventivoIdOf__(src);
+  try{
+    state.guestIsQuote = false;
+    state.guestQuoteConfirmed = false;
+    state.guestQuoteSourceItem = null;
+    state._quoteConversionPreventivoId = quoteId || '';
+    state._quoteConversionSource = src;
+  }catch(_){ }
+  try{ enterGuestCreateMode(); }catch(_){ }
+  try{
+    state.guestIsQuote = false;
+    state.guestQuoteConfirmed = false;
+    state.guestQuoteSourceItem = null;
+    state._quoteConversionPreventivoId = quoteId || '';
+    state._quoteConversionSource = src;
+  }catch(_){ }
+  try{ __ddae807FillGuestFormFromPreventivo__(src); }catch(_){ }
+  try{
+    const title = document.getElementById('ospiteFormTitle');
+    if (title) title.textContent = 'Nuovo ospite';
+    const btn = document.getElementById('createGuestCard');
+    if (btn) btn.textContent = 'Crea ospite';
+    __ddae807HideQuoteOnlyFields__();
+  }catch(_){ }
+  try{ toast('Completa prenotazione'); }catch(_){ }
+  try{ showPage('ospite'); }catch(_){ }
+}
+
+try{
+  const __oldSaveGuest807 = (typeof saveGuest === 'function') ? saveGuest : null;
+  if (__oldSaveGuest807){
+    saveGuest = async function(opts={}){
+      const convId = String(state && state._quoteConversionPreventivoId || '').trim();
+      const wasQuoteMode = !!(state && state.guestIsQuote);
+      const out = await __oldSaveGuest807.apply(this, arguments);
+      try{
+        if (convId && !wasQuoteMode && String(state && state.page || '') === 'ospiti'){
+          let rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+          rows = rows.filter(x => String(__preventivoIdOf__(x)) !== convId);
+          state.preventivi = (typeof __preventiviSort__ === 'function') ? __preventiviSort__(rows) : rows;
+          await __setPreventiviRows__(state.preventivi);
+          try{ invalidateApiCache('preventivi|'); }catch(_){ }
+          try{ renderPreventiviCards(); }catch(_){ }
+          state._quoteConversionPreventivoId = '';
+          state._quoteConversionSource = null;
+        }
+      }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+try{
+  const __oldEnterPreventivoCreate807 = (typeof __enterPreventivoCreateMode__ === 'function') ? __enterPreventivoCreateMode__ : null;
+  if (__oldEnterPreventivoCreate807){
+    __enterPreventivoCreateMode__ = function(){
+      const out = __oldEnterPreventivoCreate807.apply(this, arguments);
+      try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+try{
+  const __oldEnterPreventivoEdit807 = (typeof __enterPreventivoEditMode__ === 'function') ? __enterPreventivoEditMode__ : null;
+  if (__oldEnterPreventivoEdit807){
+    __enterPreventivoEditMode__ = function(item){
+      const out = __oldEnterPreventivoEdit807.apply(this, arguments);
+      try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
+      return out;
+    };
+  }
+}catch(_){ }
+
+try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
+
+/* dDAE_2.813 — Preventivi dentro Ospiti + report su schede preventivo */
+(function(){
+  function bindPreventiviFromOspiti(){
+    try{
+      const btn = document.getElementById('btnOpenPreventiviFromOspiti');
+      if (!btn || btn.__ddae2808Bound) return;
+      btn.__ddae2808Bound = true;
+      bindFastTap(btn, function(ev){
+        try{ ev && ev.preventDefault && ev.preventDefault(); ev && ev.stopPropagation && ev.stopPropagation(); }catch(_){ }
+        try{ hideLauncher && hideLauncher(); }catch(_){ }
+        try{ showPage('preventivi'); }catch(_){ }
+      });
+      try{
+        btn.addEventListener('contextmenu', function(ev){
+          try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
+          try{
+            if (typeof __tagColorPopupOpen__ === 'function' && typeof __iconButtonDesignOpen__ === 'function') __iconButtonDesignOpen__(btn);
+          }catch(_){ }
+        }, true);
+      }catch(_){ }
+    }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindPreventiviFromOspiti, { once:true });
+  else bindPreventiviFromOspiti();
+  try{ window.addEventListener('pageshow', bindPreventiviFromOspiti, { passive:true }); }catch(_){ }
+  setTimeout(bindPreventiviFromOspiti, 250);
+
+  const oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+  if (oldSync){
+    __syncPreventivoModeUi__ = function(){
+      const out = oldSync.apply(this, arguments);
+      try{
+        const isQuote = !!(state && state.guestIsQuote);
+        const mode = String(state && state.guestMode || '').toLowerCase();
+        const root = document.getElementById('ospiteHdActions');
+        const report = root ? root.querySelector('[data-guest-report]') : null;
+        if (report) report.hidden = (mode !== 'view');
+        const cal = root ? root.querySelector('[data-guest-cal]') : null;
+        if (cal && isQuote) cal.hidden = true;
+      }catch(_){ }
+      return out;
+    };
+  }
+
+  try{
+    const oldReportResolve = (typeof __guestReportResolveGuest__ === 'function') ? __guestReportResolveGuest__ : null;
+    if (oldReportResolve){
+      __guestReportResolveGuest__ = function(){
+        try{ if (state && state.guestIsQuote) return state.guestQuoteSourceItem || state.guestViewItem || oldReportResolve(); }catch(_){ }
+        return oldReportResolve.apply(this, arguments);
+      };
+    }
+  }catch(_){ }
+
+  try{
+    const oldApplyLang = (typeof __applyAppLanguageToDom__ === 'function') ? __applyAppLanguageToDom__ : null;
+    if (oldApplyLang){
+      __applyAppLanguageToDom__ = function(){
+        const out = oldApplyLang.apply(this, arguments);
+        try{
+          const btn = document.getElementById('btnOpenPreventiviFromOspiti');
+          if (btn){
+            const txt = (typeof __translateExactText__ === 'function' ? (__translateExactText__('Preventivi') || 'Preventivi') : 'Preventivi');
+            btn.setAttribute('aria-label', txt);
+            btn.setAttribute('title', txt);
+          }
+        }catch(_){ }
+        return out;
+      };
+    }
+  }catch(_){ }
+})();
+
+/* dDAE_2.813 — Design tasto Preventivi dentro Ospiti */
+(function(){
+  function applyPreventiviOspitiButtonDesign(){
+    try{
+      const btn = document.getElementById('btnOpenPreventiviFromOspiti');
+      if (!btn) return;
+      if (typeof __bindHeaderActionLongPress__ === 'function') __bindHeaderActionLongPress__(btn);
+      if (typeof __headerActionApplyToButton__ === 'function') __headerActionApplyToButton__(btn);
+    }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyPreventiviOspitiButtonDesign, { once:true });
+  else applyPreventiviOspitiButtonDesign();
+  try{ window.addEventListener('pageshow', applyPreventiviOspitiButtonDesign, { passive:true }); }catch(_){ }
+  setTimeout(applyPreventiviOspitiButtonDesign, 300);
+})();
+
+/* dDAE_2.813 — Preventivi: nascondi righe economiche in modifica + occupazioni reali sempre rosse */
+(function(){
+  function __ddae2809SetHidden(id, hidden){
+    try{
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.hidden = !!hidden;
+      if (hidden) el.setAttribute('hidden',''); else el.removeAttribute('hidden');
+    }catch(_){ }
+  }
+  function __ddae2809HidePreventivoEconomicRows(){
+    try{
+      const isQuote = !!(state && state.guestIsQuote);
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      const hide = isQuote && (mode === 'create' || mode === 'edit' || mode === 'view');
+      ['guestChannelRow','servicesRow','depositRow','saldoRow','discountRow'].forEach(id => __ddae2809SetHidden(id, hide));
+      const bookingField = document.getElementById('guestBookingNumberField') || document.getElementById('guestBookingNumber')?.closest('.field');
+      if (bookingField){ bookingField.hidden = hide; if (hide) bookingField.setAttribute('hidden',''); else bookingField.removeAttribute('hidden'); }
+      const commWrap = document.getElementById('guestChannelCommissionWrap');
+      if (commWrap){ commWrap.hidden = true; commWrap.setAttribute('hidden',''); }
+      if (!hide){
+        try{ const channelRow = document.getElementById('guestChannelRow'); if (channelRow) channelRow.removeAttribute('hidden'); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+  async function __ddae2809ForceRealRoomOccupancyRed(){
+    try{
+      const ci = (document.getElementById('guestCheckIn')?.value || '').trim().slice(0,10);
+      const co = (document.getElementById('guestCheckOut')?.value || '').trim().slice(0,10);
+      if (!ci || !co || co <= ci) return;
+      const isQuote = !!(state && state.guestIsQuote);
+      const editId = isQuote ? '' : String(state && state.guestEditId || '').trim();
+      let rows = [];
+      try{ rows = await cachedGet('ospiti', {}, { showLoader:false, ttlMs:0, swrMs:0, force:true }); }catch(_){ rows = Array.isArray(state && state.ospiti) ? state.ospiti : []; }
+      const realOcc = (typeof __calendarOccupiedRoomsForRange__ === 'function') ? __calendarOccupiedRoomsForRange__(Array.isArray(rows) ? rows : [], {ci, co}, editId) : new Set();
+      if (!(realOcc instanceof Set)) return;
+      state.occupiedRoomsReal = realOcc;
+      const quoteOcc = (state.occupiedRoomsQuote instanceof Set) ? state.occupiedRoomsQuote : new Set();
+      state.occupiedRooms = new Set([...(realOcc || new Set()), ...(quoteOcc || new Set())]);
+      try{ window.__ddae_renderRooms && window.__ddae_renderRooms(); }catch(_){ }
+      try{
+        const wrap = document.getElementById('roomsWrap') || document.querySelector('.rooms-grid');
+        if (wrap){
+          wrap.querySelectorAll('.room-dot[data-room]').forEach(btn=>{
+            const n = parseInt(btn.getAttribute('data-room'),10);
+            const rr = realOcc.has(n);
+            const qq = quoteOcc.has(n) && !rr;
+            btn.classList.toggle('occupied', rr || qq);
+            btn.classList.toggle('occupied-real', rr);
+            btn.classList.toggle('occupied-quote', qq);
+            if (rr){ btn.disabled = true; btn.setAttribute('aria-disabled','true'); }
+            else if (qq){ btn.disabled = false; btn.setAttribute('aria-disabled','false'); }
+          });
+        }
+      }catch(_){ }
+    }catch(_){ }
+  }
+  function __ddae2809ScheduleRoomFix(){
+    try{ setTimeout(__ddae2809ForceRealRoomOccupancyRed, 80); setTimeout(__ddae2809ForceRealRoomOccupancyRed, 350); }catch(_){ }
+  }
+  try{
+    const oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+    if (oldSync && !oldSync.__ddae2809Wrapped){
+      const wrapped = function(){ const out = oldSync.apply(this, arguments); try{ __ddae2809HidePreventivoEconomicRows(); __ddae2809ScheduleRoomFix(); }catch(_){ } return out; };
+      wrapped.__ddae2809Wrapped = true;
+      __syncPreventivoModeUi__ = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldCreate = (typeof enterGuestCreateMode === 'function') ? enterGuestCreateMode : null;
+    if (oldCreate && !oldCreate.__ddae2809Wrapped){
+      const wrappedCreate = function(){ const out = oldCreate.apply(this, arguments); try{ __ddae2809HidePreventivoEconomicRows(); __ddae2809ScheduleRoomFix(); }catch(_){ } return out; };
+      wrappedCreate.__ddae2809Wrapped = true;
+      enterGuestCreateMode = wrappedCreate;
+    }
+  }catch(_){ }
+  try{
+    const oldEdit = (typeof enterGuestEditMode === 'function') ? enterGuestEditMode : null;
+    if (oldEdit && !oldEdit.__ddae2809Wrapped){
+      const wrappedEdit = function(){ const out = oldEdit.apply(this, arguments); try{ __ddae2809HidePreventivoEconomicRows(); __ddae2809ScheduleRoomFix(); }catch(_){ } return out; };
+      wrappedEdit.__ddae2809Wrapped = true;
+      enterGuestEditMode = wrappedEdit;
+    }
+  }catch(_){ }
+  try{
+    const oldView = (typeof enterGuestViewMode === 'function') ? enterGuestViewMode : null;
+    if (oldView && !oldView.__ddae2809Wrapped){
+      const wrappedView = function(){ const out = oldView.apply(this, arguments); try{ __ddae2809HidePreventivoEconomicRows(); __ddae2809ScheduleRoomFix(); }catch(_){ } return out; };
+      wrappedView.__ddae2809Wrapped = true;
+      enterGuestViewMode = wrappedView;
+    }
+  }catch(_){ }
+  try{
+    const oldRefresh = window.__ddae_refreshRoomsAvailability;
+    if (typeof oldRefresh === 'function' && !oldRefresh.__ddae2809Wrapped){
+      const wrappedRefresh = async function(){ const out = await oldRefresh.apply(this, arguments); try{ await __ddae2809ForceRealRoomOccupancyRed(); }catch(_){ } return out; };
+      wrappedRefresh.__ddae2809Wrapped = true;
+      window.__ddae_refreshRoomsAvailability = wrappedRefresh;
+    }
+  }catch(_){ }
+  function boot(){
+    try{ __ddae2809HidePreventivoEconomicRows(); }catch(_){ }
+    try{ ['guestCheckIn','guestCheckOut'].forEach(id=>{ const el=document.getElementById(id); if(el && !el.__ddae2809RoomsFix){ el.__ddae2809RoomsFix=true; el.addEventListener('input', __ddae2809ScheduleRoomFix); el.addEventListener('change', __ddae2809ScheduleRoomFix); } }); }catch(_){ }
+    try{ __ddae2809ScheduleRoomFix(); }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once:true }); else boot();
+  try{ window.addEventListener('pageshow', boot, { passive:true }); }catch(_){ }
+  try{ window.__ddae2809HidePreventivoEconomicRows = __ddae2809HidePreventivoEconomicRows; window.__ddae2809ForceRealRoomOccupancyRed = __ddae2809ForceRealRoomOccupancyRed; }catch(_){ }
+})();
+
+/* dDAE_2.813 — Preventivi: report funzionante + rimozione definitiva commissione/channel */
+(function(){
+  function __ddae2810IsQuoteMode(){
+    try{ return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo'); }catch(_){ return false; }
+  }
+  function __ddae2810SetGone(el, hide){
+    try{
+      if (!el) return;
+      el.hidden = !!hide;
+      if (hide){
+        el.setAttribute('hidden','');
+        el.style.setProperty('display','none','important');
+        el.style.setProperty('visibility','hidden','important');
+        el.style.setProperty('pointer-events','none','important');
+      } else {
+        el.removeAttribute('hidden');
+        el.style.removeProperty('display');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('pointer-events');
+      }
+    }catch(_){ }
+  }
+  function __ddae2810HideQuoteRows(){
+    try{
+      const hide = __ddae2810IsQuoteMode();
+      ['guestChannelRow','guestChannelCommissionWrap','guestBookingNumberField'].forEach(function(id){
+        __ddae2810SetGone(document.getElementById(id), hide);
+      });
+      if (hide){
+        try{ const gb = document.getElementById('guestBooking'); if (gb) gb.value = '0'; }catch(_){ }
+        try{ const gc = document.getElementById('guestChannelCommission'); if (gc) gc.value = '0'; }catch(_){ }
+        try{ const ch = document.getElementById('guestChannel'); if (ch) ch.value = ''; }catch(_){ }
+        try{ const bn = document.getElementById('guestBookingNumber'); if (bn) bn.value = ''; }catch(_){ }
+      }
+    }catch(_){ }
+  }
+  function __ddae2810CurrentQuoteForReport(){
+    try{
+      let src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
+      if (!src || typeof src !== 'object') src = {};
+      const read = (id) => String(document.getElementById(id)?.value ?? '').trim();
+      const rooms = Array.from((state && state.guestRooms) || []).map(function(n){ return parseInt(n,10); }).filter(function(n){ return Number.isFinite(n); }).sort(function(a,b){ return a-b; });
+      const merged = Object.assign({}, src, {
+        preventivo: '1',
+        is_preventivo: '1',
+        nome: read('guestName') || src.nome || src.name || 'Preventivo',
+        telefono: read('guestPhone') || src.telefono || src.phone || '',
+        email: read('guestEmail') || src.email || '',
+        check_in: read('guestCheckIn') || src.check_in || src.checkIn || '',
+        check_out: read('guestCheckOut') || src.check_out || src.checkOut || '',
+        adulti: parseInt(read('guestAdults') || src.adulti || src.adults || '0',10) || 0,
+        bambini_u10: parseInt(read('guestKidsU10') || src.bambini_u10 || src.kids_u10 || '0',10) || 0,
+        uomini: parseInt(read('guestMen') || src.uomini || '0',10) || 0,
+        donne: parseInt(read('guestWomen') || src.donne || '0',10) || 0,
+        note: read('guestNotes') || src.note || src.notes || '',
+        stanze: rooms.length ? JSON.stringify(rooms) : (src.stanze || src.rooms || '[]'),
+        importo_prenotazione: parseFloat(read('guestTotal') || src.importo_prenotazione || src.total || '0') || 0,
+        servizi_totale: 0,
+        sconto: 0,
+        acconto_importo: 0,
+        saldo_pagato: 0,
+        numero_prenotazione: '',
+        channel_id: '',
+        channel_nome: '',
+        channel_colore: '',
+        channel_iniziale: ''
+      });
+      return merged;
+    }catch(_){ return (state && (state.guestQuoteSourceItem || state.guestViewItem)) || null; }
+  }
+  async function __ddae2810OpenQuoteReport(){
+    try{
+      const item = __ddae2810CurrentQuoteForReport();
+      if (!item){ try{ toast('Preventivo non disponibile'); }catch(_){ } return; }
+      if (typeof __openGuestReportModal__ === 'function'){
+        await __openGuestReportModal__(item);
+        try{ state.guestReportCurrent = item; }catch(_){ }
+      }
+    }catch(err){ try{ toast(err?.message || 'Errore report preventivo'); }catch(_){ } }
+  }
+  function __ddae2810EnsureReportButton(){
+    try{
+      __ddae2810HideQuoteRows();
+      const root = document.getElementById('ospiteHdActions');
+      const report = root ? root.querySelector('[data-guest-report]') : null;
+      if (report && __ddae2810IsQuoteMode()){
+        report.hidden = (String(state && state.guestMode || '').toLowerCase() !== 'view');
+        report.removeAttribute('disabled');
+        report.setAttribute('aria-disabled','false');
+      }
+    }catch(_){ }
+  }
+  try{
+    const oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+    if (oldSync && !oldSync.__ddae2810Wrapped){
+      const wrapped = function(){ const out = oldSync.apply(this, arguments); try{ __ddae2810EnsureReportButton(); setTimeout(__ddae2810EnsureReportButton, 80); setTimeout(__ddae2810HideQuoteRows, 300); }catch(_){ } return out; };
+      wrapped.__ddae2810Wrapped = true;
+      __syncPreventivoModeUi__ = wrapped;
+    }
+  }catch(_){ }
+  ['click','touchend'].forEach(function(evtName){
+    try{
+      document.addEventListener(evtName, function(ev){
+        try{
+          const btn = ev.target && ev.target.closest ? ev.target.closest('[data-guest-report]') : null;
+          if (!btn || !__ddae2810IsQuoteMode()) return;
+          ev.preventDefault(); ev.stopPropagation(); if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+          __ddae2810OpenQuoteReport();
+        }catch(_){ }
+      }, true);
+    }catch(_){ }
+  });
+  function boot(){
+    try{ __ddae2810EnsureReportButton(); }catch(_){ }
+    try{ setTimeout(__ddae2810EnsureReportButton, 120); setTimeout(__ddae2810HideQuoteRows, 450); }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once:true }); else boot();
+  try{ window.addEventListener('pageshow', boot, { passive:true }); }catch(_){ }
+  try{ setInterval(function(){ if (__ddae2810IsQuoteMode()) __ddae2810HideQuoteRows(); }, 700); }catch(_){ }
+})();
+
+/* dDAE_2.813 — Preventivi: report Note, gruppi multipli, numerazione P progressiva */
+(function(){
+  function qId(p){ try{ return String((typeof __preventivoIdOf__==='function' ? __preventivoIdOf__(p) : (p && (p.id||p.preventivo_id||p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx||0) || '').trim().toUpperCase(); }catch(_){ return 'P'+((idx||0)+1); } }
+  function isQuoteObj(p){ try{ return !!(p && (String(p.preventivo||'')==='1' || String(p.is_preventivo||'')==='1' || String(p.numero_preventivo||p.preventivo_numero||'').trim().toUpperCase().startsWith('P'))); }catch(_){ return false; } }
+  function quoteRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function quoteGroupFor(item){
+    try{
+      const n = qNum(item, 0);
+      if (!n) return item ? [item] : [];
+      const rows = quoteRows().filter(x => qNum(x,0) === n);
+      const out = rows.length ? rows : (item ? [item] : []);
+      return (typeof __preventiviSort__==='function') ? __preventiviSort__(out) : out;
+    }catch(_){ return item ? [item] : []; }
+  }
+  function withGroup(item){
+    try{
+      if (!item) return item;
+      const group = quoteGroupFor(item);
+      const merged = Object.assign({}, item, {_groupBookings: group, _quoteGroupBookings: group});
+      return merged;
+    }catch(_){ return item; }
+  }
+  function setGone(el, hide){
+    try{
+      if(!el) return;
+      el.hidden = !!hide;
+      if(hide){ el.setAttribute('hidden',''); el.style.setProperty('display','none','important'); }
+      else { el.removeAttribute('hidden'); el.style.removeProperty('display'); }
+    }catch(_){ }
+  }
+  function hideQuoteChannelEverywhere(){
+    try{
+      const quote = !!(state && state.guestIsQuote);
+      ['guestChannelRow','guestChannelCommissionWrap','guestBookingNumberField'].forEach(id=>setGone(document.getElementById(id), quote));
+      if (quote){
+        const ch=document.getElementById('guestChannel'); if(ch) ch.value='';
+        const bn=document.getElementById('guestBookingNumber'); if(bn) bn.value='';
+        const gb=document.getElementById('guestBooking'); if(gb) gb.value='0';
+        const gc=document.getElementById('guestChannelCommission'); if(gc) gc.value='0';
+      }
+    }catch(_){ }
+  }
+
+  try{
+    const oldView = (typeof __enterPreventivoViewMode__==='function') ? __enterPreventivoViewMode__ : null;
+    if(oldView && !oldView.__ddae2811Wrapped){
+      const wrapped = function(item){
+        const src = withGroup(item);
+        const out = oldView.call(this, src);
+        try{ state.guestQuoteSourceItem = src; state.guestViewItem = src; state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null; state.guestGroupActiveId = qId(item); renderGuestMulti({mode:'view'}); hideQuoteChannelEverywhere(); }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2811Wrapped = true;
+      __enterPreventivoViewMode__ = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldEdit = (typeof __enterPreventivoEditMode__==='function') ? __enterPreventivoEditMode__ : null;
+    if(oldEdit && !oldEdit.__ddae2811Wrapped){
+      const wrapped = function(item){
+        const src = withGroup(item);
+        const out = oldEdit.call(this, src);
+        try{ state.guestQuoteSourceItem = src; state.guestEditSourceItem = item || src; state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null; state.guestGroupActiveId = qId(item || src); state.guestQuoteGroupNumber = qNum(item || src,0); renderGuestMulti({mode:'edit'}); hideQuoteChannelEverywhere(); }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2811Wrapped = true;
+      __enterPreventivoEditMode__ = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldCreate = (typeof __enterPreventivoCreateMode__==='function') ? __enterPreventivoCreateMode__ : null;
+    if(oldCreate && !oldCreate.__ddae2811Wrapped){
+      const wrapped = function(){
+        const out = oldCreate.apply(this, arguments);
+        try{ hideQuoteChannelEverywhere(); }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2811Wrapped = true;
+      __enterPreventivoCreateMode__ = wrapped;
+    }
+  }catch(_){ }
+
+  try{
+    const oldCollect = (typeof __collectPreventivoPayload__==='function') ? __collectPreventivoPayload__ : null;
+    if(oldCollect && !oldCollect.__ddae2811Wrapped){
+      const wrapped = function(){
+        const payload = oldCollect.apply(this, arguments);
+        try{
+          if(payload){
+            payload.channel_id=''; payload.channel_nome=''; payload.channel_colore=''; payload.channel_colore_testo=''; payload.channel_iniziale=''; payload.channel_commissione=0; payload.importo_booking=0;
+            payload.numero_prenotazione='';
+            const groupNum = String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase();
+            if(groupNum){ payload.numero_preventivo = groupNum; payload.preventivo_numero = groupNum; }
+            if(!payload.numero_preventivo){
+              const rows = quoteRows();
+              payload.numero_preventivo = (typeof __nextPreventivoNumber__==='function') ? __nextPreventivoNumber__(rows) : ('P'+(rows.length+1));
+              payload.preventivo_numero = payload.numero_preventivo;
+            }
+          }
+        }catch(_){ }
+        return payload;
+      };
+      wrapped.__ddae2811Wrapped = true;
+      __collectPreventivoPayload__ = wrapped;
+    }
+  }catch(_){ }
+
+  function fillCommonFrom(src){
+    try{
+      if(!src) return;
+      const set=(id,val)=>{ const el=document.getElementById(id); if(el) el.value=(val==null?'':String(val)); };
+      set('guestName', src.nome ?? src.name ?? ''); try{ __applyGuestNameUppercase__(document.getElementById('guestName')); }catch(_){ }
+      set('guestPhone', src.telefono ?? src.phone ?? ''); set('guestEmail', src.email ?? '');
+      try{ setGuestNationality(__readGuestNationalityFromRecord__(src).code || src.nazionalita || src.country_code || '', {manual:true}); }catch(_){ }
+      set('guestMen', src.uomini ?? 0); set('guestWomen', src.donne ?? 0); set('guestAdults', src.adulti ?? src.adults ?? 0); set('guestKidsU10', src.bambini_u10 ?? src.kidsU10 ?? 0);
+      try{ syncGuestNotesUI(src, {open:false}); }catch(_){ set('guestNotes', src.note ?? src.notes ?? ''); }
+      try{ setMarriage(!!src.matrimonio); setGroup(truthy(src.g ?? src.flag_g ?? src.group)); setColC(truthy(src.col_c ?? src.colC ?? src.c)); }catch(_){ }
+      try{ refreshFloatingLabels(); }catch(_){ }
+    }catch(_){ }
+  }
+  document.addEventListener('click', async function(ev){
+    try{
+      if(!(state && state.guestIsQuote)) return;
+      const multi = document.getElementById('guestMulti');
+      const target = ev.target && ev.target.closest ? ev.target.closest('[data-guest-add-booking],button[data-guest-select],button[data-guest-del-booking]') : null;
+      if(!target || (multi && !multi.contains(target))) return;
+      ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      if(target.hasAttribute('data-guest-add-booking')){
+        const src = state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem || null;
+        const groupNum = qNum(src,0) || String(state.guestQuoteGroupNumber||'').trim();
+        try{ __enterPreventivoCreateMode__(); }catch(_){ }
+        try{ state.guestIsQuote = true; state.guestQuoteGroupNumber = groupNum; state.guestCreateFromQuoteGroup = true; state.guestEditId=''; fillCommonFrom(src); document.getElementById('guestCheckIn').value=''; document.getElementById('guestCheckOut').value=''; state.guestRooms = new Set(); window.__ddae_renderRooms && window.__ddae_renderRooms(); hideQuoteChannelEverywhere(); }catch(_){ }
+        try{ const t=document.getElementById('ospiteFormTitle'); if(t) t.textContent='Nuovo preventivo'; const b=document.getElementById('createGuestCard'); if(b) b.textContent='Crea preventivo'; }catch(_){ }
+        try{ renderGuestMulti({mode:'edit'}); }catch(_){ }
+        return;
+      }
+      if(target.hasAttribute('data-guest-select')){
+        const id=String(target.getAttribute('data-guest-select')||'').trim();
+        const row=(state.guestGroupBookings||quoteRows()).find(x=>qId(x)===id);
+        if(row) __enterPreventivoEditMode__(row);
+        return;
+      }
+      if(target.hasAttribute('data-guest-del-booking')){
+        const id=String(target.getAttribute('data-guest-del-booking')||'').trim();
+        if(!id) return;
+        if(!confirm('Eliminare questo preventivo?')) return;
+        let rows=quoteRows().filter(x=>qId(x)!==id);
+        state.preventivi = (typeof __preventiviSort__==='function') ? __preventiviSort__(rows) : rows;
+        await __setPreventiviRows__(state.preventivi);
+        try{ invalidateApiCache('preventivi|'); }catch(_){ }
+        const next=(state.guestGroupBookings||[]).find(x=>qId(x)!==id) || null;
+        if(next) __enterPreventivoEditMode__(next); else showPage('preventivi');
+      }
+    }catch(_){ }
+  }, true);
+
+  try{
+    const oldRender = (typeof renderPreventiviCards==='function') ? renderPreventiviCards : null;
+    renderPreventiviCards = function(){
+      try{
+        const wrap=document.getElementById('preventiviCards'); if(!wrap){ return oldRender && oldRender.apply(this, arguments); }
+        const all=quoteRows();
+        const map=new Map();
+        all.forEach((p,idx)=>{ const n=qNum(p,idx); if(!map.has(n)) map.set(n, []); map.get(n).push(p); });
+        const grouped=[]; map.forEach((list,n)=>{ const sorted=(typeof __preventiviSort__==='function')?__preventiviSort__(list):list; const first=Object.assign({}, sorted[0]||{}, {_groupBookings:sorted}); grouped.push(first); });
+        const prev=state.preventivi; state.preventivi=grouped;
+        try{ oldRender && oldRender.apply(this, arguments); }finally{ state.preventivi=prev; }
+        try{
+          const cards=wrap.querySelectorAll('.preventivo-card');
+          cards.forEach((card,i)=>{ const item=grouped[i]; if(!item) return; const open=()=>{ __enterPreventivoViewMode__(item); showPage('ospite'); }; card.onclick=null; card.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} open(); }, {once:false}); });
+        }catch(_){ }
+        return;
+      }catch(_){ return oldRender && oldRender.apply(this, arguments); }
+    };
+  }catch(_){ }
+
+  try{
+    const oldRows = (typeof __guestReportResolveRows__==='function') ? __guestReportResolveRows__ : null;
+    if(oldRows && !oldRows.__ddae2811Wrapped){
+      const wrapped = function(guest){
+        const payload = oldRows.apply(this, arguments) || {};
+        try{
+          if(isQuoteObj(guest) || (state && state.guestIsQuote)){
+            const lang = payload.lang || (typeof __guestReportResolveLanguage__==='function' ? __guestReportResolveLanguage__(guest) : 'it');
+            const label = (typeof __guestReportT__==='function' ? (__guestReportT__(lang,'notes') || 'Note') : 'Note');
+            let note = '';
+            try{
+              const bookings = (typeof __guestReportResolveBookings__==='function') ? __guestReportResolveBookings__(guest) : [guest];
+              note = (bookings||[]).map(x=>String(x?.note ?? x?.notes ?? '').trim()).filter(Boolean).join(' · ');
+            }catch(_){ note = String(guest?.note ?? guest?.notes ?? '').trim(); }
+            const rows=(payload.rows||[]).filter(r=>{
+              const k=String(r && (r.kind||'')).toLowerCase();
+              const lab=String(r && (r.label||'')).toLowerCase();
+              if(k==='serviceslist') return false;
+              if(lab.includes('servizi') || lab.includes('services')) return false;
+              return true;
+            });
+            rows.splice(Math.min(rows.length, 3), 0, {kind:'notes', label:label || 'Note', value: note || (typeof __guestReportT__==='function' ? __guestReportT__(lang,'none') : '—')});
+            payload.rows = rows;
+          }
+        }catch(_){ }
+        return payload;
+      };
+      wrapped.__ddae2811Wrapped=true;
+      __guestReportResolveRows__ = wrapped;
+    }
+  }catch(_){ }
+
+  try{
+    const oldMap = (typeof __guestReportTextMap__==='function') ? __guestReportTextMap__ : null;
+    if(oldMap && !oldMap.__ddae2811Wrapped){
+      const wrapped=function(){ const m=oldMap.apply(this, arguments)||{}; m.notes={it:'Note',en:'Notes',fr:'Notes',de:'Notizen',es:'Notas'}; return m; };
+      wrapped.__ddae2811Wrapped=true; __guestReportTextMap__=wrapped;
+    }
+  }catch(_){ }
+
+  function boot(){ try{ hideQuoteChannelEverywhere(); }catch(_){ } }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
+  try{ setInterval(function(){ if(state && state.guestIsQuote) hideQuoteChannelEverywhere(); }, 800); }catch(_){ }
+})();
+
+
+/* dDAE_2.813 — Preventivi: ogni nuovo preventivo crea una card separata; gruppi solo da modifica interna */
+(function(){
+  function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx || 0) || '').trim().toUpperCase(); }catch(_){ return 'P' + ((idx || 0) + 1); } }
+  function qRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function qGroupKey(p){
+    try{
+      const gid = String(p && (p.preventivo_group_id || p.quote_group_id || p.gruppo_preventivo_id || '') || '').trim();
+      if (gid) return 'g:' + gid;
+      const id = qId(p);
+      return id ? 'id:' + id : ('new:' + Math.random());
+    }catch(_){ return 'new:' + Math.random(); }
+  }
+  function qGroupFor(item){
+    try{
+      if (!item) return [];
+      const key = qGroupKey(item);
+      const out = qRows().filter(function(x){ return qGroupKey(x) === key; });
+      const rows = out.length ? out : [item];
+      return (typeof __preventiviSort__ === 'function') ? __preventiviSort__(rows) : rows;
+    }catch(_){ return item ? [item] : []; }
+  }
+  function qWithGroup(item){
+    try{
+      if (!item) return item;
+      const group = qGroupFor(item);
+      return Object.assign({}, item, {_groupBookings: group, _quoteGroupBookings: group});
+    }catch(_){ return item; }
+  }
+  function qResetCreateGrouping(){
+    try{
+      state.guestQuoteGroupNumber = '';
+      state.guestCreateFromQuoteGroup = false;
+      state.guestGroupBookings = null;
+      state.guestGroupActiveId = '';
+    }catch(_){ }
+  }
+  try{
+    const oldCreate = (typeof __enterPreventivoCreateMode__ === 'function') ? __enterPreventivoCreateMode__ : null;
+    if (oldCreate && !oldCreate.__ddae2813Wrapped){
+      const wrapped = function(){
+        qResetCreateGrouping();
+        const out = oldCreate.apply(this, arguments);
+        try{ qResetCreateGrouping(); }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2813Wrapped = true;
+      __enterPreventivoCreateMode__ = wrapped;
+    }
+  }catch(_){ }
+  try{
+    if (typeof __enterPreventivoViewMode__ === 'function'){
+      __enterPreventivoViewMode__ = function(item){
+        const src = qWithGroup(item);
+        state.guestIsQuote = true;
+        state.guestQuoteSourceItem = src || null;
+        state.guestQuoteConfirmed = (typeof __preventivoIsConfirmed__ === 'function') ? __preventivoIsConfirmed__(src) : false;
+        try{ enterGuestViewMode(src); }catch(_){ }
+        state.guestIsQuote = true;
+        state.guestQuoteSourceItem = src || null;
+        state.guestViewItem = src || null;
+        state.guestQuoteConfirmed = (typeof __preventivoIsConfirmed__ === 'function') ? __preventivoIsConfirmed__(src) : false;
+        state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null;
+        state.guestGroupActiveId = qId(item || src);
+        state.guestQuoteGroupNumber = qNum(item || src, 0);
+        try{ const title = document.getElementById('ospiteFormTitle'); if (title) title.textContent = 'Scheda preventivo'; }catch(_){ }
+        try{ __syncPreventivoModeUi__(); }catch(_){ }
+        try{ renderGuestMulti({mode:'view'}); }catch(_){ }
+      };
+    }
+  }catch(_){ }
+  try{
+    if (typeof __enterPreventivoEditMode__ === 'function'){
+      __enterPreventivoEditMode__ = function(item){
+        const src = qWithGroup(item);
+        state.guestIsQuote = true;
+        state.guestQuoteSourceItem = src || null;
+        state.guestQuoteConfirmed = (typeof __preventivoIsConfirmed__ === 'function') ? __preventivoIsConfirmed__(src) : false;
+        try{ enterGuestEditMode(item || src); }catch(_){ }
+        state.guestIsQuote = true;
+        state.guestQuoteSourceItem = src || null;
+        state.guestEditSourceItem = item || src || null;
+        state.guestQuoteConfirmed = (typeof __preventivoIsConfirmed__ === 'function') ? __preventivoIsConfirmed__(src) : false;
+        state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null;
+        state.guestGroupActiveId = qId(item || src);
+        state.guestQuoteGroupNumber = qNum(item || src, 0);
+        try{ const title = document.getElementById('ospiteFormTitle'); if (title) title.textContent = 'Modifica preventivo'; const btn = document.getElementById('createGuestCard'); if (btn) btn.textContent = 'Salva preventivo'; }catch(_){ }
+        try{ __syncPreventivoModeUi__(); }catch(_){ }
+        try{ renderGuestMulti({mode:'edit'}); }catch(_){ }
+      };
+    }
+  }catch(_){ }
+
+  try{
+    const oldCollect = (typeof __collectPreventivoPayload__ === 'function') ? __collectPreventivoPayload__ : null;
+    if (oldCollect && !oldCollect.__ddae2813Wrapped){
+      const wrapped = function(){
+        const payload = oldCollect.apply(this, arguments);
+        try{
+          if (payload){
+            payload.channel_id=''; payload.channel_nome=''; payload.channel_colore=''; payload.channel_colore_testo=''; payload.channel_iniziale=''; payload.channel_commissione=0; payload.importo_booking=0; payload.numero_prenotazione='';
+            const fromGroup = !!(state && state.guestCreateFromQuoteGroup);
+            const mode = String(state && state.guestMode || '').toLowerCase();
+            if (fromGroup){
+              const src = state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem || null;
+              const groupId = String(src && (src.preventivo_group_id || src.quote_group_id || src.gruppo_preventivo_id || qId(src)) || '').trim();
+              if (groupId){ payload.preventivo_group_id = groupId; payload.quote_group_id = groupId; payload.gruppo_preventivo_id = groupId; }
+              const groupNum = String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase();
+              if (groupNum){ payload.numero_preventivo = groupNum; payload.preventivo_numero = groupNum; }
+            } else if (mode === 'create'){
+              delete payload.preventivo_group_id; delete payload.quote_group_id; delete payload.gruppo_preventivo_id;
+              const rows = qRows();
+              const next = (typeof __nextPreventivoNumber__ === 'function') ? __nextPreventivoNumber__(rows) : ('P' + (rows.length + 1));
+              payload.numero_preventivo = next;
+              payload.preventivo_numero = next;
+            }
+          }
+        }catch(_){ }
+        return payload;
+      };
+      wrapped.__ddae2813Wrapped = true;
+      __collectPreventivoPayload__ = wrapped;
+    }
+  }catch(_){ }
+
+  try{
+    const oldSave = (typeof savePreventivo === 'function') ? savePreventivo : null;
+    if (oldSave && !oldSave.__ddae2813Wrapped){
+      const wrapped = async function(){
+        const out = await oldSave.apply(this, arguments);
+        try{ state.guestCreateFromQuoteGroup = false; state.guestQuoteGroupNumber = ''; }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2813Wrapped = true;
+      savePreventivo = wrapped;
+    }
+  }catch(_){ }
+
+  function qDateISO(v){ try{ return (__parseDateFlexibleToISO(v) || String(v||'').trim().slice(0,10)); }catch(_){ return String(v||'').trim().slice(0,10); } }
+  function qArrival(p){ return qDateISO(p && (p.check_in || p.checkIn || p.arrivo || p.dataArrivo || p.arrival || '')); }
+  function qCheckout(p){ return qDateISO(p && (p.check_out || p.checkOut || p.checkout || p.dataPartenza || p.partenza || p.departure || '')); }
+  function qCreated(p){ return Date.parse(p && (p.createdAt || p.created_at || p.updatedAt || p.updated_at || '')) || 0; }
+  function qFilteredGroups(){
+    let rows = qRows();
+    try{ rows = __filterByExerciseYear__(rows, state.exerciseYear || loadExerciseYear(), ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at']); }catch(_){ }
+    try{
+      const mode = String(state.preventiviArrivalFilter || localStorage.getItem('dDAE_preventiviArrivalFilter') || 'today');
+      if (mode && mode !== 'all'){
+        const today = todayISO();
+        const limits = { '3days': addDaysISO(today,3), '7days': addDaysISO(today,7), '-3days': addDaysISO(today,-3), '-7days': addDaysISO(today,-7) };
+        const useCheckout = String(state.preventiviSortBy || '').trim() === 'checkout';
+        rows = rows.filter(function(p){
+          const d = (useCheckout ? qCheckout(p) : qArrival(p)).slice(0,10);
+          if (!d) return false;
+          if (mode === '3days') return d >= today && d <= limits['3days'];
+          if (mode === '7days') return d >= today && d <= limits['7days'];
+          if (mode === '-3days') return d >= limits['-3days'] && d <= today;
+          if (mode === '-7days') return d >= limits['-7days'] && d <= today;
+          return d === today;
+        });
+      }
+    }catch(_){ }
+    const map = new Map();
+    rows.forEach(function(p){
+      const key = qGroupKey(p);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(p);
+    });
+    let groups = [];
+    map.forEach(function(list){
+      const sorted = (typeof __preventiviSort__ === 'function') ? __preventiviSort__(list) : list;
+      const first = Object.assign({}, sorted[0] || {}, {_groupBookings: sorted, _quoteGroupBookings: sorted});
+      groups.push(first);
+    });
+    const by = String(state.preventiviSortBy || localStorage.getItem('dDAE_preventiviSortBy') || 'arrivo');
+    const dir = String(state.preventiviSortDir || localStorage.getItem('dDAE_preventiviSortDir') || 'asc') === 'desc' ? -1 : 1;
+    groups.sort(function(a,b){
+      if (by === 'nome') return String(a.nome || a.name || '').trim().toLowerCase().localeCompare(String(b.nome || b.name || '').trim().toLowerCase(), 'it') * dir;
+      if (by === 'checkout') return ((Date.parse(qCheckout(a)) || 0) - (Date.parse(qCheckout(b)) || 0)) * dir;
+      if (by === 'inserimento') return ((parseInt(qNum(a,0).replace(/\D+/g,''),10)||0) - (parseInt(qNum(b,0).replace(/\D+/g,''),10)||0)) * dir || (qCreated(a)-qCreated(b))*dir;
+      return ((Date.parse(qArrival(a)) || 0) - (Date.parse(qArrival(b)) || 0)) * dir;
+    });
+    return groups;
+  }
+  if (typeof renderPreventiviCards === 'function'){
+    renderPreventiviCards = function(){
+      const wrap = document.getElementById('preventiviCards');
+      if (!wrap) return;
+      wrap.replaceChildren();
+      const groups = qFilteredGroups();
+      if (!groups.length){
+        const empty = document.createElement('div');
+        empty.style.opacity = '.7'; empty.style.fontSize = '14px'; empty.style.padding = '8px';
+        empty.textContent = 'Nessun preventivo.';
+        wrap.appendChild(empty);
+        try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+        return;
+      }
+      const frag = document.createDocumentFragment();
+      groups.forEach(function(p, idx){
+        const card = document.createElement('div');
+        card.className = 'guest-card preventivo-card';
+        card.tabIndex = 0; card.setAttribute('role','button');
+        try{ card.dataset.arrivalIso = qArrival(p); card.dataset.checkoutIso = qCheckout(p); }catch(_){ }
+        const nome = escapeHtml(p && (p.nome || p.name) || 'Preventivo');
+        const number = escapeHtml(qNum(p, idx));
+        const nationalityOption = (typeof __readGuestNationalityFromRecord__ === 'function') ? __readGuestNationalityFromRecord__(p) : null;
+        const flag = escapeHtml(String((p && p.country_flag) || (nationalityOption && nationalityOption.flag) || '🏳️').trim() || '🏳️');
+        const natName = escapeHtml(String((nationalityOption && nationalityOption.name) || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
+        const range = escapeHtml((typeof __guestCardStayRangeLabel__ === 'function' ? __guestCardStayRangeLabel__(p) : '') || (typeof formatArrivalDayIT === 'function' ? formatArrivalDayIT((p && (p.check_in || p.checkIn)) || '') : '') || '—');
+        const tel = escapeHtml(String(p && (p.telefono || p.tel || p.phone) || '').trim());
+        const em = escapeHtml(String(p && (p.email || p.mail) || '').trim());
+        const confirmed = (typeof __preventivoIsConfirmed__ === 'function') ? __preventivoIsConfirmed__(p) : false;
+        const channelBadge = (typeof getGuestChannelBadgeData === 'function') ? getGuestChannelBadgeData(p) : null;
+        const stayNights = (typeof calcStayNights === 'function') ? calcStayNights(p) : '';
+        const hasNotes = (typeof guestHasNotes === 'function') ? guestHasNotes(p) : false;
+        const marriageOn = !!(p && p.matrimonio);
+        const ledCls = confirmed ? 'led-green' : 'led-yellow';
+        const ledLabel = confirmed ? 'Preventivo confermato' : 'Preventivo non confermato';
+        card.setAttribute('aria-label', 'Apri scheda preventivo: ' + (p && (p.nome || p.name) || 'Preventivo'));
+        card.innerHTML = `<div class="guest-row guest-row-compact"><div class="guest-main"><span class="guest-insno preventivo-insno is-ready${hasNotes ? ' has-notes' : ''}" aria-label="Numero preventivo" title="Numero preventivo"${hasNotes ? ' data-has-notes="1"' : ''}>${number}</span><span class="guest-nationality-dot" aria-label="Nazionalità: ${natName}" title="${natName}"><span class="guest-nationality-flag" aria-hidden="true">${flag}</span></span><div class="guest-nameblock"><span class="guest-name-tab guest-name-text">${nome}</span><span class="guest-arrivo guest-arrivo-under" aria-label="Periodo">${range}</span>${((tel || em) ? `<span class="guest-contact" aria-label="Contatti">${tel ? `<span class="guest-contact-line guest-contact-phone">${tel}</span>` : ``}${em ? `<span class="guest-contact-line guest-contact-email">${em}</span>` : ``}</span>` : ``)}</div></div><div class="guest-meta-right" aria-label="Stato"><div class="guest-meta-dots">${(typeof buildNightsDotHTML === 'function') ? buildNightsDotHTML(stayNights) : ''}${(channelBadge && channelBadge.name) ? `<span class="guest-channel-inline"><span class="guest-channel-dot color-${channelBadge.color}" style="${escapeHtml(channelBadge.style || (typeof __tagColorInlineStyle__ === 'function' ? __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) : ''))}" aria-label="${escapeHtml(channelBadge.name)}" title="${escapeHtml(channelBadge.name)}"><span>${escapeHtml(channelBadge.initial)}</span></span></span>` : ``}${marriageOn ? `<span class="marriage-dot" aria-label="Matrimonio">M</span>` : ``}${(truthy(p && (p.g || p.flag_g || p.gruppo_g || p.group || p.g_flag)) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}${(truthy(p && (p.col_c || p.colC || p.c || p.C || p.flag_c || p.flagC || p.colc || p.c_flag)) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}<span class="guest-led ${ledCls}" aria-label="${ledLabel}" title="${ledLabel}"></span></div></div></div>`;
+        try{ __applyGuestListCardVisual__(card); }catch(_){ }
+        try{ __bindGuestListCardColorHold__(card); }catch(_){ }
+        const open = function(){ try{ __enterPreventivoViewMode__(p); showPage('ospite'); }catch(_){ } };
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+        frag.appendChild(card);
+      });
+      wrap.appendChild(frag);
+      try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+    };
+  }
+  try{
+    const boot = function(){ try{ if (state && state.page === 'preventivi') renderPreventiviCards(); }catch(_){ } };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+    window.addEventListener('pageshow', boot, {passive:true});
+  }catch(_){ }
 })();
