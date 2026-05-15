@@ -22600,3 +22600,27 @@ body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestBookin
   visibility:hidden !important;
   pointer-events:none !important;
 }
+
+/* dDAE_2.814 — Preventivi */
+.quote-mode [data-quote-confirm].quote-confirm-green,
+#page-ospite.is-preventivo [data-quote-confirm].quote-confirm-green{
+  background:#22c55e !important;
+  border-color:#22c55e !important;
+  color:#fff !important;
+}
+.quote-mode [data-quote-confirm].quote-confirm-green svg,
+#page-ospite.is-preventivo [data-quote-confirm].quote-confirm-green svg{
+  width:20px;
+  height:20px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  color:#fff !important;
+}
+#page-ospite.is-preventivo .quote-view-force-show{
+  display:revert !important;
+  visibility:visible !important;
+}

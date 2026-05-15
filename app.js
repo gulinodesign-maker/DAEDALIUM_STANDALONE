@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.813";
+const BUILD_VERSION = "2.816";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -12084,7 +12084,7 @@ async function __tagColorPopupConfirm__(){
 }
 
 
-/* dDAE_2.813 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
+/* dDAE_2.816 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
 let __settingsEditorColorPopupSuppressUntil__ = 0;
 let __settingsEditorModalOpenedAt__ = 0;
 function __suppressSettingsEditorColorPopups__(ms){
@@ -36690,7 +36690,7 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ setInterval(updateBodyState, 500); }catch(_){ }
 })();
 
-/* dDAE_2.813 — PREVENTIVI: archivio parallelo locale/backup, UI identica agli ospiti */
+/* dDAE_2.816 — PREVENTIVI: archivio parallelo locale/backup, UI identica agli ospiti */
 const __PREVENTIVI_CACHE_KEY_PREFIX__ = 'preventivi';
 
 function __preventivoIdOf__(p){
@@ -36787,7 +36787,7 @@ function __syncPreventivoModeUi__(){
     page.classList.toggle('preventivo-non-confermato', isQuote && !confirmed && String(state.guestMode||'') === 'view');
   }
   try{ document.body.classList.toggle('quote-mode', isQuote); }catch(_){ }
-  // dDAE_2.813 — Preventivi: rimuovi davvero Channel/commissione anche quando i campi
+  // dDAE_2.816 — Preventivi: rimuovi davvero Channel/commissione anche quando i campi
   // vengono riposizionati nel layout create stack. Il solo CSS sul row non basta su iOS.
   try{
     const ids = ['guestChannelRow','guestChannelCommissionWrap','guestBookingNumberField'];
@@ -37076,7 +37076,7 @@ if (__syncPreventivoModeUi__orig){
 }
 
 
-/* dDAE_2.813 — Preventivi: clone operativo/visivo della pagina Ospiti */
+/* dDAE_2.816 — Preventivi: clone operativo/visivo della pagina Ospiti */
 (function(){
   const P2G = {
     preventiviToday:'guestToday',
@@ -37291,7 +37291,7 @@ if (__syncPreventivoModeUi__orig){
   setTimeout(bind, 300); setTimeout(bind, 900);
 })();
 
-/* dDAE_2.813 — Preventivi: traduzioni, conferma come ospite reale, rifinitura clone Ospiti */
+/* dDAE_2.816 — Preventivi: traduzioni, conferma come ospite reale, rifinitura clone Ospiti */
 try{
   Object.assign(__I18N_PHRASES__, {
     "Preventivi": { "en":"Quotes", "fr":"Devis", "de":"Angebote", "es":"Presupuestos" },
@@ -37392,7 +37392,7 @@ async function confirmPreventivoCurrent(){
 
 try{ __applyAppLanguageToDom__(); }catch(_){ }
 
-/* dDAE_2.813 — Preventivi: pallini stanza globali, conversione guidata, campi quote essenziali */
+/* dDAE_2.816 — Preventivi: pallini stanza globali, conversione guidata, campi quote essenziali */
 try{
   Object.assign(__I18N_PHRASES__, {
     "Completa prenotazione": { "en":"Complete booking", "fr":"Compléter la réservation", "de":"Buchung vervollständigen", "es":"Completar reserva" },
@@ -37558,7 +37558,7 @@ try{
 
 try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 
-/* dDAE_2.813 — Preventivi dentro Ospiti + report su schede preventivo */
+/* dDAE_2.816 — Preventivi dentro Ospiti + report su schede preventivo */
 (function(){
   function bindPreventiviFromOspiti(){
     try{
@@ -37631,7 +37631,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   }catch(_){ }
 })();
 
-/* dDAE_2.813 — Design tasto Preventivi dentro Ospiti */
+/* dDAE_2.816 — Design tasto Preventivi dentro Ospiti */
 (function(){
   function applyPreventiviOspitiButtonDesign(){
     try{
@@ -37647,7 +37647,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   setTimeout(applyPreventiviOspitiButtonDesign, 300);
 })();
 
-/* dDAE_2.813 — Preventivi: nascondi righe economiche in modifica + occupazioni reali sempre rosse */
+/* dDAE_2.816 — Preventivi: nascondi righe economiche in modifica + occupazioni reali sempre rosse */
 (function(){
   function __ddae2809SetHidden(id, hidden){
     try{
@@ -37757,7 +37757,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ window.__ddae2809HidePreventivoEconomicRows = __ddae2809HidePreventivoEconomicRows; window.__ddae2809ForceRealRoomOccupancyRed = __ddae2809ForceRealRoomOccupancyRed; }catch(_){ }
 })();
 
-/* dDAE_2.813 — Preventivi: report funzionante + rimozione definitiva commissione/channel */
+/* dDAE_2.816 — Preventivi: report funzionante + rimozione definitiva commissione/channel */
 (function(){
   function __ddae2810IsQuoteMode(){
     try{ return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo'); }catch(_){ return false; }
@@ -37878,7 +37878,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   try{ setInterval(function(){ if (__ddae2810IsQuoteMode()) __ddae2810HideQuoteRows(); }, 700); }catch(_){ }
 })();
 
-/* dDAE_2.813 — Preventivi: report Note, gruppi multipli, numerazione P progressiva */
+/* dDAE_2.816 — Preventivi: report Note, gruppi multipli, numerazione P progressiva */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__==='function' ? __preventivoIdOf__(p) : (p && (p.id||p.preventivo_id||p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx||0) || '').trim().toUpperCase(); }catch(_){ return 'P'+((idx||0)+1); } }
@@ -38102,7 +38102,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 })();
 
 
-/* dDAE_2.813 — Preventivi: ogni nuovo preventivo crea una card separata; gruppi solo da modifica interna */
+/* dDAE_2.816 — Preventivi: ogni nuovo preventivo crea una card separata; gruppi solo da modifica interna */
 (function(){
   function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
   function qNum(p, idx){ try{ return String(__preventivoNumberText__(p, idx || 0) || '').trim().toUpperCase(); }catch(_){ return 'P' + ((idx || 0) + 1); } }
@@ -38339,4 +38339,425 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
     window.addEventListener('pageshow', boot, {passive:true});
   }catch(_){ }
+})();
+
+/* dDAE_2.816 — Preventivi: sola lettura completa, conversione verde, gruppi interni come ospiti */
+(function(){
+  function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qNum(p, idx){ try{ return String((typeof __preventivoNumberText__ === 'function' ? __preventivoNumberText__(p, idx || 0) : (p && (p.numero_preventivo || p.preventivo_numero))) || ('P' + ((idx || 0) + 1))).trim().toUpperCase(); }catch(_){ return 'P' + ((idx || 0) + 1); } }
+  function qRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function qGroupSeed(p){
+    try{
+      const gid = String(p && (p.preventivo_group_id || p.quote_group_id || p.gruppo_preventivo_id || '') || '').trim();
+      if (gid) return gid;
+      return qId(p);
+    }catch(_){ return ''; }
+  }
+  function qGroupFor(item){
+    try{
+      if (!item) return [];
+      const seed = qGroupSeed(item);
+      const id = qId(item);
+      const rows = qRows().filter(function(x){
+        const xSeed = qGroupSeed(x);
+        const xId = qId(x);
+        return (!!seed && (xSeed === seed || xId === seed)) || (!!id && (xSeed === id || xId === id));
+      });
+      const out = rows.length ? rows : [item];
+      return (typeof __preventiviSort__ === 'function') ? __preventiviSort__(out) : out;
+    }catch(_){ return item ? [item] : []; }
+  }
+  function qWithGroup(item){
+    try{
+      if (!item) return item;
+      const group = qGroupFor(item);
+      const first = Object.assign({}, item, {_groupBookings: group, _quoteGroupBookings: group});
+      return first;
+    }catch(_){ return item; }
+  }
+  function setShown(el, show){
+    try{
+      if (!el) return;
+      el.hidden = !show;
+      if (show){ el.removeAttribute('hidden'); el.style.removeProperty('display'); el.style.removeProperty('visibility'); el.style.removeProperty('pointer-events'); }
+      else { el.setAttribute('hidden',''); el.style.setProperty('display','none','important'); }
+    }catch(_){ }
+  }
+  function setGone(el, hide){ setShown(el, !hide); }
+  function rowOf(id){ try{ const el=document.getElementById(id); return el ? (el.closest('.field') || el.closest('.subfield') || el) : null; }catch(_){ return null; } }
+  function quoteMode(){ try{ return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo'); }catch(_){ return false; } }
+  function quoteView(){ try{ return quoteMode() && String(state && state.guestMode || '').toLowerCase() === 'view'; }catch(_){ return false; } }
+  function moneyNum(v){ const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isFinite(n) ? n : 0; }
+  function applyQuoteViewFields(){
+    try{
+      if (!quoteMode()) return;
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      const isView = mode === 'view';
+      const src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
+      setGone(document.getElementById('guestChannelRow'), true);
+      setGone(document.getElementById('guestChannelCommissionWrap'), true);
+      setGone(document.getElementById('guestBookingNumberField'), true);
+      const bookingField = rowOf('guestBooking'); if (bookingField && bookingField !== document.getElementById('guestChannelRow')) setGone(bookingField, true);
+      if (isView){
+        setShown(rowOf('guestTotal'), true);
+        setShown(rowOf('guestRemaining'), true);
+        const notesWrap = document.getElementById('guestNotesWrap');
+        const notesToggle = document.getElementById('guestNotesToggle');
+        const notesVal = String((src && (src.note || src.notes)) || document.getElementById('guestNotes')?.value || '').trim();
+        if (document.getElementById('guestNotes')) document.getElementById('guestNotes').value = notesVal;
+        setShown(notesToggle ? notesToggle.closest('.subfield') : null, true);
+        setShown(notesWrap, true);
+        const total = moneyNum(document.getElementById('guestTotal')?.value || (src && (src.importo_prenotazione || src.total)) || 0);
+        const services = moneyNum(src && (src.servizi_totale || src.importo_servizi));
+        const discount = moneyNum(src && (src.sconto || src.discount));
+        const deposit = moneyNum(src && (src.acconto_importo || src.deposit));
+        const saldo = moneyNum(src && (src.saldo_pagato || src.saldo));
+        const rem = Math.max(0, Math.round(((total + services) - discount - deposit - saldo) * 100) / 100);
+        const remEl = document.getElementById('guestRemaining'); if (remEl) remEl.value = rem.toFixed(2);
+        try{ updateGuestTaxTotalPill(); }catch(_){ }
+        const tax = document.getElementById('guestTaxTotal'); if (tax){ setShown(tax, true); }
+      } else {
+        setGone(document.getElementById('servicesRow'), true);
+        setGone(document.getElementById('depositRow'), true);
+        setGone(document.getElementById('saldoRow'), true);
+        setGone(document.getElementById('discountRow'), true);
+      }
+      styleQuoteConfirmButton();
+    }catch(_){ }
+  }
+  function styleQuoteConfirmButton(){
+    try{
+      const btn = document.querySelector('[data-quote-confirm]');
+      if (!btn) return;
+      btn.classList.remove('tl-cyan');
+      btn.classList.add('quote-confirm-green');
+      btn.style.setProperty('background', '#22c55e', 'important');
+      btn.style.setProperty('border-color', '#22c55e', 'important');
+      btn.style.setProperty('color', '#ffffff', 'important');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span class="sr-only">Conferma preventivo</span>';
+    }catch(_){ }
+  }
+  try{
+    if (typeof __enterPreventivoViewMode__ === 'function'){
+      const oldView = __enterPreventivoViewMode__;
+      __enterPreventivoViewMode__ = function(item){
+        const src = qWithGroup(item);
+        const out = oldView.call(this, src);
+        try{
+          state.guestIsQuote = true;
+          state.guestQuoteSourceItem = src || null;
+          state.guestViewItem = src || null;
+          state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null;
+          state.guestGroupActiveId = qId(item || src);
+          state.guestQuoteGroupNumber = qNum(item || src, 0);
+          if (Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length > 1 && typeof renderGuestMulti === 'function') renderGuestMulti({mode:'view'});
+          applyQuoteViewFields(); setTimeout(applyQuoteViewFields, 80); setTimeout(applyQuoteViewFields, 320);
+        }catch(_){ }
+        return out;
+      };
+    }
+  }catch(_){ }
+  try{
+    if (typeof __enterPreventivoEditMode__ === 'function'){
+      const oldEdit = __enterPreventivoEditMode__;
+      __enterPreventivoEditMode__ = function(item){
+        const src = qWithGroup(item);
+        const out = oldEdit.call(this, item || src);
+        try{
+          state.guestIsQuote = true;
+          state.guestQuoteSourceItem = src || null;
+          state.guestEditSourceItem = item || src || null;
+          state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null;
+          state.guestGroupActiveId = qId(item || src);
+          state.guestQuoteGroupNumber = qNum(item || src, 0);
+          if (typeof renderGuestMulti === 'function') renderGuestMulti({mode:'edit'});
+          applyQuoteViewFields(); setTimeout(applyQuoteViewFields, 80); setTimeout(applyQuoteViewFields, 320);
+        }catch(_){ }
+        return out;
+      };
+    }
+  }catch(_){ }
+  try{
+    const oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+    if (oldSync){ __syncPreventivoModeUi__ = function(){ const out = oldSync.apply(this, arguments); try{ applyQuoteViewFields(); }catch(_){ } return out; }; }
+  }catch(_){ }
+  try{
+    const oldCollect = (typeof __collectPreventivoPayload__ === 'function') ? __collectPreventivoPayload__ : null;
+    if (oldCollect){
+      __collectPreventivoPayload__ = function(){
+        const payload = oldCollect.apply(this, arguments);
+        try{
+          if (payload && state && state.guestIsQuote){
+            const fromGroup = !!state.guestCreateFromQuoteGroup;
+            const src = state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem || null;
+            if (fromGroup && src){
+              const seed = qGroupSeed(src) || qId(src);
+              if (seed){ payload.preventivo_group_id = seed; payload.quote_group_id = seed; payload.gruppo_preventivo_id = seed; }
+              const n = qNum(src, 0); if (n){ payload.numero_preventivo = n; payload.preventivo_numero = n; }
+            }
+          }
+        }catch(_){ }
+        return payload;
+      };
+    }
+  }catch(_){ }
+  try{
+    if (typeof renderPreventiviCards === 'function'){
+      renderPreventiviCards = function(){
+        const wrap = document.getElementById('preventiviCards'); if (!wrap) return;
+        wrap.replaceChildren();
+        let rows = qRows();
+        try{ rows = __filterByExerciseYear__(rows, state.exerciseYear || loadExerciseYear(), ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at']); }catch(_){ }
+        try{
+          const mode = String(state.preventiviArrivalFilter || localStorage.getItem('dDAE_preventiviArrivalFilter') || 'today');
+          if (mode && mode !== 'all'){
+            const today = todayISO();
+            const limits = { '3days': addDaysISO(today,3), '7days': addDaysISO(today,7), '-3days': addDaysISO(today,-3), '-7days': addDaysISO(today,-7) };
+            const useCheckout = String(state.preventiviSortBy || '').trim() === 'checkout';
+            const dateOf = function(p, co){ try{ return (__parseDateFlexibleToISO((co ? (p.check_out||p.checkOut||p.checkout||p.partenza) : (p.check_in||p.checkIn||p.arrivo)) || '') || '').slice(0,10); }catch(_){ return ''; } };
+            rows = rows.filter(function(p){ const d = dateOf(p, useCheckout); if(!d) return false; if(mode==='3days') return d>=today && d<=limits['3days']; if(mode==='7days') return d>=today && d<=limits['7days']; if(mode==='-3days') return d>=limits['-3days'] && d<=today; if(mode==='-7days') return d>=limits['-7days'] && d<=today; return d===today; });
+          }
+        }catch(_){ }
+        const map = new Map();
+        rows.forEach(function(p){ const key = qGroupSeed(p) || qId(p) || ('new:' + Math.random()); if(!map.has(key)) map.set(key, []); map.get(key).push(p); });
+        let groups = [];
+        map.forEach(function(list){ const sorted = (typeof __preventiviSort__ === 'function') ? __preventiviSort__(list) : list; groups.push(Object.assign({}, sorted[0] || {}, {_groupBookings: sorted, _quoteGroupBookings: sorted})); });
+        const by = String(state.preventiviSortBy || localStorage.getItem('dDAE_preventiviSortBy') || 'arrivo');
+        const dir = String(state.preventiviSortDir || localStorage.getItem('dDAE_preventiviSortDir') || 'asc') === 'desc' ? -1 : 1;
+        const dIso = function(p, out){ try{ return (__parseDateFlexibleToISO((out ? (p.check_out||p.checkOut||p.checkout||p.partenza) : (p.check_in||p.checkIn||p.arrivo)) || '') || '').slice(0,10); }catch(_){ return ''; } };
+        groups.sort(function(a,b){ if(by==='nome') return String(a.nome||a.name||'').localeCompare(String(b.nome||b.name||''),'it')*dir; if(by==='checkout') return ((Date.parse(dIso(a,true))||0)-(Date.parse(dIso(b,true))||0))*dir; if(by==='inserimento') return ((parseInt(qNum(a,0).replace(/\D+/g,''),10)||0)-(parseInt(qNum(b,0).replace(/\D+/g,''),10)||0))*dir; return ((Date.parse(dIso(a,false))||0)-(Date.parse(dIso(b,false))||0))*dir; });
+        if (!groups.length){ const empty=document.createElement('div'); empty.style.opacity='.7'; empty.style.fontSize='14px'; empty.style.padding='8px'; empty.textContent='Nessun preventivo.'; wrap.appendChild(empty); try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ } return; }
+        const frag = document.createDocumentFragment();
+        groups.forEach(function(p, idx){
+          const card=document.createElement('div'); card.className='guest-card preventivo-card'; card.tabIndex=0; card.setAttribute('role','button');
+          try{ card.dataset.arrivalIso=dIso(p,false); card.dataset.checkoutIso=dIso(p,true); }catch(_){ }
+          const nome=escapeHtml((p && (p.nome||p.name)) || 'Preventivo'); const number=escapeHtml(qNum(p, idx));
+          const nat=(typeof __readGuestNationalityFromRecord__==='function') ? __readGuestNationalityFromRecord__(p) : null;
+          const flag=escapeHtml(String((p&&p.country_flag)||(nat&&nat.flag)||'🏳️').trim() || '🏳️'); const natName=escapeHtml(String((nat&&nat.name)||'Nazionalità non selezionata'));
+          const range=escapeHtml((typeof __guestCardStayRangeLabel__==='function' ? __guestCardStayRangeLabel__(p) : '') || (typeof formatArrivalDayIT==='function' ? formatArrivalDayIT((p&&(p.check_in||p.checkIn))||'') : '') || '—');
+          const tel=escapeHtml(String(p&&(p.telefono||p.tel||p.phone)||'').trim()); const em=escapeHtml(String(p&&(p.email||p.mail)||'').trim());
+          const confirmed=(typeof __preventivoIsConfirmed__==='function') ? __preventivoIsConfirmed__(p) : false; const stayNights=(typeof calcStayNights==='function') ? calcStayNights(p) : ''; const hasNotes=(typeof guestHasNotes==='function') ? guestHasNotes(p) : false; const marriageOn=!!(p&&p.matrimonio); const ledCls=confirmed?'led-green':'led-yellow'; const ledLabel=confirmed?'Preventivo confermato':'Preventivo non confermato';
+          card.setAttribute('aria-label','Apri scheda preventivo: '+((p&&(p.nome||p.name))||'Preventivo'));
+          card.innerHTML = `<div class="guest-row guest-row-compact"><div class="guest-main"><span class="guest-insno preventivo-insno is-ready${hasNotes?' has-notes':''}" aria-label="Numero preventivo" title="Numero preventivo"${hasNotes?' data-has-notes="1"':''}>${number}</span><span class="guest-nationality-dot" aria-label="Nazionalità: ${natName}" title="${natName}"><span class="guest-nationality-flag" aria-hidden="true">${flag}</span></span><div class="guest-nameblock"><span class="guest-name-tab guest-name-text">${nome}</span><span class="guest-arrivo guest-arrivo-under" aria-label="Periodo">${range}</span>${((tel||em)?`<span class="guest-contact" aria-label="Contatti">${tel?`<span class="guest-contact-line guest-contact-phone">${tel}</span>`:``}${em?`<span class="guest-contact-line guest-contact-email">${em}</span>`:``}</span>`:``)}</div></div><div class="guest-meta-right" aria-label="Stato"><div class="guest-meta-dots">${(typeof buildNightsDotHTML==='function')?buildNightsDotHTML(stayNights):''}${marriageOn?`<span class="marriage-dot" aria-label="Matrimonio">M</span>`:``}${truthy(p&&(p.g||p.flag_g||p.gruppo_g||p.group||p.g_flag))?`<span class="g-dot" aria-label="G">G</span>`:``}${truthy(p&&(p.col_c||p.colC||p.c||p.C||p.flag_c||p.flagC||p.colc||p.c_flag))?`<span class="c-dot" aria-label="C">C</span>`:``}<span class="guest-led ${ledCls}" aria-label="${ledLabel}" title="${ledLabel}"></span></div></div></div>`;
+          try{ __applyGuestListCardVisual__(card); }catch(_){ } try{ __bindGuestListCardColorHold__(card); }catch(_){ }
+          const open=function(){ try{ __enterPreventivoViewMode__(p); showPage('ospite'); }catch(_){ } };
+          card.addEventListener('click', open); card.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } }); frag.appendChild(card);
+        });
+        wrap.appendChild(frag); try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+      };
+    }
+  }catch(_){ }
+  function boot(){ try{ styleQuoteConfirmButton(); applyQuoteViewFields(); if (state && state.page === 'preventivi') renderPreventiviCards(); }catch(_){ } }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
+  try{ setInterval(function(){ if(quoteMode()) applyQuoteViewFields(); }, 700); }catch(_){ }
+})();
+
+/* dDAE_2.816 — Preventivi: ogni nuovo preventivo crea una card distinta */
+(function(){
+  function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function qNext(rows){ try{ return (typeof __nextPreventivoNumber__ === 'function') ? __nextPreventivoNumber__(rows || qRows()) : ('P' + ((rows || qRows()).length + 1)); }catch(_){ return 'P' + (qRows().length + 1); } }
+  function qSort(rows){ try{ return (typeof __preventiviSort__ === 'function') ? __preventiviSort__(rows) : (Array.isArray(rows) ? rows : []); }catch(_){ return Array.isArray(rows) ? rows : []; } }
+  function newId(){ try{ return genId('p'); }catch(_){ return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); } }
+  function isCreateMode(){ try{ return String(state && state.guestMode || '').toLowerCase() === 'create'; }catch(_){ return false; } }
+  function isInternalGroupCreate(){ try{ return !!(state && state.guestCreateFromQuoteGroup); }catch(_){ return false; } }
+  function clearStandaloneQuoteState(){
+    try{
+      state.guestCreateFromQuoteGroup = false;
+      state.guestQuoteGroupNumber = '';
+      state.guestEditId = '';
+      state.guestEditSourceItem = null;
+      state.guestViewItem = null;
+      state.guestGroupBookings = null;
+      state.guestGroupActiveId = '';
+    }catch(_){ }
+  }
+
+  try{
+    const oldCreate = (typeof __enterPreventivoCreateMode__ === 'function') ? __enterPreventivoCreateMode__ : null;
+    if (oldCreate && !oldCreate.__ddae2815Wrapped){
+      const wrappedCreate = function(){
+        clearStandaloneQuoteState();
+        const out = oldCreate.apply(this, arguments);
+        try{
+          state.guestIsQuote = true;
+          state.guestQuoteConfirmed = false;
+          state.guestQuoteSourceItem = null;
+          state.guestCreateFromQuoteGroup = false;
+          state.guestQuoteGroupNumber = '';
+          state.guestEditId = '';
+          state.guestEditSourceItem = null;
+        }catch(_){ }
+        return out;
+      };
+      wrappedCreate.__ddae2815Wrapped = true;
+      __enterPreventivoCreateMode__ = wrappedCreate;
+    }
+  }catch(_){ }
+
+  try{
+    const oldCollect = (typeof __collectPreventivoPayload__ === 'function') ? __collectPreventivoPayload__ : null;
+    if (oldCollect && !oldCollect.__ddae2815Wrapped){
+      const wrappedCollect = function(){
+        const payload = oldCollect.apply(this, arguments);
+        try{
+          if (payload && state && state.guestIsQuote && isCreateMode() && !isInternalGroupCreate()){
+            const rows = qRows();
+            const id = newId();
+            const num = qNext(rows);
+            payload.id = id;
+            payload.preventivo_id = id;
+            payload.quote_id = id;
+            payload.numero_preventivo = num;
+            payload.preventivo_numero = num;
+            delete payload.preventivo_group_id;
+            delete payload.quote_group_id;
+            delete payload.gruppo_preventivo_id;
+            payload.createdAt = new Date().toISOString();
+            payload.created_at = payload.createdAt;
+          }
+          if (payload && state && state.guestIsQuote && isCreateMode() && isInternalGroupCreate()){
+            const id = newId();
+            payload.id = id;
+            payload.preventivo_id = id;
+            payload.quote_id = id;
+            const src = state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem || null;
+            const groupId = String((src && (src.preventivo_group_id || src.quote_group_id || src.gruppo_preventivo_id || qId(src))) || '').trim();
+            if (groupId){ payload.preventivo_group_id = groupId; payload.quote_group_id = groupId; payload.gruppo_preventivo_id = groupId; }
+            const groupNum = String((state && state.guestQuoteGroupNumber) || (src && (src.numero_preventivo || src.preventivo_numero)) || '').trim().toUpperCase();
+            if (groupNum){ payload.numero_preventivo = groupNum; payload.preventivo_numero = groupNum; }
+            payload.createdAt = new Date().toISOString();
+            payload.created_at = payload.createdAt;
+          }
+        }catch(_){ }
+        return payload;
+      };
+      wrappedCollect.__ddae2815Wrapped = true;
+      __collectPreventivoPayload__ = wrappedCollect;
+    }
+  }catch(_){ }
+
+  try{
+    if (typeof savePreventivo === 'function'){
+      const fixedSave = async function(opts = {}){
+        const payload = (typeof __collectPreventivoPayload__ === 'function') ? __collectPreventivoPayload__() : null;
+        if (!payload) return;
+        let rows = [];
+        try{ rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : (await cachedGet('preventivi', {}, { showLoader:false, ttlMs:0, force:true }) || []); }catch(_){ rows = qRows(); }
+        const create = isCreateMode();
+        const groupCreate = create && isInternalGroupCreate();
+        if (create && !groupCreate){
+          const id = newId();
+          const num = qNext(rows);
+          payload.id = id; payload.preventivo_id = id; payload.quote_id = id;
+          payload.numero_preventivo = num; payload.preventivo_numero = num;
+          delete payload.preventivo_group_id; delete payload.quote_group_id; delete payload.gruppo_preventivo_id;
+          rows.push(payload);
+        } else if (create && groupCreate){
+          if (!qId(payload)){ const id = newId(); payload.id = id; payload.preventivo_id = id; payload.quote_id = id; }
+          rows.push(payload);
+        } else {
+          const id = qId(payload);
+          const ix = rows.findIndex(x => qId(x) === id);
+          if (ix >= 0) rows[ix] = Object.assign({}, rows[ix] || {}, payload);
+          else rows.push(payload);
+        }
+        rows = qSort(rows);
+        state.preventivi = rows;
+        try{ invalidateApiCache('preventivi|'); }catch(_){ }
+        try{ await __setPreventiviRows__(rows); }catch(_){ }
+        try{ renderPreventiviCards(); }catch(_){ }
+        try{ __sfxSave(); }catch(_){ }
+        try{ toast(create ? 'Preventivo creato' : 'Preventivo salvato'); }catch(_){ }
+        try{ state.guestCreateFromQuoteGroup = false; if(create && !groupCreate) state.guestQuoteGroupNumber = ''; }catch(_){ }
+        if (opts && opts.instantGoList){ try{ showPage('preventivi'); }catch(_){ } }
+        else { try{ showPage('preventivi'); }catch(_){ } }
+      };
+      fixedSave.__ddae2815Fixed = true;
+      savePreventivo = fixedSave;
+    }
+  }catch(_){ }
+})();
+
+/* dDAE_2.816 — Preventivi: tasto Indietro torna sempre alla pagina Preventivi */
+(function(){
+  function hasQuoteShape(obj){
+    try{
+      if (!obj || typeof obj !== 'object') return false;
+      const n = String(obj.numero_preventivo || obj.preventivo_numero || obj.quote_number || '').trim().toUpperCase();
+      return !!(obj.preventivo_id || obj.quote_id || n.startsWith('P'));
+    }catch(_){ return false; }
+  }
+  function isQuoteContext(){
+    try{
+      if (state && state.guestIsQuote) return true;
+      if (state && (hasQuoteShape(state.guestQuoteSourceItem) || hasQuoteShape(state.guestViewItem) || hasQuoteShape(state.guestEditSourceItem))) return true;
+      const page = document.getElementById('page-ospite');
+      if (page && page.classList && page.classList.contains('is-preventivo')) return true;
+      const title = String(document.getElementById('ospiteFormTitle')?.textContent || '').toLowerCase();
+      if (title.includes('preventiv') || title.includes('quote')) return true;
+    }catch(_){ }
+    return false;
+  }
+  function resetQuoteViewContext(){
+    try{ clearGuestMulti && clearGuestMulti(); }catch(_){ }
+    try{
+      state.guestGroupBookings = null;
+      state.guestGroupActiveId = '';
+      state.guestGroupKey = null;
+      state.guestCreateFromQuoteGroup = false;
+      state.guestQuoteGroupNumber = '';
+      state._preventiviBackTarget = '';
+    }catch(_){ }
+  }
+  function goPreventivi(ev){
+    try{ if (ev){ ev.preventDefault(); ev.stopPropagation(); if (ev.stopImmediatePropagation) ev.stopImmediatePropagation(); } }catch(_){ }
+    try{ resetQuoteViewContext(); }catch(_){ }
+    try{ renderPreventiviCards && renderPreventiviCards(); }catch(_){ }
+    try{ showPage('preventivi'); }catch(_){ }
+  }
+  function markPreventiviOrigin(){ try{ if (state) state._preventiviBackTarget = 'preventivi'; }catch(_){ } }
+  try{
+    if (typeof __enterPreventivoViewMode === 'function' && !__enterPreventivoViewMode.__ddae2816BackWrapped){
+      const oldView = __enterPreventivoViewMode;
+      const wrappedView = function(){ markPreventiviOrigin(); return oldView.apply(this, arguments); };
+      wrappedView.__ddae2816BackWrapped = true;
+      __enterPreventivoViewMode = wrappedView;
+    }
+  }catch(_){ }
+  try{
+    if (typeof __enterPreventivoEditMode === 'function' && !__enterPreventivoEditMode.__ddae2816BackWrapped){
+      const oldEdit = __enterPreventivoEditMode;
+      const wrappedEdit = function(){ markPreventiviOrigin(); return oldEdit.apply(this, arguments); };
+      wrappedEdit.__ddae2816BackWrapped = true;
+      __enterPreventivoEditMode = wrappedEdit;
+    }
+  }catch(_){ }
+  function bindBack(){
+    try{
+      const topBack = document.getElementById('guestBackTop');
+      if (topBack && topBack.dataset.preventiviBack816 !== '1'){
+        topBack.dataset.preventiviBack816 = '1';
+        ['pointerup','touchend','click'].forEach(function(evt){
+          try{ topBack.addEventListener(evt, function(ev){ if (isQuoteContext()) goPreventivi(ev); }, {capture:true, passive:false}); }catch(_){ }
+        });
+      }
+    }catch(_){ }
+    try{
+      const hd = document.getElementById('ospiteHdActions');
+      if (hd && hd.dataset.preventiviBack816 !== '1'){
+        hd.dataset.preventiviBack816 = '1';
+        ['pointerup','touchend','click'].forEach(function(evt){
+          try{ hd.addEventListener(evt, function(ev){
+            const btn = ev.target && ev.target.closest ? ev.target.closest('button[data-guest-back]') : null;
+            if (btn && isQuoteContext()) goPreventivi(ev);
+          }, {capture:true, passive:false}); }catch(_){ }
+        });
+      }
+    }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindBack, {once:true}); else bindBack();
+  try{ window.addEventListener('pageshow', bindBack, {passive:true}); }catch(_){ }
+  try{ setTimeout(bindBack, 250); setTimeout(bindBack, 900); }catch(_){ }
 })();
