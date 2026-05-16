@@ -23102,3 +23102,35 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
   min-width:100% !important;
   max-width:100% !important;
 }
+
+
+/* dDAE_2.848 — tasti colore pallino nei popup impostazioni */
+#operatoriEditorDotColor.btn,
+#channelEditorDotColor.btn,
+#laundryCatalogEditorDotColor.btn{
+  font-size:30px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+}
+
+
+/* dDAE_2.848 — allineamento tasti popup impostazioni */
+#operatoriEditorModal .editor-modal-actions,
+#channelEditorModal .editor-modal-actions,
+#laundryCatalogEditorModal .editor-modal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:14px;
+}
+#operatoriEditorModal .editor-modal-actions > .btn,
+#channelEditorModal .editor-modal-actions > .btn,
+#laundryCatalogEditorModal .editor-modal-actions > .btn{
+  min-width:0;
+  flex:1 1 0;
+  white-space:nowrap;
+}
+#operatoriEditorSaldoBtn{
+  flex:0.92 1 0;
+}

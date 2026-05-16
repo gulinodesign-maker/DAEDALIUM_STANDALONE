@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.845";
+const BUILD_VERSION = "2.848";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -11707,14 +11707,16 @@ function __operatoriSetSelectedColor__(color){
   __operatoriPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#operatoriColorGrid', __operatoriPageUi);
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('operatoriEditorDotColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
 function __operatoriSetSelectedTextColor__(color){
   __operatoriPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
   __setTagPreviewButtonStyle__('operatoriEditorTagColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('operatoriEditorDotColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false, bold:false, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80, bold:false }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -11742,17 +11744,15 @@ function __tagColorPopupChangedFields__(payload){
       bg: __normalizeOperatoreColor__(colors.bg || initial.bg || 'blue-4'),
       border: __normalizeOperatoreColor__(colors.border || colors.bg || initial.border || initial.bg || 'blue-4'),
       fg: __normalizeOptionalOperatoreColor__(colors.fg || initial.fg || ''),
-      opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80),
-      bold: false
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? 0.80)
     };
     const changed = {
       bg: String(next.bg || '') !== String(initial.bg || ''),
       border: String(next.border || '') !== String(initial.border || ''),
       fg: String(next.fg || '') !== String(initial.fg || ''),
-      opacity: String(next.opacity) !== String(__designBgOpacityNormalize__(initial.opacity ?? 0.80)),
-      bold: String(!!next.bold) !== String(!!initial.bold)
+      opacity: String(next.opacity) !== String(__designBgOpacityNormalize__(initial.opacity ?? 0.80))
     };
-    changed.any = !!(changed.bg || changed.border || changed.fg || changed.opacity || changed.bold);
+    changed.any = !!(changed.bg || changed.border || changed.fg || changed.opacity);
     changed.next = next;
     changed.initial = initial;
     return changed;
@@ -11773,7 +11773,6 @@ async function __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg)
 
 function __tagColorPopupSelectedSpec__(){
   const mode = String(__tagColorPopupState__.mode || 'fg').trim().toLowerCase();
-  if (mode === 'bold') return __tagColorPopupState__.bold ? '1' : '0';
   if (mode === 'opacity') return String(__designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)));
   if (mode === 'bg') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || 'blue-4');
   if (mode === 'border') return __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || 'blue-4');
@@ -11787,20 +11786,18 @@ function __tagColorPopupRefreshModeButtons__(){
     if (mode === 'bg') return !!__tagColorPopupState__.supportsBg;
     if (mode === 'border') return !!__tagColorPopupState__.supportsBorder;
     if (mode === 'opacity') return !!__tagColorPopupState__.supportsOpacity;
-    if (mode === 'bold') return !!__tagColorPopupState__.supportsBold;
     return !!__tagColorPopupState__.supportsFg;
   };
   const buttons = Array.from(bar.querySelectorAll('.tag-color-mode-btn'));
-  const enabledCount = Math.max(1, buttons.filter((btn) => isEnabled(String(btn.dataset.mode || '').trim().toLowerCase())).length || 1);
   bar.hidden = false;
-  try{ bar.style.setProperty('--tag-color-mode-count', String(enabledCount)); }catch(_){ }
+  try{ bar.style.setProperty('--tag-color-mode-count', String(Math.max(1, buttons.length || 4))); }catch(_){ }
   buttons.forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
     const enabled = isEnabled(mode);
     btn.hidden = false;
     btn.disabled = !enabled;
     btn.classList.toggle('is-disabled', !enabled);
-    btn.classList.toggle('is-active', enabled && ((mode === 'bold') ? !!__tagColorPopupState__.bold : (mode === __tagColorPopupState__.mode)));
+    btn.classList.toggle('is-active', enabled && mode === __tagColorPopupState__.mode);
     try{ btn.setAttribute('aria-disabled', enabled ? 'false' : 'true'); }catch(_){ }
     try{ btn.tabIndex = enabled ? 0 : -1; }catch(_){ }
   });
@@ -11811,11 +11808,9 @@ function __tagColorPopupRefreshSelection__(){
   const opacityWrap = document.getElementById('tagOpacityWrap');
   const opacityGrid = document.getElementById('tagOpacityGrid');
   const selected = __tagColorPopupSelectedSpec__();
-  const popupMode = String(__tagColorPopupState__.mode || '').trim().toLowerCase();
-  const isOpacityMode = popupMode === 'opacity';
-  const isBoldMode = popupMode === 'bold';
+  const isOpacityMode = String(__tagColorPopupState__.mode || '').trim().toLowerCase() === 'opacity';
   if (grid){
-    grid.hidden = isOpacityMode || isBoldMode;
+    grid.hidden = isOpacityMode;
     grid.querySelectorAll('.tag-color-option').forEach((btn) => {
       const spec = __parseOperatoreColorSpec__(btn.dataset.spec || '').spec;
       btn.classList.toggle('is-selected', !isOpacityMode && spec === selected);
@@ -11923,7 +11918,6 @@ function __tagColorPopupCurrentPayload__(){
     mode: __tagColorPopupState__.mode,
     spec: __tagColorPopupSelectedSpec__(),
     opacity: __designBgOpacityNormalize__((__tagColorPopupState__.opacity ?? 0.80)),
-    bold: !!__tagColorPopupState__.bold,
     colors: { ...(__tagColorPopupState__.colors || {}) }
   };
 }
@@ -11951,10 +11945,8 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.supportsBorder = opts.supportsBorder !== false;
   __tagColorPopupState__.supportsFg = opts.supportsFg !== false;
   __tagColorPopupState__.supportsOpacity = opts.supportsOpacity !== false;
-  __tagColorPopupState__.supportsBold = false;
   const currentVisual = __tagColorPairFromValue__(currentColor, opts.fallbackBg || 'blue-4');
   __tagColorPopupState__.opacity = __designBgOpacityNormalize__(opts.opacity ?? currentColor?.opacity ?? currentVisual?.opacity ?? __designBgOpacityRead__());
-  __tagColorPopupState__.bold = !!(opts.bold ?? currentColor?.bold ?? currentVisual?.bold);
   __tagColorPopupState__.colors = {
     ...currentVisual,
     border: __normalizeOptionalOperatoreColor__(currentColor?.border || currentColor?.borderColor || currentVisual?.border || currentVisual?.bg || opts.fallbackBg || 'blue-4') || currentVisual?.bg || opts.fallbackBg || 'blue-4'
@@ -11963,8 +11955,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
     bg: __normalizeOperatoreColor__(__tagColorPopupState__.colors?.bg || opts.fallbackBg || 'blue-4'),
     border: __normalizeOperatoreColor__(__tagColorPopupState__.colors?.border || __tagColorPopupState__.colors?.bg || opts.fallbackBg || 'blue-4'),
     fg: __normalizeOptionalOperatoreColor__(__tagColorPopupState__.colors?.fg || ''),
-    opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80),
-    bold: !!__tagColorPopupState__.bold
+    opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80)
   };
   __tagColorPopupState__.applyCategory = (opts.applyCategory && typeof opts.applyCategory === 'object') ? opts.applyCategory : null;
   const enabledModes = [];
@@ -11972,7 +11963,6 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   if (__tagColorPopupState__.supportsBorder) enabledModes.push('border');
   if (__tagColorPopupState__.supportsFg) enabledModes.push('fg');
   if (__tagColorPopupState__.supportsOpacity) enabledModes.push('opacity');
-  if (__tagColorPopupState__.supportsBold) enabledModes.push('bold');
   const requestedMode = String(opts.defaultMode || (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg ? __tagColorPopupLastDualMode__ : (enabledModes[0] || 'fg')) || 'fg').trim().toLowerCase();
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
@@ -11982,206 +11972,21 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupSuppressUntil__ = 0;
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
-  try{ modal.style.setProperty('z-index','5000','important'); }catch(_){ }
-  try{ document.body.classList.add('tag-color-modal-open'); }catch(_){ }
 }
 
-
-function __normalizeSettingsActionOrder__(){
-  try{
-    const adminGrid = document.querySelector('#page-impostazioni .settings-actions');
-    const adminLicenseBtn = document.getElementById('settingsMasterBtn');
-    const adminLogout = document.getElementById('settingsLogoutBtn');
-    if (adminGrid){
-      if (adminLicenseBtn && adminLicenseBtn.parentElement !== adminGrid) adminGrid.appendChild(adminLicenseBtn);
-      if (adminLicenseBtn) {
-        adminGrid.appendChild(adminLicenseBtn);
-        adminLicenseBtn.style.order = '10';
-      }
-      if (adminLogout && adminLogout.parentElement !== adminGrid) adminGrid.appendChild(adminLogout);
-      if (adminLogout) {
-        adminGrid.appendChild(adminLogout);
-        adminLogout.style.order = '11';
-      }
-    }
-  }catch(_){ }
-  try{
-    const opPage = document.getElementById('page-opsettings');
-    const opGrid = opPage ? opPage.querySelector('.settings-actions.settings-actions-operator-dedicated, .settings-actions.settings-actions-reference') : null;
-    const opLang = document.getElementById('opSettingsLanguageBtn');
-    const opCode = document.getElementById('opSettingsCodeBtn');
-    const opLogout = document.getElementById('opSettingsLogoutBtn');
-    const opStack = opPage ? opPage.querySelector('.settings-bottom-stack.settings-bottom-stack-operator-dedicated') : null;
-    if (opGrid){
-      [opLang, opCode, opLogout].forEach((btn, idx) => {
-        if (!btn) return;
-        if (btn.parentElement !== opGrid) opGrid.appendChild(btn);
-        btn.hidden = false;
-        btn.removeAttribute('hidden');
-        btn.style.display = '';
-        btn.style.visibility = '';
-        btn.style.order = String(idx + 1);
-        btn.setAttribute('aria-hidden', 'false');
-      });
-      opGrid.hidden = false;
-      opGrid.removeAttribute('hidden');
-    }
-    if (opStack){
-      opStack.hidden = true;
-      opStack.setAttribute('hidden','');
-      opStack.style.display = 'none';
-    }
-  }catch(_){ }
-}
-function __rerenderActivePageAfterThemeChange__(){
-  try{
-    const page = String(state?.page || document.body?.dataset?.page || '').trim();
-    if (!page) return;
-    const rerender = () => {
-      try{
-        if (page === 'roomsettings') { try{ renderRoomSettingsPage?.(); }catch(_){ } }
-        else if (page === 'impostazioni') { try{ loadImpostazioniPage?.({ force:true }); }catch(_){ } }
-        else if (page === 'opsettings') { try{ updateSettingsTabs?.(); }catch(_){ } try{ __normalizeSettingsActionOrder__(); }catch(_){ } }
-        else if (page === 'statistiche') { try{ loadStatistichePage?.({ force:true }); }catch(_){ } }
-        else if (page === 'statgen' || page === 'statspese' || page === 'statmensili' || page === 'statprenotazioni' || page === 'statchannel' || page === 'statpulizie' || page === 'statcancellazioni' || page === 'statazienda' || page === 'statamministratore') { try{ __refreshStatCardsPage__(page); }catch(_){ } }
-        else if (page === 'ospiti') { try{ loadOspiti?.({ ...(state.period || {}), force:true }); }catch(_){ } }
-        else if (page === 'calendario') { try{ renderCalendario?.(); }catch(_){ } }
-        else if (page === 'pulizie') { try{ renderPuliziePage?.(); }catch(_){ } }
-        else if (page === 'lavanderia') { try{ loadLavanderia?.(); }catch(_){ } }
-        else if (page === 'laundrycatalog') { try{ renderLaundryCatalogPage?.(); }catch(_){ } }
-        else { try{ showPage?.(page); }catch(_){ } }
-      }catch(_){ }
-      try{ applyAppTextUi(document.body); }catch(_){ }
-      try{ __normalizeSettingsActionOrder__(); }catch(_){ }
-      try{ __launcherIconApplyAll__(); }catch(_){ }
-      try{ __headerActionApplyAll__(); }catch(_){ }
-      try{ __pillApplyAll__(); }catch(_){ }
-      try{ __applyStatisticsCardTheme__(); }catch(_){ }
-      try{ __applyGuestListCardAll__(); }catch(_){ }
-    };
-    try{ rerender(); }catch(_){ }
-    try{ requestAnimationFrame(() => { try{ rerender(); }catch(_){ } }); }catch(_){ }
-    try{ setTimeout(() => { try{ rerender(); }catch(_){ } }, 0); }catch(_){ }
-    try{ setTimeout(() => { try{ rerender(); }catch(_){ } }, 120); }catch(_){ }
-  }catch(_){ }
-}
-
-function __refreshDesignUiImmediately__(){
-  const run = () => {
-    try{ __normalizeSettingsActionOrder__(); }catch(_){ }
-    try{ __launcherIconApplyAll__(); }catch(_){ }
-    try{ __headerActionApplyAll__(); }catch(_){ }
-    try{ __pillApplyAll__(); }catch(_){ }
-    try{ __applySettingsLauncherIconColors__(); }catch(_){ }
-    try{ __applyStatisticsCardTheme__(); }catch(_){ }
-    try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
-    try{ __applyTaxPageCardAll__(); }catch(_){ }
-    try{ __applyGuestListCardAll__(); }catch(_){ }
-    try{ __applyStatSharedLineChartWrapVisualToAll__(); }catch(_){ }
-    try{ __refreshStatSharedLineCharts__(); }catch(_){ }
-    try{ __refreshStatGraphPreviews__(); }catch(_){ }
-    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
-    try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
-    try{ if (typeof renderRoomSettingsPage === 'function' && state?.page === 'roomsettings') renderRoomSettingsPage(); }catch(_){ }
-    try{ document.body && void document.body.offsetHeight; }catch(_){ }
-  };
-  try{ run(); }catch(_){ }
-  try{ requestAnimationFrame(() => { try{ run(); }catch(_){ } }); }catch(_){ }
-  try{ setTimeout(() => { try{ run(); }catch(_){ } }, 0); }catch(_){ }
-  try{ setTimeout(() => { try{ run(); }catch(_){ } }, 120); }catch(_){ }
-}
 
 
 async function __tagColorPopupConfirm__(){
   const cb = __tagColorPopupState__.onSelect;
   const applyCategoryCfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? { ...__tagColorPopupState__.applyCategory } : null;
   const payload = __tagColorPopupCurrentPayload__();
-  const changed = __tagColorPopupChangedFields__(payload);
   __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
   try{
     if (typeof cb === 'function') await cb(payload);
   }catch(_){ }
   try{ await __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg); }catch(_){ }
-  try{ __refreshDesignUiImmediately__(); }catch(_){ }
-  try{
-    if (changed?.any){
-      if (typeof __settingsEditorModalIsOpen__ === 'function' && __settingsEditorModalIsOpen__()){
-        try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
-      } else {
-        __rerenderActivePageAfterThemeChange__();
-      }
-    }
-  }catch(_){ }
   try{ toast('Colore aggiornato'); }catch(_){ }
-}
-
-
-/* dDAE_2.823 — iOS hardening: blocca popup colori/design durante apertura creazione voci Impostazioni */
-let __settingsEditorColorPopupSuppressUntil__ = 0;
-let __settingsEditorModalOpenedAt__ = 0;
-function __suppressSettingsEditorColorPopups__(ms){
-  try{ __settingsEditorColorPopupSuppressUntil__ = Math.max(Number(__settingsEditorColorPopupSuppressUntil__ || 0), Date.now() + (Number(ms) || 1800)); }catch(_){ }
-}
-function __settingsEditorColorPopupIsSuppressed__(){
-  try{ return Date.now() < Number(__settingsEditorColorPopupSuppressUntil__ || 0); }catch(_){ return false; }
-}
-function __markSettingsEditorModalOpened__(){
-  try{ __settingsEditorModalOpenedAt__ = Date.now(); }catch(_){ }
-  try{ __suppressSettingsEditorColorPopups__(2400); }catch(_){ }
-}
-function __settingsEditorModalRecentlyOpened__(ms){
-  try{ return (Date.now() - Number(__settingsEditorModalOpenedAt__ || 0)) < (Number(ms) || 2200); }catch(_){ return false; }
-}
-function __settingsEditorModalIsOpen__(){
-  try{
-    return ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].some((id) => {
-      const el = document.getElementById(id);
-      return !!(el && !el.hidden && el.getAttribute('aria-hidden') !== 'true');
-    });
-  }catch(_){ return false; }
-}
-function __isSettingsEditorDesignTarget__(node){
-  try{
-    const el = node && node.closest ? node.closest('#operatoriEditorTagColor,#channelEditorGraphColor,#laundryCatalogEditorTagColor') : null;
-    return !!el;
-  }catch(_){ return false; }
-}
-function __blockSettingsEditorGhostDesignEvent__(e){
-  try{
-    const colorModal = document.getElementById('tagColorModal');
-    if (colorModal && !colorModal.hidden && colorModal.getAttribute('aria-hidden') !== 'true') return false;
-    if (!__settingsEditorModalIsOpen__()) return false;
-    if (!__settingsEditorColorPopupIsSuppressed__() && !__settingsEditorModalRecentlyOpened__(2400)) return false;
-    if (!__isSettingsEditorDesignTarget__(e && e.target)) return false;
-    try{ e.preventDefault(); }catch(_){ }
-    try{ e.stopPropagation(); }catch(_){ }
-    try{ e.stopImmediatePropagation(); }catch(_){ }
-    return true;
-  }catch(_){ return false; }
-}
-(function __bindSettingsEditorGhostDesignGuard__(){
-  if (typeof document === 'undefined') return;
-  try{ if (window.__settingsEditorGhostDesignGuardBound__) return; window.__settingsEditorGhostDesignGuardBound__ = true; }catch(_){ }
-  ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click','contextmenu'].forEach((evt) => {
-    try{ document.addEventListener(evt, __blockSettingsEditorGhostDesignEvent__, true); }catch(_){ }
-  });
-})();
-
-function __applySettingsEditorButtonBoldAndVisuals__(){
-  try{
-    [
-      'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor',
-      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor',
-      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor'
-    ].forEach((id)=>{
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      try{ __applySingleActionButtonVisual__(btn); }catch(_){}
-      btn.style.setProperty('font-weight','900','important');
-      btn.querySelectorAll('span,.btn-label,.ui-label').forEach((el)=>{ try{ el.style.setProperty('font-weight','900','important'); }catch(_){} });
-    });
-  }catch(_){ }
 }
 
 function __tagColorPopupClose__(){
@@ -12193,7 +11998,6 @@ function __tagColorPopupClose__(){
     mode: 'bg',
     spec: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
     opacity: __designBgOpacityNormalize__(__tagColorPopupState__.initial?.opacity ?? 0.80),
-    bold: !!__tagColorPopupState__.initial?.bold,
     colors: {
       bg: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
       border: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.border || __tagColorPopupState__.initial?.bg || 'blue-4'),
@@ -12202,7 +12006,6 @@ function __tagColorPopupClose__(){
   };
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
-  try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
     __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
@@ -12220,17 +12023,13 @@ function __tagColorPopupClose__(){
   __tagColorPopupState__.supportsBorder = false;
   __tagColorPopupState__.supportsFg = true;
   __tagColorPopupState__.supportsOpacity = false;
-  __tagColorPopupState__.supportsBold = false;
   __tagColorPopupState__.opacity = 0.80;
-  __tagColorPopupState__.bold = false;
   __tagColorPopupState__.colors = { bg:'blue-4', border:'', fg:'' };
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = Date.now() + 900;
 }
 
 function __openTagColorPickerFor__(target){
-  try{ if (typeof __ddae841IsOperationalNoColorPopupButton__ === 'function' && __ddae841IsOperationalNoColorPopupButton__(document.activeElement)) return; }catch(_){ }
-  if (__settingsEditorColorPopupIsSuppressed__() || __settingsEditorModalRecentlyOpened__(2400)) return;
   const key = String(target || '').trim().toLowerCase();
   if (key === 'operatore'){
     __tagColorPopupOpen__('operatore', { bg: __operatoriPageUi.color || 'blue-3', fg: __operatoriPageUi.textColor || '' }, (payload) => {
@@ -12257,6 +12056,41 @@ function __openTagColorPickerFor__(target){
   }
 }
 
+
+
+/* dDAE_2.848 — Popup colore ripristinato: helper non invasivi per i popup impostazioni */
+function __suppressSettingsEditorColorPopups__(ms){ return; }
+function __settingsEditorColorPopupIsSuppressed__(){ return false; }
+function __settingsEditorModalRecentlyOpened__(ms){ return false; }
+function __markSettingsEditorModalOpened__(){ return; }
+function __settingsEditorModalIsOpen__(){
+  try{
+    return ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].some((id) => {
+      const el = document.getElementById(id);
+      return !!(el && !el.hidden && el.getAttribute('aria-hidden') !== 'true');
+    });
+  }catch(_){ return false; }
+}
+function __normalizeSettingsActionOrder__(){ return; }
+function __refreshDesignUiImmediately__(){
+  try{ __launcherIconApplyAll__(); }catch(_){ }
+  try{ __headerActionApplyAll__(); }catch(_){ }
+  try{ __pillApplyAll__(); }catch(_){ }
+  try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+}
+function __applySettingsEditorButtonBoldAndVisuals__(){
+  try{
+    [
+      'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor',
+      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor',
+      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor'
+    ].forEach((id)=>{
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+    });
+  }catch(_){ }
+}
 function __operatoriOpenModal__(item){
   const modal = document.getElementById('operatoriEditorModal');
   if (!modal) return;
@@ -12376,6 +12210,8 @@ function setupOperatoriPage(){
   if (cancelBtn) bindFastTap(cancelBtn, __operatoriCloseModal__);
   const colorBtn = document.getElementById('operatoriEditorTagColor');
   if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('operatore'); });
+  const dotColorBtn = document.getElementById('operatoriEditorDotColor');
+  if (dotColorBtn) bindFastTap(dotColorBtn, () => { __openSettingsDotColorPickerFor__('operatore'); });
   const saldoToggleBtn = document.getElementById('operatoriEditorSaldoBtn');
   if (saldoToggleBtn) bindFastTap(saldoToggleBtn, () => {
     const on = !saldoToggleBtn.classList.contains('is-selected');
@@ -12499,16 +12335,19 @@ function __channelSetSelectedColor__(color){
   __channelPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#channelColorGrid', __channelPageUi);
   __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
+  __setTagPreviewButtonStyle__('channelEditorDotColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', false);
 }
 
 function __channelSetSelectedTextColor__(color){
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
   __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
+  __setTagPreviewButtonStyle__('channelEditorDotColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', false);
 }
 
 function __channelSetSelectedGraphColor__(color){
   __channelPageUi.graphColor = __normalizeChannelGraphColor__(color);
   __setTagPreviewButtonStyle__('channelEditorGraphColor', __channelPageUi.color || 'orange-2', '', false);
+  __setTagPreviewButtonStyle__('channelEditorDotColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', false);
 }
 
 function __channelOpenModal__(item){
@@ -12617,6 +12456,8 @@ function setupChannelPage(){
   if (graphColorBtn) bindFastTap(graphColorBtn, () => {
     __openTagColorPickerFor__('channel');
   });
+  const dotColorBtn = document.getElementById('channelEditorDotColor');
+  if (dotColorBtn) bindFastTap(dotColorBtn, () => { __openSettingsDotColorPickerFor__('channel'); });
   try{
     document.querySelectorAll('#channelColorGrid .operatori-color-option').forEach(btn => {
       bindFastTap(btn, () => {
@@ -12649,7 +12490,7 @@ function setupChannelPage(){
         iniziale: (initialRaw || __channelInitialFromName__(nome)).slice(0,1).toUpperCase(),
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
-        coloreGrafico: __channelPageUi.color || 'orange-2',
+        coloreGrafico: __channelPageUi.graphColor || __channelPageUi.color || 'orange-2',
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -12802,11 +12643,13 @@ function __laundryCatalogSetSelectedColor__(color){
   __laundryCatalogPageUi.tones[parsed.base] = parsed.shade;
   __updateColorButtonGrid__('#laundryCatalogColorGrid', __laundryCatalogPageUi);
   __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('laundryCatalogEditorDotColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
 }
 
 function __laundryCatalogSetSelectedTextColor__(color){
   __laundryCatalogPageUi.textColor = __normalizeOptionalOperatoreColor__(color);
   __setTagPreviewButtonStyle__('laundryCatalogEditorTagColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
+  __setTagPreviewButtonStyle__('laundryCatalogEditorDotColor', __laundryCatalogPageUi.color || 'blue-2', __laundryCatalogPageUi.textColor || '');
 }
 
 function __laundryCatalogOpenModal__(item){
@@ -12912,6 +12755,8 @@ function setupLaundryCatalogPage(){
   if (cancelBtn) bindFastTap(cancelBtn, __laundryCatalogCloseModal__);
   const colorBtn = document.getElementById('laundryCatalogEditorTagColor');
   if (colorBtn) bindFastTap(colorBtn, () => { __openTagColorPickerFor__('lavanderia'); });
+  const dotColorBtn = document.getElementById('laundryCatalogEditorDotColor');
+  if (dotColorBtn) bindFastTap(dotColorBtn, () => { __openSettingsDotColorPickerFor__('lavanderia'); });
   try{
     document.querySelectorAll('#laundryCatalogColorGrid .operatori-color-option').forEach((btn) => {
       bindFastTap(btn, () => {
@@ -12946,6 +12791,7 @@ function setupLaundryCatalogPage(){
         abbreviazione,
         prezzo: Math.round(prezzo * 100) / 100,
         colore: __laundryCatalogPageUi.color || 'blue',
+        coloreTesto: __laundryCatalogPageUi.textColor || '',
       };
       const idx = list.findIndex((item) => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -18600,9 +18446,9 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
-  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorSave',
-  'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorSave',
-  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorSave',
+  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorDotColor','channelEditorSave',
+  'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
+  'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestGenderMale','guestGenderFemale',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4','spesaCatBtnFuoriBudget',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
@@ -18653,8 +18499,11 @@ function __defaultSingleActionButtonVisual__(btn){
     channelEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     operatoriEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
+    operatoriEditorDotColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     operatoriEditorSaldoBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 },
     laundryCatalogEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
+    channelEditorDotColor:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    laundryCatalogEditorDotColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -18776,8 +18625,11 @@ function __singleActionButtonCategoryForId__(id){
     channelEditorCancel:'cancel',
     laundryCatalogEditorCancel:'cancel',
     operatoriEditorTagColor:'tag',
+    operatoriEditorDotColor:'tag',
     operatoriEditorSaldoBtn:'operator-balance',
+    channelEditorDotColor:'tag',
     laundryCatalogEditorTagColor:'tag',
+    laundryCatalogEditorDotColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
     laundryCatalogEditorSave:'save',
@@ -18893,8 +18745,9 @@ function __applySingleActionButtonVisual__(btn, forcedStateKey, forcedVisual){
 
 async function __openSingleActionButtonColorPicker__(btn){
   try{
-    if (__settingsEditorColorPopupIsSuppressed__() || __settingsEditorModalRecentlyOpened__(2400)) return;
     if (!btn || !btn.id) return;
+    const __insideSettingsEditorAction__ = !!(btn.closest && btn.closest('#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal'));
+    if ((__settingsEditorColorPopupIsSuppressed__() || __settingsEditorModalRecentlyOpened__(2400)) && !__insideSettingsEditorAction__) return;
     const label = __guestFilterButtonLocalizedLabel__(btn);
     const editState = __singleActionButtonSupportsDualState__(btn)
       ? await (async()=>{
@@ -40611,464 +40464,31 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 /* dDAE_2.840 — Preventivi: elimina contestuale gruppo stanze o intera scheda */
 
 
-/* dDAE_2.843 — Disabilitato popup colore dai tasti operativi Operatori, Channel e Lavanderia in uso normale. */
 
-
-/* dDAE_2.843 — Ospiti: stabilizza il tab Channel nel pacchetto gruppo stanze selezionato */
+/* dDAE_2.848 — Long press tasti popup impostazioni con popup colore standard */
 (function(){
-  function isQuoteObj(x){
-    try{
-      if (!x || typeof x !== 'object') return false;
-      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
-      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
-    }catch(_){ return false; }
-  }
-  function isQuoteContext(){
-    try{
-      const page = document.getElementById('page-ospite');
-      const item = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
-      return !!(state && state.guestIsQuote) || isQuoteObj(item) || !!(page && page.classList && page.classList.contains('is-preventivo'));
-    }catch(_){ return false; }
-  }
-  function pageVisible(){
-    try{
-      const page = document.getElementById('page-ospite');
-      if (!page) return false;
-      if (state && state.page && String(state.page).toLowerCase() !== 'ospite' && page.hidden) return false;
-      return true;
-    }catch(_){ return false; }
-  }
-  function showEl(el, show){
-    try{
-      if (!el) return;
-      if (show){
-        el.hidden = false;
-        el.removeAttribute('hidden');
-        el.removeAttribute('data-quote-hidden');
-        el.style.removeProperty('display');
-        el.style.removeProperty('visibility');
-        el.style.removeProperty('pointer-events');
-        el.style.removeProperty('height');
-        el.style.removeProperty('min-height');
-        el.style.removeProperty('max-height');
-        el.style.removeProperty('overflow');
-      } else {
-        el.hidden = true;
-        el.setAttribute('hidden','');
-        el.style.setProperty('display','none','important');
-      }
-    }catch(_){ }
-  }
-  function currentMode(){ try{ return String(state && state.guestMode || '').toLowerCase(); }catch(_){ return ''; } }
-  function hasActiveGroup(){ try{ return !!String(state && state.guestGroupActiveId || '').trim(); }catch(_){ return false; } }
-  function stabilizeGuestChannel(){
-    try{
-      if (!pageVisible() || isQuoteContext()) return;
-      const mode = currentMode();
-      const card = document.querySelector('#page-ospite .guest-form-card');
-      const active = hasActiveGroup();
-      const shouldShow = (mode === 'edit' || mode === 'create') || (mode === 'view' && active);
-      if (card && card.classList && mode === 'view'){
-        card.classList.toggle('guest-group-info-open', shouldShow);
-      }
-      const row = document.getElementById('guestChannelRow');
-      showEl(row, shouldShow);
-      if (row){
-        const parts = row.querySelectorAll(':scope > .subfield');
-        if (parts[0]) showEl(parts[0], shouldShow);
-        if (parts[1]) showEl(parts[1], shouldShow);
-      }
-      const booking = document.getElementById('guestBooking');
-      const channel = document.getElementById('guestChannel');
-      if (booking) showEl(booking.closest('.subfield') || booking.closest('.field'), shouldShow);
-      if (channel) showEl(channel.closest('.subfield') || channel.closest('.field'), shouldShow);
-      const comm = document.getElementById('guestChannelCommissionWrap');
-      showEl(comm, false);
-      if (shouldShow){
-        try{ populateGuestChannelOptions(channel && channel.value ? channel.value : ''); }catch(_){ }
-        try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
-      }
-    }catch(_){ }
-  }
-  function after(){ try{ stabilizeGuestChannel(); setTimeout(stabilizeGuestChannel,0); setTimeout(stabilizeGuestChannel,80); setTimeout(stabilizeGuestChannel,240); }catch(_){ } }
-  ['click','change','input','pointerup','touchend'].forEach(function(evt){
-    try{ document.addEventListener(evt, function(){ after(); }, true); }catch(_){ }
-  });
-  ['enterGuestViewMode','enterGuestEditMode','enterGuestCreateMode','renderGuestMulti','renderRoomsReadOnly','setGuestFormViewOnly','updateOspiteHdActions','__setGuestGroupInfoVisible__','__populateGuestGroupInfoFromBooking__'].forEach(function(name){
-    try{
-      const fn = window[name] || (typeof globalThis !== 'undefined' ? globalThis[name] : null);
-      if (typeof fn === 'function' && !fn.__ddae2842ChannelStable){
-        const wrapped = function(){ const out = fn.apply(this, arguments); after(); return out; };
-        wrapped.__ddae2842ChannelStable = true;
-        window[name] = wrapped;
-        try{ globalThis[name] = wrapped; }catch(_){ }
-      }
-    }catch(_){ }
-  });
-  try{ window.__ddae2842StabilizeGuestChannel = stabilizeGuestChannel; }catch(_){ }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', after, {once:true}); else after();
-  try{ window.addEventListener('pageshow', after, {passive:true}); }catch(_){ }
-})();
-
-/* dDAE_2.843 — Impostazioni: popup colore tag stabile per Operatore/Channel/Lavanderia */
-(function(){
-  const SETTINGS_TAG_TARGETS = new Set(['operatore','channel','lavanderia']);
-  function keyOf(target){ return String(target || '').trim().toLowerCase(); }
-  function isSettingsTagTarget(){
-    try{ return SETTINGS_TAG_TARGETS.has(keyOf(__tagColorPopupState__ && __tagColorPopupState__.target)); }catch(_){ return false; }
-  }
-  function forceCloseColorModal(){
-    try{
-      const modal = document.getElementById('tagColorModal');
-      if (modal){ modal.hidden = true; modal.setAttribute('aria-hidden','true'); }
-      document.body.classList.remove('tag-color-modal-open');
-      __tagColorPopupReadyAt__ = 0;
-      __tagColorPopupSuppressUntil__ = Date.now() + 250;
-    }catch(_){ }
-  }
-  function currentForTarget(key){
-    if (key === 'channel') return { bg: (__channelPageUi && __channelPageUi.color) || 'orange-3', fg: (__channelPageUi && __channelPageUi.textColor) || '' };
-    if (key === 'lavanderia') return { bg: (__laundryCatalogPageUi && __laundryCatalogPageUi.color) || 'blue-3', fg: (__laundryCatalogPageUi && __laundryCatalogPageUi.textColor) || '' };
-    return { bg: (__operatoriPageUi && __operatoriPageUi.color) || 'blue-3', fg: (__operatoriPageUi && __operatoriPageUi.textColor) || '' };
-  }
-  function applyPayloadToTarget(key, payload){
-    try{
-      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      if (key === 'channel'){
-        __channelSetSelectedColor__(colors.bg || (__channelPageUi && __channelPageUi.color) || 'orange-3');
-        __channelSetSelectedTextColor__(colors.fg || '');
-      } else if (key === 'lavanderia'){
-        __laundryCatalogSetSelectedColor__(colors.bg || (__laundryCatalogPageUi && __laundryCatalogPageUi.color) || 'blue-3');
-        __laundryCatalogSetSelectedTextColor__(colors.fg || '');
-      } else {
-        __operatoriSetSelectedColor__(colors.bg || (__operatoriPageUi && __operatoriPageUi.color) || 'blue-3');
-        __operatoriSetSelectedTextColor__(colors.fg || '');
-      }
-      try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
-      try{ toast('Colore aggiornato'); }catch(_){ }
-    }catch(e){ try{ toast('Errore colore'); }catch(_){ } }
-  }
-  const originalOpen = (typeof window !== 'undefined' ? window.__openTagColorPickerFor__ : null) || (typeof __openTagColorPickerFor__ === 'function' ? __openTagColorPickerFor__ : null);
-  const patchedOpen = function(target){
-    const key = keyOf(target);
-    if (!SETTINGS_TAG_TARGETS.has(key)){
-      if (typeof originalOpen === 'function') return originalOpen.apply(this, arguments);
-      return;
-    }
-    try{
-      const current = currentForTarget(key);
-      const fallback = key === 'channel' ? 'orange-3' : 'blue-3';
-      window.__ddae843SettingsColorPickerActive = true;
-      __tagColorPopupOpen__(key, current, (payload) => applyPayloadToTarget(key, payload), {
-        supportsBg:true,
-        supportsBorder:true,
-        supportsFg:true,
-        supportsOpacity:true,
-        opacity:0.80,
-        defaultMode:'bg',
-        fallbackBg:fallback
-      });
-      setTimeout(function(){ try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } }, 0);
-    }catch(_){ try{ if (typeof originalOpen === 'function') return originalOpen.apply(this, arguments); }catch(__){} }
-  };
-  try{ window.__openTagColorPickerFor__ = patchedOpen; }catch(_){ }
-  try{ globalThis.__openTagColorPickerFor__ = patchedOpen; }catch(_){ }
-
-  const originalConfirm = (typeof window !== 'undefined' ? window.__tagColorPopupConfirm__ : null) || (typeof __tagColorPopupConfirm__ === 'function' ? __tagColorPopupConfirm__ : null);
-  const patchedConfirm = async function(){
-    if (!isSettingsTagTarget()){
-      if (typeof originalConfirm === 'function') return originalConfirm.apply(this, arguments);
-      return;
-    }
-    const key = keyOf(__tagColorPopupState__ && __tagColorPopupState__.target);
-    const payload = __tagColorPopupCurrentPayload__();
-    try{ __tagColorPopupState__.confirmed = true; }catch(_){ }
-    try{ if (typeof __tagColorPopupClose__ === 'function') __tagColorPopupClose__(); else forceCloseColorModal(); }catch(_){ forceCloseColorModal(); }
-    applyPayloadToTarget(key, payload);
-    try{ window.__ddae843SettingsColorPickerActive = false; }catch(_){ }
-  };
-  try{ window.__tagColorPopupConfirm__ = patchedConfirm; }catch(_){ }
-  try{ globalThis.__tagColorPopupConfirm__ = patchedConfirm; }catch(_){ }
-
-  function bindStableAutoConfirm(){
-    try{
-      if (window.__ddae843SettingsColorGridStableBound) return;
-      window.__ddae843SettingsColorGridStableBound = true;
-      document.addEventListener('pointerup', function(ev){
-        try{
-          if (!isSettingsTagTarget()) return;
-          const btn = ev.target && ev.target.closest ? ev.target.closest('#tagColorGrid .tag-color-option') : null;
-          if (!btn) return;
-          ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-          const spec = __parseOperatoreColorSpec__(btn.dataset.spec || 'blue-3').spec;
-          if (__tagColorPopupState__.mode === 'fg') __tagColorPopupState__.colors.fg = spec;
-          else if (__tagColorPopupState__.mode === 'border') __tagColorPopupState__.colors.border = spec;
-          else __tagColorPopupState__.colors.bg = spec;
-          try{ __tagColorPopupRefreshSelection__(); }catch(_){ }
-          setTimeout(function(){ try{ patchedConfirm(); }catch(_){ forceCloseColorModal(); } }, 0);
-        }catch(_){ forceCloseColorModal(); }
-      }, true);
-      document.addEventListener('touchend', function(ev){
-        try{
-          if (!isSettingsTagTarget()) return;
-          const btn = ev.target && ev.target.closest ? ev.target.closest('#tagColorGrid .tag-color-option') : null;
-          if (!btn) return;
-          ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-        }catch(_){ }
-      }, { capture:true, passive:false });
-    }catch(_){ }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindStableAutoConfirm, {once:true}); else bindStableAutoConfirm();
-})();
-
-
-/* dDAE_2.844 — Impostazioni: popup colore tag separato e non bloccante per Operatore/Channel/Lavanderia */
-(function(){
-  const TARGETS = new Set(['operatore','channel','lavanderia']);
-  const PREFIX = 'settings-tag-stable:';
-  function keyOf(v){ return String(v || '').trim().toLowerCase(); }
-  function isStableTarget(){
-    try{ return String(__tagColorPopupState__ && __tagColorPopupState__.target || '').indexOf(PREFIX) === 0; }catch(_){ return false; }
-  }
-  function activeKey(){
-    try{ return keyOf(String(__tagColorPopupState__ && __tagColorPopupState__.target || '').replace(PREFIX,'')); }catch(_){ return ''; }
-  }
-  function unlockUi(){
-    try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
-    try{
-      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal','tagColorModal'].forEach(function(id){
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.style.removeProperty('pointer-events');
-        if (id === 'tagColorModal'){
-          el.style.removeProperty('touch-action');
-        }
-      });
-    }catch(_){ }
-    try{ document.querySelectorAll('#operatoriEditorModal *, #channelEditorModal *, #laundryCatalogEditorModal *').forEach(function(el){ el.style.removeProperty('pointer-events'); }); }catch(_){ }
-  }
-  function closeModalHard(){
-    try{
-      const modal = document.getElementById('tagColorModal');
-      if (modal){
-        modal.hidden = true;
-        modal.setAttribute('aria-hidden','true');
-        modal.style.removeProperty('pointer-events');
-      }
-    }catch(_){ }
-    try{ __tagColorPopupState__.target = ''; __tagColorPopupState__.onSelect = null; __tagColorPopupState__.confirmed = false; }catch(_){ }
-    try{ __tagColorPopupReadyAt__ = 0; __tagColorPopupSuppressUntil__ = Date.now() + 250; }catch(_){ }
-    unlockUi();
-  }
-  function currentFor(key){
-    try{
-      if (key === 'channel') return { bg: (__channelPageUi && __channelPageUi.color) || 'orange-3', fg: (__channelPageUi && __channelPageUi.textColor) || '', opacity:0.80 };
-      if (key === 'lavanderia') return { bg: (__laundryCatalogPageUi && __laundryCatalogPageUi.color) || 'blue-3', fg: (__laundryCatalogPageUi && __laundryCatalogPageUi.textColor) || '', opacity:0.80 };
-      return { bg: (__operatoriPageUi && __operatoriPageUi.color) || 'blue-3', fg: (__operatoriPageUi && __operatoriPageUi.textColor) || '', opacity:0.80 };
-    }catch(_){ return { bg:'blue-3', fg:'', opacity:0.80 }; }
-  }
-  function payloadNow(){
-    try{
-      if (typeof __tagColorPopupCurrentPayload__ === 'function') return __tagColorPopupCurrentPayload__();
-    }catch(_){ }
-    try{ return { colors:{...(__tagColorPopupState__.colors || {})}, opacity:(__tagColorPopupState__.opacity ?? 0.80), mode:(__tagColorPopupState__.mode || 'bg') }; }catch(_){ return { colors:{} }; }
-  }
-  function applyTo(key, payload){
-    try{
-      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      const bg = colors.bg || currentFor(key).bg;
-      const fg = colors.fg || '';
-      if (key === 'channel'){
-        try{ __channelSetSelectedColor__(bg); }catch(_){ if (__channelPageUi) __channelPageUi.color = bg; }
-        try{ __channelSetSelectedTextColor__(fg); }catch(_){ if (__channelPageUi) __channelPageUi.textColor = fg; }
-      } else if (key === 'lavanderia'){
-        try{ __laundryCatalogSetSelectedColor__(bg); }catch(_){ if (__laundryCatalogPageUi) __laundryCatalogPageUi.color = bg; }
-        try{ __laundryCatalogSetSelectedTextColor__(fg); }catch(_){ if (__laundryCatalogPageUi) __laundryCatalogPageUi.textColor = fg; }
-      } else {
-        try{ __operatoriSetSelectedColor__(bg); }catch(_){ if (__operatoriPageUi) __operatoriPageUi.color = bg; }
-        try{ __operatoriSetSelectedTextColor__(fg); }catch(_){ if (__operatoriPageUi) __operatoriPageUi.textColor = fg; }
-      }
-      try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
-      try{ toast('Colore aggiornato'); }catch(_){ }
-    }catch(_){ try{ toast('Errore colore'); }catch(__){} }
-  }
-  function openStable(target){
-    const key = keyOf(target);
-    if (!TARGETS.has(key)) return false;
-    try{
-      unlockUi();
-      const current = currentFor(key);
-      const fallback = key === 'channel' ? 'orange-3' : 'blue-3';
-      __tagColorPopupOpen__(PREFIX + key, current, function(payload){ applyTo(key, payload); }, {
-        supportsBg:true,
-        supportsBorder:true,
-        supportsFg:true,
-        supportsOpacity:false,
-        opacity:0.80,
-        defaultMode:'bg',
-        fallbackBg:fallback
-      });
-      try{ __tagColorPopupReadyAt__ = 0; __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
-      try{
-        const modal = document.getElementById('tagColorModal');
-        if (modal){
-          modal.style.setProperty('z-index','2147483647','important');
-          modal.style.setProperty('pointer-events','auto','important');
-          modal.querySelectorAll('button,.tag-color-option,.tag-color-mode-btn').forEach(function(el){ el.style.setProperty('pointer-events','auto','important'); el.style.setProperty('touch-action','manipulation','important'); });
-        }
-      }catch(_){ }
-      return true;
-    }catch(_){ return false; }
-  }
-  const prevOpen = (typeof window !== 'undefined' ? window.__openTagColorPickerFor__ : null) || (typeof __openTagColorPickerFor__ === 'function' ? __openTagColorPickerFor__ : null);
-  const openPatch = function(target){
-    if (openStable(target)) return;
-    if (typeof prevOpen === 'function') return prevOpen.apply(this, arguments);
-  };
-  try{ window.__openTagColorPickerFor__ = openPatch; }catch(_){ }
-  try{ globalThis.__openTagColorPickerFor__ = openPatch; }catch(_){ }
-  try{ __openTagColorPickerFor__ = openPatch; }catch(_){ }
-
-  const prevConfirm = (typeof window !== 'undefined' ? window.__tagColorPopupConfirm__ : null) || (typeof __tagColorPopupConfirm__ === 'function' ? __tagColorPopupConfirm__ : null);
-  const confirmPatch = async function(){
-    if (!isStableTarget()){
-      if (typeof prevConfirm === 'function') return prevConfirm.apply(this, arguments);
-      return;
-    }
-    const key = activeKey();
-    const payload = payloadNow();
-    try{ __tagColorPopupState__.confirmed = true; }catch(_){ }
-    closeModalHard();
-    applyTo(key, payload);
-    setTimeout(unlockUi, 0);
-    setTimeout(unlockUi, 120);
-  };
-  try{ window.__tagColorPopupConfirm__ = confirmPatch; }catch(_){ }
-  try{ globalThis.__tagColorPopupConfirm__ = confirmPatch; }catch(_){ }
-  try{ __tagColorPopupConfirm__ = confirmPatch; }catch(_){ }
-
-  const prevClose = (typeof window !== 'undefined' ? window.__tagColorPopupClose__ : null) || (typeof __tagColorPopupClose__ === 'function' ? __tagColorPopupClose__ : null);
-  const closePatch = function(){
-    if (isStableTarget()) return closeModalHard();
-    const out = (typeof prevClose === 'function') ? prevClose.apply(this, arguments) : undefined;
-    setTimeout(unlockUi,0);
-    return out;
-  };
-  try{ window.__tagColorPopupClose__ = closePatch; }catch(_){ }
-  try{ globalThis.__tagColorPopupClose__ = closePatch; }catch(_){ }
-  try{ __tagColorPopupClose__ = closePatch; }catch(_){ }
-
-  function stop(ev){ try{ ev.preventDefault(); }catch(_){ } try{ ev.stopPropagation(); }catch(_){ } try{ ev.stopImmediatePropagation(); }catch(_){ } }
-  function handle(ev){
-    try{
-      if (!isStableTarget()) return;
-      const modal = document.getElementById('tagColorModal');
-      if (!modal || modal.hidden || modal.getAttribute('aria-hidden') === 'true') return;
-      const t = ev.target;
-      if (!t || !modal.contains(t)) return;
-      const close = t.closest && t.closest('#tagColorModalClose');
-      const ok = t.closest && t.closest('#tagColorModalConfirm');
-      const mode = t.closest && t.closest('#tagColorModeBar .tag-color-mode-btn');
-      const opt = t.closest && t.closest('#tagColorGrid .tag-color-option');
-      if (!close && !ok && !mode && !opt) return;
-      stop(ev);
-      if (close) return closeModalHard();
-      if (ok) return void confirmPatch();
-      if (mode){
-        const raw = keyOf(mode.dataset && mode.dataset.mode);
-        const m = raw === 'border' ? 'border' : (raw === 'fg' ? 'fg' : 'bg');
-        if (m === 'bg' && !__tagColorPopupState__.supportsBg) return;
-        if (m === 'border' && !__tagColorPopupState__.supportsBorder) return;
-        if (m === 'fg' && !__tagColorPopupState__.supportsFg) return;
-        __tagColorPopupState__.mode = m;
-        try{ __tagColorPopupRefreshSelection__(); __tagColorPopupApplyViewportLayout__(); }catch(_){ }
-        return;
-      }
-      if (opt){
-        const spec = __parseOperatoreColorSpec__((opt.dataset && opt.dataset.spec) || 'blue-3').spec;
-        const m = keyOf(__tagColorPopupState__.mode || 'bg');
-        if (m === 'fg') __tagColorPopupState__.colors.fg = spec;
-        else if (m === 'border') __tagColorPopupState__.colors.border = spec;
-        else __tagColorPopupState__.colors.bg = spec;
-        try{ __tagColorPopupRefreshSelection__(); }catch(_){ }
-        return;
-      }
-    }catch(_){ unlockUi(); }
-  }
-  try{
-    if (!window.__ddae2844SettingsColorStableBound__){
-      window.__ddae2844SettingsColorStableBound__ = true;
-      ['touchstart','touchend','pointerdown','pointerup','mousedown','mouseup','click'].forEach(function(evt){
-        try{ document.addEventListener(evt, handle, true); }catch(_){ }
-      });
-    }
-  }catch(_){ }
-  try{ setInterval(function(){ if (!isStableTarget()) unlockUi(); }, 800); }catch(_){ }
-})();
-
-
-/* dDAE_2.845 — Impostazioni: rimossa la funzione Tag colore da Operatore/Channel/Lavanderia */
-(function(){
-  const REMOVED_TARGETS = new Set(['operatore','operatori','channel','lavanderia','laundry','laundrycatalog']);
-  const REMOVED_SELECTORS = [
-    '#operatoriColorGrid', '#channelColorGrid', '#laundryCatalogColorGrid',
-    '#operatoriEditorTagColor', '#channelEditorGraphColor', '#laundryCatalogEditorTagColor'
+  const IDS = [
+    'operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorCancel','operatoriEditorSave',
+    'channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','channelEditorCancel','channelEditorSave',
+    'laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorCancel','laundryCatalogEditorSave'
   ];
-  function keyOf(v){ return String(v || '').trim().toLowerCase(); }
-  function removeNode(node){
+  function bindAll(){
     try{
-      if (!node) return;
-      const wrap = node.closest && node.closest('.operatori-color-wrap');
-      (wrap || node).remove();
-    }catch(_){
-      try{ if (node) node.hidden = true; }catch(__){}
-    }
-  }
-  function stripSettingsTagColorUi(){
-    try{
-      REMOVED_SELECTORS.forEach(function(sel){
-        document.querySelectorAll(sel).forEach(removeNode);
+      IDS.forEach(function(id){
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+        try{ __bindSingleActionButtonColorHold__(btn); }catch(_){ }
       });
-      document.querySelectorAll('.operatori-color-label').forEach(function(el){
-        try{
-          if (String(el.textContent || '').trim().toLowerCase() === 'tag colore') removeNode(el);
-        }catch(_){ }
-      });
+      try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
     }catch(_){ }
   }
-  function isRemovedTagColorTrigger(el){
-    try{
-      return !!(el && el.closest && el.closest('#operatoriEditorTagColor,#channelEditorGraphColor,#laundryCatalogEditorTagColor,#operatoriColorGrid,#channelColorGrid,#laundryCatalogColorGrid'));
-    }catch(_){ return false; }
-  }
-  const prevOpen = (typeof __openTagColorPickerFor__ === 'function') ? __openTagColorPickerFor__ : null;
-  const openNoSettingsTag = function(target){
-    const key = keyOf(target);
-    if (REMOVED_TARGETS.has(key)){
-      try{ stripSettingsTagColorUi(); }catch(_){ }
-      return;
-    }
-    if (typeof prevOpen === 'function') return prevOpen.apply(this, arguments);
-  };
-  try{ __openTagColorPickerFor__ = openNoSettingsTag; }catch(_){ }
-  try{ window.__openTagColorPickerFor__ = openNoSettingsTag; }catch(_){ }
-  try{ globalThis.__openTagColorPickerFor__ = openNoSettingsTag; }catch(_){ }
-  ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(evt){
-    try{
-      document.addEventListener(evt, function(ev){
-        if (!isRemovedTagColorTrigger(ev.target)) return;
-        try{ ev.preventDefault(); }catch(_){ }
-        try{ ev.stopPropagation(); }catch(_){ }
-        try{ ev.stopImmediatePropagation(); }catch(_){ }
-        stripSettingsTagColorUi();
-      }, true);
-    }catch(_){ }
-  });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', stripSettingsTagColorUi, { once:true });
-  else stripSettingsTagColorUi();
-  try{ window.addEventListener('pageshow', stripSettingsTagColorUi, { passive:true }); }catch(_){ }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAll, { once:true });
+  else bindAll();
+  try{ window.addEventListener('pageshow', bindAll, { passive:true }); }catch(_){ }
   try{
-    const mo = new MutationObserver(function(){ stripSettingsTagColorUi(); });
+    const mo = new MutationObserver(function(){ bindAll(); });
     mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
   }catch(_){ }
 })();
+
