@@ -23102,3 +23102,13 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
   min-width:100% !important;
   max-width:100% !important;
 }
+
+
+/* dDAE_2.846 — tasti colore pallino nei popup impostazioni */
+#operatoriEditorDotColor.btn,
+#channelEditorDotColor.btn,
+#laundryCatalogEditorDotColor.btn{
+  font-size:30px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+}
