@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.451");
-  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.451");
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.617");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.617");
 }
 html{
   background-color:#ececec;
@@ -119,6 +119,7 @@ body.ddae-dark.bg-dark-ready{
   background: var(--glass);
   backdrop-filter: blur(14px);
   border-bottom: 0;
+  overflow: hidden;
 }
 
 /* dDAE_1.020 — Linea sotto la topbar (sfumata colori app) */
@@ -133,38 +134,64 @@ body.ddae-dark.bg-dark-ready{
 }
 
 .brand{
-    position: relative;
-display:flex;
+  position: relative;
+  display:flex;
   align-items:center;
   justify-content:space-between;
-  gap: 12px;
+  gap: 10px;
   padding: 10px 14px;
   flex-wrap: nowrap;
+  min-width: 0;
+  --topbar-side-gap: 14px;
+  --topbar-left-reserve: 74px;
+  --topbar-right-reserve: 74px;
+  --topbar-center-width: calc(100% - 176px);
 }
 .brand-left{
   display:flex;
   align-items:center;
   gap: 6px;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   flex-wrap: nowrap;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
-
-/* dDAE_2.008 — Anno corrente centrato in topbar (sostituisce titolo) */
-.topbar-year{
+.topbar-center{
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  pointer-events: none;
+  z-index: 1;
+  width: var(--topbar-center-width);
+  max-width: var(--topbar-center-width);
+}
+
+/* dDAE_2.680 — Titolo topbar sempre centrato nella barra */
+.topbar-year{
+  position: static;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  height: 24px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight: 800;
-  font-size: 20px;
+  font-size: clamp(18px, 4.6vw, 20px);
   letter-spacing: 0.6px;
   color: rgba(15,23,42,0.92);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
   user-select: none;
 }
@@ -176,9 +203,62 @@ display:flex;
   flex-wrap: nowrap;
   flex: 0 0 auto;
   flex-shrink: 0;
+  margin-left: auto;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .brand-right > *{ flex-shrink: 0; }
+
+.brand-left > *,
+.brand-right > *{
+  min-width: 0;
+}
+.topbar .logo,
+.topbar .top-led-grid,
+.topbar .topbar-center,
+.topbar-year,
+.topbar .icon-btn,
+.topbar [id$="TopTools"]{
+  align-self: center;
+}
+.topbar [id$="TopTools"]{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap;
+}
+.topbar [id$="TopTools"][hidden]{
+  display:none !important;
+}
+.topbar .icon-btn{
+  flex: 0 0 auto;
+}
+.topbar-center,
+.topbar-year{
+  text-align:center;
+}
+.topbar .brand-left,
+.topbar .brand-right,
+.topbar .topbar-center{
+  max-height: 46px;
+}
+.prodotti-title-row,
+.hd-actions,
+.guest-hd-actions,
+.clean-topbar,
+.app-section-head-row,
+.stats-head-actions,
+.prodotti-grid-tabs,
+.room-settings-line,
+.settings-actions,
+.settings-top-row,
+.settings-bottom-stack,
+.pill-row,
+.tab-row{
+  align-items:center;
+}
 
 
 /* dDAE_2.134 — Topbar buttons: white (80%) + azure icons (palette) */
@@ -213,27 +293,38 @@ display:flex;
 }
 
 .top-led{
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
   border-radius: 999px;
   background: rgba(15,23,42,0.12);
   border: 1px solid rgba(15,23,42,0.18);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_1.020 — Griglia 2x2 LED (Spesa + DB) tra logo e titolo */
+/* dDAE_2.724 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
-  grid-template-columns: repeat(2, 10px);
-  grid-auto-rows: 10px;
-  gap: 3px;
-  margin-left: 6px;
-  margin-right: 6px;
+  grid-template-columns: repeat(6, 15px);
+  grid-auto-rows: 15px;
+  gap: 11px;
+  margin: 0;
   flex: 0 0 auto;
   align-self: center;
+  align-items: center;
+  justify-items: center;
+  pointer-events: auto;
 }
 
 
+.top-led-product{
+  cursor: default;
+  touch-action: manipulation;
+}
+.top-led-product:not(.is-on){
+  background: rgba(15,23,42,0.12);
+  border-color: rgba(15,23,42,0.18);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+}
 
 .top-led-green.is-on{
   background: rgba(34,197,94,0.92);
@@ -757,13 +848,15 @@ input[type="date"]{
 
 /* Spese: tasto elimina = pallino rosso con X bianca */
 .delbtn.delbtn-x{
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   padding: 0;
   border-radius: 999px;
   background: rgba(220, 38, 38, 0.95);
   border: 1px solid rgba(185, 28, 28, 0.85);
-  box-shadow: 0 10px 26px rgba(15,23,42,0.14);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.14);
   position: relative;
   color: transparent;
   font-size: 0;
@@ -774,8 +867,8 @@ input[type="date"]{
   position:absolute;
   left:50%;
   top:50%;
-  width: 18px;
-  height: 2.6px;
+  width: 14px;
+  height: 2.2px;
   background: rgba(255,255,255,0.98);
   border-radius: 999px;
   transform-origin: center;
@@ -1441,7 +1534,9 @@ body > *{
 #page-statistiche #goStatGen .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatMensili .home-main-glyph{ color: var(--ico-blue-deep) !important; }
 #page-statistiche #goStatSpese .home-main-glyph{ color: var(--ico-orange) !important; }
-#page-statistiche #goStatPrenotazioni .home-main-glyph{ color: var(--ico-orange) !important; }
+#page-statistiche #goStatRicevute .home-main-glyph{ color: var(--ico-orange) !important; }
+#page-statistiche #goStatChannel .home-main-glyph{ color: var(--ico-beige) !important; }
+#page-statistiche #goStatPulizie .home-main-glyph{ color: var(--ico-blue) !important; }
 #page-statistiche #goStatPiscina .home-main-glyph{ color: var(--ico-taupe) !important; }
 #page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-taupe) !important; }
 
@@ -1831,6 +1926,17 @@ border: 1px solid var(--border);
   transform:translateY(-50%);
 }
 #page-ospite .guest-name-field > .guest-nationality-btn:active{ transform:translateY(-50%) scale(0.985); }
+
+#page-ospite .guest-booking-number-field{
+  position:relative;
+}
+#page-ospite .guest-booking-number-field > input{
+  padding-right:12px;
+}
+#page-ospite .guest-booking-number-field > label{
+  max-width:calc(100% - 28px);
+}
+
 #page-ospite .guest-name-field > .guest-nationality-btn:focus-visible{
   outline:2px solid rgba(77,156,197,0.82);
   outline-offset:2px;
@@ -2351,7 +2457,7 @@ body.ddae-dark .guest-nationality-option.is-selected{
 }
 #page-ospite .toggle-check:checked + .pill-toggle .dot{
   background: var(--blue);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
 }
 
 
@@ -2614,8 +2720,30 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospiti .guest-led.led-green{ background: #34c759; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 #page-ospiti .guest-led.led-orange{ background: #ff9500; box-shadow: 0 0 0 3px rgba(255,149,0,0.16), 0 0 12px rgba(255,149,0,0.42); }
 #page-ospiti .guest-led.led-yellow{ background: #ffcc00; box-shadow: 0 0 0 3px rgba(255,204,0,0.16), 0 0 12px rgba(255,204,0,0.42); }
+#page-ospiti .guest-led.led-blue{ background: #32ade6; box-shadow: 0 0 0 3px rgba(50,173,230,0.16), 0 0 12px rgba(50,173,230,0.42); }
 
 #page-ospiti .guest-led.led-red{ background: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 0 12px rgba(255,59,48,0.42); }
+#page-ospiti .guest-led.is-checkin-due-blink{
+  animation: guestCheckInDueBlink 0.86s infinite;
+}
+
+@keyframes guestCheckInDueBlink{
+  0%, 48%{ opacity:1; transform:scale(1); }
+  49%, 100%{ opacity:0.28; transform:scale(0.86); }
+}
+
+/* dDAE_2.747 — Il lampeggio check-in deve funzionare anche in modalità prestazioni iOS. */
+body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
+#page-ospiti .guest-led.is-checkin-due-blink{
+  animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
+  -webkit-animation: guestCheckInDueBlink 0.86s steps(2, end) infinite !important;
+}
+
+@-webkit-keyframes guestCheckInDueBlink{
+  0%, 48%{ opacity:1; -webkit-transform:scale(1); transform:scale(1); }
+  49%, 100%{ opacity:0.28; -webkit-transform:scale(0.86); transform:scale(0.86); }
+}
+
 #page-ospiti .guest-led.led-greenorange-blink{
   animation: ledGreenOrangeBlink 1.05s infinite;
 }
@@ -2906,6 +3034,9 @@ body[data-page="ospiti"] .guest-card .actions {
 
 
 .tl-green{ background: rgba(52,199,89,0.92); }
+.tl-checkin{ background: rgba(148,163,184,0.92); }
+.tl-checkin.is-on{ background: rgba(52,199,89,0.92); }
+.tl-checkin.is-off{ background: rgba(148,163,184,0.92); }
 .tl-indigo{ background: rgba(79,70,229,0.92); }
 .tl-yellow{ background: rgba(255,204,0,0.92); }
 .tl-red{ background: rgba(255,59,48,0.92); }
@@ -3217,7 +3348,7 @@ body[data-page="ospiti"] .guest-card .actions {
 #page-ospite .pay-elec.selected{
   opacity: 1 !important; /* LED sempre al 100% */
   background-color: var(--ico-sky);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
@@ -3717,17 +3848,22 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 #page-calendario .cal-cell.has-booking .cal-cell-inner{
   position: relative;
   justify-content: center;
-  padding: 18px 8px 18px 8px;
+  padding: 16px 8px 24px 8px;
 }
 #page-calendario .cal-cell.has-booking .cal-fullname + .cal-dots{
   margin-top: 0;
 }
 #page-calendario .cal-dots{
   position: absolute;
-  top: 5px;
-  left: 5px;
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%);
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   width: auto;
   height: 8px;
@@ -4155,7 +4291,7 @@ border-color: rgba(255,255,255,.16);
 }
 
 .guest-filter-row-1{
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .guest-filter-row-dir{
@@ -4198,7 +4334,7 @@ border-color: rgba(255,255,255,.16);
   background: rgba(111,183,214,0.80);
   background-color: rgba(111,183,214,0.80);
   color:#ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-align:center;
   white-space: nowrap;
@@ -4255,8 +4391,14 @@ border-color: rgba(255,255,255,.16);
 
 @media (max-width: 380px){
   .gf-chip-btn{
-    font-size: 12px;
-    padding: 0 4px;
+    font-size: 11px;
+    padding: 0 3px;
+  }
+}
+@media (max-width: 340px){
+  .gf-chip-btn{
+    font-size: 10px;
+    padding: 0 2px;
   }
 }
 
@@ -4288,17 +4430,28 @@ border-color: rgba(255,255,255,.16);
   margin-right: 10px;
   border-radius: 999px;
   border: 1px solid rgba(148,163,184,0.24);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
   font-size: 24px;
   font-weight: 600;
   line-height: 1;
   opacity: 0.85;
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
 #page-ospiti .guest-main .guest-insno{
   margin-right: 0;
+}
+
+#page-ospiti .guest-insno.is-missing{
+  background: rgba(250,204,21,0.92);
+  border-color: rgba(234,179,8,0.65);
+  color: rgba(15,23,42,0.92);
+}
+#page-ospiti .guest-insno.is-ready{
+  background: rgba(34,197,94,0.92);
+  border-color: rgba(22,163,74,0.65);
+  color: rgba(255,255,255,0.98);
 }
 
 #page-ospiti .guest-nationality-dot{
@@ -4470,7 +4623,7 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
 
 #page-ospite .pay-istat.selected{
   background: var(--ico-sky);
-  border-color: var(--ico-sky);
+  border-color: rgba(234,179,8,0.65);
   color: rgba(255,255,255,0.98);
 }
 
@@ -4517,9 +4670,32 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
 #page-ospiti .guest-nameblock{
   display:flex;
   flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
   min-width: 0;
 }
+#page-ospiti .guest-name-tab{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  max-width:100%;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,0.10);
+  background:rgba(255,255,255,0.38);
+  box-sizing:border-box;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 #page-ospiti .guest-name-text{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.12;
+}
+#page-ospiti .guest-booking-number-text{
   overflow:hidden;
   text-overflow:ellipsis;
   font-size: 18px;
@@ -4565,7 +4741,7 @@ body.ddae-dark #page-ospite .guest-name-field > .guest-nationality-btn{
   border-radius: 16px;
   padding: 10px 10px;
   border: 1px solid rgba(15,23,42,0.06);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
 }
 
 body.perf-lite .guest-booking-block{
@@ -5356,7 +5532,7 @@ grid-template-rows: 34px repeat(7, 54px);
   place-items:center;
   border-radius: 12px;
   border: 1px solid rgba(148,163,184,0.24);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
 }
 .laundry-tile-icon svg{ width:18px; height:18px; }
 .laundry-code{
@@ -5899,7 +6075,7 @@ body[data-page="pulizie"]{
 ========================= */
 
 .opcal-wrap{
-  padding: 12px 19px 26px;
+  padding: 32px 19px 26px;
   max-width: 1120px;
   margin: 0 auto;
   position: relative;
@@ -6336,7 +6512,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
 #page-lavanderia .card .hd h2{
   width: auto;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: inherit;
   letter-spacing: normal;
@@ -6967,36 +7143,17 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   white-space:nowrap;
   min-width:0;
 }
-.statgen-regime-label{
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:.02em;
-  color:rgba(15,23,42,0.72);
-  line-height:1;
-  white-space:nowrap;
-  flex:0 1 auto;
-}
-.statgen-switch{
-  flex:0 0 auto;
-}
-.statgen-switch .slider{
-  background:rgba(15,23,42,0.08);
-  border-color:rgba(15,23,42,0.14);
-}
-.statgen-switch .slider:before{
-  background:#ffffff;
-  border-color:rgba(15,23,42,0.14);
-}
-.statgen-switch input:checked + .slider{
-  background:rgba(43,124,180,0.22);
-}
+.statgen-regime-btn,
+.statgen-compare-toggle-btn,
 .statgen-compare-year-btn{
   flex:0 0 auto;
-  width:38px;
-  min-width:38px;
+  width:58px;
+  min-width:58px;
   height:38px;
-  padding:0;
+  padding:0 8px;
 }
+.statgen-regime-btn-label,
+.statgen-compare-toggle-label,
 .statgen-compare-year-value{
   display:flex;
   align-items:center;
@@ -7010,15 +7167,18 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
   white-space:nowrap;
   text-align:center;
 }
-body.ddae-dark .statgen-regime-label{
-  color:rgba(226,232,240,0.72);
+.statgen-regime-btn-label{
+  font-size:11px;
 }
 @media (max-width:380px){
-  .statgen-regime-label{
-    font-size:11px;
-  }
   .statgen-regime-switch{
     gap:6px;
+  }
+  .statgen-regime-btn,
+  .statgen-compare-toggle-btn,
+  .statgen-compare-year-btn{
+    width:52px;
+    min-width:52px;
   }
 }
 
@@ -7830,7 +7990,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
 }
 .prod-rectbtn.prod-green{
   border-color: rgba(52,199,89,0.70);
-  background: rgba(52,199,89,0.35);
+  background: rgba(250,204,21,0.92);
   color: #ffffff;
   -webkit-text-fill-color: #ffffff;
 }
@@ -9357,17 +9517,45 @@ html, body{
 }
 
 
-/* dDAE_2.067 — Ore Pulizia: stesso distacco superiore di Lavanderia */
+/* dDAE_2.682 — Ore Pulizia: tasto report allineato come Lavanderia con linea continua */
+#page-orepulizia .opcal-pageHeadRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 0 12px;
+  border-bottom: 1px solid rgba(15,23,42,0.92);
+}
+#page-orepulizia .opcal-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 8px;
+  margin-left:auto;
+  flex: 0 0 auto;
+}
+#page-orepulizia .opcal-head-actions .icon-btn{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  margin: 0;
+}
 #page-orepulizia .opcal-pageTitle{
+  flex: 1 1 auto;
+  min-width: 0;
   display: block;
-  font-size: 14px;
-  font-weight: 700;
-  color: inherit;
-  letter-spacing: normal;
-  margin: 0 0 10px;
-  padding: 0 0 12px;
-  border-bottom: 1px solid #000000;
+  font-size: var(--dd-page-title-size);
+  font-weight: var(--dd-page-title-weight);
+  line-height: var(--dd-page-title-line);
+  color: var(--dd-page-title-color);
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+  border-bottom: 0;
   text-align: left;
+  align-self: center;
 }
 
 /* dDAE_2.063 — Ore Pulizia: header compatto + griglia 2x2 filtri/stat */
@@ -9389,6 +9577,31 @@ html, body{
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   align-items: stretch;
+  margin-top: 20px;
+}
+#page-orepulizia .opcal-summaryTotal{
+  grid-column: 1 / -1;
+  min-height: 64px;
+  height: 64px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 0 16px;
+}
+#page-orepulizia .opcal-summaryTotalValue{
+  width:100%;
+  text-align:center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #3f83bf;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #page-orepulizia .opcal-filterRow{
   margin: 0;
@@ -9420,18 +9633,32 @@ html, body{
   margin: 0;
 }
 #page-orepulizia .opcal-group-bd{
-  padding: 6px 12px 12px;
+  padding: 26px 12px 12px;
 }
 #page-orepulizia .opcal-weekdays{
   margin: 0 0 10px;
 }
 @media (max-width: 420px){
+  #page-orepulizia .opcal-pageHeadRow{
+    gap: 10px;
+  }
+  #page-orepulizia .opcal-head-actions .icon-btn{
+    width: 40px;
+    height: 40px;
+  }
   #page-orepulizia .opcal-summaryGrid{
     gap: 8px;
   }
   #page-orepulizia .opcal-filter select,
   #page-orepulizia .opcal-stat{
     min-height: 60px;
+  }
+  #page-orepulizia .opcal-summaryTotal{
+    min-height: 60px;
+    height: 60px;
+  }
+  #page-orepulizia .opcal-summaryTotalValue{
+    font-size: 21px;
   }
   #page-orepulizia .opcal-filter select{
     height: 60px;
@@ -9619,8 +9846,8 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 .operatori-metrics{
   display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap:10px;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:8px;
 }
 .operatori-metric{
   min-width:0;
@@ -11256,18 +11483,48 @@ body[data-role="operatore"] #page-home .home-main{
   display:none !important;
 }
 #page-lavanderia .laundry-range{
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+  gap:0;
   margin: 12px 0 0 0;
   padding-bottom: 14px;
 }
 #page-lavanderia .laundry-range-field{
-  min-height: 50px;
-  padding: 12px 8px;
-  border-radius: 18px;
+  width:min(100%, 520px);
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow:none;
 }
 #page-lavanderia .laundry-dateText{
   font-size: 13px;
+}
+#page-lavanderia .laundry-date-range-field{
+  margin-top:0;
+  display:flex;
+  justify-content:center;
+}
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  width:100%;
+  min-height:50px;
+  border-radius:20px;
+  padding:14px 16px;
+  text-align:center;
+  align-items:center;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.10);
+}
+#page-lavanderia .laundry-date-range-field .guest-date-range-label,
+#page-lavanderia .laundry-date-range-field .guest-date-range-value{
+  width:100%;
+  text-align:center;
+}
+#page-lavanderia .laundry-date-range-field input[type="hidden"]{
+  display:none !important;
 }
 #page-lavanderia .laundry-history-wrap{
   margin-top: 18px;
@@ -13719,7 +13976,7 @@ body.ddae-dark #page-tassa .tax-result-sub{
 body.ddae-dark #page-orepulizia .opcal-cell:not(.is-empty){
   background: rgba(15,23,42,0.96) !important;
   border: 1px solid rgba(148,163,184,0.26) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.30) !important;
 }
 body.ddae-dark #page-orepulizia .opcal-day{
   background: rgba(30,41,59,0.96) !important;
@@ -15520,7 +15777,7 @@ body.ddae-dark #page-spese .item-sub{
 body.ddae-dark #page-spese .delbtn.delbtn-x{
   background: rgba(220,38,38,0.96) !important;
   border-color: rgba(248,113,113,0.46) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.30) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.30) !important;
 }
 
 
@@ -15757,7 +16014,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 
 /* dDAE_2.334 — Tag palette popup above the top bar */
 #tagColorModal{
-  z-index: 6500 !important;
+  z-index: 13050 !important;
 }
 #tagColorModal[hidden]{
   display:none !important;
@@ -18692,7 +18949,6 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
   }
 
   body[data-page="statgen"] #page-statgen .stats-head-row .stats-title,
-  body[data-page="statgen"] #page-statgen .stats-head-row .statgen-regime-switch,
   body[data-page="statgen"] #page-statgen .stats-divider{
     display: none !important;
   }
@@ -18705,11 +18961,25 @@ body.ddae-dark #guestPhoneActionsModal .guest-phone-action-btn .ui-ico *{
     pointer-events: auto;
   }
 
+  body[data-page="statgen"] #page-statgen #statFiscalModeBtn,
+  body[data-page="statgen"] #page-statgen #statGenCompareToggleBtn,
   body[data-page="statgen"] #page-statgen #statGenCompareYearBtn{
-    width: 42px;
-    min-width: 42px;
+    width: auto;
+    min-width: 64px;
     height: 42px;
     border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  body[data-page="statgen"] #page-statgen #statFiscalModeBtn .statgen-regime-btn-label,
+  body[data-page="statgen"] #page-statgen #statGenCompareToggleBtn .statgen-compare-toggle-label,
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn .statgen-compare-year-value{
+    line-height: 1;
+    pointer-events: none;
   }
 
   body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
@@ -18815,7 +19085,7 @@ body[data-page="impostazioni"] main.wrap{
 }
 
 
-/* dDAE_2.556 — Impostazioni: audio + dark affiancati, lista 1x10 e popup soggiorno compatto */
+/* dDAE_2.570 — Impostazioni: audio + dark affiancati, lista 1x10 e popup soggiorno compatto */
 #page-impostazioni .settings-header-toggles{
   display:flex;
   align-items:center;
@@ -18902,7 +19172,8 @@ body[data-page="impostazioni"] main.wrap{
 #page-ospiti .guest-card{
   transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
-#page-ospiti .guest-card .guest-name-text{
+#page-ospiti .guest-card .guest-name-text,
+#page-ospiti .guest-card .guest-booking-number-text{
   color: var(--guest-list-card-text, inherit) !important;
   -webkit-text-fill-color: var(--guest-list-card-text, currentColor) !important;
 }
@@ -19314,4 +19585,3552 @@ body[data-page="impostazioni"] main.wrap{
 /* dDAE_2.566 — Impostazioni: abbassa la lista verticale 1x10 di 20px */
 #page-impostazioni .settings-actions.settings-actions-reference{
   margin-top: 48px !important;
+}
+
+
+/* dDAE_2.570 — Statistiche: nuova griglia 2x4 con 3 pagine grafico dedicate */
+#page-statistiche .home-grid{
+  margin: 24px auto 0 !important;
+  row-gap: 10px !important;
+  column-gap: 10px !important;
+  align-content: start !important;
+}
+#page-statistiche .home-main{
+  width: 160px !important;
+  max-width: 160px !important;
+}
+#page-statistiche .home-main-glyph{
+  width: clamp(74px, 21vw, 126px) !important;
+  height: clamp(74px, 21vw, 126px) !important;
+}
+#page-statistiche .home-main-label{
+  font-size: 15px !important;
+}
+@media (max-width: 390px){
+  #page-statistiche .home-grid{
+    margin-top: 18px !important;
+    column-gap: 8px !important;
+    row-gap: 8px !important;
+  }
+  #page-statistiche .home-main{
+    max-width: 148px !important;
+  }
+}
+
+.stats-pie-page .statgen-line-chart-wrap{
+  margin-top: 12px;
+}
+.stats-pie-chart-wrap{
+  min-height: 236px;
+}
+.stats-pie-chart-canvas{
+  width: 100%;
+  min-height: 236px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+.stats-pie-chart{
+  display: block;
+}
+#page-statpulizie .stats-stack{
+  padding-bottom: 18px;
+}
+
+body.ddae-dark #page-statprenotazioni .stat-row,
+body.ddae-dark #page-statchannel .stat-row,
+body.ddae-dark #page-statpulizie .stat-row{
+  background: rgba(12,23,46,0.96) !important;
+  background-color: rgba(12,23,46,0.96) !important;
+  border: 1px solid rgba(148,163,184,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-row::before,
+body.ddae-dark #page-statchannel .stat-row::before,
+body.ddae-dark #page-statpulizie .stat-row::before,
+body.ddae-dark #page-statprenotazioni .stat-row::after,
+body.ddae-dark #page-statchannel .stat-row::after,
+body.ddae-dark #page-statpulizie .stat-row::after{
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen{
+    position: relative;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statchannel"] #page-statchannel .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen > :not(.statgen-line-chart-wrap){
+    display: none !important;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap{
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: 220px;
+    height: var(--stat-landscape-chart-height, calc(100dvh - 132px));
+    border-radius: 18px;
+  }
+
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
+    min-height: 100%;
+    height: 100%;
+    padding: 8px;
+  }
+}
+
+
+/* dDAE_2.570a — Nuove pagine statistiche grafico lineare come Generali/Mensili/Spese */
+#page-statprenotazioni .stat-row,
+#page-statchannel .stat-row,
+#page-statpulizie .stat-row{
+  border: 0 !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,0.60) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 22px rgba(15,23,42,0.12) !important;
+  padding: 16px 18px !important;
+  min-height: 84px !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#page-statprenotazioni .stat-row::before,
+#page-statchannel .stat-row::before,
+#page-statpulizie .stat-row::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+}
+#page-statprenotazioni .stat-row::after,
+#page-statchannel .stat-row::after,
+#page-statpulizie .stat-row::after{
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 21px;
+  border: 1px solid rgba(255,255,255,0.30);
+  pointer-events: none;
+}
+#page-statprenotazioni .stat-row > *,
+#page-statchannel .stat-row > *,
+#page-statpulizie .stat-row > *{
+  position: relative;
+  z-index: 1;
+}
+#page-statprenotazioni .stat-name,
+#page-statchannel .stat-name,
+#page-statpulizie .stat-name{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  text-align: left !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+}
+#page-statprenotazioni .stat-val,
+#page-statchannel .stat-val,
+#page-statpulizie .stat-val{
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: max-content !important;
+  text-align: right !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-row,
+body.ddae-dark #page-statchannel .stat-row,
+body.ddae-dark #page-statpulizie .stat-row{
+  background: rgba(12,23,46,0.96) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-row::after,
+body.ddae-dark #page-statchannel .stat-row::after,
+body.ddae-dark #page-statpulizie .stat-row::after{
+  border-color: rgba(148,163,184,0.28) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-name,
+body.ddae-dark #page-statchannel .stat-name,
+body.ddae-dark #page-statpulizie .stat-name,
+body.ddae-dark #page-statprenotazioni .stat-val,
+body.ddae-dark #page-statchannel .stat-val,
+body.ddae-dark #page-statpulizie .stat-val{
+  color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
+#page-statprenotazioni .stat-row:nth-child(1),
+#page-statpulizie .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
+#page-statprenotazioni .stat-row:nth-child(2){ --mcol: var(--p2) !important; }
+#page-statchannel .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
+#page-statchannel .stat-row:nth-child(2){ --mcol: var(--p8) !important; }
+#page-statpulizie .stat-row:nth-child(2){ --mcol: var(--p2) !important; }
+#page-statpulizie .stat-row:nth-child(3){ --mcol: var(--p3) !important; }
+#page-statpulizie .stat-row:nth-child(4){ --mcol: var(--p4) !important; }
+#page-statpulizie .stat-row:nth-child(5){ --mcol: var(--p5) !important; }
+#page-statpulizie .stat-row:nth-child(6){ --mcol: var(--p6) !important; }
+#page-statpulizie .stat-row:nth-child(7){ --mcol: var(--p7) !important; }
+#page-statpulizie .stat-row:nth-child(8){ --mcol: var(--p8) !important; }
+#page-statprenotazioni .stat-ico-wrap,
+#page-statchannel .stat-ico-wrap,
+#page-statpulizie .stat-ico-wrap{
+  display: none !important;
+}
+@media (orientation: landscape){
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart{
+    height: 100% !important;
+    max-height: none !important;
+  }
+}
+
+/* dDAE_2.570 — filtro card grafici statistiche */
+#page-statprenotazioni .stat-row.is-selected,
+#page-statchannel .stat-row.is-selected,
+#page-statpulizie .stat-row.is-selected{
+  transform: scale(0.985) !important;
+  box-shadow: inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))), 0 10px 22px rgba(15,23,42,0.12) !important;
+}
+body.ddae-dark #page-statprenotazioni .stat-row.is-selected,
+body.ddae-dark #page-statchannel .stat-row.is-selected,
+body.ddae-dark #page-statpulizie .stat-row.is-selected{
+  box-shadow: inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #6FB7D6))), 0 10px 24px rgba(0,0,0,0.28) !important;
+}
+
+
+.channel-graph-dot{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-left: 8px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.55);
+}
+.channel-editor-icon-btn{
+  width: 52px !important;
+  min-width: 52px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.channel-editor-icon-btn .ui-ico{
+  width: 20px;
+  height: 20px;
+}
+#page-statchannel .stats-stack{
+  padding-bottom: 18px;
+}
+
+
+body.ddae-dark #page-ospiti .guest-name-tab{
+  background:rgba(15,23,42,0.34);
+  border-color:rgba(226,232,240,0.18);
+}
+
+
+.tl-cyan{ background: rgba(77,156,197,0.96); }
+.guest-bookingnum-led{ width:12px; height:12px; border-radius:999px; display:inline-block; box-shadow:0 0 0 1px rgba(15,23,42,0.08) inset,0 2px 8px rgba(15,23,42,0.10);} 
+.guest-bookingnum-led.is-missing{ background:#facc15; }
+.guest-bookingnum-led.is-ready{ background:#22c55e; }
+.guest-report-card{ width:min(92vw,760px); max-height:min(86vh,980px); border-radius:34px; padding:18px 18px 22px; overflow:auto; }
+.guest-report-toolbar{ display:flex; justify-content:flex-end; gap:12px; margin-bottom:10px; flex-wrap:nowrap; }
+.guest-report-tool{ width:56px; height:56px; border-radius:18px; flex:0 0 auto; }
+.guest-report-preview{ display:flex; justify-content:center; }
+.guest-report-preview img{ width:100%; height:auto; display:block; border-radius:28px; box-shadow:0 12px 30px rgba(15,23,42,0.12); }
+.guest-report-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:16px; flex-wrap:nowrap; }
+.guest-report-actions .btn{ flex:1 1 0; min-width:0; white-space:nowrap; padding-inline:12px; }
+.ddae-dark .guest-report-card{ background: rgba(15,23,42,0.98); }
+
+#guestReportModal{ z-index: 9000 !important; }
+#guestReportModal .guest-report-card{ position:relative; z-index:9001; }
+
+
+.spesa-category-field{ padding-top:0 !important; }
+.spesa-category-field label, .spesa-category-field .floating-label, .spesa-category-field::before, .spesa-category-field::after{ display:none !important; content:none !important; }
+.spesa-category-field select[hidden]{ display:none !important; }
+.spesa-category-row{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); align-items:stretch; gap:6px; margin-top:0; width:100%; max-width:100%; overflow:visible; padding:0; box-sizing:border-box; -webkit-overflow-scrolling:touch; }
+.spesa-category-row::-webkit-scrollbar{ display:none; }
+.spesa-category-btn{ min-width:0; width:100%; min-height:58px; flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:7px 2px; border-radius:14px; white-space:nowrap; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; overflow:hidden; }
+.spesa-category-btn .ui-ico{ width:18px; height:18px; stroke-width:2; }
+.spesa-category-btn span{ font-size:9px; line-height:1; font-weight:700; display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.spesa-category-btn.is-selected{ outline:2px solid rgba(15,23,42,0.16); outline-offset:0; transform:none; }
+body.ddae-dark .spesa-category-btn.is-selected{ outline-color:rgba(248,250,252,0.26); }
+.item.spesa-bg-fuoribudget::before{ background: var(--spesa-accent) !important; }
+.item.spesa-bg-fuoribudget{ border-color: rgba(var(--spesa-border-rgb, var(--spesa-accent-rgb)), var(--spesa-card-border-opacity, .22)) !important; }
+#page-statgen .stat-row:nth-child(7),
+#page-statspese .stat-row:nth-child(7){ --mcol: #8b5cf6 !important; }
+
+#page-inserisci .spesa-category-row{margin-left:0;margin-right:0;width:100%;}
+#page-spese .spesa-category-filter-field{ margin-top:10px; }
+#page-spese .spesa-category-row{ margin-top:0; }
+#page-spese .spesa-category-btn{ min-height:58px; }
+#page-inserisci .spesa-category-btn .ui-ico{flex:0 0 auto;}
+body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
+
+@media (max-width: 390px){
+  .spesa-category-row{ gap:5px; }
+  .spesa-category-btn{ min-height:56px; padding:6px 1px; }
+  .spesa-category-btn span{ font-size:8.5px; }
+}
+
+
+/* dDAE_2.617 — Range date unificato scheda nuovo ospite */
+#guestDatesRow.guest-dates-native{
+  display:none !important;
+}
+#guestDateRangeField{
+  margin-top:0;
+}
+#guestDateRangeField .guest-date-range-trigger{
+  width:100%;
+  min-height:56px;
+  border-radius:16px;
+  border:1px solid var(--ddae-range-trigger-border, rgba(15,23,42,0.12));
+  background:var(--ddae-range-trigger-bg, rgba(255,255,255,0.80));
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:4px;
+  padding:10px 14px;
+  text-align:left;
+  color:var(--ddae-range-trigger-text, var(--text));
+  box-shadow:none;
+}
+#guestDateRangeField .guest-date-range-trigger:active{ transform:scale(0.995); }
+#guestDateRangeField .guest-date-range-label{
+  font-size:12px;
+  line-height:1;
+  opacity:1;
+  color:var(--ddae-range-trigger-label, rgba(15,23,42,0.72));
+}
+#guestDateRangeField .guest-date-range-value{
+  font-size:16px;
+  font-weight:700;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:var(--ddae-range-trigger-text, var(--text));
+}
+.guest-form-card.is-view #guestDateRangeField{
+  display:none !important;
+}
+#guestDateRangeModal{
+  z-index:12000;
+}
+#guestDateRangeModal .guest-date-range-modal-card{
+  margin:0;
+  width:min(420px,92vw);
+  border-radius:24px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--ddae-range-modal-border, rgba(15,23,42,0.08));
+  background:var(--ddae-range-modal-bg, rgba(255,255,255,0.98));
+  color:var(--ddae-range-modal-text, var(--text));
+}
+.guest-date-range-modal-hd{
+  padding:14px 16px 10px;
+}
+.guest-date-range-modal-body{
+  padding:0 16px 16px;
+}
+.guest-date-range-modal-hint{
+  font-size:13px;
+  line-height:1.35;
+  opacity:1;
+  color:var(--ddae-range-modal-subtle, rgba(15,23,42,0.72));
+  margin-bottom:12px;
+}
+.guest-date-range-monthbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.guest-date-range-nav{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid var(--ddae-range-nav-border, rgba(15,23,42,0.12));
+  background:var(--ddae-range-nav-bg, rgba(255,255,255,0.80));
+  color:var(--ddae-range-modal-text, var(--text));
+  font-size:24px;
+  line-height:1;
+}
+.guest-date-range-monthtitle{
+  flex:1;
+  text-align:center;
+  font-weight:800;
+  font-size:16px;
+  color:var(--ddae-range-modal-text, var(--text));
+}
+.guest-date-range-weekdays,
+.guest-date-range-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:6px;
+}
+.guest-date-range-weekdays{
+  margin-bottom:6px;
+}
+.guest-date-range-weekdays span{
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+  opacity:1;
+  color:var(--ddae-range-modal-subtle, rgba(15,23,42,0.62));
+}
+.guest-date-range-day{
+  min-height:42px;
+  border-radius:14px;
+  border:1px solid var(--ddae-range-day-border, rgba(15,23,42,0.08));
+  background:var(--ddae-range-day-bg, rgba(255,255,255,0.80));
+  color:var(--ddae-range-day-text, var(--text));
+  font-weight:700;
+}
+.guest-date-range-day.is-muted{
+  opacity:1;
+  color:var(--ddae-range-day-muted, rgba(15,23,42,0.34));
+}
+.guest-date-range-day.is-selected,
+.guest-date-range-day.is-edge{
+  border-color:var(--ddae-range-day-selected-border, rgba(43,124,180,0.45));
+  background:var(--ddae-range-day-selected-bg, rgba(169,220,255,0.95));
+  color:var(--ddae-range-day-selected-text, var(--ddae-range-day-text, var(--text)));
+}
+.guest-date-range-day.is-in-range{
+  border-color:var(--ddae-range-day-range-border, rgba(43,124,180,0.16));
+  background:var(--ddae-range-day-range-bg, rgba(169,220,255,0.45));
+  color:var(--ddae-range-day-range-text, var(--ddae-range-day-text, var(--text)));
+}
+.guest-date-range-day.is-today{
+  box-shadow:inset 0 0 0 2px var(--ddae-range-day-today-ring, rgba(43,124,180,0.30));
+}
+.guest-date-range-legend{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.guest-date-range-legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:700;
+  opacity:1;
+  color:var(--ddae-range-modal-subtle, rgba(15,23,42,0.78));
+}
+.guest-date-range-legend-dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  border:1px solid var(--ddae-range-day-range-border, rgba(15,23,42,0.16));
+  background:var(--ddae-range-legend-bg, rgba(169,220,255,0.45));
+}
+.guest-date-range-legend-dot.is-start,
+.guest-date-range-legend-dot.is-end{
+  background:var(--ddae-range-legend-edge-bg, rgba(169,220,255,0.95));
+}
+.guest-date-range-summary{
+  margin-top:12px;
+  min-height:22px;
+  font-size:14px;
+  font-weight:700;
+  color:var(--ddae-range-modal-text, var(--text));
+}
+.guest-date-range-actions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.guest-date-range-actions .btn{
+  flex:1 1 0;
+}
+
+
+body.ddae-dark #page-ospiti .guest-card{
+  background: rgba(15,23,42,0.90) !important;
+  border-color: rgba(71,85,105,0.42) !important;
+}
+body.ddae-dark #page-ospiti .guest-card.checkout-pending{
+  border-color: rgba(248,113,113,0.48) !important;
+}
+body.ddae-dark #page-ospiti .guest-card.checkout-pending::before{
+  background: rgba(248,113,113,0.26) !important;
+}
+body.ddae-dark #page-ospiti .guest-name-tab{
+  background: rgba(30,41,59,0.92) !important;
+  border-color: rgba(96,165,250,0.24) !important;
+}
+body.ddae-dark #page-ospiti .guest-card .guest-name-text,
+body.ddae-dark #page-ospiti .guest-card .guest-booking-number-text{
+  color: var(--guest-list-card-text, #f8fbff) !important;
+  -webkit-text-fill-color: var(--guest-list-card-text, #f8fbff) !important;
+}
+body.ddae-dark #page-ospiti .guest-card .guest-arrivo,
+body.ddae-dark #page-ospiti .guest-card .guest-contact{
+  color: var(--guest-list-card-subtext, #dbe7f4) !important;
+  -webkit-text-fill-color: var(--guest-list-card-subtext, #dbe7f4) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno{
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno.is-missing{
+  background: rgba(250,204,21,0.90) !important;
+  border-color: rgba(250,204,21,0.52) !important;
+  color: rgba(15,23,42,0.94) !important;
+}
+body.ddae-dark #page-ospiti .guest-insno.is-ready{
+  background: rgba(34,197,94,0.90) !important;
+  border-color: rgba(74,222,128,0.46) !important;
+  color: #f8fbff !important;
+}
+body.ddae-dark #page-ospiti .guest-meta-right .guest-channel-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .marriage-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .g-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .c-dot,
+body.ddae-dark #page-ospiti .guest-meta-right .nights-dot{
+  box-shadow:none !important;
+}
+
+#guestDateRangeField .guest-date-range-trigger,
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.80);
+  color:var(--text);
+}
+body.ddae-dark #guestDateRangeField .guest-date-range-trigger,
+body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  border-color:rgba(148,163,184,0.24);
+  background:rgba(15,23,42,0.72);
+  color:#f8fbff;
+}
+#guestDateRangeField .guest-date-range-trigger,
+#page-lavanderia .laundry-date-range-field .laundry-date-range-trigger{
+  align-items:center;
+  text-align:center;
+  gap:0;
+}
+#guestDateRangeField .guest-date-range-value,
+#page-lavanderia .laundry-date-range-field .guest-date-range-value{
+  width:100%;
+  text-align:center;
+  color:inherit;
+}
+.guest-date-range-modal-hd{
+  justify-content:center;
+  position:relative;
+  padding:14px 52px 8px;
+}
+.guest-date-range-modal-hd .operatori-editor-close{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+}
+.guest-date-range-modal-range-title{
+  width:100%;
+  text-align:center;
+  font-weight:900;
+}
+.guest-date-range-monthbar{ margin-top:4px; }
+
+
+#page-spese .spese-date-range-field{
+  margin-top:0;
+  margin-bottom:10px;
+  border-radius:20px;
+}
+#page-spese .spese-date-range-trigger{
+  width:100%;
+  min-height:56px;
+  border-radius:20px;
+  border:1px solid var(--ddae-range-trigger-border, rgba(15,23,42,0.12));
+  background:var(--ddae-range-trigger-bg, rgba(255,255,255,0.80));
+  color:var(--ddae-range-trigger-text, var(--text));
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:0;
+  padding:12px 16px;
+  box-shadow:none;
+}
+#page-spese .spese-date-range-trigger .guest-date-range-value{
+  width:100%;
+  text-align:center;
+  font-size:16px;
+  font-weight:700;
+}
+body.ddae-dark #page-spese .spese-date-range-trigger{
+  border-color:rgba(148,163,184,0.24);
+  background:rgba(15,23,42,0.72);
+  color:#f8fbff;
+}
+body.ddae-dark .guest-date-range-actions .btn{
+  background:rgba(15,23,42,0.86) !important;
+  border-color:rgba(148,163,184,0.28) !important;
+  color:#f8fbff !important;
+  box-shadow:none !important;
+}
+body.ddae-dark .guest-date-range-actions .btn.primary{
+  background:rgba(96,165,250,0.26) !important;
+  border-color:rgba(96,165,250,0.42) !important;
+  color:#f8fbff !important;
+}
+
+
+/* dDAE_2.626 — Licenze account + key generator */
+.auth-activation[hidden]{ display:none !important; }
+.auth-activation{ margin-top:12px; }
+.auth-activation-title{ font-size:20px; font-weight:900; text-align:center; color:rgba(12,20,28,.92); }
+.auth-activation-user{ margin-top:8px; text-align:center; font-size:15px; font-weight:800; color:rgba(43,124,180,.96); word-break:break-word; }
+.auth-activation-text{ margin-top:8px; text-align:center; font-size:12px; line-height:1.35; opacity:.78; }
+.auth-activation-grid .auth-btn{ padding:24px 8px; }
+.auth-activation-actions{ justify-content:center; }
+.auth-activation-actions .auth-btn{ max-width:180px; }
+#page-impostazioni .settings-master-stack{ width:100% !important; margin-top:16px !important; align-items:center !important; }
+#page-impostazioni .settings-master-stack[hidden]{ display:none !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master{ width:clamp(83px, 23.4vw, 153px) !important; height:clamp(83px, 23.4vw, 153px) !important; min-width:clamp(83px, 23.4vw, 153px) !important; min-height:clamp(83px, 23.4vw, 153px) !important; aspect-ratio:1 / 1 !important; border-radius:clamp(23px, 6.5vw, 44px) !important; padding:14px 10px 12px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:10px !important; box-shadow:none !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master .ui-ico{ width:clamp(36px, 10vw, 48px) !important; height:clamp(36px, 10vw, 48px) !important; }
+#page-impostazioni .settings-master-stack .settings-btn-master .settings-btn-label{ display:block; max-width:100%; font-size:15px; line-height:1.1; font-weight:900; color:#fff; text-align:center; white-space:nowrap !important; overflow:hidden; text-overflow:ellipsis; }
+.license-date-range-field{ margin-top:4px; }
+.license-date-range-trigger{ width:100%; }
+body.ddae-dark .auth-activation-title,
+body.ddae-dark .auth-activation-user,
+body.ddae-dark .auth-activation-text{ color:rgba(255,255,255,.92); }
+
+
+
+/* dDAE_2.632 — Licenze master: stesso formato lungo dei pulsanti impostazioni */
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:54px !important;
+  min-height:54px !important;
+  aspect-ratio:auto !important;
+  border-radius:24px !important;
+  padding:0 14px !important;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:14px !important;
+  box-shadow:0 10px 26px rgba(15,23,42,0.10) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master .ui-ico{
+  flex:0 0 auto !important;
+  width:26px !important;
+  height:26px !important;
+  margin-left:4px !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master .settings-btn-label{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  text-align:left !important;
+  font-size:15px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  color:inherit !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack[hidden]{ display:none !important; }
+@media (max-width: 390px){
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-master-stack .settings-btn-master{
+    height:52px !important;
+    min-height:52px !important;
+  }
+}
+
+.license-date-range-field{
+  margin-top:0 !important;
+}
+#licenseGeneratorModal .db-menu-body{
+  gap:12px !important;
+}
+#licenseDateRangeField .license-date-range-trigger{
+  width:100% !important;
+  min-height:44px !important;
+  border-radius:14px !important;
+  border:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:0 !important;
+  padding:12px 8px !important;
+  box-shadow:none !important;
+}
+#licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  width:100% !important;
+  text-align:center !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+  color:rgba(12,20,28,0.9) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  color:#f8fbff !important;
+}
+#licenseGeneratorModal .auth-action-row .auth-btn{
+  min-height:44px !important;
+  height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#licenseGeneratorModal #licenseGeneratorCancel,
+#licenseGeneratorModal #licenseGeneratorConfirm{
+  padding-top:12px !important;
+  padding-bottom:12px !important;
+}
+#licenseGeneratorHint,
+#licenseRequestModalHint,
+#licenseUnlockHint,
+#authActivationText{
+  display:none !important;
+}
+
+
+.settings-license-card{width:min(92vw,420px);padding:18px 16px 16px;border-radius:24px}.settings-license-card .db-menu-title{text-align:center !important;width:100%}.settings-license-status{font-weight:800;text-align:center;margin:12px 0 10px;font-size:16px}.settings-license-actions{display:grid;gap:12px;margin-top:8px}.settings-license-actions .auth-btn{width:100%;min-height:73px;height:73px;border-radius:18px;font-size:24px;line-height:1;font-weight:800;padding:10px 12px}.settings-license-hint{display:none !important}.settings-master-stack{display:block}.settings-master-stack .settings-btn{width:100%}
+
+
+/* dDAE_2.633 — Licenza: popup figli sopra popup padre */
+#settingsLicenseModal{
+  z-index: 11000 !important;
+}
+#settingsLicenseModal .settings-license-card{
+  position: relative;
+  z-index: 11001;
+}
+#licenseUnlockModal,
+#licenseRequestModal,
+#licenseGeneratorModal{
+  z-index: 12100 !important;
+}
+#licenseUnlockModal .modal-card,
+#licenseRequestModal .modal-card,
+#licenseGeneratorModal .modal-card{
+  position: relative;
+  z-index: 12101;
+}
+#licenseDateRangeModal{
+  z-index: 12200 !important;
+}
+#licenseDateRangeModal .guest-date-range-modal-card{
+  position: relative;
+  z-index: 12201;
+}
+
+
+
+/* dDAE_2.641 — Licenza popup text sizing and child popup button heights */
+#settingsLicenseModal .settings-license-card{
+  width:min(92vw,420px) !important;
+}
+#settingsLicenseModal #settingsLicenseTitle{
+  width:100% !important;
+  text-align:center !important;
+  font-size:48px !important;
+  line-height:1 !important;
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-status{
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-actions .auth-btn{
+  font-size:19.2px !important;
+  font-weight:400 !important;
+}
+#settingsLicenseModal .settings-license-hint{
+  display:none !important;
+}
+#settingsLicenseModal #settingsLicenseHint{
+  display:none !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn,
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger{
+  min-height:88px !important;
+  height:88px !important;
+  padding-top:18px !important;
+  padding-bottom:18px !important;
+  font-weight:400 !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn{
+  font-size:18px !important;
+}
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger .guest-date-range-value{
+  font-size:18px !important;
+  font-weight:400 !important;
+}
+#licenseUnlockModal .db-menu-title,
+#licenseRequestModal .db-menu-title,
+#licenseGeneratorModal .db-menu-title{
+  font-weight:400 !important;
+}
+
+
+/* dDAE_2.641 — Tema import/export + popup licenza heights */
+#settingsLicenseModal .settings-license-actions .auth-btn{
+  min-height:51px !important;
+  height:51px !important;
+}
+#licenseUnlockModal .auth-action-row .auth-btn,
+#licenseRequestModal .auth-action-row .auth-btn,
+#licenseGeneratorModal .auth-action-row .auth-btn,
+#licenseGeneratorModal #licenseDateRangeField .license-date-range-trigger{
+  min-height:62px !important;
+  height:62px !important;
+  padding-top:12px !important;
+  padding-bottom:12px !important;
+}
+#roomSettingsThemeSlots{
+  flex-wrap:wrap !important;
+}
+#themeTransferModal{
+  z-index:12150 !important;
+}
+#themeTransferModal .modal-card{
+  position:relative;
+  z-index:12151 !important;
+}
+#themeTransferModal .settings-license-actions .auth-btn{
+  min-height:54px !important;
+  height:54px !important;
+  font-size:18px !important;
+}
+
+.tag-color-mode-ico-bold{font-weight:800;letter-spacing:-0.02em;}
+
+
+/* dDAE_2.641 — popup colore bold inline + no overlap in Design text section */
+#tagColorModal .tag-color-modebar{
+  display:grid !important;
+  grid-template-columns:repeat(var(--tag-color-mode-count, 5), minmax(0, 1fr)) !important;
+  grid-auto-flow:column !important;
+  grid-auto-rows:1fr !important;
+  gap:6px !important;
+  align-items:stretch !important;
+  flex-wrap:nowrap !important;
+  white-space:nowrap !important;
+}
+#tagColorModal .tag-color-mode-btn{
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+#page-roomsettings #roomSettingsTextControls{
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+}
+#page-roomsettings #roomSettingsTextSubtitle{
+  white-space:normal !important;
+}
+
+
+/* dDAE_2.641 — Tema transfer popup inline buttons + no X */
+#themeTransferModal .theme-transfer-head{justify-content:center !important;}
+#themeTransferModal .theme-transfer-actions{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:10px !important;align-items:stretch !important;}
+#themeTransferModal .theme-transfer-btn{width:100% !important;min-width:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;padding:10px 8px !important;white-space:nowrap !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-icon{display:inline-flex !important;align-items:center !important;justify-content:center !important;flex:0 0 auto !important;}
+#themeTransferModal .theme-transfer-btn .ui-ico{width:18px !important;height:18px !important;stroke-width:2.2 !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-label{display:inline-flex !important;align-items:center !important;justify-content:center !important;min-width:0 !important;}
+#themeTransferModal .settings-license-actions .auth-btn{min-height:56px !important;height:56px !important;font-size:16px !important;line-height:1 !important;}
+#themeTransferModal .db-menu-head .icon-btn,#themeTransferClose{display:none !important;}
+@media (max-width: 430px){#themeTransferModal .theme-transfer-actions{gap:8px !important;}#themeTransferModal .settings-license-actions .auth-btn{font-size:14px !important;padding:8px 6px !important;}#themeTransferModal .theme-transfer-btn .ui-ico{width:16px !important;height:16px !important;}}
+
+
+.room-settings-square-preview-upload{display:flex;align-items:center;justify-content:center;}
+.room-settings-square-preview-upload .ui-ico{width:22px;height:22px;stroke-width:2.2;stroke:currentColor;fill:none;}
+#themeTransferModal .theme-transfer-btn{padding:10px !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-label{display:none !important;}
+#themeTransferModal .theme-transfer-btn .theme-transfer-btn-icon{width:100% !important;height:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+#themeTransferModal .theme-transfer-btn .ui-ico{width:24px !important;height:24px !important;stroke-width:2.4 !important;stroke:currentColor !important;fill:none !important;}
+#themeTransferModal .theme-transfer-actions{grid-template-columns:repeat(3,minmax(72px,1fr)) !important;}
+
+
+#page-impostazioni #settingsMasterWrap{ order: 10 !important; }
+#page-impostazioni #settingsMasterBtn{ order: 10 !important; }
+#page-impostazioni #settingsLogoutBtn{ order: 11 !important; }
+#page-opsettings #opSettingsCodeBtn{ order: 10 !important; }
+#page-opsettings #opSettingsLogoutBtn{ order: 11 !important; }
+
+
+/* dDAE_2.665 - bold removed globally */
+html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(polyline):not(polygon):not(g):not(defs):not(clippath):not(use):not(stop){
+  font-weight: 400 !important;
+}
+#tagColorModeBold,
+#roomSettingsTextBoldBtn,
+.tag-color-mode-btn[data-mode="bold"]{
+  display:none !important;
+}
+
+/* dDAE_2.665 — Report ospite più leggibile su smartphone */
+.guest-report-card{ width:min(96vw,860px); max-height:min(88vh,1100px); border-radius:34px; padding:16px 16px 20px; overflow:auto; }
+.guest-report-preview{ display:flex; justify-content:center; align-items:flex-start; padding:4px 0 0; }
+.guest-report-preview img{ width:100%; max-width:760px; height:auto; display:block; border-radius:30px; box-shadow:0 10px 24px rgba(15,23,42,0.10); background:#f8fbfd; }
+@media (max-width: 820px){
+  .guest-report-card{ width:min(97vw,820px); padding:14px 14px 18px; border-radius:32px; }
+  .guest-report-toolbar{ gap:10px; margin-bottom:12px; }
+  .guest-report-tool{ width:58px; height:58px; border-radius:18px; }
+  .guest-report-preview img{ width:100%; max-width:none; border-radius:26px; }
+}
+@media (max-width: 480px){
+  .guest-report-card{ width:min(98vw,760px); max-height:min(90vh,1100px); padding:12px 12px 16px; border-radius:30px; }
+  .guest-report-toolbar{ justify-content:center; gap:10px; }
+  .guest-report-tool{ width:60px; height:60px; border-radius:18px; }
+  .guest-report-preview img{ width:100%; border-radius:24px; box-shadow:0 8px 18px rgba(15,23,42,0.10); }
+}
+
+/* dDAE_2.668 — report ospite mobile: preview più ampia e leggibile */
+.guest-report-card{ width:min(96vw,880px); max-height:min(92vh,1120px); padding:14px 14px 18px; }
+.guest-report-toolbar{ gap:10px; margin-bottom:12px; }
+.guest-report-preview img{ border-radius:30px; }
+@media (max-width: 600px){
+  .guest-report-card{ width:min(98vw,760px); max-height:94vh; border-radius:30px; padding:10px 10px 14px; }
+  .guest-report-toolbar{ justify-content:center; gap:8px; margin-bottom:10px; }
+  .guest-report-tool{ width:54px; height:54px; border-radius:18px; }
+  .guest-report-preview img{ border-radius:24px; }
+}
+
+
+/* dDAE_2.670 — Popup licenza davvero modale: nessun click-through su iOS */
+#settingsLicenseModal,
+#licenseRequestModal,
+#licenseUnlockModal,
+#licenseGeneratorModal,
+#licenseDateRangeModal{
+  pointer-events:auto !important;
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#settingsLicenseModal .modal-card,
+#licenseRequestModal .modal-card,
+#licenseUnlockModal .modal-card,
+#licenseGeneratorModal .modal-card,
+#licenseDateRangeModal .guest-date-range-modal-card{
+  pointer-events:auto !important;
+  touch-action:manipulation;
+}
+body.modal-open{
+  overflow:hidden;
+  overscroll-behavior:contain;
+}
+
+/* dDAE_2.694 — Spese: totale dinamico sopra data, filtri sotto data */
+#page-spese .card{
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+#page-spese .bd{
+  padding-top: 18px !important;
+}
+#page-spese .spese-total-card{
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 14px 0;
+  padding: 16px 18px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(15,23,42,0.12);
+  background: rgba(255,255,255,0.76);
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-align: center;
+}
+#page-spese .spese-total-label{
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+#page-spese .spese-total-value{
+  margin-top: 6px;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 950;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+#page-spese .spese-date-range-field{
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+#page-spese .spesa-category-filter-field{
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+#page-spese .spesa-category-row{
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+#page-spese .spesa-category-btn{
+  min-height: 58px !important;
+  height: 58px !important;
+  border-radius: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+#page-spese #speseList{
+  margin-top: 2px !important;
+}
+#page-spese .item.spesa-bg{
+  border-radius: 18px !important;
+  box-shadow: none !important;
+}
+#page-spese .item-top{
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+#page-spese .spesa-line{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  align-items: center !important;
+}
+#page-spese .delbtn.delbtn-x{
+  flex: 0 0 36px !important;
+}
+body.ddae-dark #page-spese .spese-total-card{
+  border-color: rgba(148,163,184,0.24);
+  background: rgba(15,23,42,0.72);
+}
+body.ddae-dark #page-spese .spese-total-label,
+body.ddae-dark #page-spese .spese-total-value{
+  color: #f8fbff;
+}
+@media (max-width: 390px){
+  #page-spese .spesa-category-row{ gap: 6px !important; }
+  #page-spese .spesa-category-btn{ min-height: 56px !important; height: 56px !important; }
+  #page-spese .spese-total-value{ font-size: 28px; }
+  #page-spese .spese-total-label{ font-size: 17px; }
+}
+
+/* dDAE_2.694 — Spese: linea separatrice tra filtri e lista */
+#page-spese .spese-list-separator{
+  display: block !important;
+  height: 1px !important;
+  width: calc(100vw - 20px) !important;
+  margin: 12px 0 14px calc(50% - 50vw + 10px) !important;
+  padding: 0 !important;
+  background: #000 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+body.ddae-dark #page-spese .spese-list-separator{
+  background: #000 !important;
+}
+#page-spese .spesa-category-filter-field{
+  margin-bottom: 0 !important;
+}
+#page-spese #speseList{
+  margin-top: 0 !important;
+}
+
+/* dDAE_2.695 — Statistiche landscape: grafici compatti + card numeriche visibili */
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    position: relative !important;
+    padding: 6px 12px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-title,
+  body[data-page="statmensili"] #page-statmensili .stats-title,
+  body[data-page="statspese"] #page-statspese .stats-title,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-title,
+  body[data-page="statchannel"] #page-statchannel .stats-title,
+  body[data-page="statpulizie"] #page-statpulizie .stats-title,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-title{
+    display: block !important;
+    margin: 2px 4px 6px !important;
+    font-size: 17px !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-divider,
+  body[data-page="statmensili"] #page-statmensili .stats-divider,
+  body[data-page="statspese"] #page-statspese .stats-divider,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-divider,
+  body[data-page="statchannel"] #page-statchannel .stats-divider,
+  body[data-page="statpulizie"] #page-statpulizie .stats-divider,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-divider{
+    display: block !important;
+    margin: 0 4px 6px !important;
+    width: calc(100% - 8px) !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-head-row{
+    position: static !important;
+    width: auto !important;
+    margin: 2px 4px 6px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    pointer-events: auto !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-title{
+    display: block !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-head-row .stats-head-actions,
+  body[data-page="statgen"] #page-statgen .statgen-regime-switch{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    pointer-events: auto !important;
+  }
+  body[data-page="statgen"] #page-statgen #statFiscalModeBtn,
+  body[data-page="statgen"] #page-statgen #statGenCompareToggleBtn,
+  body[data-page="statgen"] #page-statgen #statGenCompareYearBtn{
+    min-width: 70px !important;
+    height: 38px !important;
+    padding: 0 10px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
+    display: block !important;
+    width: calc(100% - 8px) !important;
+    min-height: 76px !important;
+    height: var(--stat-landscape-chart-height, 88px) !important;
+    max-height: 104px !important;
+    margin: 0 4px 8px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart{
+    display: block !important;
+    height: 100% !important;
+    max-height: 104px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-stack,
+  body[data-page="statspese"] #page-statspese .stats-stack,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-stack,
+  body[data-page="statchannel"] #page-statchannel .stats-stack,
+  body[data-page="statpulizie"] #page-statpulizie .stats-stack{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 0 4px 8px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-stack{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 0 4px 8px !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-stack{
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 4px 8px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stat-row,
+  body[data-page="statspese"] #page-statspese .stat-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row,
+  body[data-page="statchannel"] #page-statchannel .stat-row,
+  body[data-page="statpulizie"] #page-statpulizie .stat-row{
+    min-height: 46px !important;
+    padding: 8px 14px !important;
+    border-radius: 16px !important;
+    align-items: center !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-row::after,
+  body[data-page="statspese"] #page-statspese .stat-row::after,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row::after,
+  body[data-page="statchannel"] #page-statchannel .stat-row::after,
+  body[data-page="statpulizie"] #page-statpulizie .stat-row::after{
+    border-radius: 16px !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-name,
+  body[data-page="statspese"] #page-statspese .stat-name,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-name,
+  body[data-page="statchannel"] #page-statchannel .stat-name,
+  body[data-page="statpulizie"] #page-statpulizie .stat-name{
+    font-size: 16px !important;
+    line-height: 1.05 !important;
+  }
+  body[data-page="statgen"] #page-statgen .stat-val,
+  body[data-page="statspese"] #page-statspese .stat-val,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stat-val,
+  body[data-page="statchannel"] #page-statchannel .stat-val,
+  body[data-page="statpulizie"] #page-statpulizie .stat-val{
+    font-size: 17px !important;
+    line-height: 1.05 !important;
+  }
+
+  body[data-page="statmensili"] #page-statmensili .month-row{
+    display: flex !important;
+    min-height: 48px !important;
+    padding: 8px 14px !important;
+    border-radius: 16px !important;
+    gap: 10px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-row::after{
+    border-radius: 16px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-occ{
+    flex-basis: 88px !important;
+    font-size: 28px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-val{
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-card{
+    display: block !important;
+    padding: 9px 10px !important;
+    border-radius: 16px !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-label{
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-value{
+    font-size: 20px !important;
+    line-height: 1.05 !important;
+  }
+
+  body[data-page="statpiscina"] #page-statpiscina .stats-page{
+    padding-top: 6px !important;
+  }
+  body[data-page="statpiscina"] #page-statpiscina .stats-head-row{
+    margin-bottom: 6px !important;
+  }
+  body[data-page="statpiscina"] #page-statpiscina .piscina-wrap{
+    margin-top: 6px !important;
+    gap: 6px !important;
+    padding-bottom: 12px !important;
+  }
+}
+/* dDAE_2.698 — Dark Mode in topbar accanto al titolo */
+.topbar-center{
+  gap: 6px;
+  pointer-events: none;
+}
+.topbar-center .topbar-dark-btn{
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  flex: 0 0 auto;
+}
+.topbar-center .topbar-dark-btn .ui-ico{
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 380px){
+  .topbar-center .topbar-dark-btn{ width: 28px; height: 28px; min-width: 28px; }
+  .topbar-center{ gap: 4px; }
+}
+
+
+/* dDAE_2.698 — Dark mode solo in Impostazioni + operatore con toggle a slide e griglia 1x3 */
+#topDarkModeBtn,
+.topbar-dark-btn{
+  display:none !important;
+}
+#page-opsettings .settings-title-row.settings-title-row-operator{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  width:100% !important;
+}
+#page-opsettings .settings-header-toggles.settings-header-toggles-operator{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+  flex:0 0 auto !important;
+  margin-left:auto !important;
+}
+#page-opsettings .settings-title-row.settings-title-row-operator .settings-title{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+#page-opsettings .settings-audio-header.settings-audio-header-operator,
+#page-opsettings .settings-dark-header.settings-dark-header-operator{
+  margin-left:0 !important;
+  justify-content:flex-end !important;
+  flex:0 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:repeat(3, auto) !important;
+  justify-content:center !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  width:min(360px, 96vw) !important;
+  margin:28px auto 0 auto !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-language,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-opcode,
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-logout-pill{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  height:56px !important;
+  min-height:56px !important;
+  aspect-ratio:auto !important;
+  border-radius:999px !important;
+  padding:0 22px !important;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  box-shadow:none !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn .ui-ico{
+  width:24px !important;
+  height:24px !important;
+}
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-label{
+  font-size:17px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+#page-opsettings #opSettingsLanguageBtn{ order:1 !important; }
+#page-opsettings #opSettingsCodeBtn{ order:2 !important; }
+#page-opsettings #opSettingsLogoutBtn{ order:3 !important; }
+#page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid.settings-bottom-stack-operator-dedicated{
+  display:none !important;
+}
+body.ddae-dark #page-opsettings .settings-dark-header.settings-dark-header-operator .settings-audio-label{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+@media (max-width:390px){
+  #page-opsettings .settings-header-toggles.settings-header-toggles-operator{ gap:8px !important; }
+  #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{ width:min(320px, 94vw) !important; }
+  #page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated .settings-btn-label{ font-size:15px !important; }
+}
+
+
+/* dDAE_2.701 — Ripristino tasti Codice operatore e Logout nella griglia Impostazioni operatore */
+#page-opsettings .settings-actions.settings-actions-reference.settings-actions-operator-dedicated{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:repeat(3, auto) !important;
+  width:min(360px, 96vw) !important;
+  gap:12px !important;
+}
+#page-opsettings #opSettingsLanguageBtn,
+#page-opsettings #opSettingsCodeBtn,
+#page-opsettings #opSettingsLogoutBtn{
+  display:flex !important;
+  visibility:visible !important;
+  width:100% !important;
+  max-width:none !important;
+  height:56px !important;
+  min-height:56px !important;
+  aspect-ratio:auto !important;
+  border-radius:999px !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+}
+#page-opsettings #opSettingsLanguageBtn{ order:1 !important; }
+#page-opsettings #opSettingsCodeBtn{ order:2 !important; }
+#page-opsettings #opSettingsLogoutBtn{ order:3 !important; }
+#page-opsettings .settings-bottom-stack.settings-bottom-stack-under-grid.settings-bottom-stack-operator-dedicated{
+  display:none !important;
+}
+
+
+/* dDAE_2.701 — Nuovo ospite: ripristino apertura e compilazione note in creazione */
+#page-ospite .guest-form-card.is-create #guestNotesWrap:not([hidden]){
+  display:block !important;
+  margin:12px 0 10px !important;
+}
+#page-ospite .guest-form-card.is-create #guestNotesWrap:not([hidden]) #guestNotes{
+  display:block !important;
+  width:100% !important;
+  min-height:120px !important;
+  pointer-events:auto !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
+}
+
+/* dDAE_2.714 — Ospiti: testata/filtri fissi, scroll solo card */
+#page-ospiti .content{
+  height: calc(100dvh - 64px - var(--safe-top));
+  max-height: calc(100dvh - 64px - var(--safe-top));
+  overflow: hidden;
+  padding-bottom: calc(74px + var(--safe-bottom));
+}
+#page-ospiti .ospite-wrap,
+#page-ospiti .guest-cards-card{
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#page-ospiti .guest-cards-card > .hd{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+}
+#page-ospiti .guest-cards-card > .bd{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#page-ospiti .guest-filter-grid{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+#page-ospiti .guest-cards{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  padding-bottom: calc(22px + var(--safe-bottom));
+}
+#page-ospiti .guest-scroll-today-btn{
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#page-ospiti .guest-scroll-today-btn[hidden]{
+  display: none !important;
+}
+#page-ospiti .guest-cards-card > .hd > .page-title{
+  flex: 0 0 auto;
+}
+#page-ospiti .guest-cards-card > .hd > .hd-actions{
+  flex: 0 0 auto;
+}
+
+@media (orientation: landscape){
+  #page-ospiti .content{
+    height: calc(100dvh - 64px - var(--safe-top));
+    max-height: calc(100dvh - 64px - var(--safe-top));
+    padding-bottom: calc(54px + var(--safe-bottom));
+  }
+  #page-ospiti .guest-filter-grid{
+    margin-bottom: 8px;
+  }
+  #page-ospiti .guest-cards{
+    padding-bottom: calc(18px + var(--safe-bottom));
+  }
+}
+
+/* dDAE_2.716 — in lettura il tab Nome ospite copia il nome negli appunti */
+.guest-form-card.is-view #guestName{
+  pointer-events:auto !important;
+  cursor:pointer;
+}
+.guest-form-card.is-view #guestName:focus{
+  outline: none;
+}
+
+/* dDAE_2.722 — scheda ospite in lettura: il nome si comporta come un tasto copia, senza selezione testo */
+.guest-form-card.is-view .guest-name-field,
+.guest-form-card.is-view .guest-name-field label[for="guestName"],
+.guest-form-card.is-view #guestName{
+  pointer-events:auto !important;
+  cursor:pointer;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+  touch-action:manipulation;
+}
+.guest-form-card.is-view #guestName{
+  caret-color:transparent !important;
+}
+
+/* dDAE_2.722 — popup LED: chiusura sempre in alto a destra e titolo non sovrapposto */
+.guest-alert-modal-card{
+  position: relative;
+  padding-top: 46px;
+}
+.guest-alert-modal-card .stat-modal-close{
+  top: 10px;
+  right: 10px;
+}
+
+
+/* dDAE_2.724 — Popup LED pagamenti: layer sopra tutti e scroll interno */
+#guestAlertModal{
+  z-index: 20050 !important;
+}
+#guestAlertModal .guest-alert-modal-card{
+  max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 36px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#guestAlertModal .guest-alert-list{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 132px);
+  padding-right: 2px;
+}
+
+/* dDAE_2.727 — Guest list: LED alert PS / ISTAT / pagamento / ricevuta sotto i badge card */
+#page-ospiti .guest-meta-right{
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+}
+#page-ospiti .guest-meta-dots,
+#page-ospiti .guest-card-alert-leds{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+#page-ospiti .guest-card-alert-leds{
+  width: 100%;
+  padding-right: 1px;
+  transform: translate(-7px, 15px);
+}
+#page-ospiti .guest-card-alert-led{
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  min-height: 15px !important;
+  border-radius: 999px;
+  margin: 0;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+@media (max-width: 480px){
+  #page-ospiti .guest-meta-dots{ gap: 7px; }
+  #page-ospiti .guest-card-alert-leds{ gap: 7px; }
+  #page-ospiti .guest-card-alert-led{
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+  }
+}
+
+/* dDAE_2.730 — Lista spesa: fissi solo titolo/tasti/tab, scroll verticale solo sulle card */
+body.page-lock-vertical #page-prodotti{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-page{
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  align-content: stretch !important;
+  overflow: hidden !important;
+  padding-bottom: calc(var(--safe-bottom) + 16px) !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-header,
+body.page-lock-vertical #page-prodotti .prodotti-grid-tabs{
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-list{
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+  padding-bottom: calc(var(--safe-bottom) + 112px) !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical #page-prodotti .prodotti-list .prod-item-block{
+  flex: 0 0 auto !important;
+}
+
+
+/* dDAE_2.730 — Lista spesa: header/tab fissi, SOLO le card scrollano davvero su iOS */
+body.page-lock-vertical[data-page="prodotti"] main.wrap{
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow: hidden !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-page{
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  padding: 8px 0 0 !important;
+  box-sizing: border-box !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-header,
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-grid-tabs{
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+  padding-bottom: calc(var(--safe-bottom) + 28px) !important;
+  margin-top: 0 !important;
+  box-sizing: border-box !important;
+  transform: translateZ(0);
+}
+body.page-lock-vertical[data-page="prodotti"] #page-prodotti .prodotti-list .prod-item-block{
+  flex: 0 0 auto !important;
+}
+
+
+/* dDAE_2.749 — Operatori: card metriche 3x1, chiusura popup con pallino X, saldo nello zoom calendario */
+.operatori-metrics{
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap:8px !important;
+}
+.operatori-metric{
+  padding:10px 8px !important;
+  text-align:center;
+}
+.operatori-metric-label{
+  font-size:10px !important;
+  line-height:1.12;
+}
+.operatori-metric-value{
+  font-size:15px !important;
+}
+.operatori-editor-close{
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  min-height:34px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:16px !important;
+  line-height:1 !important;
+}
+#operatoriEditorCancel{
+  display:none !important;
+}
+.calendar-cell-zoom .cal-cell-balance{
+  position:relative;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.10);
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+  line-height:1;
+}
+.calendar-cell-zoom .cal-cell-balance span{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  opacity:.72;
+}
+.calendar-cell-zoom .cal-cell-balance strong{
+  font-size:14px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-balance{
+  margin-top:14px;
+  padding:9px 14px;
+  font-size:15px;
+}
+body.ddae-dark .calendar-cell-zoom .cal-cell-balance{
+  background:rgba(15,23,42,.72);
+  border-color:rgba(148,163,184,.24);
+  color:#f8fafc;
+  -webkit-text-fill-color:#f8fafc;
+}
+@media (max-width: 380px){
+  .operatori-metric{ padding:9px 5px !important; }
+  .operatori-metric-label{ font-size:9px !important; }
+  .operatori-metric-value{ font-size:13px !important; }
+}
+
+
+/* dDAE_2.751 — account operatore: sotto il titolo restano solo i LED spesa Colazione/Prodotti, centrati */
+body[data-role="operatore"] .top-led-grid,
+.top-led-grid.is-operator-leds{
+  grid-template-columns: repeat(2, 15px) !important;
+  justify-content: center;
+  justify-items: center;
+}
+body[data-role="operatore"] .top-led-grid .top-led-alert,
+.top-led-grid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+body[data-role="operatore"] .top-led-grid .top-led-product,
+.top-led-grid.is-operator-leds .top-led-product{
+  display: inline-block !important;
+}
+
+
+/* dDAE_2.753 — Guest list: e-mail sotto il telefono, mai sovrapposta ai LED */
+#page-ospiti .guest-row.guest-row-compact{
+  width:100%;
+}
+#page-ospiti .guest-main{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:calc(100% - 132px);
+}
+#page-ospiti .guest-nameblock{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
+#page-ospiti .guest-contact{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  white-space:normal;
+  line-height:1.18;
+}
+#page-ospiti .guest-contact-line{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#page-ospiti .guest-contact-email{
+  margin-top:2px;
+}
+#page-ospiti .guest-meta-right{
+  flex:0 0 auto;
+  min-width:124px;
+}
+@media (max-width:480px){
+  #page-ospiti .guest-main{ max-width:calc(100% - 118px); }
+  #page-ospiti .guest-meta-right{ min-width:112px; }
+}
+
+
+/* dDAE_2.763 — Statistiche: griglia 3x3 con nuova sezione Amministratore */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 112px)) !important;
+  width:min(360px, calc(100vw - 24px)) !important;
+  max-width:360px !important;
+  column-gap:8px !important;
+  row-gap:8px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  margin:18px auto 0 !important;
+}
+#page-statistiche .home-main{
+  width:112px !important;
+  max-width:112px !important;
+  min-width:0 !important;
+}
+#page-statistiche .home-main-glyph{
+  width:clamp(64px, 18vw, 90px) !important;
+  height:clamp(64px, 18vw, 90px) !important;
+}
+#page-statistiche .home-main-label{
+  font-size:13px !important;
+  line-height:1.05 !important;
+  min-height:28px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    grid-template-columns:repeat(3, minmax(0, 104px)) !important;
+    width:min(336px, calc(100vw - 18px)) !important;
+    max-width:336px !important;
+    column-gap:6px !important;
+    row-gap:7px !important;
+    margin-top:14px !important;
+  }
+  #page-statistiche .home-main{
+    width:104px !important;
+    max-width:104px !important;
+  }
+  #page-statistiche .home-main-glyph{
+    width:clamp(58px, 17vw, 76px) !important;
+    height:clamp(58px, 17vw, 76px) !important;
+  }
+  #page-statistiche .home-main-label{
+    font-size:12px !important;
+  }
+}
+
+
+/* dDAE_2.763 — Statistiche: griglia 3x3 con dimensioni e centratura identiche alla Home */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  width:min(460px, 92vw) !important;
+  max-width:460px !important;
+  margin:10px auto 0 !important;
+  padding:10px 10px !important;
+  column-gap:18px !important;
+  row-gap:18px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:210px !important;
+  min-width:0 !important;
+  margin:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main-glyph{
+  width:clamp(83px, 23.4vw, 153px) !important;
+  height:clamp(83px, 23.4vw, 153px) !important;
+  border-radius:clamp(23px, 6.5vw, 44px) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:clamp(39px, 9.1vw, 70px) !important;
+}
+#page-statistiche .home-main-glyph .ui-ico{
+  width:58% !important;
+  height:58% !important;
+}
+#page-statistiche .home-main-label{
+  font-size:17px !important;
+  line-height:1.15 !important;
+  min-height:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    width:min(460px, 92vw) !important;
+    max-width:460px !important;
+    column-gap:18px !important;
+    row-gap:18px !important;
+    margin-top:10px !important;
+    padding:10px 10px !important;
+  }
+  #page-statistiche .home-main{
+    width:100% !important;
+    max-width:210px !important;
+  }
+  #page-statistiche .home-main-glyph{
+    width:clamp(83px, 23.4vw, 153px) !important;
+    height:clamp(83px, 23.4vw, 153px) !important;
+  }
+  #page-statistiche .home-main-label{
+    font-size:17px !important;
+  }
+}
+
+/* dDAE_2.763 — Amministratore: fatturato senza ricevuta, netto mensile e calcolo forfettario affittacamere */
+
+/* dDAE_2.763 — Statistiche Ricavi: tasto TFM dentro la pagina accanto al titolo */
+#page-statamministratore .statamm-head-row{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  margin:6px 6px 14px !important;
+}
+#page-statamministratore .statamm-title-group{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  min-width:0 !important;
+  flex:1 1 auto !important;
+}
+#page-statamministratore .statamm-title-group .stats-title{
+  min-width:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-statamministratore .statamm-title-action{
+  flex:0 0 auto !important;
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  padding:0 !important;
+}
+#page-statamministratore .statgen-head-actions{
+  flex:0 0 auto !important;
+  margin-left:0 !important;
+}
+@media (max-width:390px){
+  #page-statamministratore .statamm-head-row{
+    gap:6px !important;
+  }
+  #page-statamministratore .statamm-title-group{
+    gap:6px !important;
+    flex:1 1 92px !important;
+  }
+  #page-statamministratore .statamm-title-action{
+    width:36px !important;
+    height:36px !important;
+    min-width:36px !important;
+  }
+  #page-statamministratore .statgen-head-actions{
+    gap:6px !important;
+  }
+  #page-statamministratore #statAmmFiscalModeBtn,
+  #page-statamministratore #statAmmCompareToggleBtn,
+  #page-statamministratore #statAmmCompareYearBtn{
+    min-width:62px !important;
+    height:36px !important;
+    padding:0 8px !important;
+  }
+}
+
+
+/* dDAE_2.763 — Ricavi: titolo breve e quattro tasti uniformi/editabili */
+#page-statamministratore .statamm-head-row{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  margin:6px 6px 14px !important;
+}
+#page-statamministratore .statamm-title-group{
+  display:flex !important;
+  align-items:center !important;
+  flex:0 1 auto !important;
+  min-width:0 !important;
+}
+#page-statamministratore .statamm-title-group .stats-title{
+  min-width:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-statamministratore .statgen-head-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+  margin-left:auto !important;
+}
+#page-statamministratore .statgen-head-actions .statgen-regime-switch{
+  display:flex !important;
+  align-items:center !important;
+  flex:0 0 auto !important;
+}
+#page-statamministratore #btnAdminInputsTop,
+#page-statamministratore #statAmmFiscalModeBtn,
+#page-statamministratore #statAmmCompareToggleBtn,
+#page-statamministratore #statAmmCompareYearBtn{
+  width:62px !important;
+  min-width:62px !important;
+  max-width:62px !important;
+  height:38px !important;
+  min-height:38px !important;
+  padding:0 8px !important;
+  border-radius:14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+  flex:0 0 62px !important;
+  line-height:1 !important;
+}
+#page-statamministratore #btnAdminInputsTop .ui-ico{
+  width:22px !important;
+  height:22px !important;
+}
+@media (max-width:390px){
+  #page-statamministratore .statamm-head-row{
+    gap:6px !important;
+    margin-left:2px !important;
+    margin-right:2px !important;
+  }
+  #page-statamministratore .statgen-head-actions{
+    gap:6px !important;
+  }
+  #page-statamministratore #btnAdminInputsTop,
+  #page-statamministratore #statAmmFiscalModeBtn,
+  #page-statamministratore #statAmmCompareToggleBtn,
+  #page-statamministratore #statAmmCompareYearBtn{
+    width:56px !important;
+    min-width:56px !important;
+    max-width:56px !important;
+    height:36px !important;
+    min-height:36px !important;
+    flex-basis:56px !important;
+    padding:0 6px !important;
+  }
+}
+@media (max-width:360px){
+  #page-statamministratore .statgen-head-actions{
+    gap:4px !important;
+  }
+  #page-statamministratore #btnAdminInputsTop,
+  #page-statamministratore #statAmmFiscalModeBtn,
+  #page-statamministratore #statAmmCompareToggleBtn,
+  #page-statamministratore #statAmmCompareYearBtn{
+    width:52px !important;
+    min-width:52px !important;
+    max-width:52px !important;
+    flex-basis:52px !important;
+  }
+}
+
+
+/* dDAE_2.766 — Calendario: zoom cella con tipologia letti in elenco puntato */
+.calendar-cell-zoom .cal-cell-beds-text{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(15,23,42,.10);
+  color:#0f172a;
+  font-weight:800;
+  text-align:center;
+  max-width:100%;
+}
+.calendar-cell-zoom .cal-cell-beds-text span{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  opacity:.68;
+  line-height:1;
+}
+.calendar-cell-zoom .cal-cell-beds-text strong{
+  font-size:14px;
+  line-height:1.18;
+}
+.calendar-cell-zoom .cal-cell-beds-list{
+  margin:0;
+  padding-left:18px;
+  list-style-position:outside;
+  text-align:left;
+  font-size:14px;
+  line-height:1.24;
+  font-weight:800;
+}
+.calendar-cell-zoom .cal-cell-beds-list li{
+  margin:2px 0;
+  padding-left:2px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-beds-text{
+  margin-top:16px;
+  padding:10px 14px;
+  border-radius:18px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-beds-text strong{
+  font-size:16px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-beds-list{
+  font-size:16px;
+  line-height:1.28;
+}
+body.ddae-dark .calendar-cell-zoom .cal-cell-beds-text{
+  background:rgba(15,23,42,.72);
+  border-color:rgba(148,163,184,.24);
+  color:#f8fafc;
+  -webkit-text-fill-color:#f8fafc;
+}
+
+
+/* dDAE_2.773 — Scheda ospite sola lettura: tab Uomo/Donna sotto Telefono/Email */
+#page-ospite #guestGenderTabsRow.guest-gender-tabs-row{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+  align-items:start !important;
+  margin-top:-2px !important;
+}
+#page-ospite #guestGenderTabsRow.guest-gender-tabs-row[hidden]{
+  display:none !important;
+}
+#page-ospite #guestGenderTabsRow .guest-gender-tab{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  height:56px !important;
+  min-height:56px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:16px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+.guest-form-card.is-view #guestGenderTabsRow,
+.guest-form-card.is-view #guestGenderTabsRow .guest-gender-tab{
+  pointer-events:auto !important;
+}
+
+/* dDAE_2.773 — Check-in: conteggio Uomini/Donne sotto Telefono/Email */
+#page-ospite #guestSexCountRow{
+  margin-top: 8px;
+  align-items: stretch;
+}
+#page-ospite #guestSexCountRow .subfield{
+  min-height: 56px;
+}
+#page-ospite #guestSexCountRow input,
+#page-ospite #guestSexCountRow label{
+  font-weight: 900 !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow{
+  display: grid !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow input{
+  opacity: 1 !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+
+/* dDAE_2.774 — Uomini/Donne solo in scheda ospite in sola lettura, multitap come Adulti/<10 */
+#page-ospite .guest-form-card:not(.is-view) #guestSexCountRow{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow input{
+  pointer-events:auto !important;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+
+/* dDAE_2.777 — Scheda ospite: rimuovi tab Uomo/Donna e riquadro stanze bianco */
+#page-ospite #guestGenderTabsRow{
+  display:none !important;
+}
+#page-ospite .guest-booking-block,
+#page-ospite .guest-booking-block.guest-booking-block--primary{
+  background:#ffffff !important;
+  background-color:#ffffff !important;
+  background-image:none !important;
+}
+body.ddae-dark #page-ospite .guest-booking-block,
+body.ddae-dark #page-ospite .guest-booking-block.guest-booking-block--primary{
+  background:rgba(15,23,42,.72) !important;
+  background-color:rgba(15,23,42,.72) !important;
+  background-image:none !important;
+}
+
+/* dDAE_2.777 — Impostazioni: popup realmente modali, nessun click-through sui tasti sottostanti */
+#settingsConfigModal:not([hidden]),
+#settingsBackupModal:not([hidden]),
+#settingsYearModal:not([hidden]),
+#tagColorModal:not([hidden]),
+#operatoriEditorModal:not([hidden]),
+#channelEditorModal:not([hidden]),
+#laundryCatalogEditorModal:not([hidden]),
+#languageModal:not([hidden]),
+#settingsLicenseModal:not([hidden]),
+#licenseRequestModal:not([hidden]),
+#licenseUnlockModal:not([hidden]),
+#licenseGeneratorModal:not([hidden]),
+#licenseDateRangeModal:not([hidden]),
+#themeTransferModal:not([hidden]),
+#settingsLicenseModal:not([hidden]){
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#settingsConfigModal:not([hidden]) .modal-card,
+#settingsBackupModal:not([hidden]) .modal-card,
+#settingsYearModal:not([hidden]) .modal-card,
+#tagColorModal:not([hidden]) .modal-card,
+#operatoriEditorModal:not([hidden]) .modal-card,
+#channelEditorModal:not([hidden]) .modal-card,
+#laundryCatalogEditorModal:not([hidden]) .modal-card,
+#languageModal:not([hidden]) .modal-card,
+#settingsLicenseModal:not([hidden]) .modal-card,
+#licenseRequestModal:not([hidden]) .modal-card,
+#licenseUnlockModal:not([hidden]) .modal-card,
+#licenseGeneratorModal:not([hidden]) .modal-card,
+#licenseDateRangeModal:not([hidden]) .modal-card,
+#themeTransferModal:not([hidden]) .modal-card{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+body.ddae-settings-modal-open,
+body.ddae-settings-modal-open #app,
+body.ddae-settings-modal-open main{
+  overscroll-behavior:contain !important;
+}
+
+
+/* dDAE_2.777 — Statistiche Mensili: stanze occupate e confronto anni precedenti */
+.month-occ{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:72px;text-align:center;line-height:1.05;}
+.month-occ-pct{font-weight:900;}
+.month-occ-rooms{font-size:11px;font-weight:800;opacity:.82;white-space:nowrap;}
+#page-statmensili .stats-head-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#page-statmensili .stats-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+#page-statmensili .piscina-action-btn{min-width:44px;}
+
+
+/* dDAE_2.784 — Calendario: bordo giorno corrente solo sulle celle stanze */
+#page-calendario #calGrid,
+#page-calendario #calGridMonth{
+  position: relative;
+}
+#page-calendario .cal-cell.is-today-col,
+#page-calendario .cal-cell.cal-head.is-today-col{
+  border-color: rgba(15,23,42,0.12) !important;
+  box-shadow: none !important;
+}
+#page-calendario .cal-today-column-outline{
+  position: absolute;
+  z-index: 28;
+  pointer-events: none;
+  border: 2px solid rgba(56,189,248,0.86);
+  border-radius: 15px;
+  box-shadow: none;
+  background: transparent;
+  box-sizing: border-box;
+  transform: translateZ(0);
+}
+#page-calendario .cal-today-column-outline::after{
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+body.ddae-dark #page-calendario .cal-today-column-outline{
+  border-color: rgba(125,211,252,0.88);
+}
+body.ddae-dark #page-calendario .cal-today-column-outline::after{
+  background: rgba(255,255,255,0.04);
+}
+
+/* dDAE_2.790 — Ospiti iOS: forza layer stabile per lista card dopo riordino */
+#page-ospiti .guest-cards{
+  contain: layout paint style;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+#page-ospiti .guest-card{
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* dDAE_2.791 — Ospiti iOS: lo scroller non deve usare layer/contain persistenti
+   perché su Safari possono restare invisibili ma cliccabili dopo il riordino. */
+#page-ospiti .guest-cards{
+  contain: none !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+}
+
+/* dDAE_2.793 — Calendario: punti tipologia letto in basso, orizzontali e centrati nella cella */
+#page-calendario .calendar-event-bar .cal-dots,
+#page-calendario.is-month-view .calendar-event-bar .cal-dots{
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  height: 8px;
+  margin: 0;
+}
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
+  position: relative;
+  padding-bottom: 24px;
+}
+
+
+/* dDAE_2.793 — Calendario: M/G/C in alto a sinistra, channel in alto a destra */
+#page-calendario .cal-corner-chrome{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:4;
+}
+#page-calendario .cal-flags,
+#page-calendario .calendar-event-bar .cal-flags,
+#page-calendario.is-month-view .calendar-event-bar .cal-flags{
+  position:absolute !important;
+  left:4px !important;
+  right:auto !important;
+  top:4px !important;
+  bottom:auto !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:3px !important;
+  pointer-events:none !important;
+  z-index:5 !important;
+}
+#page-calendario .cal-channel-tag,
+#page-calendario .calendar-event-bar .cal-channel-tag,
+#page-calendario.is-month-view .calendar-event-bar .cal-channel-tag{
+  position:absolute !important;
+  top:4px !important;
+  right:4px !important;
+  left:auto !important;
+  bottom:auto !important;
+  z-index:6 !important;
+}
+#page-calendario .cal-cell.has-booking .cal-cell-inner,
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
+  padding-top:24px !important;
+}
+
+
+/* dDAE_2.794 — Calendario: stessa configurazione nella cella zoomata
+   M/G/C in alto a sinistra, channel in alto a destra, letti in basso centrati. */
+.calendar-cell-zoom .cal-corner-chrome,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-corner-chrome{
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  z-index:6 !important;
+}
+.calendar-cell-zoom .cal-flags,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-flags{
+  position:absolute !important;
+  left:14px !important;
+  right:auto !important;
+  top:14px !important;
+  bottom:auto !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  pointer-events:none !important;
+  z-index:8 !important;
+}
+.calendar-cell-zoom .cal-channel-tag,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-channel-tag{
+  position:absolute !important;
+  top:14px !important;
+  right:14px !important;
+  left:auto !important;
+  bottom:auto !important;
+  z-index:9 !important;
+}
+.calendar-cell-zoom .cal-dots,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots{
+  position:absolute !important;
+  left:50% !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:18px !important;
+  transform:translateX(-50%) !important;
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  pointer-events:none !important;
+  z-index:7 !important;
+}
+.calendar-cell-zoom .cal-dots .bed-dot,
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-dots .bed-dot{
+  position:static !important;
+}
+
+/* dDAE_2.795 — Statistiche: griglia 3x3 standardizzata sulla Home anche in landscape */
+#page-statistiche .home-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  width:min(520px, 96vw) !important;
+  max-width:520px !important;
+  margin:10px auto 0 !important;
+  padding:14px !important;
+  gap:10px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:stretch !important;
+  align-content:start !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+@media (orientation: landscape){
+  #page-statistiche .home-grid{
+    width:min(520px, 96vw) !important;
+    max-width:520px !important;
+    padding:14px !important;
+    gap:10px !important;
+  }
+  #page-statistiche .home-main{
+    width:100% !important;
+    max-width:none !important;
+  }
+}
+
+/* dDAE_2.797 — Statistiche: griglia 3x3 centrata orizzontalmente rispetto alla pagina */
+#page-statistiche .stats-page{
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#page-statistiche .home-grid{
+  --ddae-stat-grid-gap: 18px;
+  --ddae-stat-grid-item: minmax(0, 1fr);
+  display:grid !important;
+  grid-template-columns:repeat(3, var(--ddae-stat-grid-item)) !important;
+  width:min(520px, calc(100vw - 28px)) !important;
+  max-width:520px !important;
+  box-sizing:border-box !important;
+  margin:10px auto 0 !important;
+  padding:14px !important;
+  gap:var(--ddae-stat-grid-gap) !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  float:none !important;
+  position:relative !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+}
+#page-statistiche .home-main{
+  width:100% !important;
+  max-width:150px !important;
+  justify-self:center !important;
+  margin:0 !important;
+}
+@media (orientation: landscape){
+  #page-statistiche .home-grid{
+    width:min(640px, calc(100vw - 96px)) !important;
+    max-width:640px !important;
+    gap:22px !important;
+    padding:14px !important;
+    margin-top:10px !important;
+  }
+  #page-statistiche .home-main{
+    max-width:170px !important;
+  }
+}
+@media (max-width:390px){
+  #page-statistiche .home-grid{
+    width:min(500px, calc(100vw - 18px)) !important;
+    padding:10px !important;
+    gap:12px !important;
+  }
+  #page-statistiche .home-main{
+    max-width:124px !important;
+  }
+}
+
+/* dDAE_2.800 — Popup Impostazioni: tasti creazione/modifica in grassetto + Statistiche landscape full display */
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button{
+  font-weight: 900 !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .content,
+  body[data-page="statmensili"] #page-statmensili .content,
+  body[data-page="statspese"] #page-statspese .content,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .content,
+  body[data-page="statchannel"] #page-statchannel .content,
+  body[data-page="statpulizie"] #page-statpulizie .content,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .content{
+    height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    max-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
+    height: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    padding: 6px 8px calc(6px + var(--safe-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .statgen-line-chart canvas,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart canvas,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart canvas,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart canvas,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart canvas,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart,
+  body[data-page="statchannel"] #page-statchannel .stats-pie-chart,
+  body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart{
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
+
+/* dDAE_2.806 — Preventivi: archivio parallelo e UI azzurra */
+.preventivi-home-glyph{
+  font-weight:800;
+  font-size:clamp(24px, 6vw, 34px);
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+body[data-page="preventivi"] #periodChip,
+body[data-page="ospite"].quote-mode #periodChip{ display:none !important; }
+#page-preventivi .guest-cards-card,
+#page-ospite.is-preventivo .guest-form-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+#page-preventivi .page-title,
+#page-ospite.is-preventivo #ospiteFormTitle{ color:#12618f !important; }
+.preventivo-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+.preventivo-insno{
+  background:#36a9e1 !important;
+  color:#fff !important;
+  border-color:#36a9e1 !important;
+  font-weight:800 !important;
+}
+.preventivo-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:84px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid rgba(18,97,143,.28);
+  background:rgba(54,169,225,.18);
+  color:#12618f;
+  font-size:12px;
+  font-weight:800;
+}
+#page-ospite.is-preventivo.preventivo-non-confermato .quote-hide-before-confirm{ display:none !important; }
+#page-ospite.is-preventivo.preventivo-non-confermato .payment-row,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow,
+#page-ospite.is-preventivo.preventivo-non-confermato #servicesListWrap{ display:none !important; }
+.tl-btn .tl-text{font-weight:800;font-size:12px;line-height:1;}
+
+
+/* dDAE_2.806 — Preventivi: pagina clonata da Ospiti + occupazione gialla */
+#page-preventivi .guest-cards-card{
+  background: var(--glass) !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+}
+#page-preventivi .page-title{ color: inherit !important; }
+#page-preventivi .preventivi-filter-grid{ margin-bottom: 10px; }
+#page-preventivi .guest-card.preventivo-card{
+  background: var(--glass) !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+}
+#page-ospite.is-preventivo .guest-form-card{
+  background:#e8f6ff !important;
+  background-image:none !important;
+  border-color:#9ed8ff !important;
+}
+#page-ospite.is-preventivo .room-dot.occupied,
+body.quote-mode #page-ospite .room-dot.occupied{
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+#page-ospite.is-preventivo .room-dot[disabled].occupied,
+body.quote-mode #page-ospite .room-dot[disabled].occupied{
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* dDAE_2.806 — Preventivi: clone visivo reale della pagina Ospiti */
+#page-preventivi .content{
+  height: calc(100dvh - 64px - var(--safe-top));
+  max-height: calc(100dvh - 64px - var(--safe-top));
+  overflow: hidden;
+  padding-bottom: calc(74px + var(--safe-bottom));
+}
+#page-preventivi .ospite-wrap,
+#page-preventivi .guest-cards-card{
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#page-preventivi .guest-cards-card{
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-preventivi .guest-cards-card > .hd{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+  background: transparent !important;
+  border-bottom: none !important;
+}
+#page-preventivi .guest-cards-card > .bd{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0 !important;
+}
+#page-preventivi .guest-filter-grid{
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+#page-preventivi .guest-cards{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  padding-bottom: calc(22px + var(--safe-bottom));
+}
+#page-preventivi .guest-scroll-today-btn{
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#page-preventivi .guest-scroll-today-btn[hidden]{ display: none !important; }
+#page-preventivi .guest-cards-card > .hd > .page-title,
+#page-preventivi .guest-cards-card > .hd > .hd-actions{ flex: 0 0 auto; }
+#page-preventivi .guest-card.preventivo-card{
+  background: rgba(148,163,184,0.20) !important;
+  background-image: none !important;
+  border: 1px solid rgba(15,23,42,0.10) !important;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#page-preventivi .guest-filter-grid .field input,
+#page-preventivi .guest-filter-grid .field select,
+#page-preventivi .gf-dir{ background: rgba(148,163,184,0.20) !important; }
+#page-preventivi .preventivo-insno{
+  background: #36a9e1 !important;
+  border-color: #36a9e1 !important;
+  color: #fff !important;
+}
+.preventivi-home-glyph .ui-ico{ width: 34px; height: 34px; }
+@media (orientation: landscape){
+  #page-preventivi .content{
+    height: calc(100dvh - 64px - var(--safe-top));
+    max-height: calc(100dvh - 64px - var(--safe-top));
+    padding-bottom: calc(54px + var(--safe-bottom));
+  }
+  #page-preventivi .guest-filter-grid{ margin-bottom: 8px; }
+  #page-preventivi .guest-cards{ padding-bottom: calc(18px + var(--safe-bottom)); }
+}
+body.ddae-dark #page-preventivi .guest-card.preventivo-card{
+  background: rgba(15,23,42,0.32) !important;
+  border-color: rgba(226,232,240,0.12) !important;
+}
+
+/* dDAE_2.806 — Pallini stanza: rosso reale, giallo preventivo/prenotazione non concretizzata */
+#page-ospite .room-dot.occupied-real,
+#page-ospite .room-dot.occupied.occupied-real{
+  background:#ff0000 !important;
+  background-image:none !important;
+  border-color:#b40000 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+#page-ospite .room-dot.occupied-quote:not(.occupied-real),
+#page-ospite .room-dot.occupied.occupied-quote:not(.occupied-real),
+#page-ospite.is-preventivo .room-dot.occupied:not(.occupied-real),
+body.quote-mode #page-ospite .room-dot.occupied:not(.occupied-real){
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* dDAE_2.810 — Preventivi: card e strumenti clonati graficamente da Ospiti */
+#page-preventivi .guest-card{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+#page-preventivi .guest-card:active{ transform:scale(0.995); }
+#page-preventivi .guest-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+#page-preventivi .guest-row.guest-row-compact{ width:100%; align-items:center; }
+#page-preventivi .guest-main{ display:flex; align-items:center; gap:8px; min-width:0; white-space:normal; flex-wrap:nowrap; flex:1 1 auto; max-width:calc(100% - 132px); }
+#page-preventivi .guest-main .guest-insno{ margin-right:0; }
+#page-preventivi .guest-nationality-dot{ display:inline-flex; align-items:center; justify-content:center; align-self:center; flex:0 0 auto; min-width:36px; width:36px; height:36px; border-radius:999px; overflow:hidden; border:1px solid var(--ico-sky); background:rgba(255,255,255,0.98); }
+#page-preventivi .guest-nationality-flag{ display:inline-flex; align-items:center; justify-content:center; width:100%; height:100%; font-size:30px; line-height:1; transform:scale(1.36); transform-origin:center center; }
+#page-preventivi .guest-nameblock{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-width:0; flex:1 1 auto; max-width:100%; overflow:hidden; }
+#page-preventivi .guest-name-tab{ display:inline-flex; align-items:center; min-height:28px; max-width:100%; padding:4px 10px; border-radius:999px; border:1px solid rgba(15,23,42,0.10); background:rgba(255,255,255,0.38); box-sizing:border-box; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#page-preventivi .guest-name-text{ overflow:hidden; text-overflow:ellipsis; font-size:18px; font-weight:500; line-height:1.12; }
+#page-preventivi .guest-arrivo{ font-size:12px; font-weight:800; opacity:.75; white-space:nowrap; }
+#page-preventivi .guest-arrivo.guest-arrivo-under{ white-space:normal; margin-top:2px; }
+#page-preventivi .guest-contact{ display:block; width:100%; max-width:100%; overflow:hidden; white-space:normal; line-height:1.18; }
+#page-preventivi .guest-contact-line{ display:block; width:100%; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#page-preventivi .guest-contact-email{ margin-top:2px; }
+#page-preventivi .guest-meta-right{ display:flex; align-items:center; gap:6px; flex:0 0 auto; min-width:124px; }
+#page-preventivi .guest-meta-dots{ display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:6px; }
+#page-preventivi .guest-card.preventivo-card{ min-height:96px; }
+#page-ospiti #ospitiTopTools{ display:flex; align-items:center; gap:12px; }
+#btnOpenPreventiviFromOspiti .ui-ico{ width:25px; height:25px; }
+@media (max-width:480px){
+  #page-preventivi .guest-main{ max-width:calc(100% - 118px); }
+  #page-preventivi .guest-meta-right{ min-width:112px; }
+}
+body.ddae-dark #page-preventivi .guest-nationality-dot{ border-color:rgba(88,183,244,0.48) !important; background:rgba(15,23,42,0.92) !important; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04) !important; }
+body.ddae-dark #page-preventivi .guest-nationality-flag{ filter:saturate(.92) brightness(.94); }
+body.ddae-dark #page-preventivi .guest-name-tab{ background:rgba(15,23,42,0.42); border-color:rgba(226,232,240,0.12); }
+
+/* dDAE_2.810 — Preventivi: righe economiche eliminate e priorità rosso reale */
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #servicesRow,
+#page-ospite.is-preventivo #depositRow,
+#page-ospite.is-preventivo #saldoRow,
+#page-ospite.is-preventivo #discountRow,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #servicesRow,
+body.quote-mode #page-ospite #depositRow,
+body.quote-mode #page-ospite #saldoRow,
+body.quote-mode #page-ospite #discountRow{ display:none !important; }
+#page-ospite .room-dot.occupied-real,
+#page-ospite .room-dot.occupied.occupied-real,
+#page-ospite.is-preventivo .room-dot.occupied-real,
+#page-ospite.is-preventivo .room-dot.occupied.occupied-real,
+body.quote-mode #page-ospite .room-dot.occupied-real,
+body.quote-mode #page-ospite .room-dot.occupied.occupied-real{
+  background:#ff0000 !important;
+  background-image:none !important;
+  border-color:#b40000 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+#page-ospite .room-dot.occupied-quote:not(.occupied-real),
+#page-ospite .room-dot.occupied.occupied-quote:not(.occupied-real),
+#page-ospite.is-preventivo .room-dot.occupied-quote:not(.occupied-real),
+body.quote-mode #page-ospite .room-dot.occupied-quote:not(.occupied-real){
+  background:#ffcc00 !important;
+  background-image:none !important;
+  border-color:#d6a900 !important;
+  color:#5a4100 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* dDAE_2.810 — Preventivi: elimina definitivamente commissione/channel dalla modifica preventivo */
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestBookingNumberField,
+#page-ospite.is-preventivo #guestBookingNumberField {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
+/* dDAE_2.812 — Preventivi: nessun Channel/commissione nel form nuovo/modifica preventivo anche se riposizionato */
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannel,
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannel + label,
+body.quote-mode #page-ospite #guestCreatePrimaryStack label[for="guestChannel"],
+body.quote-mode #page-ospite #guestCreatePrimaryStack #guestChannelCreateAnchor,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow *,
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestBooking,
+body.quote-mode #page-ospite #guestBooking + label,
+#page-ospite.is-preventivo #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-preventivo #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite.is-preventivo #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelRow *,
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestBooking,
+#page-ospite.is-preventivo #guestBooking + label{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestChannel),
+body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestBooking),
+#page-ospite.is-preventivo #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-preventivo #guestCreatePrimaryStack .subfield:has(#guestBooking){
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* dDAE_2.814 — Preventivi */
+.quote-mode [data-quote-confirm].quote-confirm-green,
+#page-ospite.is-preventivo [data-quote-confirm].quote-confirm-green{
+  background:#22c55e !important;
+  border-color:#22c55e !important;
+  color:#fff !important;
+}
+.quote-mode [data-quote-confirm].quote-confirm-green svg,
+#page-ospite.is-preventivo [data-quote-confirm].quote-confirm-green svg{
+  width:20px;
+  height:20px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  color:#fff !important;
+}
+#page-ospite.is-preventivo .quote-view-force-show{
+  display:revert !important;
+  visibility:visible !important;
+}
+
+
+/* dDAE_2.823 — Impostazioni: popup editor buttons bold + stable color editor overlay */
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button{
+  font-weight:900 !important;
+}
+#operatoriEditorModal button span,
+#channelEditorModal button span,
+#laundryCatalogEditorModal button span{
+  font-weight:900 !important;
+}
+#tagColorModal{
+  z-index:5000 !important;
+  touch-action:manipulation;
+}
+#tagColorModal .tag-color-modal-card{
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
+body.tag-color-modal-open #operatoriEditorModal,
+body.tag-color-modal-open #channelEditorModal,
+body.tag-color-modal-open #laundryCatalogEditorModal{
+  pointer-events:none;
+}
+body.tag-color-modal-open #tagColorModal{
+  pointer-events:auto;
+}
+
+/* dDAE_2.823 — popup colore sopra ai modali impostazioni, sempre cliccabile/toccabile */
+#tagColorModal{
+  z-index:99999 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#tagColorModal .tag-color-modal-card,
+#tagColorModal .tag-color-modal-card *,
+#tagColorModal button,
+#tagColorModal .tag-color-option,
+#tagColorModal .tag-opacity-option,
+#tagColorModal .tag-color-mode-btn{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button,
+#operatoriEditorModal button *,
+#channelEditorModal button *,
+#laundryCatalogEditorModal button *{
+  font-weight:900 !important;
+}
+
+
+/* dDAE_2.823 — popup colore sempre sopra e interattivo su iOS */
+body.tag-color-modal-open #operatoriEditorModal:not([hidden]),
+body.tag-color-modal-open #channelEditorModal:not([hidden]),
+body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
+  pointer-events:none !important;
+}
+#tagColorModal:not([hidden]){
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:auto !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#tagColorModal:not([hidden]) .tag-color-modal-card,
+#tagColorModal:not([hidden]) .tag-color-modal-card *,
+#tagColorModal:not([hidden]) button,
+#tagColorModal:not([hidden]) .tag-color-option,
+#tagColorModal:not([hidden]) .tag-opacity-option,
+#tagColorModal:not([hidden]) .tag-color-mode-btn{
+  pointer-events:auto !important;
+  touch-action:auto !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#operatoriEditorModal button,
+#channelEditorModal button,
+#laundryCatalogEditorModal button,
+#operatoriEditorModal button *,
+#channelEditorModal button *,
+#laundryCatalogEditorModal button *{
+  font-weight:900 !important;
+}
+
+/* dDAE_2.824 — Ospiti reali: layout lettura/modifica ripristinato, non contaminato dai Preventivi */
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestBookingNumberField,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #servicesRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #depositRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #saldoRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #discountRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #remainingRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow > .subfield,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannelRow > .subfield.field.float,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestBooking,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) #guestChannel{
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow{
+  grid-template-columns: minmax(0, 1fr) 220px !important;
+  align-items:center !important;
+  gap:16px !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:first-child,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:first-child{
+  display:block !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
+  display:block !important;
+}
+
+/* dDAE_2.827 — Ospiti reali: Importo commissione e Channel dimensionati come le altre righe */
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:first-child,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:first-child{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  justify-self:stretch !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-edit #guestChannel,
+body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
+
+
+/* dDAE_2.827 — Ospiti: centra realmente il tasto data corrente rispetto alla pagina */
+#page-ospiti .guest-cards-card > .hd{
+  position: relative !important;
+}
+#page-ospiti .guest-scroll-today-btn:not([hidden]){
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  z-index: 3 !important;
+}
+#page-ospiti .guest-cards-card > .hd > .hd-actions{
+  margin-left: auto !important;
+}
+
+/* dDAE_2.827 — Nuovo ospite: elimina sezioni servizi/pagamenti solo in creazione */
+#page-ospite .guest-form-card.is-create #servicesRow,
+#page-ospite .guest-form-card.is-create #depositRow,
+#page-ospite .guest-form-card.is-create #saldoRow,
+#page-ospite .guest-form-card.is-create #discountRow,
+#page-ospite .guest-form-card.is-create #remainingRow,
+#page-ospite .guest-form-card.is-create #servicesListWrap,
+#page-ospite .guest-form-card.is-create .ddae-create-hidden{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+#page-ospite .guest-form-card.is-create #createGuestCard{
+  margin-top:18px !important;
+}
+
+/* dDAE_2.828 — Ospiti: informazioni economiche per singolo gruppo stanze */
+#page-ospite .guest-booking-block[role="button"]{
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#page-ospite .guest-booking-block.is-active{
+  border-color: rgba(30, 122, 168, 0.45) !important;
+  box-shadow: 0 0 0 2px rgba(30, 122, 168, 0.16) !important;
+}
+#page-ospite #ospiteHdActions [data-guest-checkin].is-disabled,
+#page-ospite #ospiteHdActions [data-guest-checkin]:disabled{
+  opacity:.38 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestNotesWrap,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesListWrap{
+  display:none !important;
+}
+
+/* dDAE_2.829 — Ospiti: pacchetto dati gruppo stanze solo dopo click in sola lettura */
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #mgcRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) .total-row,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #depositRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #saldoRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #discountRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #remainingRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestNotesWrap,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesListWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #mgcRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+  display:flex !important;
+}
+#page-ospite #ospiteHdActions [data-guest-edit].is-disabled,
+#page-ospite #ospiteHdActions [data-guest-edit]:disabled{
+  opacity:.38 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+
+
+/* dDAE_2.830 — Ospiti: ripristino layout originale pacchetto dati gruppo stanze */
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield:first-child{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  justify-self:stretch !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .pay-pill,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestNotesToggle,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesPillView,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestTaxTotal{
+  width:100% !important;
+}
+
+/* dDAE_2.836 — tab totale commissioni sotto i gruppi stanze */
+#page-ospite #guestMulti .guest-commission-total-tab{
+  width:100%;
+  min-height:44px;
+  box-sizing:border-box;
+  border:1px solid rgba(15,23,42,0.14);
+  border-radius:22px;
+  background:rgba(255,255,255,0.78);
+  color:rgba(15,23,42,0.82);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 14px;
+  font-size:14px;
+  line-height:1.15;
+  box-shadow:none;
+}
+#page-ospite #guestMulti .guest-commission-total-label{
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-ospite #guestMulti .guest-commission-total-value{
+  font-weight:700;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
+  background:rgba(15,23,42,0.72);
+  border-color:rgba(255,255,255,0.16);
+  color:rgba(255,255,255,0.90);
+}
+
+
+/* dDAE_2.836 — Scheda ospite sola lettura: spazi uniformi, nessuna linea anomala, tab non tagliati */
+#page-ospite #roomsReadOnly{
+  margin-top:10px !important;
+  margin-bottom:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+#page-ospite #guestMulti{
+  margin-top:10px !important;
+  gap:10px !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+#page-ospite #roomsReadOnly .guest-booking-block,
+#page-ospite #guestMulti .guest-booking-block{
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-booking-top-row{
+  min-width:0 !important;
+  width:100% !important;
+}
+#page-ospite .guest-booking-dates-pill{
+  min-width:0 !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-booking-right{
+  flex:0 0 auto !important;
+}
+#page-ospite #guestMulti .guest-commission-total-tab{
+  justify-content:space-between !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+#page-ospite #guestMulti .guest-commission-total-label{
+  min-width:0 !important;
+}
+#page-ospite #guestMulti .guest-commission-total-value{
+  flex:0 0 auto !important;
+  margin-left:10px !important;
+}
+@media (max-width:430px){
+  #page-ospite{ --paycol:142px; }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+    grid-template-columns:minmax(0,1fr) minmax(0,var(--paycol)) !important;
+    gap:8px !important;
+  }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+    width:100% !important;
+    min-width:0 !important;
+    max-width:var(--paycol) !important;
+  }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .pay-pill,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestNotesToggle,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesPillView,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestTaxTotal,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+}
+
+
+/* dDAE_2.842 — Ospiti: Channel stabile solo nel dettaglio gruppo stanze attivo */
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow > .subfield{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  align-items:center !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child{
+  width:100% !important;
+  justify-self:stretch !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > #guestChannelCommissionWrap,
+#page-ospite #guestChannelCommissionWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+}
+
+
+/* dDAE_2.848 — tasti colore pallino nei popup impostazioni */
+#operatoriEditorDotColor.btn,
+#channelEditorDotColor.btn,
+#laundryCatalogEditorDotColor.btn{
+  font-size:30px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+}
+
+
+/* dDAE_2.848 — allineamento tasti popup impostazioni */
+#operatoriEditorModal .editor-modal-actions,
+#channelEditorModal .editor-modal-actions,
+#laundryCatalogEditorModal .editor-modal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:14px;
+}
+#operatoriEditorModal .editor-modal-actions > .btn,
+#channelEditorModal .editor-modal-actions > .btn,
+#laundryCatalogEditorModal .editor-modal-actions > .btn{
+  min-width:0;
+  flex:1 1 0;
+  white-space:nowrap;
+}
+#operatoriEditorSaldoBtn{
+  flex:0.92 1 0;
 }
