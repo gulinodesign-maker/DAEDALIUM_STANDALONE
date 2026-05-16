@@ -23159,7 +23159,7 @@ body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
   pointer-events:none !important;
 }
 
-/* dDAE_2.851 — conferma categoria sopra popup colore, senza bloccare la UI */
+/* dDAE_2.852 — conferma categoria sopra popup colore, senza bloccare la UI */
 #confirmYesNoModal:not([hidden]){
   position:fixed !important;
   inset:0 !important;
@@ -23182,4 +23182,16 @@ body.confirm-yesno-open #operatoriEditorModal:not([hidden]),
 body.confirm-yesno-open #channelEditorModal:not([hidden]),
 body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
   pointer-events:none !important;
+}
+
+
+/* dDAE_2.852 — testo tasti popup Impostazioni sempre in grassetto, senza pulsazioni */
+#operatoriEditorModal .editor-modal-actions > .btn,
+#channelEditorModal .editor-modal-actions > .btn,
+#laundryCatalogEditorModal .editor-modal-actions > .btn,
+#operatoriEditorModal .editor-modal-actions > .btn *,
+#channelEditorModal .editor-modal-actions > .btn *,
+#laundryCatalogEditorModal .editor-modal-actions > .btn *{
+  font-weight:900 !important;
+  -webkit-font-smoothing:antialiased;
 }
