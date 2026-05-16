@@ -23158,3 +23158,28 @@ body.tag-color-modal-open #channelEditorModal:not([hidden]),
 body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
   pointer-events:none !important;
 }
+
+
+/* dDAE_2.850 — conferma categoria sempre sopra popup colore/editor e touchabile */
+#confirmYesNoModal:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:auto !important;
+}
+#confirmYesNoModal:not([hidden]) .modal-card,
+#confirmYesNoModal:not([hidden]) .modal-card *,
+#confirmYesNoYes,
+#confirmYesNoNo{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+body.confirm-yesno-open #tagColorModal:not([hidden]){
+  pointer-events:none !important;
+}
+body.confirm-yesno-open #operatoriEditorModal:not([hidden]),
+body.confirm-yesno-open #channelEditorModal:not([hidden]),
+body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
+  pointer-events:none !important;
+}
