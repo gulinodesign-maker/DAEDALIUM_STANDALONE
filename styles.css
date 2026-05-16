@@ -23053,3 +23053,52 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
     box-sizing:border-box !important;
   }
 }
+
+
+/* dDAE_2.842 — Ospiti: Channel stabile solo nel dettaglio gruppo stanze attivo */
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow > .subfield{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  align-items:center !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child{
+  width:100% !important;
+  justify-self:stretch !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > #guestChannelCommissionWrap,
+#page-ospite #guestChannelCommissionWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+}
