@@ -23104,7 +23104,7 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
 }
 
 
-/* dDAE_2.848 — tasti colore pallino nei popup impostazioni */
+/* dDAE_2.849 — tasti colore pallino nei popup impostazioni */
 #operatoriEditorDotColor.btn,
 #channelEditorDotColor.btn,
 #laundryCatalogEditorDotColor.btn{
@@ -23114,7 +23114,7 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
 }
 
 
-/* dDAE_2.848 — allineamento tasti popup impostazioni */
+/* dDAE_2.849 — allineamento tasti popup impostazioni */
 #operatoriEditorModal .editor-modal-actions,
 #channelEditorModal .editor-modal-actions,
 #laundryCatalogEditorModal .editor-modal-actions{
@@ -23133,4 +23133,28 @@ body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
 }
 #operatoriEditorSaldoBtn{
   flex:0.92 1 0;
+}
+
+
+/* dDAE_2.849 — Popup colore: layer superiore agli editor Impostazioni e touch sempre attivo */
+#tagColorModal:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:auto !important;
+}
+#tagColorModal:not([hidden]) .tag-color-modal-card,
+#tagColorModal:not([hidden]) .tag-color-modal-card *,
+#tagColorModal:not([hidden]) button,
+#tagColorModal:not([hidden]) .tag-color-option,
+#tagColorModal:not([hidden]) .tag-opacity-option,
+#tagColorModal:not([hidden]) .tag-color-mode-btn{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+body.tag-color-modal-open #operatoriEditorModal:not([hidden]),
+body.tag-color-modal-open #channelEditorModal:not([hidden]),
+body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
+  pointer-events:none !important;
 }
