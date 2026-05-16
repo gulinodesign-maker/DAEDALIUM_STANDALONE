@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.847" rel="stylesheet"/>
-<link href="./manifest.json?v=2.847" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.847" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.847" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.847" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.847" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.847" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.847" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.567" rel="stylesheet"/>
+<link href="./manifest.json?v=2.567" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.567" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.567" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.567" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.567" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" href="./bg-daedalium.jpeg?v=2.567" rel="preload" fetchpriority="high"/>
+<link as="image" href="./bg-daedalium_dark.PNG?v=2.567" rel="preload" fetchpriority="high" media="(prefers-color-scheme: dark)"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.847";
+window.APP_VERSION = "2.567";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.847";
+  const LOCAL_BUILD = "dDAE_2.567";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.847";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.847")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.847")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.567")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.567")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -126,6 +126,7 @@ window.APP_VERSION = "2.847";
   }
 })();
 </script>
+
 <script>
 (function(){
   const isEditableTarget = (el) => {
@@ -155,21 +156,17 @@ window.APP_VERSION = "2.847";
 <body>
 <header class="topbar">
 <div class="brand">
-<div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.847"/>
-</div>
-<div class="topbar-center" id="topbarCenterWrap">
-<div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
+<div class="brand-left">
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.567"/>
 <div aria-label="Stato" class="top-led-grid" id="topLedGrid" role="status">
-<span aria-label="Alert schedine PS" class="top-led top-led-alert" id="dbLedRead" role="button" tabindex="0"></span>
-<span aria-label="Alert ISTAT" class="top-led top-led-alert" id="dbLedIstat" role="button" tabindex="0"></span>
-<span aria-label="Alert pagamenti" class="top-led top-led-alert" id="dbLedWrite" role="button" tabindex="0"></span>
-<span aria-label="Alert ricevute" class="top-led top-led-alert" id="dbLedReceipt" role="button" tabindex="0"></span>
-<span aria-label="Lista spesa" class="top-led top-led-product top-led-blue" id="prodLedColazione" role="status"></span>
-<span aria-label="Prodotti" class="top-led top-led-product top-led-orange" id="prodLedPulizia" role="status"></span>
+<span aria-label="Spesa colazione" class="top-led top-led-blue" id="prodLedColazione"></span>
+<span aria-label="Spesa prodotti" class="top-led top-led-orange" id="prodLedPulizia"></span>
+<span aria-label="Alert registrazioni ospiti" class="top-led top-led-alert" id="dbLedRead" role="button" tabindex="0"></span>
+<span aria-label="Alert pagamenti ospiti" class="top-led top-led-alert" id="dbLedWrite" role="button" tabindex="0"></span>
 </div>
+<div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
 </div>
-<div class="brand-right" id="topbarBrandRight">
+<div class="brand-right">
 <button aria-label="Indietro" class="icon-btn icon-btn-whiteorange" hidden="" id="backBtnTop" type="button"><span aria-hidden="true" class="backchev"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path><path d="M9 12h12"></path></svg></span></button><div hidden="" id="pulizieTopTools"></div>
 <div hidden="" id="speseTopTools"></div>
 <div hidden="" id="prodottiTopTools"></div>
@@ -205,22 +202,6 @@ window.APP_VERSION = "2.847";
 </svg>
 </button>
 </div>
-<div hidden="" id="statChannelTopTools">
-<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheChannel" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M15 18l-6-6 6-6"></path>
-<path d="M9 12h12"></path>
-</svg>
-</button>
-</div>
-<div hidden="" id="statPulizieTopTools">
-<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatistichePulizie" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M15 18l-6-6 6-6"></path>
-<path d="M9 12h12"></path>
-</svg>
-</button>
-</div>
 <div hidden="" id="statCancTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheCancellazioni" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -244,17 +225,10 @@ window.APP_VERSION = "2.847";
 <path d="M9 12h12"></path>
 </svg>
 </button>
+<button aria-label="Dati amministratore" class="icon-btn icon-btn-whiteorange" id="btnAdminInputsTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 21V14"></path><path d="M4 10V3"></path><path d="M12 21V12"></path><path d="M12 8V3"></path><path d="M20 21V16"></path><path d="M20 12V3"></path><path d="M2 14h4"></path><path d="M10 8h4"></path><path d="M18 16h4"></path></svg></button>
 </div>
 <div hidden="" id="statPiscinaTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatistichePiscina" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M15 18l-6-6 6-6"></path>
-<path d="M9 12h12"></path>
-</svg>
-</button>
-</div>
-<div hidden="" id="orePuliziaTopTools">
-<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" data-single-action-key="hamburgerBtn" id="btnBackStatisticheOrePulizia" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
 <path d="M9 12h12"></path>
@@ -284,7 +258,6 @@ window.APP_VERSION = "2.847";
 <div hidden="" id="lavanderiaTopTools"></div>
 <button aria-label="Ospiti" class="icon-btn icon-btn-whitegreen" hidden="" id="guestBackTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg></button>
 <button aria-label="Carica backup" class="icon-btn icon-btn-whiteblue" hidden="" id="authImportBackupTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3v11"></path><path d="M8 10l4 4 4-4"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg></button>
-<button aria-label="Indietro a Ospiti" class="icon-btn icon-btn-whitegreen" hidden="" id="btnBackPreventiviToOspiti" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg></button>
 <button aria-label="Home" class="icon-btn icon-btn-whiteorange" id="hamburgerBtn"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 10v11h14V10"></path><path d="M9 21v-6h6v6"></path></svg></button>
 </div>
 </div>
@@ -295,7 +268,7 @@ window.APP_VERSION = "2.847";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.847"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.567"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -326,14 +299,14 @@ window.APP_VERSION = "2.847";
 <!-- Step 1: struttura (solo operatore) -->
 <div hidden="" id="authOperatorTenant">
 <div class="field float">
-<input autocapitalize="none" autocomplete="off" id="authTenant" inputmode="text" placeholder=" " spellcheck="false"/>
+<input autocapitalize="none" autocomplete="off" id="authTenant" inputmode="text" placeholder=" " spellcheck="false">
 <label for="authTenant">Struttura</label>
-</div>
+</input></div>
 <div class="auth-remember">
 <label class="auth-check">
-<input id="authTenantRemember" type="checkbox"/>
+<input id="authTenantRemember" type="checkbox">
 <span>Ricorda struttura</span>
-</label>
+</input></label>
 </div>
 </div>
 <!-- Credenziali -->
@@ -383,19 +356,6 @@ window.APP_VERSION = "2.847";
 <div class="auth-action-row">
 <button class="auth-btn auth-btn-gray" id="btnAuthBack" type="button">indietro</button>
 <button class="auth-btn auth-btn-orange" id="btnAuthSubmit" type="button">continua</button>
-</div>
-</div>
-<div class="auth-activation" hidden="" id="authActivation">
-<div class="auth-activation-title" id="authActivationTitle">Attivazione account</div>
-<div class="auth-activation-user" id="authActivationUser">—</div>
-<div class="auth-activation-text" id="authActivationText">Accedi e gestisci la licenza da Impostazioni → Licenza.</div>
-<div class="auth-grid auth-grid-2 auth-activation-grid">
-<button class="auth-btn auth-btn-azure" id="btnAuthRequestCode" type="button">licenza</button>
-<button class="auth-btn auth-btn-green" id="btnAuthUnlockCode" type="button">accedi</button>
-</div>
-<div aria-live="polite" class="auth-hint auth-activation-hint" id="authActivationHint"></div>
-<div class="auth-action-row auth-activation-actions">
-<button class="auth-btn auth-btn-gray" id="btnAuthActivationBack" type="button">indietro</button>
 </div>
 </div>
 </div>
@@ -463,14 +423,14 @@ window.APP_VERSION = "2.847";
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Piscina" class="home-main" id="goOrePuliziaHome" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M10 2h4"></path>
-<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
-<path d="M8 14h8"></path>
-<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
+<button aria-label="Ore Pulizia Mensili" class="home-main" id="goOrePuliziaHome" type="button">
+<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M6 20V11"></path>
+<path d="M12 20V7"></path>
+<path d="M18 20V4"></path>
+<path d="M4 20h16"></path>
 </svg></div>
-<div class="home-main-label">Piscina</div>
+<div class="home-main-label small">Ore Pulizia</div>
 </button>
 <button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -481,14 +441,14 @@ window.APP_VERSION = "2.847";
 </svg></div>
 <div class="home-main-label">Statistiche</div>
 </button>
-<button aria-label="Lista spesa" class="home-main" id="goProdotti" type="button"><div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<button aria-label="Spesa" class="home-main" id="goProdotti" type="button"><div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M9 6h12"></path>
 <path d="M9 12h12"></path>
 <path d="M9 18h12"></path>
 <path d="M4 6h.01"></path>
 <path d="M4 12h.01"></path>
 <path d="M4 18h.01"></path>
-</svg></div><div class="home-main-label">Lista spesa</div></button>
+</svg></div><div class="home-main-label">Spesa</div></button>
 <button aria-label="Importa DB" class="home-main" hidden="" id="goDbImport" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M5 21h14"></path>
@@ -503,7 +463,7 @@ window.APP_VERSION = "2.847";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.847</div></div></section>
+<div class="build" id="buildText">dDAE_2.567</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -521,7 +481,7 @@ window.APP_VERSION = "2.847";
 <button class="prod-rectbtn prod-blue" id="prodTabColazione" type="button">Colazione</button>
 <button class="prod-rectbtn prod-orange" id="prodTabPulizia" type="button">Prodotti</button>
 </div>
-<div aria-label="Lista prodotti" class="colazione-list prodotti-list" data-allow-vertical-scroll="true" id="prodottiList"></div>
+<div aria-label="Lista prodotti" class="colazione-list prodotti-list" id="prodottiList"></div>
 </div>
 </section>
 <!-- MODAL: Aggiungi prodotto -->
@@ -582,55 +542,25 @@ window.APP_VERSION = "2.847";
 </svg></div>
 <div class="home-main-label">Cancellazioni</div>
 </button>
-<button aria-label="Con senza ricevuta" class="home-main" id="goStatRicevute" type="button">
-<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 3h7l3 3v15H7z"></path>
-<path d="M14 3v4h4"></path>
-<path d="M9 10h6"></path>
-<path d="M9 14h3"></path>
-<path d="M15 13l-2.5 3"></path>
-<path d="M12.5 13l2.5 3"></path>
-</svg></div>
-<div class="home-main-label">Con/Senza ricevuta</div>
-</button>
-<button aria-label="PMS" class="home-main" id="goStatChannel" type="button">
+<button aria-label="Piscina" class="home-main" id="goStatPiscina" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M4 7h7v10H4z"></path>
-<path d="M13 5h7v6h-7z"></path>
-<path d="M13 13h7v6h-7z"></path>
-<path d="M11 10h2"></path>
-<path d="M11 14h2"></path>
+<path d="M10 2h4"></path>
+<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
+<path d="M8 14h8"></path>
+<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
 </svg></div>
-<div class="home-main-label">PMS</div>
+<div class="home-main-label">Piscina</div>
 </button>
-<button aria-label="Ore pulizia operatori" class="home-main" id="goStatPiscina" type="button">
+<button aria-label="Grafici" class="home-main" id="goStatPrenotazioni" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 20V11"></path>
-<path d="M12 20V7"></path>
-<path d="M18 20V4"></path>
-<path d="M4 20h16"></path>
+<path d="M4 19V5"></path>
+<path d="M4 19h16"></path>
+<path d="M8 17v-4"></path>
+<path d="M12 17V9"></path>
+<path d="M16 17v-7"></path>
+<path d="M7 7h10"></path>
 </svg></div>
-<div class="home-main-label small">Ore pulizie</div>
-</button>
-<button aria-label="Grafici pulizie" class="home-main" id="goStatPulizie" type="button">
-<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 3h12"></path>
-<path d="M8 3v4"></path>
-<path d="M16 3v4"></path>
-<path d="M12 12v4"></path>
-<path d="M12 12l3-2"></path>
-<path d="M12 21a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"></path>
-</svg></div>
-<div class="home-main-label small">Grafici pulizie</div>
-</button>
-<button aria-label="Ricavi" class="home-main" id="goStatAmministratore" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
-<path d="M4 21a8 8 0 0 1 16 0"></path>
-<path d="M12 14v4"></path>
-<path d="M9.5 16h5"></path>
-</svg></div>
-<div class="home-main-label small">Ricavi</div>
+<div class="home-main-label">Grafici</div>
 </button>
 </div>
 </div>
@@ -650,66 +580,15 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </section><section class="page" hidden="" id="page-statamministratore">
-<div class="stats-gen">
-<div class="stats-head-row statamm-head-row">
-<div class="statamm-title-group">
-<div class="stats-title">Ricavi</div>
-</div>
-<div aria-label="Azioni ricavi" class="stats-head-actions statgen-head-actions">
-<button aria-label="Dati ricavi" class="piscina-action-btn statgen-admin-inputs-btn statamm-title-action" id="btnAdminInputsTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 21V14"></path><path d="M4 10V3"></path><path d="M12 21V12"></path><path d="M12 8V3"></path><path d="M20 21V16"></path><path d="M20 12V3"></path><path d="M2 14h4"></path><path d="M10 8h4"></path><path d="M18 16h4"></path></svg></button>
-<div class="statgen-regime-switch">
-<button aria-label="Regime fiscale amministratore" class="piscina-action-btn statgen-regime-btn" id="statAmmFiscalModeBtn" type="button">
-<span class="statgen-regime-btn-label" id="statAmmFiscalModeLabel">Società</span>
-</button>
-</div>
-<button aria-label="Confronto anno grafico amministratore" class="piscina-action-btn statgen-compare-toggle-btn" id="statAmmCompareToggleBtn" type="button">
-<span class="statgen-compare-toggle-label" id="statAmmCompareToggleBtnLabel">ON</span>
-</button>
-<button aria-label="Seleziona anno confronto grafico amministratore" class="piscina-action-btn statgen-compare-year-btn" id="statAmmCompareYearBtn" type="button">
-<span class="statgen-compare-year-value" id="statAmmCompareYearBtnLabel">2025</span>
-</button>
-</div>
-</div>
+<div class="stats-page">
+<div class="stats-title">Amministratore</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Andamento tasse amministratore cumulativo per mese" class="statgen-line-chart-wrap" data-stat-line-chart-key="statamministratore">
-<canvas class="statgen-line-chart" height="118" id="statAmmRegChart"></canvas>
+<div class="fin-card">
+<div class="fin-head">
+<div>Voce Personale</div>
+<div class="fin-right">Importo (€)</div>
 </div>
-<div class="stats-stack">
-<button class="stat-row" data-stat-card-key="fatturato-ricevute" style="--statbg:#2b7cb4" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 19h16M6 16l4-4 3 3 5-7"></path></svg></span>
-<span class="stat-name">Fatturato ricevute</span>
-<span class="stat-val" id="saFatturato">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="fatturato-senza-ricevuta" style="--statbg:#9aa3af" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 2 2 5-6"></path><path d="M6 5l12 14"></path></svg></span>
-<span class="stat-name">Fatturato senza ricevuta</span>
-<span class="stat-val" id="saFatturatoSenza">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="irpef" style="--statbg:#c9772b" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M19 5L5 19"></path><path d="M7 7h.01"></path><path d="M17 17h.01"></path></svg></span>
-<span class="stat-name">IRPEF</span>
-<span class="stat-val" id="saIrpef">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="inps" style="--statbg:#7a3d9b" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 7h14M7 12h14M7 17h14M3.5 7h.01M3.5 12h.01M3.5 17h.01"></path></svg></span>
-<span class="stat-name">INPS</span>
-<span class="stat-val" id="saInps">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="iva-da-versare" id="saIvaRow" style="--statbg:#d39b3b" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 14l2 2 4-4"></path></svg></span>
-<span class="stat-name">IVA da versare</span>
-<span class="stat-val" id="saIva">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="totale-tasse" style="--statbg:#e05a4f" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 1v22"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
-<span class="stat-name">Totale tasse</span>
-<span class="stat-val" id="saTotaleTasse">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="netto-mensile" style="--statbg:#2aa36b" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M7 4v6"></path><path d="M17 4v6"></path><path d="M6 13h4"></path><path d="M14 13h4"></path><path d="M6 17h4"></path><path d="M14 17h4"></path></svg></span>
-<span class="stat-name">Netto Mensile</span>
-<span class="stat-val" id="saNettoMensile">€0,00</span>
-</button>
+<div id="amministratoreRows"></div>
 </div>
 </div>
 </section>
@@ -718,23 +597,22 @@ window.APP_VERSION = "2.847";
 <div class="stats-gen">
 <div class="stats-head-row">
 <div class="stats-title">Generali</div>
-<div aria-label="Azioni generali" class="stats-head-actions statgen-head-actions">
+<div class="stats-head-actions statgen-head-actions" aria-label="Azioni generali">
 <div class="statgen-regime-switch">
-<button aria-label="Regime fiscale generali" class="piscina-action-btn statgen-regime-btn" id="statFiscalModeBtn" type="button">
-<span class="statgen-regime-btn-label" id="statFiscalModeLabel">Società</span>
-</button>
+<span class="statgen-regime-label" id="statFiscalModeLabel">Società</span>
+<label class="switch statgen-switch" for="statFiscalModeToggle">
+<input aria-label="Cambia regime fiscale generali" id="statFiscalModeToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
 </div>
-<button aria-label="Confronto anno grafico generali" class="piscina-action-btn statgen-compare-toggle-btn" id="statGenCompareToggleBtn" type="button">
-<span class="statgen-compare-toggle-label" id="statGenCompareToggleBtnLabel">ON</span>
-</button>
-<button aria-label="Seleziona anno confronto grafico generali" class="piscina-action-btn statgen-compare-year-btn" id="statGenCompareYearBtn" type="button">
+<button aria-label="Anno confronto grafico generali" class="piscina-action-btn statgen-compare-year-btn" id="statGenCompareYearBtn" type="button">
 <span class="statgen-compare-year-value" id="statGenCompareYearBtnLabel">2025</span>
 </button>
 </div>
 </div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Andamento fatturato cumulativo per mese basato sulla data di prenotazione" class="statgen-line-chart-wrap">
-<canvas class="statgen-line-chart" height="118" id="statGenRegChart"></canvas>
+<div class="statgen-line-chart-wrap" aria-label="Andamento fatturato cumulativo per mese basato sulla data di prenotazione">
+<canvas id="statGenRegChart" class="statgen-line-chart" height="118"></canvas>
 </div>
 <div class="stats-stack">
 <button class="stat-row" data-stat-card-key="fatturato-totale" style="--statbg:#2b7cb4" type="button">
@@ -792,20 +670,10 @@ window.APP_VERSION = "2.847";
 <!-- STATISTICHE: INCASSI MENSILI -->
 <section class="page" hidden="" id="page-statmensili">
 <div class="stats-gen">
-<div class="stats-head-row">
 <div class="stats-title">Mensili</div>
-<div aria-label="Azioni mensili" class="stats-head-actions statgen-head-actions">
-<button aria-label="Confronto anno grafico mensili" class="piscina-action-btn statgen-compare-toggle-btn" id="statMensiliCompareToggleBtn" type="button">
-<span class="statgen-compare-toggle-label" id="statMensiliCompareToggleBtnLabel">ON</span>
-</button>
-<button aria-label="Seleziona anno confronto grafico mensili" class="piscina-action-btn statgen-compare-year-btn" id="statMensiliCompareYearBtn" type="button">
-<span class="statgen-compare-year-value" id="statMensiliCompareYearBtnLabel">2025</span>
-</button>
-</div>
-</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Percentuale occupazione mensile room nights" class="statgen-line-chart-wrap">
-<canvas class="statgen-line-chart" height="118" id="statMensiliLineChart"></canvas>
+<div class="statgen-line-chart-wrap" aria-label="Percentuale occupazione mensile room nights">
+<canvas id="statMensiliLineChart" class="statgen-line-chart" height="118"></canvas>
 </div>
 <div class="month-stack" id="smList"></div>
 </div>
@@ -815,8 +683,8 @@ window.APP_VERSION = "2.847";
 <div class="stats-gen">
 <div class="stats-title">Spese generali</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Percentuale spese mensili" class="statgen-line-chart-wrap">
-<canvas class="statgen-line-chart" height="118" id="statSpeseLineChart"></canvas>
+<div class="statgen-line-chart-wrap" aria-label="Percentuale spese mensili">
+<canvas id="statSpeseLineChart" class="statgen-line-chart" height="118"></canvas>
 </div>
 <div class="stats-stack">
 <button class="stat-row" style="--statbg:#2b7cb4" type="button">
@@ -842,10 +710,6 @@ window.APP_VERSION = "2.847";
 <button class="stat-row" id="ssRowIva4" style="--statbg:var(--sky)" type="button">
 <span class="stat-name">IVA 4%</span>
 <span class="stat-val" id="ssIva4">€0,00</span>
-</button>
-<button class="stat-row" id="ssRowFuoriBudget" style="--statbg:#8b5cf6" type="button">
-<span class="stat-name">Fuori Budget</span>
-<span class="stat-val" id="ssFuoriBudget">€0,00</span>
 </button>
 </div>
 </div>
@@ -921,46 +785,43 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </section>
-<!-- STATISTICHE: CON / SENZA RICEVUTA -->
+<!-- STATISTICHE: PRENOTAZIONI -->
 <section class="page" hidden="" id="page-statprenotazioni">
-<div class="stats-gen">
-<div class="stats-title">Con / Senza ricevuta</div>
+<div class="stats-gen stats-graphs-page">
+<div class="stats-title">Grafici</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div class="statgen-line-chart-wrap" data-stat-line-chart-key="statricevute">
-<canvas class="statgen-line-chart" height="118" id="statRicevuteCanvas"></canvas>
+<div class="stats-graphs-grid">
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Occupazione mensile</div>
+<div class="stats-graph-canvas"><canvas id="statGrafOccCanvas"></canvas></div>
+<div class="stats-graph-note" id="statGrafOccNote">Anno selezionato</div>
 </div>
-<div class="stats-stack">
-<button class="stat-row" data-stat-card-key="senza-ricevuta" style="--statbg:#9aa3af; --statfg:rgba(15,23,42,0.92)" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 13h6"></path></svg></span>
-<span class="stat-name">Senza ricevuta</span>
-<span class="stat-val" id="srNoRicevuta">€0,00</span>
-</button>
-<button class="stat-row" data-stat-card-key="con-ricevuta" style="--statbg:#6aa0b3; --statfg:rgba(15,23,42,0.92)" type="button">
-<span aria-hidden="true" class="stat-ico-wrap"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 14l2 2 4-4"></path></svg></span>
-<span class="stat-name">Con ricevuta</span>
-<span class="stat-val" id="srRicevuta">€0,00</span>
-</button>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Con ricevuta / Senza ricevuta</div>
+<div class="stats-graph-canvas"><canvas id="statGrafRicevuteCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafRicevuteLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Prenotazioni con / senza Booking</div>
+<div class="stats-graph-canvas"><canvas id="statGrafBookingCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafBookingLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Cancellazioni</div>
+<div class="stats-graph-canvas"><canvas id="statGrafCancCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafCancLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Spese</div>
+<div class="stats-graph-canvas"><canvas id="statGrafSpeseCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafSpeseLegend"></div>
+</div>
+<div class="stats-graph-card">
+<div class="stats-graph-card-title">Ore pulizia operatori</div>
+<div class="stats-graph-canvas"><canvas id="statGrafPulizieCanvas"></canvas></div>
+<div class="stats-graph-legend" id="statGrafPulizieLegend"></div>
 </div>
 </div>
-</section>
-<section class="page" hidden="" id="page-statchannel">
-<div class="stats-gen">
-<div class="stats-title">PMS</div>
-<div aria-hidden="true" class="stats-divider"></div>
-<div class="statgen-line-chart-wrap" data-stat-line-chart-key="statchannel">
-<canvas class="statgen-line-chart" height="118" id="statChannelCanvas"></canvas>
-</div>
-<div class="stats-stack" id="statPmsRows"></div>
-</div>
-</section>
-<section class="page" hidden="" id="page-statpulizie">
-<div class="stats-gen">
-<div class="stats-title">Ore pulizia operatori</div>
-<div aria-hidden="true" class="stats-divider"></div>
-<div class="statgen-line-chart-wrap" data-stat-line-chart-key="statpulizie">
-<canvas class="statgen-line-chart" height="118" id="statPulizieCanvas"></canvas>
-</div>
-<div class="stats-stack" id="statPulizieRows"></div>
 </div>
 </section>
 <section class="page" hidden="" id="page-statcancellazioni">
@@ -968,7 +829,7 @@ window.APP_VERSION = "2.847";
 <div class="stats-title">Cancellazioni</div>
 <div aria-hidden="true" class="stats-divider"></div>
 <div class="statgen-line-chart-wrap" data-stat-line-chart-key="statcancellazioni" style="margin-top:12px;">
-<canvas class="statgen-line-chart" height="118" id="statCancellazioniLineChart"></canvas>
+<canvas id="statCancellazioniLineChart" class="statgen-line-chart" height="118"></canvas>
 </div>
 <div class="kpi-stack" style="margin-top:16px;">
 <div class="kpi-card">
@@ -1062,10 +923,6 @@ window.APP_VERSION = "2.847";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h9"></path><path d="M8.5 5c0 6-2 10-5.5 13"></path><path d="M6 11c1.5 2 3.5 3.5 6 4.5"></path><path d="M14 19h7"></path><path d="M17.5 5l4.5 14"></path><path d="M15 13h5"></path></svg>
 <span class="settings-btn-label">Lingua</span>
 </button>
-<button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
-<span class="settings-btn-label">Licenza</span>
-</button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
@@ -1078,21 +935,12 @@ window.APP_VERSION = "2.847";
 <div class="settings-page settings-page-reference settings-page-operator-dedicated">
 <div class="settings-title-row settings-title-row-operator">
 <div class="settings-title">Impostazioni</div>
-<div class="settings-header-toggles settings-header-toggles-operator">
 <div class="settings-audio settings-audio-header settings-audio-header-operator">
 <span class="settings-audio-label">AUDIO</span>
 <label aria-label="Audio on/off" class="switch">
 <input aria-label="Audio on/off" id="opAudioToggle" type="checkbox"/>
 <span class="slider"></span>
 </label>
-</div>
-<div class="settings-audio settings-audio-header settings-dark-header settings-dark-header-operator">
-<span class="settings-audio-label settings-dark-label">DARK</span>
-<label aria-label="Dark Mode on/off" class="switch">
-<input aria-label="Dark Mode on/off" id="opSettingsDarkToggle" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
 </div>
 </div>
 <div aria-hidden="true" class="settings-divider"></div>
@@ -1103,7 +951,11 @@ window.APP_VERSION = "2.847";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h9"></path><path d="M8.5 5c0 6-2 10-5.5 13"></path><path d="M6 11c1.5 2 3.5 3.5 6 4.5"></path><path d="M14 19h7"></path><path d="M17.5 5l4.5 14"></path><path d="M15 13h5"></path></svg>
 <span class="settings-btn-label">Lingua</span>
 </button>
-<button aria-label="Codice operatore" class="settings-btn settings-btn-roster settings-btn-opcode" id="opSettingsCodeBtn" type="button">
+<button aria-label="Dark Mode" class="settings-btn settings-btn-dark settings-btn-opdark" id="opSettingsDarkBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path></svg>
+<span class="settings-btn-label">Dark Mode</span>
+</button>
+<button aria-label="Codice" class="settings-btn settings-btn-roster settings-btn-opcode" id="opSettingsCodeBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 4h6v6H4z"></path>
 <path d="M14 4h6v6h-6z"></path>
@@ -1112,14 +964,15 @@ window.APP_VERSION = "2.847";
 <path d="M14 18h6"></path>
 <path d="M18 14v6"></path>
 </svg>
-<span class="settings-btn-label">Codice Operatore</span>
+<span class="settings-btn-label">Codice Ope...</span>
 </button>
+</div>
+<div class="settings-bottom-stack settings-bottom-stack-under-grid settings-bottom-stack-operator-dedicated">
 <button aria-label="Logout" class="settings-btn settings-btn-logout settings-btn-logout-pill" id="opSettingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
 </div>
-<div class="settings-bottom-stack settings-bottom-stack-under-grid settings-bottom-stack-operator-dedicated" hidden=""></div>
 </div></section>
 <section class="page" hidden="" id="page-tassa">
 <div class="card">
@@ -1197,24 +1050,16 @@ window.APP_VERSION = "2.847";
 <input id="spesaData" type="date"/>
 <label for="spesaData">Data</label>
 </div>
-<div class="field spesa-category-field" id="spesaCategoryField" style="margin-top:10px;">
-<select aria-hidden="true" hidden="" id="spesaCategoria" required="" tabindex="-1">
+<div class="field float" style="margin-top:10px;">
+<select id="spesaCategoria" required="">
 <option value="">Seleziona…</option>
 <option value="CONTANTI">Contanti</option>
 <option value="TASSA_SOGGIORNO">Tassa di soggiorno</option>
 <option value="IVA_22">IVA 22%</option>
 <option value="IVA_10">IVA 10%</option>
 <option value="IVA_4">IVA 4%</option>
-<option value="FUORI_BUDGET">Fuori Budget</option>
 </select>
-<div aria-label="Categoria spesa" class="spesa-category-row" id="spesaCategoryButtons" role="group">
-<button aria-label="Contanti" class="btn spesa-category-btn" data-value="CONTANTI" id="spesaCatBtnContanti" title="Contanti" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="12" rx="2" width="18" x="3" y="6"></rect><path d="M7 12h10"></path><circle cx="12" cy="12" r="1.8"></circle></svg><span>Cont.</span></button>
-<button aria-label="Tassa soggiorno" class="btn spesa-category-btn" data-value="TASSA_SOGGIORNO" id="spesaCatBtnTassa" title="Tassa soggiorno" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h10v18l-2-1-3 1-3-1-2 1z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path></svg><span>Tassa</span></button>
-<button aria-label="IVA 22%" class="btn spesa-category-btn" data-value="IVA_22" id="spesaCatBtnIva22" title="IVA 22%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>22%</span></button>
-<button aria-label="IVA 10%" class="btn spesa-category-btn" data-value="IVA_10" id="spesaCatBtnIva10" title="IVA 10%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>10%</span></button>
-<button aria-label="IVA 4%" class="btn spesa-category-btn" data-value="IVA_4" id="spesaCatBtnIva4" title="IVA 4%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>4%</span></button>
-<button aria-label="Fuori Budget" class="btn spesa-category-btn" data-value="FUORI_BUDGET" id="spesaCatBtnFuoriBudget" title="Fuori Budget" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v16"></path><path d="M4 12h16"></path><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg><span>Extra</span></button>
-</div>
+<label for="spesaCategoria">Categoria</label>
 </div>
 <div class="row" style="margin-top:14px;">
 <button class="btn primary" id="btnSaveSpesa" style="flex:1;" type="button">Salva</button>
@@ -1264,7 +1109,6 @@ window.APP_VERSION = "2.847";
 <button aria-label="Tema 2" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="2" id="roomSettingsThemeBtn2" type="button">2</button>
 <button aria-label="Tema 3" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="3" id="roomSettingsThemeBtn3" type="button">3</button>
 <button aria-label="Tema 4" class="room-settings-square-btn room-settings-theme-btn" data-theme-slot="4" id="roomSettingsThemeBtn4" type="button">4</button>
-<button aria-label="Importa o esporta tema" class="room-settings-square-btn room-settings-theme-btn" id="roomSettingsThemeTransferBtn" type="button">5</button>
 </div>
 </div>
 </div>
@@ -1283,6 +1127,7 @@ window.APP_VERSION = "2.847";
 <div class="room-settings-section-title" id="roomSettingsTextTitle">Testi</div>
 </div>
 <div class="room-settings-text-controls" id="roomSettingsTextControls">
+<button aria-label="Grassetto" class="room-settings-square-btn room-settings-text-btn" data-text-style="bold" id="roomSettingsTextBoldBtn" type="button">G</button>
 <button aria-label="Dimensione testo 1" class="room-settings-square-btn room-settings-text-btn" data-text-size="1" id="roomSettingsTextSizeBtn1" type="button">1</button>
 <button aria-label="Dimensione testo 2" class="room-settings-square-btn room-settings-text-btn" data-text-size="2" id="roomSettingsTextSizeBtn2" type="button">2</button>
 <button aria-label="Dimensione testo 3" class="room-settings-square-btn room-settings-text-btn" data-text-size="3" id="roomSettingsTextSizeBtn3" type="button">3</button>
@@ -1318,26 +1163,20 @@ window.APP_VERSION = "2.847";
 <h2 class="page-title">Spese</h2>
 <div class="hd-actions" id="spesePageTools"><button aria-label="Aggiungi spesa" class="icon-btn icon-btn-whiteblue" id="btnAddSpesa" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
 <div class="bd">
-<div aria-live="polite" class="spese-total-card" id="speseTotalCard">
-<div class="spese-total-label" id="speseTotalLabel">Totale Spese</div>
-<div class="spese-total-value" id="speseTotalValue">0,00 €</div>
+<div class="period-tabs-row">
+<div class="field period-preset">
+<select aria-label="Periodo" id="periodPreset1">
+<!-- options injected by JS -->
+</select>
 </div>
-<div class="field float guest-date-range-field spese-date-range-field" id="speseDateRangeField">
-<button aria-label="Seleziona intervallo spese" class="guest-date-range-trigger spese-date-range-trigger" id="speseDateRangeTrigger" type="button">
-<span class="guest-date-range-value" id="speseDateRangeValue">Seleziona date</span>
-</button>
-</div>
-<div class="spesa-category-field spesa-category-filter-field" id="speseCategoryFilterField">
-<div aria-label="Filtro categoria spese" class="spesa-category-row" id="speseCategoryFilterButtons" role="group">
-<button aria-label="Contanti" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnContanti" data-value="CONTANTI" id="speseFilterCatBtnContanti" title="Contanti" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="12" rx="2" width="18" x="3" y="6"></rect><path d="M7 12h10"></path><circle cx="12" cy="12" r="1.8"></circle></svg><span>Cont.</span></button>
-<button aria-label="Tassa soggiorno" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnTassa" data-value="TASSA_SOGGIORNO" id="speseFilterCatBtnTassa" title="Tassa soggiorno" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h10v18l-2-1-3 1-3-1-2 1z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path></svg><span>Tassa</span></button>
-<button aria-label="IVA 22%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva22" data-value="IVA_22" id="speseFilterCatBtnIva22" title="IVA 22%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>22%</span></button>
-<button aria-label="IVA 10%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva10" data-value="IVA_10" id="speseFilterCatBtnIva10" title="IVA 10%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>10%</span></button>
-<button aria-label="IVA 4%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva4" data-value="IVA_4" id="speseFilterCatBtnIva4" title="IVA 4%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>4%</span></button>
-<button aria-label="Fuori Budget" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnFuoriBudget" data-value="FUORI_BUDGET" id="speseFilterCatBtnFuoriBudget" title="Fuori Budget" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v16"></path><path d="M4 12h16"></path><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg><span>Extra</span></button>
+<div class="field period-sort">
+<select aria-label="Ordina spese" id="speseSort">
+<option value="date">Ordina: data</option>
+<option value="insert">Ordina: inserimento</option>
+<option value="motivazione">Ordina: motivazione</option>
+</select>
 </div>
 </div>
-<div aria-hidden="true" class="spese-list-separator"></div>
 <div id="speseViewList">
 <div class="list" id="speseList"></div>
 </div>
@@ -1352,16 +1191,9 @@ window.APP_VERSION = "2.847";
 <div class="hd">
 <h2 id="ospiteFormTitle">Nuovo ospite</h2>
 <div class="guest-hd-actions" hidden="" id="ospiteHdActions">
-<button aria-label="Check-in effettuato" class="tl-btn tl-checkin" data-guest-checkin="" title="Check-in" type="button" aria-pressed="false">
-<svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"></path><path d="M14 8l4 4-4 4"></path><path d="M7 12h11"></path></svg><span class="sr-only">Check-in</span>
-</button>
 <button aria-label="Vai al calendario" class="tl-btn tl-indigo" data-guest-cal="" title="Calendario" type="button">
 <svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M8 2v3M16 2v3M3 9h18"></path><path d="M5 5h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2"></path></svg><span class="sr-only">Calendario</span>
 </button>
-<button aria-label="Crea report ospite" class="tl-btn tl-cyan" data-guest-report="" title="Report ospite" type="button">
-<svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4"></path><path d="M9 11h6"></path><path d="M9 15h6"></path><path d="M9 19h4"></path></svg><span class="sr-only">Report</span>
-</button>
-<button aria-label="Conferma preventivo" class="tl-btn tl-cyan" data-quote-confirm="" hidden="" type="button"><span class="tl-text">OK</span><span class="sr-only">Conferma preventivo</span></button>
 <button aria-label="Modifica ospite" class="tl-btn tl-yellow" data-guest-edit="" type="button"><svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg><span class="sr-only">Modifica</span></button>
 <button aria-label="Elimina ospite" class="tl-btn tl-red" data-guest-del="" type="button"><svg aria-hidden="true" class="tl-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg><span class="sr-only">Elimina</span></button>
 </div>
@@ -1373,15 +1205,6 @@ window.APP_VERSION = "2.847";
 <input id="guestNationality" type="hidden" value=""/>
 <button aria-label="Seleziona nazionalità" class="guest-nationality-btn" id="guestNationalityBtn" type="button"><span aria-hidden="true" class="guest-nationality-flag" id="guestNationalityFlag">🏳️</span></button>
 </div>
-<div class="field float guest-name-field guest-booking-number-field" id="guestBookingNumberField">
-<input autocomplete="off" id="guestBookingNumber" placeholder=" " type="text"/>
-<label for="guestBookingNumber">Numero prenotazione</label>
-</div>
-<div class="field float guest-date-range-field" id="guestDateRangeField">
-<button aria-label="Seleziona periodo pernottamento" class="guest-date-range-trigger" id="guestDateRangeTrigger" type="button">
-<span class="guest-date-range-value" id="guestDateRangeValue">Seleziona date</span>
-</button>
-</div>
 <div class="field two-col guest-contact-row" id="guestContactRow">
 <div class="subfield field float">
 <input autocomplete="tel" id="guestPhone" inputmode="tel" placeholder=" " type="tel"/>
@@ -1390,16 +1213,6 @@ window.APP_VERSION = "2.847";
 <div class="subfield field float">
 <input autocomplete="email" id="guestEmail" inputmode="email" placeholder=" " type="email"/>
 <label for="guestEmail">Email</label>
-</div>
-</div>
-<div class="field two-col guest-sex-count-row" hidden="" id="guestSexCountRow">
-<div class="subfield field float">
-<input class="tap-counter" id="guestMen" inputmode="none" min="0" placeholder=" " readonly="" step="1" type="number"/>
-<label for="guestMen">Uomini</label>
-</div>
-<div class="subfield field float">
-<input class="tap-counter" id="guestWomen" inputmode="none" min="0" placeholder=" " readonly="" step="1" type="number"/>
-<label for="guestWomen">Donne</label>
 </div>
 </div>
 <div class="field two-col" id="guestPeopleRow">
@@ -1412,7 +1225,7 @@ window.APP_VERSION = "2.847";
 <label for="guestKidsU10">Bambini &lt; 10</label>
 </div>
 </div>
-<div aria-hidden="true" class="guest-dates-native" id="guestDatesRow">
+<div class="field two-col" id="guestDatesRow">
 <div class="subfield field float">
 <input id="guestCheckIn" type="date"/>
 <label for="guestCheckIn">Check-in</label>
@@ -1545,7 +1358,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
-</section><section aria-label="Ospiti" class="page" hidden="" id="page-ospiti"><div class="content"><div class="ospite-wrap"><div class="card guest-cards-card"><div class="hd"><h2 class="page-title">Ospiti</h2><button aria-label="Vai alla data corrente" class="icon-btn icon-btn-whiteblue guest-scroll-today-btn" hidden="" id="guestScrollTodayBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle></svg></button><div class="hd-actions" id="ospitiTopTools"><button aria-label="Preventivi" class="icon-btn icon-btn-whiteblue" id="btnOpenPreventiviFromOspiti" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 3.5h7l3 3V20a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 6 20V5A1.5 1.5 0 0 1 7.5 3.5Z"></path><path d="M14 3.5V7h3.5"></path><path d="M9 11h6"></path><path d="M9 15h4"></path><path d="M9 18h6"></path></svg></button><button aria-label="Nuovo ospite" class="icon-btn icon-btn-whiteblue" id="btnNewGuestTop" type="button">
+</section><section aria-label="Ospiti" class="page" hidden="" id="page-ospiti"><div class="content"><div class="ospite-wrap"><div class="card guest-cards-card"><div class="hd"><h2 class="page-title">Ospiti</h2><div class="hd-actions" id="ospitiTopTools"><button aria-label="Nuovo ospite" class="icon-btn icon-btn-whiteblue" id="btnNewGuestTop" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M12 5v14"></path>
 <path d="M5 12h14"></path>
@@ -1555,15 +1368,13 @@ window.APP_VERSION = "2.847";
 <div aria-label="Filtri ospiti" class="guest-filter-grid">
 <div class="guest-filter-row guest-filter-row-1 guest-filter-row-sort-buttons">
 <div aria-label="Oggi" class="field gf-tile gf-today"><button aria-label="Filtra ospiti: oggi" class="gf-chip-btn gf-today-btn" data-sort-mode="today" id="guestToday" type="button">Oggi</button></div>
-<div aria-label="Ordina ospiti per arrivo" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-in" class="gf-chip-btn gf-sort-btn" data-sort-by="arrivo" id="guestSortByArrivo" type="button">Check-in</button></div>
-<div aria-label="Ordina ospiti per check-out" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-out" class="gf-chip-btn gf-sort-btn" data-sort-by="checkout" id="guestSortByCheckout" type="button">Check-out</button></div>
+<div aria-label="Ordina ospiti per arrivo" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per arrivo" class="gf-chip-btn gf-sort-btn" data-sort-by="arrivo" id="guestSortByArrivo" type="button">Arrivo</button></div>
 <div aria-label="Ordina ospiti per inserimento" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per inserimento" class="gf-chip-btn gf-sort-btn" data-sort-by="inserimento" id="guestSortByInserimento" type="button">Inserimento</button></div>
 <div aria-label="Ordina ospiti per nome" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per nome" class="gf-chip-btn gf-sort-btn" data-sort-by="nome" id="guestSortByNome" type="button">Nome</button></div>
 </div>
 <div class="guest-filter-row guest-filter-row-dir" hidden="">
 <select aria-label="Ordina ospiti per" hidden="" id="guestSortBy" tabindex="-1">
-<option value="arrivo">Check-in</option>
-<option value="checkout">Check-out</option>
+<option value="arrivo">Arrivo</option>
 <option value="inserimento">Inserimento</option>
 <option value="nome">Nome</option>
 </select>
@@ -1576,21 +1387,6 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 <div class="guest-cards" id="guestCards"></div></div></div></div></div></section>
-<section aria-label="Preventivi" class="page" hidden="" id="page-preventivi"><div class="content"><div class="ospite-wrap preventivi-wrap"><div class="card guest-cards-card preventivi-cards-card"><div class="hd"><h2 class="page-title">Preventivi</h2><button aria-label="Vai alla data corrente" class="icon-btn icon-btn-whiteblue guest-scroll-today-btn" hidden="" id="preventiviScrollTodayBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle></svg></button><div class="hd-actions" id="preventiviTopTools"><button aria-label="Nuovo preventivo" class="icon-btn icon-btn-whiteblue" id="btnNewPreventivoTop" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
-</button></div></div><div class="bd">
-<div aria-label="Filtri preventivi" class="guest-filter-grid preventivi-filter-grid">
-<div class="guest-filter-row guest-filter-row-1 guest-filter-row-sort-buttons">
-<div aria-label="Oggi" class="field gf-tile gf-today"><button aria-label="Filtra preventivi: oggi" class="gf-chip-btn gf-today-btn preventivi-filter-btn" data-preventivi-filter="today" id="preventiviToday" type="button">Oggi</button></div>
-<div aria-label="Ordina preventivi per check-in" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina preventivi per check-in" class="gf-chip-btn gf-sort-btn preventivi-filter-btn" data-preventivi-sort-by="arrivo" id="preventiviSortByArrivo" type="button">Check-in</button></div>
-<div aria-label="Ordina preventivi per check-out" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina preventivi per check-out" class="gf-chip-btn gf-sort-btn preventivi-filter-btn" data-preventivi-sort-by="checkout" id="preventiviSortByCheckout" type="button">Check-out</button></div>
-<div aria-label="Ordina preventivi per inserimento" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina preventivi per inserimento" class="gf-chip-btn gf-sort-btn preventivi-filter-btn" data-preventivi-sort-by="inserimento" id="preventiviSortByInserimento" type="button">Inserimento</button></div>
-<div aria-label="Ordina preventivi per nome" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina preventivi per nome" class="gf-chip-btn gf-sort-btn preventivi-filter-btn" data-preventivi-sort-by="nome" id="preventiviSortByNome" type="button">Nome</button></div>
-</div>
-<div class="guest-filter-row guest-filter-row-dir" hidden=""><select aria-label="Ordina preventivi per" hidden="" id="preventiviSortBy" tabindex="-1"><option value="arrivo">Check-in</option><option value="checkout">Check-out</option><option value="inserimento">Inserimento</option><option value="nome">Nome</option></select></div>
-<div class="guest-filter-row guest-filter-row-2"><div aria-label="Da" class="field gf-tile"></div><div aria-label="A" class="field gf-tile"></div></div>
-</div>
-<div class="guest-cards" id="preventiviCards"></div></div></div></div></div></section>
 <!-- CALENDARIO -->
 <section aria-label="Calendario" class="page" hidden="" id="page-calendario">
 <div class="content calendar-page">
@@ -1652,6 +1448,7 @@ window.APP_VERSION = "2.847";
 <button aria-label="Oggi" class="btn" id="cleanToday" type="button">Oggi</button>
 <button aria-label="Giorno successivo" class="btn ghost" id="cleanNext" type="button">→</button>
 </div>
+
 </div>
 </div>
 <div class="bd">
@@ -1760,24 +1557,9 @@ window.APP_VERSION = "2.847";
 <div class="opcal-wrap">
 <div aria-label="Riepilogo ore pulizia" class="opcal-group">
 <div class="opcal-group-hd">
-<div class="opcal-pageHeadRow">
-<div aria-hidden="true" class="opcal-pageTitle">Ore Pulizia Mensili</div>
-<div class="hd-actions opcal-head-actions">
-<button aria-label="Genera report PDF ore pulizia mensili" class="icon-btn icon-btn-whiteblue" id="btnOrePuliziaPdfTop" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 2h9l3 3v17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"></path>
-<path d="M15 2v4h4"></path>
-<path d="M8 12h8"></path>
-<path d="M8 16h8"></path>
-</svg>
-</button>
-</div>
-</div>
-<div aria-hidden="true" class="opcal-titleMain" id="opcalTitleMain">—</div>
-<div aria-label="Filtri e riepilogo ore pulizia" class="opcal-summaryGrid">
-<div aria-label="Importo totale ore pulizia e benzina" class="opcal-summaryTotal">
-<div class="opcal-summaryTotalValue" id="opcalGrandTotal">—</div>
-</div>
+<div class="opcal-pageTitle" aria-hidden="true">Ore Pulizia Mensili</div>
+<div class="opcal-titleMain" id="opcalTitleMain" aria-hidden="true">—</div>
+<div class="opcal-summaryGrid" aria-label="Filtri e riepilogo ore pulizia">
 <div aria-label="Filtri ore pulizia" class="opcal-filterRow opcal-filterRow-top">
 <label class="opcal-filter">
 <select aria-label="Mese" id="opcalMonthSelect"></select>
@@ -1833,13 +1615,14 @@ window.APP_VERSION = "2.847";
 <div class="laundry-hint" id="laundryHint"></div>
 </div>
 <div aria-label="Intervallo report lavanderia" class="laundry-range laundry-range--datesOnly">
-<div class="field float guest-date-range-field laundry-date-range-field" id="laundryDateRangeField">
-<button aria-label="Seleziona intervallo report lavanderia" class="guest-date-range-trigger laundry-date-range-trigger" id="laundryDateRangeTrigger" type="button">
-<span class="guest-date-range-value" id="laundryDateRangeValue">Seleziona date</span>
-</button>
-<input aria-label="Da" id="laundryFrom" type="hidden"/>
-<input aria-label="A" id="laundryTo" type="hidden"/>
-</div>
+<label aria-label="Data inizio" class="laundry-range-field">
+<span class="laundry-dateText" id="laundryFromText">--/--/--</span>
+<input aria-label="Da" id="laundryFrom" type="date"/>
+</label>
+<label aria-label="Data fine" class="laundry-range-field">
+<span class="laundry-dateText" id="laundryToText">--/--/--</span>
+<input aria-label="A" id="laundryTo" type="date"/>
+</label>
 </div>
 <div class="laundry-history-wrap laundry-history-wrap--solo">
 <div class="list" id="laundryHistory"></div>
@@ -1851,10 +1634,10 @@ window.APP_VERSION = "2.847";
 <div aria-labelledby="laundryDetailTitle" aria-modal="true" class="modal-card laundry-detail-card" role="dialog">
 <div class="laundry-detail-toolbar">
 <button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue laundry-detail-tool" id="laundryDetailClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
 </button>
 <button aria-label="Condividi" class="icon-btn icon-btn-whiteblue laundry-detail-tool" id="laundryDetailShare" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 16V4"></path><path d="M8 8l4-4 4 4"></path><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M12 16V4"></path><path d="M8 8l4-4 4 4"></path><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
 </button>
 </div>
 <div class="laundry-detail-head">
@@ -1884,73 +1667,8 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="laundryDateRangeModal">
-<div aria-labelledby="laundryDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
-<div class="operatori-editor-hd guest-date-range-modal-hd">
-<div class="operatori-editor-title guest-date-range-modal-range-title" id="laundryDateRangeModalTitle"> </div>
-<button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="laundryDateRangeModalClose" type="button">✕</button>
-</div>
-<div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
-<button aria-label="Mese precedente" class="guest-date-range-nav" id="laundryDateRangePrev" type="button">‹</button>
-<div class="guest-date-range-monthtitle" id="laundryDateRangeMonthTitle"> </div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" id="laundryDateRangeNext" type="button">›</button>
-</div>
-<div class="guest-date-range-weekdays" id="laundryDateRangeWeekdays"></div>
-<div class="guest-date-range-grid" id="laundryDateRangeGrid"></div>
-<div class="guest-date-range-actions">
-<button class="btn" id="laundryDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" id="laundryDateRangeApply" type="button">Conferma</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="speseDateRangeModal">
-<div aria-labelledby="speseDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
-<div class="operatori-editor-hd guest-date-range-modal-hd">
-<div class="operatori-editor-title guest-date-range-modal-range-title" id="speseDateRangeModalTitle"> </div>
-<button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="speseDateRangeModalClose" type="button">✕</button>
-</div>
-<div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
-<button aria-label="Mese precedente" class="guest-date-range-nav" id="speseDateRangePrev" type="button">‹</button>
-<div class="guest-date-range-monthtitle" id="speseDateRangeMonthTitle"> </div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" id="speseDateRangeNext" type="button">›</button>
-</div>
-<div class="guest-date-range-weekdays" id="speseDateRangeWeekdays">
-<span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
-</div>
-<div class="guest-date-range-grid" id="speseDateRangeGrid"></div>
-<div class="guest-date-range-actions">
-<button class="btn" id="speseDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" id="speseDateRangeApply" type="button">Conferma</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="guestDateRangeModal">
-<div aria-labelledby="guestDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
-<div class="operatori-editor-hd guest-date-range-modal-hd">
-<div class="operatori-editor-title guest-date-range-modal-range-title" id="guestDateRangeModalTitle"> </div>
-<button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="guestDateRangeModalClose" type="button">✕</button>
-</div>
-<div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
-<button aria-label="Mese precedente" class="guest-date-range-nav" id="guestDateRangePrev" type="button">‹</button>
-<div class="guest-date-range-monthtitle" id="guestDateRangeMonthTitle"> </div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" id="guestDateRangeNext" type="button">›</button>
-</div>
-<div class="guest-date-range-weekdays" id="guestDateRangeWeekdays">
-<span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
-</div>
-<div class="guest-date-range-grid" id="guestDateRangeGrid"></div>
-<div class="guest-date-range-actions">
-<button class="btn" id="guestDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" id="guestDateRangeApply" type="button">Conferma</button>
-</div>
-</div>
-</div>
-</div>
+<script defer="" src="./config.js?v=2.567"></script>
+<script defer="" src="./app.js?v=2.567"></script>
 <!-- TAX REPORT MODAL -->
 <div aria-hidden="true" class="modal" hidden="" id="taxReportModal">
 <div aria-labelledby="taxReportTitle" aria-modal="true" class="modal-card tax-report-card" role="dialog">
@@ -2055,13 +1773,25 @@ window.APP_VERSION = "2.847";
 <label for="channelEditorCommission">Commissione (%)</label>
 </div>
 <div class="field float">
-<input autocomplete="off" id="channelEditorInitial" maxlength="1" placeholder=" "/>
+<input id="channelEditorInitial" maxlength="1" autocomplete="off" placeholder=" "/>
 <label for="channelEditorInitial">Iniziale</label>
 </div>
 </div>
+<div class="operatori-color-wrap">
+<div class="operatori-color-label">Tag colore</div>
+<div class="operatori-color-grid" id="channelColorGrid">
+<button aria-label="Azzurro" class="operatori-color-option is-selected" data-color="blue" type="button"></button>
+<button aria-label="Arancione" class="operatori-color-option" data-color="orange" type="button"></button>
+<button aria-label="Verde" class="operatori-color-option" data-color="green" type="button"></button>
+<button aria-label="Rosso" class="operatori-color-option" data-color="red" type="button"></button>
+<button aria-label="Viola" class="operatori-color-option" data-color="purple" type="button"></button>
+<button aria-label="Sabbia" class="operatori-color-option" data-color="sand" type="button"></button>
+</div>
+</div>
 <div class="row operatori-editor-actions editor-modal-actions">
-<button class="btn ghost" hidden="" id="channelEditorDelete" type="button">Elimina</button>
-<button class="btn ghost" id="channelEditorGraphColor" type="button">Tag</button>
+<button class="btn ghost" id="channelEditorDelete" hidden="" type="button">Elimina</button>
+<button class="btn ghost" id="channelEditorCancel" type="button">Annulla</button>
+<button class="btn ghost" id="channelEditorTagColor" type="button">Tag</button>
 <button class="btn primary" id="channelEditorSave" type="button">Salva</button>
 </div>
 </div>
@@ -2089,15 +1819,27 @@ window.APP_VERSION = "2.847";
 <label for="operatoriEditorBenzina">Benzina (€)</label>
 </div>
 </div>
+<div class="operatori-color-wrap">
+<div class="operatori-color-label">Tag colore</div>
+<div class="operatori-color-grid" id="operatoriColorGrid">
+<button aria-label="Azzurro" class="operatori-color-option is-selected" data-color="blue" type="button"></button>
+<button aria-label="Arancione" class="operatori-color-option" data-color="orange" type="button"></button>
+<button aria-label="Verde" class="operatori-color-option" data-color="green" type="button"></button>
+<button aria-label="Rosso" class="operatori-color-option" data-color="red" type="button"></button>
+<button aria-label="Viola" class="operatori-color-option" data-color="purple" type="button"></button>
+<button aria-label="Sabbia" class="operatori-color-option" data-color="sand" type="button"></button>
+</div>
+</div>
 <div class="row operatori-editor-actions editor-modal-actions">
-<button class="btn ghost" hidden="" id="operatoriEditorDelete" type="button">Elimina</button>
-<button aria-pressed="false" class="btn ghost operatori-saldo-toggle" id="operatoriEditorSaldoBtn" type="button" title="Mostra saldo in calendario">$</button>
+<button class="btn ghost" id="operatoriEditorDelete" hidden="" type="button">Elimina</button>
+<button class="btn ghost" id="operatoriEditorCancel" type="button">Annulla</button>
 <button class="btn ghost" id="operatoriEditorTagColor" type="button">Tag</button>
 <button class="btn primary" id="operatoriEditorSave" type="button">Salva</button>
 </div>
 </div>
 </div>
 </div>
+
 <div aria-hidden="true" class="modal guest-nationality-modal" hidden="" id="guestNationalityModal">
 <div aria-modal="true" class="modal-card operatori-editor-card guest-nationality-modal-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2106,30 +1848,32 @@ window.APP_VERSION = "2.847";
 </div>
 <div class="operatori-editor-body">
 <div class="guest-nationality-modal-hint">Seleziona la nazionalità dell'ospite</div>
-<div aria-label="Elenco nazionalità" class="guest-nationality-list" id="guestNationalityList" role="listbox"></div>
+<div class="guest-nationality-list" id="guestNationalityList" role="listbox" aria-label="Elenco nazionalità"></div>
 </div>
 </div>
 </div>
+
 <div aria-hidden="true" class="modal modal-center guest-phone-actions-modal" hidden="" id="guestPhoneActionsModal">
 <div aria-labelledby="guestPhoneActionsTitle" aria-modal="true" class="modal-card guest-phone-actions-card" role="dialog">
 <button aria-label="Chiudi" class="stat-modal-close" id="guestPhoneActionsClose" type="button">✕</button>
 <div class="guest-phone-actions-title" id="guestPhoneActionsTitle">Telefono</div>
-<div aria-label="Azioni contatto telefono" class="guest-phone-actions-buttons" role="group">
+<div class="guest-phone-actions-buttons" role="group" aria-label="Azioni contatto telefono">
 <button aria-label="Chiama" class="guest-phone-action-btn" data-phone-action="call" id="guestPhoneActionCall" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.19a2 2 0 0 1 2.11-.45c.83.29 1.7.5 2.6.62A2 2 0 0 1 22 16.92z"></path></svg>
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.19a2 2 0 0 1 2.11-.45c.83.29 1.7.5 2.6.62A2 2 0 0 1 22 16.92z"></path></svg>
 <span class="sr-only">Chiama</span>
 </button>
 <button aria-label="WhatsApp" class="guest-phone-action-btn" data-phone-action="whatsapp" id="guestPhoneActionWhatsApp" type="button">
-<svg aria-hidden="true" class="ui-ico ui-ico-wa" viewbox="0 0 24 24"><path class="wa-bubble" d="M12 3.25c-4.83 0-8.75 3.72-8.75 8.31 0 1.67.5 3.24 1.42 4.56L3.5 20.75l4.88-1.03c1.08.61 2.32.93 3.62.93 4.83 0 8.75-3.72 8.75-8.31S16.83 3.25 12 3.25Z"></path><path class="wa-tail" d="M6.08 18.48l-.55 1.72 1.74-.37"></path><path class="wa-phone" d="M9.36 8.93c-.15-.33-.31-.35-.57-.36h-.42c-.18 0-.44.07-.66.31-.22.24-.85.82-.85 2s.86 2.32.98 2.48c.12.16 1.69 2.69 4.08 3.65 1.99.79 2.39.64 2.82.6.43-.05 1.38-.57 1.58-1.13.2-.56.2-1.04.14-1.14-.06-.1-.23-.17-.48-.29-.25-.12-1.44-.71-1.67-.79-.23-.08-.4-.12-.57.13-.17.25-.66.81-.81.98-.15.17-.31.19-.56.06-.25-.13-1.08-.39-2.05-1.25-.76-.67-1.28-1.5-1.43-1.76-.15-.26-.02-.4.11-.54.12-.12.26-.31.39-.46.13-.15.17-.26.25-.43.08-.17.04-.33-.02-.46-.06-.13-.56-1.35-.77-1.85Z"></path></svg>
+<svg aria-hidden="true" class="ui-ico ui-ico-wa" viewBox="0 0 24 24"><path class="wa-bubble" d="M12 3.25c-4.83 0-8.75 3.72-8.75 8.31 0 1.67.5 3.24 1.42 4.56L3.5 20.75l4.88-1.03c1.08.61 2.32.93 3.62.93 4.83 0 8.75-3.72 8.75-8.31S16.83 3.25 12 3.25Z"></path><path class="wa-tail" d="M6.08 18.48l-.55 1.72 1.74-.37"></path><path class="wa-phone" d="M9.36 8.93c-.15-.33-.31-.35-.57-.36h-.42c-.18 0-.44.07-.66.31-.22.24-.85.82-.85 2s.86 2.32.98 2.48c.12.16 1.69 2.69 4.08 3.65 1.99.79 2.39.64 2.82.6.43-.05 1.38-.57 1.58-1.13.2-.56.2-1.04.14-1.14-.06-.1-.23-.17-.48-.29-.25-.12-1.44-.71-1.67-.79-.23-.08-.4-.12-.57.13-.17.25-.66.81-.81.98-.15.17-.31.19-.56.06-.25-.13-1.08-.39-2.05-1.25-.76-.67-1.28-1.5-1.43-1.76-.15-.26-.02-.4.11-.54.12-.12.26-.31.39-.46.13-.15.17-.26.25-.43.08-.17.04-.33-.02-.46-.06-.13-.56-1.35-.77-1.85Z"></path></svg>
 <span class="sr-only">WhatsApp</span>
 </button>
 <button aria-label="SMS" class="guest-phone-action-btn" data-phone-action="sms" id="guestPhoneActionSms" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
 <span class="sr-only">SMS</span>
 </button>
 </div>
 </div>
 </div>
+
 <div aria-hidden="true" class="modal" hidden="" id="languageModal">
 <div aria-modal="true" class="modal-card operatori-editor-card language-modal-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2148,6 +1892,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
+
 <div aria-hidden="true" class="modal" hidden="" id="laundryCatalogEditorModal">
 <div aria-modal="true" class="modal-card operatori-editor-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2170,8 +1915,20 @@ window.APP_VERSION = "2.847";
 <label for="laundryCatalogEditorPrice">Prezzo pulizia (€)</label>
 </div>
 </div>
+<div class="operatori-color-wrap">
+<div class="operatori-color-label">Tag colore</div>
+<div class="operatori-color-grid" id="laundryCatalogColorGrid">
+<button aria-label="Azzurro" class="operatori-color-option is-selected" data-color="blue" type="button"></button>
+<button aria-label="Arancione" class="operatori-color-option" data-color="orange" type="button"></button>
+<button aria-label="Verde" class="operatori-color-option" data-color="green" type="button"></button>
+<button aria-label="Rosso" class="operatori-color-option" data-color="red" type="button"></button>
+<button aria-label="Viola" class="operatori-color-option" data-color="purple" type="button"></button>
+<button aria-label="Sabbia" class="operatori-color-option" data-color="sand" type="button"></button>
+</div>
+</div>
 <div class="row operatori-editor-actions editor-modal-actions">
-<button class="btn ghost" hidden="" id="laundryCatalogEditorDelete" type="button">Elimina</button>
+<button class="btn ghost" id="laundryCatalogEditorDelete" hidden="" type="button">Elimina</button>
+<button class="btn ghost" id="laundryCatalogEditorCancel" type="button">Annulla</button>
 <button class="btn ghost" id="laundryCatalogEditorTagColor" type="button">Tag</button>
 <button class="btn primary" id="laundryCatalogEditorSave" type="button">Salva</button>
 </div>
@@ -2188,12 +1945,11 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 <div class="tag-color-modal-body">
-<div aria-label="Modalità colore" class="tag-color-modebar" hidden="" id="tagColorModeBar" role="tablist">
+<div class="tag-color-modebar" hidden="" id="tagColorModeBar" role="tablist" aria-label="Modalità colore">
 <button aria-label="Sfondo" class="tag-color-mode-btn is-active" data-mode="bg" id="tagColorModeBg" title="Sfondo" type="button"><span aria-hidden="true" class="tag-color-mode-ico">◼</span></button>
 <button aria-label="Bordo" class="tag-color-mode-btn" data-mode="border" id="tagColorModeBorder" title="Bordo" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-border">▣</span></button>
 <button aria-label="Icona/Testo" class="tag-color-mode-btn" data-mode="fg" id="tagColorModeFg" title="Icona/Testo" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-fg">A</span></button>
 <button aria-label="Trasparenza" class="tag-color-mode-btn" data-mode="opacity" id="tagColorModeOpacity" title="Trasparenza" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-opacity">◐</span></button>
-<button aria-label="Grassetto" class="tag-color-mode-btn" data-mode="bold" id="tagColorModeBold" title="Grassetto" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-bold">B</span></button>
 </div>
 <div class="tag-opacity-wrap" hidden="" id="tagOpacityWrap">
 <div class="tag-opacity-grid" id="tagOpacityGrid">
@@ -2398,6 +2154,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
+
 <!-- HOME: ricevute mancanti (aperto solo da pulsante) -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="receiptDueModal">
 <div aria-modal="true" class="modal-card receipt-modal-card" role="dialog">
@@ -2418,7 +2175,7 @@ window.APP_VERSION = "2.847";
 <div class="db-menu-head">
 <div class="db-menu-title">COSTI LAVANDERIA</div>
 <button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue" id="laundryPricesClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
 </button>
 </div>
 <div class="laundry-prices-body">
@@ -2460,6 +2217,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div></div>
 </div>
+
 <!-- QR MODAL (Admin) -->
 <div aria-hidden="true" class="modal modal-center" hidden="" id="qrModal">
 <div aria-label="Codice" aria-modal="true" class="modal-card" role="dialog">
@@ -2494,114 +2252,8 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseRequestModal">
-<div aria-label="Codice richiesta" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title" id="licenseRequestModalTitle">CODICE RICHIESTA</div>
-<button aria-label="Chiudi" class="icon-btn" id="licenseRequestClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
-</button>
-</div>
-<div class="db-menu-body" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px">
-<div class="code-box" id="licenseRequestCodeText" style="width:100%;max-width:360px;text-align:center;word-break:break-all">—</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-azure" id="licenseRequestEmailBtn" type="button">email</button>
-<button class="auth-btn auth-btn-gray" id="licenseRequestDoneBtn" type="button">chiudi</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseUnlockModal">
-<div aria-label="Inserisci codice sblocco" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title" id="licenseUnlockModalTitle">CODICE SBLOCCO</div>
-<button aria-label="Chiudi" class="icon-btn" id="licenseUnlockClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
-</button>
-</div>
-<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
-<div class="field float">
-<input autocapitalize="characters" autocomplete="off" id="licenseUnlockInput" placeholder=" " spellcheck="false" type="text"/>
-<label for="licenseUnlockInput">Codice</label>
-</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-gray" id="licenseUnlockCancel" type="button">annulla</button>
-<button class="auth-btn auth-btn-green" id="licenseUnlockConfirm" type="button">ok</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseGeneratorModal">
-<div aria-label="Key generator" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title">KEY GENERATOR</div>
-</div>
-<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
-<div class="field float">
-<input autocapitalize="characters" autocomplete="off" id="licenseRequestInput" placeholder=" " spellcheck="false" type="text"/>
-<label for="licenseRequestInput">Codice richiesta</label>
-</div>
-<input id="licenseStartDate" type="hidden"/>
-<input id="licenseEndDate" type="hidden"/>
-<div class="field float guest-date-range-field license-date-range-field" id="licenseDateRangeField">
-<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger auth-btn auth-btn-azure" data-single-action-key="licenseDateRangeTrigger" id="licenseDateRangeTrigger" type="button">
-<span class="guest-date-range-value" id="licenseDateRangeValue">Seleziona date</span>
-</button>
-</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-gray" data-single-action-key="licenseGeneratorCancel" id="licenseGeneratorCancel" type="button">annulla</button>
-<button class="auth-btn auth-btn-green" data-single-action-key="licenseGeneratorConfirm" id="licenseGeneratorConfirm" type="button">genera</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center guest-date-range-modal" hidden="" id="licenseDateRangeModal">
-<div aria-labelledby="licenseDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
-<div class="operatori-editor-hd guest-date-range-modal-hd">
-<div class="operatori-editor-title guest-date-range-modal-range-title" id="licenseDateRangeModalTitle"> </div>
-</div>
-<div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
-<button aria-label="Mese precedente" class="guest-date-range-nav" data-single-action-key="licenseDateRangePrev" id="licenseDateRangePrev" type="button">‹</button>
-<div class="guest-date-range-monthtitle" id="licenseDateRangeMonthTitle"> </div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" data-single-action-key="licenseDateRangeNext" id="licenseDateRangeNext" type="button">›</button>
-</div>
-<div class="guest-date-range-weekdays" id="licenseDateRangeWeekdays"></div>
-<div class="guest-date-range-grid" id="licenseDateRangeGrid"></div>
-<div class="guest-date-range-actions">
-<button class="btn ghost" data-single-action-key="licenseDateRangeCancel" id="licenseDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" data-single-action-key="licenseDateRangeApply" id="licenseDateRangeApply" type="button">OK</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="themeTransferModal">
-<div aria-label="Importa o esporta tema" aria-modal="true" class="modal-card settings-license-card" role="dialog">
-<div class="db-menu-head theme-transfer-head">
-<div class="db-menu-title" style="width:100%;text-align:center;">TEMA</div>
-</div>
-<div class="settings-license-actions theme-transfer-actions">
-<button aria-label="Importa tema" class="auth-btn auth-btn-azure theme-transfer-btn" data-single-action-key="themeTransferImport" id="themeTransferImport" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg></span></button>
-<button aria-label="Esporta tema" class="auth-btn auth-btn-green theme-transfer-btn" data-single-action-key="themeTransferExport" id="themeTransferExport" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 20V8"></path><path d="m7 13 5-5 5 5"></path><path d="M5 4h14"></path></svg></span></button>
-<button aria-label="Annulla" class="auth-btn auth-btn-gray theme-transfer-btn" data-single-action-key="themeTransferCancel" id="themeTransferCancel" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></span></button>
-</div>
-</div>
-</div>
+
 <!-- YES/NO CONFIRM MODAL -->
-<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsLicenseModal">
-<div aria-label="Licenza" aria-modal="true" class="modal-card settings-license-card" role="dialog">
-<div class="db-menu-title" id="settingsLicenseTitle">LICENZA</div>
-<div class="settings-license-status" id="settingsLicenseStatus">Licenza non attiva</div>
-<div class="settings-license-actions">
-<button class="auth-btn auth-btn-green" id="settingsLicenseUnlockBtn" type="button">inserisci codice</button>
-<button class="auth-btn auth-btn-azure" id="settingsLicensePayBtn" type="button">abbonati</button>
-<button class="auth-btn auth-btn-orange" id="settingsLicenseRequestBtn" type="button">genera codice richiesta</button>
-<button class="auth-btn auth-btn-orange" hidden="" id="settingsLicenseGeneratorBtn" type="button">key generator</button>
-<button class="auth-btn auth-btn-gray" id="settingsLicenseCloseBtn" type="button">annulla</button>
-</div>
-<div class="settings-license-hint" id="settingsLicenseHint"></div>
-</div>
-</div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="confirmYesNoModal">
 <div aria-label="Conferma" aria-modal="true" class="modal-card confirm-card" role="dialog">
 <div class="confirm-text" id="confirmYesNoText">—</div>
@@ -2644,19 +2296,19 @@ window.APP_VERSION = "2.847";
 <div class="piscina-modal-body">
 <div class="piscina-field piscina-field-input">
 <div class="piscina-k">Cloro attivo libero</div>
-<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peCloroLibero" inputmode="decimal" min="0" placeholder="0.00" step="0.01" type="number"/></div>
+<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peCloroLibero" inputmode="decimal" placeholder="0.00" type="number" step="0.01" min="0"></div>
 </div>
 <div class="piscina-field piscina-field-input">
 <div class="piscina-k">Cloro attivo combinato</div>
-<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peCloroComb" inputmode="decimal" min="0" placeholder="0.00" step="0.01" type="number"/></div>
+<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peCloroComb" inputmode="decimal" placeholder="0.00" type="number" step="0.01" min="0"></div>
 </div>
 <div class="piscina-field piscina-field-input">
 <div class="piscina-k">pH</div>
-<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="pePh" inputmode="decimal" min="0" placeholder="7.20" step="0.01" type="number"/></div>
+<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="pePh" inputmode="decimal" placeholder="7.20" type="number" step="0.01" min="0"></div>
 </div>
 <div class="piscina-field piscina-field-input">
 <div class="piscina-k">Temperatura acqua</div>
-<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peTemp" inputmode="decimal" placeholder="20.0" step="0.1" type="number"/></div>
+<div class="piscina-edit-wrap"><input class="piscina-edit-input" id="peTemp" inputmode="decimal" placeholder="20.0" type="number" step="0.1"></div>
 </div>
 <div class="row" style="justify-content:center; gap:12px; margin-top:6px;">
 <button class="btn ghost" id="piscinaEditCancel" type="button">Chiudi</button>
@@ -2670,13 +2322,13 @@ window.APP_VERSION = "2.847";
 <button aria-label="Chiudi" class="services-modal-close" id="servicesModalClose" type="button"><span class="x">×</span></button>
 <div class="services-modal-body">
 <div class="field float">
-<input autocomplete="off" id="svcName" placeholder=" " type="text">
+<input autocomplete="off" id="svcName" placeholder=" " type="text"/>
 <label for="svcName">Servizio</label>
-</input></div>
+</div>
 <div class="field float">
-<input id="svcAmount" inputmode="decimal" placeholder=" " step="0.01" type="number">
+<input id="svcAmount" inputmode="decimal" placeholder=" " step="0.01" type="number"/>
 <label for="svcAmount">Importo (€)</label>
-</input></div>
+</div>
 <div class="services-modal-actions">
 <button class="btn" id="svcCancel" type="button">Cancella</button>
 <button class="btn primary" id="svcSave" type="button">Salva</button>
@@ -2684,6 +2336,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
+
 <div aria-hidden="true" class="modal modal-center" hidden="" id="statGraphModal">
 <div aria-label="Dettaglio grafico" aria-modal="true" class="modal-card stat-graph-modal-card" role="dialog">
 <div class="db-menu-head">
@@ -2699,19 +2352,7 @@ window.APP_VERSION = "2.847";
 </div>
 </div>
 </div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="guestReportModal">
-<div aria-label="Report ospite" aria-modal="true" class="modal-card guest-report-card" role="dialog">
-<div class="guest-report-toolbar">
-<button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue guest-report-tool" id="guestReportClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
-</button>
-<button aria-label="Invia report" class="icon-btn icon-btn-whiteblue guest-report-tool" id="guestReportShare" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 16V4"></path><path d="M8 8l4-4 4 4"></path><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
-</button>
-</div>
-<div class="guest-report-preview" id="guestReportPreview"></div>
-</div>
-</div>
+
 <div class="sync-footer" id="homeSyncBar">
 <div aria-hidden="true" class="sync-footer-line"></div>
 <button aria-label="Sync Firebase" class="home-sync-btn" id="goDbSync" type="button">
@@ -2726,7 +2367,5 @@ window.APP_VERSION = "2.847";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.847"></script>
-<script defer="" src="./app.js?v=2.847"></script>
 </body>
 </html>
