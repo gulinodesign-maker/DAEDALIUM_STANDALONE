@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.823";
+const BUILD_VERSION = "2.837";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -5741,12 +5741,17 @@ function __syncGuestCheckInButton__(){
   try{
     const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
     if (!btn) return;
-    const on = !!state.guestCheckInDone;
+    const needsActiveGroup = String(state.guestMode || '') === 'view';
+    const active = !needsActiveGroup || !!String(state.guestGroupActiveId || '').trim();
+    const on = active && !!state.guestCheckInDone;
+    btn.disabled = !active;
+    btn.classList.toggle('is-disabled', !active);
     btn.classList.toggle('is-on', on);
-    btn.classList.toggle('is-off', !on);
+    btn.classList.toggle('is-off', active && !on);
+    btn.setAttribute('aria-disabled', active ? 'false' : 'true');
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.setAttribute('title', on ? 'Check-in effettuato' : 'Check-in non effettuato');
-    btn.setAttribute('aria-label', on ? 'Check-in effettuato' : 'Check-in non effettuato');
+    btn.setAttribute('title', !active ? 'Seleziona prima un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
+    btn.setAttribute('aria-label', !active ? 'Check-in non attivo: seleziona un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
   }catch(_){ }
 }
 
@@ -8493,7 +8498,7 @@ function calcTouristTax(ospite, nights){
   const maxTaxableNights = Math.max(0, parseInt(maxTaxableNightsRaw, 10) || 0);
   const taxableDays = Math.min(nNights, maxTaxableNights);
 
-  const rate = (state.settings && state.settings.loaded) ? getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0)) : ((typeof TOURIST_TAX_EUR_PPN !== "undefined") ? Number(TOURIST_TAX_EUR_PPN) : 0);
+  const rate = getSettingNumber("tassa_soggiorno", (typeof TOURIST_TAX_EUR_PPN !== "undefined" ? TOURIST_TAX_EUR_PPN : 0));
   const r = isFinite(rate) ? Math.max(0, rate) : 0;
 
   const total = adults * taxableDays * r;
@@ -8506,7 +8511,7 @@ function buildNightsDotHTML(nights){
   return `<span class="nights-dot" aria-label="Notti" style="${__roomsUiBadgeStyle__(getRoomsUiConfig().nights || 'indigo-4')}">${n}</span>`;
 }
 
-function updateGuestTaxTotalPill(){
+function updateGuestTaxTotalPill(targetGuest){
   try{
     // dDAE: in modalità 'create' non mostrare la tassa di soggiorno
     if (String(state.guestMode||'').toLowerCase()==='create'){
@@ -8518,10 +8523,17 @@ function updateGuestTaxTotalPill(){
     const el = document.getElementById("guestTaxTotal");
     if (!el) return;
     const valEl = document.getElementById("guestTaxTotalVal");
+    if (!(state.settings && state.settings.loaded) && !updateGuestTaxTotalPill.__settingsRefreshPending){
+      updateGuestTaxTotalPill.__settingsRefreshPending = true;
+      try{ ensureSettingsLoaded({ force:false, showLoader:false }).then(() => { updateGuestTaxTotalPill.__settingsRefreshPending = false; updateGuestTaxTotalPill(targetGuest); }).catch(() => { updateGuestTaxTotalPill.__settingsRefreshPending = false; }); }catch(_){ updateGuestTaxTotalPill.__settingsRefreshPending = false; }
+    }
 
-    const list = (Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length)
-      ? state.guestGroupBookings
-      : (state.guestViewItem ? [state.guestViewItem] : []);
+    const activeGuest = targetGuest || ((String(state.guestMode || '').toLowerCase() === 'view' && String(state.guestGroupActiveId || '').trim()) ? __guestActiveBookingForAction__() : null);
+    const list = activeGuest
+      ? [activeGuest]
+      : ((Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length)
+        ? state.guestGroupBookings
+        : (state.guestViewItem ? [state.guestViewItem] : []));
 
     let sum = 0;
     for (const g of (list || [])){
@@ -15647,6 +15659,30 @@ function setupHeader(){
   if (adminInputsModal) adminInputsModal.addEventListener("click", (e)=>{ if (e.target === adminInputsModal) closeAdminInputsModal(); });
   const adminChartModal = document.getElementById("adminChartModal");
   if (adminChartModal) adminChartModal.addEventListener("click", (e)=>{ if (e.target === adminChartModal) closeAdminChartModal(); });
+
+  const roomsReadOnly = document.getElementById("roomsReadOnly");
+  if (roomsReadOnly && !roomsReadOnly.__boundGuestGroupInfo){
+    roomsReadOnly.__boundGuestGroupInfo = true;
+    roomsReadOnly.addEventListener("click", (e) => {
+      try{
+        if (String(state.guestMode || '') !== 'view') return;
+        const block = e.target && e.target.closest ? e.target.closest('.guest-booking-block[data-booking-id]') : null;
+        if (!block || !roomsReadOnly.contains(block)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        __toggleGuestGroupInfoForBooking__(block.getAttribute('data-booking-id') || '');
+      }catch(_){ }
+    });
+    roomsReadOnly.addEventListener("keydown", (e) => {
+      try{
+        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+        const block = e.target && e.target.closest ? e.target.closest('.guest-booking-block[data-booking-id]') : null;
+        if (!block || !roomsReadOnly.contains(block)) return;
+        e.preventDefault();
+        __toggleGuestGroupInfoForBooking__(block.getAttribute('data-booking-id') || '');
+      }catch(_){ }
+    });
+  }
 
   const btnIrapTop = document.getElementById("btnIrapTop");
   if (btnIrapTop) bindFastTap(btnIrapTop, () => { openIrapModal(); });
@@ -25555,11 +25591,156 @@ function buildRoomsStackHTML(guestId, roomsArr){
   }).join("") + `</div>`;
 }
 
+
+function __guestGroupInfoRowElements__(){
+  try{
+    const rows = [];
+    const add = (el) => { if (el) rows.push(el); };
+    const total = document.getElementById('guestTotal');
+    // dDAE_2.837 — il blocco Importo prenotazione + Note deve essere trattato
+    // come una sola riga del pacchetto gruppo stanze: nascosto finché non si seleziona il gruppo.
+    add(total ? (total.closest('.total-row') || total.closest('.field')) : null);
+    [
+      'mgcRow',
+      'guestChannelRow',
+      'servicesRow',
+      'depositRow',
+      'saldoRow',
+      'discountRow',
+      'remainingRow',
+      'servicesListWrap'
+    ].forEach((id) => add(document.getElementById(id)));
+    add(document.getElementById('guestNotesWrap'));
+    return Array.from(new Set(rows.filter(Boolean)));
+  }catch(_){ return []; }
+}
+
+function __setGuestGroupInfoVisible__(visible){
+  try{
+    const on = !!visible;
+    const card = document.querySelector('#page-ospite .guest-form-card');
+    if (card) card.classList.toggle('guest-group-info-open', on);
+    __guestGroupInfoRowElements__().forEach((el) => {
+      try{
+        el.hidden = !on;
+        // dDAE_2.837: alcuni layout storici usano display!important su righe economiche;
+        // applica anche lo style inline per garantire che Importo commissione/Channel
+        // restino davvero nascosti finché non si apre un gruppo stanze.
+        if (!on) el.style.setProperty('display','none','important');
+        else el.style.removeProperty('display');
+      }catch(_){ }
+    });
+    if (!on){
+      try{ const notes = document.getElementById('guestNotesWrap'); if (notes){ notes.hidden = true; notes.style.setProperty('display','none','important'); } }catch(_){ }
+      try{ const services = document.getElementById('servicesListWrap'); if (services){ services.hidden = true; services.style.setProperty('display','none','important'); } }catch(_){ }
+      try{ const notesBtn = document.getElementById('guestNotesToggle'); if (notesBtn) notesBtn.setAttribute('aria-expanded','false'); }catch(_){ }
+      try{ const servicesBtn = document.getElementById('servicesPillView'); if (servicesBtn) servicesBtn.setAttribute('aria-expanded','false'); }catch(_){ }
+    } else {
+      try{ const notes = document.getElementById('guestNotesWrap'); if (notes){ notes.hidden = true; notes.style.removeProperty('display'); } }catch(_){ }
+      try{ const services = document.getElementById('servicesListWrap'); if (services){ services.hidden = true; services.style.removeProperty('display'); } }catch(_){ }
+    }
+    try{ __syncGuestCheckInButton__(); }catch(_){ }
+  }catch(_){ }
+}
+
+function __guestBookingById__(bookingId){
+  try{
+    const id = String(bookingId || '').trim();
+    if (!id) return null;
+    const list = Array.isArray(state.guestGroupBookings) ? state.guestGroupBookings : [];
+    const found = list.find(x => String(guestIdOf(x) || x?.id || '').trim() === id);
+    if (found) return found;
+    const view = state.guestViewItem || null;
+    if (view && String(guestIdOf(view) || view?.id || '').trim() === id) return view;
+  }catch(_){ }
+  return null;
+}
+
+function __guestActiveBookingForAction__(){
+  try{
+    const id = String(state.guestGroupActiveId || '').trim();
+    if (!id) return null;
+    return __guestBookingById__(id);
+  }catch(_){ return null; }
+}
+
+function __populateGuestGroupInfoFromBooking__(ospite){
+  try{
+    if (!ospite) return;
+    try{ document.getElementById('guestTotal').value = ospite.importo_prenotazione ?? ospite.total ?? 0; }catch(_){ }
+    try{ populateGuestChannelOptions(ospite.channel_id ?? ospite.channelId ?? ''); }catch(_){ }
+    try{
+      const pct = (ospite.channel_commissione ?? ospite.channelCommissione ?? ospite.channel_commission_pct ?? ospite.channelCommissionPct ?? 0);
+      document.getElementById('guestChannelCommission').value = (pct === null || pct === undefined || pct === '') ? '' : pct;
+      document.getElementById('guestChannel').value = String(ospite.channel_id ?? ospite.channelId ?? '');
+      applySelectedChannelToGuestForm(ospite.channel_id ?? ospite.channelId ?? '', { preserveManual:true });
+    }catch(_){ }
+    try{ document.getElementById('guestBooking').value = ospite.importo_booking ?? ospite.booking ?? 0; }catch(_){ }
+    try{ document.getElementById('guestServices').value = ospite.servizi_totale ?? ospite.serviziTotal ?? ospite.importo_servizi ?? 0; }catch(_){ }
+    try{ document.getElementById('guestDiscount').value = ospite.sconto ?? ospite.discount ?? 0; }catch(_){ }
+    try{ document.getElementById('guestDeposit').value = ospite.acconto_importo ?? ospite.deposit ?? 0; }catch(_){ }
+    try{ document.getElementById('guestSaldo').value = ospite.saldo_pagato ?? ospite.saldoPagato ?? ospite.saldo ?? 0; }catch(_){ }
+    try{ syncGuestNotesUI(ospite, { open:false }); }catch(_){ }
+
+    const depAmount = parseFloat(document.getElementById('guestDeposit')?.value || '0') || 0;
+    const saldoAmount = parseFloat(document.getElementById('guestSaldo')?.value || '0') || 0;
+    const depType = (depAmount > 0) ? (ospite.acconto_tipo ?? ospite.accontoTipo ?? ospite.depositType ?? ospite.deposit_type ?? '') : '';
+    const saldoType = (saldoAmount > 0) ? (ospite.saldo_tipo ?? ospite.saldoTipo ?? ospite.balanceType ?? ospite.balance_type ?? '') : '';
+    state.guestDepositType = depType;
+    state.guestSaldoType = saldoType;
+    try{ setPayType('depositType', depType); }catch(_){ }
+    try{ setPayType('saldoType', saldoType); }catch(_){ }
+    state.guestDepositReceipt = !!(depAmount > 0 && truthy(ospite.acconto_ricevuta ?? ospite.accontoRicevuta ?? ospite.ricevuta_acconto ?? ospite.ricevutaAcconto ?? ospite.acconto_ricevutain));
+    state.guestSaldoReceipt = !!(saldoAmount > 0 && truthy(ospite.saldo_ricevuta ?? ospite.saldoRicevuta ?? ospite.ricevuta_saldo ?? ospite.ricevutaSaldo ?? ospite.saldo_ricevutain));
+    try{ setPayReceipt('depositType', state.guestDepositReceipt); }catch(_){ }
+    try{ setPayReceipt('saldoType', state.guestSaldoReceipt); }catch(_){ }
+
+    state.guestPSRegistered = truthy(ospite.ps_registrato ?? ospite.psRegistrato);
+    state.guestISTATRegistered = truthy(ospite.istat_registrato ?? ospite.istatRegistrato);
+    try{ setRegFlags('regTags', state.guestPSRegistered, state.guestISTATRegistered); }catch(_){ }
+    state.guestCheckInDone = __guestCheckInDone__(ospite);
+    try{ updateGuestRemaining(); }catch(_){ }
+    try{ updateGuestNotesIndicator(); }catch(_){ }
+    try{ refreshFloatingLabels(); }catch(_){ }
+    try{ updateGuestTaxTotalPill(ospite); }catch(_){ try{ updateGuestTaxTotalPill(); }catch(__){ } }
+    try{ loadServiziForOspite(ospite); }catch(_){ }
+    try{ __syncGuestCheckInButton__(); }catch(_){ }
+  }catch(_){ }
+}
+
+function __toggleGuestGroupInfoForBooking__(bookingId){
+  try{
+    if (String(state.guestMode || '') !== 'view') return;
+    const id = String(bookingId || '').trim();
+    if (!id) return;
+    const already = String(state.guestGroupActiveId || '').trim() === id;
+    const card = document.querySelector('#page-ospite .guest-form-card');
+    const isOpen = !!(card && card.classList.contains('guest-group-info-open'));
+    if (already && isOpen){
+      state.guestGroupActiveId = null;
+      state.guestCheckInDone = false;
+      __setGuestGroupInfoVisible__(false);
+    } else {
+      const item = __guestBookingById__(id);
+      if (!item) return;
+      state.guestGroupActiveId = id;
+      __populateGuestGroupInfoFromBooking__(item);
+      __setGuestGroupInfoVisible__(true);
+    }
+    try{ renderRoomsReadOnly(state.guestViewItem || __guestBookingById__(state.guestViewPrimaryId) || null); }catch(_){ }
+    try{ renderGuestMulti({ mode:'view' }); }catch(_){ }
+    try{ updateOspiteHdActions(); }catch(_){ }
+    try{ __syncGuestCheckInButton__(); }catch(_){ }
+  }catch(_){ }
+}
+
 function renderRoomsReadOnly(ospite){
   const ro = document.getElementById("roomsReadOnly");
   if (!ro) return;
 
   const guestId = _guestIdOf(ospite);
+  const activeId = String(state.guestGroupActiveId || '').trim();
+  const primaryActive = !!(guestId && activeId && String(guestId) === activeId);
   let roomsArr = _parseRoomsArr(ospite?.stanze);
 
   // fallback: se per qualche motivo non arriva 'stanze' dal backend, usa lo stato locale
@@ -25598,7 +25779,7 @@ function renderRoomsReadOnly(ospite){
 
   // Coerenza UI: usa lo stesso riquadro smussato delle prenotazioni multiple
   ro.innerHTML = `
-    <div class="guest-booking-block guest-booking-block--primary">
+    <div class="guest-booking-block guest-booking-block--primary ${primaryActive ? "is-active" : ""}" data-booking-id="${guestId || ''}" role="button" tabindex="0" aria-expanded="${primaryActive ? 'true' : 'false'}">
       <div class="guest-booking-top">
         <div class="guest-booking-top-row">
           ${datesHTML}
@@ -25687,7 +25868,7 @@ function buildGuestBookingBlockHTML(ospite, { mode="view", showSelect=false, act
   const viewRight = (marriageHTML || gHTML || cHTML || nightsHTML) ? `<div class="guest-booking-right">${marriageHTML}${gHTML}${cHTML}${nightsHTML}</div>` : ``;
 const topRightHTML = actionsHTML || viewRight;
 
-  return `<div class="guest-booking-block ${isActive ? "is-active" : ""}" data-booking-id="${gid}">
+  return `<div class="guest-booking-block ${isActive ? "is-active" : ""}" data-booking-id="${gid}" role="button" tabindex="0" aria-expanded="${isActive ? 'true' : 'false'}">
     <div class="guest-booking-top">
       <div class="guest-booking-top-row">
         <div class="guest-booking-dates-pill">${rangeCompact}</div>
@@ -25706,50 +25887,176 @@ function clearGuestMulti(){
   el.innerHTML = "";
 }
 
+function __guestMoneyValue__(value){
+  try{
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    const raw = String(value).trim();
+    if (!raw) return 0;
+    const clean = raw
+      .replace(/€/g, '')
+      .replace(/\s+/g, '')
+      .replace(/[^0-9,.-]/g, '')
+      .replace(/\.(?=\d{3}(\D|$))/g, '')
+      .replace(',', '.');
+    const n = parseFloat(clean);
+    return Number.isFinite(n) ? n : 0;
+  }catch(_){ return 0; }
+}
+
+function __guestBookingAmountOfBooking__(guest){
+  try{
+    const candidates = [
+      guest?.importo_prenotazione, guest?.importo_prenota, guest?.importoPrenotazione, guest?.importoPrenota,
+      guest?.booking_amount, guest?.bookingAmount, guest?.reservation_amount, guest?.reservationAmount,
+      guest?.prezzo_prenotazione, guest?.prezzoPrenotazione, guest?.totale_prenotazione, guest?.totalePrenotazione,
+      guest?.total, guest?.totale, guest?.amount, guest?.importo, guest?.prezzo
+    ];
+    for (const v of candidates){
+      const n = __guestMoneyValue__(v);
+      if (n) return n;
+      if (String(v ?? '').trim() === '0') return 0;
+    }
+  }catch(_){ }
+  return 0;
+}
+
+function __guestCommissionAmountOfBooking__(guest){
+  try{
+    const direct = guest?.importo_booking ?? guest?.booking ?? guest?.commissione_importo ?? guest?.commissioneImporto ?? guest?.channel_commission_amount ?? guest?.channelCommissionAmount;
+    const directText = String(direct ?? '').trim();
+    const n = __guestMoneyValue__(direct);
+    if (directText !== '' && Number.isFinite(n)) return n;
+    const total = __guestBookingAmountOfBooking__(guest);
+    const pct = __guestMoneyValue__(guest?.channel_commissione ?? guest?.channelCommissione ?? guest?.channel_commission_pct ?? guest?.channelCommissionPct ?? 0);
+    const calc = (total * pct) / 100;
+    return Number.isFinite(calc) ? Math.round(calc * 100) / 100 : 0;
+  }catch(_){ return 0; }
+}
+
+function __guestTaxAmountOfBooking__(guest){
+  try{
+    const direct = guest?.tassa_soggiorno ?? guest?.tassaSoggiorno ?? guest?.tourist_tax ?? guest?.touristTax ?? guest?.city_tax ?? guest?.cityTax;
+    const directText = String(direct ?? '').trim();
+    const dn = __guestMoneyValue__(direct);
+    if (directText !== '' && Number.isFinite(dn) && dn > 0) return dn;
+    const nights = calcStayNights(guest);
+    if (nights == null) return 0;
+    const tt = calcTouristTax(guest, nights);
+    return __guestMoneyValue__(tt?.total ?? tt?.amount ?? tt?.value ?? tt ?? 0);
+  }catch(_){ return 0; }
+}
+
+function __guestGroupBookingTotal__(list){
+  try{
+    return (Array.isArray(list) ? list : []).reduce((sum, item) => sum + __guestBookingAmountOfBooking__(item), 0);
+  }catch(_){ return 0; }
+}
+
+function __guestGroupCommissionTotal__(list){
+  try{
+    return (Array.isArray(list) ? list : []).reduce((sum, item) => sum + __guestCommissionAmountOfBooking__(item), 0);
+  }catch(_){ return 0; }
+}
+
+function __guestGroupTaxTotal__(list){
+  try{
+    return (Array.isArray(list) ? list : []).reduce((sum, item) => sum + __guestTaxAmountOfBooking__(item), 0);
+  }catch(_){ return 0; }
+}
+
+function __guestGroupCommissionTotalHTML__(list){
+  const bookingTotal = __guestGroupBookingTotal__(list);
+  return `<div class="guest-commission-total-tab guest-summary-total-tab" role="status" aria-label="Somma importo prenotazioni">
+    <span class="guest-commission-total-label">Somma importo prenotazioni</span>
+    <span class="guest-commission-total-value">${euro(bookingTotal)}</span>
+  </div>`;
+}
+
+async function __guestAddBookingFromCurrentEdit__(){
+  try{
+    const nameNow = (document.getElementById("guestName")?.value || "").trim();
+    const phoneNow = (document.getElementById("guestPhone")?.value || "").trim();
+    const nationalityNow = String(document.getElementById("guestNationality")?.value || "").trim();
+    const emailNow = (document.getElementById("guestEmail")?.value || "").trim();
+    const menNow = parseInt(document.getElementById("guestMen")?.value || "0", 10) || 0;
+    const womenNow = parseInt(document.getElementById("guestWomen")?.value || "0", 10) || 0;
+    const adultsNow = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
+    const kidsNow = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
+    const marriageNow = !!(state.guestMarriage);
+    const groupNow = !!(state.guestGroup);
+    const depTypeNow = state.guestDepositType || "";
+    const saldoTypeNow = state.guestSaldoType || "";
+    const psNow = !!state.guestPSRegistered;
+    const istNow = !!state.guestISTATRegistered;
+    const baseCardKey = String(state.guestEditCardKey || state.guestGroupKey || __guestCardKeyOf__(state.guestEditSourceItem || { id: state.guestEditId, nome: nameNow })).trim();
+    enterGuestCreateMode();
+    state.guestCreateFromGroup = true;
+    state.guestCreateFromGroupCardKey = baseCardKey || null;
+    try { updateGuestPriceVisibility(); } catch (_) {}
+    try {
+      document.getElementById("guestName").value = nameNow;
+      try{ __applyGuestNameUppercase__(document.getElementById("guestName")); }catch(_){}
+      document.getElementById("guestPhone").value = phoneNow;
+      setGuestNationality(nationalityNow, { manual:true });
+      document.getElementById("guestEmail").value = emailNow;
+      document.getElementById("guestMen").value = menNow;
+      document.getElementById("guestWomen").value = womenNow;
+      document.getElementById("guestAdults").value = adultsNow;
+      document.getElementById("guestKidsU10").value = kidsNow;
+      setMarriage(marriageNow);
+      setGroup(groupNow);
+      state.guestDepositType = depTypeNow;
+      setPayType("depositType", depTypeNow);
+      state.guestSaldoType = saldoTypeNow;
+      setPayType("saldoType", saldoTypeNow);
+      state.guestPSRegistered = psNow;
+      state.guestISTATRegistered = istNow;
+      setRegFlags("regTags", psNow, istNow);
+      refreshFloatingLabels();
+    } catch (_) {}
+    showPage("ospite");
+  }catch(err){ try{ toast(err?.message || 'Errore nuova prenotazione'); }catch(_){} }
+}
+
 function renderGuestMulti({ mode="view" } = {}){
   const el = document.getElementById("guestMulti");
   if (!el) return;
 
-  const list = Array.isArray(state.guestGroupBookings) ? state.guestGroupBookings : [];
+  let list = Array.isArray(state.guestGroupBookings) ? state.guestGroupBookings : [];
   const activeId = String(state.guestGroupActiveId || state.guestEditId || "").trim();
 
-  if (!list || !list.length){
+  // dDAE_2.837: in modifica il tasto + deve essere sempre disponibile,
+  // anche quando il contesto gruppo non è ancora stato ricostruito.
+  if ((!list || !list.length) && mode === "edit"){
+    const fallback = state.guestEditSourceItem || state.guestViewItem || null;
+    list = fallback ? [fallback] : [];
+  }
+
+  if ((!list || !list.length) && mode !== "edit"){
     clearGuestMulti();
     return;
   }
 
-  // In modifica: mostra SEMPRE il riquadro (anche se singolo) + tasto "+" per aggiungere prenotazione
   if (mode === "edit"){
     const showSelect = true;
     const title = `<div class="guest-multi-title">Prenotazioni</div>`;
     const blocks = list.map(g => buildGuestBookingBlockHTML(g, { mode, showSelect, activeId })).join("");
-    const plus = `<button class="guest-add-booking" type="button" data-guest-add-booking aria-label="Aggiungi prenotazione">+</button>`;
-    el.innerHTML = `${title}${blocks}${plus}`;
+    const totalTab = __guestGroupCommissionTotalHTML__(list);
+    el.innerHTML = `${title}${blocks}${totalTab}`;
     el.hidden = false;
     return;
   }
 
-  // In sola lettura: mostra solo le prenotazioni aggiuntive (sotto la prima)
-  if (list.length <= 1){
-    clearGuestMulti();
-    return;
-  }
-
-  const shown = list.filter(x => guestIdOf(x) !== activeId);
-  if (!shown.length){
-    clearGuestMulti();
-    return;
-  }
-
+  const primaryId = String(state.guestViewPrimaryId || guestIdOf(state.guestViewItem || {}) || '').trim();
+  const shown = (list || []).filter(x => String(guestIdOf(x) || x?.id || '').trim() !== primaryId);
   const blocks = shown.map(g => buildGuestBookingBlockHTML(g, { mode, showSelect:false, activeId })).join("");
-  el.innerHTML = `${blocks}`;
-  el.hidden = false;
-  // Servizi: carica elenco e imposta totale (edit/view)
-  try{
-    state.guestServicesManualOverride = false;
-    loadServiziForOspite(ospite);
-  }catch(_){}
+  const totalTab = __guestGroupCommissionTotalHTML__(list);
 
+  // In sola lettura, se c'è una sola prenotazione mostra comunque il totale aggregato
+  // sotto il gruppo stanze principale; con più prenotazioni lo mostra sotto tutti i gruppi.
+  el.innerHTML = `${blocks}${totalTab}`;
+  el.hidden = false;
 }
 
 function updateOspiteHdActions(){
@@ -25773,15 +26080,32 @@ function updateOspiteHdActions(){
   if (btnCheckIn) btnCheckIn.hidden = (mode !== "view");
   try{ __syncGuestCheckInButton__(); }catch(_){ }
 
-  // Indaco: vai al calendario (sempre presente)
-  if (btnCal) btnCal.hidden = false;
+  // Indaco: aggiunge un nuovo gruppo stanze anche in sola lettura; non apre più il calendario.
+  if (btnCal){
+    const canAddGroup = (mode === "edit" || mode === "view");
+    btnCal.hidden = !canAddGroup;
+    btnCal.disabled = false;
+    btnCal.setAttribute('aria-label', 'Aggiungi prenotazione');
+    btnCal.setAttribute('title', 'Aggiungi prenotazione');
+    const sr = btnCal.querySelector('.sr-only');
+    if (sr) sr.textContent = 'Aggiungi prenotazione';
+    const svg = btnCal.querySelector('svg');
+    if (svg) svg.innerHTML = '<path d="M12 5v14"></path><path d="M5 12h14"></path>';
+  }
   if (btnReport) btnReport.hidden = (mode !== "view");
 
   // Verde: sempre presente (torna alla lista ospiti)
   if (btnBack) btnBack.hidden = false;
 
-  // Giallo: solo in sola lettura (azione: passa a modifica)
-  if (btnEdit) btnEdit.hidden = (mode !== "view");
+  // Giallo: solo in sola lettura (azione: passa a modifica del gruppo stanze selezionato)
+  if (btnEdit){
+    btnEdit.hidden = (mode !== "view");
+    const hasActiveGroup = !!String(state.guestGroupActiveId || '').trim();
+    btnEdit.disabled = (mode === "view" && !hasActiveGroup);
+    btnEdit.classList.toggle('is-disabled', mode === "view" && !hasActiveGroup);
+    btnEdit.setAttribute('aria-disabled', (mode === "view" && !hasActiveGroup) ? 'true' : 'false');
+    btnEdit.setAttribute('title', (mode === "view" && !hasActiveGroup) ? 'Seleziona prima un gruppo stanze' : 'Modifica gruppo stanze');
+  }
 
   // Rosso: solo in sola lettura (azione: elimina ospite)
   if (btnDel) btnDel.hidden = (mode !== "view");
@@ -26520,6 +26844,7 @@ function setGuestFormViewOnly(isView, ospite){
   }catch(_){ }
 // Aggiorna i pallini in testata in base alla modalità corrente
   try { updateOspiteHdActions(); } catch (_) {}
+  try{ if (isView && !String(state.guestGroupActiveId || '').trim()) __setGuestGroupInfoVisible__(false); }catch(_){ }
   try{ __syncPreventivoModeUi__(); }catch(_){ }
 }
 
@@ -26530,6 +26855,8 @@ function enterGuestViewMode(ospite){
   try{ updateGuestFormModeClass(); }catch(_){ }
   try{ syncGuestCreatePrimaryStack(); }catch(_){ }
   state.guestViewItem = ospite || null;
+  state.guestViewPrimaryId = guestIdOf(ospite) || ospite?.id || null;
+  state.guestGroupActiveId = null;
 
   
   // Servizi: carica sempre elenco e totale (anche se non ci sono multi-prenotazioni)
@@ -26562,11 +26889,11 @@ const title = document.getElementById("ospiteFormTitle");
   // Multi prenotazioni: mostra prenotazioni aggiuntive sotto la prima
   try{
     if (Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length > 1){
-      state.guestGroupActiveId = guestIdOf(ospite);
       renderGuestMulti({ mode: "view" });
     } else {
       clearGuestMulti();
     }
+    __setGuestGroupInfoVisible__(false);
   }catch(_){ }
   try { updateOspiteHdActions(); } catch (_) {}
   try{ __syncPreventivoModeUi__(); }catch(_){ }
@@ -27542,9 +27869,13 @@ function setupOspite(){
       if (!btn || !hdActions.contains(btn) || btn.hidden) return;
 
       if (btn.hasAttribute("data-guest-checkin")){
-        const item = state.guestViewItem || null;
-        const id = guestIdOf(item) || item?.id || state.guestEditId || '';
-        if (!item || !id) return;
+        const item = __guestActiveBookingForAction__();
+        const id = guestIdOf(item) || item?.id || '';
+        if (!item || !id){
+          try{ toast('Seleziona prima un gruppo stanze'); }catch(_){ }
+          try{ __syncGuestCheckInButton__(); }catch(_){ }
+          return;
+        }
         const next = !__guestCheckInDone__(item);
         state.guestCheckInDone = next;
         item.checkin_effettuato = next ? "1" : "";
@@ -27570,6 +27901,13 @@ function setupOspite(){
               });
             });
           }catch(_){ }
+          try{
+            if (Array.isArray(state.guestGroupBookings)){
+              state.guestGroupBookings.forEach((row) => {
+                try{ if (String(guestIdOf(row) || row?.id || '').trim() === gid) patchCheckInState(row); }catch(_){ }
+              });
+            }
+          }catch(_){ }
           try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
           try{ renderOspiti && renderOspiti(); }catch(_){ }
         }catch(_){ }
@@ -27584,6 +27922,7 @@ function setupOspite(){
           await api("ospiti", { method:"PUT", body: payload });
           try{ invalidateApiCache("ospiti|"); }catch(_){ }
           try{ await loadOspiti({ ...(state.period || {}), force:true }); }catch(_){ }
+          try{ renderRoomsReadOnly(state.guestViewItem || __guestBookingById__(state.guestViewPrimaryId) || null); renderGuestMulti({ mode:'view' }); }catch(_){ }
           try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
           try{ renderOspiti && renderOspiti(); }catch(_){ }
           toast(next ? "Check-in effettuato" : "Check-in non effettuato");
@@ -27599,18 +27938,12 @@ function setupOspite(){
         return;
       }
 
-      // Indaco: vai al calendario
+      // Indaco: aggiunge sempre un nuovo gruppo stanze dalla scheda ospite.
       if (btn.hasAttribute("data-guest-cal")){
-        // In sola lettura: apri il calendario centrato sulla stessa prenotazione
-        try{
-          const ciRaw = (document.getElementById("guestCheckIn")?.value || "").trim();
-          const ci = ciRaw || (state.guestViewItem?.check_in || state.guestViewItem?.checkIn || "");
-          if (ci){
-            if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [], rangeKey: "" };
-            state.calendar.anchor = new Date(ci + "T00:00:00");
-          }
-        }catch(_){ }
-        showPage("calendario");
+        if (["edit", "view"].includes(String(state.guestMode || '').toLowerCase())) {
+          await __guestAddBookingFromCurrentEdit__();
+          return;
+        }
         return;
       }
 
@@ -27630,10 +27963,14 @@ function setupOspite(){
       const mode = state.guestMode;
       const item = state.guestViewItem;
 
-      // Giallo: dalla sola lettura passa a modifica
+      // Giallo: dalla sola lettura passa a modifica solo del gruppo stanze selezionato
       if (btn.hasAttribute("data-guest-edit")){
-        if (!item) return;
-        enterGuestEditMode(item);
+        const selected = __guestActiveBookingForAction__();
+        if (!selected){
+          try{ toast('Seleziona prima un gruppo stanze'); }catch(_){ }
+          return;
+        }
+        enterGuestEditMode(selected);
         try { updateOspiteHdActions(); } catch (_) {}
         return;
       }
@@ -27644,7 +27981,7 @@ function setupOspite(){
 
         if (mode === "view"){
           if (!item) return;
-          gid = guestIdOf(item) || item.id;
+          gid = String(state.guestGroupActiveId || '').trim() || guestIdOf(item) || item.id;
         } else if (mode === "edit"){
           gid = state.guestEditId || null;
         }
@@ -27654,8 +27991,8 @@ function setupOspite(){
         // In sola lettura: se esistono più prenotazioni per lo stesso ospite, elimina TUTTI i gruppi contemporaneamente
         let idsToDelete = [String(gid)];
         try{
-          if (mode === "view"){
-            // 1) se abbiamo contesto multi gia' in memoria (aperto da lista), usalo
+          if (mode === "view" && !String(state.guestGroupActiveId || '').trim()){
+            // Nessun gruppo selezionato: elimina tutti i gruppi della scheda.
             if (Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length){
               const all = state.guestGroupBookings
                 .map(b => String(guestIdOf(b) || b?.id || "").trim())
@@ -27741,6 +28078,15 @@ function setupOspite(){
   if (multi && !multi.__bound){
     multi.__bound = true;
     multi.addEventListener("click", async (e) => {
+      if (String(state.guestMode || '') === 'view'){
+        const block = e.target && e.target.closest ? e.target.closest('.guest-booking-block[data-booking-id]') : null;
+        if (block && multi.contains(block)){
+          e.preventDefault();
+          e.stopPropagation();
+          __toggleGuestGroupInfoForBooking__(block.getAttribute('data-booking-id') || '');
+          return;
+        }
+      }
       // Elimina singola prenotazione (solo il gruppo selezionato)
       const delBtn = e.target.closest("button[data-guest-del-booking]");
       if (delBtn && multi.contains(delBtn)){
@@ -27801,56 +28147,7 @@ function setupOspite(){
       if (addBtn && multi.contains(addBtn)) {
         e.preventDefault();
         e.stopPropagation();
-
-        const nameNow = (document.getElementById("guestName")?.value || "").trim();
-        const phoneNow = (document.getElementById("guestPhone")?.value || "").trim();
-        const nationalityNow = String(document.getElementById("guestNationality")?.value || "").trim();
-        const emailNow = (document.getElementById("guestEmail")?.value || "").trim();
-        const menNow = parseInt(document.getElementById("guestMen")?.value || "0", 10) || 0;
-        const womenNow = parseInt(document.getElementById("guestWomen")?.value || "0", 10) || 0;
-        const adultsNow = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
-        const kidsNow = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
-        const marriageNow = !!(state.guestMarriage);
-        const groupNow = !!(state.guestGroup);
-
-        const depTypeNow = state.guestDepositType || "";
-        const saldoTypeNow = state.guestSaldoType || "";
-        const psNow = !!state.guestPSRegistered;
-        const istNow = !!state.guestISTATRegistered;
-
-        // Passa a CREATE precompilato
-        const baseCardKey = String(state.guestEditCardKey || state.guestGroupKey || __guestCardKeyOf__(state.guestEditSourceItem || { id: state.guestEditId, nome: nameNow })).trim();
-        enterGuestCreateMode();
-        state.guestCreateFromGroup = true;
-        state.guestCreateFromGroupCardKey = baseCardKey || null;
-        try { updateGuestPriceVisibility(); } catch (_) {}
-
-        try {
-          document.getElementById("guestName").value = nameNow;
-          try{ __applyGuestNameUppercase__(document.getElementById("guestName")); }catch(_){ }
-          document.getElementById("guestPhone").value = phoneNow;
-          setGuestNationality(nationalityNow, { manual:true });
-          document.getElementById("guestEmail").value = emailNow;
-          document.getElementById("guestMen").value = menNow;
-          document.getElementById("guestWomen").value = womenNow;
-          document.getElementById("guestAdults").value = adultsNow;
-          document.getElementById("guestKidsU10").value = kidsNow;
-          setMarriage(marriageNow);
-          setGroup(groupNow);
-
-          state.guestDepositType = depTypeNow;
-          setPayType("depositType", depTypeNow);
-          state.guestSaldoType = saldoTypeNow;
-          setPayType("saldoType", saldoTypeNow);
-
-          state.guestPSRegistered = psNow;
-          state.guestISTATRegistered = istNow;
-          setRegFlags("regTags", psNow, istNow);
-
-          refreshFloatingLabels();
-        } catch (_) {}
-
-        showPage("ospite");
+        await __guestAddBookingFromCurrentEdit__();
         return;
       }
 
@@ -28804,7 +29101,7 @@ function __guestReportResolveRows__(guest){
   const bookings = __guestReportResolveBookings__(guest);
   const stayRanges = __guestReportResolveStayRanges__(lang, guest);
   const roomCards = __guestReportResolveRoomCards__(lang, guest);
-  const total = bookings.reduce((sum, item)=> sum + money(item?.importo_prenotazione ?? item?.importo_prenota ?? item?.importoPrenotazione ?? item?.importoPrenota ?? item?.total ?? 0), 0);
+  const total = bookings.reduce((sum, item)=> sum + __guestBookingAmountOfBooking__(item), 0);
   const services = bookings.reduce((sum, item)=> sum + money(item?.servizi_totale ?? item?.serviziTotal ?? item?.importo_servizi ?? 0), 0);
   const discount = bookings.reduce((sum, item)=> sum + money(item?.sconto ?? item?.discount ?? 0), 0);
   const deposit = bookings.reduce((sum, item)=> sum + money(item?.acconto_importo ?? item?.accontoImporto ?? item?.deposit ?? 0), 0);
@@ -28819,8 +29116,7 @@ function __guestReportResolveRows__(guest){
   const servicesLabel = serviceNames.length ? serviceNames.join(', ') : __guestReportT__(lang, 'noExtraServices');
   const taxVal = bookings.reduce((sum, item) => {
     try{
-      const tax = calcTouristTax(item, calcStayNights(item));
-      return sum + money(tax?.total ?? tax?.amount ?? tax?.value ?? tax ?? 0);
+      return sum + __guestTaxAmountOfBooking__(item);
     }catch(_){ return sum; }
   }, 0);
   const __guestReportShouldRenderPositiveMoneyRow__ = (row) => {
@@ -39477,6 +39773,49 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
       try{ renderPreventiviCards(); }catch(_){ }
     }catch(_){ }
   }
+  async function __ddae2840DeleteOneQuoteGroup__(src){
+    try{
+      const id = __ddae2822QId__(src) || String(state && state.guestEditId || '').trim();
+      if (!id) return false;
+      const rows = Array.isArray(state.preventivi) ? state.preventivi.slice() : [];
+      const nextRows = rows.filter(function(x){ return __ddae2822QId__(x) !== id; });
+      state.preventivi = (typeof __preventiviSort__ === 'function') ? __preventiviSort__(nextRows) : nextRows;
+      try{ await __setPreventiviRows__(state.preventivi); }catch(_){ }
+      try{ invalidateApiCache('preventivi|'); }catch(_){ }
+      try{ toast('Gruppo stanze eliminato'); }catch(_){ }
+
+      const membersLeft = __ddae2822QuoteGroupMembers__(src).filter(function(x){ return __ddae2822QId__(x) !== id; });
+      const next = membersLeft[0] || null;
+      try{ state.guestGroupActiveId = ''; }catch(_){ }
+      if (next){
+        try{ state.guestQuoteSourceItem = next; state.guestViewItem = next; state.guestEditSourceItem = null; }catch(_){ }
+        try{ if (typeof __enterPreventivoViewMode__ === 'function') __enterPreventivoViewMode__(next); }catch(_){ }
+        try{ showPage('ospite'); }catch(_){ }
+      } else {
+        try{ state.guestGroupBookings = null; state.guestQuoteSourceItem = null; state.guestViewItem = null; state.guestEditSourceItem = null; }catch(_){ }
+        try{ showPage('preventivi'); }catch(_){ }
+      }
+      try{ renderPreventiviCards(); }catch(_){ }
+      return true;
+    }catch(_){ return false; }
+  }
+  function __ddae2840QuoteSelectedSource__(fallback){
+    try{
+      const activeId = String(state && state.guestGroupActiveId || '').trim();
+      const editId = String(state && state.guestEditId || '').trim();
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      const rows = Array.isArray(state && state.preventivi) ? state.preventivi : [];
+      const group = Array.isArray(state && state.guestGroupBookings) ? state.guestGroupBookings : [];
+      const findById = function(id){
+        if (!id) return null;
+        return group.find(function(x){ return __ddae2822QId__(x) === id; }) || rows.find(function(x){ return __ddae2822QId__(x) === id; }) || null;
+      };
+      if (activeId) return findById(activeId) || fallback || null;
+      if (mode === 'edit' && editId) return findById(editId) || state.guestEditSourceItem || fallback || null;
+      return null;
+    }catch(_){ return null; }
+  }
+
   function __ddae2822IsQuoteMode__(){
     try{
       return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo');
@@ -39493,8 +39832,14 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
           __ddae2822Stop__(ev);
           const src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
           if (!src) return;
-          if (!confirm('Eliminare definitivamente questo preventivo?')) return;
-          __ddae2822DeleteWholeQuote__(src);
+          const selectedSrc = __ddae2840QuoteSelectedSource__(src);
+          if (selectedSrc){
+            if (!confirm('Eliminare questo gruppo di stanze?')) return;
+            __ddae2840DeleteOneQuoteGroup__(selectedSrc);
+          } else {
+            if (!confirm('Eliminare definitivamente questo preventivo?')) return;
+            __ddae2822DeleteWholeQuote__(src);
+          }
         }catch(_){ }
       }, true);
     }
@@ -39828,3 +40173,425 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
 })();
+
+/* dDAE_2.837 — Preventivi: tasto + gruppi stanze parallelo e separato da Ospiti */
+(function(){
+  function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qNum(p, idx){
+    try{
+      const raw = String((p && (p.numero_preventivo || p.preventivo_numero || p.quote_number)) || '').trim().toUpperCase();
+      if (raw) return raw;
+      return String((typeof __preventivoNumberText__ === 'function' ? __preventivoNumberText__(p, idx || 0) : '') || '').trim().toUpperCase();
+    }catch(_){ return ''; }
+  }
+  function qGroupId(p){ try{ return String(p && (p.preventivo_group_id || p.quote_group_id || p.gruppo_preventivo_id || '') || '').trim(); }catch(_){ return ''; } }
+  function isQuoteObj(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
+      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
+    }catch(_){ return false; }
+  }
+  function quoteMode(){
+    try{ return !!(state && state.guestIsQuote) || !!document.getElementById('page-ospite')?.classList.contains('is-preventivo') || isQuoteObj(state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)); }catch(_){ return false; }
+  }
+  function quoteRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function quoteGroupFor(src){
+    try{
+      if (!src) return [];
+      const gid = qGroupId(src);
+      const id = qId(src);
+      const num = qNum(src, 0) || String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase();
+      const rows = quoteRows().filter(function(x, i){
+        const xid = qId(x), xgid = qGroupId(x), xn = qNum(x, i);
+        if (gid && (xgid === gid || xid === gid)) return true;
+        if (id && (xgid === id || xid === id)) return true;
+        if (num && xn === num) return true;
+        return false;
+      });
+      return rows.length ? ((typeof __preventiviSort__ === 'function') ? __preventiviSort__(rows) : rows) : [src];
+    }catch(_){ return src ? [src] : []; }
+  }
+  function srcQuote(){
+    try{
+      const active = String(state && state.guestGroupActiveId || '').trim();
+      const list = Array.isArray(state && state.guestGroupBookings) ? state.guestGroupBookings : [];
+      if (active){
+        const found = list.find(function(x){ return qId(x) === active; });
+        if (found) return found;
+      }
+      return (state && (state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem)) || list[0] || null;
+    }catch(_){ return null; }
+  }
+  function setVal(id, v){ try{ const el = document.getElementById(id); if (el) el.value = (v == null ? '' : v); }catch(_){ } }
+  function fillCommonFrom(src){
+    try{
+      if (!src) return;
+      setVal('guestName', src.nome || src.name || '');
+      try{ __applyGuestNameUppercase__(document.getElementById('guestName')); }catch(_){ }
+      setVal('guestPhone', src.telefono || src.phone || '');
+      setVal('guestEmail', src.email || '');
+      try{ if (typeof setGuestNationality === 'function') setGuestNationality(src.nazionalita || src.nazione || src.country_code || '', {manual:true}); }catch(_){ }
+      setVal('guestMen', src.uomini || 0);
+      setVal('guestWomen', src.donne || 0);
+      setVal('guestAdults', src.adulti || src.adults || 0);
+      setVal('guestKidsU10', src.bambini_u10 || src.kidsU10 || 0);
+      try{ if (typeof setMarriage === 'function') setMarriage(!!(src.matrimonio || src.marriage)); }catch(_){ }
+      try{ if (typeof setGroup === 'function') setGroup(!!(src.g || src.flag_g || src.gruppo_g || src.group || src.g_flag)); }catch(_){ }
+      try{ if (typeof setColC === 'function') setColC(!!(src.col_c || src.colC || src.c || src.C || src.flag_c || src.flagC)); }catch(_){ }
+      try{ if (typeof syncGuestNotesUI === 'function') syncGuestNotesUI({note:'', notes:''}, {open:false}); else setVal('guestNotes',''); }catch(_){ setVal('guestNotes',''); }
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+    }catch(_){ }
+  }
+  function forcePlusButton(){
+    try{
+      if (!quoteMode()) return;
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      const root = document.getElementById('ospiteHdActions');
+      const btn = root && root.querySelector('[data-guest-cal]');
+      if (!btn) return;
+      const show = (mode === 'view' || mode === 'edit');
+      btn.hidden = !show;
+      btn.disabled = false;
+      btn.classList.add('tl-indigo');
+      btn.setAttribute('aria-label','Aggiungi gruppo stanze preventivo');
+      btn.setAttribute('title','Aggiungi gruppo stanze preventivo');
+      const sr = btn.querySelector('.sr-only'); if (sr) sr.textContent = 'Aggiungi gruppo stanze preventivo';
+      const svg = btn.querySelector('svg'); if (svg) svg.innerHTML = '<path d="M12 5v14"></path><path d="M5 12h14"></path>';
+    }catch(_){ }
+  }
+  function openQuoteGroupCreate(){
+    try{
+      const src = srcQuote();
+      if (!src){ try{ toast('Preventivo non trovato'); }catch(_){ } return; }
+      const group = quoteGroupFor(src);
+      const seed = qGroupId(src) || qId(src) || qNum(src, 0);
+      const num = qNum(src, 0) || String(state && state.guestQuoteGroupNumber || '').trim().toUpperCase();
+      try{ if (Array.isArray(group) && group.length) state.guestGroupBookings = group; }catch(_){ }
+      if (typeof __enterPreventivoCreateMode__ === 'function') __enterPreventivoCreateMode__();
+      state.guestIsQuote = true;
+      state.guestQuoteSourceItem = src;
+      state.guestEditSourceItem = null;
+      state.guestViewItem = src;
+      state.guestCreateFromQuoteGroup = true;
+      state.guestQuoteGroupNumber = num;
+      state.guestGroupActiveId = '';
+      if (seed){
+        try{ src.preventivo_group_id = qGroupId(src) || qId(src) || seed; src.quote_group_id = src.preventivo_group_id; src.gruppo_preventivo_id = src.preventivo_group_id; }catch(_){ }
+      }
+      fillCommonFrom(src);
+      setVal('guestCheckIn',''); setVal('guestCheckOut','');
+      setVal('guestTotal','0'); setVal('guestServices','0'); setVal('guestDeposit','0'); setVal('guestSaldo','0'); setVal('guestDiscount','0'); setVal('guestRemaining','0');
+      try{ state.guestRooms = new Set(); if (typeof window.__ddae_renderRooms === 'function') window.__ddae_renderRooms(); }catch(_){ }
+      try{ const t=document.getElementById('ospiteFormTitle'); if (t) t.textContent='Nuovo preventivo'; const b=document.getElementById('createGuestCard'); if (b) b.textContent='Crea preventivo'; }catch(_){ }
+      try{ if (typeof __syncPreventivoModeUi__ === 'function') __syncPreventivoModeUi__(); }catch(_){ }
+      try{ forcePlusButton(); setTimeout(forcePlusButton, 60); setTimeout(forcePlusButton, 240); }catch(_){ }
+      try{ showPage('ospite'); }catch(_){ }
+    }catch(err){ try{ toast(err && err.message ? err.message : 'Errore nuovo gruppo preventivo'); }catch(_){ } }
+  }
+  try{
+    document.addEventListener('click', function(ev){
+      try{
+        if (!quoteMode()) return;
+        const btn = ev.target && ev.target.closest ? ev.target.closest('[data-guest-cal]') : null;
+        if (!btn) return;
+        ev.preventDefault(); ev.stopPropagation(); if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        openQuoteGroupCreate();
+      }catch(_){ }
+    }, true);
+  }catch(_){ }
+  try{
+    const oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+    if (oldSync && !oldSync.__ddae2837QuotePlus){
+      const wrapped = function(){ const out = oldSync.apply(this, arguments); try{ forcePlusButton(); }catch(_){ } return out; };
+      wrapped.__ddae2837QuotePlus = true;
+      __syncPreventivoModeUi__ = wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldUpdate = (typeof updateOspiteHdActions === 'function') ? updateOspiteHdActions : null;
+    if (oldUpdate && !oldUpdate.__ddae2837QuotePlus){
+      const wrappedUpdate = function(){ const out = oldUpdate.apply(this, arguments); try{ forcePlusButton(); }catch(_){ } return out; };
+      wrappedUpdate.__ddae2837QuotePlus = true;
+      updateOspiteHdActions = wrappedUpdate;
+    }
+  }catch(_){ }
+  function boot(){ try{ forcePlusButton(); setTimeout(forcePlusButton, 80); setTimeout(forcePlusButton, 300); }catch(_){ } }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
+})();
+
+/* dDAE_2.838 — Preventivi multi-gruppo: una sola card preventivo e nessun leak nella lista prenotazioni */
+(function(){
+  function isQuoteRecord(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
+      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
+    }catch(_){ return false; }
+  }
+  function qId(p){ try{ return String((typeof __preventivoIdOf__ === 'function' ? __preventivoIdOf__(p) : (p && (p.id || p.preventivo_id || p.quote_id))) || '').trim(); }catch(_){ return ''; } }
+  function qNum(p, idx){
+    try{
+      const raw = String((p && (p.numero_preventivo || p.preventivo_numero || p.quote_number)) || '').trim().toUpperCase();
+      if (raw) return raw;
+      return String((typeof __preventivoNumberText__ === 'function' ? __preventivoNumberText__(p, idx || 0) : '') || '').trim().toUpperCase();
+    }catch(_){ return ''; }
+  }
+  function qGroupId(p){ try{ return String(p && (p.preventivo_group_id || p.quote_group_id || p.gruppo_preventivo_id || '') || '').trim(); }catch(_){ return ''; } }
+  function qRows(){ try{ return Array.isArray(state.preventivi) ? state.preventivi.slice() : []; }catch(_){ return []; } }
+  function qDate(v){ try{ return (__parseDateFlexibleToISO(v) || String(v || '').trim().slice(0,10)); }catch(_){ return String(v || '').trim().slice(0,10); } }
+  function qIn(p){ return qDate(p && (p.check_in || p.checkIn || p.arrivo || p.dataArrivo || p.arrival || '')); }
+  function qOut(p){ return qDate(p && (p.check_out || p.checkOut || p.checkout || p.dataPartenza || p.partenza || p.departure || '')); }
+  function qCreated(p){ return Date.parse(p && (p.createdAt || p.created_at || p.updatedAt || p.updated_at || '')) || 0; }
+  function qSortRows(rows){ try{ return (typeof __preventiviSort__ === 'function') ? __preventiviSort__(rows || []) : (rows || []); }catch(_){ return rows || []; } }
+  function qCanonicalKey(p, idx){
+    try{
+      const n = qNum(p, idx);
+      if (n && /^P\d+/i.test(n)) return 'n:' + n;
+      const gid = qGroupId(p);
+      if (gid) return 'g:' + gid;
+      const id = qId(p);
+      return id ? 'id:' + id : ('x:' + idx);
+    }catch(_){ return 'x:' + idx; }
+  }
+  function qGroupFor(item){
+    try{
+      if (!item) return [];
+      const num = qNum(item, 0);
+      const gid = qGroupId(item);
+      const id = qId(item);
+      const rows = qRows().filter(function(x, i){
+        const xn = qNum(x, i), xgid = qGroupId(x), xid = qId(x);
+        if (num && /^P\d+/i.test(num) && xn === num) return true;
+        if (gid && (xgid === gid || xid === gid)) return true;
+        if (id && (xgid === id || xid === id)) return true;
+        return false;
+      });
+      return qSortRows(rows.length ? rows : [item]);
+    }catch(_){ return item ? [item] : []; }
+  }
+  function qDecorate(item){
+    try{
+      const group = qGroupFor(item);
+      return Object.assign({}, item || {}, {_groupBookings: group, _quoteGroupBookings: group});
+    }catch(_){ return item; }
+  }
+  function qRange(group, first){
+    try{
+      const list = (Array.isArray(group) && group.length) ? group : [first];
+      const labels = list.map(function(x){ return (typeof __guestCardStayRangeLabel__ === 'function' ? __guestCardStayRangeLabel__(x) : '') || (typeof formatArrivalDayIT === 'function' ? formatArrivalDayIT(qIn(x)) : '') || ''; }).filter(Boolean);
+      const uniq = Array.from(new Set(labels));
+      return uniq.length ? uniq.join(' · ') : '—';
+    }catch(_){ return '—'; }
+  }
+  function qStayNights(group, first){
+    try{
+      const list = (Array.isArray(group) && group.length) ? group : [first];
+      return list.reduce(function(sum, x){ return sum + ((typeof calcStayNights === 'function' ? (parseInt(calcStayNights(x),10) || 0) : 0)); }, 0) || (typeof calcStayNights === 'function' ? calcStayNights(first) : '');
+    }catch(_){ return ''; }
+  }
+  function qFilteredGroups(){
+    let rows = qRows().filter(isQuoteRecord);
+    try{ rows = __filterByExerciseYear__(rows, state.exerciseYear || loadExerciseYear(), ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at']); }catch(_){ }
+    try{
+      const mode = String(state.preventiviArrivalFilter || localStorage.getItem('dDAE_preventiviArrivalFilter') || 'today');
+      if (mode && mode !== 'all'){
+        const today = todayISO();
+        const limits = { '3days': addDaysISO(today,3), '7days': addDaysISO(today,7), '-3days': addDaysISO(today,-3), '-7days': addDaysISO(today,-7) };
+        const useCheckout = String(state.preventiviSortBy || '').trim() === 'checkout';
+        rows = rows.filter(function(p){
+          const d = (useCheckout ? qOut(p) : qIn(p)).slice(0,10);
+          if (!d) return false;
+          if (mode === '3days') return d >= today && d <= limits['3days'];
+          if (mode === '7days') return d >= today && d <= limits['7days'];
+          if (mode === '-3days') return d >= limits['-3days'] && d <= today;
+          if (mode === '-7days') return d >= limits['-7days'] && d <= today;
+          return d === today;
+        });
+      }
+    }catch(_){ }
+    const map = new Map();
+    rows.forEach(function(p, i){
+      const key = qCanonicalKey(p, i);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(p);
+    });
+    const groups = [];
+    map.forEach(function(list){
+      const sorted = qSortRows(list);
+      groups.push(Object.assign({}, sorted[0] || {}, {_groupBookings: sorted, _quoteGroupBookings: sorted}));
+    });
+    const by = String(state.preventiviSortBy || localStorage.getItem('dDAE_preventiviSortBy') || 'arrivo');
+    const dir = String(state.preventiviSortDir || localStorage.getItem('dDAE_preventiviSortDir') || 'asc') === 'desc' ? -1 : 1;
+    groups.sort(function(a,b){
+      if (by === 'nome') return String(a.nome || a.name || '').localeCompare(String(b.nome || b.name || ''), 'it') * dir;
+      if (by === 'checkout') return ((Date.parse(qOut(a)) || 0) - (Date.parse(qOut(b)) || 0)) * dir;
+      if (by === 'inserimento') return ((parseInt(qNum(a,0).replace(/\D+/g,''),10) || 0) - (parseInt(qNum(b,0).replace(/\D+/g,''),10) || 0)) * dir || (qCreated(a) - qCreated(b)) * dir;
+      return ((Date.parse(qIn(a)) || 0) - (Date.parse(qIn(b)) || 0)) * dir;
+    });
+    return groups;
+  }
+  function renderPreventiviCards838(){
+    const wrap = document.getElementById('preventiviCards');
+    if (!wrap) return;
+    try{ if (typeof setupPreventiviListControls === 'function') setupPreventiviListControls(); }catch(_){ }
+    wrap.replaceChildren();
+    const groups = qFilteredGroups();
+    if (!groups.length){
+      const empty = document.createElement('div'); empty.style.opacity='.7'; empty.style.fontSize='14px'; empty.style.padding='8px'; empty.textContent='Nessun preventivo.'; wrap.appendChild(empty);
+      try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    groups.forEach(function(p, idx){
+      const group = Array.isArray(p._groupBookings) ? p._groupBookings : [p];
+      const card = document.createElement('div'); card.className='guest-card preventivo-card'; card.tabIndex=0; card.setAttribute('role','button');
+      try{ card.dataset.arrivalIso = qIn(p); card.dataset.checkoutIso = qOut(p); }catch(_){ }
+      const nome = escapeHtml((p && (p.nome || p.name)) || 'Preventivo');
+      const number = escapeHtml(qNum(p, idx) || ('P' + (idx + 1)));
+      const nat = (typeof __readGuestNationalityFromRecord__ === 'function') ? __readGuestNationalityFromRecord__(p) : null;
+      const flag = escapeHtml(String((p && p.country_flag) || (nat && nat.flag) || '🏳️').trim() || '🏳️');
+      const natName = escapeHtml(String((nat && nat.name) || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
+      const range = escapeHtml(qRange(group, p));
+      const tel = escapeHtml(String(p && (p.telefono || p.tel || p.phone) || '').trim());
+      const em = escapeHtml(String(p && (p.email || p.mail) || '').trim());
+      const confirmed = (typeof __preventivoIsConfirmed__ === 'function') ? group.some(function(x){ return __preventivoIsConfirmed__(x); }) : false;
+      const stayNights = qStayNights(group, p);
+      const hasNotes = (typeof guestHasNotes === 'function') ? group.some(function(x){ return guestHasNotes(x); }) : false;
+      const marriageOn = group.some(function(x){ return !!(x && x.matrimonio); });
+      const ledCls = confirmed ? 'led-green' : 'led-yellow';
+      const ledLabel = confirmed ? 'Preventivo confermato' : 'Preventivo non confermato';
+      card.setAttribute('aria-label','Apri scheda preventivo: ' + ((p && (p.nome || p.name)) || 'Preventivo'));
+      card.innerHTML = `<div class="guest-row guest-row-compact"><div class="guest-main"><span class="guest-insno preventivo-insno is-ready${hasNotes?' has-notes':''}" aria-label="Numero preventivo" title="Numero preventivo"${hasNotes?' data-has-notes="1"':''}>${number}</span><span class="guest-nationality-dot" aria-label="Nazionalità: ${natName}" title="${natName}"><span class="guest-nationality-flag" aria-hidden="true">${flag}</span></span><div class="guest-nameblock"><span class="guest-name-tab guest-name-text">${nome}</span><span class="guest-arrivo guest-arrivo-under" aria-label="Periodo">${range}</span>${((tel||em)?`<span class="guest-contact" aria-label="Contatti">${tel?`<span class="guest-contact-line guest-contact-phone">${tel}</span>`:``}${em?`<span class="guest-contact-line guest-contact-email">${em}</span>`:``}</span>`:``)}</div></div><div class="guest-meta-right" aria-label="Stato"><div class="guest-meta-dots">${(typeof buildNightsDotHTML==='function')?buildNightsDotHTML(stayNights):''}${marriageOn?`<span class="marriage-dot" aria-label="Matrimonio">M</span>`:``}${group.some(function(x){return truthy(x&&(x.g||x.flag_g||x.gruppo_g||x.group||x.g_flag));})?`<span class="g-dot" aria-label="G">G</span>`:``}${group.some(function(x){return truthy(x&&(x.col_c||x.colC||x.c||x.C||x.flag_c||x.flagC||x.colc||x.c_flag));})?`<span class="c-dot" aria-label="C">C</span>`:``}<span class="guest-led ${ledCls}" aria-label="${ledLabel}" title="${ledLabel}"></span></div></div></div>`;
+      try{ __applyGuestListCardVisual__(card); }catch(_){ }
+      try{ __bindGuestListCardColorHold__(card); }catch(_){ }
+      const open = function(){ try{ const src = qDecorate(p); state.guestGroupBookings = src && src._groupBookings ? src._groupBookings : null; __enterPreventivoViewMode__(src); showPage('ospite'); }catch(_){ } };
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+      frag.appendChild(card);
+    });
+    wrap.appendChild(frag);
+    try{ __translateTree__(document.getElementById('page-preventivi')); }catch(_){ }
+  }
+  try{ renderPreventiviCards = renderPreventiviCards838; }catch(_){ }
+  try{
+    const oldRenderGuestCards = (typeof renderGuestCards === 'function') ? renderGuestCards : null;
+    if (oldRenderGuestCards && !oldRenderGuestCards.__ddae2838NoQuoteLeak){
+      const wrappedGuestCards = function(){
+        let oldOspiti, oldGuests, changedO=false, changedG=false;
+        try{
+          if (Array.isArray(state.ospiti)){ oldOspiti = state.ospiti; state.ospiti = oldOspiti.filter(function(x){ return !isQuoteRecord(x); }); changedO = true; }
+          if (Array.isArray(state.guests)){ oldGuests = state.guests; state.guests = oldGuests.filter(function(x){ return !isQuoteRecord(x); }); changedG = true; }
+          return oldRenderGuestCards.apply(this, arguments);
+        }finally{
+          try{ if (changedO) state.ospiti = oldOspiti; }catch(_){ }
+          try{ if (changedG) state.guests = oldGuests; }catch(_){ }
+        }
+      };
+      wrappedGuestCards.__ddae2838NoQuoteLeak = true;
+      renderGuestCards = wrappedGuestCards;
+    }
+  }catch(_){ }
+  try{
+    const oldLoad = (typeof loadOspiti === 'function') ? loadOspiti : null;
+    if (oldLoad && !oldLoad.__ddae2838NoQuoteLeak){
+      const wrappedLoad = async function(){
+        const out = await oldLoad.apply(this, arguments);
+        try{ if (Array.isArray(state.guests)) state.guests = state.guests.filter(function(x){ return !isQuoteRecord(x); }); }catch(_){ }
+        try{ if (Array.isArray(state.ospiti)) state.ospiti = state.ospiti.filter(function(x){ return !isQuoteRecord(x); }); }catch(_){ }
+        try{ renderGuestCards(); }catch(_){ }
+        return out;
+      };
+      wrappedLoad.__ddae2838NoQuoteLeak = true;
+      loadOspiti = wrappedLoad;
+    }
+  }catch(_){ }
+  function boot(){ try{ if (state && state.page === 'preventivi') renderPreventiviCards838(); }catch(_){ } }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
+})();
+
+/* dDAE_2.839 — Ospiti: ripristino tab Channel nei dettagli gruppo stanze */
+(function(){
+  function isQuoteObj(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
+      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
+    }catch(_){ return false; }
+  }
+  function isQuoteContext(){
+    try{
+      const page = document.getElementById('page-ospite');
+      const item = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem)) || null;
+      return !!(state && state.guestIsQuote) || isQuoteObj(item) || !!(page && page.classList && page.classList.contains('is-preventivo'));
+    }catch(_){ return false; }
+  }
+  function pageIsOspite(){
+    try{ return !!document.getElementById('page-ospite') && (!state || !state.page || String(state.page).toLowerCase() === 'ospite' || !document.getElementById('page-ospite').hidden); }catch(_){ return false; }
+  }
+  function rowOf(el){ try{ return el && (el.closest('.subfield') || el.closest('.field') || el); }catch(_){ return el || null; } }
+  function setShown(el, show){
+    try{
+      if (!el) return;
+      el.hidden = !show;
+      if (show){
+        el.removeAttribute('hidden');
+        el.removeAttribute('data-quote-hidden');
+        el.style.removeProperty('display');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('pointer-events');
+      } else {
+        el.setAttribute('hidden','');
+        el.style.setProperty('display','none','important');
+      }
+    }catch(_){ }
+  }
+  function restoreGuestChannel(){
+    try{
+      if (!pageIsOspite() || isQuoteContext()) return;
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      const card = document.querySelector('#page-ospite .guest-form-card');
+      const active = !!String(state && state.guestGroupActiveId || '').trim();
+      const open = !!(card && card.classList && card.classList.contains('guest-group-info-open'));
+      const shouldShow = (mode === 'edit' || mode === 'create') || (mode === 'view' && active && open);
+      const page = document.getElementById('page-ospite');
+      if (page && page.classList){ page.classList.remove('is-preventivo'); page.classList.remove('preventivo-non-confermato'); }
+      if (state){ state.guestIsQuote = false; state.guestQuoteSourceItem = null; state.guestCreateFromQuoteGroup = false; }
+      const row = document.getElementById('guestChannelRow');
+      setShown(row, shouldShow);
+      const booking = document.getElementById('guestBooking');
+      const bookingSub = rowOf(booking);
+      if (bookingSub && bookingSub !== row) setShown(bookingSub, shouldShow);
+      const channel = document.getElementById('guestChannel');
+      const channelSub = rowOf(channel);
+      if (channelSub && channelSub !== row) setShown(channelSub, shouldShow);
+      const commWrap = document.getElementById('guestChannelCommissionWrap');
+      if (commWrap) setShown(commWrap, false);
+      if (shouldShow){
+        try{ populateGuestChannelOptions(channel && channel.value ? channel.value : ''); }catch(_){ }
+        try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+  function after(){ try{ restoreGuestChannel(); setTimeout(restoreGuestChannel,0); setTimeout(restoreGuestChannel,120); setTimeout(restoreGuestChannel,360); }catch(_){ } }
+  ['__setGuestGroupInfoVisible__','__populateGuestGroupInfoFromBooking__','renderGuestMulti','enterGuestViewMode','enterGuestEditMode','enterGuestCreateMode','updateOspiteHdActions','setGuestFormViewOnly'].forEach(function(name){
+    try{
+      const fn = window[name] || (typeof globalThis !== 'undefined' ? globalThis[name] : null);
+      if (typeof fn === 'function' && !fn.__ddae2839ChannelRestore){
+        const wrapped = function(){ const out = fn.apply(this, arguments); after(); return out; };
+        wrapped.__ddae2839ChannelRestore = true;
+        window[name] = wrapped;
+        try{ globalThis[name] = wrapped; }catch(_){ }
+      }
+    }catch(_){ }
+  });
+  try{ document.addEventListener('click', function(){ setTimeout(restoreGuestChannel, 0); setTimeout(restoreGuestChannel, 160); }, true); }catch(_){ }
+  try{ window.__ddae2839RestoreGuestChannel = restoreGuestChannel; }catch(_){ }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', after, {once:true}); else after();
+  try{ window.addEventListener('pageshow', after, {passive:true}); }catch(_){ }
+})();
+
+
+/* dDAE_2.840 — Preventivi: elimina contestuale gruppo stanze o intera scheda */

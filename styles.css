@@ -22824,3 +22824,232 @@ body:not(.quote-mode) #page-ospite:not(.is-preventivo) .guest-form-card.is-view 
 #page-ospite .guest-form-card.is-create #createGuestCard{
   margin-top:18px !important;
 }
+
+/* dDAE_2.828 — Ospiti: informazioni economiche per singolo gruppo stanze */
+#page-ospite .guest-booking-block[role="button"]{
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#page-ospite .guest-booking-block.is-active{
+  border-color: rgba(30, 122, 168, 0.45) !important;
+  box-shadow: 0 0 0 2px rgba(30, 122, 168, 0.16) !important;
+}
+#page-ospite #ospiteHdActions [data-guest-checkin].is-disabled,
+#page-ospite #ospiteHdActions [data-guest-checkin]:disabled{
+  opacity:.38 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestNotesWrap,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesListWrap{
+  display:none !important;
+}
+
+/* dDAE_2.829 — Ospiti: pacchetto dati gruppo stanze solo dopo click in sola lettura */
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #mgcRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) .total-row,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #depositRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #saldoRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #discountRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #remainingRow,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestNotesWrap,
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #servicesListWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #mgcRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+  display:flex !important;
+}
+#page-ospite #ospiteHdActions [data-guest-edit].is-disabled,
+#page-ospite #ospiteHdActions [data-guest-edit]:disabled{
+  opacity:.38 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+
+
+/* dDAE_2.830 — Ospiti: ripristino layout originale pacchetto dati gruppo stanze */
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield:first-child{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  justify-self:stretch !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open .pay-pill,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestNotesToggle,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #servicesPillView,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestTaxTotal{
+  width:100% !important;
+}
+
+/* dDAE_2.836 — tab totale commissioni sotto i gruppi stanze */
+#page-ospite #guestMulti .guest-commission-total-tab{
+  width:100%;
+  min-height:44px;
+  box-sizing:border-box;
+  border:1px solid rgba(15,23,42,0.14);
+  border-radius:22px;
+  background:rgba(255,255,255,0.78);
+  color:rgba(15,23,42,0.82);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 14px;
+  font-size:14px;
+  line-height:1.15;
+  box-shadow:none;
+}
+#page-ospite #guestMulti .guest-commission-total-label{
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-ospite #guestMulti .guest-commission-total-value{
+  font-weight:700;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+body.ddae-dark #page-ospite #guestMulti .guest-commission-total-tab{
+  background:rgba(15,23,42,0.72);
+  border-color:rgba(255,255,255,0.16);
+  color:rgba(255,255,255,0.90);
+}
+
+
+/* dDAE_2.836 — Scheda ospite sola lettura: spazi uniformi, nessuna linea anomala, tab non tagliati */
+#page-ospite #roomsReadOnly{
+  margin-top:10px !important;
+  margin-bottom:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+#page-ospite #guestMulti{
+  margin-top:10px !important;
+  gap:10px !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+#page-ospite #roomsReadOnly .guest-booking-block,
+#page-ospite #guestMulti .guest-booking-block{
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-booking-top-row{
+  min-width:0 !important;
+  width:100% !important;
+}
+#page-ospite .guest-booking-dates-pill{
+  min-width:0 !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-booking-right{
+  flex:0 0 auto !important;
+}
+#page-ospite #guestMulti .guest-commission-total-tab{
+  justify-content:space-between !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+#page-ospite #guestMulti .guest-commission-total-label{
+  min-width:0 !important;
+}
+#page-ospite #guestMulti .guest-commission-total-value{
+  flex:0 0 auto !important;
+  margin-left:10px !important;
+}
+@media (max-width:430px){
+  #page-ospite{ --paycol:142px; }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .total-row,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow{
+    grid-template-columns:minmax(0,1fr) minmax(0,var(--paycol)) !important;
+    gap:8px !important;
+  }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .total-row > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #depositRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #saldoRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #discountRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #remainingRow > .subfield.paywrap,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+    width:100% !important;
+    min-width:0 !important;
+    max-width:var(--paycol) !important;
+  }
+  #page-ospite .guest-form-card.is-view.guest-group-info-open .pay-pill,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestNotesToggle,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #servicesPillView,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestTaxTotal,
+  #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+}
