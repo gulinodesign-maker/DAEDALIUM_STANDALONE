@@ -23361,3 +23361,21 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
     min-height: 40px !important;
   }
 }
+
+
+/* dDAE_2.857 — Ospiti: range centrato sul nome e stanze in card */
+#page-ospiti .guest-nameblock{
+  align-items:center;
+}
+#page-ospiti .guest-name-tab{
+  align-self:center;
+}
+#page-ospiti .guest-arrivo.guest-arrivo-under{
+  align-self:center;
+  text-align:center;
+  width:100%;
+}
+#page-ospiti .guest-room-label{
+  text-align:center;
+  width:100%;
+}
