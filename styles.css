@@ -23159,7 +23159,7 @@ body.tag-color-modal-open #laundryCatalogEditorModal:not([hidden]){
   pointer-events:none !important;
 }
 
-/* dDAE_2.852 — conferma categoria sopra popup colore, senza bloccare la UI */
+/* dDAE_2.853 — conferma categoria sopra popup colore, senza bloccare la UI */
 #confirmYesNoModal:not([hidden]){
   position:fixed !important;
   inset:0 !important;
@@ -23185,7 +23185,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.852 — testo tasti popup Impostazioni sempre in grassetto, senza pulsazioni */
+/* dDAE_2.853 — testo tasti popup Impostazioni sempre in grassetto, senza pulsazioni */
 #operatoriEditorModal .editor-modal-actions > .btn,
 #channelEditorModal .editor-modal-actions > .btn,
 #laundryCatalogEditorModal .editor-modal-actions > .btn,
@@ -23194,4 +23194,104 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 #laundryCatalogEditorModal .editor-modal-actions > .btn *{
   font-weight:900 !important;
   -webkit-font-smoothing:antialiased;
+}
+
+/* dDAE_2.853 — Calendario: badge stanze occupate oggi */
+#page-calendario .app-section-head-row{
+  position: relative;
+}
+#page-calendario .cal-today-occupancy-badge{
+  justify-self: end;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(15,23,42,0.14);
+  background: rgba(239,68,68,1);
+  background-color: rgba(239,68,68,1);
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 900;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+#page-calendario .cal-today-occupancy-badge[hidden]{
+  display: none !important;
+}
+#page-calendario .cal-today-occupancy-badge:active,
+#page-calendario .cal-today-occupancy-badge:focus,
+#page-calendario .cal-today-occupancy-badge:hover{
+  box-shadow: none !important;
+  outline: none;
+  font-weight: 900;
+}
+
+/* dDAE_2.854 — Calendario: cursore giorno, navigazione giorno e badge stanze selezionato */
+#page-calendario .app-section-head-row{
+  grid-template-columns: minmax(68px, .9fr) auto minmax(42px, .9fr) !important;
+  column-gap:8px !important;
+}
+#page-calendario .cal-nav-inline{
+  gap:6px !important;
+  min-width:0 !important;
+  flex-wrap:nowrap !important;
+}
+#page-calendario .cal-nav-inline .cal-nav-btn{
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  border-radius:13px !important;
+  flex:0 0 38px !important;
+}
+#page-calendario .cal-nav-inline .cal-day-nav-btn .ui-ico{
+  width:22px !important;
+  height:22px !important;
+}
+#page-calendario .cal-today-occupancy-badge{
+  justify-self:end !important;
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
+  font-size:22px !important;
+  position:relative;
+  z-index:2;
+}
+#page-calendario .cal-today-occupancy-badge[hidden]{
+  display:none !important;
+}
+#page-calendario .cal-cell.is-today-col{
+  font-weight:900;
+}
+#page-calendario .cal-today-column-outline{
+  pointer-events:none !important;
+}
+@media (max-width: 380px){
+  #page-calendario .app-section-head-row{ column-gap:6px !important; }
+  #page-calendario .cal-nav-inline{ gap:4px !important; }
+  #page-calendario .cal-nav-inline .cal-nav-btn{
+    width:35px !important;
+    height:35px !important;
+    min-width:35px !important;
+    min-height:35px !important;
+    flex-basis:35px !important;
+    border-radius:12px !important;
+  }
+  #page-calendario .cal-today-occupancy-badge{
+    width:40px !important;
+    height:40px !important;
+    min-width:40px !important;
+    min-height:40px !important;
+  }
 }
