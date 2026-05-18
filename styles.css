@@ -23295,3 +23295,69 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
     min-height:40px !important;
   }
 }
+
+
+/* dDAE_2.856 — Calendario: posizioni assolute stabili, non influenzate da titoli o componenti */
+#page-calendario .app-section-head-row{
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  min-height: 52px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#page-calendario .cal-nav-inline{
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  max-width: calc(100vw - 112px) !important;
+  min-width: 0 !important;
+  z-index: 1 !important;
+}
+#page-calendario .cal-today-occupancy-badge{
+  position: absolute !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 2 !important;
+  justify-self: auto !important;
+  margin: 0 !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+}
+#page-calendario #calDateInput{
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+@media (max-width: 380px){
+  #page-calendario .app-section-head-row{ min-height: 48px !important; }
+  #page-calendario .cal-nav-inline{ gap: 4px !important; max-width: calc(100vw - 102px) !important; }
+  #page-calendario .cal-nav-inline .cal-nav-btn{
+    width: 35px !important;
+    height: 35px !important;
+    min-width: 35px !important;
+    min-height: 35px !important;
+    flex-basis: 35px !important;
+  }
+  #page-calendario .cal-today-occupancy-badge{
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+}
