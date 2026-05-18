@@ -23363,7 +23363,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.859 — Ospiti: range centrato sul nome e stanze in card */
+/* dDAE_2.860 — Ospiti: range centrato sul nome e stanze in grassetto */
 #page-ospiti .guest-nameblock{
   align-items:center;
 }
@@ -23378,4 +23378,5 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 #page-ospiti .guest-room-label{
   text-align:center;
   width:100%;
+  font-weight:700;
 }
