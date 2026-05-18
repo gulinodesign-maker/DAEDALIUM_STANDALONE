@@ -23236,7 +23236,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
   font-weight: 900;
 }
 
-/* dDAE_2.854 — Calendario: cursore giorno, navigazione giorno e badge stanze selezionato */
+/* dDAE_2.855 — Calendario: cursore giorno, navigazione giorno e badge stanze selezionato */
 #page-calendario .app-section-head-row{
   grid-template-columns: minmax(68px, .9fr) auto minmax(42px, .9fr) !important;
   column-gap:8px !important;
