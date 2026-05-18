@@ -23363,7 +23363,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.860 — Ospiti: range centrato sul nome e stanze in grassetto */
+/* dDAE_2.861 — Ospiti: range centrato sul nome e stanze in grassetto */
 #page-ospiti .guest-nameblock{
   align-items:center;
 }
@@ -23379,4 +23379,42 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
   text-align:center;
   width:100%;
   font-weight:700;
+}
+
+/* dDAE_2.861 — Calendario: badge stanze da pulire e navigazione mese/oggi/giorno */
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge{
+  left: 0 !important;
+  right: auto !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+#page-calendario #calTodayOccupancyBadge.cal-today-occupancy-badge{
+  right: 0 !important;
+  left: auto !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+#page-calendario .cal-today-occupancy-badge.cal-tomorrow-checkout-badge,
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge{
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+}
+#page-calendario #calDateInput{
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+@media (max-width: 380px){
+  #page-calendario .cal-today-occupancy-badge.cal-tomorrow-checkout-badge,
+  #page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge{
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
 }
