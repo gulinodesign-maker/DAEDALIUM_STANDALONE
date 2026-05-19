@@ -23921,3 +23921,86 @@ body.quote-mode #page-ospite #guestChannelRow{
   align-items:center !important;
   justify-content:center !important;
 }
+
+/* dDAE_2.883 — Preventivi: schede nuovo/lettura/modifica graficamente identiche a Nuovo ospite */
+#page-ospite.is-preventivo .guest-form-card,
+body.quote-mode #page-ospite .guest-form-card{
+  background: var(--glass) !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+  color: inherit !important;
+}
+#page-ospite.is-preventivo #ospiteFormTitle,
+body.quote-mode #page-ospite #ospiteFormTitle{
+  color: inherit !important;
+}
+#page-ospite.is-preventivo #preventivoChannelRow,
+body.quote-mode #page-ospite #preventivoChannelRow{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite.is-preventivo #guestBookingNumberField,
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo #servicesRow,
+#page-ospite.is-preventivo #depositRow,
+#page-ospite.is-preventivo #saldoRow,
+#page-ospite.is-preventivo #discountRow,
+#page-ospite.is-preventivo #remainingRow,
+body.quote-mode #page-ospite #guestBookingNumberField,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite #servicesRow,
+body.quote-mode #page-ospite #depositRow,
+body.quote-mode #page-ospite #saldoRow,
+body.quote-mode #page-ospite #discountRow,
+body.quote-mode #page-ospite #remainingRow{
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield,
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+#page-ospite.is-preventivo #guestChannel,
+body.quote-mode #page-ospite #guestChannel,
+#page-ospite.is-preventivo #guestBooking,
+body.quote-mode #page-ospite #guestBooking{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2),
+body.quote-mode #page-ospite #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+}
+#page-ospite.is-preventivo #servicesRow,
+#page-ospite.is-preventivo #depositRow,
+#page-ospite.is-preventivo #saldoRow,
+#page-ospite.is-preventivo #discountRow,
+#page-ospite.is-preventivo #remainingRow,
+body.quote-mode #page-ospite #servicesRow,
+body.quote-mode #page-ospite #depositRow,
+body.quote-mode #page-ospite #saldoRow,
+body.quote-mode #page-ospite #discountRow,
+body.quote-mode #page-ospite #remainingRow{
+  display:grid !important;
+}
+#page-ospite.is-preventivo.preventivo-non-confermato .payment-row,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow,
+#page-ospite.is-preventivo.preventivo-non-confermato #servicesListWrap{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
