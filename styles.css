@@ -23804,7 +23804,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.882 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.883 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
