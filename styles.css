@@ -23804,7 +23804,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.883 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.884 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23831,4 +23831,16 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 #page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel:disabled{
   opacity:1 !important;
+}
+
+
+/* dDAE_2.884 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow > .subfield{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow{
+  display:grid !important;
 }
