@@ -57,8 +57,8 @@
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; overflow-x:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); touch-action:manipulation; -webkit-text-size-adjust:100%; }
 :root{
-  --ddae-bg-light: none;
-  --ddae-bg-dark: none;
+  --ddae-bg-light: url("./bg-daedalium.jpeg?v=2.617");
+  --ddae-bg-dark: url("./bg-daedalium_dark.PNG?v=2.617");
 }
 html{
   background-color:#ececec;
@@ -12949,11 +12949,11 @@ body[data-role="operatore"] #page-home .home-main-label{
 }
 .settings-year-wheel-fade-top{
   top:0;
-  background:rgba(248,250,252,0.72);
+  background:linear-gradient(to bottom, rgba(248,250,252,0.98), rgba(248,250,252,0));
 }
 .settings-year-wheel-fade-bottom{
   bottom:0;
-  background:rgba(248,250,252,0.72);
+  background:linear-gradient(to top, rgba(248,250,252,0.98), rgba(248,250,252,0));
 }
 
 
@@ -13311,10 +13311,10 @@ body.ddae-dark .settings-year-wheel-highlight{
   border-color: rgba(88,183,244,0.28) !important;
 }
 body.ddae-dark .settings-year-wheel-fade-top{
-  background: rgba(15,23,42,0.72) !important;
+  background: linear-gradient(to bottom, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
 }
 body.ddae-dark .settings-year-wheel-fade-bottom{
-  background: rgba(15,23,42,0.72) !important;
+  background: linear-gradient(to top, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
 }
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
@@ -19892,7 +19892,7 @@ body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
 }
 
 
-/* dDAE_2.891 — Range date unificato scheda nuovo ospite */
+/* dDAE_2.617 — Range date unificato scheda nuovo ospite */
 #guestDatesRow.guest-dates-native{
   display:none !important;
 }
@@ -23715,67 +23715,4 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   height:1px !important;
   overflow:hidden !important;
   clip:rect(0,0,0,0) !important;
-}
-
-
-/* dDAE_2.891 — stabilizzazione layout flat, griglie 3x3 e allineamenti */
-.topbar .brand{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:nowrap !important;
-  min-height:64px;
-}
-.topbar .brand-left,
-.topbar .brand-right{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:nowrap !important;
-  gap:6px !important;
-}
-.topbar .brand-right{
-  margin-left:auto !important;
-  justify-content:flex-end !important;
-  flex:0 0 auto !important;
-}
-.topbar .brand-right .home-btn,
-.topbar .brand-right [data-home],
-.topbar .brand-right button:last-child{
-  margin-left:auto !important;
-}
-#page-home .home-grid,
-#page-statistiche .home-grid{
-  display:grid !important;
-  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
-  gap:12px !important;
-  width:100% !important;
-  align-items:stretch !important;
-  justify-items:stretch !important;
-}
-#page-home .home-grid > .home-main,
-#page-statistiche .home-grid > .home-main{
-  width:100% !important;
-  min-width:0 !important;
-  min-height:92px !important;
-  height:92px !important;
-  border-radius:18px !important;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:8px !important;
-  box-shadow:none !important;
-}
-#page-home .home-grid > .home-main .ui-ico,
-#page-statistiche .home-grid > .home-main .ui-ico,
-#page-home .home-grid > .home-main svg,
-#page-statistiche .home-grid > .home-main svg{
-  width:30px !important;
-  height:30px !important;
-  flex:0 0 30px !important;
-}
-.tabbar, .tabs, .pill-row, .segmented, .inline-actions, .settings-actions{
-  align-items:center !important;
-}
-button, .btn, .home-main, .icon-btn, .pill, .tab, .settings-btn{
-  background-image:none !important;
 }
