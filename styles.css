@@ -23595,3 +23595,24 @@ body.ddae870-confirm-open #ddae870ConfirmOverlay,
 body.ddae870-confirm-open #ddae870ConfirmOverlay *{
   pointer-events:auto !important;
 }
+
+/* dDAE_2.876 — Statistiche mensili: percentuale quota totale, stanze + prezzo medio */
+#page-statmensili .month-occ{
+  flex:0 0 clamp(122px, 26vw, 190px);
+  gap:3px;
+}
+#page-statmensili .month-occ-pct{
+  font-size:clamp(20px, 5vw, 32px);
+  line-height:1;
+}
+#page-statmensili .month-occ-rooms{
+  font-size:18.7px;
+  line-height:1.05;
+}
+#page-statmensili .month-occ-avg{
+  font-size:11px;
+  font-weight:800;
+  line-height:1.05;
+  opacity:.78;
+  white-space:nowrap;
+}
