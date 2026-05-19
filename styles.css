@@ -23804,7 +23804,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.882 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.883 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23833,7 +23833,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   opacity:1 !important;
 }
 
-/* dDAE_2.882 — Preventivi/prenotazioni: Channel visibile come Nuovo ospite */
+/* dDAE_2.883 — Preventivi/prenotazioni: Channel visibile come Nuovo ospite */
 body.quote-mode #page-ospite #guestChannelRow,
 #page-ospite.is-preventivo #guestChannelRow{
   display:grid !important;
@@ -23893,6 +23893,82 @@ body.quote-mode #page-ospite #guestChannelRow #guestChannel,
 }
 body.quote-mode #page-ospite #guestChannelCommissionWrap,
 #page-ospite.is-preventivo #guestChannelCommissionWrap{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* dDAE_2.883 — Preventivi/prenotazioni: Channel sempre visibile in scrittura, lettura e modifica */
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow,
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow,
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow > .subfield,
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow > .subfield,
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow > .subfield{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2),
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow > .subfield:nth-child(2),
+body.quote-mode #page-ospite #guestChannelRow > .subfield:nth-child(2),
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2),
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  align-items:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite.is-preventivo #guestChannelRow #guestChannel,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow #guestChannel,
+body.quote-mode #page-ospite #guestChannelRow #guestChannel,
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow #guestChannel,
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow #guestChannel{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+  -webkit-text-fill-color:currentColor !important;
+}
+#page-ospite.is-preventivo #guestChannelRow #guestChannel + label,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow #guestChannel + label,
+body.quote-mode #page-ospite #guestChannelRow #guestChannel + label,
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow #guestChannel + label,
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow #guestChannel + label{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+body.quote-mode #page-ospite.is-preventivo #guestChannelCommissionWrap,
+body.quote-mode #page-ospite.is-preventivo.preventivo-non-confermato #guestChannelCommissionWrap{
   display:none !important;
   visibility:hidden !important;
   pointer-events:none !important;
