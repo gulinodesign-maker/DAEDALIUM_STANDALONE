@@ -23884,3 +23884,86 @@ body.quote-mode #page-ospite #guestBookingNumberField,
 }
 #page-ospite.is-preventivo .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2){ order:1 !important; width:100% !important; max-width:100% !important; min-width:0 !important; }
 #page-ospite.is-preventivo .guest-form-card.is-create #guestChannelRow > .subfield:first-child{ order:2 !important; width:100% !important; max-width:100% !important; min-width:0 !important; }
+
+
+/* dDAE_2.884 — Preventivi/Ospiti: Channel sempre visibile; rimuove Importo commissione isolato */
+#page-ospite #guestChannelRow,
+#page-ospite .guest-form-card.is-view #guestChannelRow,
+#page-ospite .guest-form-card.is-edit #guestChannelRow,
+#page-ospite .guest-form-card.is-create #guestChannelRow{
+  display:block !important;
+  width:100% !important;
+  grid-template-columns:none !important;
+  gap:0 !important;
+}
+#page-ospite #guestChannelRow > .subfield:first-child{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  position:absolute !important;
+  left:-9999px !important;
+  width:0 !important;
+  height:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2),
+#page-ospite .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2),
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2){
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  position:relative !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+}
+#page-ospite #guestChannel{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+}
+#page-ospite #guestChannelCommissionWrap{
+  display:none !important;
+  visibility:hidden !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannel,
+#page-ospite .guest-form-card.is-edit #guestChannel,
+#page-ospite .guest-form-card.is-view #guestChannel{
+  height:82px !important;
+  min-height:82px !important;
+  border-radius:24px !important;
+  padding:26px 14px 12px 14px !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:22px !important;
+  font-weight:800 !important;
+  color:#1e88e5 !important;
+  background:rgba(255,255,255,0.78) !important;
+  border:1px solid rgba(15,23,42,0.12) !important;
+  box-shadow:none !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+#page-ospite .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2) label,
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2) label,
+#page-ospite .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2) label{
+  display:block !important;
+  top:18px !important;
+  left:14px !important;
+}
+#page-ospite #guestChannelRow > .subfield:nth-child(2)::after{
+  display:none !important;
+  content:none !important;
+}

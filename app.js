@@ -42286,7 +42286,7 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 
 /* dDAE_2.882 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_2.883';
+  var BUILD_TAG='dDAE_2.884';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -42958,4 +42958,198 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   try{ window.addEventListener('pageshow', boot, {passive:true}); }catch(_){ }
   try{ setInterval(function(){ try{ if (isQuoteMode()) showQuoteChannel(currentQuoteSource()); }catch(_){ } }, 700); }catch(_){ }
+})();
+
+
+/* dDAE_2.884 — Fix definitivo: Channel attivo nei preventivi e nessun Importo commissione isolato */
+(function(){
+  function isQuoteObject(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim();
+      return !!(x.preventivo || x.is_preventivo || x.preventivo_id || x.quote_id || /^P\d+$/i.test(n));
+    }catch(_){ return false; }
+  }
+  function quoteMode(){
+    try{
+      const page = document.getElementById('page-ospite');
+      return !!(state && state.guestIsQuote) || !!(page && page.classList && page.classList.contains('is-preventivo')) || isQuoteObject(state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem || state._quoteConversionSource));
+    }catch(_){ return false; }
+  }
+  function cssShow(el, display){
+    try{
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      el.removeAttribute('data-quote-hidden');
+      el.style.setProperty('display', display || 'block', 'important');
+      el.style.setProperty('visibility', 'visible', 'important');
+      el.style.setProperty('opacity', '1', 'important');
+      el.style.setProperty('pointer-events', 'auto', 'important');
+    }catch(_){ }
+  }
+  function cssHide(el){
+    try{
+      if (!el) return;
+      el.hidden = true;
+      el.setAttribute('hidden','');
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('pointer-events','none','important');
+    }catch(_){ }
+  }
+  function channelIdFrom(obj){
+    try{
+      obj = obj || {};
+      let id = String(obj.channel_id || obj.channelId || obj.channel_key || obj.channel || '').trim();
+      if (id && typeof getChannelCatalogItemById === 'function' && getChannelCatalogItemById(id)) return id;
+      const name = String(obj.channel_nome || obj.channelName || obj.channel_name || obj.nome_channel || '').trim().toLowerCase();
+      if (name && typeof getChannelCatalogFromSettings === 'function'){
+        const found = getChannelCatalogFromSettings().find(function(ch){ return String(ch && ch.nome || '').trim().toLowerCase() === name; });
+        if (found) return String(found.id || '');
+      }
+      return id;
+    }catch(_){ return ''; }
+  }
+  function sourceRecord(){
+    try{
+      const activeId = String(state && state.guestGroupActiveId || '').trim();
+      if (activeId && typeof __guestBookingById__ === 'function'){
+        const b = __guestBookingById__(activeId);
+        if (b) return b;
+      }
+      return (state && (state.guestQuoteSourceItem || state.guestEditSourceItem || state.guestViewItem || state._quoteConversionSource)) || null;
+    }catch(_){ return null; }
+  }
+  function parseMoney(v){
+    try{ return parseFloat(String(v == null ? '' : v).replace(',', '.')) || 0; }catch(_){ return 0; }
+  }
+  function syncChannelFromRecord(rec){
+    try{
+      const sel = document.getElementById('guestChannel');
+      if (!sel) return;
+      const keep = String(sel.value || '').trim();
+      const id = keep || channelIdFrom(rec || sourceRecord());
+      if (typeof populateGuestChannelOptions === 'function') populateGuestChannelOptions(id || keep || '');
+      if (id){
+        if (![...sel.options].some(function(o){ return String(o.value) === String(id); })){
+          const opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = String((rec && (rec.channel_nome || rec.channelName || rec.channel_name)) || id);
+          sel.appendChild(opt);
+        }
+        sel.value = id;
+      }
+      if (typeof applySelectedChannelToGuestForm === 'function') applySelectedChannelToGuestForm(sel.value || id || '', { preserveManual:true });
+    }catch(_){ }
+  }
+  function calculateCommission(){
+    try{
+      const sel = document.getElementById('guestChannel');
+      const booking = document.getElementById('guestBooking');
+      const pctEl = document.getElementById('guestChannelCommission');
+      if (!sel || !booking) return;
+      const item = (typeof getChannelCatalogItemById === 'function') ? getChannelCatalogItemById(sel.value || '') : null;
+      const pct = parseMoney((pctEl && pctEl.value) || (item && item.commissione) || 0);
+      const total = parseMoney(document.getElementById('guestTotal') && document.getElementById('guestTotal').value);
+      if (item && pctEl) pctEl.value = String(pct).replace('.', ',');
+      if (item) booking.value = String(Math.round((total * pct / 100) * 100) / 100).replace('.', ',');
+    }catch(_){ }
+  }
+  function forceChannelUi(rec){
+    try{
+      const page = document.getElementById('page-ospite');
+      if (!page || page.hidden) return;
+      const row = document.getElementById('guestChannelRow');
+      const sel = document.getElementById('guestChannel');
+      const booking = document.getElementById('guestBooking');
+      if (!row || !sel) return;
+      cssShow(row, 'block');
+      const bookSub = booking && (booking.closest('.subfield') || booking.closest('.field'));
+      cssHide(bookSub);
+      const chSub = sel.closest('.subfield') || sel.closest('.field');
+      cssShow(chSub, 'block');
+      cssHide(document.getElementById('guestChannelCommissionWrap'));
+      syncChannelFromRecord(rec || sourceRecord());
+      calculateCommission();
+      sel.disabled = false;
+      sel.removeAttribute('disabled');
+      sel.removeAttribute('aria-hidden');
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+    }catch(_){ }
+  }
+  function patchPayload(payload){
+    try{
+      if (!payload) return payload;
+      const sel = document.getElementById('guestChannel');
+      const id = String(sel && sel.value || '').trim();
+      const item = id && typeof getChannelCatalogItemById === 'function' ? getChannelCatalogItemById(id) : null;
+      if (item){
+        payload.channel_id = String(item.id || '');
+        payload.channelId = payload.channel_id;
+        payload.channel_nome = String(item.nome || '');
+        payload.channelName = payload.channel_nome;
+        payload.channel_colore = String(item.colore || '');
+        payload.channel_colore_testo = String(item.coloreTesto || '');
+        payload.channel_iniziale = String(item.iniziale || (typeof __channelInitialFromName__ === 'function' ? __channelInitialFromName__(item.nome || '') : '') || '');
+        payload.channel_commissione = parseMoney((document.getElementById('guestChannelCommission')||{}).value || item.commissione || 0);
+        payload.channel_commission_pct = payload.channel_commissione;
+        payload.importo_booking = parseMoney((document.getElementById('guestBooking')||{}).value || 0);
+      }
+    }catch(_){ }
+    return payload;
+  }
+  function wrap(name, cb){
+    try{
+      const fn = (typeof window !== 'undefined' && window[name]) || (typeof globalThis !== 'undefined' && globalThis[name]);
+      if (typeof fn !== 'function' || fn.__ddae2884ChannelFix) return;
+      const wrapped = function(){ const out = fn.apply(this, arguments); try{ cb && cb.apply(this, arguments); }catch(_){ } return out; };
+      wrapped.__ddae2884ChannelFix = true;
+      try{ window[name] = wrapped; }catch(_){ }
+      try{ globalThis[name] = wrapped; }catch(_){ }
+      try{ eval(name + ' = wrapped'); }catch(_){ }
+    }catch(_){ }
+  }
+  ['__enterPreventivoCreateMode__','__enterPreventivoViewMode__','__enterPreventivoEditMode__','enterGuestCreateMode','enterGuestViewMode','enterGuestEditMode','setGuestFormViewOnly','__syncPreventivoModeUi__','__ddae807FillGuestFormFromPreventivo__','updateOspiteHdActions'].forEach(function(name){
+    wrap(name, function(arg){ forceChannelUi(arg); setTimeout(function(){ forceChannelUi(arg); },0); setTimeout(function(){ forceChannelUi(arg); },180); });
+  });
+  try{
+    if (typeof __ddae807HideQuoteOnlyFields__ === 'function'){
+      __ddae807HideQuoteOnlyFields__ = function(){
+        try{
+          cssHide(document.getElementById('guestBookingNumberField') || (document.getElementById('guestBookingNumber') && document.getElementById('guestBookingNumber').closest('.field')));
+          cssHide(document.getElementById('guestChannelCommissionWrap'));
+          forceChannelUi(sourceRecord());
+        }catch(_){ }
+      };
+    }
+  }catch(_){ }
+  try{
+    if (typeof applySelectedChannelToGuestForm === 'function' && !applySelectedChannelToGuestForm.__ddae2884ChannelFix){
+      const oldApply = applySelectedChannelToGuestForm;
+      applySelectedChannelToGuestForm = function(){ const out = oldApply.apply(this, arguments); calculateCommission(); forceChannelUi(sourceRecord()); return out; };
+      applySelectedChannelToGuestForm.__ddae2884ChannelFix = true;
+    }
+  }catch(_){ }
+  ['__collectPreventivoPayload__','__buildPreventivoPayload__','collectPreventivoPayload'].forEach(function(name){
+    try{
+      const fn = (typeof window !== 'undefined' && window[name]) || (typeof globalThis !== 'undefined' && globalThis[name]) || eval('typeof '+name+'!=="undefined" ? '+name+' : null');
+      if (typeof fn !== 'function' || fn.__ddae2884ChannelFix) return;
+      const wrapped = function(){ return patchPayload(fn.apply(this, arguments)); };
+      wrapped.__ddae2884ChannelFix = true;
+      try{ window[name] = wrapped; globalThis[name] = wrapped; eval(name+' = wrapped'); }catch(_){ }
+    }catch(_){ }
+  });
+  try{
+    document.addEventListener('change', function(ev){
+      try{ if (ev.target && ev.target.id === 'guestChannel'){ calculateCommission(); forceChannelUi(sourceRecord()); } }catch(_){ }
+    }, true);
+    document.addEventListener('input', function(ev){
+      try{ if (ev.target && ev.target.id === 'guestTotal') calculateCommission(); }catch(_){ }
+    }, true);
+  }catch(_){ }
+  function boot(){ forceChannelUi(sourceRecord()); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once:true }); else boot();
+  try{ window.addEventListener('pageshow', boot, { passive:true }); }catch(_){ }
+  try{ setInterval(function(){ try{ forceChannelUi(sourceRecord()); }catch(_){ } }, 250); }catch(_){ }
 })();
