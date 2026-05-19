@@ -23363,7 +23363,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.862 — Ospiti: range centrato sul nome e stanze in grassetto */
+/* dDAE_2.863 — Ospiti: range centrato sul nome e stanze in grassetto */
 #page-ospiti .guest-nameblock{
   align-items:center;
 }
@@ -23381,7 +23381,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
   font-weight:700;
 }
 
-/* dDAE_2.862 — Calendario: badge stanze da pulire e navigazione mese/oggi/giorno */
+/* dDAE_2.863 — Calendario: badge stanze da pulire e navigazione mese/oggi/giorno */
 #page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge{
   left: 0 !important;
   right: auto !important;
@@ -23417,4 +23417,51 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
     min-width: 40px !important;
     min-height: 40px !important;
   }
+}
+
+
+/* dDAE_2.863 — Calendario: il pallino sinistro non usa testo in grassetto */
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge,
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge:active,
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge:focus,
+#page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge:hover{
+  font-weight: 400 !important;
+}
+
+
+/* dDAE_2.864 — Conferma Sì/No: layer touch realmente prioritario su iOS */
+#confirmYesNoModal:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  isolation:isolate !important;
+}
+#confirmYesNoModal:not([hidden]) .confirm-card{
+  position:relative !important;
+  z-index:1 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#confirmYesNoModal:not([hidden]) #confirmYesNoYes,
+#confirmYesNoModal:not([hidden]) #confirmYesNoNo{
+  position:relative !important;
+  z-index:2 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+body.confirm-yesno-open #app,
+body.confirm-yesno-open .app-shell,
+body.confirm-yesno-open .topbar,
+body.confirm-yesno-open main,
+body.confirm-yesno-open header{
+  pointer-events:none !important;
+}
+body.confirm-yesno-open #confirmYesNoModal,
+body.confirm-yesno-open #confirmYesNoModal *{
+  pointer-events:auto !important;
 }
