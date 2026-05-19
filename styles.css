@@ -23832,3 +23832,40 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 #page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel:disabled{
   opacity:1 !important;
 }
+
+/* dDAE_2.883 — Conversione preventivo: Channel obbligatorio visibile nel nuovo ospite */
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow,
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow *,
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel + label,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack label[for="guestChannel"],
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-quote-conversion #guestChannelRow,
+#page-ospite.is-quote-conversion #guestChannelRow *,
+#page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel){
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow,
+#page-ospite.is-quote-conversion #guestChannelRow{
+  display:grid !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow > .subfield,
+#page-ospite.is-quote-conversion #guestChannelRow > .subfield,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel){
+  display:block !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel{
+  display:block !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+#page-ospite.is-quote-conversion #guestChannelCommissionWrap{
+  display:none !important;
+}
