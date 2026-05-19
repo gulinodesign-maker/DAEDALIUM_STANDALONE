@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.864";
+const BUILD_VERSION = "2.871";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -2524,6 +2524,7 @@ async function __confirmTwoActions__(message, yesLabel, noLabel){
     if (noBtn)  noBtn.textContent  = String(noLabel  || "No");
 
     const ok = await confirmYesNo(String(message || "Confermare?"));
+    try{ __confirmYesNoForceClose__(); }catch(_){ }
 
     // restore
     if (yesBtn && prevYes !== null) yesBtn.textContent = prevYes;
@@ -8034,16 +8035,39 @@ function __confirmYesNoSetupModal__(){
     const modal = document.getElementById('confirmYesNoModal');
     if (!modal || modal.dataset.ghostTapBound === '1') return;
     modal.dataset.ghostTapBound = '1';
-    const card = modal.querySelector?.('.modal-card');
-    if (card){
-      ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
-        try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(_){} }, { passive:false }); }
-        catch(_){ try{ card.addEventListener(evt, (ev) => { try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} }
-      });
-    }
     ['pointerdown','pointerup','touchstart','touchend','click'].forEach((evt) => {
       try{ document.addEventListener(evt, __confirmYesNoSwallowGhostTap__, true); }catch(_){ }
     });
+  }catch(_){ }
+}
+function __confirmYesNoIsActionButton__(target, id){
+  try{
+    if (!target) return false;
+    if (target.id === id) return true;
+    const el = target.closest ? target.closest('#' + id) : null;
+    return !!el;
+  }catch(_){ return false; }
+}
+function __confirmYesNoStopEvent__(e){
+  try{ if (e && e.cancelable !== false) e.preventDefault(); }catch(_){ }
+  try{ if (e) e.stopPropagation(); }catch(_){ }
+  try{ if (e && e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_){ }
+}
+
+function __confirmYesNoForceClose__(){
+  try{
+    const modal = document.getElementById('confirmYesNoModal');
+    if (modal){
+      try{ modal.hidden = true; }catch(_){ }
+      try{ modal.setAttribute('hidden', ''); }catch(_){ }
+      try{ modal.setAttribute('aria-hidden', 'true'); }catch(_){ }
+      try{ modal.classList.remove('is-open', 'show', 'open', 'active'); }catch(_){ }
+      try{ modal.style.removeProperty('z-index'); }catch(_){ }
+      try{ modal.style.removeProperty('pointer-events'); }catch(_){ }
+      try{ modal.style.removeProperty('display'); }catch(_){ }
+    }
+    try{ document.body.classList.remove('confirm-yesno-open'); }catch(_){ }
+    try{ document.documentElement.classList.remove('confirm-yesno-open'); }catch(_){ }
   }catch(_){ }
 }
 function confirmYesNo(message){
@@ -8054,92 +8078,73 @@ function confirmYesNo(message){
       const yesBtn = document.getElementById("confirmYesNoYes");
       const noBtn  = document.getElementById("confirmYesNoNo");
       if (!modal || !textEl || !yesBtn || !noBtn){
-        // fallback
         try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(_){ resolve(false); }
         return;
       }
 
       try{ __confirmYesNoSetupModal__(); }catch(_){ }
-
-      // chiude eventuale precedente
-      try{ if (__confirmYesNoResolve){ __confirmYesNoResolve(false); } }catch(_){ }
+      try{ if (__confirmYesNoResolve){ const prev = __confirmYesNoResolve; __confirmYesNoResolve = null; try{ prev(false); }catch(__){} } }catch(_){ }
+      try{ __confirmYesNoForceClose__(); }catch(_){ }
       __confirmYesNoResolve = resolve;
 
+      let settled = false;
+      const listeners = [];
+      const add = (el, type, fn, opts) => {
+        try{ el.addEventListener(type, fn, opts); listeners.push([el,type,fn,opts]); }catch(_){ }
+      };
+      const removeAll = () => {
+        try{ listeners.forEach(([el,type,fn,opts]) => { try{ el.removeEventListener(type, fn, opts); }catch(_){} }); }catch(_){ }
+        listeners.length = 0;
+      };
+      const cleanup = (val) => {
+        if (settled) return;
+        settled = true;
+        __confirmYesNoReadyAt__ = 0;
+        try{ __confirmYesNoSuppressUntil__ = Date.now() + 450; }catch(_){ }
+        removeAll();
+        try{ __confirmYesNoForceClose__(); }catch(_){ }
+        try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 0); }catch(_){ }
+        try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 120); }catch(_){ }
+        if (__confirmYesNoResolve){
+          const r = __confirmYesNoResolve;
+          __confirmYesNoResolve = null;
+          try{ r(!!val); }catch(_){ }
+        }
+      };
+
+      const activateYes = (e) => { __confirmYesNoStopEvent__(e); cleanup(true); };
+      const activateNo  = (e) => { __confirmYesNoStopEvent__(e); cleanup(false); };
+      const blockModalEvent = (e) => {
+        try{
+          if (__confirmYesNoIsActionButton__(e && e.target, 'confirmYesNoYes') || __confirmYesNoIsActionButton__(e && e.target, 'confirmYesNoNo')) return;
+          if (e && e.type === 'click' && e.target === modal){ __confirmYesNoStopEvent__(e); cleanup(false); return; }
+          if (e && e.cancelable !== false) e.preventDefault();
+          try{ e.stopPropagation(); }catch(_){ }
+          try{ if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_){ }
+        }catch(_){ }
+      };
+
       textEl.textContent = __translateText__(String(message || "Confermare?"));
-      const now = Date.now();
-      __confirmYesNoReadyAt__ = now + 180;
-      __confirmYesNoSuppressUntil__ = now + 650;
+      __confirmYesNoReadyAt__ = 0;
+      __confirmYesNoSuppressUntil__ = 0;
       try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
       modal.hidden = false;
+      try{ modal.removeAttribute('hidden'); }catch(_){ }
       try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
       try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
       try{ modal.style.setProperty('z-index','2147483647','important'); }catch(_){ }
       try{ modal.style.setProperty('pointer-events','auto','important'); }catch(_){ }
       try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
 
-      const cleanup = (val) => {
-        __confirmYesNoReadyAt__ = 0;
-        try{ __confirmYesNoSuppressUntil__ = Date.now() + 850; }catch(_){ }
-        if (__confirmYesNoResolve){
-          const r = __confirmYesNoResolve;
-          __confirmYesNoResolve = null;
-          try{ r(!!val); }catch(_){ }
-        }
-        try{ modal.hidden = true; }catch(_){ }
-        try{ modal.setAttribute("aria-hidden", "true"); }catch(_){ }
-        try{ document.body.classList.remove('confirm-yesno-open'); }catch(_){ }
-        try{ modal.style.removeProperty('z-index'); }catch(_){ }
-        try{ modal.style.removeProperty('pointer-events'); }catch(_){ }
-        try{ yesBtn.removeEventListener("pointerup", onYes, true); }catch(_){ }
-        try{ yesBtn.removeEventListener("touchend", onYes, true); }catch(_){ }
-        try{ yesBtn.removeEventListener("click", onYes, true); }catch(_){ }
-        try{ noBtn.removeEventListener("pointerup", onNo, true); }catch(_){ }
-        try{ noBtn.removeEventListener("touchend", onNo, true); }catch(_){ }
-        try{ noBtn.removeEventListener("click", onNo, true); }catch(_){ }
-        try{ modal.removeEventListener("pointerdown", swallowModalTouch, true); }catch(_){ }
-        try{ modal.removeEventListener("touchstart", swallowModalTouch, true); }catch(_){ }
-        try{ modal.removeEventListener("click", onBackdrop, true); }catch(_){ }
-      };
-
-      const onYes = (e) => {
-        try{ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_){ }
-        if (Date.now() < (__confirmYesNoReadyAt__ || 0)) return;
-        cleanup(true);
-      };
-      const onNo  = (e) => {
-        try{ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_){ }
-        if (Date.now() < (__confirmYesNoReadyAt__ || 0)) return;
-        cleanup(false);
-      };
-      const onBackdrop = (e) => {
-        try{
-          try{ e.preventDefault(); }catch(__){ }
-          try{ e.stopPropagation(); }catch(__){ }
-          if (e && e.stopImmediatePropagation) { try{ e.stopImmediatePropagation(); }catch(__){ } }
-          if (Date.now() < (__confirmYesNoReadyAt__ || 0)) return;
-          if (e && e.target === modal){ cleanup(false); }
-        }catch(_){ }
-      };
-      const swallowModalTouch = (e) => {
-        try{
-          if (e && e.target === yesBtn) return;
-          if (e && e.target === noBtn) return;
-          try{ e.preventDefault(); }catch(__){ }
-          try{ e.stopPropagation(); }catch(__){ }
-          if (e && e.stopImmediatePropagation) { try{ e.stopImmediatePropagation(); }catch(__){ } }
-        }catch(_){ }
-      };
-
-      yesBtn.addEventListener("pointerup", onYes, true);
-      yesBtn.addEventListener("touchend", onYes, true);
-      yesBtn.addEventListener("click", onYes, true);
-      noBtn.addEventListener("pointerup", onNo, true);
-      noBtn.addEventListener("touchend", onNo, true);
-      noBtn.addEventListener("click", onNo, true);
-      modal.addEventListener("pointerdown", swallowModalTouch, true);
-      modal.addEventListener("touchstart", swallowModalTouch, true);
-      modal.addEventListener("click", onBackdrop, true);
+      ['pointerdown','touchstart','mousedown'].forEach((type)=>add(modal, type, blockModalEvent, true));
+      add(modal, 'click', blockModalEvent, true);
+      ['pointerup','touchend','click'].forEach((type)=>{
+        add(yesBtn, type, activateYes, true);
+        add(noBtn, type, activateNo, true);
+      });
+      try{ yesBtn.onclick = activateYes; noBtn.onclick = activateNo; }catch(_){ }
     }catch(_){
+      try{ __confirmYesNoForceClose__(); }catch(__){}
       try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(__){ resolve(false); }
     }
   });
@@ -40869,4 +40874,898 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
   try{ window.addEventListener('pageshow', run, {passive:true}); }catch(_){}
+})();
+
+/* dDAE_2.868 — Fix popup colore pill: conferma categoria stabile su iOS e applicazione globale */
+(function(){
+  var colorConfirmBusy = false;
+
+  function stopEvent(ev){
+    try{ if (ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if (ev) ev.stopPropagation(); }catch(_){ }
+    try{ if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+
+  function pointFromEvent(ev){
+    try{
+      var t = (ev && ev.changedTouches && ev.changedTouches[0]) || (ev && ev.touches && ev.touches[0]);
+      if (t) return { x:t.clientX, y:t.clientY };
+      return { x:ev.clientX, y:ev.clientY };
+    }catch(_){ return { x:null, y:null }; }
+  }
+
+  function byHit(selector, ev){
+    try{
+      var p = pointFromEvent(ev);
+      if (p.x == null || p.y == null) return null;
+      var nodes = Array.prototype.slice.call(document.querySelectorAll(selector));
+      for (var i = nodes.length - 1; i >= 0; i--){
+        var el = nodes[i];
+        if (!el || el.disabled || el.hidden) continue;
+        var cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.visibility === 'hidden' || cs.pointerEvents === 'none') continue;
+        var r = el.getBoundingClientRect();
+        if (p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom) return el;
+      }
+    }catch(_){ }
+    return null;
+  }
+
+  function closestOrHit(ev, selector){
+    try{
+      var t = ev && ev.target;
+      var el = t && t.closest ? t.closest(selector) : null;
+      if (el) return el;
+    }catch(_){ }
+    return byHit(selector, ev);
+  }
+
+  function forceCloseConfirm(){
+    try{ if (typeof __confirmYesNoForceClose__ === 'function') __confirmYesNoForceClose__(); }catch(_){ }
+    try{
+      var modal = document.getElementById('confirmYesNoModal');
+      if (modal){
+        modal.hidden = true;
+        modal.setAttribute('hidden','');
+        modal.setAttribute('aria-hidden','true');
+        modal.classList.remove('is-open','show','open','active');
+        modal.style.setProperty('display','none','important');
+        modal.style.setProperty('pointer-events','none','important');
+      }
+      document.body.classList.remove('confirm-yesno-open');
+      document.documentElement.classList.remove('confirm-yesno-open');
+    }catch(_){ }
+  }
+
+  try{
+    __confirmYesNoForceClose__ = forceCloseConfirm;
+  }catch(_){ }
+
+  try{
+    confirmYesNo = function(message){
+      return new Promise(function(resolve){
+        var modal = document.getElementById('confirmYesNoModal');
+        var textEl = document.getElementById('confirmYesNoText');
+        var yesBtn = document.getElementById('confirmYesNoYes');
+        var noBtn = document.getElementById('confirmYesNoNo');
+        if (!modal || !textEl || !yesBtn || !noBtn){
+          try{ resolve(!!window.confirm(String(message || 'Confermare?'))); }catch(_){ resolve(false); }
+          return;
+        }
+
+        var settled = false;
+        var listeners = [];
+        function add(el, type, fn, opts){
+          try{ el.addEventListener(type, fn, opts); listeners.push([el,type,fn,opts]); }catch(_){ }
+        }
+        function removeAll(){
+          try{ listeners.forEach(function(x){ try{ x[0].removeEventListener(x[1], x[2], x[3]); }catch(_){} }); }catch(_){ }
+          listeners.length = 0;
+        }
+        function cleanup(val){
+          if (settled) return;
+          settled = true;
+          removeAll();
+          try{ __confirmYesNoResolve = null; }catch(_){ }
+          try{ __confirmYesNoReadyAt__ = 0; }catch(_){ }
+          try{ __confirmYesNoSuppressUntil__ = Date.now() + 180; }catch(_){ }
+          forceCloseConfirm();
+          try{ setTimeout(forceCloseConfirm, 0); }catch(_){ }
+          try{ setTimeout(forceCloseConfirm, 80); }catch(_){ }
+          resolve(!!val);
+        }
+        function handler(ev){
+          try{
+            if (!modal || modal.hidden || modal.getAttribute('aria-hidden') === 'true') return;
+            var yes = closestOrHit(ev, '#confirmYesNoYes');
+            var no = closestOrHit(ev, '#confirmYesNoNo');
+            if (yes){ stopEvent(ev); cleanup(true); return; }
+            if (no){ stopEvent(ev); cleanup(false); return; }
+            if (ev && ev.type === 'click' && ev.target === modal){ stopEvent(ev); cleanup(false); return; }
+            if (modal.contains(ev.target)) return;
+            stopEvent(ev);
+          }catch(_){ }
+        }
+
+        try{ if (__confirmYesNoResolve) __confirmYesNoResolve(false); }catch(_){ }
+        try{ __confirmYesNoResolve = resolve; }catch(_){ }
+        forceCloseConfirm();
+        textEl.textContent = (typeof __translateText__ === 'function') ? __translateText__(String(message || 'Confermare?')) : String(message || 'Confermare?');
+        try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
+        modal.hidden = false;
+        try{ modal.removeAttribute('hidden'); }catch(_){ }
+        modal.setAttribute('aria-hidden','false');
+        modal.style.removeProperty('display');
+        modal.style.setProperty('z-index','2147483647','important');
+        modal.style.setProperty('pointer-events','auto','important');
+        try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
+        try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
+        ['touchstart','touchend','pointerdown','pointerup','mousedown','mouseup','click'].forEach(function(evt){ add(document, evt, handler, true); });
+        add(yesBtn, 'click', function(ev){ stopEvent(ev); cleanup(true); }, true);
+        add(noBtn, 'click', function(ev){ stopEvent(ev); cleanup(false); }, true);
+      });
+    };
+  }catch(_){ }
+
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      if (colorConfirmBusy) return;
+      colorConfirmBusy = true;
+      var cb = __tagColorPopupState__.onSelect;
+      var applyCategoryCfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+      var payload = __tagColorPopupCurrentPayload__();
+      var changed = { bg:false, border:false, fg:false, opacity:false, bold:false, any:true };
+      try{ changed = __tagColorPopupChangedFields__(payload); }catch(_){ }
+      __tagColorPopupState__.confirmed = true;
+      try{ __tagColorPopupClose__(); }catch(_){ }
+      try{ if (typeof cb === 'function') await cb(payload); }catch(_){ }
+      try{
+        if (applyCategoryCfg && typeof applyCategoryCfg.apply === 'function' && changed && changed.any){
+          var ok = await confirmYesNo(String(applyCategoryCfg.message || 'Applicare le modifiche a tutta la categoria di questo tasto?'));
+          forceCloseConfirm();
+          if (ok) await applyCategoryCfg.apply(payload, changed);
+        }
+      }catch(_){ forceCloseConfirm(); }
+      try{ toast('Colore aggiornato'); }catch(_){ }
+      colorConfirmBusy = false;
+    };
+  }catch(_){ colorConfirmBusy = false; }
+})();
+
+/* dDAE_2.868 — Conferma colore pill: chiusura immediata SI/NO e propagazione categoria */
+(function(){
+  var __ddae2868ColorBusy = false;
+
+  function stop(ev){
+    try{ if (ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if (ev) ev.stopPropagation(); }catch(_){ }
+    try{ if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+
+  function pureCloseConfirm(){
+    try{
+      var modal = document.getElementById('confirmYesNoModal');
+      if (modal){
+        try{ modal.hidden = true; }catch(_){ }
+        try{ modal.setAttribute('hidden',''); }catch(_){ }
+        try{ modal.setAttribute('aria-hidden','true'); }catch(_){ }
+        try{ modal.classList.remove('is-open','show','open','active'); }catch(_){ }
+        try{ modal.style.setProperty('display','none','important'); }catch(_){ }
+        try{ modal.style.setProperty('pointer-events','none','important'); }catch(_){ }
+        try{ modal.style.removeProperty('z-index'); }catch(_){ }
+      }
+      try{ document.body.classList.remove('confirm-yesno-open'); }catch(_){ }
+      try{ document.documentElement.classList.remove('confirm-yesno-open'); }catch(_){ }
+      try{ if (typeof __confirmYesNoReadyAt__ !== 'undefined') __confirmYesNoReadyAt__ = 0; }catch(_){ }
+      try{ if (typeof __confirmYesNoSuppressUntil__ !== 'undefined') __confirmYesNoSuppressUntil__ = Date.now() + 120; }catch(_){ }
+    }catch(_){ }
+  }
+
+  try{ __confirmYesNoForceClose__ = pureCloseConfirm; }catch(_){ }
+  try{ globalThis.__confirmYesNoForceClose__ = pureCloseConfirm; }catch(_){ }
+
+  function showConfirm(message){
+    return new Promise(function(resolve){
+      var modal = document.getElementById('confirmYesNoModal');
+      var textEl = document.getElementById('confirmYesNoText');
+      var yesBtn = document.getElementById('confirmYesNoYes');
+      var noBtn = document.getElementById('confirmYesNoNo');
+      if (!modal || !textEl || !yesBtn || !noBtn){
+        try{ resolve(!!window.confirm(String(message || 'Confermare?'))); }catch(_){ resolve(false); }
+        return;
+      }
+
+      var settled = false;
+      var listeners = [];
+      var readyAt = Date.now() + 120;
+      function add(el, type, fn, opts){
+        try{ el.addEventListener(type, fn, opts); listeners.push([el,type,fn,opts]); }catch(_){ }
+      }
+      function removeAll(){
+        try{ listeners.forEach(function(x){ try{ x[0].removeEventListener(x[1], x[2], x[3]); }catch(_){} }); }catch(_){ }
+        listeners.length = 0;
+      }
+      function finish(value, ev){
+        if (ev) stop(ev);
+        if (settled) return;
+        if (Date.now() < readyAt) return;
+        settled = true;
+        removeAll();
+        try{ __confirmYesNoResolve = null; }catch(_){ }
+        pureCloseConfirm();
+        try{ requestAnimationFrame(pureCloseConfirm); }catch(_){ }
+        try{ setTimeout(pureCloseConfirm, 0); }catch(_){ }
+        try{ setTimeout(pureCloseConfirm, 80); }catch(_){ }
+        resolve(!!value);
+      }
+      function yes(ev){ finish(true, ev); }
+      function no(ev){ finish(false, ev); }
+      function outside(ev){
+        try{
+          if (ev && ev.target === modal) finish(false, ev);
+        }catch(_){ }
+      }
+
+      try{ if (typeof __confirmYesNoResolve === 'function') __confirmYesNoResolve(false); }catch(_){ }
+      try{ __confirmYesNoResolve = null; }catch(_){ }
+      pureCloseConfirm();
+      textEl.textContent = (typeof __translateText__ === 'function') ? __translateText__(String(message || 'Confermare?')) : String(message || 'Confermare?');
+      try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
+      try{ modal.style.removeProperty('display'); }catch(_){ }
+      try{ modal.style.setProperty('z-index','2147483647','important'); }catch(_){ }
+      try{ modal.style.setProperty('pointer-events','auto','important'); }catch(_){ }
+      modal.hidden = false;
+      try{ modal.removeAttribute('hidden'); }catch(_){ }
+      try{ modal.setAttribute('aria-hidden','false'); }catch(_){ }
+      try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
+      try{ document.documentElement.classList.add('confirm-yesno-open'); }catch(_){ }
+      try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = Date.now() + 120; }catch(_){ }
+
+      ['pointerup','touchend','mouseup','click'].forEach(function(type){
+        add(yesBtn, type, yes, { capture:true, passive:false });
+        add(noBtn, type, no, { capture:true, passive:false });
+      });
+      add(modal, 'click', outside, { capture:true, passive:false });
+      try{ yesBtn.onclick = yes; }catch(_){ }
+      try{ noBtn.onclick = no; }catch(_){ }
+    });
+  }
+
+  try{ confirmYesNo = showConfirm; }catch(_){ }
+  try{ globalThis.confirmYesNo = showConfirm; }catch(_){ }
+
+  function changedFields(payload){
+    try{
+      if (typeof __tagColorPopupChangedFields__ === 'function') return __tagColorPopupChangedFields__(payload);
+    }catch(_){ }
+    return { bg:true, border:true, fg:true, opacity:true, any:true };
+  }
+
+  async function applySingle(cb, payload){
+    try{ if (typeof cb === 'function') await cb(payload); }catch(_){ }
+  }
+
+  async function applyCategory(cfg, payload, changed){
+    try{ if (cfg && typeof cfg.apply === 'function') await cfg.apply(payload, changed || { any:true }); }catch(_){ }
+  }
+
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      if (__ddae2868ColorBusy) return;
+      __ddae2868ColorBusy = true;
+      var cb = null;
+      var cfg = null;
+      var payload = null;
+      var changed = null;
+      try{
+        cb = __tagColorPopupState__ ? __tagColorPopupState__.onSelect : null;
+        cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload = (typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : null;
+        changed = changedFields(payload);
+        if (!changed || typeof changed !== 'object') changed = { any:true };
+        if (changed.any !== true && (changed.bg || changed.border || changed.fg || changed.opacity || changed.bold)) changed.any = true;
+        try{ __tagColorPopupState__.confirmed = true; }catch(_){ }
+        try{ __tagColorPopupClose__(); }catch(_){ }
+        await applySingle(cb, payload);
+        if (cfg && typeof cfg.apply === 'function' && changed.any){
+          var ok = await showConfirm(String(cfg.message || 'Applicare le modifiche a tutta la categoria di questo tasto?'));
+          pureCloseConfirm();
+          if (ok) await applyCategory(cfg, payload, changed);
+        }
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+        try{ if (typeof __headerActionApplyAll__ === 'function') __headerActionApplyAll__(); }catch(_){ }
+        try{ if (typeof __launcherIconApplyAll__ === 'function') __launcherIconApplyAll__(); }catch(_){ }
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        pureCloseConfirm();
+      }finally{
+        __ddae2868ColorBusy = false;
+      }
+    };
+    try{ globalThis.__tagColorPopupConfirm__ = __tagColorPopupConfirm__; }catch(_){ }
+  }catch(_){ __ddae2868ColorBusy = false; }
+})();
+
+
+/* dDAE_2.871 — Debug definitivo popup conferma colore: un solo gestore globale, nessun blocco iOS */
+(function(){
+  var busyColorConfirm = false;
+  var activeConfirm = null;
+
+  function stop(ev){
+    try{ if (ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if (ev) ev.stopPropagation(); }catch(_){ }
+    try{ if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+
+  function isOpen(el){
+    try{ return !!(el && !el.hidden && el.getAttribute('aria-hidden') !== 'true'); }catch(_){ return false; }
+  }
+
+  function closest(target, selector){
+    try{ return target && target.closest ? target.closest(selector) : null; }catch(_){ return null; }
+  }
+
+  function hardCloseConfirm(){
+    try{
+      var modal = document.getElementById('confirmYesNoModal');
+      if (modal){
+        try{ modal.hidden = true; }catch(_){ }
+        try{ modal.setAttribute('hidden',''); }catch(_){ }
+        try{ modal.setAttribute('aria-hidden','true'); }catch(_){ }
+        try{ modal.classList.remove('is-open','show','open','active'); }catch(_){ }
+        try{ modal.style.setProperty('display','none','important'); }catch(_){ }
+        try{ modal.style.setProperty('pointer-events','none','important'); }catch(_){ }
+        try{ modal.style.removeProperty('z-index'); }catch(_){ }
+      }
+      try{ document.body.classList.remove('confirm-yesno-open'); }catch(_){ }
+      try{ document.documentElement.classList.remove('confirm-yesno-open'); }catch(_){ }
+      try{ if (typeof __confirmYesNoResolve !== 'undefined') __confirmYesNoResolve = null; }catch(_){ }
+      try{ if (typeof __confirmYesNoReadyAt__ !== 'undefined') __confirmYesNoReadyAt__ = 0; }catch(_){ }
+      try{ if (typeof __confirmYesNoSuppressUntil__ !== 'undefined') __confirmYesNoSuppressUntil__ = 0; }catch(_){ }
+      try{
+        var otherOpen = document.querySelector('.modal.is-open:not([hidden]), .modal:not([hidden])[aria-hidden="false"]');
+        if (!otherOpen) document.body.classList.remove('modal-open');
+      }catch(_){ }
+    }catch(_){ }
+  }
+
+  function finishConfirm(value, ev){
+    if (ev) stop(ev);
+    var st = activeConfirm;
+    if (!st || st.done) { hardCloseConfirm(); return; }
+    st.done = true;
+    activeConfirm = null;
+    try{ if (st.timer) clearTimeout(st.timer); }catch(_){ }
+    hardCloseConfirm();
+    try{ requestAnimationFrame(hardCloseConfirm); }catch(_){ }
+    try{ setTimeout(hardCloseConfirm, 0); }catch(_){ }
+    try{ setTimeout(hardCloseConfirm, 80); }catch(_){ }
+    try{ st.resolve(!!value); }catch(_){ }
+  }
+
+  function globalConfirmInput(ev){
+    try{
+      var modal = document.getElementById('confirmYesNoModal');
+      if (!activeConfirm || !isOpen(modal)) return;
+      var t = ev && ev.target;
+      if (closest(t, '#confirmYesNoYes')) { finishConfirm(true, ev); return; }
+      if (closest(t, '#confirmYesNoNo')) { finishConfirm(false, ev); return; }
+      if (t === modal) { finishConfirm(false, ev); return; }
+      if (modal && t && !modal.contains(t)) { stop(ev); return; }
+    }catch(_){ }
+  }
+
+  function bindGlobalConfirmInput(){
+    try{
+      if (window.__ddae2869ConfirmInputBound__) return;
+      window.__ddae2869ConfirmInputBound__ = true;
+      ['touchstart','touchend','pointerdown','pointerup','mousedown','mouseup','click'].forEach(function(evt){
+        try{ document.addEventListener(evt, globalConfirmInput, { capture:true, passive:false }); }catch(_){ try{ document.addEventListener(evt, globalConfirmInput, true); }catch(__){ } }
+      });
+    }catch(_){ }
+  }
+
+  function showConfirm(message){
+    bindGlobalConfirmInput();
+    return new Promise(function(resolve){
+      try{
+        if (activeConfirm && typeof activeConfirm.resolve === 'function'){
+          try{ activeConfirm.resolve(false); }catch(_){ }
+        }
+        activeConfirm = null;
+        hardCloseConfirm();
+        var modal = document.getElementById('confirmYesNoModal');
+        var textEl = document.getElementById('confirmYesNoText');
+        var yesBtn = document.getElementById('confirmYesNoYes');
+        var noBtn = document.getElementById('confirmYesNoNo');
+        if (!modal || !textEl || !yesBtn || !noBtn){
+          try{ resolve(!!window.confirm(String(message || 'Confermare?'))); }catch(_){ resolve(false); }
+          return;
+        }
+        activeConfirm = { resolve: resolve, done:false, timer:null };
+        textEl.textContent = (typeof __translateText__ === 'function') ? __translateText__(String(message || 'Confermare?')) : String(message || 'Confermare?');
+        try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
+        try{ modal.classList.add('is-open'); }catch(_){ }
+        try{ modal.style.removeProperty('display'); }catch(_){ }
+        try{ modal.style.setProperty('display','flex','important'); }catch(_){ }
+        try{ modal.style.setProperty('z-index','2147483647','important'); }catch(_){ }
+        try{ modal.style.setProperty('pointer-events','auto','important'); }catch(_){ }
+        try{ yesBtn.style.setProperty('pointer-events','auto','important'); noBtn.style.setProperty('pointer-events','auto','important'); }catch(_){ }
+        modal.hidden = false;
+        try{ modal.removeAttribute('hidden'); }catch(_){ }
+        try{ modal.setAttribute('aria-hidden','false'); }catch(_){ }
+        try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
+        try{ document.documentElement.classList.add('confirm-yesno-open'); }catch(_){ }
+        try{ if (typeof __confirmYesNoSuppressUntil__ !== 'undefined') __confirmYesNoSuppressUntil__ = 0; }catch(_){ }
+        try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
+        try{ yesBtn.onclick = function(ev){ finishConfirm(true, ev); }; }catch(_){ }
+        try{ noBtn.onclick = function(ev){ finishConfirm(false, ev); }; }catch(_){ }
+        activeConfirm.timer = setTimeout(function(){ if (activeConfirm && activeConfirm.resolve === resolve) finishConfirm(false); }, 60000);
+      }catch(_){
+        hardCloseConfirm();
+        try{ resolve(false); }catch(__){ }
+      }
+    });
+  }
+
+  try{ __confirmYesNoForceClose__ = hardCloseConfirm; }catch(_){ }
+  try{ globalThis.__confirmYesNoForceClose__ = hardCloseConfirm; }catch(_){ }
+  try{ confirmYesNo = showConfirm; }catch(_){ }
+  try{ globalThis.confirmYesNo = showConfirm; }catch(_){ }
+
+  function changedFields(payload){
+    try{
+      if (typeof __tagColorPopupChangedFields__ === 'function') return __tagColorPopupChangedFields__(payload);
+    }catch(_){ }
+    return { bg:true, border:true, fg:true, opacity:true, any:true, next:(payload && payload.colors) ? payload.colors : null };
+  }
+
+  function visualFromPayload(payload, changed){
+    try{
+      var colors = payload && payload.colors && typeof payload.colors === 'object' ? payload.colors : {};
+      var next = (changed && changed.next && typeof changed.next === 'object') ? changed.next : null;
+      return {
+        bg: (next && next.bg) || colors.bg || 'blue-4',
+        border: (next && next.border) || colors.border || colors.bg || 'blue-4',
+        fg: (next && next.fg) || colors.fg || 'white',
+        opacity: (typeof __designBgOpacityNormalize__ === 'function') ? __designBgOpacityNormalize__(payload && payload.opacity != null ? payload.opacity : (next && next.opacity != null ? next.opacity : 0.80)) : (payload && payload.opacity != null ? payload.opacity : 0.80),
+        bold: false
+      };
+    }catch(_){ return { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80, bold:false }; }
+  }
+
+  async function applyCategorySafely(cfg, payload, changed, target){
+    try{
+      if (String(target || '') === 'pill-single-button'){
+        var visual = visualFromPayload(payload, changed);
+        try{ if (typeof __pillThemeWrite__ === 'function') __pillThemeWrite__(visual); }catch(_){ }
+        try{ if (typeof __pillThemeOverwriteTargets__ === 'function') __pillThemeOverwriteTargets__(visual); }catch(_){ }
+      }
+      if (cfg && typeof cfg.apply === 'function') await cfg.apply(payload, changed || { any:true });
+    }catch(_){ }
+  }
+
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      if (busyColorConfirm) return;
+      busyColorConfirm = true;
+      var cb = null, cfg = null, payload = null, changed = null, target = '';
+      try{
+        target = String((__tagColorPopupState__ && __tagColorPopupState__.target) || '');
+        cb = __tagColorPopupState__ ? __tagColorPopupState__.onSelect : null;
+        cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload = (typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : null;
+        changed = changedFields(payload);
+        if (!changed || typeof changed !== 'object') changed = { any:true };
+        if (changed.any !== true && (changed.bg || changed.border || changed.fg || changed.opacity || changed.bold)) changed.any = true;
+        try{ __tagColorPopupState__.confirmed = true; }catch(_){ }
+        try{ __tagColorPopupClose__(); }catch(_){ }
+        try{ if (typeof cb === 'function') await cb(payload); }catch(_){ }
+        if (cfg && typeof cfg.apply === 'function' && changed.any){
+          var ok = await showConfirm(String(cfg.message || 'Applicare le modifiche a tutta la categoria di questo tasto?'));
+          hardCloseConfirm();
+          if (ok) await applyCategorySafely(cfg, payload, changed, target);
+        }
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+        try{ if (typeof __headerActionApplyAll__ === 'function') __headerActionApplyAll__(); }catch(_){ }
+        try{ if (typeof __launcherIconApplyAll__ === 'function') __launcherIconApplyAll__(); }catch(_){ }
+        try{ if (typeof renderRoomSettingsPage === 'function') renderRoomSettingsPage(); }catch(_){ }
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        hardCloseConfirm();
+      }finally{
+        busyColorConfirm = false;
+      }
+    };
+    try{ globalThis.__tagColorPopupConfirm__ = __tagColorPopupConfirm__; }catch(_){ }
+  }catch(_){ busyColorConfirm = false; }
+
+  try{ bindGlobalConfirmInput(); }catch(_){ }
+  try{ setTimeout(function(){ var m=document.getElementById('confirmYesNoModal'); if (m && (m.hidden || m.getAttribute('aria-hidden') === 'true')) hardCloseConfirm(); }, 0); }catch(_){ }
+})();
+
+
+/* dDAE_2.871 — Popup conferma colore isolato: nessun blocco iOS dopo SI/NO */
+(function(){
+  var busy = false;
+  var overlayId = 'ddae870ConfirmOverlay';
+
+  function safeCall(fn){ try{ if (typeof fn === 'function') fn(); }catch(_){ } }
+  function stop(ev){
+    try{ if (ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if (ev) ev.stopPropagation(); }catch(_){ }
+    try{ if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function removeOldConfirm(){
+    try{
+      var m = document.getElementById('confirmYesNoModal');
+      if (m){
+        m.hidden = true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.setProperty('display','none','important');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('confirm-yesno-open'); }catch(_){ }
+    try{ document.documentElement.classList.remove('confirm-yesno-open'); }catch(_){ }
+    try{ if (typeof __confirmYesNoResolve !== 'undefined') __confirmYesNoResolve = null; }catch(_){ }
+    try{ if (typeof __confirmYesNoSuppressUntil__ !== 'undefined') __confirmYesNoSuppressUntil__ = 0; }catch(_){ }
+    try{ if (typeof __confirmYesNoReadyAt__ !== 'undefined') __confirmYesNoReadyAt__ = 0; }catch(_){ }
+  }
+  function removeOverlay(){
+    try{ var old = document.getElementById(overlayId); if (old && old.parentNode) old.parentNode.removeChild(old); }catch(_){ }
+    removeOldConfirm();
+    try{ document.body.classList.remove('ddae870-confirm-open'); }catch(_){ }
+    try{ document.documentElement.classList.remove('ddae870-confirm-open'); }catch(_){ }
+    try{
+      var stillOpen = document.querySelector('.modal.is-open:not([hidden]), .modal:not([hidden])[aria-hidden="false"], #tagColorModal:not([hidden])');
+      if (!stillOpen) document.body.classList.remove('modal-open');
+    }catch(_){ document.body.classList.remove('modal-open'); }
+  }
+  function closeTagColorHard(){
+    try{ if (typeof __tagColorPopupClose__ === 'function') __tagColorPopupClose__(); }catch(_){ }
+    try{
+      var m = document.getElementById('tagColorModal');
+      if (m){
+        m.hidden = true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.removeProperty('display');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
+    try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
+  }
+  function pointFrom(ev){
+    try{
+      var t = (ev && ev.changedTouches && ev.changedTouches[0]) || (ev && ev.touches && ev.touches[0]);
+      if (t) return {x:t.clientX, y:t.clientY};
+      return {x:ev.clientX, y:ev.clientY};
+    }catch(_){ return {x:null,y:null}; }
+  }
+  function hitButton(ev, selector){
+    try{
+      var target = ev && ev.target;
+      var direct = target && target.closest ? target.closest(selector) : null;
+      if (direct) return direct;
+      var p = pointFrom(ev);
+      if (p.x == null || p.y == null) return null;
+      var nodes = Array.prototype.slice.call(document.querySelectorAll(selector));
+      for (var i = nodes.length - 1; i >= 0; i--){
+        var el = nodes[i];
+        var r = el.getBoundingClientRect();
+        if (p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom) return el;
+      }
+    }catch(_){ }
+    return null;
+  }
+  function isolatedConfirm(message){
+    return new Promise(function(resolve){
+      try{
+        removeOverlay();
+        removeOldConfirm();
+        var ov = document.createElement('div');
+        ov.id = overlayId;
+        ov.setAttribute('role','presentation');
+        ov.innerHTML = '<div class="ddae870-confirm-card" role="dialog" aria-modal="true" aria-label="Conferma"><div class="ddae870-confirm-text"></div><div class="ddae870-confirm-actions"><button id="ddae870ConfirmYes" type="button">SI</button><button id="ddae870ConfirmNo" type="button">NO</button></div></div>';
+        document.body.appendChild(ov);
+        var txt = ov.querySelector('.ddae870-confirm-text');
+        if (txt) txt.textContent = (typeof __translateText__ === 'function') ? __translateText__(String(message || 'Confermare?')) : String(message || 'Confermare?');
+        document.body.classList.add('ddae870-confirm-open');
+        document.documentElement.classList.add('ddae870-confirm-open');
+        var done = false;
+        var listeners = [];
+        var timer = null;
+        function add(el, type, fn, opts){ try{ el.addEventListener(type, fn, opts); listeners.push([el,type,fn,opts]); }catch(_){ } }
+        function cleanup(value, ev){
+          if (ev) stop(ev);
+          if (done) return;
+          done = true;
+          try{ listeners.forEach(function(x){ try{ x[0].removeEventListener(x[1], x[2], x[3]); }catch(_){} }); }catch(_){ }
+          try{ if (timer) clearTimeout(timer); }catch(_){ }
+          removeOverlay();
+          try{ requestAnimationFrame(removeOverlay); }catch(_){ }
+          try{ setTimeout(removeOverlay, 0); }catch(_){ }
+          try{ setTimeout(removeOverlay, 120); }catch(_){ }
+          resolve(!!value);
+        }
+        function handler(ev){
+          try{
+            if (hitButton(ev, '#ddae870ConfirmYes')) { cleanup(true, ev); return; }
+            if (hitButton(ev, '#ddae870ConfirmNo')) { cleanup(false, ev); return; }
+            var card = ov.querySelector('.ddae870-confirm-card');
+            var target = ev && ev.target;
+            if (target === ov || (target && card && !card.contains(target))) { cleanup(false, ev); return; }
+            stop(ev);
+          }catch(_){ }
+        }
+        ['touchstart','touchend','pointerdown','pointerup','mousedown','mouseup','click'].forEach(function(evt){ add(document, evt, handler, {capture:true, passive:false}); });
+        timer = setTimeout(function(){ cleanup(false); }, 60000);
+      }catch(_){
+        removeOverlay();
+        resolve(false);
+      }
+    });
+  }
+
+  try{ __confirmYesNoForceClose__ = removeOverlay; }catch(_){ }
+  try{ globalThis.__confirmYesNoForceClose__ = removeOverlay; }catch(_){ }
+  try{ confirmYesNo = isolatedConfirm; }catch(_){ }
+  try{ globalThis.confirmYesNo = isolatedConfirm; }catch(_){ }
+
+  function changedFields(payload){
+    try{ if (typeof __tagColorPopupChangedFields__ === 'function') return __tagColorPopupChangedFields__(payload); }catch(_){ }
+    return { bg:true, border:true, fg:true, opacity:true, any:true };
+  }
+  function normalizeChanged(changed){
+    try{
+      if (!changed || typeof changed !== 'object') changed = {};
+      if (changed.any !== true && (changed.bg || changed.border || changed.fg || changed.opacity || changed.bold)) changed.any = true;
+      if (changed.any !== true) changed.any = true;
+    }catch(_){ changed = { any:true }; }
+    return changed;
+  }
+  function visualFromPayload(payload){
+    try{
+      var colors = payload && payload.colors && typeof payload.colors === 'object' ? payload.colors : {};
+      return {
+        bg: colors.bg || 'blue-4',
+        border: colors.border || colors.bg || 'blue-4',
+        fg: colors.fg || 'white',
+        opacity: (typeof __designBgOpacityNormalize__ === 'function') ? __designBgOpacityNormalize__(payload && payload.opacity != null ? payload.opacity : 0.80) : (payload && payload.opacity != null ? payload.opacity : 0.80),
+        bold: false
+      };
+    }catch(_){ return { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80, bold:false }; }
+  }
+  async function applyCategory(target, cfg, payload, changed){
+    try{
+      if (String(target || '') === 'pill-single-button'){
+        var v = visualFromPayload(payload);
+        try{ if (typeof __pillThemeWrite__ === 'function') __pillThemeWrite__(v); }catch(_){ }
+        try{ if (typeof __pillThemeOverwriteTargets__ === 'function') __pillThemeOverwriteTargets__(v); }catch(_){ }
+      }
+      if (cfg && typeof cfg.apply === 'function') await cfg.apply(payload, changed || {any:true});
+    }catch(_){ }
+  }
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      if (busy) return;
+      busy = true;
+      var cb = null, cfg = null, payload = null, changed = null, target = '';
+      try{
+        target = String((__tagColorPopupState__ && __tagColorPopupState__.target) || '');
+        cb = __tagColorPopupState__ ? __tagColorPopupState__.onSelect : null;
+        cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload = (typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : null;
+        changed = normalizeChanged(changedFields(payload));
+        try{ __tagColorPopupState__.confirmed = true; }catch(_){ }
+        closeTagColorHard();
+        try{ if (typeof cb === 'function') await cb(payload); }catch(_){ }
+        if (cfg && typeof cfg.apply === 'function' && changed.any){
+          var ok = await isolatedConfirm(String(cfg.message || 'Applicare le modifiche a tutta la categoria di questo tasto?'));
+          removeOverlay();
+          if (ok) await applyCategory(target, cfg, payload, changed);
+        }
+        safeCall(typeof __pillApplyAll__ === 'function' ? __pillApplyAll__ : null);
+        safeCall(typeof __headerActionApplyAll__ === 'function' ? __headerActionApplyAll__ : null);
+        safeCall(typeof __launcherIconApplyAll__ === 'function' ? __launcherIconApplyAll__ : null);
+        safeCall(typeof renderRoomSettingsPage === 'function' ? renderRoomSettingsPage : null);
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        removeOverlay();
+      }finally{
+        busy = false;
+        removeOldConfirm();
+      }
+    };
+    try{ globalThis.__tagColorPopupConfirm__ = __tagColorPopupConfirm__; }catch(_){ }
+  }catch(_){ busy = false; }
+})();
+
+
+/* dDAE_2.871 — Garanzia riapertura popup colore dopo conferma isolata */
+(function(){
+  try{
+    var oldOpen = (typeof __tagColorPopupOpen__ === 'function') ? __tagColorPopupOpen__ : null;
+    if (oldOpen && !oldOpen.__ddae2870ReopenFix){
+      var wrapped = function(){
+        try{ var m=document.getElementById('tagColorModal'); if (m){ m.style.removeProperty('display'); m.style.removeProperty('pointer-events'); } }catch(_){ }
+        var out = oldOpen.apply(this, arguments);
+        try{ var m2=document.getElementById('tagColorModal'); if (m2){ m2.style.removeProperty('display'); m2.style.setProperty('pointer-events','auto','important'); } }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2870ReopenFix = true;
+      __tagColorPopupOpen__ = wrapped;
+      try{ globalThis.__tagColorPopupOpen__ = wrapped; }catch(_){ }
+    }
+  }catch(_){ }
+})();
+
+/* dDAE_2.871 — Riscrittura flusso colore tasti: niente popup conferma DOM, nessun overlay bloccante */
+(function(){
+  var __ddae2871Busy = false;
+
+  function __ddae2871RemoveNode(id){
+    try{ var n = document.getElementById(id); if (n && n.parentNode) n.parentNode.removeChild(n); }catch(_){ }
+  }
+
+  function __ddae2871UnlockUi(){
+    try{ __ddae2871RemoveNode('ddae870ConfirmOverlay'); }catch(_){ }
+    try{
+      var m = document.getElementById('confirmYesNoModal');
+      if (m){
+        m.hidden = true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.setProperty('display','none','important');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('confirm-yesno-open','ddae870-confirm-open'); }catch(_){ }
+    try{ document.documentElement.classList.remove('confirm-yesno-open','ddae870-confirm-open'); }catch(_){ }
+    try{ if (typeof __confirmYesNoResolve !== 'undefined') __confirmYesNoResolve = null; }catch(_){ }
+    try{ if (typeof __confirmYesNoReadyAt__ !== 'undefined') __confirmYesNoReadyAt__ = 0; }catch(_){ }
+    try{ if (typeof __confirmYesNoSuppressUntil__ !== 'undefined') __confirmYesNoSuppressUntil__ = 0; }catch(_){ }
+    try{
+      var tag = document.getElementById('tagColorModal');
+      var tagOpen = !!(tag && !tag.hidden && tag.getAttribute('aria-hidden') !== 'true');
+      if (!tagOpen) document.body.classList.remove('tag-color-modal-open');
+      var anyOpen = !!document.querySelector('.modal.is-open:not([hidden]), .modal:not([hidden])[aria-hidden="false"]');
+      if (!anyOpen && !tagOpen) document.body.classList.remove('modal-open');
+    }catch(_){ document.body.classList.remove('modal-open'); }
+  }
+
+  function __ddae2871CloseColorPopupWithoutRevert(){
+    try{ if (__tagColorPopupState__) __tagColorPopupState__.confirmed = true; }catch(_){ }
+    try{ if (typeof __tagColorPopupClose__ === 'function') __tagColorPopupClose__(); }catch(_){ }
+    try{
+      var m = document.getElementById('tagColorModal');
+      if (m){
+        m.hidden = true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.removeProperty('display');
+        m.style.removeProperty('pointer-events');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
+    try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
+    __ddae2871UnlockUi();
+  }
+
+  function __ddae2871ChangedFields(payload){
+    try{
+      if (typeof __tagColorPopupChangedFields__ === 'function'){
+        var c = __tagColorPopupChangedFields__(payload);
+        if (c && typeof c === 'object'){
+          if (c.any !== true && (c.bg || c.border || c.fg || c.opacity || c.bold)) c.any = true;
+          return c;
+        }
+      }
+    }catch(_){ }
+    return { bg:true, border:true, fg:true, opacity:true, bold:false, any:true };
+  }
+
+  function __ddae2871AskApplyAll(message){
+    __ddae2871UnlockUi();
+    try{
+      var txt = String(message || 'Applicare le modifiche a tutta la categoria di questo tasto?');
+      if (typeof __translateText__ === 'function') txt = __translateText__(txt);
+      return !!window.confirm(txt + '\n\nOK = SI\nAnnulla = NO');
+    }catch(_){ return false; }
+  }
+
+  async function __ddae2871ApplyCategory(target, cfg, payload, changed){
+    try{
+      if (cfg && typeof cfg.apply === 'function') await cfg.apply(payload, changed || { any:true, bg:true, border:true, fg:true, opacity:true });
+      if (String(target || '') === 'pill-single-button'){
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+
+  try{
+    __confirmYesNoForceClose__ = __ddae2871UnlockUi;
+    globalThis.__confirmYesNoForceClose__ = __ddae2871UnlockUi;
+  }catch(_){ }
+
+  try{
+    __tagColorPopupApplyCategoryIfNeeded__ = async function(payload, applyCategoryCfg){
+      var cfg = (applyCategoryCfg && typeof applyCategoryCfg === 'object') ? applyCategoryCfg : ((__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? __tagColorPopupState__.applyCategory : null);
+      if (!cfg || typeof cfg.apply !== 'function') return;
+      var changed = __ddae2871ChangedFields(payload);
+      if (!changed.any) return;
+      if (!__ddae2871AskApplyAll(cfg.message)) return;
+      await __ddae2871ApplyCategory((__tagColorPopupState__ && __tagColorPopupState__.target) || '', cfg, payload, changed);
+    };
+    globalThis.__tagColorPopupApplyCategoryIfNeeded__ = __tagColorPopupApplyCategoryIfNeeded__;
+  }catch(_){ }
+
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      if (__ddae2871Busy) return;
+      __ddae2871Busy = true;
+      var cb = null, cfg = null, payload = null, changed = null, target = '';
+      try{
+        target = String((__tagColorPopupState__ && __tagColorPopupState__.target) || '');
+        cb = (__tagColorPopupState__ && typeof __tagColorPopupState__.onSelect === 'function') ? __tagColorPopupState__.onSelect : null;
+        cfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload = (typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : { mode:'bg', spec:'blue-4', opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'white' } };
+        changed = __ddae2871ChangedFields(payload);
+        __ddae2871CloseColorPopupWithoutRevert();
+
+        if (typeof cb === 'function'){
+          try{ await cb(payload); }catch(_){ }
+        }
+
+        if (cfg && typeof cfg.apply === 'function' && changed.any){
+          var ok = __ddae2871AskApplyAll(cfg.message);
+          __ddae2871UnlockUi();
+          if (ok) await __ddae2871ApplyCategory(target, cfg, payload, changed);
+        }
+
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+        try{ if (typeof __headerActionApplyAll__ === 'function') __headerActionApplyAll__(); }catch(_){ }
+        try{ if (typeof __launcherIconApplyAll__ === 'function') __launcherIconApplyAll__(); }catch(_){ }
+        try{ if (typeof __setupSingleActionButtonPaletteBindings__ === 'function') __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+        try{ if (typeof __applySettingsEditorButtonBoldAndVisuals__ === 'function') __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+        try{ if (typeof renderRoomSettingsPage === 'function') renderRoomSettingsPage(); }catch(_){ }
+        try{ if (typeof saveData === 'function') saveData(); }catch(_){ }
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        __ddae2871UnlockUi();
+      }finally{
+        __ddae2871Busy = false;
+        __ddae2871UnlockUi();
+        try{ setTimeout(__ddae2871UnlockUi, 0); }catch(_){ }
+        try{ setTimeout(__ddae2871UnlockUi, 120); }catch(_){ }
+        try{ setTimeout(__ddae2871UnlockUi, 400); }catch(_){ }
+      }
+    };
+    globalThis.__tagColorPopupConfirm__ = __tagColorPopupConfirm__;
+  }catch(_){ __ddae2871Busy = false; }
+
+  try{
+    var oldOpen = (typeof __tagColorPopupOpen__ === 'function') ? __tagColorPopupOpen__ : null;
+    if (oldOpen && !oldOpen.__ddae2871CleanOpen){
+      var openClean = function(){
+        __ddae2871UnlockUi();
+        try{ var m = document.getElementById('tagColorModal'); if (m){ m.style.removeProperty('display'); m.style.removeProperty('pointer-events'); } }catch(_){ }
+        return oldOpen.apply(this, arguments);
+      };
+      openClean.__ddae2871CleanOpen = true;
+      __tagColorPopupOpen__ = openClean;
+      globalThis.__tagColorPopupOpen__ = openClean;
+    }
+  }catch(_){ }
+
+  try{ window.addEventListener('pageshow', __ddae2871UnlockUi, { passive:true }); }catch(_){ }
+  try{ document.addEventListener('visibilitychange', __ddae2871UnlockUi, true); }catch(_){ }
 })();

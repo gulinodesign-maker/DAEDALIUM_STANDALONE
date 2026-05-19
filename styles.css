@@ -23429,7 +23429,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.864 — Conferma Sì/No: layer touch realmente prioritario su iOS */
+/* dDAE_2.869 — Conferma Sì/No: layer touch realmente prioritario su iOS */
 #confirmYesNoModal:not([hidden]){
   position:fixed !important;
   inset:0 !important;
@@ -23463,5 +23463,135 @@ body.confirm-yesno-open header{
 }
 body.confirm-yesno-open #confirmYesNoModal,
 body.confirm-yesno-open #confirmYesNoModal *{
+  pointer-events:auto !important;
+}
+
+/* dDAE_2.869 — Conferma Sì/No: chiusura forzata dopo SI/NO */
+#confirmYesNoModal[hidden]{
+  display:none !important;
+  pointer-events:none !important;
+}
+body:not(.confirm-yesno-open) #confirmYesNoModal[aria-hidden="true"]{
+  display:none !important;
+  pointer-events:none !important;
+}
+
+/* dDAE_2.869 — popup conferma categoria: SI/NO sempre cliccabili e chiusura pulita */
+#confirmYesNoModal:not([hidden]){
+  display:flex !important;
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+}
+#confirmYesNoModal:not([hidden]) .confirm-card,
+#confirmYesNoModal:not([hidden]) #confirmYesNoYes,
+#confirmYesNoModal:not([hidden]) #confirmYesNoNo{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#confirmYesNoModal[hidden],
+#confirmYesNoModal[aria-hidden="true"]{
+  display:none !important;
+  pointer-events:none !important;
+}
+body:not(.confirm-yesno-open) #app,
+body:not(.confirm-yesno-open) .app-shell,
+body:not(.confirm-yesno-open) .topbar,
+body:not(.confirm-yesno-open) main,
+body:not(.confirm-yesno-open) header{
+  pointer-events:auto;
+}
+
+
+/* dDAE_2.869 — Conferma colore: SI/NO sempre sopra ogni layer e sblocco dopo chiusura */
+#confirmYesNoModal:not([hidden]){
+  display:flex !important;
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+}
+#confirmYesNoModal:not([hidden]) .confirm-card,
+#confirmYesNoModal:not([hidden]) #confirmYesNoYes,
+#confirmYesNoModal:not([hidden]) #confirmYesNoNo{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#confirmYesNoModal[hidden],
+#confirmYesNoModal[aria-hidden="true"]{
+  display:none !important;
+  pointer-events:none !important;
+}
+body.confirm-yesno-open #confirmYesNoModal,
+body.confirm-yesno-open #confirmYesNoModal *{
+  pointer-events:auto !important;
+}
+
+
+/* dDAE_2.870 — Conferma colore isolata e flat */
+#ddae870ConfirmOverlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  background:rgba(0,0,0,0.28) !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#ddae870ConfirmOverlay .ddae870-confirm-card{
+  width:min(360px, calc(100vw - 36px)) !important;
+  background:var(--card, #ffffff) !important;
+  color:var(--text, #22313f) !important;
+  border:1px solid var(--line, rgba(0,0,0,0.12)) !important;
+  border-radius:18px !important;
+  padding:18px !important;
+  box-shadow:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#ddae870ConfirmOverlay .ddae870-confirm-text{
+  font-weight:800 !important;
+  font-size:16px !important;
+  line-height:1.25 !important;
+  text-align:center !important;
+  margin:0 0 14px !important;
+}
+#ddae870ConfirmOverlay .ddae870-confirm-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:12px !important;
+}
+#ddae870ConfirmOverlay button{
+  min-height:48px !important;
+  width:100% !important;
+  border:0 !important;
+  border-radius:14px !important;
+  box-shadow:none !important;
+  font-weight:900 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#ddae870ConfirmYes{ background:rgba(52,168,83,0.90) !important; color:#fff !important; }
+#ddae870ConfirmNo{ background:rgba(220,68,55,0.90) !important; color:#fff !important; }
+body.ddae870-confirm-open #app,
+body.ddae870-confirm-open .app-shell,
+body.ddae870-confirm-open .topbar,
+body.ddae870-confirm-open main,
+body.ddae870-confirm-open header{
+  pointer-events:none !important;
+}
+body.ddae870-confirm-open #ddae870ConfirmOverlay,
+body.ddae870-confirm-open #ddae870ConfirmOverlay *{
   pointer-events:auto !important;
 }
