@@ -23618,7 +23618,7 @@ body.ddae870-confirm-open #ddae870ConfirmOverlay *{
 }
 
 
-/* dDAE_2.877 — Conferma colore custom SI/NO rettangolare, simmetrica, flat */
+/* dDAE_2.878 — Conferma colore custom SI/NO rettangolare, simmetrica, flat */
 #ddae2877ConfirmOverlay{
   position:fixed !important;
   inset:0 !important;
@@ -23687,4 +23687,32 @@ body.ddae2877-confirm-open header{
 body.ddae2877-confirm-open #ddae2877ConfirmOverlay,
 body.ddae2877-confirm-open #ddae2877ConfirmOverlay *{
   pointer-events:auto !important;
+}
+
+/* dDAE_2.878 — Popup conferma colore sbloccato sopra tutti i popup Impostazioni */
+html.confirm-yesno-open #confirmYesNoModal,
+body.confirm-yesno-open #confirmYesNoModal,
+#confirmYesNoModal:not([hidden]){
+  display:flex !important;
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+}
+html.confirm-yesno-open #confirmYesNoModal .confirm-card,
+html.confirm-yesno-open #confirmYesNoModal #confirmYesNoYes,
+html.confirm-yesno-open #confirmYesNoModal #confirmYesNoNo,
+body.confirm-yesno-open #confirmYesNoModal .confirm-card,
+body.confirm-yesno-open #confirmYesNoModal #confirmYesNoYes,
+body.confirm-yesno-open #confirmYesNoModal #confirmYesNoNo{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#confirmYesNoModal[hidden],
+#confirmYesNoModal[aria-hidden="true"]{
+  display:none !important;
+  pointer-events:none !important;
 }
