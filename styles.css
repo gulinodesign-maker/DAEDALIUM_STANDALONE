@@ -22287,7 +22287,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 }
 
 
-/* dDAE_2.888 — Ospiti: stato reale stanza occupata */
+/* dDAE_2.889 — Ospiti: stato reale stanza occupata */
 #page-ospite .room-dot.occupied-real,
 #page-ospite .room-dot.occupied.occupied-real{
   background:#ff0000 !important;
@@ -23477,7 +23477,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.888 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.889 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23507,7 +23507,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.888 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
+/* dDAE_2.889 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
 #page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow{
   display:none !important;
 }
@@ -23519,7 +23519,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.888 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
+/* dDAE_2.889 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
 #page-ospite .guest-form-card.is-view > .hd{
   display:flex !important;
   align-items:center !important;
@@ -23575,7 +23575,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.888 — Prenota/Preventivo: doppio tasto creazione e filtro preventivi */
+/* dDAE_2.889 — Prenota/Preventivo: doppio tasto creazione e filtro preventivi */
 #page-ospite .guest-create-choice-row{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -23628,7 +23628,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.888 — Ospiti: filtri iconografici in una sola linea omogenea */
+/* dDAE_2.889 — Ospiti: filtri iconografici in una sola linea omogenea */
 #page-ospiti .guest-filter-grid{
   width:100% !important;
   margin:0 0 14px 0 !important;
@@ -23698,4 +23698,21 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
     width:22px !important;
     height:22px !important;
   }
+}
+
+
+/* dDAE_2.889 — Ospiti: Oggi/Preventivi sempre iconografici e filtri senza testo visibile */
+#page-ospiti .guest-filter-row-1 .gf-chip-btn{
+  font-size:0 !important;
+  line-height:1 !important;
+}
+#page-ospiti .guest-filter-row-1 .gf-chip-btn .gf-filter-ico{
+  font-size:16px !important;
+}
+#page-ospiti .guest-filter-row-1 .gf-chip-btn .sr-only{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
 }
