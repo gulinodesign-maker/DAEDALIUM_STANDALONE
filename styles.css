@@ -23363,7 +23363,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 
 
-/* dDAE_2.861 — Ospiti: range centrato sul nome e stanze in grassetto */
+/* dDAE_2.862 — Ospiti: range centrato sul nome e stanze in grassetto */
 #page-ospiti .guest-nameblock{
   align-items:center;
 }
@@ -23381,7 +23381,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
   font-weight:700;
 }
 
-/* dDAE_2.861 — Calendario: badge stanze da pulire e navigazione mese/oggi/giorno */
+/* dDAE_2.862 — Calendario: badge stanze da pulire e navigazione mese/oggi/giorno */
 #page-calendario #calTomorrowCheckoutBadge.cal-today-occupancy-badge{
   left: 0 !important;
   right: auto !important;
