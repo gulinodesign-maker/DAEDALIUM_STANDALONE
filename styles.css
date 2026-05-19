@@ -23804,7 +23804,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.881 — Preventivi: CHANNEL visibile su tutte le schede preventivo */
+/* dDAE_2.882 — Preventivi: CHANNEL visibile su tutte le schede preventivo */
 body.quote-mode #page-ospite.is-preventivo #guestChannelRow,
 body.quote-mode #page-ospite #guestChannelRow,
 #page-ospite.is-preventivo #guestChannelRow,
@@ -23859,4 +23859,65 @@ body.quote-mode #page-ospite #guestBookingNumberField,
   display:none !important;
   visibility:hidden !important;
   pointer-events:none !important;
+}
+
+/* dDAE_2.882 — Preventivi: CHANNEL separato dalla scheda Nuovo ospite */
+#page-ospite #preventivoChannelRow{
+  display:none;
+}
+#page-ospite.is-preventivo #preventivoChannelRow,
+body.quote-mode #page-ospite #preventivoChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#preventivoChannelRow .preventivo-channel-select-field{
+  min-width:0 !important;
+}
+#preventivoChannelRow #preventivoChannel{
+  width:100% !important;
+  min-height:44px !important;
+  height:44px !important;
+  box-sizing:border-box !important;
+}
+#preventivoChannelRow .preventivo-channel-preview{
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#preventivoChannelBadge{
+  min-width:44px !important;
+  height:44px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+  background:rgba(148,163,184,.18) !important;
+  color:inherit !important;
+}
+#preventivoChannelBadge.is-empty{
+  opacity:.55 !important;
+}
+.preventivo-card .guest-channel-inline{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
 }
