@@ -23804,7 +23804,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.881 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.882 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23831,4 +23831,69 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 #page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel:disabled{
   opacity:1 !important;
+}
+
+/* dDAE_2.882 — Preventivi/prenotazioni: Channel visibile come Nuovo ospite */
+body.quote-mode #page-ospite #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+#page-ospite.is-preventivo #guestChannelRow > .subfield,
+body.quote-mode #page-ospite #guestChannelRow > .subfield.field.float,
+#page-ospite.is-preventivo #guestChannelRow > .subfield.field.float{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelRow > .subfield:nth-child(2),
+#page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+  align-items:center !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+body.quote-mode #page-ospite #guestChannelRow #guestBooking,
+body.quote-mode #page-ospite #guestChannelRow #guestBooking + label,
+body.quote-mode #page-ospite #guestChannelRow #guestChannel,
+body.quote-mode #page-ospite #guestChannelRow #guestChannel + label,
+body.quote-mode #page-ospite #guestChannelRow label[for="guestChannel"],
+#page-ospite.is-preventivo #guestChannelRow #guestBooking,
+#page-ospite.is-preventivo #guestChannelRow #guestBooking + label,
+#page-ospite.is-preventivo #guestChannelRow #guestChannel,
+#page-ospite.is-preventivo #guestChannelRow #guestChannel + label,
+#page-ospite.is-preventivo #guestChannelRow label[for="guestChannel"]{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelRow #guestChannel,
+#page-ospite.is-preventivo #guestChannelRow #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+  -webkit-text-fill-color:currentColor !important;
+}
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestChannelCommissionWrap{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
 }
