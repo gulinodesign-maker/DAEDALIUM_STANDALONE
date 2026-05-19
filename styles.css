@@ -23832,3 +23832,55 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 #page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel:disabled{
   opacity:1 !important;
 }
+
+/* dDAE_2.883 — Preventivi: Channel visibile in nuovo/lettura/modifica preventivo */
+body.quote-mode #page-ospite #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo.preventivo-non-confermato #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+body.quote-mode #page-ospite #guestChannelRow *,
+#page-ospite.is-preventivo #guestChannelRow *{
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+#page-ospite.is-preventivo #guestChannelRow > .subfield{
+  display:block !important;
+}
+body.quote-mode #page-ospite #guestChannel,
+body.quote-mode #page-ospite #guestChannel + label,
+body.quote-mode #page-ospite label[for="guestChannel"],
+body.quote-mode #page-ospite #guestBooking,
+body.quote-mode #page-ospite #guestBooking + label,
+#page-ospite.is-preventivo #guestChannel,
+#page-ospite.is-preventivo #guestChannel + label,
+#page-ospite.is-preventivo label[for="guestChannel"],
+#page-ospite.is-preventivo #guestBooking,
+#page-ospite.is-preventivo #guestBooking + label{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestBookingNumberField,
+#page-ospite.is-preventivo #guestBookingNumberField{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite.is-preventivo .guest-form-card.is-create #guestChannelRow{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:12px !important;
+}
+#page-ospite.is-preventivo .guest-form-card.is-create #guestChannelRow > .subfield:nth-child(2){ order:1 !important; width:100% !important; max-width:100% !important; min-width:0 !important; }
+#page-ospite.is-preventivo .guest-form-card.is-create #guestChannelRow > .subfield:first-child{ order:2 !important; width:100% !important; max-width:100% !important; min-width:0 !important; }
