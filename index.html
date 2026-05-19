@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.886" rel="stylesheet"/>
-<link href="./manifest.json?v=2.886" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.886" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.886" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.886" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.886" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.886" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.886" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.887" rel="stylesheet"/>
+<link href="./manifest.json?v=2.887" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.887" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.887" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.887" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.887" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.887" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.887" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.886";
+window.APP_VERSION = "2.887";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.886";
+  const LOCAL_BUILD = "dDAE_2.887";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.886";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.886")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.886")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.887")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.887")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.886";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.886"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.887"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -295,7 +295,7 @@ window.APP_VERSION = "2.886";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.886"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.887"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -503,7 +503,7 @@ window.APP_VERSION = "2.886";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.886</div></div></section>
+<div class="build" id="buildText">dDAE_2.887</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1540,6 +1540,10 @@ window.APP_VERSION = "2.886";
 <div class="services-list-body" id="servicesListBody"></div>
 </div>
 </div>
+<div class="guest-create-choice-row" id="guestCreateChoiceRow">
+<button class="btn primary guest-create-choice-btn" id="createGuestBookingBtn" data-single-action-key="createGuestBookingBtn" type="button">Prenota</button>
+<button class="btn primary guest-create-choice-btn" id="createGuestEstimateBtn" data-single-action-key="createGuestEstimateBtn" type="button">Preventivo</button>
+</div>
 <button class="btn primary" id="createGuestCard" type="button">Crea scheda cliente</button>
 </div>
 </div>
@@ -1555,6 +1559,7 @@ window.APP_VERSION = "2.886";
 <div aria-label="Filtri ospiti" class="guest-filter-grid">
 <div class="guest-filter-row guest-filter-row-1 guest-filter-row-sort-buttons">
 <div aria-label="Oggi" class="field gf-tile gf-today"><button aria-label="Filtra ospiti: oggi" class="gf-chip-btn gf-today-btn" data-sort-mode="today" id="guestToday" type="button">Oggi</button></div>
+<div aria-label="Preventivi" class="field gf-tile gf-preventivi"><button aria-label="Mostra solo preventivi" class="gf-chip-btn gf-preventivi-btn" id="guestPreventivi" type="button" aria-pressed="false">Preventivi</button></div>
 <div aria-label="Ordina ospiti per arrivo" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-in" class="gf-chip-btn gf-sort-btn" data-sort-by="arrivo" id="guestSortByArrivo" type="button">Check-in</button></div>
 <div aria-label="Ordina ospiti per check-out" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-out" class="gf-chip-btn gf-sort-btn" data-sort-by="checkout" id="guestSortByCheckout" type="button">Check-out</button></div>
 <div aria-label="Ordina ospiti per inserimento" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per inserimento" class="gf-chip-btn gf-sort-btn" data-sort-by="inserimento" id="guestSortByInserimento" type="button">Inserimento</button></div>
@@ -2723,7 +2728,7 @@ window.APP_VERSION = "2.886";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.886"></script>
-<script defer="" src="./app.js?v=2.886"></script>
+<script defer="" src="./config.js?v=2.887"></script>
+<script defer="" src="./app.js?v=2.887"></script>
 </body>
 </html>

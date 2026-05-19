@@ -22287,7 +22287,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 }
 
 
-/* dDAE_2.886 — Ospiti: stato reale stanza occupata */
+/* dDAE_2.887 — Ospiti: stato reale stanza occupata */
 #page-ospite .room-dot.occupied-real,
 #page-ospite .room-dot.occupied.occupied-real{
   background:#ff0000 !important;
@@ -23477,7 +23477,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.886 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.887 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23507,7 +23507,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.886 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
+/* dDAE_2.887 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
 #page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow{
   display:none !important;
 }
@@ -23519,7 +23519,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.886 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
+/* dDAE_2.887 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
 #page-ospite .guest-form-card.is-view > .hd{
   display:flex !important;
   align-items:center !important;
@@ -23572,4 +23572,57 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
     min-height:44px !important;
     flex-basis:44px !important;
   }
+}
+
+
+/* dDAE_2.887 — Prenota/Preventivo: doppio tasto creazione e filtro preventivi */
+#page-ospite .guest-create-choice-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  width:100%;
+  align-items:center;
+}
+#page-ospite .guest-create-choice-btn{
+  width:100%;
+  min-height:64px;
+  border-radius:18px;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestCreateChoiceRow,
+#page-ospite .guest-form-card.is-edit #guestCreateChoiceRow{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-create #createGuestCard{
+  display:none !important;
+}
+#page-ospiti .gf-preventivi-btn{
+  min-width:92px;
+}
+#page-ospiti .gf-preventivi-btn.is-active{
+  font-weight:800;
+}
+#page-ospite .tl-btn.tl-concretizza .tl-ico{
+  stroke-width:2.35;
+}
+#page-ospiti .guest-card.is-preventivo{
+  outline:1px solid rgba(245,158,11,.45);
+}
+#page-ospiti .guest-card.is-preventivo .guest-insno::after{
+  content:'P';
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  right:-8px;
+  top:-8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:900;
+  color:#0f172a;
+  background:rgba(253,224,71,.95);
+  border:1px solid rgba(15,23,42,.12);
 }
