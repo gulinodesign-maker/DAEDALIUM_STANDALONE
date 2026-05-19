@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.876";
+const BUILD_VERSION = "2.884";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -8072,84 +8072,77 @@ function __confirmYesNoForceClose__(){
 }
 function confirmYesNo(message){
   return new Promise((resolve)=>{
+    let settled = false;
+    const done = (value) => {
+      if (settled) return;
+      settled = true;
+      try{ __confirmYesNoResolve = null; }catch(_){ }
+      try{ __confirmYesNoForceClose__(); }catch(_){ }
+      try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 0); }catch(_){ }
+      try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 120); }catch(_){ }
+      try{ resolve(!!value); }catch(_){ }
+    };
     try{
-      const modal = document.getElementById("confirmYesNoModal");
-      const textEl = document.getElementById("confirmYesNoText");
-      const yesBtn = document.getElementById("confirmYesNoYes");
-      const noBtn  = document.getElementById("confirmYesNoNo");
-      if (!modal || !textEl || !yesBtn || !noBtn){
-        try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(_){ resolve(false); }
+      const modal = document.getElementById('confirmYesNoModal');
+      const textEl = document.getElementById('confirmYesNoText');
+      const yesOld = document.getElementById('confirmYesNoYes');
+      const noOld  = document.getElementById('confirmYesNoNo');
+      if (!modal || !textEl || !yesOld || !noOld){
+        try{ done(!!confirm(__translateText__(String(message || 'Confermare?')))); }catch(_){ done(false); }
         return;
       }
 
       try{ __confirmYesNoSetupModal__(); }catch(_){ }
       try{ if (__confirmYesNoResolve){ const prev = __confirmYesNoResolve; __confirmYesNoResolve = null; try{ prev(false); }catch(__){} } }catch(_){ }
       try{ __confirmYesNoForceClose__(); }catch(_){ }
-      __confirmYesNoResolve = resolve;
+      __confirmYesNoResolve = done;
 
-      let settled = false;
-      const listeners = [];
-      const add = (el, type, fn, opts) => {
-        try{ el.addEventListener(type, fn, opts); listeners.push([el,type,fn,opts]); }catch(_){ }
-      };
-      const removeAll = () => {
-        try{ listeners.forEach(([el,type,fn,opts]) => { try{ el.removeEventListener(type, fn, opts); }catch(_){} }); }catch(_){ }
-        listeners.length = 0;
-      };
-      const cleanup = (val) => {
-        if (settled) return;
-        settled = true;
-        __confirmYesNoReadyAt__ = 0;
-        try{ __confirmYesNoSuppressUntil__ = Date.now() + 450; }catch(_){ }
-        removeAll();
-        try{ __confirmYesNoForceClose__(); }catch(_){ }
-        try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 0); }catch(_){ }
-        try{ setTimeout(()=>{ try{ __confirmYesNoForceClose__(); }catch(__){} }, 120); }catch(_){ }
-        if (__confirmYesNoResolve){
-          const r = __confirmYesNoResolve;
-          __confirmYesNoResolve = null;
-          try{ r(!!val); }catch(_){ }
-        }
-      };
+      textEl.textContent = __translateText__(String(message || 'Confermare?'));
+      try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
 
-      const activateYes = (e) => { __confirmYesNoStopEvent__(e); cleanup(true); };
-      const activateNo  = (e) => { __confirmYesNoStopEvent__(e); cleanup(false); };
-      const blockModalEvent = (e) => {
+      // Clona i pulsanti a ogni apertura: elimina listener vecchi o catturatori ereditati
+      // che nei popup Impostazioni potevano intercettare il tap e bloccare la conferma.
+      const yesBtn = yesOld.cloneNode(true);
+      const noBtn = noOld.cloneNode(true);
+      yesOld.parentNode.replaceChild(yesBtn, yesOld);
+      noOld.parentNode.replaceChild(noBtn, noOld);
+
+      const onYes = (ev) => { try{ __confirmYesNoStopEvent__(ev); }catch(_){ } done(true); };
+      const onNo  = (ev) => { try{ __confirmYesNoStopEvent__(ev); }catch(_){ } done(false); };
+      const onBackdrop = (ev) => {
         try{
-          if (__confirmYesNoIsActionButton__(e && e.target, 'confirmYesNoYes') || __confirmYesNoIsActionButton__(e && e.target, 'confirmYesNoNo')) return;
-          if (e && e.type === 'click' && e.target === modal){ __confirmYesNoStopEvent__(e); cleanup(false); return; }
-          if (e && e.cancelable !== false) e.preventDefault();
-          try{ e.stopPropagation(); }catch(_){ }
-          try{ if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_){ }
+          if (ev && ev.target === modal){
+            __confirmYesNoStopEvent__(ev);
+            done(false);
+          }
         }catch(_){ }
       };
 
-      textEl.textContent = __translateText__(String(message || "Confermare?"));
+      ['pointerdown','touchstart','mousedown','click'].forEach((type)=>{
+        try{ yesBtn.addEventListener(type, onYes, { capture:false, passive:false }); }catch(_){ try{ yesBtn.addEventListener(type, onYes, false); }catch(__){} }
+        try{ noBtn.addEventListener(type, onNo, { capture:false, passive:false }); }catch(_){ try{ noBtn.addEventListener(type, onNo, false); }catch(__){} }
+      });
+      try{ yesBtn.onclick = onYes; noBtn.onclick = onNo; }catch(_){ }
+      try{ modal.onclick = onBackdrop; }catch(_){ }
+
       __confirmYesNoReadyAt__ = 0;
       __confirmYesNoSuppressUntil__ = 0;
-      try{ if (modal.parentNode !== document.body) document.body.appendChild(modal); }catch(_){ }
+      try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
+      try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
+      try{ document.documentElement.classList.add('confirm-yesno-open'); }catch(_){ }
       modal.hidden = false;
       try{ modal.removeAttribute('hidden'); }catch(_){ }
-      try{ modal.setAttribute("aria-hidden", "false"); }catch(_){ }
-      try{ document.body.classList.add('confirm-yesno-open'); }catch(_){ }
+      try{ modal.setAttribute('aria-hidden', 'false'); }catch(_){ }
+      try{ modal.classList.add('is-open'); }catch(_){ }
+      try{ modal.style.setProperty('display','flex','important'); }catch(_){ }
       try{ modal.style.setProperty('z-index','2147483647','important'); }catch(_){ }
       try{ modal.style.setProperty('pointer-events','auto','important'); }catch(_){ }
-      try{ if (typeof __tagColorPopupSuppressUntil__ !== 'undefined') __tagColorPopupSuppressUntil__ = 0; }catch(_){ }
-
-      ['pointerdown','touchstart','mousedown'].forEach((type)=>add(modal, type, blockModalEvent, true));
-      add(modal, 'click', blockModalEvent, true);
-      ['pointerup','touchend','click'].forEach((type)=>{
-        add(yesBtn, type, activateYes, true);
-        add(noBtn, type, activateNo, true);
-      });
-      try{ yesBtn.onclick = activateYes; noBtn.onclick = activateNo; }catch(_){ }
     }catch(_){
       try{ __confirmYesNoForceClose__(); }catch(__){}
-      try{ resolve(!!confirm(__translateText__(String(message || "Confermare?")))); }catch(__){ resolve(false); }
+      try{ done(!!confirm(__translateText__(String(message || 'Confermare?')))); }catch(__){ done(false); }
     }
   });
 }
-
 
 function todayISO(){
   const d = new Date();
@@ -41863,4 +41856,1166 @@ try{ __ddae807HideQuoteOnlyFields__(); }catch(_){ }
 
   try{ window.addEventListener('pageshow', __ddae2871UnlockUi, { passive:true }); }catch(_){ }
   try{ document.addEventListener('visibilitychange', __ddae2871UnlockUi, true); }catch(_){ }
+})();
+
+
+/* dDAE_2.884 — Popup conferma colore custom SI/NO e anti doppia conferma */
+(function(){
+  var __ddae2877ConfirmBusy = false;
+  var __ddae2877PromptOpen = false;
+  var __ddae2877LastOkTap = { t:0 };
+
+  function __ddae2877Stop(ev){
+    try{ if (ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if (ev) ev.stopPropagation(); }catch(_){ }
+    try{ if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function __ddae2877Text(txt){
+    try{ return (typeof __translateText__ === 'function') ? __translateText__(String(txt || '')) : String(txt || ''); }catch(_){ return String(txt || ''); }
+  }
+  function __ddae2877Remove(id){
+    try{ var n=document.getElementById(id); if (n && n.parentNode) n.parentNode.removeChild(n); }catch(_){ }
+  }
+  function __ddae2877ForceCloseLegacy(){
+    try{ __ddae2877Remove('ddae2877ConfirmOverlay'); }catch(_){ }
+    try{ __ddae2877Remove('ddae870ConfirmOverlay'); }catch(_){ }
+    try{
+      var m=document.getElementById('confirmYesNoModal');
+      if (m){
+        m.hidden=true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.setProperty('display','none','important');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('confirm-yesno-open','ddae870-confirm-open','ddae2877-confirm-open'); }catch(_){ }
+    try{ document.documentElement.classList.remove('confirm-yesno-open','ddae870-confirm-open','ddae2877-confirm-open'); }catch(_){ }
+    try{ if (typeof __confirmYesNoResolve !== 'undefined') __confirmYesNoResolve = null; }catch(_){ }
+  }
+  function __ddae2877CustomConfirm(message){
+    return new Promise(function(resolve){
+      try{
+        if (__ddae2877PromptOpen){ resolve(false); return; }
+        __ddae2877PromptOpen = true;
+        __ddae2877ForceCloseLegacy();
+        var overlay=document.createElement('div');
+        overlay.id='ddae2877ConfirmOverlay';
+        overlay.setAttribute('role','presentation');
+        overlay.innerHTML = '<div class="ddae2877-confirm-card" role="dialog" aria-modal="true" aria-label="Conferma"><div class="ddae2877-confirm-text"></div><div class="ddae2877-confirm-actions"><button id="ddae2877ConfirmYes" type="button">SÌ</button><button id="ddae2877ConfirmNo" type="button">NO</button></div></div>';
+        var text=overlay.querySelector('.ddae2877-confirm-text');
+        var yes=overlay.querySelector('#ddae2877ConfirmYes');
+        var no=overlay.querySelector('#ddae2877ConfirmNo');
+        if (text) text.textContent = __ddae2877Text(message || 'Applicare le modifiche a tutti i tasti della stessa categoria?');
+        document.body.appendChild(overlay);
+        try{ document.body.classList.add('ddae2877-confirm-open'); }catch(_){ }
+        var done=false;
+        function finish(val, ev){
+          __ddae2877Stop(ev);
+          if (done) return;
+          done=true;
+          try{ __ddae2877Remove('ddae2877ConfirmOverlay'); }catch(_){ }
+          try{ document.body.classList.remove('ddae2877-confirm-open'); }catch(_){ }
+          __ddae2877PromptOpen=false;
+          try{ setTimeout(__ddae2877ForceCloseLegacy, 0); setTimeout(__ddae2877ForceCloseLegacy, 180); }catch(_){ }
+          resolve(!!val);
+        }
+        ['pointerdown','touchstart','mousedown','click'].forEach(function(evt){
+          try{ overlay.addEventListener(evt, function(ev){
+            var t=ev && ev.target;
+            if (t && (t.closest('#ddae2877ConfirmYes') || t.closest('#ddae2877ConfirmNo'))) return;
+            __ddae2877Stop(ev);
+          }, true); }catch(_){ }
+        });
+        ['pointerup','touchend','mouseup','click'].forEach(function(evt){
+          try{ yes.addEventListener(evt, function(ev){ finish(true, ev); }, true); }catch(_){ }
+          try{ no.addEventListener(evt, function(ev){ finish(false, ev); }, true); }catch(_){ }
+        });
+      }catch(_){ __ddae2877PromptOpen=false; resolve(false); }
+    });
+  }
+  function __ddae2877Changed(payload){
+    try{
+      if (typeof __tagColorPopupChangedFields__ === 'function'){
+        var c=__tagColorPopupChangedFields__(payload);
+        if (c && typeof c === 'object'){
+          if (c.any !== true && (c.bg || c.border || c.fg || c.opacity || c.bold)) c.any=true;
+          return c;
+        }
+      }
+    }catch(_){ }
+    return { bg:true, border:true, fg:true, opacity:true, bold:false, any:true };
+  }
+  async function __ddae2877ApplyCategory(target, cfg, payload, changed){
+    try{
+      if (cfg && typeof cfg.apply === 'function') await cfg.apply(payload, changed || { any:true, bg:true, border:true, fg:true, opacity:true });
+      if (String(target || '') === 'pill-single-button'){
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+  function __ddae2877CloseColorPopupWithoutRevert(){
+    try{ if (__tagColorPopupState__) __tagColorPopupState__.confirmed = true; }catch(_){ }
+    try{ if (typeof __tagColorPopupClose__ === 'function') __tagColorPopupClose__(); }catch(_){ }
+    try{
+      var m=document.getElementById('tagColorModal');
+      if (m){
+        m.hidden=true;
+        m.setAttribute('hidden','');
+        m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.removeProperty('display');
+        m.style.removeProperty('pointer-events');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
+  }
+
+  try{
+    __tagColorPopupApplyCategoryIfNeeded__ = async function(payload, applyCategoryCfg){
+      if (__ddae2877ConfirmBusy) return;
+      var cfg = (applyCategoryCfg && typeof applyCategoryCfg === 'object') ? applyCategoryCfg : ((__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? __tagColorPopupState__.applyCategory : null);
+      if (!cfg || typeof cfg.apply !== 'function') return;
+      var changed = __ddae2877Changed(payload);
+      if (!changed.any) return;
+      var ok = await __ddae2877CustomConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?'));
+      if (ok) await __ddae2877ApplyCategory((__tagColorPopupState__ && __tagColorPopupState__.target) || '', cfg, payload, changed);
+    };
+    globalThis.__tagColorPopupApplyCategoryIfNeeded__ = __tagColorPopupApplyCategoryIfNeeded__;
+  }catch(_){ }
+
+  try{
+    __tagColorPopupConfirm__ = async function(){
+      var now=Date.now();
+      if (__ddae2877ConfirmBusy) return;
+      if (now - (__ddae2877LastOkTap.t || 0) < 650) return;
+      __ddae2877LastOkTap.t = now;
+      __ddae2877ConfirmBusy = true;
+      var cb=null, cfg=null, payload=null, changed=null, target='';
+      try{
+        target=String((__tagColorPopupState__ && __tagColorPopupState__.target) || '');
+        cb=(__tagColorPopupState__ && typeof __tagColorPopupState__.onSelect === 'function') ? __tagColorPopupState__.onSelect : null;
+        cfg=(__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload=(typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : { mode:'bg', spec:'blue-4', opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'white' } };
+        changed=__ddae2877Changed(payload);
+        __ddae2877CloseColorPopupWithoutRevert();
+        __ddae2877ForceCloseLegacy();
+        if (typeof cb === 'function'){
+          try{ await cb(payload); }catch(_){ }
+        }
+        if (cfg && typeof cfg.apply === 'function' && changed.any){
+          var ok = await __ddae2877CustomConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?'));
+          if (ok) await __ddae2877ApplyCategory(target, cfg, payload, changed);
+        }
+        try{ if (typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+        try{ if (typeof __headerActionApplyAll__ === 'function') __headerActionApplyAll__(); }catch(_){ }
+        try{ if (typeof __launcherIconApplyAll__ === 'function') __launcherIconApplyAll__(); }catch(_){ }
+        try{ if (typeof __setupSingleActionButtonPaletteBindings__ === 'function') __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+        try{ if (typeof __applySettingsEditorButtonBoldAndVisuals__ === 'function') __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+        try{ if (typeof renderRoomSettingsPage === 'function') renderRoomSettingsPage(); }catch(_){ }
+        try{ if (typeof saveData === 'function') saveData(); }catch(_){ }
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        __ddae2877ForceCloseLegacy();
+      }finally{
+        __ddae2877ConfirmBusy=false;
+        __ddae2877PromptOpen=false;
+        try{ setTimeout(__ddae2877ForceCloseLegacy,0); setTimeout(__ddae2877ForceCloseLegacy,160); setTimeout(__ddae2877ForceCloseLegacy,420); }catch(_){ }
+      }
+    };
+    globalThis.__tagColorPopupConfirm__ = __tagColorPopupConfirm__;
+  }catch(_){ __ddae2877ConfirmBusy=false; }
+
+  try{
+    if (!window.__ddae2877ConfirmCaptureBound__){
+      window.__ddae2877ConfirmCaptureBound__ = true;
+      ['pointerup','touchend','click'].forEach(function(evt){
+        document.addEventListener(evt, function(ev){
+          try{
+            var btn = ev && ev.target && ev.target.closest ? ev.target.closest('#tagColorModalConfirm') : null;
+            if (!btn) return;
+            __ddae2877Stop(ev);
+            __tagColorPopupConfirm__();
+          }catch(_){ }
+        }, true);
+      });
+    }
+  }catch(_){ }
+
+  try{ __confirmYesNoForceClose__ = __ddae2877ForceCloseLegacy; globalThis.__confirmYesNoForceClose__ = __ddae2877ForceCloseLegacy; }catch(_){ }
+})();
+
+/* dDAE_2.884 — Conferma colore: fix definitivo layer/touch con cattura coordinate */
+(function(){
+  var busy=false;
+  var active=null;
+  var lastTap=0;
+
+  function stop(ev){
+    try{ if(ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if(ev) ev.stopPropagation(); }catch(_){ }
+    try{ if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function txt(s){
+    try{ return (typeof __translateText__ === 'function') ? __translateText__(String(s||'')) : String(s||''); }catch(_){ return String(s||''); }
+  }
+  function remove(id){ try{ var n=document.getElementById(id); if(n && n.parentNode) n.parentNode.removeChild(n); }catch(_){ } }
+  function isShown(el){ try{ return !!(el && !el.hidden && el.getAttribute('aria-hidden') !== 'true' && getComputedStyle(el).display !== 'none'); }catch(_){ return !!el; } }
+  function hardCloseLegacy(){
+    try{ remove('ddae2879ConfirmOverlay'); remove('ddae2877ConfirmOverlay'); remove('ddae870ConfirmOverlay'); }catch(_){ }
+    try{
+      var m=document.getElementById('confirmYesNoModal');
+      if(m){
+        m.hidden=true; m.setAttribute('hidden',''); m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.setProperty('display','none','important');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.documentElement.classList.remove('confirm-yesno-open','ddae870-confirm-open','ddae2877-confirm-open','ddae2879-confirm-open'); }catch(_){ }
+    try{ document.body.classList.remove('confirm-yesno-open','ddae870-confirm-open','ddae2877-confirm-open','ddae2879-confirm-open'); }catch(_){ }
+    try{ if(typeof __confirmYesNoResolve !== 'undefined') __confirmYesNoResolve=null; }catch(_){ }
+  }
+  function lowerBlockingLayers(){
+    try{
+      ['tagColorModal','confirmYesNoModal','operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(!el || id==='ddae2879ConfirmOverlay') return;
+        if(id==='confirmYesNoModal'){
+          el.hidden=true; el.setAttribute('hidden',''); el.setAttribute('aria-hidden','true');
+          el.style.setProperty('display','none','important');
+        }
+        if(isShown(el)){
+          el.style.setProperty('pointer-events','none','important');
+          el.style.setProperty('touch-action','none','important');
+        }
+      });
+    }catch(_){ }
+  }
+  function restoreBlockingLayers(){
+    try{
+      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal','tagColorModal'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el){ el.style.removeProperty('pointer-events'); el.style.removeProperty('touch-action'); }
+      });
+    }catch(_){ }
+  }
+  function point(ev){
+    try{
+      if(ev && ev.changedTouches && ev.changedTouches[0]) return {x:ev.changedTouches[0].clientX, y:ev.changedTouches[0].clientY};
+      if(ev && ev.touches && ev.touches[0]) return {x:ev.touches[0].clientX, y:ev.touches[0].clientY};
+      if(ev && typeof ev.clientX === 'number') return {x:ev.clientX, y:ev.clientY};
+    }catch(_){ }
+    return null;
+  }
+  function inRect(p, el){
+    try{
+      if(!p || !el) return false;
+      var r=el.getBoundingClientRect();
+      return p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom;
+    }catch(_){ return false; }
+  }
+  function finish(val, ev){
+    try{ stop(ev); }catch(_){ }
+    if(!active || active.done) return;
+    var a=active;
+    a.done=true;
+    active=null;
+    try{ if(a.keepAlive) clearInterval(a.keepAlive); }catch(_){ }
+    try{ remove('ddae2879ConfirmOverlay'); }catch(_){ }
+    try{ document.documentElement.classList.remove('ddae2879-confirm-open'); document.body.classList.remove('ddae2879-confirm-open'); }catch(_){ }
+    try{ restoreBlockingLayers(); }catch(_){ }
+    try{ setTimeout(hardCloseLegacy,0); setTimeout(hardCloseLegacy,180); }catch(_){ }
+    try{ a.resolve(!!val); }catch(_){ }
+  }
+  function capture(ev){
+    try{
+      if(!active || active.done) return;
+      var overlay=document.getElementById('ddae2879ConfirmOverlay');
+      if(!overlay) return;
+      var p=point(ev);
+      var yes=document.getElementById('ddae2879ConfirmYes');
+      var no=document.getElementById('ddae2879ConfirmNo');
+      var type=String(ev && ev.type || '');
+      var release=/up|end|click/i.test(type);
+      var target=ev && ev.target;
+      var onYes=!!(target && target.closest && target.closest('#ddae2879ConfirmYes')) || inRect(p, yes);
+      var onNo=!!(target && target.closest && target.closest('#ddae2879ConfirmNo')) || inRect(p, no);
+      if(onYes || onNo){
+        stop(ev);
+        if(release) finish(onYes, ev);
+        return;
+      }
+      stop(ev);
+    }catch(_){ }
+  }
+  function customConfirm(message){
+    return new Promise(function(resolve){
+      try{
+        if(active && !active.done){ finish(false); }
+        hardCloseLegacy();
+        lowerBlockingLayers();
+        var overlay=document.createElement('div');
+        overlay.id='ddae2879ConfirmOverlay';
+        overlay.setAttribute('role','presentation');
+        overlay.innerHTML='<div class="ddae2879-confirm-card" role="dialog" aria-modal="true" aria-label="Conferma"><div class="ddae2879-confirm-text"></div><div class="ddae2879-confirm-actions"><button id="ddae2879ConfirmYes" type="button">SÌ</button><button id="ddae2879ConfirmNo" type="button">NO</button></div></div>';
+        var text=overlay.querySelector('.ddae2879-confirm-text');
+        if(text) text.textContent=txt(message || 'Applicare le modifiche a tutti i tasti della stessa categoria?');
+        document.body.appendChild(overlay);
+        document.documentElement.classList.add('ddae2879-confirm-open');
+        document.body.classList.add('ddae2879-confirm-open');
+        active={ resolve:resolve, done:false, keepAlive:null };
+        active.keepAlive=setInterval(function(){
+          try{
+            lowerBlockingLayers();
+            var o=document.getElementById('ddae2879ConfirmOverlay');
+            if(o && o.parentNode===document.body) document.body.appendChild(o);
+          }catch(_){ }
+        },120);
+        ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(evt){
+          try{ overlay.addEventListener(evt, capture, true); }catch(_){ }
+        });
+      }catch(_){ active=null; restoreBlockingLayers(); resolve(false); }
+    });
+  }
+  function changed(payload){
+    try{
+      if(typeof __tagColorPopupChangedFields__ === 'function'){
+        var c=__tagColorPopupChangedFields__(payload);
+        if(c && typeof c === 'object'){
+          if(c.any !== true && (c.bg || c.border || c.fg || c.opacity || c.bold)) c.any=true;
+          return c;
+        }
+      }
+    }catch(_){ }
+    return {bg:true,border:true,fg:true,opacity:true,bold:false,any:true};
+  }
+  async function applyCategory(target,cfg,payload,ch){
+    try{ if(cfg && typeof cfg.apply === 'function') await cfg.apply(payload, ch || {any:true,bg:true,border:true,fg:true,opacity:true}); }catch(_){ }
+    try{ if(String(target||'')==='pill-single-button' && typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+  }
+  function closeColorNoRevert(){
+    try{ if(typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__) __tagColorPopupState__.confirmed=true; }catch(_){ }
+    try{ if(typeof __tagColorPopupClose__ === 'function') __tagColorPopupClose__(); }catch(_){ }
+    try{
+      var m=document.getElementById('tagColorModal');
+      if(m){
+        m.hidden=true; m.setAttribute('hidden',''); m.setAttribute('aria-hidden','true');
+        m.classList.remove('is-open','show','open','active');
+        m.style.setProperty('display','none','important');
+        m.style.setProperty('pointer-events','none','important');
+      }
+    }catch(_){ }
+    try{ document.body.classList.remove('tag-color-modal-open'); }catch(_){ }
+  }
+
+  try{
+    __tagColorPopupApplyCategoryIfNeeded__=async function(payload, applyCategoryCfg){
+      if(busy) return;
+      var cfg=(applyCategoryCfg && typeof applyCategoryCfg==='object') ? applyCategoryCfg : ((typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory==='object') ? __tagColorPopupState__.applyCategory : null);
+      if(!cfg || typeof cfg.apply !== 'function') return;
+      var ch=changed(payload);
+      if(!ch.any) return;
+      var ok=await customConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?'));
+      if(ok) await applyCategory((typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__ && __tagColorPopupState__.target) || '', cfg, payload, ch);
+    };
+    globalThis.__tagColorPopupApplyCategoryIfNeeded__=__tagColorPopupApplyCategoryIfNeeded__;
+  }catch(_){ }
+
+  try{
+    __tagColorPopupConfirm__=async function(){
+      var now=Date.now();
+      if(busy) return;
+      if(now-lastTap<550) return;
+      lastTap=now;
+      busy=true;
+      var cb=null,cfg=null,payload=null,ch=null,target='';
+      try{
+        target=String((typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__ && __tagColorPopupState__.target) || '');
+        cb=(typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__ && typeof __tagColorPopupState__.onSelect==='function') ? __tagColorPopupState__.onSelect : null;
+        cfg=(typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory==='object') ? Object.assign({}, __tagColorPopupState__.applyCategory) : null;
+        payload=(typeof __tagColorPopupCurrentPayload__ === 'function') ? __tagColorPopupCurrentPayload__() : {mode:'bg',spec:'blue-4',opacity:.80,colors:{bg:'blue-4',border:'blue-4',fg:'white'}};
+        ch=changed(payload);
+        closeColorNoRevert();
+        hardCloseLegacy();
+        if(typeof cb === 'function'){
+          try{ await cb(payload); }catch(_){ }
+        }
+        if(cfg && typeof cfg.apply === 'function' && ch.any){
+          var ok=await customConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?'));
+          if(ok) await applyCategory(target,cfg,payload,ch);
+        }
+        try{ if(typeof __pillApplyAll__ === 'function') __pillApplyAll__(); }catch(_){ }
+        try{ if(typeof __headerActionApplyAll__ === 'function') __headerActionApplyAll__(); }catch(_){ }
+        try{ if(typeof __launcherIconApplyAll__ === 'function') __launcherIconApplyAll__(); }catch(_){ }
+        try{ if(typeof __setupSingleActionButtonPaletteBindings__ === 'function') __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+        try{ if(typeof __applySettingsEditorButtonBoldAndVisuals__ === 'function') __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+        try{ if(typeof renderRoomSettingsPage === 'function') renderRoomSettingsPage(); }catch(_){ }
+        try{ if(typeof saveData === 'function') saveData(); }catch(_){ }
+        try{ toast('Colore aggiornato'); }catch(_){ }
+      }catch(_){
+        hardCloseLegacy();
+      }finally{
+        busy=false;
+        try{ restoreBlockingLayers(); }catch(_){ }
+        try{ setTimeout(hardCloseLegacy,0); setTimeout(hardCloseLegacy,160); setTimeout(hardCloseLegacy,420); }catch(_){ }
+      }
+    };
+    globalThis.__tagColorPopupConfirm__=__tagColorPopupConfirm__;
+  }catch(_){ busy=false; }
+
+  try{
+    if(!window.__ddae2879GlobalCaptureBound__){
+      window.__ddae2879GlobalCaptureBound__=true;
+      ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(evt){
+        document.addEventListener(evt, function(ev){
+          try{
+            if(active && !active.done){ capture(ev); return; }
+            var btn=ev && ev.target && ev.target.closest ? ev.target.closest('#tagColorModalConfirm') : null;
+            if(!btn) return;
+            stop(ev);
+            __tagColorPopupConfirm__();
+          }catch(_){ }
+        }, true);
+      });
+    }
+  }catch(_){ }
+  try{ __confirmYesNoForceClose__=hardCloseLegacy; globalThis.__confirmYesNoForceClose__=hardCloseLegacy; }catch(_){ }
+})();
+
+/* dDAE_2.884 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
+(function(){
+  var BUILD_TAG='dDAE_2.884';
+  var busy=false;
+  var lastStart=0;
+  var active=null;
+
+  function t(s){ try{ return (typeof __translateText__==='function') ? __translateText__(String(s||'')) : String(s||''); }catch(_){ return String(s||''); } }
+  function stop(ev){
+    try{ if(ev && ev.cancelable !== false) ev.preventDefault(); }catch(_){ }
+    try{ if(ev) ev.stopPropagation(); }catch(_){ }
+    try{ if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function removeEl(id){ try{ var el=document.getElementById(id); if(el && el.parentNode) el.parentNode.removeChild(el); }catch(_){ } }
+  function hardHide(id){
+    try{
+      var el=document.getElementById(id);
+      if(!el) return;
+      el.hidden=true;
+      el.setAttribute('hidden','');
+      el.setAttribute('aria-hidden','true');
+      el.classList.remove('is-open','show','open','active');
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('pointer-events','none','important');
+      el.style.setProperty('touch-action','none','important');
+    }catch(_){ }
+  }
+  function unlock(){
+    try{ document.documentElement.classList.remove('ddae2879-confirm-open','confirm-yesno-open','tag-color-modal-open','ddae2880-confirm-open'); }catch(_){ }
+    try{ document.body.classList.remove('ddae2879-confirm-open','confirm-yesno-open','tag-color-modal-open','ddae2880-confirm-open'); }catch(_){ }
+    try{ document.querySelectorAll('#tagColorModal,#confirmYesNoModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,.modal,.overlay,.modal-backdrop').forEach(function(el){
+      try{ el.style.removeProperty('touch-action'); }catch(_){ }
+      try{ if(el.id!=='ddae2880ConfirmOverlay') el.style.removeProperty('pointer-events'); }catch(_){ }
+    }); }catch(_){ }
+  }
+  function point(ev){
+    try{
+      var x=(ev && ev.changedTouches && ev.changedTouches[0]) || (ev && ev.touches && ev.touches[0]);
+      if(x) return {x:x.clientX,y:x.clientY};
+      if(ev && typeof ev.clientX==='number') return {x:ev.clientX,y:ev.clientY};
+    }catch(_){ }
+    return null;
+  }
+  function inside(el,p){
+    try{ if(!el || !p) return false; var r=el.getBoundingClientRect(); return p.x>=r.left && p.x<=r.right && p.y>=r.top && p.y<=r.bottom; }catch(_){ return false; }
+  }
+  function closeAllConfirmationLayers(){
+    try{ removeEl('ddae2880ConfirmOverlay'); }catch(_){ }
+    try{ removeEl('ddae2879ConfirmOverlay'); }catch(_){ }
+    try{ hardHide('confirmYesNoModal'); }catch(_){ }
+    try{ if(typeof __confirmYesNoResolve!=='undefined') __confirmYesNoResolve=null; }catch(_){ }
+    try{ if(typeof __confirmYesNoReadyAt__!=='undefined') __confirmYesNoReadyAt__=0; }catch(_){ }
+    try{ if(typeof __confirmYesNoSuppressUntil__!=='undefined') __confirmYesNoSuppressUntil__=0; }catch(_){ }
+  }
+  function finish(val,ev){
+    try{ stop(ev); }catch(_){ }
+    if(!active || active.done) return;
+    var a=active;
+    a.done=true;
+    active=null;
+    try{ if(a.timer) clearInterval(a.timer); }catch(_){ }
+    closeAllConfirmationLayers();
+    unlock();
+    try{ a.resolve(!!val); }catch(_){ }
+  }
+  function globalCapture(ev){
+    try{
+      if(!active || active.done) return;
+      var p=point(ev);
+      var yes=document.getElementById('ddae2880ConfirmYes');
+      var no=document.getElementById('ddae2880ConfirmNo');
+      var release=/up|end|click/i.test(String(ev && ev.type || ''));
+      var onYes=inside(yes,p);
+      var onNo=inside(no,p);
+      stop(ev);
+      if((onYes || onNo) && release){ finish(onYes,ev); }
+    }catch(_){ stop(ev); }
+  }
+  function installGlobalCapture(){
+    if(window.__ddae2880CaptureInstalled__) return;
+    window.__ddae2880CaptureInstalled__=true;
+    ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(evt){
+      try{ window.addEventListener(evt, globalCapture, true); }catch(_){ }
+      try{ document.addEventListener(evt, function(ev){ if(active && !active.done) globalCapture(ev); }, true); }catch(_){ }
+    });
+  }
+  function lockOtherLayers(){
+    try{
+      document.querySelectorAll('#tagColorModal,#confirmYesNoModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,.modal,.overlay,.modal-backdrop').forEach(function(el){
+        if(!el || el.id==='ddae2880ConfirmOverlay') return;
+        el.style.setProperty('pointer-events','none','important');
+        el.style.setProperty('touch-action','none','important');
+      });
+    }catch(_){ }
+  }
+  function showConfirm(message){
+    return new Promise(function(resolve){
+      try{
+        installGlobalCapture();
+        if(active && !active.done) finish(false);
+        closeAllConfirmationLayers();
+        lockOtherLayers();
+        document.documentElement.classList.add('ddae2880-confirm-open');
+        document.body.classList.add('ddae2880-confirm-open');
+        var overlay=document.createElement('div');
+        overlay.id='ddae2880ConfirmOverlay';
+        overlay.setAttribute('data-build',BUILD_TAG);
+        overlay.setAttribute('role','presentation');
+        overlay.style.cssText='position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:18px!important;background:rgba(0,0,0,.38)!important;pointer-events:auto!important;touch-action:none!important;isolation:isolate!important;';
+        var card=document.createElement('div');
+        card.setAttribute('role','dialog');
+        card.setAttribute('aria-modal','true');
+        card.style.cssText='position:relative!important;z-index:2147483647!important;width:min(360px,calc(100vw - 36px))!important;background:#fff!important;color:#111827!important;border:1px solid rgba(0,0,0,.14)!important;border-radius:20px!important;padding:20px!important;box-shadow:none!important;pointer-events:auto!important;touch-action:manipulation!important;';
+        var text=document.createElement('div');
+        text.textContent=t(message || 'Applicare le modifiche a tutti i tasti della stessa categoria?');
+        text.style.cssText='margin:0 0 18px!important;text-align:center!important;font-size:17px!important;line-height:1.25!important;font-weight:900!important;';
+        var actions=document.createElement('div');
+        actions.style.cssText='display:grid!important;grid-template-columns:1fr 1fr!important;gap:14px!important;';
+        var yes=document.createElement('button');
+        yes.id='ddae2880ConfirmYes'; yes.type='button'; yes.textContent='SÌ';
+        yes.style.cssText='width:100%!important;min-height:50px!important;border:0!important;border-radius:12px!important;background:#188038!important;color:#fff!important;font-size:17px!important;font-weight:900!important;box-shadow:none!important;text-transform:uppercase!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;';
+        var no=document.createElement('button');
+        no.id='ddae2880ConfirmNo'; no.type='button'; no.textContent='NO';
+        no.style.cssText='width:100%!important;min-height:50px!important;border:0!important;border-radius:12px!important;background:#c5221f!important;color:#fff!important;font-size:17px!important;font-weight:900!important;box-shadow:none!important;text-transform:uppercase!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;';
+        actions.appendChild(yes); actions.appendChild(no); card.appendChild(text); card.appendChild(actions); overlay.appendChild(card); document.body.appendChild(overlay);
+        active={resolve:resolve,done:false,timer:null};
+        yes.addEventListener('click',function(ev){ finish(true,ev); },true);
+        no.addEventListener('click',function(ev){ finish(false,ev); },true);
+        overlay.addEventListener('click',function(ev){ if(ev && ev.target===overlay) finish(false,ev); },true);
+        active.timer=setInterval(function(){
+          try{ lockOtherLayers(); var o=document.getElementById('ddae2880ConfirmOverlay'); if(o && o.parentNode===document.body) document.body.appendChild(o); }catch(_){ }
+        },80);
+      }catch(_){ unlock(); resolve(false); }
+    });
+  }
+  function closeColorPopupKeepSelection(){
+    try{ if(typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__) __tagColorPopupState__.confirmed=true; }catch(_){ }
+    try{ if(typeof __tagColorPopupClose__==='function') __tagColorPopupClose__(); }catch(_){ }
+    try{ hardHide('tagColorModal'); }catch(_){ }
+    try{ document.body.classList.remove('tag-color-modal-open'); document.documentElement.classList.remove('tag-color-modal-open'); }catch(_){ }
+  }
+  function changed(payload){
+    try{ if(typeof __tagColorPopupChangedFields__==='function'){ var c=__tagColorPopupChangedFields__(payload); if(c && typeof c==='object'){ if(c.any!==true && (c.bg||c.border||c.fg||c.opacity||c.bold)) c.any=true; return c; } } }catch(_){ }
+    return {any:true,bg:true,border:true,fg:true,opacity:true,bold:false};
+  }
+  async function applyCfg(target,cfg,payload,ch){
+    try{ if(cfg && typeof cfg.apply==='function') await cfg.apply(payload,ch||{any:true,bg:true,border:true,fg:true,opacity:true}); }catch(_){ }
+    try{ if(String(target||'')==='pill-single-button' && typeof __pillApplyAll__==='function') __pillApplyAll__(); }catch(_){ }
+  }
+  async function confirmColor(){
+    var now=Date.now();
+    if(busy || (now-lastStart)<650) return;
+    lastStart=now; busy=true;
+    var target='',cb=null,cfg=null,payload=null,ch=null;
+    try{
+      target=String((typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__ && __tagColorPopupState__.target) || '');
+      cb=(typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__ && typeof __tagColorPopupState__.onSelect==='function') ? __tagColorPopupState__.onSelect : null;
+      cfg=(typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory==='object') ? Object.assign({},__tagColorPopupState__.applyCategory) : null;
+      payload=(typeof __tagColorPopupCurrentPayload__==='function') ? __tagColorPopupCurrentPayload__() : {mode:'bg',spec:'blue-4',opacity:.8,colors:{bg:'blue-4',border:'blue-4',fg:'white'}};
+      ch=changed(payload);
+      closeColorPopupKeepSelection();
+      closeAllConfirmationLayers();
+      if(typeof cb==='function'){ try{ await cb(payload); }catch(_){ } }
+      if(cfg && typeof cfg.apply==='function' && ch && ch.any){
+        var ok=await showConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?'));
+        if(ok) await applyCfg(target,cfg,payload,ch);
+      }
+      try{ if(typeof __pillApplyAll__==='function') __pillApplyAll__(); }catch(_){ }
+      try{ if(typeof __headerActionApplyAll__==='function') __headerActionApplyAll__(); }catch(_){ }
+      try{ if(typeof __launcherIconApplyAll__==='function') __launcherIconApplyAll__(); }catch(_){ }
+      try{ if(typeof __setupSingleActionButtonPaletteBindings__==='function') __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+      try{ if(typeof __applySettingsEditorButtonBoldAndVisuals__==='function') __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+      try{ if(typeof renderRoomSettingsPage==='function') renderRoomSettingsPage(); }catch(_){ }
+      try{ if(typeof saveData==='function') saveData(); }catch(_){ }
+      try{ toast('Colore aggiornato'); }catch(_){ }
+    }catch(_){
+      closeAllConfirmationLayers(); unlock();
+    }finally{
+      busy=false;
+      try{ closeAllConfirmationLayers(); unlock(); }catch(_){ }
+    }
+  }
+  try{ __confirmYesNoForceClose__=function(){ closeAllConfirmationLayers(); unlock(); }; globalThis.__confirmYesNoForceClose__=__confirmYesNoForceClose__; }catch(_){ }
+  try{ confirmYesNo=showConfirm; globalThis.confirmYesNo=showConfirm; }catch(_){ }
+  try{ __tagColorPopupApplyCategoryIfNeeded__=async function(payload,applyCategoryCfg){ var cfg=(applyCategoryCfg && typeof applyCategoryCfg==='object') ? applyCategoryCfg : ((typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory==='object') ? __tagColorPopupState__.applyCategory : null); if(!cfg || typeof cfg.apply!=='function') return; var ch=changed(payload); if(!ch.any) return; var ok=await showConfirm(String(cfg.message || 'Applicare le modifiche a tutti i tasti della stessa categoria?')); if(ok) await applyCfg((typeof __tagColorPopupState__!=='undefined' && __tagColorPopupState__ && __tagColorPopupState__.target)||'',cfg,payload,ch); }; globalThis.__tagColorPopupApplyCategoryIfNeeded__=__tagColorPopupApplyCategoryIfNeeded__; }catch(_){ }
+  try{ __tagColorPopupConfirm__=confirmColor; globalThis.__tagColorPopupConfirm__=confirmColor; }catch(_){ }
+  try{
+    if(!window.__ddae2880TagConfirmCapture__){
+      window.__ddae2880TagConfirmCapture__=true;
+      ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(evt){
+        window.addEventListener(evt,function(ev){
+          try{
+            if(active && !active.done) return;
+            var btn=ev && ev.target && ev.target.closest ? ev.target.closest('#tagColorModalConfirm') : null;
+            if(!btn) return;
+            stop(ev);
+            confirmColor();
+          }catch(_){ }
+        },true);
+      });
+    }
+  }catch(_){ }
+})();
+
+
+/* dDAE_2.884 — Scheda ospite: ripristino pill Channel selezionato */
+(function(){
+  function isQuoteObj(x){
+    try{
+      if (!x || typeof x !== 'object') return false;
+      const n = String(x.numero_preventivo || x.preventivo_numero || x.quote_number || '').trim().toUpperCase();
+      return String(x.preventivo || x.is_preventivo || '').trim() === '1' || !!x.preventivo_id || !!x.quote_id || /^P\d+$/i.test(n);
+    }catch(_){ return false; }
+  }
+  function currentGuestRecord(){
+    try{
+      const activeId = String(state && state.guestGroupActiveId || '').trim();
+      if (activeId && typeof __guestBookingById__ === 'function'){
+        const b = __guestBookingById__(activeId);
+        if (b) return b;
+      }
+      return (state && (state.guestViewItem || state.guestEditSourceItem || state.guestQuoteSourceItem)) || null;
+    }catch(_){ return null; }
+  }
+  function readChannelId(item){
+    try{ return String((item && (item.channel_id ?? item.channelId ?? item.channel ?? item.channel_id_ref)) ?? '').trim(); }catch(_){ return ''; }
+  }
+  function readChannelName(item){
+    try{ return String((item && (item.channel_nome ?? item.channelName ?? item.nome_channel ?? item.channel_label ?? item.channel)) ?? '').trim(); }catch(_){ return ''; }
+  }
+  function setShown(el, show){
+    try{
+      if (!el) return;
+      el.hidden = !show;
+      if (show){
+        el.removeAttribute('hidden');
+        el.removeAttribute('data-quote-hidden');
+        el.style.removeProperty('display');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('opacity');
+        el.style.removeProperty('pointer-events');
+      } else {
+        el.setAttribute('hidden','');
+        el.style.setProperty('display','none','important');
+      }
+    }catch(_){ }
+  }
+  function restoreGuestChannelPill(){
+    try{
+      const page = document.getElementById('page-ospite');
+      if (!page || page.hidden) return;
+      const mode = String(state && state.guestMode || '').toLowerCase();
+      if (mode !== 'view') return;
+      const item = currentGuestRecord();
+      if ((state && state.guestIsQuote) || isQuoteObj(item) || (page.classList && page.classList.contains('is-preventivo'))) return;
+      const row = document.getElementById('guestChannelRow');
+      const sel = document.getElementById('guestChannel');
+      const booking = document.getElementById('guestBooking');
+      if (!row || !sel || !booking) return;
+
+      const id = readChannelId(item) || String(sel.value || '').trim();
+      const name = readChannelName(item);
+      try{ populateGuestChannelOptions(id || sel.value || ''); }catch(_){ }
+      if (id){
+        try{
+          if (![...sel.options].some(o => String(o.value) === id)){
+            const opt = document.createElement('option');
+            opt.value = id;
+            opt.textContent = name || id;
+            sel.appendChild(opt);
+          }
+          sel.value = id;
+        }catch(_){ }
+      } else if (name && !String(sel.value || '').trim()){
+        try{
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          sel.appendChild(opt);
+          sel.value = name;
+        }catch(_){ }
+      }
+      try{ applySelectedChannelToGuestForm(sel.value || id || '', { preserveManual:true }); }catch(_){ }
+
+      setShown(row, true);
+      const bookingSub = booking.closest('.subfield') || booking.closest('.field');
+      const channelSub = sel.closest('.subfield') || sel.closest('.field');
+      if (bookingSub && bookingSub !== row) setShown(bookingSub, true);
+      if (channelSub && channelSub !== row) setShown(channelSub, true);
+      const commWrap = document.getElementById('guestChannelCommissionWrap');
+      if (commWrap) setShown(commWrap, false);
+      try{ sel.disabled = false; sel.readOnly = true; sel.setAttribute('aria-readonly','true'); }catch(_){ }
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+    }catch(_){ }
+  }
+  function after(){
+    try{ restoreGuestChannelPill(); setTimeout(restoreGuestChannelPill,0); setTimeout(restoreGuestChannelPill,120); setTimeout(restoreGuestChannelPill,360); }catch(_){ }
+  }
+  ['enterGuestViewMode','setGuestFormViewOnly','__populateGuestGroupInfoFromBooking__','__setGuestGroupInfoVisible__','renderGuestMulti','updateOspiteHdActions'].forEach(function(name){
+    try{
+      const fn = window[name] || (typeof globalThis !== 'undefined' ? globalThis[name] : null);
+      if (typeof fn === 'function' && !fn.__ddae2881ChannelPillFix){
+        const wrapped = function(){ const out = fn.apply(this, arguments); after(); return out; };
+        wrapped.__ddae2881ChannelPillFix = true;
+        window[name] = wrapped;
+        try{ globalThis[name] = wrapped; }catch(_){ }
+      }
+    }catch(_){ }
+  });
+  try{ document.addEventListener('click', function(){ setTimeout(restoreGuestChannelPill, 0); setTimeout(restoreGuestChannelPill, 160); }, true); }catch(_){ }
+  try{ window.__ddae2881RestoreGuestChannelPill = restoreGuestChannelPill; }catch(_){ }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', after, {once:true}); else after();
+  try{ window.addEventListener('pageshow', after, {passive:true}); }catch(_){ }
+})();
+
+/* dDAE_2.884 — Preventivi: concretizzazione con Channel visibile e salvabile */
+(function(){
+  function __ddae2882QuoteIdOf__(src){
+    try{ return (typeof __preventivoIdOf__ === 'function') ? String(__preventivoIdOf__(src) || '').trim() : String(src && (src.id || src.preventivo_id || src.quote_id) || '').trim(); }catch(_){ return ''; }
+  }
+  function __ddae2882ShowEl__(el){
+    try{
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      el.removeAttribute('data-quote-hidden');
+      el.style.removeProperty('display');
+      el.style.removeProperty('visibility');
+      el.style.removeProperty('pointer-events');
+    }catch(_){ }
+  }
+  function __ddae2882ReadChannelId__(src){
+    try{
+      const direct = String(src && (src.channel_id ?? src.channelId ?? src.channel ?? '') || '').trim();
+      if (direct) return direct;
+      const name = String(src && (src.channel_nome ?? src.channelName ?? '') || '').trim().toLowerCase();
+      if (name && typeof getChannelCatalogFromSettings === 'function'){
+        const found = (getChannelCatalogFromSettings() || []).find(function(x){ return String(x && x.nome || '').trim().toLowerCase() === name; });
+        if (found) return String(found.id || '').trim();
+      }
+    }catch(_){ }
+    return '';
+  }
+  function __ddae2882RestoreChannelForConversion__(src){
+    try{
+      if (state){
+        state.guestIsQuote = false;
+        state.guestQuoteConfirmed = false;
+        state.guestQuoteSourceItem = null;
+        state.guestCreateFromQuoteGroup = false;
+      }
+      const page = document.getElementById('page-ospite');
+      if (page && page.classList){
+        page.classList.remove('is-preventivo');
+        page.classList.remove('preventivo-non-confermato');
+      }
+      const row = document.getElementById('guestChannelRow');
+      __ddae2882ShowEl__(row);
+      const channel = document.getElementById('guestChannel');
+      const channelField = channel && (channel.closest('.subfield') || channel.closest('.field'));
+      __ddae2882ShowEl__(channelField);
+      const booking = document.getElementById('guestBooking');
+      const bookingField = booking && (booking.closest('.subfield') || booking.closest('.field'));
+      __ddae2882ShowEl__(bookingField);
+      const commWrap = document.getElementById('guestChannelCommissionWrap');
+      __ddae2882ShowEl__(commWrap);
+      try{
+        const selected = __ddae2882ReadChannelId__(src);
+        if (typeof populateGuestChannelOptions === 'function') populateGuestChannelOptions(selected || (channel && channel.value) || '');
+        if (selected && channel) channel.value = selected;
+        if (selected && typeof applySelectedChannelToGuestForm === 'function') applySelectedChannelToGuestForm(selected, { preserveManual:true });
+        else if (typeof recalcGuestCommission === 'function') recalcGuestCommission();
+      }catch(_){ }
+      try{ if (typeof syncGuestCreatePrimaryStack === 'function') syncGuestCreatePrimaryStack(); }catch(_){ }
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+    }catch(_){ }
+  }
+  window.__ddae2882RestoreChannelForConversion = __ddae2882RestoreChannelForConversion__;
+
+  confirmPreventivoCurrent = async function(){
+    const src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem || state._quoteConversionSource)) || null;
+    if (!src) return;
+    const quoteId = __ddae2882QuoteIdOf__(src);
+    try{
+      if (state){
+        state.guestIsQuote = false;
+        state.guestQuoteConfirmed = false;
+        state.guestQuoteSourceItem = null;
+        state.guestViewItem = null;
+        state.guestEditSourceItem = null;
+        state.guestCreateFromQuoteGroup = false;
+        state._quoteConversionPreventivoId = quoteId || '';
+        state._quoteConversionSource = src;
+      }
+    }catch(_){ }
+    try{ if (typeof enterGuestCreateMode === 'function') enterGuestCreateMode(); }catch(_){ }
+    try{
+      if (state){
+        state.guestIsQuote = false;
+        state.guestQuoteConfirmed = false;
+        state.guestQuoteSourceItem = null;
+        state.guestViewItem = null;
+        state.guestEditSourceItem = null;
+        state.guestCreateFromQuoteGroup = false;
+        state._quoteConversionPreventivoId = quoteId || '';
+        state._quoteConversionSource = src;
+      }
+    }catch(_){ }
+    try{ if (typeof __ddae807FillGuestFormFromPreventivo__ === 'function') __ddae807FillGuestFormFromPreventivo__(src); }catch(_){ }
+    try{ __ddae2882RestoreChannelForConversion__(src); }catch(_){ }
+    try{
+      const title = document.getElementById('ospiteFormTitle');
+      if (title) title.textContent = 'Nuovo ospite';
+      const btn = document.getElementById('createGuestCard');
+      if (btn) btn.textContent = 'Crea ospite';
+    }catch(_){ }
+    try{ if (typeof showPage === 'function') showPage('ospite'); }catch(_){ }
+    try{ __ddae2882RestoreChannelForConversion__(src); setTimeout(function(){ __ddae2882RestoreChannelForConversion__(src); }, 80); setTimeout(function(){ __ddae2882RestoreChannelForConversion__(src); }, 300); }catch(_){ }
+    try{ toast('Completa prenotazione'); }catch(_){ }
+  };
+
+  try{
+    const oldSave = (typeof saveGuest === 'function') ? saveGuest : null;
+    if (oldSave && !oldSave.__ddae2882QuoteChannelGuard){
+      const wrappedSave = async function(opts){
+        try{
+          if (state && state._quoteConversionPreventivoId && !state.guestIsQuote){
+            __ddae2882RestoreChannelForConversion__(state._quoteConversionSource || null);
+          }
+        }catch(_){ }
+        return await oldSave.apply(this, arguments);
+      };
+      wrappedSave.__ddae2882QuoteChannelGuard = true;
+      saveGuest = wrappedSave;
+      try{ window.saveGuest = wrappedSave; globalThis.saveGuest = wrappedSave; }catch(_){ }
+    }
+  }catch(_){ }
+})();
+
+/* dDAE_2.884 — Preventivi: conversione reale con Channel visibile e salvataggio sbloccato */
+(function(){
+  function qid(src){
+    try{ return (typeof __preventivoIdOf__ === 'function') ? String(__preventivoIdOf__(src) || '').trim() : String(src && (src.id || src.preventivo_id || src.quote_id) || '').trim(); }catch(_){ return ''; }
+  }
+  function show(el, display){
+    try{
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      el.removeAttribute('data-quote-hidden');
+      el.style.removeProperty('visibility');
+      el.style.removeProperty('pointer-events');
+      el.style.setProperty('display', display || '', display ? 'important' : '');
+      if (!display) el.style.removeProperty('display');
+    }catch(_){ }
+  }
+  function hide(el){
+    try{
+      if (!el) return;
+      el.hidden = true;
+      el.setAttribute('hidden','');
+      el.style.setProperty('display','none','important');
+    }catch(_){ }
+  }
+  function sourceChannelId(src){
+    try{
+      const raw = String(src && (src.channel_id ?? src.channelId ?? src.channel ?? '') || '').trim();
+      if (raw) return raw;
+      const name = String(src && (src.channel_nome ?? src.channelName ?? src.channel_name ?? '') || '').trim().toLowerCase();
+      if (name && typeof getChannelCatalogFromSettings === 'function'){
+        const found = (getChannelCatalogFromSettings() || []).find(function(x){ return String(x && x.nome || '').trim().toLowerCase() === name; });
+        if (found && found.id) return String(found.id).trim();
+      }
+    }catch(_){ }
+    return '';
+  }
+  function clearQuoteFlags(src){
+    try{
+      if (document.body && document.body.classList) document.body.classList.remove('quote-mode');
+      const page = document.getElementById('page-ospite');
+      if (page && page.classList){
+        page.classList.remove('is-preventivo');
+        page.classList.remove('preventivo-non-confermato');
+        page.classList.add('is-quote-conversion');
+      }
+      if (state){
+        state.guestIsQuote = false;
+        state.guestQuoteConfirmed = false;
+        state.guestQuoteSourceItem = null;
+        state.guestViewItem = null;
+        state.guestEditSourceItem = null;
+        state.guestCreateFromQuoteGroup = false;
+        state.guestMode = 'create';
+        if (src) state._quoteConversionSource = src;
+      }
+    }catch(_){ }
+  }
+  function restore(src){
+    try{
+      clearQuoteFlags(src);
+      const row = document.getElementById('guestChannelRow');
+      show(row, 'grid');
+      const channel = document.getElementById('guestChannel');
+      const channelField = channel && (channel.closest('.subfield') || channel.closest('.field'));
+      show(channelField, 'block');
+      show(channel, 'block');
+      try{ if (channel) channel.required = true; }catch(_){ }
+      const booking = document.getElementById('guestBooking');
+      const bookingField = booking && (booking.closest('.subfield') || booking.closest('.field'));
+      show(bookingField, 'block');
+      const commWrap = document.getElementById('guestChannelCommissionWrap');
+      hide(commWrap);
+      try{
+        const selected = sourceChannelId(src || (state && state._quoteConversionSource) || null);
+        if (typeof populateGuestChannelOptions === 'function') populateGuestChannelOptions(selected || (channel && channel.value) || '');
+        if (selected && channel) channel.value = selected;
+        if (channel && channel.value && typeof applySelectedChannelToGuestForm === 'function') applySelectedChannelToGuestForm(channel.value, { preserveManual:true });
+        else if (typeof recalcGuestCommission === 'function') recalcGuestCommission();
+      }catch(_){ }
+      try{ if (typeof syncGuestCreatePrimaryStack === 'function') syncGuestCreatePrimaryStack(); }catch(_){ }
+      try{
+        const stack = document.getElementById('guestCreatePrimaryStack');
+        const channel = document.getElementById('guestChannel');
+        const channelField = channel && (channel.closest('.subfield') || channel.closest('.field'));
+        show(stack, '');
+        show(channelField, 'block');
+        show(channel, 'block');
+      }catch(_){ }
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+      try{ if (typeof updateGuestRemaining === 'function') updateGuestRemaining(); }catch(_){ }
+    }catch(_){ }
+  }
+  window.__ddae2883RestoreQuoteConversionChannel = restore;
+
+  confirmPreventivoCurrent = async function(){
+    const src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem || state._quoteConversionSource)) || null;
+    if (!src) return;
+    const quoteId = qid(src);
+    try{ if (state){ state._quoteConversionPreventivoId = quoteId || ''; state._quoteConversionSource = src; } }catch(_){ }
+    clearQuoteFlags(src);
+    try{ if (typeof enterGuestCreateMode === 'function') enterGuestCreateMode(); }catch(_){ }
+    clearQuoteFlags(src);
+    try{ if (typeof __ddae807FillGuestFormFromPreventivo__ === 'function') __ddae807FillGuestFormFromPreventivo__(src); }catch(_){ }
+    restore(src);
+    try{
+      const title = document.getElementById('ospiteFormTitle');
+      if (title) title.textContent = 'Nuovo ospite';
+      const btn = document.getElementById('createGuestCard');
+      if (btn) btn.textContent = 'Crea ospite';
+    }catch(_){ }
+    try{ if (typeof showPage === 'function') showPage('ospite'); }catch(_){ }
+    restore(src);
+    [0, 60, 160, 360, 800, 1400].forEach(function(ms){ try{ setTimeout(function(){ restore(src); }, ms); }catch(_){ } });
+    try{ toast('Completa prenotazione'); }catch(_){ }
+  };
+
+  try{
+    const oldSave = (typeof saveGuest === 'function') ? saveGuest : null;
+    if (oldSave && !oldSave.__ddae2883QuoteConversionChannel){
+      const wrapped = async function(){
+        try{ if (state && state._quoteConversionPreventivoId){ restore(state._quoteConversionSource || null); } }catch(_){ }
+        const out = await oldSave.apply(this, arguments);
+        try{
+          if (state && !state._quoteConversionPreventivoId){
+            const page = document.getElementById('page-ospite');
+            if (page && page.classList) page.classList.remove('is-quote-conversion');
+          }
+        }catch(_){ }
+        return out;
+      };
+      wrapped.__ddae2883QuoteConversionChannel = true;
+      saveGuest = wrapped;
+      try{ window.saveGuest = wrapped; globalThis.saveGuest = wrapped; }catch(_){ }
+    }
+  }catch(_){ }
+})();
+
+/* dDAE_2.884 — Preventivi: ripristino definitivo tab Channel in concretizzazione */
+(function(){
+  function qid(src){
+    try{ return (typeof __preventivoIdOf__ === 'function') ? String(__preventivoIdOf__(src) || '').trim() : String(src && (src.id || src.preventivo_id || src.quote_id) || '').trim(); }catch(_){ return ''; }
+  }
+  function isConv(){
+    try{ return !!(state && state._quoteConversionPreventivoId) || !!document.getElementById('page-ospite')?.classList.contains('is-quote-conversion'); }catch(_){ return false; }
+  }
+  function show(el, display){
+    try{
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      el.removeAttribute('aria-hidden');
+      el.removeAttribute('data-quote-hidden');
+      el.style.setProperty('display', display || 'block', 'important');
+      el.style.setProperty('visibility', 'visible', 'important');
+      el.style.setProperty('opacity', '1', 'important');
+      el.style.setProperty('pointer-events', 'auto', 'important');
+    }catch(_){ }
+  }
+  function hide(el){
+    try{
+      if (!el) return;
+      el.hidden = true;
+      el.setAttribute('hidden','');
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('pointer-events','none','important');
+    }catch(_){ }
+  }
+  function ensureStack(){
+    try{
+      var formStack = document.querySelector('#page-ospite .guest-form-card .bd.form-stack');
+      var mgcRow = document.getElementById('mgcRow');
+      if (!formStack) return null;
+      var stack = document.getElementById('guestCreatePrimaryStack');
+      if (!stack){
+        stack = document.createElement('div');
+        stack.id = 'guestCreatePrimaryStack';
+        if (mgcRow && mgcRow.parentNode) mgcRow.parentNode.insertBefore(stack, mgcRow.nextSibling);
+        else formStack.appendChild(stack);
+      }
+      return stack;
+    }catch(_){ return null; }
+  }
+  function channelFrom(src){
+    try{
+      var raw = String(src && (src.channel_id ?? src.channelId ?? src.channel ?? src.channel_code ?? '') || '').trim();
+      if (raw) return raw;
+      var name = String(src && (src.channel_nome ?? src.channelName ?? src.channel_name ?? '') || '').trim().toLowerCase();
+      if (name && typeof getChannelCatalogFromSettings === 'function'){
+        var found = (getChannelCatalogFromSettings() || []).find(function(x){ return String((x && (x.nome || x.name)) || '').trim().toLowerCase() === name; });
+        if (found && found.id) return String(found.id).trim();
+      }
+    }catch(_){ }
+    return '';
+  }
+  function restore(src){
+    try{
+      if (!isConv() && !src) return;
+      var source = src || (state && state._quoteConversionSource) || null;
+      try{ document.body.classList.remove('quote-mode'); }catch(_){ }
+      var page = document.getElementById('page-ospite');
+      if (page && page.classList){
+        page.classList.remove('is-preventivo');
+        page.classList.remove('preventivo-non-confermato');
+        page.classList.add('is-quote-conversion');
+      }
+      if (state){
+        state.guestIsQuote = false;
+        state.guestQuoteConfirmed = false;
+        state.guestQuoteSourceItem = null;
+        state.guestViewItem = null;
+        state.guestEditSourceItem = null;
+        state.guestCreateFromQuoteGroup = false;
+        state.guestMode = 'create';
+        if (source) state._quoteConversionSource = source;
+      }
+      try{ updateGuestFormModeClass && updateGuestFormModeClass(); }catch(_){ }
+      var stack = ensureStack();
+      show(stack, 'grid');
+      var channel = document.getElementById('guestChannel');
+      var channelField = channel && (channel.closest('.subfield') || channel.closest('.field') || channel.parentElement);
+      if (stack && channelField && channelField.parentNode !== stack){
+        try{ stack.appendChild(channelField); }catch(_){ }
+      }
+      show(channelField, 'block');
+      show(channel, 'block');
+      var label = (channelField && channelField.querySelector('label[for="guestChannel"]')) || document.querySelector('label[for="guestChannel"]');
+      show(label, 'block');
+      try{ if (channel){ channel.disabled = false; channel.required = true; channel.removeAttribute('disabled'); } }catch(_){ }
+      try{
+        var selected = channelFrom(source);
+        if (typeof populateGuestChannelOptions === 'function') populateGuestChannelOptions(selected || (channel && channel.value) || '');
+        if (selected && channel) channel.value = selected;
+        if (channel && channel.value && typeof applySelectedChannelToGuestForm === 'function') applySelectedChannelToGuestForm(channel.value, { preserveManual:true });
+      }catch(_){ }
+      hide(document.getElementById('guestChannelCommissionWrap'));
+      var booking = document.getElementById('guestBooking');
+      var bookingField = booking && (booking.closest('.subfield') || booking.closest('.field'));
+      show(bookingField, 'block');
+      try{ if (typeof refreshFloatingLabels === 'function') refreshFloatingLabels(); }catch(_){ }
+      try{ if (typeof updateOspiteHdActions === 'function') updateOspiteHdActions(); }catch(_){ }
+    }catch(_){ }
+  }
+  window.__ddae2884RestoreQuoteConversionChannel = restore;
+
+  try{
+    var oldConfirm = (typeof confirmPreventivoCurrent === 'function') ? confirmPreventivoCurrent : null;
+    if (oldConfirm && !oldConfirm.__ddae2884ChannelVisible){
+      confirmPreventivoCurrent = async function(){
+        var src = (state && (state.guestQuoteSourceItem || state.guestViewItem || state.guestEditSourceItem || state._quoteConversionSource)) || null;
+        var id = qid(src);
+        if (state){ state._quoteConversionPreventivoId = id || state._quoteConversionPreventivoId || ''; state._quoteConversionSource = src || state._quoteConversionSource || null; }
+        var out = await oldConfirm.apply(this, arguments);
+        restore(src || (state && state._quoteConversionSource) || null);
+        [0,50,120,250,500,900,1500,2500].forEach(function(ms){ try{ setTimeout(function(){ restore(src || (state && state._quoteConversionSource) || null); }, ms); }catch(_){ } });
+        return out;
+      };
+      confirmPreventivoCurrent.__ddae2884ChannelVisible = true;
+      try{ window.confirmPreventivoCurrent = confirmPreventivoCurrent; globalThis.confirmPreventivoCurrent = confirmPreventivoCurrent; }catch(_){ }
+    }
+  }catch(_){ }
+  try{
+    var oldSync = (typeof __syncPreventivoModeUi__ === 'function') ? __syncPreventivoModeUi__ : null;
+    if (oldSync && !oldSync.__ddae2884ChannelVisible){
+      __syncPreventivoModeUi__ = function(){
+        var out = oldSync.apply(this, arguments);
+        try{ if (isConv()) restore(state && state._quoteConversionSource); }catch(_){ }
+        return out;
+      };
+      __syncPreventivoModeUi__.__ddae2884ChannelVisible = true;
+    }
+  }catch(_){ }
+  try{
+    var oldStack = (typeof syncGuestCreatePrimaryStack === 'function') ? syncGuestCreatePrimaryStack : null;
+    if (oldStack && !oldStack.__ddae2884ChannelVisible){
+      syncGuestCreatePrimaryStack = function(){
+        var out = oldStack.apply(this, arguments);
+        try{ if (isConv()) restore(state && state._quoteConversionSource); }catch(_){ }
+        return out;
+      };
+      syncGuestCreatePrimaryStack.__ddae2884ChannelVisible = true;
+    }
+  }catch(_){ }
+  try{
+    var oldSave = (typeof saveGuest === 'function') ? saveGuest : null;
+    if (oldSave && !oldSave.__ddae2884ChannelVisible){
+      saveGuest = async function(){
+        try{ if (isConv()) restore(state && state._quoteConversionSource); }catch(_){ }
+        return await oldSave.apply(this, arguments);
+      };
+      saveGuest.__ddae2884ChannelVisible = true;
+      try{ window.saveGuest = saveGuest; globalThis.saveGuest = saveGuest; }catch(_){ }
+    }
+  }catch(_){ }
 })();

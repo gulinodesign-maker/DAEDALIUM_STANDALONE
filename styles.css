@@ -23616,3 +23616,303 @@ body.ddae870-confirm-open #ddae870ConfirmOverlay *{
   opacity:.78;
   white-space:nowrap;
 }
+
+
+/* dDAE_2.879 — Conferma colore custom SI/NO rettangolare, simmetrica, flat */
+#ddae2877ConfirmOverlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  background:rgba(0,0,0,0.32) !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#ddae2877ConfirmOverlay .ddae2877-confirm-card{
+  width:min(360px, calc(100vw - 36px)) !important;
+  background:var(--card, #ffffff) !important;
+  color:var(--text, #111827) !important;
+  border:1px solid var(--line, rgba(0,0,0,0.14)) !important;
+  border-radius:20px !important;
+  padding:20px !important;
+  box-shadow:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#ddae2877ConfirmOverlay .ddae2877-confirm-text{
+  margin:0 0 18px !important;
+  text-align:center !important;
+  font-size:17px !important;
+  line-height:1.25 !important;
+  font-weight:900 !important;
+}
+#ddae2877ConfirmOverlay .ddae2877-confirm-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:14px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#ddae2877ConfirmOverlay #ddae2877ConfirmYes,
+#ddae2877ConfirmOverlay #ddae2877ConfirmNo{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:50px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  color:#ffffff !important;
+  font-size:17px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  text-transform:uppercase !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#ddae2877ConfirmOverlay #ddae2877ConfirmYes{ background:#188038 !important; }
+#ddae2877ConfirmOverlay #ddae2877ConfirmNo{ background:#c5221f !important; }
+body.ddae2877-confirm-open #app,
+body.ddae2877-confirm-open .app-shell,
+body.ddae2877-confirm-open .topbar,
+body.ddae2877-confirm-open main,
+body.ddae2877-confirm-open header{
+  pointer-events:none !important;
+}
+body.ddae2877-confirm-open #ddae2877ConfirmOverlay,
+body.ddae2877-confirm-open #ddae2877ConfirmOverlay *{
+  pointer-events:auto !important;
+}
+
+/* dDAE_2.879 — Popup conferma colore sbloccato sopra tutti i popup Impostazioni */
+html.confirm-yesno-open #confirmYesNoModal,
+body.confirm-yesno-open #confirmYesNoModal,
+#confirmYesNoModal:not([hidden]){
+  display:flex !important;
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+}
+html.confirm-yesno-open #confirmYesNoModal .confirm-card,
+html.confirm-yesno-open #confirmYesNoModal #confirmYesNoYes,
+html.confirm-yesno-open #confirmYesNoModal #confirmYesNoNo,
+body.confirm-yesno-open #confirmYesNoModal .confirm-card,
+body.confirm-yesno-open #confirmYesNoModal #confirmYesNoYes,
+body.confirm-yesno-open #confirmYesNoModal #confirmYesNoNo{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+#confirmYesNoModal[hidden],
+#confirmYesNoModal[aria-hidden="true"]{
+  display:none !important;
+  pointer-events:none !important;
+}
+
+/* dDAE_2.879 — Conferma colore: layer isolato e touch/click sempre sul popup superiore */
+html.ddae2879-confirm-open,
+body.ddae2879-confirm-open{
+  overflow:hidden !important;
+  touch-action:none !important;
+}
+body.ddae2879-confirm-open #tagColorModal,
+body.ddae2879-confirm-open #confirmYesNoModal,
+body.ddae2879-confirm-open #operatoriEditorModal:not([hidden]),
+body.ddae2879-confirm-open #channelEditorModal:not([hidden]),
+body.ddae2879-confirm-open #laundryCatalogEditorModal:not([hidden]),
+body.ddae2879-confirm-open .modal:not(#ddae2879ConfirmOverlay),
+body.ddae2879-confirm-open .modal-backdrop,
+body.ddae2879-confirm-open .overlay:not(#ddae2879ConfirmOverlay){
+  pointer-events:none !important;
+}
+#ddae2879ConfirmOverlay{
+  position:fixed !important;
+  left:0 !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  z-index:2147483647 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  background:rgba(0,0,0,.34) !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-transform:translateZ(0) !important;
+  transform:translateZ(0) !important;
+  isolation:isolate !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-card{
+  position:relative !important;
+  z-index:1 !important;
+  width:min(360px, calc(100vw - 36px)) !important;
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid rgba(0,0,0,.14) !important;
+  border-radius:20px !important;
+  padding:20px !important;
+  box-shadow:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-text{
+  margin:0 0 18px !important;
+  text-align:center !important;
+  font-size:17px !important;
+  line-height:1.25 !important;
+  font-weight:900 !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:14px !important;
+}
+#ddae2879ConfirmOverlay #ddae2879ConfirmYes,
+#ddae2879ConfirmOverlay #ddae2879ConfirmNo{
+  width:100% !important;
+  min-height:50px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  text-transform:uppercase !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#ddae2879ConfirmOverlay #ddae2879ConfirmYes{ background:#188038 !important; }
+#ddae2879ConfirmOverlay #ddae2879ConfirmNo{ background:#c5221f !important; }
+body.ddae2879-confirm-open #ddae2879ConfirmOverlay,
+body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
+  pointer-events:auto !important;
+}
+
+
+/* dDAE_2.881 — Scheda ospite: ripristino pill Channel in sola lettura */
+#page-ospite .guest-form-card.is-view #guestChannelRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+  align-self:center !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:none !important;
+  -webkit-text-fill-color:currentColor !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelRow #guestChannel:disabled{
+  opacity:1 !important;
+}
+
+/* dDAE_2.884 — Conversione preventivo: Channel obbligatorio visibile nel nuovo ospite */
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow,
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow *,
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel + label,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack label[for="guestChannel"],
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-quote-conversion #guestChannelRow,
+#page-ospite.is-quote-conversion #guestChannelRow *,
+#page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel){
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow,
+#page-ospite.is-quote-conversion #guestChannelRow{
+  display:grid !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelRow > .subfield,
+#page-ospite.is-quote-conversion #guestChannelRow > .subfield,
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack .subfield:has(#guestChannel){
+  display:block !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-quote-conversion #guestCreatePrimaryStack #guestChannel{
+  display:block !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion #guestChannelCommissionWrap,
+#page-ospite.is-quote-conversion #guestChannelCommissionWrap{
+  display:none !important;
+}
+
+/* dDAE_2.884 — Preventivo → Nuovo ospite: Channel sempre visibile e selezionabile */
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack,
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:12px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack .subfield:has(#guestChannel),
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack .field:has(#guestChannel),
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestCreatePrimaryStack .field:has(#guestChannel),
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel,
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel,
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel + label,
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create label[for="guestChannel"],
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel + label,
+#page-ospite.is-quote-conversion .guest-form-card.is-create label[for="guestChannel"]{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel,
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannel{
+  width:100% !important;
+  max-width:100% !important;
+  min-height:var(--guest-create-control-height, 56px) !important;
+  height:var(--guest-create-control-height, 56px) !important;
+  border-radius:var(--guest-create-control-radius, 16px) !important;
+  padding:var(--guest-create-control-padding-top, 26px) var(--guest-create-control-padding-right, 14px) var(--guest-create-control-padding-bottom, 12px) var(--guest-create-control-padding-left, 14px) !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannelRow,
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannelRow{
+  display:none !important;
+}
+body.quote-mode #page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannelCommissionWrap,
+#page-ospite.is-quote-conversion .guest-form-card.is-create #guestChannelCommissionWrap{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
