@@ -23802,3 +23802,61 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay,
 body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   pointer-events:auto !important;
 }
+
+
+/* dDAE_2.881 — Preventivi: CHANNEL visibile su tutte le schede preventivo */
+body.quote-mode #page-ospite.is-preventivo #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow,
+#page-ospite.is-preventivo #guestChannelRow,
+#page-ospite.is-preventivo .guest-form-card #guestChannelRow,
+body.quote-mode #page-ospite #guestCreatePrimaryStack .subfield:has(#guestChannel),
+#page-ospite.is-preventivo #guestCreatePrimaryStack .subfield:has(#guestChannel){
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+#page-ospite.is-preventivo #guestChannelRow > .subfield,
+body.quote-mode #page-ospite #guestChannel,
+#page-ospite.is-preventivo #guestChannel,
+body.quote-mode #page-ospite #guestBooking,
+#page-ospite.is-preventivo #guestBooking,
+body.quote-mode #page-ospite #guestChannel + label,
+#page-ospite.is-preventivo #guestChannel + label,
+body.quote-mode #page-ospite #guestBooking + label,
+#page-ospite.is-preventivo #guestBooking + label{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.quote-mode #page-ospite #guestChannelRow > .subfield:nth-child(2),
+#page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2){
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+}
+body.quote-mode #page-ospite #guestChannel,
+#page-ospite.is-preventivo #guestChannel{
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+}
+body.quote-mode #page-ospite #guestChannelCommissionWrap,
+#page-ospite.is-preventivo #guestChannelCommissionWrap,
+body.quote-mode #page-ospite #guestBookingNumberField,
+#page-ospite.is-preventivo #guestBookingNumberField{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
