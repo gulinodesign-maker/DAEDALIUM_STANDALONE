@@ -22287,7 +22287,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 }
 
 
-/* dDAE_2.887 — Ospiti: stato reale stanza occupata */
+/* dDAE_2.888 — Ospiti: stato reale stanza occupata */
 #page-ospite .room-dot.occupied-real,
 #page-ospite .room-dot.occupied.occupied-real{
   background:#ff0000 !important;
@@ -23477,7 +23477,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.887 — Scheda ospite: ripristino pill Channel in sola lettura */
+/* dDAE_2.888 — Scheda ospite: ripristino pill Channel in sola lettura */
 #page-ospite .guest-form-card.is-view #guestChannelRow{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) var(--paycol) !important;
@@ -23507,7 +23507,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.887 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
+/* dDAE_2.888 — Scheda ospite: Importo commissione/Channel solo dentro il menu gruppo stanze aperto */
 #page-ospite .guest-form-card.is-view:not(.guest-group-info-open) #guestChannelRow{
   display:none !important;
 }
@@ -23519,7 +23519,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.887 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
+/* dDAE_2.888 — Scheda ospite: titolo rimosso e tasti funzione centrati a tutta larghezza */
 #page-ospite .guest-form-card.is-view > .hd{
   display:flex !important;
   align-items:center !important;
@@ -23575,7 +23575,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 
 
-/* dDAE_2.887 — Prenota/Preventivo: doppio tasto creazione e filtro preventivi */
+/* dDAE_2.888 — Prenota/Preventivo: doppio tasto creazione e filtro preventivi */
 #page-ospite .guest-create-choice-row{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -23625,4 +23625,77 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   color:#0f172a;
   background:rgba(253,224,71,.95);
   border:1px solid rgba(15,23,42,.12);
+}
+
+
+/* dDAE_2.888 — Ospiti: filtri iconografici in una sola linea omogenea */
+#page-ospiti .guest-filter-grid{
+  width:100% !important;
+  margin:0 0 14px 0 !important;
+  gap:0 !important;
+}
+#page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:100% !important;
+}
+#page-ospiti .guest-filter-row-1 .gf-tile,
+#page-ospiti .guest-filter-row-sort-buttons .gf-tile{
+  min-width:0 !important;
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#page-ospiti .guest-filter-row-1 .gf-tile button,
+#page-ospiti .guest-filter-row-sort-buttons .gf-tile button,
+#page-ospiti .gf-chip-btn,
+#page-ospiti .gf-preventivi-btn{
+  width:100% !important;
+  min-width:0 !important;
+  height:50px !important;
+  min-height:50px !important;
+  padding:0 !important;
+  border-radius:16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-indent:0 !important;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+#page-ospiti .gf-filter-ico{
+  width:25px !important;
+  height:25px !important;
+  display:block !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.35 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  pointer-events:none !important;
+}
+#page-ospiti .guest-filter-row-2{
+  display:none !important;
+}
+@media (max-width:390px){
+  #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{
+    gap:6px !important;
+  }
+  #page-ospiti .guest-filter-row-1 .gf-tile button,
+  #page-ospiti .guest-filter-row-sort-buttons .gf-tile button,
+  #page-ospiti .gf-chip-btn{
+    height:46px !important;
+    min-height:46px !important;
+    border-radius:14px !important;
+  }
+  #page-ospiti .gf-filter-ico{
+    width:22px !important;
+    height:22px !important;
+  }
 }
