@@ -23803,7 +23803,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   pointer-events:auto !important;
 }
 
-/* dDAE_2.881 — CHANNEL anche in Preventivo e pill visibile in scheda */
+/* dDAE_2.882 — CHANNEL anche in Preventivo e pill visibile in scheda */
 #page-ospite .guest-form-card.is-preventivo #guestCreatePrimaryStack #guestChannel,
 #page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel{
   display:block !important;
@@ -23869,4 +23869,76 @@ body.ddae-dark #page-ospite .guest-channel-view-pill{
 #page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel{
   display:block !important;
   width:100% !important;
+}
+
+/* dDAE_2.882 — CHANNEL reale in nuovo preventivo, scheda preventivo e scheda prenotazione */
+#page-ospite.is-preventivo #guestChannelRow,
+body.quote-mode #page-ospite #guestChannelRow,
+#page-ospite.is-preventivo .guest-form-card #guestChannelRow,
+body.quote-mode #page-ospite .guest-form-card #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow{
+  display:grid !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  grid-template-columns:minmax(0,1fr) var(--paycol) !important;
+  gap:12px !important;
+  align-items:center !important;
+  width:100% !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield,
+body.quote-mode #page-ospite #guestChannelRow > .subfield,
+#page-ospite.is-preventivo #guestChannelRow *:not(option),
+body.quote-mode #page-ospite #guestChannelRow *:not(option),
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow *:not(option){
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield:first-child,
+body.quote-mode #page-ospite #guestChannelRow > .subfield:first-child,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:first-child{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  justify-self:stretch !important;
+}
+#page-ospite.is-preventivo #guestChannelRow > .subfield:nth-child(2),
+body.quote-mode #page-ospite #guestChannelRow > .subfield:nth-child(2),
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  display:block !important;
+  width:var(--paycol) !important;
+  min-width:var(--paycol) !important;
+  max-width:var(--paycol) !important;
+  justify-self:end !important;
+}
+#page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack > .subfield:has(#guestChannel),
+body.quote-mode #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield:has(#guestChannel){
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+body.quote-mode #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+body.quote-mode #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel + label,
+#page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+body.quote-mode #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"]{
+  display:block !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+#page-ospite.is-preventivo .guest-form-card.is-create #guestCreatePrimaryStack .subfield:has(#guestBooking),
+body.quote-mode #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack .subfield:has(#guestBooking){
+  display:none !important;
+}
+#page-ospite #guestChannelCommissionWrap{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannel{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestChannelViewPill{
+  display:flex !important;
+  visibility:visible !important;
+  pointer-events:none !important;
 }
