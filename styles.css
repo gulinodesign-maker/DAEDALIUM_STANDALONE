@@ -23618,7 +23618,7 @@ body.ddae870-confirm-open #ddae870ConfirmOverlay *{
 }
 
 
-/* dDAE_2.878 — Conferma colore custom SI/NO rettangolare, simmetrica, flat */
+/* dDAE_2.879 — Conferma colore custom SI/NO rettangolare, simmetrica, flat */
 #ddae2877ConfirmOverlay{
   position:fixed !important;
   inset:0 !important;
@@ -23689,7 +23689,7 @@ body.ddae2877-confirm-open #ddae2877ConfirmOverlay *{
   pointer-events:auto !important;
 }
 
-/* dDAE_2.878 — Popup conferma colore sbloccato sopra tutti i popup Impostazioni */
+/* dDAE_2.879 — Popup conferma colore sbloccato sopra tutti i popup Impostazioni */
 html.confirm-yesno-open #confirmYesNoModal,
 body.confirm-yesno-open #confirmYesNoModal,
 #confirmYesNoModal:not([hidden]){
@@ -23715,4 +23715,90 @@ body.confirm-yesno-open #confirmYesNoModal #confirmYesNoNo{
 #confirmYesNoModal[aria-hidden="true"]{
   display:none !important;
   pointer-events:none !important;
+}
+
+/* dDAE_2.879 — Conferma colore: layer isolato e touch/click sempre sul popup superiore */
+html.ddae2879-confirm-open,
+body.ddae2879-confirm-open{
+  overflow:hidden !important;
+  touch-action:none !important;
+}
+body.ddae2879-confirm-open #tagColorModal,
+body.ddae2879-confirm-open #confirmYesNoModal,
+body.ddae2879-confirm-open #operatoriEditorModal:not([hidden]),
+body.ddae2879-confirm-open #channelEditorModal:not([hidden]),
+body.ddae2879-confirm-open #laundryCatalogEditorModal:not([hidden]),
+body.ddae2879-confirm-open .modal:not(#ddae2879ConfirmOverlay),
+body.ddae2879-confirm-open .modal-backdrop,
+body.ddae2879-confirm-open .overlay:not(#ddae2879ConfirmOverlay){
+  pointer-events:none !important;
+}
+#ddae2879ConfirmOverlay{
+  position:fixed !important;
+  left:0 !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  z-index:2147483647 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  background:rgba(0,0,0,.34) !important;
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-transform:translateZ(0) !important;
+  transform:translateZ(0) !important;
+  isolation:isolate !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-card{
+  position:relative !important;
+  z-index:1 !important;
+  width:min(360px, calc(100vw - 36px)) !important;
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid rgba(0,0,0,.14) !important;
+  border-radius:20px !important;
+  padding:20px !important;
+  box-shadow:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-text{
+  margin:0 0 18px !important;
+  text-align:center !important;
+  font-size:17px !important;
+  line-height:1.25 !important;
+  font-weight:900 !important;
+}
+#ddae2879ConfirmOverlay .ddae2879-confirm-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:14px !important;
+}
+#ddae2879ConfirmOverlay #ddae2879ConfirmYes,
+#ddae2879ConfirmOverlay #ddae2879ConfirmNo{
+  width:100% !important;
+  min-height:50px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  text-transform:uppercase !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#ddae2879ConfirmOverlay #ddae2879ConfirmYes{ background:#188038 !important; }
+#ddae2879ConfirmOverlay #ddae2879ConfirmNo{ background:#c5221f !important; }
+body.ddae2879-confirm-open #ddae2879ConfirmOverlay,
+body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
+  pointer-events:auto !important;
 }
