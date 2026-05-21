@@ -24148,3 +24148,50 @@ body.ddae-dark .guest-date-range-day.is-edge{
   font-size:25px !important;
   transform:scale(1.24) !important;
 }
+
+
+/* dDAE_2.896 — Range date: campi check-in/check-out più proporzionati */
+.guest-date-range-top-fields{
+  gap:12px !important;
+  align-items:stretch !important;
+}
+.guest-date-range-top-field{
+  min-width:0 !important;
+  min-height:64px !important;
+  height:auto !important;
+  padding:18px 10px 10px !important;
+  overflow:visible !important;
+}
+.guest-date-range-top-label{
+  top:-11px !important;
+  left:12px !important;
+  padding:0 6px !important;
+  font-size:15px !important;
+  line-height:1.1 !important;
+  max-width:calc(100% - 24px) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.guest-date-range-top-value{
+  font-size:18px !important;
+  line-height:1.12 !important;
+  letter-spacing:-.02em !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  overflow-wrap:normal !important;
+  word-break:normal !important;
+}
+@media (max-width: 520px){
+  .guest-date-range-top-fields{ gap:10px !important; margin-bottom:22px !important; }
+  .guest-date-range-top-field{ min-height:62px !important; border-radius:15px !important; padding:17px 9px 9px !important; }
+  .guest-date-range-top-label{ left:11px !important; font-size:14px !important; }
+  .guest-date-range-top-value{ font-size:17px !important; }
+}
+@media (max-width: 390px){
+  .guest-date-range-top-fields{ gap:8px !important; }
+  .guest-date-range-top-field{ min-height:60px !important; padding-left:8px !important; padding-right:8px !important; }
+  .guest-date-range-top-label{ font-size:13px !important; }
+  .guest-date-range-top-value{ font-size:16px !important; }
+}
