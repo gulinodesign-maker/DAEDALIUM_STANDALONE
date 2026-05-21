@@ -23717,7 +23717,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   clip:rect(0,0,0,0) !important;
 }
 
-/* dDAE_2.891 — Calendari range da/a uniformati, flat ed editabili da popup colore */
+/* dDAE_2.892 — Calendari range da/a uniformati, flat ed editabili da popup colore */
 .guest-date-range-modal .guest-date-range-modal-card,
 #guestDateRangeModal .guest-date-range-modal-card,
 #laundryDateRangeModal .guest-date-range-modal-card,
@@ -23953,4 +23953,26 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-weekdays,.guest-date-range-grid{ gap:8px 6px !important; }
   .guest-date-range-day{ width:42px !important; height:42px !important; min-height:42px !important; font-size:20px !important; }
   .guest-date-range-actions .btn{ font-size:22px !important; }
+}
+
+
+/* dDAE_2.892 — Nuovo ospite: channel senza placeholder visibile e nazionalità in alto a destra */
+#page-ospite .guest-name-field > .guest-nationality-btn{
+  top:10px !important;
+  right:12px !important;
+  transform:none !important;
+}
+#page-ospite .guest-name-field > .guest-nationality-btn:active{
+  transform:scale(0.985) !important;
+}
+#page-ospite .guest-name-field > input{
+  padding-right:64px !important;
+}
+#page-ospite #guestChannel:invalid,
+#page-ospite #guestChannel option[value=""]{
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+}
+#page-ospite #guestChannel{
+  background-image:none !important;
 }
