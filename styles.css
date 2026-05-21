@@ -23717,7 +23717,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   clip:rect(0,0,0,0) !important;
 }
 
-/* dDAE_2.892 — Calendari range da/a uniformati, flat ed editabili da popup colore */
+/* dDAE_2.893 — Calendari range da/a uniformati, flat ed editabili da popup colore */
 .guest-date-range-modal .guest-date-range-modal-card,
 #guestDateRangeModal .guest-date-range-modal-card,
 #laundryDateRangeModal .guest-date-range-modal-card,
@@ -23956,7 +23956,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.892 — Nuovo ospite: channel senza placeholder visibile e nazionalità in alto a destra */
+/* dDAE_2.893 — Nuovo ospite: channel senza placeholder visibile e nazionalità in alto a destra */
 #page-ospite .guest-name-field > .guest-nationality-btn{
   top:10px !important;
   right:12px !important;
@@ -23975,4 +23975,176 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 #page-ospite #guestChannel{
   background-image:none !important;
+}
+
+/* dDAE_2.893 — Nazionalità accanto al titolo e calendario range editabile per singoli elementi */
+#page-ospite .guest-form-card > .hd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+#page-ospite .guest-title-row{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  min-width:0;
+  flex:1 1 auto;
+}
+#page-ospite .guest-title-row #ospiteFormTitle{
+  margin:0;
+  min-width:0;
+}
+#page-ospite .guest-title-row .guest-nationality-title-btn,
+#page-ospite .guest-nationality-title-btn{
+  position:relative !important;
+  top:auto !important;
+  right:auto !important;
+  left:auto !important;
+  transform:none !important;
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  max-width:38px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  flex:0 0 38px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  border:1px solid rgba(77,156,197,0.24) !important;
+  background:rgba(255,255,255,0.98) !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-title-row .guest-nationality-title-btn:active,
+#page-ospite .guest-nationality-title-btn:active{ transform:scale(0.985) !important; }
+#page-ospite .guest-title-row .guest-nationality-title-btn .guest-nationality-flag,
+#page-ospite .guest-nationality-title-btn .guest-nationality-flag{
+  width:100% !important;
+  height:100% !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:26px !important;
+  line-height:1 !important;
+  transform:scale(1.22) !important;
+  transform-origin:center center !important;
+}
+#page-ospite .guest-name-field > input{ padding-right:12px !important; }
+#page-ospite .guest-name-field > label{ max-width:calc(100% - 28px) !important; }
+
+.guest-date-range-modal-card{
+  background:var(--ddae-range-part-modal-bg, var(--ddae-range-modal-bg, rgba(255,255,255,.98))) !important;
+  border-color:var(--ddae-range-part-modal-border, var(--ddae-range-modal-border, rgba(15,23,42,.10))) !important;
+  color:var(--ddae-range-part-modal-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-modal-hd,
+.guest-date-range-modal-range-title{
+  color:var(--ddae-range-part-title-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-start{
+  background:var(--ddae-range-part-checkin-bg, var(--ddae-range-field-bg, rgba(255,255,255,.94))) !important;
+  border-color:var(--ddae-range-part-checkin-border, var(--ddae-range-field-muted-border, rgba(15,23,42,.18))) !important;
+  color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-end{
+  background:var(--ddae-range-part-checkout-bg, var(--ddae-range-field-bg, rgba(255,255,255,.94))) !important;
+  border-color:var(--ddae-range-part-checkout-border, var(--ddae-range-field-border, #0f8c9a)) !important;
+  color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-start .guest-date-range-top-label,
+.guest-date-range-top-field.is-start .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-end .guest-date-range-top-label,
+.guest-date-range-top-field.is-end .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-monthtitle{
+  color:var(--ddae-range-part-month-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-nav{
+  background:var(--ddae-range-part-nav-bg, var(--ddae-range-nav-bg, rgba(255,255,255,.80))) !important;
+  border-color:var(--ddae-range-part-nav-border, var(--ddae-range-nav-border, rgba(15,23,42,.12))) !important;
+  color:var(--ddae-range-part-nav-fg, var(--ddae-range-modal-subtle, rgba(15,23,42,.35))) !important;
+}
+.guest-date-range-weekdays span{
+  color:var(--ddae-range-part-weekdays-fg, var(--ddae-range-modal-subtle, rgba(15,23,42,.48))) !important;
+}
+.guest-date-range-day{
+  background:var(--ddae-range-part-days-bg, var(--ddae-range-day-bg, transparent)) !important;
+  border-color:var(--ddae-range-part-days-border, var(--ddae-range-day-border, transparent)) !important;
+  color:var(--ddae-range-part-days-fg, var(--ddae-range-modal-text, #000)) !important;
+}
+.guest-date-range-day.is-muted{
+  color:var(--ddae-range-part-muteddays-fg, var(--ddae-range-day-muted, rgba(15,23,42,.28))) !important;
+}
+.guest-date-range-day.is-in-range{
+  background:var(--ddae-range-part-rangedays-bg, var(--ddae-range-day-range-bg, rgba(15,140,154,.10))) !important;
+  border-color:var(--ddae-range-part-rangedays-border, var(--ddae-range-day-range-border, rgba(15,140,154,.16))) !important;
+  color:var(--ddae-range-part-rangedays-fg, var(--ddae-range-day-range-text, #111827)) !important;
+}
+.guest-date-range-day.is-selected,
+.guest-date-range-day.is-edge{
+  background:var(--ddae-range-part-selecteddays-bg, var(--ddae-range-action-apply-bg, #0f8c9a)) !important;
+  border-color:var(--ddae-range-part-selecteddays-border, var(--ddae-range-action-apply-bg, #0f8c9a)) !important;
+  color:var(--ddae-range-part-selecteddays-fg, var(--ddae-range-action-apply-text, #fff)) !important;
+}
+.guest-date-range-actions .btn:not(.primary){
+  background:var(--ddae-range-part-cancel-bg, var(--ddae-range-action-cancel-bg, rgba(169,220,255,.32))) !important;
+  border-color:var(--ddae-range-part-cancel-border, var(--ddae-range-field-muted-border, rgba(15,23,42,.12))) !important;
+  color:var(--ddae-range-part-cancel-fg, var(--ddae-range-action-cancel-text, #0f8c9a)) !important;
+}
+.guest-date-range-actions .btn.primary{
+  background:var(--ddae-range-part-apply-bg, var(--ddae-range-action-apply-bg, #0f8c9a)) !important;
+  border-color:var(--ddae-range-part-apply-border, var(--ddae-range-action-apply-bg, #0f8c9a)) !important;
+  color:var(--ddae-range-part-apply-fg, var(--ddae-range-action-apply-text, #fff)) !important;
+}
+
+/* dDAE_2.895 — Nazionalità: titolo solo in nuovo ospite, campo nome in lettura/modifica */
+#page-ospite .guest-title-row{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+}
+#page-ospite .guest-title-row .guest-nationality-title-btn{
+  order:0;
+}
+#page-ospite .guest-title-row #ospiteFormTitle{
+  order:1;
+}
+#page-ospite .guest-form-card.is-edit .guest-name-field > input,
+#page-ospite .guest-form-card.is-view .guest-name-field > input{
+  padding-right:64px !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-name-field > label,
+#page-ospite .guest-form-card.is-view .guest-name-field > label{
+  max-width:calc(100% - 86px) !important;
+}
+#page-ospite .guest-name-field > .guest-nationality-name-btn{
+  position:absolute !important;
+  top:50% !important;
+  right:12px !important;
+  left:auto !important;
+  transform:translateY(-50%) !important;
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  min-height:34px !important;
+  max-width:34px !important;
+  max-height:34px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  flex:0 0 34px !important;
+}
+#page-ospite .guest-name-field > .guest-nationality-name-btn:active{
+  transform:translateY(-50%) scale(0.985) !important;
+}
+#page-ospite .guest-name-field > .guest-nationality-name-btn .guest-nationality-flag{
+  font-size:25px !important;
+  transform:scale(1.24) !important;
 }
