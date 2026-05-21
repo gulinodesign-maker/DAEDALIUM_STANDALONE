@@ -23717,7 +23717,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   clip:rect(0,0,0,0) !important;
 }
 
-/* dDAE_2.891 — Calendari range da/a uniformati, flat ed editabili da popup colore */
+/* dDAE_2.892 — Calendari range da/a uniformati, flat ed editabili da popup colore */
 .guest-date-range-modal .guest-date-range-modal-card,
 #guestDateRangeModal .guest-date-range-modal-card,
 #laundryDateRangeModal .guest-date-range-modal-card,
@@ -23953,4 +23953,432 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-weekdays,.guest-date-range-grid{ gap:8px 6px !important; }
   .guest-date-range-day{ width:42px !important; height:42px !important; min-height:42px !important; font-size:20px !important; }
   .guest-date-range-actions .btn{ font-size:22px !important; }
+}
+
+/* dDAE_2.892 — Nuovo ospite: redesign iOS hotel-card flat */
+#page-ospite{
+  --guest-ui-accent: var(--blue, #0b84a5);
+  --guest-ui-accent-2: var(--orange, #d88a25);
+  --guest-ui-ink: var(--ico-blue-night, #0f172a);
+  --guest-ui-muted: rgba(15,23,42,0.62);
+  --guest-ui-line: rgba(124,83,45,0.20);
+  --guest-ui-surface: rgba(255,255,255,0.92);
+  --guest-ui-soft: rgba(255,248,241,0.82);
+}
+#page-ospite .content{
+  padding-top: 18px !important;
+}
+#page-ospite .ospite-wrap{
+  max-width: 640px !important;
+  gap: 16px !important;
+}
+#page-ospite .guest-form-card{
+  border-radius: 28px !important;
+  border: 1px solid rgba(124,83,45,0.18) !important;
+  background: rgba(255,255,255,0.88) !important;
+  box-shadow: 0 10px 28px rgba(15,23,42,0.10) !important;
+  overflow: hidden !important;
+}
+#page-ospite .guest-form-card.is-create,
+#page-ospite .guest-form-card.is-edit,
+#page-ospite .guest-form-card.is-view{
+  background: rgba(255,255,255,0.88) !important;
+}
+#page-ospite .guest-form-card > .hd{
+  display:grid !important;
+  grid-template-columns: 74px minmax(0,1fr) auto !important;
+  align-items:center !important;
+  column-gap: 16px !important;
+  min-height: 112px !important;
+  padding: 24px 26px 18px !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(124,83,45,0.14) !important;
+}
+#page-ospite .guest-form-card > .hd::before{
+  content:"";
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  background-color: rgba(11,132,165,0.10);
+  border: 1px solid rgba(11,132,165,0.14);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21a8 8 0 0 0-16 0'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size: 34px 34px;
+}
+#page-ospite .guest-form-card > .hd h2{
+  grid-column: 2;
+  margin: 0 !important;
+  align-self:end !important;
+  color: var(--guest-ui-ink) !important;
+  font-size: clamp(29px, 4.9vw, 36px) !important;
+  font-weight: 850 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.02em !important;
+}
+#page-ospite .guest-form-card > .hd h2::after{
+  content:"Inserisci i dati del nuovo ospite";
+  display:block;
+  margin-top: 7px;
+  color: rgba(15,23,42,0.70);
+  font-size: clamp(15px, 2.8vw, 18px);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+#page-ospite .guest-form-card > .hd .guest-hd-actions{
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  justify-self:end;
+}
+#page-ospite .guest-form-card .bd.form-stack{
+  display:grid !important;
+  grid-template-columns: minmax(0,1fr) !important;
+  gap: 14px !important;
+  padding: 20px 26px 24px !important;
+}
+#page-ospite .guest-form-card .bd.form-stack > .field,
+#page-ospite .guest-form-card .bd.form-stack > .field.two-col{
+  width: 100% !important;
+}
+#page-ospite .guest-form-card .bd.form-stack > .field.float,
+#page-ospite .guest-form-card .bd.form-stack > .guest-date-range-field,
+#page-ospite .guest-form-card .bd.form-stack > .field.two-col > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap{
+  position: relative !important;
+}
+#page-ospite .guest-form-card input,
+#page-ospite .guest-form-card select,
+#page-ospite .guest-form-card textarea,
+#page-ospite .guest-form-card .guest-date-range-trigger,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  height: 64px !important;
+  min-height: 64px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(124,83,45,0.22) !important;
+  background: rgba(255,255,255,0.86) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: var(--guest-ui-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+  font-size: 18px !important;
+  font-weight: 650 !important;
+}
+#page-ospite .guest-form-card input,
+#page-ospite .guest-form-card select{
+  padding: 25px 44px 10px 54px !important;
+}
+#page-ospite .guest-form-card .field.float > label,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestChannel"],
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack label[for="guestTotal"]{
+  top: 10px !important;
+  left: 54px !important;
+  transform: none !important;
+  color: var(--guest-ui-muted) !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.1 !important;
+  opacity: 1 !important;
+}
+#page-ospite .guest-form-card .field.float.has-value > label,
+#page-ospite .guest-form-card .field.float input:focus + label,
+#page-ospite .guest-form-card .field.float select:focus + label{
+  transform:none !important;
+  color: rgba(124,83,45,0.84) !important;
+}
+#page-ospite .guest-form-card .field.float::before,
+#page-ospite .guest-form-card .guest-date-range-field::before,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float::before,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap::before{
+  content:"";
+  position:absolute;
+  left:18px;
+  top:50%;
+  width:22px;
+  height:22px;
+  transform: translateY(-50%);
+  background-color: rgba(15,23,42,0.82);
+  z-index:2;
+  pointer-events:none;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-size:22px 22px;
+  mask-size:22px 22px;
+}
+#page-ospite .guest-name-field::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z'/%3E%3C/svg%3E"); }
+#page-ospite .guest-booking-number-field::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 3h2L9.8 9h4.4L15.4 3h2l-1.2 6H21v2h-5.2l-.8 4H20v2h-5.4L13.4 23h-2l1.2-6H8.2L7 23H5l1.2-6H2v-2h4.6l.8-4H3V9h4.8L9 3Zm.8 8-.8 4h4.4l.8-4H9.8Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 3h2L9.8 9h4.4L15.4 3h2l-1.2 6H21v2h-5.2l-.8 4H20v2h-5.4L13.4 23h-2l1.2-6H8.2L7 23H5l1.2-6H2v-2h4.6l.8-4H3V9h4.8L9 3Zm.8 8-.8 4h4.4l.8-4H9.8Z'/%3E%3C/svg%3E"); }
+#page-ospite .guest-date-range-field::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 2h2v3h6V2h2v3h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3V2Zm13 8H4v10h16V10Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 2h2v3h6V2h2v3h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3V2Zm13 8H4v10h16V10Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestPhone.closest{} /* selector guard */
+#page-ospite #guestPhone{ }
+#page-ospite #guestPhone + label{ }
+#page-ospite #guestPhone:where(input){ }
+#page-ospite .guest-contact-row .subfield:first-child::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6.6 10.8c1.4 2.8 3.7 5.1 6.6 6.6l2.2-2.2c.3-.3.8-.4 1.2-.3 1.3.4 2.6.6 4 .6.8 0 1.4.6 1.4 1.4v3.5c0 .8-.6 1.4-1.4 1.4C10.3 22.3 1.7 13.7 1.7 3.4 1.7 2.6 2.3 2 3.1 2h3.5C7.4 2 8 2.6 8 3.4c0 1.4.2 2.8.6 4 .1.4 0 .9-.3 1.2l-1.7 2.2Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6.6 10.8c1.4 2.8 3.7 5.1 6.6 6.6l2.2-2.2c.3-.3.8-.4 1.2-.3 1.3.4 2.6.6 4 .6.8 0 1.4.6 1.4 1.4v3.5c0 .8-.6 1.4-1.4 1.4C10.3 22.3 1.7 13.7 1.7 3.4 1.7 2.6 2.3 2 3.1 2h3.5C7.4 2 8 2.6 8 3.4c0 1.4.2 2.8.6 4 .1.4 0 .9-.3 1.2l-1.7 2.2Z'/%3E%3C/svg%3E"); }
+#page-ospite .guest-contact-row .subfield:nth-child(2)::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestPeopleRow .subfield:first-child::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestPeopleRow .subfield:nth-child(2)::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6.5 8c.5-3.2 3.2-5 6.5-5s6 1.8 6.5 5h-13ZM7 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6.5 8c.5-3.2 3.2-5 6.5-5s6 1.8 6.5 5h-13ZM7 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestCreatePrimaryStack > .subfield.paywrap::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 3h14a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2Zm3 5h8v2H8V8Zm0 4h8v2H8v-2Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 3h14a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2Zm3 5h8v2H8V8Zm0 4h8v2H8v-2Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestCreatePrimaryStack > .subfield:has(#guestChannel)::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 9h-3.1a15.8 15.8 0 0 0-1.1-5 8.1 8.1 0 0 1 4.2 5ZM12 4.1c.8 1.1 1.5 3.2 1.8 6.9h-3.6c.3-3.7 1-5.8 1.8-6.9ZM4.3 13h3.8c.1 1.7.4 3.2.8 4.5A8 8 0 0 1 4.3 13Zm3.8-2H4.3A8 8 0 0 1 8.9 6.5c-.4 1.3-.7 2.8-.8 4.5ZM12 19.9c-.8-1.1-1.5-3.2-1.8-6.9h3.6c-.3 3.7-1 5.8-1.8 6.9Zm3.1-2.4c.4-1.3.7-2.8.8-4.5h3.8a8 8 0 0 1-4.6 4.5Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 9h-3.1a15.8 15.8 0 0 0-1.1-5 8.1 8.1 0 0 1 4.2 5ZM12 4.1c.8 1.1 1.5 3.2 1.8 6.9h-3.6c.3-3.7 1-5.8 1.8-6.9ZM4.3 13h3.8c.1 1.7.4 3.2.8 4.5A8 8 0 0 1 4.3 13Zm3.8-2H4.3A8 8 0 0 1 8.9 6.5c-.4 1.3-.7 2.8-.8 4.5ZM12 19.9c-.8-1.1-1.5-3.2-1.8-6.9h3.6c-.3 3.7-1 5.8-1.8 6.9Zm3.1-2.4c.4-1.3.7-2.8.8-4.5h3.8a8 8 0 0 1-4.6 4.5Z'/%3E%3C/svg%3E"); }
+#page-ospite #guestCreatePrimaryStack > .subfield:has(#guestTotal)::before{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 4h16v16H4V4Zm9.5 3.5H10a3.5 3.5 0 0 0 0 7h3.5v-2H10a1.5 1.5 0 0 1 0-3h3.5v-2ZM8 11h6v2H8v-2Z'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 4h16v16H4V4Zm9.5 3.5H10a3.5 3.5 0 0 0 0 7h3.5v-2H10a1.5 1.5 0 0 1 0-3h3.5v-2ZM8 11h6v2H8v-2Z'/%3E%3C/svg%3E"); }
+#page-ospite .guest-date-range-trigger{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding: 0 54px !important;
+  position: relative !important;
+}
+#page-ospite .guest-date-range-trigger::after{
+  content:"›";
+  position:absolute;
+  right: 22px;
+  top:50%;
+  transform: translateY(-50%);
+  color: rgba(124,83,45,0.88);
+  font-size: 36px;
+  font-weight: 400;
+  line-height:1;
+}
+#page-ospite .guest-date-range-value{
+  width:100%;
+  text-align:center;
+  color: var(--guest-ui-ink) !important;
+  font-size: 20px !important;
+  font-weight: 850 !important;
+  letter-spacing:-0.01em;
+}
+#page-ospite .guest-date-range-field::after,
+#page-ospite #guestContactRow::before,
+#page-ospite #guestPeopleRow::before,
+#page-ospite .bd.form-stack > .field:has(#roomsPicker)::before,
+#page-ospite #mgcRow::before,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack::before{
+  display:block;
+  width:100%;
+  color: rgba(124,83,45,0.96);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height:1;
+  margin: 4px 0 -6px 2px;
+}
+#page-ospite .guest-date-range-field::after{ content:"Soggiorno"; order:-1; }
+#page-ospite #guestContactRow::before{ content:"Contatti"; grid-column:1/-1; }
+#page-ospite #guestPeopleRow::before{ content:"Ospiti"; grid-column:1/-1; }
+#page-ospite .bd.form-stack > .field:has(#roomsPicker)::before{ content:"Numero ospiti"; }
+#page-ospite #mgcRow::before{ content:"Tipologia camera"; }
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack::before{ content:"Dettagli prenotazione"; margin-bottom: -2px; }
+#page-ospite .guest-form-card .bd.form-stack > .guest-name-field:first-child::after{
+  content:"Dati ospite";
+  display:block;
+  order:-1;
+  color: rgba(124,83,45,0.96);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height:1;
+  margin: 0 0 8px 2px;
+}
+#page-ospite #guestContactRow,
+#page-ospite #guestPeopleRow{
+  display:grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+  column-gap: 22px !important;
+  row-gap: 10px !important;
+  align-items:end !important;
+}
+#page-ospite .bd.form-stack > .field:has(#roomsPicker),
+#page-ospite #mgcRow{
+  border: 1px solid rgba(124,83,45,0.18) !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,0.36) !important;
+  padding: 14px 18px 16px !important;
+  gap: 12px !important;
+}
+#page-ospite .rooms{
+  display:grid !important;
+  grid-template-columns: repeat(6, minmax(40px, 1fr)) !important;
+  gap: 12px !important;
+  padding: 8px 0 2px !important;
+  overflow: visible !important;
+}
+#page-ospite .rooms .room-dot,
+#page-ospite #mgcRow .room-dot{
+  width: 54px !important;
+  height: 54px !important;
+  max-width: 100% !important;
+  justify-self:center !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(124,83,45,0.24) !important;
+  background: rgba(255,255,255,0.78) !important;
+  color: var(--guest-ui-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+  box-shadow:none !important;
+  font-size: 23px !important;
+  font-weight: 850 !important;
+}
+#page-ospite .rooms .room-dot.selected,
+#page-ospite #mgcRow .room-dot.selected{
+  background: var(--guest-ui-accent) !important;
+  border-color: var(--guest-ui-accent) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+#page-ospite #mgcRow{
+  margin-top: 0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+}
+#page-ospite #mgcRow .mgc-divider{ display:none !important; }
+#page-ospite #mgcRow .mg-pill{
+  display:flex !important;
+  justify-content:center !important;
+  gap: clamp(24px, 8vw, 54px) !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack{
+  display:flex !important;
+  flex-direction:column !important;
+  gap: 14px !important;
+  margin: 2px 0 4px !important;
+  padding: 0 !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.field.float,
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack > .subfield.paywrap{
+  height:64px !important;
+  min-height:64px !important;
+  width:100% !important;
+  display:flex !important;
+  align-items:stretch !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle{
+  justify-content:flex-start !important;
+  padding: 0 16px 0 54px !important;
+}
+#page-ospite .guest-form-card.is-create #guestCreatePrimaryStack .guest-notes-toggle-label{
+  color: rgba(15,23,42,0.72) !important;
+  font-size:18px !important;
+  font-weight:750 !important;
+}
+#page-ospite .guest-nationality-btn{
+  right: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(124,83,45,0.18) !important;
+  background: rgba(255,255,255,0.70) !important;
+  box-shadow:none !important;
+}
+#page-ospite select{
+  background-image:none !important;
+}
+#page-ospite .subfield:has(select)::after{
+  content:"⌄";
+  position:absolute;
+  right: 18px;
+  top:50%;
+  transform: translateY(-50%);
+  color: rgba(15,23,42,0.82);
+  font-size: 24px;
+  line-height:1;
+  pointer-events:none;
+}
+#page-ospite .guest-create-choice-row{
+  display:grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+  gap: 22px !important;
+  margin-top: 10px !important;
+}
+#page-ospite .guest-create-choice-row .btn,
+#page-ospite #createGuestCard{
+  height: 58px !important;
+  min-height:58px !important;
+  border-radius: 999px !important;
+  box-shadow:none !important;
+  font-size: 18px !important;
+  font-weight: 850 !important;
+}
+#page-ospite .guest-create-choice-row .btn:first-child{
+  background: rgba(255,255,255,0.72) !important;
+  color: rgba(124,83,45,0.98) !important;
+  -webkit-text-fill-color: currentColor !important;
+  border-color: rgba(124,83,45,0.22) !important;
+}
+#page-ospite .guest-create-choice-row .btn:last-child,
+#page-ospite #createGuestCard{
+  background: var(--guest-ui-accent) !important;
+  border-color: var(--guest-ui-accent) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+body.ddae-dark #page-ospite{
+  --guest-ui-surface: rgba(18,24,38,0.92);
+  --guest-ui-soft: rgba(18,24,38,0.80);
+  --guest-ui-line: rgba(255,255,255,0.14);
+  --guest-ui-muted: rgba(255,255,255,0.62);
+}
+body.ddae-dark #page-ospite .guest-form-card,
+body.ddae-dark #page-ospite .guest-form-card.is-create,
+body.ddae-dark #page-ospite .guest-form-card.is-edit,
+body.ddae-dark #page-ospite .guest-form-card.is-view{
+  background: rgba(18,24,38,0.92) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+body.ddae-dark #page-ospite .guest-form-card > .hd h2,
+body.ddae-dark #page-ospite .guest-date-range-value,
+body.ddae-dark #page-ospite .guest-form-card input,
+body.ddae-dark #page-ospite .guest-form-card select,
+body.ddae-dark #page-ospite .rooms .room-dot,
+body.ddae-dark #page-ospite #mgcRow .room-dot{
+  color: rgba(255,255,255,0.94) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.ddae-dark #page-ospite .guest-form-card input,
+body.ddae-dark #page-ospite .guest-form-card select,
+body.ddae-dark #page-ospite .guest-form-card textarea,
+body.ddae-dark #page-ospite .guest-form-card .guest-date-range-trigger,
+body.ddae-dark #page-ospite .rooms .room-dot,
+body.ddae-dark #page-ospite #mgcRow .room-dot,
+body.ddae-dark #page-ospite .bd.form-stack > .field:has(#roomsPicker),
+body.ddae-dark #page-ospite #mgcRow,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestNotesToggle,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestChannel,
+body.ddae-dark #page-ospite .guest-form-card.is-create #guestCreatePrimaryStack #guestTotal{
+  background: rgba(18,24,38,0.74) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+body.ddae-dark #page-ospite .guest-form-card .field.float > label,
+body.ddae-dark #page-ospite .guest-form-card > .hd h2::after{
+  color: rgba(255,255,255,0.70) !important;
+}
+@media (max-width: 520px){
+  #page-ospite .guest-form-card{ border-radius: 24px !important; }
+  #page-ospite .guest-form-card > .hd{
+    grid-template-columns: 58px minmax(0,1fr) auto !important;
+    min-height: 96px !important;
+    column-gap: 12px !important;
+    padding: 20px 18px 16px !important;
+  }
+  #page-ospite .guest-form-card > .hd::before{ width:52px; height:52px; background-size:30px 30px; }
+  #page-ospite .guest-form-card .bd.form-stack{ padding: 16px 18px 20px !important; gap:12px !important; }
+  #page-ospite #guestContactRow,
+  #page-ospite #guestPeopleRow{
+    column-gap: 12px !important;
+  }
+  #page-ospite .rooms{ grid-template-columns: repeat(6, minmax(38px, 1fr)) !important; gap:8px !important; }
+  #page-ospite .rooms .room-dot,
+  #page-ospite #mgcRow .room-dot{ width:48px !important; height:48px !important; font-size:20px !important; }
+  #page-ospite .guest-create-choice-row{ gap:12px !important; }
 }
