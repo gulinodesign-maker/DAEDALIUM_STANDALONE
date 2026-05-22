@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.902 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.903 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24196,7 +24196,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-value{ font-size:16px !important; }
 }
 
-/* dDAE_2.902 - switch database spese Budget / Fuori Budget */
+/* dDAE_2.903 - switch database spese Budget / Fuori Budget */
 .spese-budget-tools{
   display:flex;
   align-items:center;
@@ -24261,7 +24261,7 @@ body.ddae-dark .budget-toggle.is-on{
 }
 
 
-/* dDAE_2.902 - filtri spese centrati/omogenei + switch Statistiche→Spese */
+/* dDAE_2.903 - filtri spese centrati/omogenei + switch Statistiche→Spese */
 #page-spese .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24332,7 +24332,7 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.902 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
+/* dDAE_2.903 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
 #page-inserisci .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24399,7 +24399,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.902 - regola generale: etichette campi sopra il tab, mai dentro */
+/* dDAE_2.903 - regola generale: etichette campi sopra il tab, mai dentro */
 .field.float{
   position:relative !important;
   padding-top:22px !important;
@@ -24454,7 +24454,7 @@ body.ddae-dark .field.float > label{
   color:rgba(248,250,252,.78) !important;
 }
 
-/* dDAE_2.902 - tasto Tassa: spento grigio, acceso colorato come gli altri */
+/* dDAE_2.903 - tasto Tassa: spento grigio, acceso colorato come gli altri */
 #page-inserisci #spesaCatBtnTassa:not(.is-selected),
 #page-inserisci #spesaCatBtnTassa.is-muted,
 #page-spese #speseFilterCatBtnTassa:not(.is-selected),
@@ -24492,7 +24492,7 @@ body.ddae-dark #page-spese #speseFilterCatBtnTassa.is-muted{
 }
 
 
-/* dDAE_2.902 - Spese: intestazione fissa, scroll solo elenco; tassa filtro stato corretto */
+/* dDAE_2.903 - Spese: intestazione fissa, scroll solo elenco; tassa filtro stato corretto */
 body.page-lock-vertical[data-page="spese"] main.wrap{
   min-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   max-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
@@ -24582,4 +24582,68 @@ body.ddae-dark #page-inserisci #spesaCatBtnTassa:not(.is-selected){
   border-color:#4b5563 !important;
   color:#d1d5db !important;
   -webkit-text-fill-color:#d1d5db !important;
+}
+
+
+/* dDAE_2.903 - Spese: scroll card funzionante + minore spazio Totale/Range date */
+body.page-lock-vertical[data-page="spese"] main.wrap{
+  height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  min-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow:hidden !important;
+}
+body.page-lock-vertical[data-page="spese"] #page-spese{
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+body.page-lock-vertical[data-page="spese"] #page-spese > .card{
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#page-spese .card > .hd{
+  flex:0 0 auto !important;
+}
+#page-spese .card > .bd{
+  flex:1 1 0 !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  padding-top:10px !important;
+}
+#page-spese #speseTotalCard{
+  flex:0 0 auto !important;
+  margin-bottom:6px !important;
+}
+#page-spese #speseDateRangeField{
+  flex:0 0 auto !important;
+  margin-top:0 !important;
+  margin-bottom:8px !important;
+  padding-top:18px !important;
+}
+#page-spese #speseCategoryFilterField{
+  flex:0 0 auto !important;
+  margin-bottom:8px !important;
+}
+#page-spese .spese-list-separator{
+  flex:0 0 auto !important;
+}
+#page-spese #speseViewList{
+  flex:1 1 0 !important;
+  min-height:0 !important;
+  height:auto !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:contain !important;
+  touch-action:pan-y !important;
+  padding-bottom:calc(var(--safe-bottom) + 30px) !important;
+}
+#page-spese #speseList{
+  min-height:0 !important;
+  padding-bottom:14px !important;
 }
