@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.897" rel="stylesheet"/>
-<link href="./manifest.json?v=2.897" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.897" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.897" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.897" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.897" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.897" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.897" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.898" rel="stylesheet"/>
+<link href="./manifest.json?v=2.898" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.898" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.898" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.898" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.898" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.898" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.898" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.897";
+window.APP_VERSION = "2.898";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.897";
+  const LOCAL_BUILD = "dDAE_2.898";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.897";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.897")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.897")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.898")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.898")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.897";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.897"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.898"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -189,7 +189,8 @@ window.APP_VERSION = "2.897";
 </svg>
 </button>
 </div>
-<div hidden="" id="statSpeseTopTools">
+<div hidden="" class="spese-budget-tools" id="statSpeseTopTools">
+<button aria-label="Mostra statistiche fuori budget" aria-pressed="false" class="budget-toggle" id="statSpeseBudgetToggle" type="button"><span class="budget-toggle-knob"></span><span class="budget-toggle-text">Fuori Budget</span></button>
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheSpese" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
@@ -295,7 +296,7 @@ window.APP_VERSION = "2.897";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.897"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.898"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -503,7 +504,7 @@ window.APP_VERSION = "2.897";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.897</div></div></section>
+<div class="build" id="buildText">dDAE_2.898</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -842,10 +843,6 @@ window.APP_VERSION = "2.897";
 <button class="stat-row" id="ssRowIva4" style="--statbg:var(--sky)" type="button">
 <span class="stat-name">IVA 4%</span>
 <span class="stat-val" id="ssIva4">€0,00</span>
-</button>
-<button class="stat-row" id="ssRowFuoriBudget" style="--statbg:#8b5cf6" type="button">
-<span class="stat-name">Fuori Budget</span>
-<span class="stat-val" id="ssFuoriBudget">€0,00</span>
 </button>
 </div>
 </div>
@@ -1205,7 +1202,6 @@ window.APP_VERSION = "2.897";
 <option value="IVA_22">IVA 22%</option>
 <option value="IVA_10">IVA 10%</option>
 <option value="IVA_4">IVA 4%</option>
-<option value="FUORI_BUDGET">Fuori Budget</option>
 </select>
 <div aria-label="Categoria spesa" class="spesa-category-row" id="spesaCategoryButtons" role="group">
 <button aria-label="Contanti" class="btn spesa-category-btn" data-value="CONTANTI" id="spesaCatBtnContanti" title="Contanti" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="12" rx="2" width="18" x="3" y="6"></rect><path d="M7 12h10"></path><circle cx="12" cy="12" r="1.8"></circle></svg><span>Cont.</span></button>
@@ -1213,7 +1209,6 @@ window.APP_VERSION = "2.897";
 <button aria-label="IVA 22%" class="btn spesa-category-btn" data-value="IVA_22" id="spesaCatBtnIva22" title="IVA 22%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>22%</span></button>
 <button aria-label="IVA 10%" class="btn spesa-category-btn" data-value="IVA_10" id="spesaCatBtnIva10" title="IVA 10%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>10%</span></button>
 <button aria-label="IVA 4%" class="btn spesa-category-btn" data-value="IVA_4" id="spesaCatBtnIva4" title="IVA 4%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>4%</span></button>
-<button aria-label="Fuori Budget" class="btn spesa-category-btn" data-value="FUORI_BUDGET" id="spesaCatBtnFuoriBudget" title="Fuori Budget" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v16"></path><path d="M4 12h16"></path><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg><span>Extra</span></button>
 </div>
 </div>
 <div class="row" style="margin-top:14px;">
@@ -1316,7 +1311,7 @@ window.APP_VERSION = "2.897";
 <div class="card">
 <div class="hd">
 <h2 class="page-title">Spese</h2>
-<div class="hd-actions" id="spesePageTools"><button aria-label="Aggiungi spesa" class="icon-btn icon-btn-whiteblue" id="btnAddSpesa" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
+<div class="hd-actions spese-budget-tools" id="spesePageTools"><button aria-label="Mostra spese fuori budget" aria-pressed="false" class="budget-toggle" id="speseBudgetToggle" type="button"><span class="budget-toggle-knob"></span><span class="budget-toggle-text">Fuori Budget</span></button><button aria-label="Aggiungi spesa" class="icon-btn icon-btn-whiteblue" id="btnAddSpesa" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
 <div class="bd">
 <div aria-live="polite" class="spese-total-card" id="speseTotalCard">
 <div class="spese-total-label" id="speseTotalLabel">Totale Spese</div>
@@ -1334,7 +1329,6 @@ window.APP_VERSION = "2.897";
 <button aria-label="IVA 22%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva22" data-value="IVA_22" id="speseFilterCatBtnIva22" title="IVA 22%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>22%</span></button>
 <button aria-label="IVA 10%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva10" data-value="IVA_10" id="speseFilterCatBtnIva10" title="IVA 10%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>10%</span></button>
 <button aria-label="IVA 4%" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnIva4" data-value="IVA_4" id="speseFilterCatBtnIva4" title="IVA 4%" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 17L17 7"></path><circle cx="8" cy="8" r="1.6"></circle><circle cx="16" cy="16" r="1.6"></circle></svg><span>4%</span></button>
-<button aria-label="Fuori Budget" class="btn spesa-category-btn" data-single-action-key="spesaCatBtnFuoriBudget" data-value="FUORI_BUDGET" id="speseFilterCatBtnFuoriBudget" title="Fuori Budget" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v16"></path><path d="M4 12h16"></path><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg><span>Extra</span></button>
 </div>
 </div>
 <div aria-hidden="true" class="spese-list-separator"></div>
@@ -2727,7 +2721,7 @@ window.APP_VERSION = "2.897";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.897"></script>
-<script defer="" src="./app.js?v=2.897"></script>
+<script defer="" src="./config.js?v=2.898"></script>
+<script defer="" src="./app.js?v=2.898"></script>
 </body>
 </html>

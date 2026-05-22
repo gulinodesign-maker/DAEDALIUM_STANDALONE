@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.897 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.898 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24194,4 +24194,68 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-field{ min-height:60px !important; padding-left:8px !important; padding-right:8px !important; }
   .guest-date-range-top-label{ font-size:13px !important; }
   .guest-date-range-top-value{ font-size:16px !important; }
+}
+
+/* dDAE_2.898 - switch database spese Budget / Fuori Budget */
+.spese-budget-tools{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  min-width:0;
+}
+.budget-toggle{
+  appearance:none;
+  border:1px solid rgba(15,23,42,.16);
+  background:rgba(255,255,255,.86);
+  color:#172033;
+  border-radius:999px;
+  min-height:36px;
+  height:36px;
+  padding:3px 10px 3px 3px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-weight:900;
+  font-size:11px;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.budget-toggle-knob{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  display:inline-block;
+  background:#d1d5db;
+  border:1px solid rgba(15,23,42,.14);
+}
+.budget-toggle-text{ display:none; letter-spacing:.01em; }
+.budget-toggle.is-on{
+  background:#f3ecff;
+  border-color:#8b5cf6;
+  color:#4c1d95;
+}
+.budget-toggle.is-on .budget-toggle-knob{
+  background:#8b5cf6;
+  border-color:#7c3aed;
+}
+.budget-toggle.is-on .budget-toggle-text{ display:inline; }
+#statSpeseTopTools .budget-toggle{ max-width:128px; }
+#spesePageTools .budget-toggle{ max-width:142px; }
+@media (max-width:420px){
+  .budget-toggle{ height:34px; min-height:34px; padding-right:8px; font-size:10px; gap:5px; }
+  .budget-toggle-knob{ width:26px; height:26px; }
+  .budget-toggle.is-on .budget-toggle-text{ display:inline; max-width:80px; overflow:hidden; text-overflow:ellipsis; }
+}
+body.ddae-dark .budget-toggle{
+  background:rgba(15,23,42,.78);
+  color:#e5e7eb;
+  border-color:rgba(148,163,184,.24);
+}
+body.ddae-dark .budget-toggle.is-on{
+  background:rgba(76,29,149,.62);
+  color:#f5f3ff;
+  border-color:#a78bfa;
 }
