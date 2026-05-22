@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.899 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.900 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24196,7 +24196,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-value{ font-size:16px !important; }
 }
 
-/* dDAE_2.899 - switch database spese Budget / Fuori Budget */
+/* dDAE_2.900 - switch database spese Budget / Fuori Budget */
 .spese-budget-tools{
   display:flex;
   align-items:center;
@@ -24261,7 +24261,7 @@ body.ddae-dark .budget-toggle.is-on{
 }
 
 
-/* dDAE_2.899 - filtri spese centrati/omogenei + switch Statistiche→Spese */
+/* dDAE_2.900 - filtri spese centrati/omogenei + switch Statistiche→Spese */
 #page-spese .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24329,4 +24329,71 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
   #page-spese .spesa-category-btn{ min-height:56px !important; height:56px !important; }
   #page-statspese .stats-title{ font-size:24px !important; }
   #page-statspese #statSpeseBudgetTogglePage{ max-width:132px !important; }
+}
+
+
+/* dDAE_2.900 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
+#page-inserisci .spesa-category-row{
+  display:grid !important;
+  grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
+  justify-content:center !important;
+  justify-items:stretch !important;
+  align-items:stretch !important;
+  width:100% !important;
+  gap:8px !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  overflow:visible !important;
+}
+#page-inserisci .spesa-category-btn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:58px !important;
+  height:58px !important;
+  margin:0 !important;
+  justify-self:stretch !important;
+  text-align:center !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+#page-inserisci .spesa-category-btn:not(.is-selected),
+#page-inserisci .spesa-category-btn.is-muted{
+  background:#e5e7eb !important;
+  border-color:#d1d5db !important;
+  color:#6b7280 !important;
+  opacity:1 !important;
+}
+#page-inserisci .spesa-category-btn:not(.is-selected) .ui-ico,
+#page-inserisci .spesa-category-btn.is-muted .ui-ico{
+  color:#6b7280 !important;
+  stroke:#6b7280 !important;
+}
+body.ddae-dark #page-inserisci .spesa-category-btn:not(.is-selected),
+body.ddae-dark #page-inserisci .spesa-category-btn.is-muted{
+  background:#374151 !important;
+  border-color:#4b5563 !important;
+  color:#d1d5db !important;
+}
+body.ddae-dark #page-inserisci .spesa-category-btn:not(.is-selected) .ui-ico,
+body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
+  color:#d1d5db !important;
+  stroke:#d1d5db !important;
+}
+#statSpeseTopTools .budget-toggle,
+#topbarBrandRight #statSpeseBudgetToggle{
+  display:none !important;
+}
+#statSpeseTopTools{
+  gap:0 !important;
+}
+@media (max-width:390px){
+  #page-inserisci .spesa-category-row{ gap:6px !important; }
+  #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; padding-left:1px !important; padding-right:1px !important; }
+  #page-inserisci .spesa-category-btn span{ font-size:8.5px !important; }
 }
