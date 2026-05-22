@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.898";
+const BUILD_VERSION = "2.897";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -8654,38 +8654,9 @@ function toISODateLocal(d){
 
 function __isFuoriBudgetSpesa__(row){
   try{
-    if (row && (row.fuoriBudget === true || row.fuori_budget === true || row.extra === true || row.isExtra === true)) return true;
-    const flag = (row?.fuoriBudget ?? row?.fuori_budget ?? row?.extra ?? row?.isExtra ?? '').toString().trim().toLowerCase();
-    if (['1','true','si','sì','yes','extra','fuori_budget'].includes(flag)) return true;
     const catRaw = (row?.categoria ?? row?.cat ?? "").toString().trim().toLowerCase();
     return catRaw.includes('fuori') && catRaw.includes('budget');
   }catch(_){ return false; }
-}
-
-function __isSpesaBaseCategoryKey__(key){
-  return ['CONTANTI','TASSA_SOGGIORNO','IVA_22','IVA_10','IVA_4'].includes(String(key || '').trim().toUpperCase());
-}
-
-function __spesaBaseCategoryKeyForItem(row){
-  try{
-    const catRaw = (row?.categoria ?? row?.cat ?? '').toString().trim().toLowerCase();
-    const aliq = (row?.aliquotaIva ?? row?.aliquota_iva ?? '').toString().trim();
-    if (catRaw.includes('contant')) return 'CONTANTI';
-    if (catRaw.includes('tassa') && catRaw.includes('sogg')) return 'TASSA_SOGGIORNO';
-    if (catRaw.includes('iva')){
-      if (catRaw.includes('22')) return 'IVA_22';
-      if (catRaw.includes('10')) return 'IVA_10';
-      if (catRaw.includes('4')) return 'IVA_4';
-    }
-    const n = parseFloat(String(aliq).replace(',', '.'));
-    if (!isNaN(n)){
-      if (n >= 21.5) return 'IVA_22';
-      if (n >= 9.5 && n < 11.5) return 'IVA_10';
-      if (n >= 3.5 && n < 5.5) return 'IVA_4';
-    }
-    if (catRaw.includes('fuori') && catRaw.includes('budget')) return 'FUORI_BUDGET';
-    return '';
-  }catch(_){ return ''; }
 }
 
 function spesaCategoryClass(s){
@@ -8700,9 +8671,22 @@ function spesaCategoryClass(s){
 }
 
 function spesaGraphKeyForItem(s){
-  const base = __spesaBaseCategoryKeyForItem(s);
-  if (base) return base;
+  const catRaw = (s?.categoria ?? s?.cat ?? "").toString().trim().toLowerCase();
+  const aliq = (s?.aliquotaIva ?? s?.aliquota_iva ?? "").toString().trim();
   if (__isFuoriBudgetSpesa__(s)) return "FUORI_BUDGET";
+  if (catRaw.includes("contant")) return "CONTANTI";
+  if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "TASSA_SOGGIORNO";
+  if (catRaw.includes("iva")){
+    if (catRaw.includes("22")) return "IVA_22";
+    if (catRaw.includes("10")) return "IVA_10";
+    if (catRaw.includes("4")) return "IVA_4";
+  }
+  const n = parseFloat(String(aliq).replace(",", "."));
+  if (!isNaN(n)){
+    if (n >= 21.5) return "IVA_22";
+    if (n >= 9.5 && n < 11.5) return "IVA_10";
+    if (n >= 3.5 && n < 5.5) return "IVA_4";
+  }
   return "";
 }
 
@@ -8993,10 +8977,8 @@ function categoriaLabel(cat){
 
 function __spesaCategoriaDisplay__(row){
   try{
-    const base = __spesaBaseCategoryKeyForItem(row);
-    const isExtra = __isFuoriBudgetSpesa__(row);
-    if (base && base !== 'FUORI_BUDGET') return isExtra ? (categoriaLabel(base) + ' · Extra') : categoriaLabel(base);
-    if (isExtra) return 'Extra';
+    const key = spesaGraphKeyForItem(row);
+    if (key) return categoriaLabel(key);
     const raw = (row?.categoria ?? row?.cat ?? '').toString().trim();
     return raw || '';
   }catch(_){ return ''; }
@@ -17394,7 +17376,6 @@ function resetInserisci(){
   __exitSpesaEditMode__();
   $("#spesaImporto").value = "";
   $("#spesaMotivazione").value = "";
-  try{ state.spesaFuoriBudgetSelected = false; }catch(_){ }
   __setSpesaCategoriaValue__("");
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
@@ -17471,8 +17452,7 @@ function __enterSpesaEditMode__(row){
   __setSpesaEditorUiMode__('edit');
   try{ $("#spesaImporto").value = String(Number(row?.importoLordo || row?.importo_lordo || row?.importo || 0) || ''); }catch(_){ }
   try{ $("#spesaMotivazione").value = String(row?.motivazione || row?.motivo || '').trim(); }catch(_){ }
-  try{ state.spesaFuoriBudgetSelected = __isFuoriBudgetSpesa__(row); }catch(_){ }
-  try{ __setSpesaCategoriaValue__(__spesaBaseCategoryKeyForItem(row) || String(row?.categoria || row?.cat || '').trim()); }catch(_){ }
+  try{ __setSpesaCategoriaValue__(String(row?.categoria || row?.cat || '').trim()); }catch(_){ }
   try{ $("#spesaData").value = String(row?.dataSpesa || row?.data || row?.data_spesa || '').slice(0,10) || todayISO(); }catch(_){ }
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ showPage('inserisci'); }catch(_){ }
@@ -17482,7 +17462,6 @@ function __enterSpesaEditMode__(row){
 async function saveSpesa(){
   const dataSpesa = $("#spesaData").value;
   const categoria = $("#spesaCategoria").value;
-  const fuoriBudget = !!(state && state.spesaFuoriBudgetSelected);
   const importoLordo = Number($("#spesaImporto").value);
   const motivazione = ($("#spesaMotivazione").value || "").trim();
   const editingId = String(state?.spesaEditingId || '').trim();
@@ -17509,9 +17488,6 @@ async function saveSpesa(){
     id: editingId || undefined,
     dataSpesa,
     categoria,
-    fuoriBudget,
-    fuori_budget: fuoriBudget,
-    extra: fuoriBudget,
     motivazione,
     importoLordo,
     note: String(existing?.note || ''),
@@ -17528,7 +17504,7 @@ async function saveSpesa(){
   // Aggiornamento ottimistico: mostra subito il record aggiornato in lista
   try{
     const effectiveId = editingId || (res && (res.id || res.spesaId || (res.data && (res.data.id || res.data.spesaId)))) || ("tmp-" + Date.now());
-    const nextItem = Object.assign({}, existing || {}, { id: effectiveId, dataSpesa, categoria, fuoriBudget, fuori_budget: fuoriBudget, extra: fuoriBudget, motivazione, importoLordo, updatedAt: (typeof __nowIso__ === 'function' ? __nowIso__() : new Date().toISOString()) });
+    const nextItem = Object.assign({}, existing || {}, { id: effectiveId, dataSpesa, categoria, motivazione, importoLordo, updatedAt: (typeof __nowIso__ === 'function' ? __nowIso__() : new Date().toISOString()) });
     const upsert = (rows) => {
       const list = Array.isArray(rows) ? rows.slice() : [];
       const idx = list.findIndex((row) => String(row?.id || '') === String(effectiveId));
@@ -17578,7 +17554,7 @@ function renderSpese(){
 
   const items = __getStatsSpese();
   if (!items.length){
-    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${(categoryFilter || extraFilter) ? 'Nessuna spesa per questo filtro nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
+    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     return;
   }
 
@@ -19234,25 +19210,10 @@ function __spesaCategoryButtons__(){
   return Array.from(document.querySelectorAll('#spesaCategoryButtons .spesa-category-btn[data-value]'));
 }
 
-function __isSpesaExtraButtonValue__(value){
-  return String(value || '').trim().toUpperCase() === 'FUORI_BUDGET';
-}
-
-function __getSpesaEditorExtraFlag__(){
-  try{ return !!(state && state.spesaFuoriBudgetSelected); }catch(_){ return false; }
-}
-
-function __setSpesaEditorExtraFlag__(on){
-  try{ state.spesaFuoriBudgetSelected = !!on; }catch(_){ }
-  try{ __syncSpesaCategoryButtons__(document.getElementById('spesaCategoria')?.value || ''); }catch(_){ }
-}
-
 function __syncSpesaCategoryButtons__(selectedValue){
   const safe = String(selectedValue || '').trim();
-  const extraOn = __getSpesaEditorExtraFlag__();
   __spesaCategoryButtons__().forEach((btn) => {
-    const val = String(btn.dataset.value || '').trim();
-    const on = __isSpesaExtraButtonValue__(val) ? extraOn : (val === safe);
+    const on = String(btn.dataset.value || '') === safe;
     btn.classList.toggle('is-selected', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
@@ -19260,12 +19221,11 @@ function __syncSpesaCategoryButtons__(selectedValue){
 }
 
 function __setSpesaCategoriaValue__(value){
-  const val = String(value || '').trim();
   try{
     const select = document.getElementById('spesaCategoria');
-    if (select) select.value = __isSpesaExtraButtonValue__(val) ? '' : val;
+    if (select) select.value = String(value || '');
   }catch(_){ }
-  __syncSpesaCategoryButtons__(val);
+  __syncSpesaCategoryButtons__(value);
 }
 
 function __setupSpesaCategoryButtons__(){
@@ -19278,14 +19238,11 @@ function __setupSpesaCategoryButtons__(){
       if (btn.dataset.spesaCategoryBound === '1') return;
       btn.dataset.spesaCategoryBound = '1';
       bindFastTap(btn, (ev) => {
-        try{ if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+        try{
+          if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
+        }catch(_){ }
         try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
-        const val = String(btn.dataset.value || '').trim();
-        if (__isSpesaExtraButtonValue__(val)){
-          __setSpesaEditorExtraFlag__(!__getSpesaEditorExtraFlag__());
-          return;
-        }
-        __setSpesaCategoriaValue__(val);
+        __setSpesaCategoriaValue__(btn.dataset.value || '');
       });
     });
     try{
@@ -19303,12 +19260,10 @@ function __speseCategoryFilterButtons__(){
   return Array.from(document.querySelectorAll('#speseCategoryFilterButtons .spesa-category-btn[data-value]'));
 }
 
-function __syncSpeseCategoryFilterButtons__(){
-  const safe = String(state?.speseCategoryFilter || '').trim();
-  const extraOn = !!(state && state.speseFuoriBudgetFilter);
+function __syncSpeseCategoryFilterButtons__(selectedValue){
+  const safe = String(selectedValue || '').trim();
   __speseCategoryFilterButtons__().forEach((btn) => {
-    const val = String(btn.dataset.value || '').trim();
-    const on = __isSpesaExtraButtonValue__(val) ? extraOn : (val === safe);
+    const on = String(btn.dataset.value || '') === safe;
     btn.classList.toggle('is-selected', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
@@ -19317,13 +19272,7 @@ function __syncSpeseCategoryFilterButtons__(){
 
 function __setSpeseCategoryFilter__(value){
   try{ state.speseCategoryFilter = String(value || '').trim(); }catch(_){ }
-  __syncSpeseCategoryFilterButtons__();
-  try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
-}
-
-function __setSpeseFuoriBudgetFilter__(on){
-  try{ state.speseFuoriBudgetFilter = !!on; }catch(_){ }
-  __syncSpeseCategoryFilterButtons__();
+  __syncSpeseCategoryFilterButtons__(value);
   try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
 }
 
@@ -19338,15 +19287,11 @@ function __setupSpeseCategoryFilterButtons__(){
         try{ if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
         try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
         const value = String(btn.dataset.value || '').trim();
-        if (__isSpesaExtraButtonValue__(value)){
-          __setSpeseFuoriBudgetFilter__(!(state && state.speseFuoriBudgetFilter));
-          return;
-        }
         const current = String(state.speseCategoryFilter || '').trim();
         __setSpeseCategoryFilter__(current === value ? '' : value);
       });
     });
-    __syncSpeseCategoryFilterButtons__();
+    __syncSpeseCategoryFilterButtons__(state.speseCategoryFilter || '');
     try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   }catch(_){ }
 }
@@ -19989,14 +19934,22 @@ function __statSpeseMonthlyBreakdownForRows__(rows){
     if (!Number.isFinite(month) || month < 1 || month > 12) return;
     const idx = month - 1;
     const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
-    const baseKey = __spesaBaseCategoryKeyForItem(row);
-    if (__isFuoriBudgetSpesa__(row)) { if (out.fuoriBudget) out.fuoriBudget[idx] += lordo; return; }
+    const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
+    const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
+    if (__isFuoriBudgetSpesa__(row)) { out.fuoriBudget[idx] += lordo; return; }
     out.totale[idx] += lordo;
-    if (baseKey === 'CONTANTI') { out.contanti[idx] += lordo; return; }
-    if (baseKey === 'TASSA_SOGGIORNO') { out.tassa[idx] += lordo; return; }
-    if (baseKey === 'IVA_22') { out.iva22[idx] += lordo; return; }
-    if (baseKey === 'IVA_10') { out.iva10[idx] += lordo; return; }
-    if (baseKey === 'IVA_4') { out.iva4[idx] += lordo; return; }
+    if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
+    if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
+    if (categoria.includes('iva')){
+      if (categoria.includes('22')) { out.iva22[idx] += lordo; return; }
+      if (categoria.includes('10')) { out.iva10[idx] += lordo; return; }
+      if (categoria.includes('4')) { out.iva4[idx] += lordo; return; }
+    }
+    if (!Number.isNaN(aliquota)){
+      if (aliquota >= 21.5) out.iva22[idx] += lordo;
+      else if (aliquota >= 9.5 && aliquota < 11.5) out.iva10[idx] += lordo;
+      else if (aliquota >= 3.5 && aliquota < 5.5) out.iva4[idx] += lordo;
+    }
   });
   return out;
 }
@@ -20290,14 +20243,22 @@ function __statSpeseMonthlyBreakdown__(){
     if (!Number.isFinite(month) || month < 1 || month > 12) return;
     const idx = month - 1;
     const lordo = Math.max(0, toNumber(row?.importoLordo || row?.importo_lordo || row?.importo));
-    const baseKey = __spesaBaseCategoryKeyForItem(row);
-    if (__isFuoriBudgetSpesa__(row)) { if (out.fuoriBudget) out.fuoriBudget[idx] += lordo; return; }
+    const categoria = String(row?.categoria || row?.cat || '').trim().toLowerCase();
+    const aliquota = toNumber(row?.aliquotaIva ?? row?.aliquota_iva ?? row?.aliquota);
+    if (__isFuoriBudgetSpesa__(row)) { out.fuoriBudget[idx] += lordo; return; }
     out.totale[idx] += lordo;
-    if (baseKey === 'CONTANTI') { out.contanti[idx] += lordo; return; }
-    if (baseKey === 'TASSA_SOGGIORNO') { out.tassa[idx] += lordo; return; }
-    if (baseKey === 'IVA_22') { out.iva22[idx] += lordo; return; }
-    if (baseKey === 'IVA_10') { out.iva10[idx] += lordo; return; }
-    if (baseKey === 'IVA_4') { out.iva4[idx] += lordo; return; }
+    if (categoria.includes('contant')) { out.contanti[idx] += lordo; return; }
+    if (categoria.includes('tassa') && categoria.includes('sogg')) { out.tassa[idx] += lordo; return; }
+    if (categoria.includes('iva')){
+      if (categoria.includes('22')) { out.iva22[idx] += lordo; return; }
+      if (categoria.includes('10')) { out.iva10[idx] += lordo; return; }
+      if (categoria.includes('4')) { out.iva4[idx] += lordo; return; }
+    }
+    if (!Number.isNaN(aliquota)){
+      if (aliquota >= 21.5) out.iva22[idx] += lordo;
+      else if (aliquota >= 9.5 && aliquota < 11.5) out.iva10[idx] += lordo;
+      else if (aliquota >= 3.5 && aliquota < 5.5) out.iva4[idx] += lordo;
+    }
   });
   return out;
 }
@@ -23094,9 +23055,25 @@ function computeStatSpese(){
     const lordo = money(s?.importoLordo ?? s?.lordo ?? 0);
     if (!isFinite(lordo) || lordo === 0) continue;
 
-    const baseKey = __spesaBaseCategoryKeyForItem(s);
+    const catRaw = (s?.categoria ?? s?.cat ?? "").toString().trim().toLowerCase();
+
     if (__isFuoriBudgetSpesa__(s)) { acc.FUORI_BUDGET += lordo; continue; }
-    if (baseKey && acc[baseKey] !== undefined) { acc[baseKey] += lordo; continue; }
+    if (catRaw.includes("contant")) { acc.CONTANTI += lordo; continue; }
+    if (catRaw.includes("tassa") && catRaw.includes("sogg")) { acc.TASSA_SOGGIORNO += lordo; continue; }
+
+    if (catRaw.includes("iva")){
+      if (catRaw.includes("22")) { acc.IVA_22 += lordo; continue; }
+      if (catRaw.includes("10")) { acc.IVA_10 += lordo; continue; }
+      if (catRaw.includes("4")) { acc.IVA_4 += lordo; continue; }
+    }
+
+    // fallback su aliquota numerica
+    const n = parseFloat(String(s?.aliquotaIva ?? s?.aliquota_iva ?? "").replace(",","."));
+    if (!isNaN(n)){
+      if (n >= 21.5) acc.IVA_22 += lordo;
+      else if (n >= 9.5 && n < 11.5) acc.IVA_10 += lordo;
+      else if (n >= 3.5 && n < 5.5) acc.IVA_4 += lordo;
+    }
   }
 
   return {
@@ -23123,9 +23100,26 @@ function buildReportFromSpese(items){
   };
 
   const normCat = (row) => {
+    const catRaw = (row?.categoria ?? row?.cat ?? "").toString().trim().toLowerCase();
+    const aliqRaw = (row?.aliquotaIva ?? row?.aliquota_iva ?? "").toString().trim();
+
     if (__isFuoriBudgetSpesa__(row)) return "FUORI_BUDGET";
-    const baseKey = __spesaBaseCategoryKeyForItem(row);
-    return (baseKey && baseKey !== "FUORI_BUDGET") ? baseKey : null;
+    if (catRaw.includes("contant")) return "CONTANTI";
+    if (catRaw.includes("tassa") && catRaw.includes("sogg")) return "TASSA_SOGGIORNO";
+
+    if (catRaw.includes("iva")){
+      if (catRaw.includes("22")) return "IVA_22";
+      if (catRaw.includes("10")) return "IVA_10";
+      if (catRaw.includes("4")) return "IVA_4";
+    }
+
+    const n = parseFloat(aliqRaw.replace(",", "."));
+    if (!isNaN(n)){
+      if (n >= 21.5) return "IVA_22";
+      if (n >= 9.5 && n < 11.5) return "IVA_10";
+      if (n >= 3.5 && n < 5.5) return "IVA_4";
+    }
+    return null;
   };
 
   const totals = { importoLordo:0, imponibile:0, iva:0, ivaDetraibile:0 };
@@ -23347,7 +23341,7 @@ function renderStatSpese(){
     });
 
     if (!items.length){
-      list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${(categoryFilter || extraFilter) ? 'Nessuna spesa per questo filtro nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
+      list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     } else {
       items.forEach((sp) => {
         const el = document.createElement("div");
@@ -36290,12 +36284,6 @@ document.getElementById('rc_cancel')?.addEventListener('click', ()=>{
 // --- dDAE: Spese riga singola (senza IVA in visualizzazione) ---
 function __speseFilterTitle__(key){
   const k = String(key || '').trim();
-  if (k.includes('+')){
-    const parts = k.split('+').map(x => x.trim()).filter(Boolean);
-    const base = parts.find(x => x !== 'FUORI_BUDGET') || '';
-    const extra = parts.includes('FUORI_BUDGET');
-    return (extra ? 'Extra' : '') + (base ? (extra ? ' ' : '') + (__speseFilterTitle__(base)) : '');
-  }
   const map = {
     CONTANTI: 'Contanti',
     TASSA_SOGGIORNO: 'Tassa',
@@ -36326,17 +36314,11 @@ function renderSpese(){
   list.innerHTML = "";
 
   let items = Array.isArray(state.spese) ? [...state.spese] : [];
-  const selectedFilter = String(state.speseCategoryFilter || '').trim();
-  const categoryFilter = selectedFilter.toLowerCase();
-  const extraFilter = !!(state && state.speseFuoriBudgetFilter);
+  const categoryFilter = String(state.speseCategoryFilter || '').trim().toLowerCase();
   if (categoryFilter){
-    items = items.filter((row) => String(__spesaBaseCategoryKeyForItem(row) || '').trim().toLowerCase() === categoryFilter);
+    items = items.filter((row) => String(row?.categoria || row?.cat || '').trim().toLowerCase() === categoryFilter);
   }
-  if (extraFilter){
-    items = items.filter((row) => __isFuoriBudgetSpesa__(row));
-  }
-  const totalLabelKey = extraFilter ? (selectedFilter ? (selectedFilter + ' + FUORI_BUDGET') : 'FUORI_BUDGET') : selectedFilter;
-  try{ __updateSpeseTotalCard__(items, totalLabelKey); }catch(_){ }
+  try{ __updateSpeseTotalCard__(items, String(state.speseCategoryFilter || '').trim()); }catch(_){ }
 
   // Ordina: data / inserimento / motivazione
   const mode = String(state.speseSort || "date");
@@ -36380,7 +36362,7 @@ function renderSpese(){
 
   items = withIdx.map(x => x.s);
   if (!items.length){
-    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${(categoryFilter || extraFilter) ? 'Nessuna spesa per questo filtro nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
+    list.innerHTML = `<div style="font-size:13px; opacity:.75; padding:8px 2px;">${categoryFilter ? 'Nessuna spesa per questa categoria nel periodo.' : 'Nessuna spesa nel periodo.'}</div>`;
     return;
   }
 
@@ -39449,7 +39431,7 @@ function syncGuestPhoneWhatsAppLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_2.898';
+  var BUILD_TAG='dDAE_2.897';
   var busy=false;
   var lastStart=0;
   var active=null;
