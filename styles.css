@@ -24966,3 +24966,279 @@ body[data-page="spese"] .wrap{
     font-size: 12px !important;
   }
 }
+
+
+/* dDAE_2.907 — Statistiche: grafico fisso su layer assoluto, card scrollabili sotto, landscape con offset 20px */
+#page-statgen .stats-gen.stats-layered,
+#page-statmensili .stats-gen.stats-layered,
+#page-statspese .stats-gen.stats-layered,
+#page-statprenotazioni .stats-gen.stats-layered,
+#page-statchannel .stats-gen.stats-layered,
+#page-statpulizie .stats-gen.stats-layered,
+#page-statcancellazioni .stats-gen.stats-layered,
+#page-statamministratore .stats-gen.stats-layered{
+  --stats-fixed-layer-height: 188px;
+  position: relative !important;
+  height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  max-height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: block !important;
+  padding: 14px 14px calc(16px + var(--safe-bottom, 0px)) !important;
+  box-sizing: border-box !important;
+}
+
+#page-statgen .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statamministratore .stats-gen.stats-layered > .stats-fixed-layer{
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  right: 14px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: auto !important;
+  padding: 0 0 10px !important;
+  margin: 0 !important;
+  z-index: 30 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#page-statgen .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statamministratore .stats-gen.stats-layered > .stats-scroll-layer{
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: calc(var(--stats-fixed-layer-height, 188px) + 10px) 0 calc(24px + var(--safe-bottom, 0px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+}
+
+#page-statgen .stats-fixed-layer .stats-head-row,
+#page-statmensili .stats-fixed-layer .stats-head-row,
+#page-statspese .stats-fixed-layer .stats-head-row,
+#page-statprenotazioni .stats-fixed-layer .stats-head-row,
+#page-statchannel .stats-fixed-layer .stats-head-row,
+#page-statpulizie .stats-fixed-layer .stats-head-row,
+#page-statcancellazioni .stats-fixed-layer .stats-head-row,
+#page-statamministratore .stats-fixed-layer .stats-head-row{
+  flex: 0 0 auto !important;
+  margin: 0 6px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+}
+
+#page-statgen .stats-fixed-layer .stats-divider,
+#page-statmensili .stats-fixed-layer .stats-divider,
+#page-statspese .stats-fixed-layer .stats-divider,
+#page-statprenotazioni .stats-fixed-layer .stats-divider,
+#page-statchannel .stats-fixed-layer .stats-divider,
+#page-statpulizie .stats-fixed-layer .stats-divider,
+#page-statcancellazioni .stats-fixed-layer .stats-divider,
+#page-statamministratore .stats-fixed-layer .stats-divider{
+  flex: 0 0 auto !important;
+  display: block !important;
+  margin: 0 10px 8px !important;
+}
+
+#page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+  flex: 0 0 118px !important;
+  width: calc(100% - 20px) !important;
+  height: 118px !important;
+  min-height: 118px !important;
+  max-height: 118px !important;
+  margin: 0 10px !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#page-statgen .stats-fixed-layer .statgen-line-chart,
+#page-statmensili .stats-fixed-layer .statgen-line-chart,
+#page-statspese .stats-fixed-layer .statgen-line-chart,
+#page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+#page-statchannel .stats-fixed-layer .statgen-line-chart,
+#page-statpulizie .stats-fixed-layer .statgen-line-chart,
+#page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
+#page-statamministratore .stats-fixed-layer .statgen-line-chart,
+#page-statprenotazioni .stats-fixed-layer canvas,
+#page-statchannel .stats-fixed-layer canvas,
+#page-statpulizie .stats-fixed-layer canvas{
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered{
+    height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    max-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-fixed-layer{
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    z-index: 30 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-scroll-layer{
+    position: relative !important;
+    z-index: 1 !important;
+    display: block !important;
+    height: 100% !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    padding: calc(var(--stats-fixed-layer-height, 100dvh) + 10px) 20px calc(24px + var(--safe-bottom, 0px)) !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-head-row,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-head-row{
+    flex: 0 0 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    margin: 0 !important;
+    padding: 0 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-divider,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-divider{
+    display: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: hidden !important;
+  }
+}
