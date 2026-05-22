@@ -24439,7 +24439,7 @@ body[data-page="spese"] .wrap{
   margin-top:0 !important;
 }
 
-/* dDAE_2.904 — Statistiche: layer grafico fisso e controlli confronto standard */
+/* dDAE_2.905 — Statistiche: layer grafico fisso e controlli confronto standard */
 #page-statgen .stats-gen.stats-layered,
 #page-statmensili .stats-gen.stats-layered,
 #page-statspese .stats-gen.stats-layered,
@@ -24675,5 +24675,113 @@ body[data-page="spese"] .wrap{
   #page-statamministratore .stats-fixed-layer .statgen-line-chart{
     height: 100% !important;
     max-height: 104px !important;
+  }
+}
+
+
+/* dDAE_2.905 — Statistiche: ripristino grafici in landscape dopo layer fisso 2.904 */
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-fixed-layer{
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 0 auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    min-height: 118px !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-scroll-layer{
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-head-row,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-head-row{
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: clamp(96px, 30dvh, 132px) !important;
+    min-height: 96px !important;
+    max-height: 132px !important;
+    flex: 0 0 clamp(96px, 30dvh, 132px) !important;
+    overflow: hidden !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-pie-chart-canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-pie-chart-canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-pie-chart-canvas{
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: 100% !important;
+    min-height: 96px !important;
+    max-height: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer canvas,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer canvas,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer canvas,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer canvas,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-pie-chart,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-pie-chart,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-pie-chart{
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
   }
 }
