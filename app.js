@@ -19301,7 +19301,6 @@ function __syncSpesaCategoryButtons__(selectedValue){
   __spesaCategoryButtons__().forEach((btn) => {
     const on = String(btn.dataset.value || '') === safe;
     btn.classList.toggle('is-selected', on);
-    btn.classList.toggle('is-muted', !on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
   });

@@ -24332,7 +24332,7 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.900 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
+/* dDAE_2.900 - Spese: filtri uniformi anche in inserimento/modifica */
 #page-inserisci .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24341,26 +24341,13 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
   align-items:stretch !important;
   width:100% !important;
   gap:8px !important;
-  margin-left:0 !important;
-  margin-right:0 !important;
-  overflow:visible !important;
 }
 #page-inserisci .spesa-category-btn{
   width:100% !important;
   min-width:0 !important;
-  min-height:58px !important;
-  height:58px !important;
   margin:0 !important;
   justify-self:stretch !important;
   text-align:center !important;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:4px !important;
-  border-radius:16px !important;
-  box-shadow:none !important;
-  transform:none !important;
 }
 #page-inserisci .spesa-category-btn:not(.is-selected),
 #page-inserisci .spesa-category-btn.is-muted{
@@ -24385,15 +24372,69 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   color:#d1d5db !important;
   stroke:#d1d5db !important;
 }
+@media (max-width:390px){
+  #page-inserisci .spesa-category-row{ gap:6px !important; }
+  #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; }
+}
+
+/* dDAE_2.900 - Statistiche Spese: nessuno switch duplicato nella topbar */
 #statSpeseTopTools .budget-toggle,
-#topbarBrandRight #statSpeseBudgetToggle{
+#statSpeseBudgetToggle{
   display:none !important;
 }
 #statSpeseTopTools{
   gap:0 !important;
 }
-@media (max-width:390px){
-  #page-inserisci .spesa-category-row{ gap:6px !important; }
-  #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; padding-left:1px !important; padding-right:1px !important; }
-  #page-inserisci .spesa-category-btn span{ font-size:8.5px !important; }
+
+/* dDAE_2.900 - Spese: layer superiore fisso e lista card scrollabile */
+body[data-page="spese"] .wrap{
+  height:calc(100dvh - 96px);
+  padding-bottom:calc(16px + var(--safe-bottom));
+  overflow:hidden;
+}
+#page-spese,
+#page-spese .card{
+  height:100%;
+  min-height:0;
+  overflow:hidden !important;
+}
+#page-spese .card{
+  display:flex !important;
+  flex-direction:column !important;
+}
+#page-spese .hd{
+  flex:0 0 auto !important;
+  position:relative;
+  z-index:5;
+}
+#page-spese .bd{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+}
+#page-spese .spese-total-card,
+#page-spese .spese-date-range-field,
+#page-spese .spesa-category-filter-field,
+#page-spese .spese-list-separator{
+  flex:0 0 auto !important;
+  position:relative;
+  z-index:4;
+}
+#page-spese #speseViewList{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  padding-bottom:calc(22px + var(--safe-bottom)) !important;
+  overscroll-behavior:contain;
+}
+#page-spese #speseList{
+  overflow:visible !important;
+  padding-top:2px;
+}
+#page-spese #speseList .item:first-child{
+  margin-top:0 !important;
 }
