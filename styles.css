@@ -24439,7 +24439,7 @@ body[data-page="spese"] .wrap{
   margin-top:0 !important;
 }
 
-/* dDAE_2.905 — Statistiche: layer grafico fisso e controlli confronto standard */
+/* dDAE_2.906 — Statistiche: layer grafico fisso e controlli confronto standard */
 #page-statgen .stats-gen.stats-layered,
 #page-statmensili .stats-gen.stats-layered,
 #page-statspese .stats-gen.stats-layered,
@@ -24679,7 +24679,7 @@ body[data-page="spese"] .wrap{
 }
 
 
-/* dDAE_2.905 — Statistiche: ripristino grafici in landscape dopo layer fisso 2.904 */
+/* dDAE_2.906 — Statistiche: ripristino grafici in landscape dopo layer fisso 2.904 */
 @media (orientation: landscape){
   body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
@@ -24783,5 +24783,186 @@ body[data-page="spese"] .wrap{
     height: 100% !important;
     max-width: none !important;
     max-height: none !important;
+  }
+}
+
+
+/* dDAE_2.906 — Statistiche: grafici fissi full-display in landscape come pagina Mensili */
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered{
+    height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    max-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    min-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-fixed-layer{
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    position: relative !important;
+    z-index: 30 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-head-row,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-head-row{
+    flex: 0 0 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    padding: 4px 8px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+    z-index: 35 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-title,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-title,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-title,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-title,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-title,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-title,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-title,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-title{
+    font-size: 13px !important;
+    line-height: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-divider,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .stats-divider{
+    display: none !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 6px 6px !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+  body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
+  body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas{
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-layered > .stats-scroll-layer{
+    flex: 0 0 auto !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  body[data-page="statgen"] #page-statgen .stats-compare-btn,
+  body[data-page="statmensili"] #page-statmensili .stats-compare-btn,
+  body[data-page="statspese"] #page-statspese .stats-compare-btn,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-compare-btn,
+  body[data-page="statchannel"] #page-statchannel .stats-compare-btn,
+  body[data-page="statpulizie"] #page-statpulizie .stats-compare-btn,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-compare-btn,
+  body[data-page="statamministratore"] #page-statamministratore .stats-compare-btn,
+  body[data-page="statgen"] #page-statgen .statgen-compare-toggle-btn,
+  body[data-page="statgen"] #page-statgen .statgen-compare-year-btn,
+  body[data-page="statmensili"] #page-statmensili .statgen-compare-toggle-btn,
+  body[data-page="statmensili"] #page-statmensili .statgen-compare-year-btn,
+  body[data-page="statamministratore"] #page-statamministratore .statgen-compare-toggle-btn,
+  body[data-page="statamministratore"] #page-statamministratore .statgen-compare-year-btn{
+    height: 30px !important;
+    min-height: 30px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    border-radius: 12px !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
   }
 }
