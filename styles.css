@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.897 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.898 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24194,4 +24194,31 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-field{ min-height:60px !important; padding-left:8px !important; padding-right:8px !important; }
   .guest-date-range-top-label{ font-size:13px !important; }
   .guest-date-range-top-value{ font-size:16px !important; }
+}
+
+/* dDAE_2.898 — Spese: tasti filtro disabilitati sempre grigi */
+.spesa-category-btn:disabled,
+.spesa-category-btn[aria-disabled="true"],
+.spesa-category-btn.is-disabled{
+  background: rgba(148,163,184,0.42) !important;
+  background-color: rgba(148,163,184,0.42) !important;
+  border-color: rgba(100,116,139,0.80) !important;
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b !important;
+  opacity: 0.70 !important;
+}
+.spesa-category-btn:disabled svg,
+.spesa-category-btn[aria-disabled="true"] svg,
+.spesa-category-btn.is-disabled svg{
+  color:#64748b !important;
+  stroke:#64748b !important;
+}
+body.ddae-dark .spesa-category-btn:disabled,
+body.ddae-dark .spesa-category-btn[aria-disabled="true"],
+body.ddae-dark .spesa-category-btn.is-disabled{
+  background: rgba(71,85,105,0.62) !important;
+  background-color: rgba(71,85,105,0.62) !important;
+  border-color: rgba(148,163,184,0.45) !important;
+  color: #cbd5e1 !important;
+  -webkit-text-fill-color: #cbd5e1 !important;
 }
