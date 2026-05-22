@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.904 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.905 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24196,7 +24196,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-value{ font-size:16px !important; }
 }
 
-/* dDAE_2.904 - switch database spese Budget / Fuori Budget */
+/* dDAE_2.905 - switch database spese Budget / Fuori Budget */
 .spese-budget-tools{
   display:flex;
   align-items:center;
@@ -24261,7 +24261,7 @@ body.ddae-dark .budget-toggle.is-on{
 }
 
 
-/* dDAE_2.904 - filtri spese centrati/omogenei + switch Statistiche→Spese */
+/* dDAE_2.905 - filtri spese centrati/omogenei + switch Statistiche→Spese */
 #page-spese .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24332,7 +24332,7 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.904 - Spese: filtri uniformi anche in inserimento/modifica */
+/* dDAE_2.905 - Spese: filtri uniformi anche in inserimento/modifica */
 #page-inserisci .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24377,7 +24377,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; }
 }
 
-/* dDAE_2.904 - Statistiche Spese: nessuno switch duplicato nella topbar */
+/* dDAE_2.905 - Statistiche Spese: nessuno switch duplicato nella topbar */
 #statSpeseTopTools .budget-toggle,
 #statSpeseBudgetToggle{
   display:none !important;
@@ -24386,7 +24386,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   gap:0 !important;
 }
 
-/* dDAE_2.904 - Spese: layer superiore fisso e lista card scrollabile */
+/* dDAE_2.905 - Spese: layer superiore fisso e lista card scrollabile */
 body[data-page="spese"] .wrap{
   height:calc(100dvh - 96px);
   padding-bottom:calc(16px + var(--safe-bottom));
@@ -24439,7 +24439,7 @@ body[data-page="spese"] .wrap{
   margin-top:0 !important;
 }
 
-/* dDAE_2.904 — Statistiche: layer grafico/confronto fisso e card scrollabili */
+/* dDAE_2.905 — Statistiche: layer grafico/confronto fisso e card scrollabili */
 body[data-page^="stat"] .statgen-compare-toggle-btn,
 body[data-page^="stat"] .statgen-compare-year-btn{
   width:58px !important;
@@ -24589,5 +24589,192 @@ body[data-page^="stat"] .stats-gen > .ddae-stat-scroll-cards{
     -webkit-overflow-scrolling:touch !important;
     padding:0 6px calc(14px + var(--safe-bottom,0px)) !important;
     margin:0 !important;
+  }
+}
+
+
+/* dDAE_2.905 — Statistiche principale indipendente e griglia 3x3 centrata in assoluto */
+body[data-page="statistiche"] #page-statistiche{
+  position:relative !important;
+  overflow:hidden !important;
+  min-height:calc(100dvh - 72px - var(--safe-top,0px)) !important;
+}
+body[data-page="statistiche"] #page-statistiche .stats-page{
+  position:relative !important;
+  min-height:calc(100dvh - 72px - var(--safe-top,0px)) !important;
+  height:calc(100dvh - 72px - var(--safe-top,0px)) !important;
+  width:100% !important;
+  padding:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+body[data-page="statistiche"] #page-statistiche .stats-title{
+  position:absolute !important;
+  top:18px !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  margin:0 !important;
+  z-index:2 !important;
+  pointer-events:none !important;
+}
+body[data-page="statistiche"] #page-statistiche .stats-divider{ display:none !important; }
+body[data-page="statistiche"] #page-statistiche .home-grid{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate3d(-50%,-50%,0) !important;
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-rows:1fr !important;
+  width:min(92vw, 720px) !important;
+  max-width:min(92vw, 720px) !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  gap:18px !important;
+  justify-items:center !important;
+  align-items:center !important;
+  justify-content:center !important;
+  align-content:center !important;
+  z-index:3 !important;
+  box-sizing:border-box !important;
+}
+body[data-page="statistiche"] #page-statistiche .home-main{
+  justify-self:center !important;
+  align-self:center !important;
+  width:clamp(92px, 24vw, 150px) !important;
+  max-width:150px !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+body[data-page="statistiche"] #page-statistiche .home-main-glyph{
+  width:clamp(64px, 16vw, 106px) !important;
+  height:clamp(64px, 16vw, 106px) !important;
+}
+@media (orientation: landscape){
+  body[data-page="statistiche"] #page-statistiche .stats-page{
+    height:calc(100dvh - 58px - var(--safe-top,0px)) !important;
+    min-height:calc(100dvh - 58px - var(--safe-top,0px)) !important;
+  }
+  body[data-page="statistiche"] #page-statistiche .home-grid{
+    width:min(72vw, 690px) !important;
+    gap:12px 20px !important;
+  }
+  body[data-page="statistiche"] #page-statistiche .home-main{
+    width:clamp(86px, 14vw, 132px) !important;
+    max-width:132px !important;
+  }
+  body[data-page="statistiche"] #page-statistiche .home-main-glyph{
+    width:clamp(56px, 10vw, 92px) !important;
+    height:clamp(56px, 10vw, 92px) !important;
+  }
+}
+
+/* dDAE_2.905 — Statistiche sottocategorie: grafico/tasti visibili e card riaccese in landscape */
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-head-row,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .statgen-line-chart-wrap,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .month-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .kpi-stack{
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-head-row{
+  display:flex !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .statgen-line-chart-wrap{
+  display:block !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .month-stack{
+  display:flex !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .kpi-stack{
+  display:grid !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-head-actions,
+body[data-page^="stat"]:not([data-page="statistiche"]) .ddae-stat-compare-actions,
+body[data-page^="stat"]:not([data-page="statistiche"]) .statgen-compare-toggle-btn,
+body[data-page^="stat"]:not([data-page="statistiche"]) .statgen-compare-year-btn{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows:auto minmax(0, 1fr) !important;
+    column-gap:12px !important;
+    row-gap:6px !important;
+    width:100% !important;
+    height:calc(100dvh - 68px - var(--safe-top,0px)) !important;
+    max-height:calc(100dvh - 68px - var(--safe-top,0px)) !important;
+    min-height:0 !important;
+    padding:8px 10px calc(8px + var(--safe-bottom,0px)) !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-gen > .stats-head-row,
+  body[data-page="statmensili"] #page-statmensili .stats-gen > .stats-head-row,
+  body[data-page="statspese"] #page-statspese .stats-gen > .stats-head-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > .stats-head-row,
+  body[data-page="statchannel"] #page-statchannel .stats-gen > .stats-head-row,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen > .stats-head-row,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen > .stats-head-row,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen > .stats-head-row{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    position:relative !important;
+    inset:auto !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    pointer-events:auto !important;
+    z-index:20 !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .statgen-line-chart-wrap{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 !important;
+    align-self:stretch !important;
+    justify-self:stretch !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .month-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .kpi-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-scroll-cards{
+    grid-column:2 !important;
+    grid-row:1 / span 2 !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:100% !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:0 6px calc(14px + var(--safe-bottom,0px)) !important;
+    margin:0 !important;
+    z-index:10 !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .statgen-line-chart{
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
   }
 }
