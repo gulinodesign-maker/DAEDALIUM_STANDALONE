@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.901 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.902 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24196,7 +24196,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-value{ font-size:16px !important; }
 }
 
-/* dDAE_2.901 - switch database spese Budget / Fuori Budget */
+/* dDAE_2.902 - switch database spese Budget / Fuori Budget */
 .spese-budget-tools{
   display:flex;
   align-items:center;
@@ -24261,7 +24261,7 @@ body.ddae-dark .budget-toggle.is-on{
 }
 
 
-/* dDAE_2.901 - filtri spese centrati/omogenei + switch Statistiche→Spese */
+/* dDAE_2.902 - filtri spese centrati/omogenei + switch Statistiche→Spese */
 #page-spese .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24332,7 +24332,7 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.901 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
+/* dDAE_2.902 - spese: tasti scrittura/modifica centrati e omogenei, rimozione switch duplicato topbar */
 #page-inserisci .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24399,7 +24399,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.901 - regola generale: etichette campi sopra il tab, mai dentro */
+/* dDAE_2.902 - regola generale: etichette campi sopra il tab, mai dentro */
 .field.float{
   position:relative !important;
   padding-top:22px !important;
@@ -24454,7 +24454,7 @@ body.ddae-dark .field.float > label{
   color:rgba(248,250,252,.78) !important;
 }
 
-/* dDAE_2.901 - tasto Tassa: spento grigio, acceso colorato come gli altri */
+/* dDAE_2.902 - tasto Tassa: spento grigio, acceso colorato come gli altri */
 #page-inserisci #spesaCatBtnTassa:not(.is-selected),
 #page-inserisci #spesaCatBtnTassa.is-muted,
 #page-spese #speseFilterCatBtnTassa:not(.is-selected),
@@ -24484,6 +24484,99 @@ body.ddae-dark #page-inserisci #spesaCatBtnTassa:not(.is-selected),
 body.ddae-dark #page-inserisci #spesaCatBtnTassa.is-muted,
 body.ddae-dark #page-spese #speseFilterCatBtnTassa:not(.is-selected),
 body.ddae-dark #page-spese #speseFilterCatBtnTassa.is-muted{
+  background:#374151 !important;
+  background-color:#374151 !important;
+  border-color:#4b5563 !important;
+  color:#d1d5db !important;
+  -webkit-text-fill-color:#d1d5db !important;
+}
+
+
+/* dDAE_2.902 - Spese: intestazione fissa, scroll solo elenco; tassa filtro stato corretto */
+body.page-lock-vertical[data-page="spese"] main.wrap{
+  min-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height:calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  overflow:hidden !important;
+  padding-bottom:calc(var(--safe-bottom) + 8px) !important;
+  box-sizing:border-box !important;
+}
+body.page-lock-vertical[data-page="spese"] #page-spese{
+  height:100% !important;
+  max-height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+body.page-lock-vertical[data-page="spese"] #page-spese > .card,
+#page-spese > .card{
+  height:100% !important;
+  max-height:100% !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+#page-spese .card > .hd{
+  flex:0 0 auto !important;
+  position:relative !important;
+  z-index:4 !important;
+}
+#page-spese .card > .bd{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+#page-spese #speseTotalCard,
+#page-spese #speseDateRangeField,
+#page-spese #speseCategoryFilterField,
+#page-spese .spese-list-separator{
+  flex:0 0 auto !important;
+  position:relative !important;
+  z-index:3 !important;
+}
+#page-spese #speseViewList{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding-bottom:calc(var(--safe-bottom) + 24px) !important;
+  box-sizing:border-box !important;
+}
+#page-spese #speseList{
+  min-height:min-content !important;
+  padding-bottom:8px !important;
+}
+/* Se il design salvato aveva Tassa invertito, l'attributo aria resta la fonte corretta. */
+#page-spese #speseFilterCatBtnTassa[aria-pressed="false"],
+#page-spese #speseFilterCatBtnTassa:not(.is-selected),
+#page-inserisci #spesaCatBtnTassa[aria-pressed="false"],
+#page-inserisci #spesaCatBtnTassa:not(.is-selected){
+  background:#e5e7eb !important;
+  background-color:#e5e7eb !important;
+  border-color:#d1d5db !important;
+  color:#6b7280 !important;
+  -webkit-text-fill-color:#6b7280 !important;
+  opacity:1 !important;
+}
+#page-spese #speseFilterCatBtnTassa[aria-pressed="false"] .ui-ico,
+#page-spese #speseFilterCatBtnTassa:not(.is-selected) .ui-ico,
+#page-inserisci #spesaCatBtnTassa[aria-pressed="false"] .ui-ico,
+#page-inserisci #spesaCatBtnTassa:not(.is-selected) .ui-ico{
+  color:#6b7280 !important;
+  stroke:#6b7280 !important;
+}
+body.ddae-dark #page-spese #speseFilterCatBtnTassa[aria-pressed="false"],
+body.ddae-dark #page-spese #speseFilterCatBtnTassa:not(.is-selected),
+body.ddae-dark #page-inserisci #spesaCatBtnTassa[aria-pressed="false"],
+body.ddae-dark #page-inserisci #spesaCatBtnTassa:not(.is-selected){
   background:#374151 !important;
   background-color:#374151 !important;
   border-color:#4b5563 !important;
