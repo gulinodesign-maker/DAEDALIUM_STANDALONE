@@ -24150,7 +24150,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
 }
 
 
-/* dDAE_2.903 — Range date: campi check-in/check-out più proporzionati */
+/* dDAE_2.904 — Range date: campi check-in/check-out più proporzionati */
 .guest-date-range-top-fields{
   gap:12px !important;
   align-items:stretch !important;
@@ -24196,7 +24196,7 @@ body.ddae-dark .guest-date-range-day.is-edge{
   .guest-date-range-top-value{ font-size:16px !important; }
 }
 
-/* dDAE_2.903 - switch database spese Budget / Fuori Budget */
+/* dDAE_2.904 - switch database spese Budget / Fuori Budget */
 .spese-budget-tools{
   display:flex;
   align-items:center;
@@ -24261,7 +24261,7 @@ body.ddae-dark .budget-toggle.is-on{
 }
 
 
-/* dDAE_2.903 - filtri spese centrati/omogenei + switch Statistiche→Spese */
+/* dDAE_2.904 - filtri spese centrati/omogenei + switch Statistiche→Spese */
 #page-spese .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24332,7 +24332,7 @@ body.ddae-dark #page-spese .spesa-category-btn.is-muted .ui-ico{
 }
 
 
-/* dDAE_2.903 - Spese: filtri uniformi anche in inserimento/modifica */
+/* dDAE_2.904 - Spese: filtri uniformi anche in inserimento/modifica */
 #page-inserisci .spesa-category-row{
   display:grid !important;
   grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
@@ -24377,7 +24377,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; }
 }
 
-/* dDAE_2.903 - Statistiche Spese: nessuno switch duplicato nella topbar */
+/* dDAE_2.904 - Statistiche Spese: nessuno switch duplicato nella topbar */
 #statSpeseTopTools .budget-toggle,
 #statSpeseBudgetToggle{
   display:none !important;
@@ -24386,7 +24386,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   gap:0 !important;
 }
 
-/* dDAE_2.903 - Spese: layer superiore fisso e lista card scrollabile */
+/* dDAE_2.904 - Spese: layer superiore fisso e lista card scrollabile */
 body[data-page="spese"] .wrap{
   height:calc(100dvh - 96px);
   padding-bottom:calc(16px + var(--safe-bottom));
@@ -24437,4 +24437,157 @@ body[data-page="spese"] .wrap{
 }
 #page-spese #speseList .item:first-child{
   margin-top:0 !important;
+}
+
+/* dDAE_2.904 — Statistiche: layer grafico/confronto fisso e card scrollabili */
+body[data-page^="stat"] .statgen-compare-toggle-btn,
+body[data-page^="stat"] .statgen-compare-year-btn{
+  width:58px !important;
+  min-width:58px !important;
+  height:38px !important;
+  border-radius:16px !important;
+  padding:0 8px !important;
+  flex:0 0 auto !important;
+  box-shadow:none !important;
+  background-image:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+body[data-page^="stat"] .statgen-compare-toggle-btn.is-off{ opacity:.75 !important; }
+body[data-page^="stat"] .ddae-stat-compare-actions{ margin-left:auto !important; gap:8px !important; flex-wrap:nowrap !important; }
+body[data-page^="stat"] .ddae-stat-fixed-head-row{ flex:0 0 auto !important; }
+body[data-page^="stat"] .stats-gen{
+  min-height:calc(100dvh - 128px - var(--safe-top,0px)) !important;
+  max-height:calc(100dvh - 128px - var(--safe-top,0px)) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+body[data-page^="stat"] .stats-gen > .stats-divider{ flex:0 0 auto !important; }
+body[data-page^="stat"] .stats-gen > .statgen-line-chart-wrap,
+body[data-page^="stat"] .stats-gen > .ddae-stat-fixed-chart{
+  flex:0 0 auto !important;
+  position:relative !important;
+  z-index:5 !important;
+  margin-bottom:12px !important;
+}
+body[data-page^="stat"] .stats-gen > .stats-stack,
+body[data-page^="stat"] .stats-gen > .month-stack,
+body[data-page^="stat"] .stats-gen > .kpi-stack,
+body[data-page^="stat"] .stats-gen > .ddae-stat-scroll-cards{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding-bottom:calc(22px + var(--safe-bottom,0px)) !important;
+}
+
+@media (orientation: landscape){
+  body[data-page="statgen"] #page-statgen .content,
+  body[data-page="statmensili"] #page-statmensili .content,
+  body[data-page="statspese"] #page-statspese .content,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .content,
+  body[data-page="statchannel"] #page-statchannel .content,
+  body[data-page="statpulizie"] #page-statpulizie .content,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .content,
+  body[data-page="statamministratore"] #page-statamministratore .content{
+    overflow:hidden !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:50% 50% !important;
+    grid-template-rows:auto 1fr !important;
+    column-gap:12px !important;
+    height:calc(100dvh - 70px - var(--safe-top,0px)) !important;
+    max-height:calc(100dvh - 70px - var(--safe-top,0px)) !important;
+    min-height:0 !important;
+    width:100% !important;
+    padding:8px 10px calc(8px + var(--safe-bottom,0px)) !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-head-row,
+  body[data-page="statmensili"] #page-statmensili .stats-head-row,
+  body[data-page="statspese"] #page-statspese .stats-head-row,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-head-row,
+  body[data-page="statchannel"] #page-statchannel .stats-head-row,
+  body[data-page="statpulizie"] #page-statpulizie .stats-head-row,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-head-row,
+  body[data-page="statamministratore"] #page-statamministratore .stats-head-row{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    z-index:10 !important;
+    margin:0 4px 6px !important;
+    min-width:0 !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-divider,
+  body[data-page="statmensili"] #page-statmensili .stats-divider,
+  body[data-page="statspese"] #page-statspese .stats-divider,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-divider,
+  body[data-page="statchannel"] #page-statchannel .stats-divider,
+  body[data-page="statpulizie"] #page-statpulizie .stats-divider,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-divider,
+  body[data-page="statamministratore"] #page-statamministratore .stats-divider{
+    display:none !important;
+  }
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap,
+  body[data-page="statamministratore"] #page-statamministratore .statgen-line-chart-wrap{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
+    min-height:0 !important;
+    margin:0 !important;
+    align-self:stretch !important;
+    justify-self:stretch !important;
+  }
+  body[data-page="statgen"] #page-statgen .statgen-line-chart,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart,
+  body[data-page="statamministratore"] #page-statamministratore .statgen-line-chart{
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-stack,
+  body[data-page="statspese"] #page-statspese .stats-stack,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-stack,
+  body[data-page="statchannel"] #page-statchannel .stats-stack,
+  body[data-page="statpulizie"] #page-statpulizie .stats-stack,
+  body[data-page="statmensili"] #page-statmensili .month-stack,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-stack,
+  body[data-page="statamministratore"] #page-statamministratore .stats-stack{
+    grid-column:2 !important;
+    grid-row:1 / span 2 !important;
+    min-height:0 !important;
+    height:100% !important;
+    max-height:100% !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:0 6px calc(14px + var(--safe-bottom,0px)) !important;
+    margin:0 !important;
+  }
 }
