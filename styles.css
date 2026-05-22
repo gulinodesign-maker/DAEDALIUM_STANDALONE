@@ -25001,3 +25001,216 @@ body[data-page="statistiche"] #page-statistiche .home-main-label{
     opacity:1 !important;
   }
 }
+
+
+/* dDAE_2.907 — Statistiche: standard unico grafico fisso/card scrollabili, allineamento card-grafico */
+body[data-page="statgen"] #page-statgen,
+body[data-page="statmensili"] #page-statmensili,
+body[data-page="statspese"] #page-statspese,
+body[data-page="statprenotazioni"] #page-statprenotazioni,
+body[data-page="statchannel"] #page-statchannel,
+body[data-page="statpulizie"] #page-statpulizie,
+body[data-page="statcancellazioni"] #page-statcancellazioni,
+body[data-page="statamministratore"] #page-statamministratore{
+  overflow:hidden !important;
+  height:calc(100dvh - 58px - var(--safe-top,0px)) !important;
+  min-height:0 !important;
+  box-sizing:border-box !important;
+}
+body[data-page="statgen"] #page-statgen .stats-gen,
+body[data-page="statmensili"] #page-statmensili .stats-gen,
+body[data-page="statspese"] #page-statspese .stats-gen,
+body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+body[data-page="statchannel"] #page-statchannel .stats-gen,
+body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen,
+body[data-page="statamministratore"] #page-statamministratore .stats-gen{
+  height:100% !important;
+  min-height:0 !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-head-row,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-fixed-head-row{
+  flex:0 0 auto !important;
+  min-height:40px !important;
+  margin:0 !important;
+  z-index:40 !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-divider{
+  flex:0 0 auto !important;
+  margin:6px 0 8px !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .statgen-line-chart-wrap,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-fixed-chart{
+  flex:0 0 auto !important;
+  min-height:210px !important;
+  height:clamp(210px, 34dvh, 300px) !important;
+  max-height:300px !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  position:relative !important;
+  z-index:20 !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .month-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .kpi-stack,
+body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-scroll-cards{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  padding:10px 8px calc(18px + var(--safe-bottom,0px)) !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-page^="stat"]:not([data-page="statistiche"]) .stat-row,
+body[data-page^="stat"]:not([data-page="statistiche"]) .month-row,
+body[data-page^="stat"]:not([data-page="statistiche"]) .kpi-card{
+  flex:0 0 auto !important;
+  min-height:58px !important;
+  width:100% !important;
+  max-width:none !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  box-sizing:border-box !important;
+}
+body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-card{
+  min-height:72px !important;
+}
+
+@media (orientation:landscape){
+  body[data-page="statgen"] #page-statgen,
+  body[data-page="statmensili"] #page-statmensili,
+  body[data-page="statspese"] #page-statspese,
+  body[data-page="statprenotazioni"] #page-statprenotazioni,
+  body[data-page="statchannel"] #page-statchannel,
+  body[data-page="statpulizie"] #page-statpulizie,
+  body[data-page="statcancellazioni"] #page-statcancellazioni,
+  body[data-page="statamministratore"] #page-statamministratore{
+    height:calc(100dvh - 58px - var(--safe-top,0px)) !important;
+    max-height:calc(100dvh - 58px - var(--safe-top,0px)) !important;
+    overflow:hidden !important;
+  }
+  body[data-page="statgen"] #page-statgen .stats-gen,
+  body[data-page="statmensili"] #page-statmensili .stats-gen,
+  body[data-page="statspese"] #page-statspese .stats-gen,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statchannel"] #page-statchannel .stats-gen,
+  body[data-page="statpulizie"] #page-statpulizie .stats-gen,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen,
+  body[data-page="statamministratore"] #page-statamministratore .stats-gen{
+    display:grid !important;
+    grid-template-columns:minmax(0, calc(50vw - 16px)) minmax(0, calc(50vw - 16px)) !important;
+    grid-template-rows:auto minmax(0, 1fr) !important;
+    column-gap:14px !important;
+    row-gap:8px !important;
+    width:100vw !important;
+    max-width:100vw !important;
+    height:100% !important;
+    max-height:100% !important;
+    min-height:0 !important;
+    padding:8px 9px calc(9px + var(--safe-bottom,0px)) !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    align-items:stretch !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-head-row,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-fixed-head-row{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:8px !important;
+    width:100% !important;
+    min-height:40px !important;
+    height:auto !important;
+    padding:0 !important;
+    margin:0 !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-divider{
+    display:none !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .statgen-line-chart-wrap,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-fixed-chart{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    position:relative !important;
+    display:block !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-self:stretch !important;
+    justify-self:stretch !important;
+    overflow:hidden !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .stats-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .month-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .kpi-stack,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stats-gen > .ddae-stat-scroll-cards{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    align-self:stretch !important;
+    justify-self:stretch !important;
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    height:100% !important;
+    max-height:100% !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:0 7px calc(14px + var(--safe-bottom,0px)) !important;
+    margin:0 !important;
+    gap:9px !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    z-index:25 !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .stat-row,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .month-row,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .kpi-card{
+    display:flex !important;
+    flex:0 0 auto !important;
+    min-height:58px !important;
+    height:auto !important;
+    width:100% !important;
+    margin:0 !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .month-row{
+    min-height:62px !important;
+  }
+  body[data-page="statcancellazioni"] #page-statcancellazioni .kpi-card{
+    min-height:76px !important;
+  }
+  body[data-page^="stat"]:not([data-page="statistiche"]) .statgen-line-chart,
+  body[data-page^="stat"]:not([data-page="statistiche"]) .statgen-line-chart canvas{
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
+    display:block !important;
+  }
+}
