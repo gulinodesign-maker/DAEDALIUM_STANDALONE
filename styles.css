@@ -24438,3 +24438,242 @@ body[data-page="spese"] .wrap{
 #page-spese #speseList .item:first-child{
   margin-top:0 !important;
 }
+
+/* dDAE_2.904 — Statistiche: layer grafico fisso e controlli confronto standard */
+#page-statgen .stats-gen.stats-layered,
+#page-statmensili .stats-gen.stats-layered,
+#page-statspese .stats-gen.stats-layered,
+#page-statprenotazioni .stats-gen.stats-layered,
+#page-statchannel .stats-gen.stats-layered,
+#page-statpulizie .stats-gen.stats-layered,
+#page-statcancellazioni .stats-gen.stats-layered,
+#page-statamministratore .stats-gen.stats-layered{
+  height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  max-height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 14px 14px calc(16px + var(--safe-bottom, 0px)) !important;
+}
+
+#page-statgen .stats-fixed-layer,
+#page-statmensili .stats-fixed-layer,
+#page-statspese .stats-fixed-layer,
+#page-statprenotazioni .stats-fixed-layer,
+#page-statchannel .stats-fixed-layer,
+#page-statpulizie .stats-fixed-layer,
+#page-statcancellazioni .stats-fixed-layer,
+#page-statamministratore .stats-fixed-layer{
+  flex: 0 0 auto !important;
+  position: relative !important;
+  z-index: 20 !important;
+  padding: 0 0 10px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+#page-statgen .stats-scroll-layer,
+#page-statmensili .stats-scroll-layer,
+#page-statspese .stats-scroll-layer,
+#page-statprenotazioni .stats-scroll-layer,
+#page-statchannel .stats-scroll-layer,
+#page-statpulizie .stats-scroll-layer,
+#page-statcancellazioni .stats-scroll-layer,
+#page-statamministratore .stats-scroll-layer{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 0 0 calc(20px + var(--safe-bottom, 0px)) !important;
+  margin: 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#page-statspese .stats-scroll-layer{
+  overscroll-behavior: contain !important;
+}
+
+#page-statgen .stats-fixed-layer .stats-head-row,
+#page-statmensili .stats-fixed-layer .stats-head-row,
+#page-statspese .stats-fixed-layer .stats-head-row,
+#page-statprenotazioni .stats-fixed-layer .stats-head-row,
+#page-statchannel .stats-fixed-layer .stats-head-row,
+#page-statpulizie .stats-fixed-layer .stats-head-row,
+#page-statcancellazioni .stats-fixed-layer .stats-head-row,
+#page-statamministratore .stats-fixed-layer .stats-head-row{
+  margin: 0 6px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+#page-statgen .stats-fixed-layer .stats-title,
+#page-statmensili .stats-fixed-layer .stats-title,
+#page-statspese .stats-fixed-layer .stats-title,
+#page-statprenotazioni .stats-fixed-layer .stats-title,
+#page-statchannel .stats-fixed-layer .stats-title,
+#page-statpulizie .stats-fixed-layer .stats-title,
+#page-statcancellazioni .stats-fixed-layer .stats-title,
+#page-statamministratore .stats-fixed-layer .stats-title{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#page-statgen .stats-compare-actions,
+#page-statmensili .stats-compare-actions,
+#page-statspese .stats-compare-actions,
+#page-statprenotazioni .stats-compare-actions,
+#page-statchannel .stats-compare-actions,
+#page-statpulizie .stats-compare-actions,
+#page-statcancellazioni .stats-compare-actions,
+#page-statamministratore .stats-compare-actions{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+  margin-left: auto !important;
+}
+
+#page-statgen .stats-compare-btn,
+#page-statmensili .stats-compare-btn,
+#page-statspese .stats-compare-btn,
+#page-statprenotazioni .stats-compare-btn,
+#page-statchannel .stats-compare-btn,
+#page-statpulizie .stats-compare-btn,
+#page-statcancellazioni .stats-compare-btn,
+#page-statamministratore .stats-compare-btn,
+#page-statgen .statgen-compare-toggle-btn,
+#page-statgen .statgen-compare-year-btn,
+#page-statmensili .statgen-compare-toggle-btn,
+#page-statmensili .statgen-compare-year-btn,
+#page-statamministratore .statgen-compare-toggle-btn,
+#page-statamministratore .statgen-compare-year-btn{
+  width: 58px !important;
+  min-width: 58px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  border-radius: 14px !important;
+  padding: 0 8px !important;
+  flex: 0 0 auto !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+#page-statspese .budget-toggle{
+  flex: 0 0 auto !important;
+  max-width: 112px !important;
+}
+
+#page-statgen .stats-fixed-layer .stats-divider,
+#page-statmensili .stats-fixed-layer .stats-divider,
+#page-statspese .stats-fixed-layer .stats-divider,
+#page-statprenotazioni .stats-fixed-layer .stats-divider,
+#page-statchannel .stats-fixed-layer .stats-divider,
+#page-statpulizie .stats-fixed-layer .stats-divider,
+#page-statcancellazioni .stats-fixed-layer .stats-divider,
+#page-statamministratore .stats-fixed-layer .stats-divider{
+  margin: 0 10px 8px !important;
+}
+
+#page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+  width: calc(100% - 20px) !important;
+  margin: 0 10px !important;
+  height: 118px !important;
+  min-height: 118px !important;
+  max-height: 118px !important;
+  flex: 0 0 118px !important;
+}
+
+#page-statgen .stats-fixed-layer .statgen-line-chart,
+#page-statmensili .stats-fixed-layer .statgen-line-chart,
+#page-statspese .stats-fixed-layer .statgen-line-chart,
+#page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+#page-statchannel .stats-fixed-layer .statgen-line-chart,
+#page-statpulizie .stats-fixed-layer .statgen-line-chart,
+#page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
+#page-statamministratore .stats-fixed-layer .statgen-line-chart{
+  height: 118px !important;
+  max-height: 118px !important;
+}
+
+@media (max-width: 380px){
+  #page-statspese .budget-toggle{ max-width: 96px !important; }
+  #page-statgen .stats-compare-btn,
+  #page-statmensili .stats-compare-btn,
+  #page-statspese .stats-compare-btn,
+  #page-statprenotazioni .stats-compare-btn,
+  #page-statchannel .stats-compare-btn,
+  #page-statpulizie .stats-compare-btn,
+  #page-statcancellazioni .stats-compare-btn,
+  #page-statamministratore .stats-compare-btn,
+  #page-statgen .statgen-compare-toggle-btn,
+  #page-statgen .statgen-compare-year-btn,
+  #page-statmensili .statgen-compare-toggle-btn,
+  #page-statmensili .statgen-compare-year-btn,
+  #page-statamministratore .statgen-compare-toggle-btn,
+  #page-statamministratore .statgen-compare-year-btn{
+    width: 50px !important;
+    min-width: 50px !important;
+  }
+}
+
+@media (orientation: landscape){
+  #page-statgen .stats-gen.stats-layered,
+  #page-statmensili .stats-gen.stats-layered,
+  #page-statspese .stats-gen.stats-layered,
+  #page-statprenotazioni .stats-gen.stats-layered,
+  #page-statchannel .stats-gen.stats-layered,
+  #page-statpulizie .stats-gen.stats-layered,
+  #page-statcancellazioni .stats-gen.stats-layered,
+  #page-statamministratore .stats-gen.stats-layered{
+    height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    max-height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+    padding: 6px 8px calc(6px + var(--safe-bottom, 0px)) !important;
+  }
+  #page-statgen .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statamministratore .stats-fixed-layer .statgen-line-chart-wrap{
+    height: var(--stat-landscape-chart-height, 88px) !important;
+    min-height: 76px !important;
+    max-height: 104px !important;
+    flex-basis: var(--stat-landscape-chart-height, 88px) !important;
+  }
+  #page-statgen .stats-fixed-layer .statgen-line-chart,
+  #page-statmensili .stats-fixed-layer .statgen-line-chart,
+  #page-statspese .stats-fixed-layer .statgen-line-chart,
+  #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  #page-statchannel .stats-fixed-layer .statgen-line-chart,
+  #page-statpulizie .stats-fixed-layer .statgen-line-chart,
+  #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
+  #page-statamministratore .stats-fixed-layer .statgen-line-chart{
+    height: 100% !important;
+    max-height: 104px !important;
+  }
+}
