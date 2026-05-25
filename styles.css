@@ -25460,7 +25460,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
 }
 
 
-/* dDAE_2.911 — Statistiche: grafici fissati al viewport; solo le card scorrono sotto il layer */
+/* dDAE_2.912 — Statistiche: grafici fissati al viewport; solo le card scorrono sotto il layer */
 body[data-page="statgen"],
 body[data-page="statmensili"],
 body[data-page="statspese"],
@@ -25759,7 +25759,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
 }
 
 
-/* dDAE_2.911 — Statistiche: griglia 3x3 identica alla Home
+/* dDAE_2.912 — Statistiche: griglia 3x3 identica alla Home
    Override finale unico: neutralizza i vecchi blocchi specifici di Statistiche
    che allargavano la griglia in landscape e ingrandivano le icone. */
 #page-statistiche .stats-page{
@@ -25905,7 +25905,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
 }
 
 
-/* dDAE_2.911 — Statistiche: sposta leggermente a destra solo il testo del titolo per evitare taglio su iPhone */
+/* dDAE_2.912 — Statistiche: sposta leggermente a destra solo il testo del titolo per evitare taglio su iPhone */
 #page-statistiche .stats-title{
   padding-left:20px !important;
   box-sizing:border-box !important;
