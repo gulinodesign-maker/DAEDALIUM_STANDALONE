@@ -26041,3 +26041,42 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   stroke:#f8fbff !important;
   fill:none !important;
 }
+
+
+/* dDAE_2.920 — Spese: doppio salvataggio ordinario / fuori budget */
+#page-inserisci .spesa-save-row{
+  display:flex !important;
+  gap:12px !important;
+  align-items:stretch !important;
+}
+#page-inserisci #btnSaveSpesa,
+#page-inserisci #btnSaveSpesaFuoriBudget{
+  min-height:56px !important;
+  border-radius:16px !important;
+  font-weight:800 !important;
+  font-size:clamp(15px, 3.8vw, 20px) !important;
+  white-space:normal !important;
+  line-height:1.1 !important;
+  background-image:none !important;
+  box-shadow:none !important;
+}
+#page-inserisci #btnSaveSpesa{
+  background: rgba(201,119,43,0.40) !important;
+  border: 1px solid rgba(201,119,43,0.35) !important;
+  color: rgba(255,255,255,0.96) !important;
+}
+#page-inserisci #btnSaveSpesaFuoriBudget{
+  background: rgba(86,105,190,0.42) !important;
+  border: 1px solid rgba(86,105,190,0.38) !important;
+  color: rgba(255,255,255,0.96) !important;
+}
+@media (max-width: 430px){
+  #page-inserisci .spesa-save-row{ gap:8px !important; }
+  #page-inserisci #btnSaveSpesa,
+  #page-inserisci #btnSaveSpesaFuoriBudget{
+    min-height:52px !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    font-size:clamp(13px, 3.6vw, 16px) !important;
+  }
+}
