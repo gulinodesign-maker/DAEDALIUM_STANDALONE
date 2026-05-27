@@ -25919,3 +25919,67 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
 /* dDAE_2.913 — Ricavi: aliquota startup e utile netto annuo */
 #page-statamministratore #statAmmStartupRateBtn{min-width:46px;}
 #page-statamministratore #statAmmStartupRateBtn[hidden],#page-statamministratore #btnAdminInputsTop[hidden]{display:none!important;}
+
+
+/* dDAE_2.918 — Ricavi: card ottimizzate per dark mode e coerenti con le altre statistiche */
+#page-statamministratore .stat-row{
+  border:0 !important;
+  border-radius:22px !important;
+  background:rgba(255,255,255,0.60) !important;
+  position:relative !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 22px rgba(15,23,42,0.12) !important;
+  padding:14px 16px !important;
+}
+#page-statamministratore .stat-row::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background:transparent !important;
+  opacity:0 !important;
+  box-shadow:none !important;
+}
+#page-statamministratore .stat-row::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:1px !important;
+  border-radius:21px !important;
+  border:1px solid rgba(255,255,255,0.30) !important;
+  pointer-events:none !important;
+}
+#page-statamministratore .stat-row > *{
+  position:relative !important;
+  z-index:1 !important;
+}
+#page-statamministratore .stat-row .stat-name,
+#page-statamministratore .stat-row .stat-val,
+#page-statamministratore .stat-row .stat-ico-wrap,
+#page-statamministratore .stat-row .ui-ico{
+  color:var(--cardtext, var(--mcol, var(--statfg, var(--ico-blue-night)))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statfg, var(--ico-blue-night)))) !important;
+  stroke:currentColor !important;
+}
+body.ddae-dark #page-statamministratore .stat-row{
+  background:rgba(12,23,46,0.96) !important;
+  background-color:rgba(12,23,46,0.96) !important;
+  border:1px solid rgba(148,163,184,0.28) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,0.28) !important;
+  color:#f8fbff !important;
+}
+body.ddae-dark #page-statamministratore .stat-row::before,
+body.ddae-dark #page-statamministratore .stat-row::after{
+  background:transparent !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #page-statamministratore .stat-row::after{
+  border-color:rgba(148,163,184,0.28) !important;
+}
+body.ddae-dark #page-statamministratore .stat-row .stat-name,
+body.ddae-dark #page-statamministratore .stat-row .stat-val,
+body.ddae-dark #page-statamministratore .stat-row .stat-ico-wrap,
+body.ddae-dark #page-statamministratore .stat-row .ui-ico{
+  color:var(--cardtext, var(--mcol, #6fb7d6)) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, #6fb7d6)) !important;
+  stroke:currentColor !important;
+}
