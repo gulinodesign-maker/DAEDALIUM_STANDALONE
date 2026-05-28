@@ -26043,7 +26043,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.923 — Spese: doppio salvataggio ordinario / fuori budget */
+/* dDAE_2.921 — Spese: doppio salvataggio ordinario / fuori budget */
 #page-inserisci .spesa-save-row{
   display:flex !important;
   gap:12px !important;
@@ -26081,7 +26081,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   }
 }
 
-/* dDAE_2.923 - Spese: lista card minimale importo + motivazione */
+/* dDAE_2.921 - Spese: lista card minimale importo + motivazione */
 #speseList .spesa-line-minimal{
   display:flex;
   align-items:center;
