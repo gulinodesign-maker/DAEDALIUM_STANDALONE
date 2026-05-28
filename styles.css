@@ -26043,7 +26043,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.921 — Spese: doppio salvataggio ordinario / fuori budget */
+/* dDAE_2.922 — Spese: doppio salvataggio ordinario / fuori budget */
 #page-inserisci .spesa-save-row{
   display:flex !important;
   gap:12px !important;
@@ -26081,7 +26081,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   }
 }
 
-/* dDAE_2.921 - Spese: lista card minimale importo + motivazione */
+/* dDAE_2.922 - Spese: lista card minimale importo + motivazione */
 #speseList .spesa-line-minimal{
   display:flex;
   align-items:center;
@@ -26094,3 +26094,11 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+
+
+/* dDAE_2.922 — Servizi QR */
+.services-admin-page,.services-public-page{width:min(560px,94vw);margin:0 auto;padding:18px 0 90px;color:var(--fg,#2d3748)}
+.services-admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 10px}.services-admin-actions .services-btn:nth-child(3){grid-column:1/-1}.services-btn{min-height:44px;border-radius:18px!important}.services-admin-hint{font-size:13px;opacity:.76;text-align:center;margin:8px 0 14px}.services-products-list{display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 250px);overflow:auto;padding:4px 2px 20px}.services-product-card,.services-public-product{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;width:100%;border:1px solid rgba(120,132,150,.35);background:rgba(255,255,255,.72);color:inherit;border-radius:18px;padding:14px;text-align:left;box-shadow:none}.services-product-card .services-product-state{grid-column:1/-1;font-size:12px;opacity:.68}.services-product-name{font-weight:800}.services-product-price{font-weight:900}.services-empty{padding:18px;border-radius:18px;background:rgba(255,255,255,.45);border:1px solid rgba(120,132,150,.25);text-align:center;opacity:.8}.services-product-modal-card,.services-qr-modal-card{width:min(420px,92vw)}.services-field-label{display:block;margin:12px 0 6px;font-weight:800;font-size:13px}.services-product-input,.services-input{width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(120,132,150,.35);background:rgba(255,255,255,.82);color:inherit;padding:0 12px}.services-product-active-row{margin:12px 0;font-weight:700}.services-product-actions{grid-template-columns:1fr 1fr}.services-qr-box{display:flex;justify-content:center;align-items:center;padding:12px}.services-qr-box img{width:min(300px,76vw);height:auto;border-radius:12px;background:#fff;padding:8px}.services-qr-url{font-size:11px;line-height:1.35;word-break:break-all;opacity:.75;text-align:center;margin:4px 0 12px}.services-public-shell{position:fixed!important;inset:0!important;z-index:9999!important;background:var(--page-bg,#f6f8fb);overflow:auto}.services-public-mode .topbar,.services-public-mode #homeSyncBar{display:none!important}.services-public-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.services-public-card{width:min(460px,94vw);border:1px solid rgba(120,132,150,.35);background:rgba(255,255,255,.86);border-radius:26px;padding:18px;box-shadow:none}.services-public-title{text-align:center;font-weight:900;font-size:26px;margin-bottom:4px}.services-public-subtitle{text-align:center;opacity:.74;margin-bottom:14px}.services-public-products{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}.services-public-product{grid-template-columns:auto 1fr auto}.services-submit{width:100%;min-height:46px;border-radius:18px!important}.services-public-status{min-height:22px;text-align:center;margin-top:10px;font-weight:800}.services-public-status.ok{color:#16a34a}.services-public-status.err{color:#dc2626}.services-ambiguity{border:1px solid rgba(245,158,11,.45);background:rgba(245,158,11,.12);border-radius:16px;padding:10px;margin:10px 0}.services-choice{display:block;padding:8px 0;font-weight:700}
+:root[data-theme="dark"] .services-product-card,:root[data-theme="dark"] .services-public-card,:root[data-theme="dark"] .services-empty{background:rgba(18,24,33,.82);border-color:rgba(255,255,255,.18);color:var(--fg,#eef2f7)}
+:root[data-theme="dark"] .services-input,:root[data-theme="dark"] .services-product-input{background:rgba(18,24,33,.92);border-color:rgba(255,255,255,.20);color:var(--fg,#eef2f7)}
+@media (prefers-color-scheme: dark){.services-public-card,.services-product-card,.services-empty{background:rgba(18,24,33,.82);border-color:rgba(255,255,255,.18)}}
