@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.923" rel="stylesheet"/>
-<link href="./manifest.json?v=2.923" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.923" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.923" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.923" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.923" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.923" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.923" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.921" rel="stylesheet"/>
+<link href="./manifest.json?v=2.921" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.921" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.921" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.921" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.921" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.921" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.921" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.923";
+window.APP_VERSION = "2.921";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.923";
+  const LOCAL_BUILD = "dDAE_2.921";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.923";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.923")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.923")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.921")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.921")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.923";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.923"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.921"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -295,7 +295,7 @@ window.APP_VERSION = "2.923";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.923"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.921"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -463,15 +463,14 @@ window.APP_VERSION = "2.923";
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Servizi" class="home-main" id="goServiziHome" type="button">
+<button aria-label="Piscina" class="home-main" id="goOrePuliziaHome" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>
-<path d="M8 8h8"></path>
-<path d="M8 12h8"></path>
-<path d="M8 16h5"></path>
-<path d="M17 15l2 2 3-4"></path>
+<path d="M10 2h4"></path>
+<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
+<path d="M8 14h8"></path>
+<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
 </svg></div>
-<div class="home-main-label">Servizi</div>
+<div class="home-main-label">Piscina</div>
 </button>
 <button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -504,7 +503,7 @@ window.APP_VERSION = "2.923";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.923</div></div></section>
+<div class="build" id="buildText">dDAE_2.921</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -541,72 +540,6 @@ window.APP_VERSION = "2.923";
 </div>
 </div>
 </div>
-<!-- SERVIZI QR -->
-<section class="page" hidden="" id="page-servizi">
-<div class="services-admin-page">
-<div class="services-admin-head">
-<div class="stats-title">Servizi</div>
-<div aria-hidden="true" class="stats-divider"></div>
-</div>
-<div class="services-admin-actions">
-<button class="btn primary services-btn" id="servicesAddProductBtn" type="button">Aggiungi prodotto</button>
-<button class="btn ghost services-btn" id="servicesQrBtn" type="button">QR code</button>
-<button class="btn ghost services-btn" id="servicesSyncBtn" type="button">Sincronizza servizi</button>
-</div>
-<div class="services-admin-hint">Crea le schede prodotto visibili agli ospiti dal QR del tuo account.</div>
-<div class="services-products-list" id="servicesProductsList" data-allow-vertical-scroll="true"></div>
-</div>
-</section>
-
-<section class="page services-public-shell" hidden="" id="page-servizi-qr">
-<div class="services-public-page">
-<div class="services-public-card">
-<div class="services-public-title">Servizi</div>
-<div class="services-public-subtitle" id="servicesQrSubtitle">Seleziona stanza e servizio</div>
-<label class="services-field-label" for="servicesQrRoom">Stanza</label>
-<select class="services-input" id="servicesQrRoom"></select>
-<div class="services-field-label">Servizi disponibili</div>
-<div class="services-public-products" id="servicesQrProducts"></div>
-<div class="services-ambiguity" id="servicesQrAmbiguity" hidden=""></div>
-<button class="btn primary services-submit" id="servicesQrSubmit" type="button">Invia</button>
-<div class="services-public-status" id="servicesQrStatus"></div>
-</div>
-</div>
-</section>
-
-<div aria-hidden="true" class="modal modal-center" hidden="" id="servicesProductModal">
-<div aria-label="Scheda prodotto servizio" aria-modal="true" class="modal-card services-product-modal-card" role="dialog">
-<div class="prod-add-top">
-<div class="prod-add-title" id="servicesProductModalTitle">Servizio</div>
-<button aria-label="Chiudi" class="icon-btn icon-btn-whiteblack prod-add-close" id="servicesProductClose" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg></button>
-</div>
-<label class="services-field-label" for="servicesProductName">Nome servizio</label>
-<input autocomplete="off" class="prod-add-input services-product-input" id="servicesProductName" type="text" placeholder="Nome"/>
-<label class="services-field-label" for="servicesProductPrice">Prezzo</label>
-<input autocomplete="off" class="prod-add-input services-product-input" id="servicesProductPrice" inputmode="decimal" type="number" step="0.01" min="0" placeholder="0.00"/>
-<div class="services-product-active-row"><label><input id="servicesProductActive" type="checkbox" checked=""/> Attivo</label></div>
-<div class="prod-add-actions services-product-actions">
-<button class="prod-add-btn prod-blue" id="servicesProductSave" type="button">Salva</button>
-<button class="prod-add-btn prod-orange" id="servicesProductDelete" type="button">Elimina</button>
-</div>
-</div>
-</div>
-
-<div aria-hidden="true" class="modal modal-center" hidden="" id="servicesQrModal">
-<div aria-label="QR code servizi" aria-modal="true" class="modal-card services-qr-modal-card" role="dialog">
-<div class="prod-add-top">
-<div class="prod-add-title">QR code servizi</div>
-<button aria-label="Chiudi" class="icon-btn icon-btn-whiteblack prod-add-close" id="servicesQrClose" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg></button>
-</div>
-<div class="services-qr-box"><img alt="QR code servizi" id="servicesQrImg"/></div>
-<div class="services-qr-url" id="servicesQrUrl"></div>
-<div class="prod-add-actions services-product-actions">
-<button class="prod-add-btn prod-blue" id="servicesQrShare" type="button">Condividi</button>
-<button class="prod-add-btn prod-orange" id="servicesQrDownload" type="button">Scarica</button>
-</div>
-</div>
-</div>
-
 <!-- STATISTICHE -->
 <section class="page" hidden="" id="page-statistiche">
 <div class="stats-page">
@@ -698,15 +631,6 @@ window.APP_VERSION = "2.923";
 <path d="M9.5 16h5"></path>
 </svg></div>
 <div class="home-main-label small">Ricavi</div>
-</button>
-<button aria-label="Piscina" class="home-main" id="goStatPiscinaMain" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M10 2h4"></path>
-<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
-<path d="M8 14h8"></path>
-<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
-</svg></div>
-<div class="home-main-label">Piscina</div>
 </button>
 </div>
 </div>
@@ -2810,7 +2734,7 @@ window.APP_VERSION = "2.923";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.923"></script>
-<script defer="" src="./app.js?v=2.923"></script>
+<script defer="" src="./config.js?v=2.921"></script>
+<script defer="" src="./app.js?v=2.921"></script>
 </body>
 </html>
