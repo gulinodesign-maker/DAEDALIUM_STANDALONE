@@ -26045,7 +26045,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.926 — Spese: doppio salvataggio ordinario / fuori budget */
+/* dDAE_2.927 — Spese: doppio salvataggio ordinario / fuori budget */
 #page-inserisci .spesa-save-row{
   display:flex !important;
   gap:12px !important;
@@ -26083,7 +26083,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   }
 }
 
-/* dDAE_2.926 - Spese: lista card minimale importo + motivazione */
+/* dDAE_2.927 - Spese: lista card minimale importo + motivazione */
 #speseList .spesa-line-minimal{
   display:flex;
   align-items:center;
@@ -26098,7 +26098,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.926 — Design tag opzioni equidistanti + LED PS/ISTAT luminosi */
+/* dDAE_2.927 — Design tag opzioni equidistanti + LED PS/ISTAT luminosi */
 #roomSettingsOptionDots{
   display:flex !important;
   flex-wrap:nowrap !important;
@@ -26150,4 +26150,71 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 @media (max-width: 390px){
   #roomSettingsOptionDots{ gap:0 !important; }
+}
+
+
+/* dDAE_2.927 — LED alert PS/ISTAT uniformati a pagamenti e ricevuta fiscale */
+:root{
+  --ddae-alert-led-size: 15px;
+  --ddae-alert-led-ring: 2px;
+  --ddae-alert-led-glow: 18px;
+  --ddae-alert-led-glow-alpha: 0.42;
+  --ddae-reg-ps-rgb: 15,23,42;
+  --ddae-reg-istat-rgb: 77,156,197;
+}
+.top-led-alert,
+.guest-card-alert-led{
+  width: var(--ddae-alert-led-size) !important;
+  height: var(--ddae-alert-led-size) !important;
+  min-width: var(--ddae-alert-led-size) !important;
+  min-height: var(--ddae-alert-led-size) !important;
+  border-radius: 999px !important;
+}
+.top-led-alert.is-black,
+.guest-card-alert-led.is-black{
+  background: var(--ddae-reg-ps-bg, rgba(15,23,42,0.96)) !important;
+  border-color: var(--ddae-reg-ps-border, rgba(15,23,42,1)) !important;
+  box-shadow:
+    0 0 0 var(--ddae-alert-led-ring) rgba(var(--ddae-reg-ps-rgb),0.18),
+    0 0 var(--ddae-alert-led-glow) rgba(var(--ddae-reg-ps-rgb),var(--ddae-alert-led-glow-alpha)) !important;
+}
+.top-led-alert.is-sky,
+.guest-card-alert-led.is-sky{
+  background: var(--ddae-reg-istat-bg, rgba(77,156,197,0.96)) !important;
+  border-color: var(--ddae-reg-istat-border, rgba(77,156,197,1)) !important;
+  box-shadow:
+    0 0 0 var(--ddae-alert-led-ring) rgba(var(--ddae-reg-istat-rgb),0.18),
+    0 0 var(--ddae-alert-led-glow) rgba(var(--ddae-reg-istat-rgb),var(--ddae-alert-led-glow-alpha)) !important;
+}
+#page-ospiti .guest-card-alert-led,
+#page-ospiti .guest-card-alert-led.is-black,
+#page-ospiti .guest-card-alert-led.is-sky{
+  width: var(--ddae-alert-led-size) !important;
+  height: var(--ddae-alert-led-size) !important;
+  min-width: var(--ddae-alert-led-size) !important;
+  min-height: var(--ddae-alert-led-size) !important;
+}
+#page-ospite .pay-ps.selected{
+  box-shadow:
+    0 0 0 4px rgba(var(--ddae-reg-ps-rgb),0.14),
+    0 0 18px rgba(var(--ddae-reg-ps-rgb),0.42) !important;
+}
+#page-ospite .pay-istat.selected{
+  box-shadow:
+    0 0 0 4px rgba(var(--ddae-reg-istat-rgb),0.14),
+    0 0 18px rgba(var(--ddae-reg-istat-rgb),0.42) !important;
+}
+.guest-alert-tag.tag-black{
+  box-shadow: 0 0 18px rgba(var(--ddae-reg-ps-rgb),0.42) !important;
+}
+.guest-alert-tag.tag-sky{
+  box-shadow: 0 0 18px rgba(var(--ddae-reg-istat-rgb),0.42) !important;
+}
+@media (max-width: 480px){
+  #page-ospiti .guest-card-alert-led{
+    width: var(--ddae-alert-led-size) !important;
+    height: var(--ddae-alert-led-size) !important;
+    min-width: var(--ddae-alert-led-size) !important;
+    min-height: var(--ddae-alert-led-size) !important;
+  }
 }
