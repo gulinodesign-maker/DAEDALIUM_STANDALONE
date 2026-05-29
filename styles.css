@@ -26045,7 +26045,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.925 — Spese: doppio salvataggio ordinario / fuori budget */
+/* dDAE_2.926 — Spese: doppio salvataggio ordinario / fuori budget */
 #page-inserisci .spesa-save-row{
   display:flex !important;
   gap:12px !important;
@@ -26083,7 +26083,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   }
 }
 
-/* dDAE_2.925 - Spese: lista card minimale importo + motivazione */
+/* dDAE_2.926 - Spese: lista card minimale importo + motivazione */
 #speseList .spesa-line-minimal{
   display:flex;
   align-items:center;
@@ -26095,4 +26095,59 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+}
+
+
+/* dDAE_2.926 — Design tag opzioni equidistanti + LED PS/ISTAT luminosi */
+#roomSettingsOptionDots{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  gap:0 !important;
+}
+#roomSettingsOptionDots .room-settings-color-dot{
+  flex:0 0 auto !important;
+}
+.top-led-alert.is-black{
+  box-shadow:
+    0 0 0 2px var(--ddae-reg-ps-bg, rgba(15,23,42,0.22)),
+    0 0 16px var(--ddae-reg-ps-bg, rgba(15,23,42,0.55)),
+    0 0 34px var(--ddae-reg-ps-bg, rgba(15,23,42,0.32)) !important;
+}
+.top-led-alert.is-sky{
+  box-shadow:
+    0 0 0 2px var(--ddae-reg-istat-bg, rgba(77,156,197,0.24)),
+    0 0 16px var(--ddae-reg-istat-bg, rgba(77,156,197,0.62)),
+    0 0 34px var(--ddae-reg-istat-bg, rgba(77,156,197,0.38)) !important;
+}
+#page-ospite .pay-ps.selected{
+  box-shadow:
+    0 0 0 4px var(--ddae-reg-ps-bg, rgba(15,23,42,0.20)),
+    0 0 18px var(--ddae-reg-ps-bg, rgba(15,23,42,0.48)) !important;
+}
+#page-ospite .pay-istat.selected{
+  box-shadow:
+    0 0 0 4px var(--ddae-reg-istat-bg, rgba(77,156,197,0.20)),
+    0 0 18px var(--ddae-reg-istat-bg, rgba(77,156,197,0.52)) !important;
+}
+.guest-alert-tag.tag-black{
+  box-shadow:0 0 12px var(--ddae-reg-ps-bg, rgba(15,23,42,0.42)) !important;
+}
+.guest-alert-tag.tag-sky{
+  box-shadow:0 0 12px var(--ddae-reg-istat-bg, rgba(77,156,197,0.50)) !important;
+}
+.guest-card-alert-led.is-black{
+  box-shadow:
+    0 0 0 2px var(--ddae-reg-ps-bg, rgba(15,23,42,0.22)),
+    0 0 14px var(--ddae-reg-ps-bg, rgba(15,23,42,0.55)) !important;
+}
+.guest-card-alert-led.is-sky{
+  box-shadow:
+    0 0 0 2px var(--ddae-reg-istat-bg, rgba(77,156,197,0.22)),
+    0 0 14px var(--ddae-reg-istat-bg, rgba(77,156,197,0.58)) !important;
+}
+@media (max-width: 390px){
+  #roomSettingsOptionDots{ gap:0 !important; }
 }
