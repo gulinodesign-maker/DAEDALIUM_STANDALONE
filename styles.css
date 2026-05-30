@@ -26218,3 +26218,37 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
     min-height: var(--ddae-alert-led-size) !important;
   }
 }
+
+
+/* dDAE_2.933 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
+#page-calendario .cal-cell.has-booking.is-today-col::before,
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col::before,
+#page-calendario .calendar-event-bar.is-today-col::before,
+#page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
+  opacity: .78;
+}
+#page-calendario .cal-cell.has-booking.is-today-col::after,
+#page-calendario .calendar-event-bar.is-today-col::after{
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc((100% / var(--today-span, 1)) * var(--today-offset, 0));
+  width: calc(100% / var(--today-span, 1));
+  background: var(--room-bg, rgba(255,255,255,.08));
+  opacity: .34;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+#page-calendario .cal-cell.has-booking.is-today-col.booking-span-merged::after,
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-span-merged::after{
+  border-radius: 13px;
+}
+#page-calendario .cal-cell.has-booking.is-today-col .cal-cell-inner,
+#page-calendario .cal-cell.has-booking.is-today-col .cal-corner-chrome,
+#page-calendario .calendar-event-bar.is-today-col .cal-cell-inner,
+#page-calendario .calendar-event-bar.is-today-col .cal-corner-chrome{
+  position: relative;
+  z-index: 3;
+}
