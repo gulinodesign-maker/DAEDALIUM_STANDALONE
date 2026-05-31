@@ -26269,7 +26269,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   z-index: 18 !important;
 }
 
-/* dDAE_2.937 — Calendario: CHANNEL ancorato alla porzione del giorno selezionato nelle prenotazioni multi-giorno */
+/* dDAE_2.938 — Calendario: CHANNEL ancorato alla porzione del giorno selezionato nelle prenotazioni multi-giorno */
 #page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-span-merged .cal-corner-chrome{
   position: absolute !important;
   top: 0 !important;
@@ -26296,5 +26296,38 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   left: 4px !important;
   right: auto !important;
   bottom: auto !important;
+  z-index: 85 !important;
+}
+
+
+/* dDAE_2.938 — Calendario: CHANNEL visibile in alto a destra anche sulle prenotazioni di un solo giorno selezionate */
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-seg-single .cal-corner-chrome,
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col:not(.booking-span-merged) .cal-corner-chrome{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
+  z-index: 80 !important;
+  pointer-events: none !important;
+}
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-seg-single .cal-channel-tag,
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col:not(.booking-span-merged) .cal-channel-tag{
+  position: absolute !important;
+  top: 4px !important;
+  right: 4px !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: 90 !important;
+}
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-seg-single .cal-flags,
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col:not(.booking-span-merged) .cal-flags{
+  position: absolute !important;
+  top: 4px !important;
+  left: 4px !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
   z-index: 85 !important;
 }
