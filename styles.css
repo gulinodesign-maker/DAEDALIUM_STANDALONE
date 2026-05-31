@@ -26220,7 +26220,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.933 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
+/* dDAE_2.934 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .cal-cell.has-booking.is-today-col::before,
 #page-calendario .calendar-event-bar.is-today-col::before,
