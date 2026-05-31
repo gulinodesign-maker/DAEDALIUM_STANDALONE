@@ -26220,7 +26220,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.935 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
+/* dDAE_2.936 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .cal-cell.has-booking.is-today-col::before,
 #page-calendario .calendar-event-bar.is-today-col::before,
@@ -26251,4 +26251,20 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 #page-calendario .calendar-event-bar.is-today-col .cal-corner-chrome{
   position: relative;
   z-index: 3;
+}
+
+
+/* dDAE_2.936 — Calendario: badge CHANNEL sempre sopra evidenziazione giorno selezionato */
+#page-calendario .cal-corner-chrome{
+  z-index: 60 !important;
+}
+#page-calendario .cal-channel-tag{
+  z-index: 70 !important;
+}
+#page-calendario .cal-cell.has-booking.is-today-col .cal-corner-chrome,
+#page-calendario .calendar-event-bar.is-today-col .cal-corner-chrome{
+  z-index: 60 !important;
+}
+#page-calendario .cal-today-column-outline{
+  z-index: 18 !important;
 }

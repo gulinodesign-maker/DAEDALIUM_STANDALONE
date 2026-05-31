@@ -1,4 +1,4 @@
-/* dDAE_2.935 - Firebase frontend config */
+/* dDAE_2.936 - Firebase frontend config */
 const DDAE_LICENSE_PAYMENT_URL = "";
 const FIREBASE_ENABLED = true;
 const FIREBASE_CONFIG = {
