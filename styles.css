@@ -26268,3 +26268,33 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 #page-calendario .cal-today-column-outline{
   z-index: 18 !important;
 }
+
+/* dDAE_2.937 — Calendario: CHANNEL ancorato alla porzione del giorno selezionato nelle prenotazioni multi-giorno */
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-span-merged .cal-corner-chrome{
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: calc((100% / var(--today-span, 1)) * var(--today-offset, 0)) !important;
+  right: auto !important;
+  width: calc(100% / var(--today-span, 1)) !important;
+  height: 100% !important;
+  overflow: visible !important;
+  z-index: 80 !important;
+  pointer-events: none !important;
+}
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-span-merged .cal-channel-tag{
+  position: absolute !important;
+  top: 4px !important;
+  right: 4px !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 90 !important;
+}
+#page-calendario.is-month-view .cal-cell.has-booking.is-today-col.booking-span-merged .cal-flags{
+  position: absolute !important;
+  top: 4px !important;
+  left: 4px !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 85 !important;
+}
