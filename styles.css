@@ -26333,7 +26333,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.939 — Popup LED ricevute/pagamenti: card scrollabili internamente */
+/* dDAE_2.940 — Popup LED ricevute/pagamenti: card scrollabili internamente */
 #guestAlertModal:not([hidden]){
   display:flex !important;
   align-items:center !important;
@@ -26369,5 +26369,42 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   padding-bottom:8px !important;
 }
 #guestAlertModal .guest-alert-card{
+  flex:0 0 auto !important;
+}
+
+
+/* dDAE_2.940 — Popup LED ricevute/pagamenti: scroll reale lista card iOS */
+#guestAlertModal:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  height:100dvh !important;
+  max-height:100dvh !important;
+  overflow:hidden !important;
+  touch-action:none !important;
+}
+#guestAlertModal .guest-alert-modal-card{
+  height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px) !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px) !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+}
+#guestAlertModal .guest-alert-list{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:1 1 0 !important;
+  min-height:0 !important;
+  height:auto !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 150px) !important;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:contain !important;
+  touch-action:pan-y !important;
+  padding-right:4px !important;
+  padding-bottom:18px !important;
+}
+#guestAlertModal .guest-alert-list .guest-alert-card{
   flex:0 0 auto !important;
 }
