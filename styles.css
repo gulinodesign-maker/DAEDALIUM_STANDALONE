@@ -26408,3 +26408,54 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 #guestAlertModal .guest-alert-list .guest-alert-card{
   flex:0 0 auto !important;
 }
+
+/* dDAE_2.943 — Popup LED ricevute/pagamenti: scroll interno robusto iOS */
+#guestAlertModal:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  height:100vh !important;
+  height:100dvh !important;
+  max-height:100dvh !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:calc(var(--safe-top, 0px) + 16px) 16px calc(var(--safe-bottom, 0px) + 16px) !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  touch-action:auto !important;
+}
+#guestAlertModal .guest-alert-modal-card{
+  width:min(460px, calc(100vw - 32px)) !important;
+  height:auto !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px) !important;
+  min-height:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  box-sizing:border-box !important;
+  touch-action:auto !important;
+}
+#guestAlertModal .guest-alert-modal-card .stat-modal-close,
+#guestAlertModal .guest-alert-modal-card .stat-pie-title{
+  flex:0 0 auto !important;
+}
+#guestAlertModal .guest-alert-list{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:0 1 auto !important;
+  min-height:120px !important;
+  height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 150px) !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 150px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:contain !important;
+  touch-action:pan-y !important;
+  padding-right:4px !important;
+  padding-bottom:24px !important;
+  box-sizing:border-box !important;
+}
+#guestAlertModal .guest-alert-card{
+  flex:0 0 auto !important;
+}
