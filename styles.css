@@ -26409,7 +26409,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   flex:0 0 auto !important;
 }
 
-/* dDAE_2.943 — Popup LED ricevute/pagamenti: scroll interno robusto iOS */
+/* dDAE_2.944 — Popup LED ricevute/pagamenti: scroll interno robusto iOS */
 #guestAlertModal:not([hidden]){
   position:fixed !important;
   inset:0 !important;
@@ -26455,6 +26455,34 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   padding-right:4px !important;
   padding-bottom:24px !important;
   box-sizing:border-box !important;
+}
+#guestAlertModal .guest-alert-card{
+  flex:0 0 auto !important;
+}
+
+
+/* dDAE_2.944 — Popup LED ricevute/pagamenti: sblocco scroll touch iOS dentro lista card */
+#guestAlertModal:not([hidden]){
+  touch-action:auto !important;
+  -webkit-overflow-scrolling:auto !important;
+}
+#guestAlertModal .guest-alert-modal-card{
+  height:min(620px, calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px)) !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px) !important;
+  overflow:hidden !important;
+}
+#guestAlertModal .guest-alert-list,
+#guestAlertList[data-allow-vertical-scroll="true"]{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  overscroll-behavior-y:contain !important;
+  contain:content !important;
 }
 #guestAlertModal .guest-alert-card{
   flex:0 0 auto !important;
