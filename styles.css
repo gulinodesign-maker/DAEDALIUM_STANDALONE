@@ -26331,3 +26331,43 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   transform: none !important;
   z-index: 85 !important;
 }
+
+
+/* dDAE_2.939 — Popup LED ricevute/pagamenti: card scrollabili internamente */
+#guestAlertModal:not([hidden]){
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:calc(var(--safe-top, 0px) + 16px) 16px calc(var(--safe-bottom, 0px) + 16px) !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  overscroll-behavior:contain !important;
+}
+#guestAlertModal .guest-alert-modal-card{
+  width:min(460px, calc(100vw - 32px)) !important;
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px) !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  box-sizing:border-box !important;
+}
+#guestAlertModal .guest-alert-modal-card .stat-modal-close,
+#guestAlertModal .guest-alert-modal-card .stat-pie-title{
+  flex:0 0 auto !important;
+}
+#guestAlertModal .guest-alert-list{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  touch-action:pan-y !important;
+  padding-right:4px !important;
+  padding-bottom:8px !important;
+}
+#guestAlertModal .guest-alert-card{
+  flex:0 0 auto !important;
+}
