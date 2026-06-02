@@ -27068,3 +27068,76 @@ body.ddae-dark #page-statmensili .month-expanded-metric.is-compare strong{
     padding-bottom:12px !important;
   }
 }
+
+
+/* dDAE_2.952 — Statistiche Mensili: gap finale 3px e titolo trend centrato sopra i numeri */
+#page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+  padding-bottom:3px !important;
+}
+#page-statmensili .month-expanded-panel{
+  padding-bottom:0 !important;
+}
+#page-statmensili .month-expanded-grid{
+  padding-bottom:0 !important;
+  margin-bottom:0 !important;
+}
+#page-statmensili .month-expanded-grid .month-expanded-metric:nth-last-child(-n+2){
+  margin-bottom:0 !important;
+}
+#page-statmensili .month-expanded-trend{
+  display:grid !important;
+  grid-template-columns:auto minmax(0, 1fr) !important;
+  align-items:center !important;
+  column-gap:12px !important;
+}
+#page-statmensili .month-expanded-trend-arrow{
+  grid-column:1 !important;
+  grid-row:1 !important;
+}
+#page-statmensili .month-expanded-trend-copy{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:0 !important;
+  row-gap:4px !important;
+}
+#page-statmensili .month-expanded-trend-label{
+  width:100% !important;
+  text-align:center !important;
+  line-height:1.08 !important;
+}
+#page-statmensili .month-expanded-trend-value{
+  width:100% !important;
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:8px 16px !important;
+  margin-top:0 !important;
+}
+@media (max-width:420px){
+  #page-statmensili .month-expanded-trend-copy{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    row-gap:4px !important;
+  }
+  #page-statmensili .month-expanded-trend-value{
+    justify-content:center !important;
+    text-align:center !important;
+  }
+}
+@media (max-height:740px){
+  #page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+    padding-bottom:3px !important;
+  }
+  #page-statmensili .month-expanded-panel{
+    padding-bottom:0 !important;
+  }
+  #page-statmensili .month-expanded-grid{
+    padding-bottom:0 !important;
+  }
+}
