@@ -10421,7 +10421,7 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
   opacity: 0.48;
 }
 
-/* dDAE_2.945 — Calendario: stesso tasto Sync fisso con linea nera superiore */
+/* dDAE_2.946 — Calendario: stesso tasto Sync fisso con linea nera superiore */
 body[data-page="calendario"] #homeSyncBar{
   display: flex !important;
 }
@@ -26418,7 +26418,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   flex:0 0 auto !important;
 }
 
-/* dDAE_2.945 — Popup LED ricevute/pagamenti: scroll interno robusto iOS */
+/* dDAE_2.946 — Popup LED ricevute/pagamenti: scroll interno robusto iOS */
 #guestAlertModal:not([hidden]){
   position:fixed !important;
   inset:0 !important;
@@ -26470,7 +26470,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 
 
-/* dDAE_2.945 — Popup LED ricevute/pagamenti: sblocco scroll touch iOS dentro lista card */
+/* dDAE_2.946 — Popup LED ricevute/pagamenti: sblocco scroll touch iOS dentro lista card */
 #guestAlertModal:not([hidden]){
   touch-action:auto !important;
   -webkit-overflow-scrolling:auto !important;
@@ -26495,4 +26495,206 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 #guestAlertModal .guest-alert-card{
   flex:0 0 auto !important;
+}
+
+/* dDAE_2.946 — Statistiche Mensili: card mese espansa sotto grafico fisso */
+#page-statmensili .month-stack.has-expanded-month{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:100% !important;
+  padding:0 4px calc(8px + var(--safe-bottom, 0px)) !important;
+}
+#page-statmensili .month-stack.has-expanded-month .month-row:not(.is-expanded){
+  display:none !important;
+}
+#page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+  min-height:100% !important;
+  height:100% !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  padding:18px 16px !important;
+  border-radius:26px !important;
+  overflow:hidden !important;
+  background:var(--stats-theme-bg, rgba(255,255,255,0.74)) !important;
+  background-color:var(--stats-theme-bg, rgba(255,255,255,0.74)) !important;
+  box-shadow:0 10px 22px rgba(15,23,42,0.12) !important;
+}
+#page-statmensili .month-stack.has-expanded-month .month-row.is-expanded::after{
+  border-radius:26px !important;
+}
+#page-statmensili .month-row.is-expanded .month-left{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+}
+#page-statmensili .month-row.is-expanded .month-head{
+  margin-bottom:14px !important;
+  align-items:flex-start !important;
+}
+#page-statmensili .month-row.is-expanded .month-name{
+  font-size:clamp(28px, 7.2vw, 42px) !important;
+  line-height:1 !important;
+  letter-spacing:-0.04em !important;
+}
+#page-statmensili .month-row.is-expanded .month-val{
+  font-size:clamp(24px, 6.2vw, 36px) !important;
+  line-height:1 !important;
+  text-align:right !important;
+}
+#page-statmensili .month-row.is-expanded .month-bar{
+  height:16px !important;
+  margin-bottom:16px !important;
+}
+#page-statmensili .month-row.is-expanded .month-occ{
+  flex:0 0 clamp(92px, 24vw, 128px) !important;
+  align-self:flex-start !important;
+  padding-top:2px !important;
+}
+#page-statmensili .month-row.is-expanded .month-occ-pct{
+  font-size:clamp(28px, 8vw, 46px) !important;
+}
+#page-statmensili .month-row.is-expanded .month-occ-rooms{
+  font-size:clamp(17px, 4.6vw, 26px) !important;
+}
+#page-statmensili .month-row.is-expanded .month-occ-avg{
+  font-size:clamp(11px, 3vw, 15px) !important;
+}
+#page-statmensili .month-expanded-panel{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  margin-top:2px !important;
+}
+#page-statmensili .month-expanded-trend{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:13px 14px !important;
+  border-radius:22px !important;
+  background:rgba(255,255,255,0.62) !important;
+  background-color:rgba(255,255,255,0.62) !important;
+  border:1px solid rgba(15,23,42,0.08) !important;
+}
+#page-statmensili .month-expanded-trend-arrow{
+  width:52px !important;
+  height:52px !important;
+  border-radius:18px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 52px !important;
+  font-size:34px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#page-statmensili .month-expanded-trend.is-up .month-expanded-trend-arrow{
+  background:#16a34a !important;
+  background-color:#16a34a !important;
+}
+#page-statmensili .month-expanded-trend.is-down .month-expanded-trend-arrow{
+  background:#dc2626 !important;
+  background-color:#dc2626 !important;
+}
+#page-statmensili .month-expanded-trend-copy{
+  min-width:0 !important;
+  flex:1 1 auto !important;
+}
+#page-statmensili .month-expanded-trend-label{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+  color:rgba(15,23,42,0.58) !important;
+  -webkit-text-fill-color:rgba(15,23,42,0.58) !important;
+}
+#page-statmensili .month-expanded-trend-value{
+  margin-top:4px !important;
+  font-size:clamp(22px, 6vw, 34px) !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-statmensili .month-expanded-grid{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:9px !important;
+  align-content:stretch !important;
+}
+#page-statmensili .month-expanded-metric{
+  min-width:0 !important;
+  min-height:0 !important;
+  border-radius:18px !important;
+  padding:11px 12px !important;
+  background:rgba(255,255,255,0.54) !important;
+  background-color:rgba(255,255,255,0.54) !important;
+  border:1px solid rgba(15,23,42,0.07) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+}
+#page-statmensili .month-expanded-metric span{
+  display:block !important;
+  font-size:11px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:rgba(15,23,42,0.54) !important;
+  -webkit-text-fill-color:rgba(15,23,42,0.54) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-statmensili .month-expanded-metric strong{
+  display:block !important;
+  margin-top:5px !important;
+  font-size:clamp(17px, 4.8vw, 26px) !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+@media (max-width:380px){
+  #page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+    padding:14px 12px !important;
+    gap:9px !important;
+    border-radius:22px !important;
+  }
+  #page-statmensili .month-expanded-grid{ gap:7px !important; }
+  #page-statmensili .month-expanded-metric{ padding:9px 10px !important; border-radius:15px !important; }
+  #page-statmensili .month-expanded-trend{ padding:10px 11px !important; border-radius:18px !important; }
+  #page-statmensili .month-expanded-trend-arrow{ width:44px !important; height:44px !important; flex-basis:44px !important; font-size:29px !important; border-radius:15px !important; }
+}
+@media (orientation:landscape){
+  #page-statmensili .month-row.is-expanded .month-name{ font-size:24px !important; }
+  #page-statmensili .month-row.is-expanded .month-val{ font-size:22px !important; }
+  #page-statmensili .month-expanded-trend{ padding:9px 10px !important; }
+  #page-statmensili .month-expanded-trend-arrow{ width:40px !important; height:40px !important; flex-basis:40px !important; font-size:27px !important; }
+  #page-statmensili .month-expanded-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)) !important; gap:7px !important; }
+  #page-statmensili .month-expanded-metric{ padding:8px 9px !important; }
+  #page-statmensili .month-expanded-metric strong{ font-size:16px !important; }
+}
+body.ddae-dark #page-statmensili .month-row.is-expanded,
+body.ddae-dark #page-statmensili .month-expanded-trend,
+body.ddae-dark #page-statmensili .month-expanded-metric{
+  background:rgba(15,23,42,0.72) !important;
+  background-color:rgba(15,23,42,0.72) !important;
+  border-color:rgba(148,163,184,0.18) !important;
+}
+body.ddae-dark #page-statmensili .month-expanded-trend-label,
+body.ddae-dark #page-statmensili .month-expanded-metric span{
+  color:rgba(226,232,240,0.62) !important;
+  -webkit-text-fill-color:rgba(226,232,240,0.62) !important;
 }
