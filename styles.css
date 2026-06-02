@@ -27070,7 +27070,7 @@ body.ddae-dark #page-statmensili .month-expanded-metric.is-compare strong{
 }
 
 
-/* dDAE_2.953 — Statistiche Mensili: gap finale 3px e titolo trend centrato sopra i numeri */
+/* dDAE_2.954 — Statistiche Mensili: gap finale 3px e titolo trend centrato sopra i numeri */
 #page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
   padding-bottom:3px !important;
 }
@@ -27139,5 +27139,26 @@ body.ddae-dark #page-statmensili .month-expanded-metric.is-compare strong{
   }
   #page-statmensili .month-expanded-grid{
     padding-bottom:0 !important;
+  }
+}
+
+
+/* dDAE_2.954 — Statistiche Mensili: gap inferiore uguale al gap tra righe tab */
+#page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+  padding-bottom:8px !important;
+}
+#page-statmensili .month-expanded-panel{
+  padding-bottom:0 !important;
+}
+#page-statmensili .month-expanded-grid{
+  padding-bottom:0 !important;
+  margin-bottom:0 !important;
+}
+#page-statmensili .month-expanded-grid .month-expanded-metric:nth-last-child(-n+2){
+  margin-bottom:0 !important;
+}
+@media (max-height:740px){
+  #page-statmensili .month-stack.has-expanded-month .month-row.is-expanded{
+    padding-bottom:6px !important;
   }
 }
