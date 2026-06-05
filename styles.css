@@ -27279,3 +27279,18 @@ body.ddae-dark #page-statmensili .month-channel-value{
   #page-statmensili .month-stack:not(.has-expanded-month){ max-width:760px !important; margin-left:auto !important; margin-right:auto !important; }
   #page-statmensili .month-stack:not(.has-expanded-month) .month-row{ min-height:58px !important; }
 }
+
+/* dDAE_2.959 — Lavanderia: alert report settimanale/bisettimanale */
+.top-led-laundry{ background:#d7c4a3; border-color:#b99f75; opacity:1; }
+.top-led-laundry.is-off{ background:#d8dde3; border-color:#aeb7c2; opacity:.38; }
+.laundry-cadence-btn{ font-weight:900; font-size:14px; letter-spacing:.03em; }
+.laundry-cadence-label{ display:inline-flex; align-items:center; justify-content:center; min-width:26px; font-weight:950; line-height:1; }
+.laundry-weekday-modal-card{ max-width:420px; width:min(92vw,420px); }
+.laundry-weekday-title{ text-align:center; font-weight:950; letter-spacing:.08em; text-transform:uppercase; color:#1d2433; margin:6px 42px 14px; }
+.laundry-weekday-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:4px 2px 12px; }
+.laundry-weekday-btn{ min-height:54px; border-radius:20px; border:1px solid rgba(120,130,145,.22); background:rgba(255,255,255,.76); color:#1d2433; font-weight:900; letter-spacing:.05em; box-shadow:none; }
+.laundry-weekday-btn.is-active{ border-color:#b99f75; background:rgba(215,196,163,.34); color:#7a5b2b; }
+.laundry-weekday-actions{ display:flex; justify-content:flex-end; gap:10px; padding-top:4px; }
+body.ddae-dark .laundry-weekday-title{ color:#f8fbff; }
+body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff; border-color:rgba(143,203,232,.22); }
+body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
