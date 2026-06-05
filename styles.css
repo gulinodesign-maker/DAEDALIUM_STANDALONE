@@ -27297,9 +27297,9 @@ body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
 
 
-/* dDAE_2.961 — Design categoria Alert: colori LED topbar editabili */
+/* dDAE_2.962 — Design categoria Alert: colori LED topbar editabili */
 #roomSettingsAlertDots{
-  --room-settings-cols: 5;
+  --room-settings-cols: 7;
 }
 #roomSettingsAlertDots .room-settings-color-dot{
   text-transform: uppercase;
@@ -27333,4 +27333,30 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   border-color: var(--ddae-alert-laundry-border, #b99f75) !important;
   color: var(--ddae-alert-laundry-fg, #ffffff) !important;
   box-shadow: var(--ddae-alert-laundry-shadow, none) !important;
+}
+
+
+/* dDAE_2.962 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
+.room-settings-dots{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  gap:0 !important;
+}
+.room-settings-dots .room-settings-color-dot{
+  flex:0 0 auto !important;
+}
+#prodLedColazione.top-led-product.is-on{
+  background: var(--ddae-alert-shopping-bg, rgba(59,130,246,0.92)) !important;
+  border-color: var(--ddae-alert-shopping-border, rgba(37,99,235,1)) !important;
+  color: var(--ddae-alert-shopping-fg, #ffffff) !important;
+  box-shadow: var(--ddae-alert-shopping-shadow, none) !important;
+}
+#prodLedPulizia.top-led-product.is-on{
+  background: var(--ddae-alert-products-bg, rgba(249,115,22,0.92)) !important;
+  border-color: var(--ddae-alert-products-border, rgba(234,88,12,1)) !important;
+  color: var(--ddae-alert-products-fg, #ffffff) !important;
+  box-shadow: var(--ddae-alert-products-shadow, none) !important;
 }
