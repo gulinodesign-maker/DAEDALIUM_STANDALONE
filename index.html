@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.962" rel="stylesheet"/>
-<link href="./manifest.json?v=2.962" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.962" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.962" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.962" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.962" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.962" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.962" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.963" rel="stylesheet"/>
+<link href="./manifest.json?v=2.963" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.963" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.963" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.963" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.963" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.963" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.963" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.962";
+window.APP_VERSION = "2.963";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.962";
+  const LOCAL_BUILD = "dDAE_2.963";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.962";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.962")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.962")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.963")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.963")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.962";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.962"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.963"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -296,7 +296,7 @@ window.APP_VERSION = "2.962";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.962"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.963"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -504,7 +504,7 @@ window.APP_VERSION = "2.962";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.962</div></div></section>
+<div class="build" id="buildText">dDAE_2.963</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1299,7 +1299,19 @@ window.APP_VERSION = "2.962";
 </div>
 <div class="room-settings-section">
 <div class="room-settings-section-title">Tag colore stanze</div>
-<div class="room-settings-dots" id="roomSettingsDots"></div>
+<div class="room-settings-dots room-settings-room-dots" id="roomSettingsDots"></div>
+</div>
+<div class="room-settings-section room-settings-section-alerts">
+<div class="room-settings-section-title">Alert</div>
+<div class="room-settings-dots room-settings-alert-dots" id="roomSettingsAlertDots">
+<button aria-label="Colore alert schedine PS" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="ps" id="roomSettingsAlertPsBtn" type="button">P</button>
+<button aria-label="Colore alert ISTAT" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="istat" id="roomSettingsAlertIstatBtn" type="button">I</button>
+<button aria-label="Colore alert pagamenti" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="payment" id="roomSettingsAlertPaymentBtn" type="button">€</button>
+<button aria-label="Colore alert ricevute" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="receipt" id="roomSettingsAlertReceiptBtn" type="button">R</button>
+<button aria-label="Colore alert lista spesa" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="shopping" id="roomSettingsAlertShoppingBtn" type="button">S</button>
+<button aria-label="Colore alert prodotti" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="products" id="roomSettingsAlertProductsBtn" type="button">Pr</button>
+<button aria-label="Colore alert lavanderia" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="laundry" id="roomSettingsAlertLaundryBtn" type="button">L</button>
+</div>
 </div>
 <div class="room-settings-section">
 <div class="room-settings-section-title">Tag colore opzioni</div>
@@ -1308,19 +1320,6 @@ window.APP_VERSION = "2.962";
 <button aria-label="Colore M" class="room-settings-color-dot room-settings-color-dot-tag" id="roomSettingsMBtn" type="button">M</button>
 <button aria-label="Colore G" class="room-settings-color-dot room-settings-color-dot-tag" id="roomSettingsGBtn" type="button">G</button>
 <button aria-label="Colore C" class="room-settings-color-dot room-settings-color-dot-tag" id="roomSettingsCBtn" type="button">C</button>
-</div>
-</div>
-
-<div class="room-settings-section room-settings-section-alerts">
-<div class="room-settings-section-title">Alert</div>
-<div class="room-settings-dots" id="roomSettingsAlertDots">
-<button aria-label="Colore alert schedine PS" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="ps" id="roomSettingsAlertPsBtn" type="button">P</button>
-<button aria-label="Colore alert ISTAT" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="istat" id="roomSettingsAlertIstatBtn" type="button">I</button>
-<button aria-label="Colore alert pagamenti" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="payment" id="roomSettingsAlertPaymentBtn" type="button">€</button>
-<button aria-label="Colore alert ricevute" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="receipt" id="roomSettingsAlertReceiptBtn" type="button">R</button>
-<button aria-label="Colore alert lista spesa" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="shopping" id="roomSettingsAlertShoppingBtn" type="button">S</button>
-<button aria-label="Colore alert prodotti" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="products" id="roomSettingsAlertProductsBtn" type="button">Pr</button>
-<button aria-label="Colore alert lavanderia" class="room-settings-color-dot room-settings-color-dot-tag" data-alert-led="laundry" id="roomSettingsAlertLaundryBtn" type="button">L</button>
 </div>
 </div>
 <div class="room-settings-section">
@@ -2753,7 +2752,7 @@ window.APP_VERSION = "2.962";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.962"></script>
-<script defer="" src="./app.js?v=2.962"></script>
+<script defer="" src="./config.js?v=2.963"></script>
+<script defer="" src="./app.js?v=2.963"></script>
 </body>
 </html>
