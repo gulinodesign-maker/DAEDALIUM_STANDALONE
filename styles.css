@@ -27295,3 +27295,42 @@ body.ddae-dark #page-statmensili .month-channel-value{
 body.ddae-dark .laundry-weekday-title{ color:#f8fbff; }
 body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff; border-color:rgba(143,203,232,.22); }
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
+
+
+/* dDAE_2.961 — Design categoria Alert: colori LED topbar editabili */
+#roomSettingsAlertDots{
+  --room-settings-cols: 5;
+}
+#roomSettingsAlertDots .room-settings-color-dot{
+  text-transform: uppercase;
+}
+.top-led-alert.is-black{
+  background: var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,0.92))) !important;
+  border-color: var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,0.96))) !important;
+  color: var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, rgba(255,255,255,0.98))) !important;
+  box-shadow: var(--ddae-alert-ps-shadow, none) !important;
+}
+.top-led-alert.is-sky{
+  background: var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,0.96))) !important;
+  border-color: var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
+  color: var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, rgba(255,255,255,0.98))) !important;
+  box-shadow: var(--ddae-alert-istat-shadow, none) !important;
+}
+.top-led-alert.is-yellow{
+  background: var(--ddae-alert-payment-bg, rgba(245,194,66,0.98)) !important;
+  border-color: var(--ddae-alert-payment-border, rgba(232,178,26,1)) !important;
+  color: var(--ddae-alert-payment-fg, rgba(255,255,255,0.98)) !important;
+  box-shadow: var(--ddae-alert-payment-shadow, none) !important;
+}
+.top-led-alert.is-red{
+  background: var(--ddae-alert-receipt-bg, rgba(239,68,68,0.96)) !important;
+  border-color: var(--ddae-alert-receipt-border, rgba(239,68,68,1)) !important;
+  color: var(--ddae-alert-receipt-fg, rgba(255,255,255,0.98)) !important;
+  box-shadow: var(--ddae-alert-receipt-shadow, none) !important;
+}
+.top-led-laundry:not(.is-off){
+  background: var(--ddae-alert-laundry-bg, #d7c4a3) !important;
+  border-color: var(--ddae-alert-laundry-border, #b99f75) !important;
+  color: var(--ddae-alert-laundry-fg, #ffffff) !important;
+  box-shadow: var(--ddae-alert-laundry-shadow, none) !important;
+}
