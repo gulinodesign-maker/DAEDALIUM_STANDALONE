@@ -27297,7 +27297,7 @@ body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
 
 
-/* dDAE_2.963 — Design categoria Alert: colori LED topbar editabili */
+/* dDAE_2.964 — Design categoria Alert: colori LED topbar editabili */
 #roomSettingsAlertDots{
   --room-settings-cols: 7;
 }
@@ -27336,7 +27336,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.963 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
+/* dDAE_2.964 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:nowrap !important;
@@ -27361,7 +27361,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   box-shadow: var(--ddae-alert-products-shadow, none) !important;
 }
 
-/* dDAE_2.963 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
+/* dDAE_2.964 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:wrap !important;
@@ -27377,4 +27377,116 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 .room-settings-dots .room-settings-color-dot{
   flex:0 0 auto !important;
+}
+
+
+/* dDAE_2.964 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
+:root{
+  --ddae-alert-led-highlight: inset 0 1px 2px rgba(255,255,255,.72), inset 0 -2px 3px rgba(0,0,0,.20);
+  --ddae-alert-off-shadow: inset 0 1px 2px rgba(255,255,255,.45), inset 0 -2px 3px rgba(15,23,42,.10);
+}
+.top-led,
+.top-led-alert,
+.top-led-product,
+.top-led-laundry,
+.guest-card-alert-led{
+  position:relative !important;
+  border-width:1px !important;
+  border-style:solid !important;
+  box-shadow: var(--ddae-alert-off-shadow) !important;
+}
+.top-led::after,
+.top-led-alert::after,
+.top-led-product::after,
+.top-led-laundry::after,
+.guest-card-alert-led::after{
+  content:"";
+  position:absolute;
+  width:38%;
+  height:38%;
+  left:22%;
+  top:16%;
+  border-radius:999px;
+  background:rgba(255,255,255,.58);
+  opacity:.50;
+  pointer-events:none;
+}
+.top-led-alert.is-off,
+.top-led-product:not(.is-on),
+.top-led-laundry.is-off,
+.guest-card-alert-led.is-off{
+  background:rgba(148,163,184,.34) !important;
+  border-color:rgba(100,116,139,.34) !important;
+  opacity:.72 !important;
+  box-shadow:var(--ddae-alert-off-shadow) !important;
+}
+.top-led-alert.is-black,
+.guest-card-alert-led.is-black{
+  background:var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,.96))) !important;
+  border-color:var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,1))) !important;
+  color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff)) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-ps-shadow, 0 0 0 3px rgba(15,23,42,.18), 0 0 18px rgba(15,23,42,.58), 0 0 36px rgba(15,23,42,.32)) !important;
+}
+.top-led-alert.is-sky,
+.guest-card-alert-led.is-sky{
+  background:var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,.96))) !important;
+  border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
+  color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-istat-shadow, 0 0 0 3px rgba(77,156,197,.20), 0 0 18px rgba(77,156,197,.62), 0 0 36px rgba(77,156,197,.36)) !important;
+}
+.top-led-alert.is-yellow{
+  background:var(--ddae-alert-payment-bg, rgba(245,194,66,.98)) !important;
+  border-color:var(--ddae-alert-payment-border, rgba(232,178,26,1)) !important;
+  color:var(--ddae-alert-payment-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-payment-shadow, 0 0 0 3px rgba(245,194,66,.22), 0 0 18px rgba(245,194,66,.62), 0 0 36px rgba(245,194,66,.36)) !important;
+}
+.top-led-alert.is-red{
+  background:var(--ddae-alert-receipt-bg, rgba(239,68,68,.96)) !important;
+  border-color:var(--ddae-alert-receipt-border, rgba(239,68,68,1)) !important;
+  color:var(--ddae-alert-receipt-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-receipt-shadow, 0 0 0 3px rgba(239,68,68,.20), 0 0 18px rgba(239,68,68,.62), 0 0 36px rgba(239,68,68,.36)) !important;
+}
+#prodLedColazione.top-led-product.is-on{
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-shopping-shadow, 0 0 0 3px rgba(59,130,246,.20), 0 0 18px rgba(59,130,246,.62), 0 0 36px rgba(59,130,246,.36)) !important;
+}
+#prodLedPulizia.top-led-product.is-on{
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-products-shadow, 0 0 0 3px rgba(249,115,22,.20), 0 0 18px rgba(249,115,22,.62), 0 0 36px rgba(249,115,22,.36)) !important;
+}
+.top-led-laundry:not(.is-off){
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-laundry-shadow, 0 0 0 3px rgba(215,196,163,.24), 0 0 18px rgba(215,196,163,.66), 0 0 36px rgba(215,196,163,.36)) !important;
+}
+#page-ospite .pay-ps.selected,
+#page-ospite .pay-pill .pay-ps.selected{
+  background:var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,.96))) !important;
+  border-color:var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,1))) !important;
+  color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff)) !important;
+  -webkit-text-fill-color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-ps-shadow, 0 0 0 4px rgba(15,23,42,.16), 0 0 18px rgba(15,23,42,.46)) !important;
+}
+#page-ospite .pay-istat.selected,
+#page-ospite .pay-pill .pay-istat.selected{
+  background:var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,.96))) !important;
+  border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
+  color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
+  -webkit-text-fill-color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-istat-shadow, 0 0 0 4px rgba(77,156,197,.16), 0 0 18px rgba(77,156,197,.50)) !important;
+}
+.guest-alert-tag.tag-black{
+  background:var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,.96))) !important;
+  border-color:var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,1))) !important;
+  color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-ps-shadow, 0 0 16px rgba(15,23,42,.46)) !important;
+}
+.guest-alert-tag.tag-sky{
+  background:var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,.96))) !important;
+  border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
+  color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-istat-shadow, 0 0 16px rgba(77,156,197,.50)) !important;
 }
