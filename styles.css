@@ -27297,7 +27297,7 @@ body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
 
 
-/* dDAE_2.964 — Design categoria Alert: colori LED topbar editabili */
+/* dDAE_2.965 — Design categoria Alert: colori LED topbar editabili */
 #roomSettingsAlertDots{
   --room-settings-cols: 7;
 }
@@ -27336,7 +27336,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.964 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
+/* dDAE_2.965 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:nowrap !important;
@@ -27361,7 +27361,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   box-shadow: var(--ddae-alert-products-shadow, none) !important;
 }
 
-/* dDAE_2.964 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
+/* dDAE_2.965 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:wrap !important;
@@ -27380,7 +27380,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.964 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
+/* dDAE_2.965 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
 :root{
   --ddae-alert-led-highlight: inset 0 1px 2px rgba(255,255,255,.72), inset 0 -2px 3px rgba(0,0,0,.20);
   --ddae-alert-off-shadow: inset 0 1px 2px rgba(255,255,255,.45), inset 0 -2px 3px rgba(15,23,42,.10);
