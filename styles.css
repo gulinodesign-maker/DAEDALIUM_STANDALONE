@@ -27907,7 +27907,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   }
 }
 
-/* dDAE_2.973 — Statistiche Mensili landscape: la scheda mese espansa scorre nella colonna destra e lo sfondo segue tutte le voci */
+/* dDAE_2.974 — Statistiche Mensili landscape: la scheda mese espansa scorre nella colonna destra e lo sfondo segue tutte le voci */
 @media (orientation: landscape){
   body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .stats-gen.stats-layered > .stats-scroll-layer{
     display:block !important;
