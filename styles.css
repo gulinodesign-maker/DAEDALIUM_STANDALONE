@@ -27907,7 +27907,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   }
 }
 
-/* dDAE_2.970 — Statistiche Mensili landscape: la scheda mese espansa scorre nella colonna destra e lo sfondo segue tutte le voci */
+/* dDAE_2.971 — Statistiche Mensili landscape: la scheda mese espansa scorre nella colonna destra e lo sfondo segue tutte le voci */
 @media (orientation: landscape){
   body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .stats-gen.stats-layered > .stats-scroll-layer{
     display:block !important;
@@ -27983,5 +27983,41 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
     max-height:none !important;
     overflow:visible !important;
     box-sizing:border-box !important;
+  }
+}
+
+
+/* dDAE_2.971 — Statistiche Mensili landscape: griglia mesi 3x4 centrata verticalmente */
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili:not(.has-expanded-month-page) .stats-gen.stats-layered > .stats-scroll-layer{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:0 6px calc(10px + var(--safe-bottom, 0px)) 6px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili:not(.has-expanded-month-page) .stats-scroll-layer > .month-stack:not(.has-expanded-month),
+  body[data-page="statmensili"] #page-statmensili:not(.has-expanded-month-page) .month-stack:not(.has-expanded-month){
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100% - 2px) !important;
+    margin:auto 0 !important;
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows:repeat(4, minmax(60px, 82px)) !important;
+    gap:10px !important;
+    align-content:center !important;
+    justify-content:stretch !important;
+    align-items:stretch !important;
+    justify-items:stretch !important;
+    box-sizing:border-box !important;
+  }
+  @media (max-height:420px) and (orientation: landscape){
+    body[data-page="statmensili"] #page-statmensili:not(.has-expanded-month-page) .stats-scroll-layer > .month-stack:not(.has-expanded-month),
+    body[data-page="statmensili"] #page-statmensili:not(.has-expanded-month-page) .month-stack:not(.has-expanded-month){
+      grid-template-rows:repeat(4, minmax(50px, 68px)) !important;
+      gap:8px !important;
+    }
   }
 }
