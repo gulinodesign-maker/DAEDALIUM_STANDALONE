@@ -28017,3 +28017,105 @@ body.ddae-dark .design-tag-meaning-pill{
   border-color:rgba(255,255,255,0.18);
   color:#f8fafc;
 }
+
+/* dDAE_2.979 — Griglie 3x3: tasti sempre allineati, testo indipendente */
+.grid-3x3,
+.home-grid,
+.stats-grid,
+.stat-grid,
+.launcher-grid,
+.menu-grid,
+.settings-grid-3x3{
+  align-items:start !important;
+}
+
+.grid-3x3 .tile,
+.home-grid .tile,
+.stats-grid .tile,
+.stat-grid .tile,
+.launcher-grid .tile,
+.menu-grid .tile,
+#page-statistiche .stat-home-grid > *,
+#page-statistiche .stat-grid > *,
+#page-home .home-grid > *,
+#page-home .launcher-grid > *{
+  display:grid !important;
+  grid-template-rows:auto minmax(2.35em, auto) !important;
+  align-items:start !important;
+  justify-items:center !important;
+  align-content:start !important;
+  gap:12px !important;
+  min-height:0 !important;
+}
+
+.grid-3x3 .tile-btn,
+.grid-3x3 .tile-icon,
+.home-grid .tile-btn,
+.home-grid .tile-icon,
+.stats-grid .tile-btn,
+.stats-grid .tile-icon,
+.stat-grid .tile-btn,
+.stat-grid .tile-icon,
+.launcher-grid .tile-btn,
+.launcher-grid .tile-icon,
+.menu-grid .tile-btn,
+.menu-grid .tile-icon,
+#page-statistiche .stat-home-grid button,
+#page-statistiche .stat-grid button,
+#page-statistiche .stat-home-grid .btn,
+#page-statistiche .stat-grid .btn,
+#page-home .home-grid button,
+#page-home .launcher-grid button,
+#page-home .home-grid .btn,
+#page-home .launcher-grid .btn{
+  align-self:start !important;
+  justify-self:center !important;
+  margin-top:0 !important;
+  margin-bottom:0 !important;
+}
+
+.grid-3x3 .tile-label,
+.home-grid .tile-label,
+.stats-grid .tile-label,
+.stat-grid .tile-label,
+.launcher-grid .tile-label,
+.menu-grid .tile-label,
+#page-statistiche .stat-home-grid .label,
+#page-statistiche .stat-grid .label,
+#page-home .home-grid .label,
+#page-home .launcher-grid .label{
+  align-self:start !important;
+  min-height:2.35em !important;
+  line-height:1.08 !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+
+#page-statistiche .stat-home-grid,
+#page-statistiche .stat-grid{
+  row-gap:34px !important;
+  column-gap:26px !important;
+}
+@media (max-width: 430px){
+  #page-statistiche .stat-home-grid,
+  #page-statistiche .stat-grid{
+    row-gap:38px !important;
+  }
+}
+#page-statistiche .ddae-grid-cell-fixed-align{
+  display:grid !important;
+  grid-template-rows:auto minmax(2.35em, auto) !important;
+  align-items:start !important;
+  justify-items:center !important;
+  align-content:start !important;
+  gap:12px !important;
+}
+#page-statistiche .ddae-grid-cell-fixed-align > button,
+#page-statistiche .ddae-grid-cell-fixed-align > .btn,
+#page-statistiche .ddae-grid-cell-fixed-align > [role="button"]{
+  align-self:start !important;
+  justify-self:center !important;
+  margin-top:0 !important;
+}
