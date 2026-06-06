@@ -27986,3 +27986,34 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   }
 }
 
+
+/* dDAE_2.977 — Pill significato tag Design */
+.design-tag-meaning-pill{
+  position:fixed;
+  z-index:99999;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  max-width:min(86vw, 360px);
+  padding:10px 18px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.94);
+  border:1px solid rgba(15,23,42,0.14);
+  color:var(--ico-blue-night, #152033);
+  font-size:16px;
+  font-weight:900;
+  line-height:1.2;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(15,23,42,0.16);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .12s ease;
+}
+.design-tag-meaning-pill.is-visible{ opacity:1; }
+body.ddae-dark .design-tag-meaning-pill{
+  background:rgba(15,23,42,0.94);
+  border-color:rgba(255,255,255,0.18);
+  color:#f8fafc;
+}
