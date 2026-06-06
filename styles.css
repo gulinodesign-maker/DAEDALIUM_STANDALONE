@@ -27906,3 +27906,82 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
     padding:8px 8px 9px !important;
   }
 }
+
+/* dDAE_2.970 — Statistiche Mensili landscape: la scheda mese espansa scorre nella colonna destra e lo sfondo segue tutte le voci */
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .stats-gen.stats-layered > .stats-scroll-layer{
+    display:block !important;
+    align-items:initial !important;
+    justify-content:initial !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:100% !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
+    touch-action:pan-y !important;
+    padding:0 6px calc(18px + var(--safe-bottom, 0px)) 6px !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .stats-scroll-layer > .month-stack.has-expanded-month,
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-stack.has-expanded-month{
+    display:block !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:100% !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-stack.has-expanded-month .month-row.is-expanded{
+    display:block !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:100% !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:10px 12px calc(14px + var(--safe-bottom, 0px)) !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+    border-radius:22px !important;
+  }
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-row.is-expanded .month-left{
+    display:block !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding-bottom:0 !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-expanded-panel{
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    flex:0 0 auto !important;
+    overflow:visible !important;
+    padding:0 0 4px !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-expanded-grid,
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-expanded-trend,
+  body[data-page="statmensili"] #page-statmensili.has-expanded-month-page .month-channel-block{
+    flex:0 0 auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+  }
+}
