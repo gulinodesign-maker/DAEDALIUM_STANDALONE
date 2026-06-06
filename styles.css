@@ -27297,7 +27297,7 @@ body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
 
 
-/* dDAE_2.965 — Design categoria Alert: colori LED topbar editabili */
+/* dDAE_2.966 — Design categoria Alert: colori LED topbar editabili */
 #roomSettingsAlertDots{
   --room-settings-cols: 7;
 }
@@ -27336,7 +27336,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.965 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
+/* dDAE_2.966 — Design Alert: spesa/prodotti, rimozione duplicati P/I e pallini equidistanti */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:nowrap !important;
@@ -27361,7 +27361,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   box-shadow: var(--ddae-alert-products-shadow, none) !important;
 }
 
-/* dDAE_2.965 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
+/* dDAE_2.966 — Design: Alert sotto stanze e maggiore distanza verticale pallini stanze */
 .room-settings-dots{
   display:flex !important;
   flex-wrap:wrap !important;
@@ -27380,7 +27380,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.965 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
+/* dDAE_2.966 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
 :root{
   --ddae-alert-led-highlight: inset 0 1px 2px rgba(255,255,255,.72), inset 0 -2px 3px rgba(0,0,0,.20);
   --ddae-alert-off-shadow: inset 0 1px 2px rgba(255,255,255,.45), inset 0 -2px 3px rgba(15,23,42,.10);
@@ -27489,4 +27489,64 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
   color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
   box-shadow:var(--ddae-alert-istat-shadow, 0 0 16px rgba(77,156,197,.50)) !important;
+}
+
+
+/* dDAE_2.966 — LED alert luminosi ma più flat */
+:root{
+  --ddae-alert-led-highlight: none;
+  --ddae-alert-off-shadow: none;
+}
+.top-led,
+.top-led-alert,
+.top-led-product,
+.top-led-laundry,
+.guest-card-alert-led{
+  background-clip: padding-box !important;
+  box-shadow: none !important;
+}
+.top-led::after,
+.top-led-alert::after,
+.top-led-product::after,
+.top-led-laundry::after,
+.guest-card-alert-led::after{
+  display:none !important;
+}
+.top-led-alert.is-off,
+.top-led-product:not(.is-on),
+.top-led-laundry.is-off,
+.guest-card-alert-led.is-off{
+  box-shadow:none !important;
+  opacity:.62 !important;
+}
+.top-led-alert.is-black,
+.guest-card-alert-led.is-black{
+  box-shadow:var(--ddae-alert-ps-shadow, 0 0 0 2px rgba(15,23,42,.14), 0 0 10px rgba(15,23,42,.40), 0 0 20px rgba(15,23,42,.18)) !important;
+}
+.top-led-alert.is-sky,
+.guest-card-alert-led.is-sky{
+  box-shadow:var(--ddae-alert-istat-shadow, 0 0 0 2px rgba(77,156,197,.14), 0 0 10px rgba(77,156,197,.40), 0 0 20px rgba(77,156,197,.18)) !important;
+}
+.top-led-alert.is-yellow{
+  box-shadow:var(--ddae-alert-payment-shadow, 0 0 0 2px rgba(245,194,66,.14), 0 0 10px rgba(245,194,66,.40), 0 0 20px rgba(245,194,66,.18)) !important;
+}
+.top-led-alert.is-red{
+  box-shadow:var(--ddae-alert-receipt-shadow, 0 0 0 2px rgba(239,68,68,.14), 0 0 10px rgba(239,68,68,.40), 0 0 20px rgba(239,68,68,.18)) !important;
+}
+#prodLedColazione.top-led-product.is-on{
+  box-shadow:var(--ddae-alert-shopping-shadow, 0 0 0 2px rgba(59,130,246,.14), 0 0 10px rgba(59,130,246,.40), 0 0 20px rgba(59,130,246,.18)) !important;
+}
+#prodLedPulizia.top-led-product.is-on{
+  box-shadow:var(--ddae-alert-products-shadow, 0 0 0 2px rgba(249,115,22,.14), 0 0 10px rgba(249,115,22,.40), 0 0 20px rgba(249,115,22,.18)) !important;
+}
+.top-led-laundry:not(.is-off){
+  box-shadow:var(--ddae-alert-laundry-shadow, 0 0 0 2px rgba(215,196,163,.16), 0 0 10px rgba(215,196,163,.42), 0 0 20px rgba(215,196,163,.18)) !important;
+}
+#page-ospite .pay-ps.selected,
+#page-ospite .pay-pill .pay-ps.selected{
+  box-shadow:0 0 0 2px rgba(var(--ddae-reg-ps-rgb),.12), 0 0 12px rgba(var(--ddae-reg-ps-rgb),.32) !important;
+}
+#page-ospite .pay-istat.selected,
+#page-ospite .pay-pill .pay-istat.selected{
+  box-shadow:0 0 0 2px rgba(var(--ddae-reg-istat-rgb),.12), 0 0 12px rgba(var(--ddae-reg-istat-rgb),.32) !important;
 }
