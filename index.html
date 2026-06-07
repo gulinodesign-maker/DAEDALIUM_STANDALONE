@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.985" rel="stylesheet"/>
-<link href="./manifest.json?v=2.985" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.985" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.985" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.985" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.985" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.985" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.985" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.986" rel="stylesheet"/>
+<link href="./manifest.json?v=2.986" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.986" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.986" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.986" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.986" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.986" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.986" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.985";
+window.APP_VERSION = "2.986";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.985";
+  const LOCAL_BUILD = "dDAE_2.986";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.985";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.985")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.985")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.986")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.986")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.985";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.985"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.986"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -296,7 +296,7 @@ window.APP_VERSION = "2.985";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.985"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.986"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -504,7 +504,7 @@ window.APP_VERSION = "2.985";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.985</div></div></section>
+<div class="build" id="buildText">dDAE_2.986</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1044,6 +1044,10 @@ window.APP_VERSION = "2.985";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
 <span class="settings-btn-label">Channel</span>
 </button>
+<button aria-label="Stanze" class="settings-btn settings-btn-roomcatalog" id="settingsRoomCatalogBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="16" rx="2" ry="2" width="16" x="4" y="4"></rect><path d="M9 4v16"></path><path d="M15 4v16"></path><path d="M4 10h16"></path><path d="M4 15h16"></path></svg>
+<span class="settings-btn-label">Stanze</span>
+</button>
 <button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
 <span class="settings-btn-label">Lavanderia</span>
@@ -1249,6 +1253,15 @@ window.APP_VERSION = "2.985";
 <div class="bd operatori-page-shell">
 <div class="operatori-list channel-list" id="channelList"></div>
 <div class="operatori-empty" hidden="" id="channelEmpty">Nessun channel inserito</div>
+</div></div></section>
+<section class="page" hidden="" id="page-roomcatalog">
+<div class="card">
+<div class="hd">
+<h2 class="page-title">Stanze</h2>
+<div class="hd-actions" id="roomCatalogPageTools"><button aria-label="Aggiungi stanza" class="icon-btn icon-btn-whiteblue" id="btnAddRoomCatalogCard" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div></div>
+<div class="bd operatori-page-shell">
+<div class="operatori-list channel-list room-catalog-list" id="roomCatalogList"></div>
+<div class="operatori-empty" hidden="" id="roomCatalogEmpty">Nessuna stanza inserita</div>
 </div></div></section>
 <section class="page" hidden="" id="page-laundrycatalog">
 <div class="card">
@@ -2092,6 +2105,36 @@ window.APP_VERSION = "2.985";
 </div>
 </div>
 </div>
+<div aria-hidden="true" class="modal" hidden="" id="roomCatalogEditorModal">
+<div aria-modal="true" class="modal-card operatori-editor-card" role="dialog">
+<div class="operatori-editor-hd">
+<div class="operatori-editor-title" id="roomCatalogEditorTitle">Nuova stanza</div>
+<button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="roomCatalogEditorClose" type="button">✕</button>
+</div>
+<div class="operatori-editor-body">
+<input id="roomCatalogEditorId" type="hidden"/>
+<div class="field float" style="margin-top:10px;">
+<input autocomplete="off" id="roomCatalogEditorNome" placeholder=" "/>
+<label for="roomCatalogEditorNome">Nome della stanza</label>
+</div>
+<div class="operatori-editor-grid">
+<div class="field float">
+<input autocomplete="off" id="roomCatalogEditorTag" maxlength="3" placeholder=" "/>
+<label for="roomCatalogEditorTag">Tag</label>
+</div>
+<div class="field float">
+<input autocomplete="off" id="roomCatalogEditorNumero" inputmode="numeric" placeholder=" "/>
+<label for="roomCatalogEditorNumero">Numero stanza</label>
+</div>
+</div>
+<div class="row operatori-editor-actions editor-modal-actions">
+<button class="btn ghost" hidden="" id="roomCatalogEditorDelete" type="button">Elimina</button>
+<button class="btn ghost" id="roomCatalogEditorTagColor" type="button">Tag</button>
+<button class="btn primary" id="roomCatalogEditorSave" type="button">Salva</button>
+</div>
+</div>
+</div>
+</div>
 <div aria-hidden="true" class="modal" hidden="" id="operatoriEditorModal">
 <div aria-modal="true" class="modal-card operatori-editor-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2750,7 +2793,7 @@ window.APP_VERSION = "2.985";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.985"></script>
-<script defer="" src="./app.js?v=2.985"></script>
+<script defer="" src="./config.js?v=2.986"></script>
+<script defer="" src="./app.js?v=2.986"></script>
 </body>
 </html>

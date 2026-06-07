@@ -94,7 +94,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 2.652
  */
-const BUILD_VERSION = "2.985";
+const BUILD_VERSION = "2.986";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -8645,7 +8645,7 @@ function __closeLanguageModal__(){ const modal=document.getElementById("language
 function setupLanguageModal(){ const modal=document.getElementById("languageModal"); if(!modal || modal.dataset.bound==="1") return; modal.dataset.bound="1"; const closeBtn=document.getElementById("languageModalClose"); const closeFooterBtn=document.getElementById("languageModalCloseBtn"); const card=modal.querySelector?.(".language-modal-card"); if(closeBtn) bindFastTap(closeBtn, __closeLanguageModal__); if(closeFooterBtn) bindFastTap(closeFooterBtn, __closeLanguageModal__); if(card){ ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt)=>{ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(_){} },{ passive:false }); }catch(_){ try{ card.addEventListener(evt,(ev)=>{ try{ ev.stopPropagation(); }catch(__){} }); }catch(__){} } }); } ["pointerdown","pointerup","touchstart","touchend","click"].forEach((evt)=>{ try{ document.addEventListener(evt, __languageModalSwallowGhostTap__, true); }catch(_){ } }); modal.addEventListener("click",(ev)=>{ try{ if(ev.target===modal) __closeLanguageModal__(); }catch(_){} }); document.querySelectorAll?.("#languageGrid .language-option").forEach((btn)=>bindFastTap(btn, async()=>{ try{ if(Date.now() < __languageModalReadyAt__) return; __languageModalSuppressUntil__ = Date.now() + 900; try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(_){} await __setAppLanguage__(btn.dataset.lang || "it"); setTimeout(()=>{ try{ __closeLanguageModal__(); }catch(_){} }, 80); }catch(_){} })); }
 try{ const __nativeConfirm__=(typeof window!=="undefined" && typeof window.confirm==="function") ? window.confirm.bind(window) : null; const __nativeAlert__=(typeof window!=="undefined" && typeof window.alert==="function") ? window.alert.bind(window) : null; if(__nativeConfirm__) window.confirm=(message)=>__nativeConfirm__(__translateText__(message)); if(__nativeAlert__) window.alert=(message)=>__nativeAlert__(__translateText__(message)); }catch(_){}
 try{ if(typeof window!=="undefined") window.addEventListener("DOMContentLoaded", ()=>{ try{ __ensureLanguageObserver__(); }catch(_){} try{ __hydrateAppLanguageFromSettings__(); }catch(_){} }); }catch(_){}
-/* dDAE_2.985 — Statistiche mensili: ripristino card espansa e traduzioni dedicate */
+/* dDAE_2.986 — Statistiche mensili: ripristino card espansa e traduzioni dedicate */
 try{
   if(typeof window!=="undefined" && !window.__ddae2953LanguageDynamicRerenderBound){
     window.__ddae2953LanguageDynamicRerenderBound = true;
@@ -8662,7 +8662,7 @@ try{
   }
 }catch(_){ }
 
-/* dDAE_2.985 — Traduzioni stabili per card mensile espansa: solo testo, mai chiavi colore */
+/* dDAE_2.986 — Traduzioni stabili per card mensile espansa: solo testo, mai chiavi colore */
 function __statMensiliI18n__(text){
   try{
     const key = String(text ?? "");
@@ -10250,7 +10250,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti','goDbSync',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni','goStatAmministratore'
 ];
@@ -10270,6 +10270,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsRoomsBtn: 'yellow-4',
   settingsOperatoriBtn: 'blue-4',
   settingsChannelBtn: 'orange-4',
+  settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
   settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
@@ -11485,7 +11486,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni','goStatAmministratore'
 ];
 
@@ -11567,7 +11568,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -11796,7 +11797,7 @@ function __ddae841IsOperationalNoColorPopupButton__(btn){
     const id = String((btn && btn.id) || '').trim();
     const blocked = new Set([
       'settingsOperatoriBtn','settingsChannelBtn','settingsLaundryCatalogBtn','goLavanderia',
-      'btnAddOperatoreCard','btnAddChannelCard','btnAddLaundryComponentCard'
+      'btnAddOperatoreCard','btnAddChannelCard','btnAddRoomCatalogCard','btnAddLaundryComponentCard'
     ]);
     if (blocked.has(id)) return true;
     if (btn && btn.closest && btn.closest('#page-operatori,#page-channel,#page-laundrycatalog')) return true;
@@ -12269,6 +12270,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     try{ if (state && state.page === "pulizie") window.__ddae_refreshPulizieGrid?.({ forceReload:true }); }catch(_){ }
     try{ if (state && state.page === "lavanderia") renderLaundry_(state?.laundry?.current || null); }catch(_){ }
     try{ if (state && state.page === "laundrycatalog") renderLaundryCatalogPage(); }catch(_){ }
+    try{ if (state && state.page === "roomcatalog") renderRoomCatalogPage(); }catch(_){ }
 
     return state.settings;
   } catch (e) {
@@ -13018,7 +13020,7 @@ function __settingsEditorModalRecentlyOpened__(ms){ return false; }
 function __markSettingsEditorModalOpened__(){ return; }
 function __settingsEditorModalIsOpen__(){
   try{
-    return ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].some((id) => {
+    return ['operatoriEditorModal','channelEditorModal','roomCatalogEditorModal','laundryCatalogEditorModal'].some((id) => {
       const el = document.getElementById(id);
       return !!(el && !el.hidden && el.getAttribute('aria-hidden') !== 'true');
     });
@@ -13035,8 +13037,8 @@ function __applySettingsEditorButtonBoldAndVisuals__(){
   try{
     [
       'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor',
-      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor',
-      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor'
+      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorTagColor',
+      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorTagColor'
     ].forEach((id)=>{
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -13486,6 +13488,174 @@ function setupChannelPage(){
       return;
     }
     __channelOpenModal__(item);
+  });
+}
+
+
+const __roomCatalogPageUi = { color: "blue-4", textColor: "", editingId: "" };
+
+function __roomCatalogDefaultList__(){
+  const n = Math.max(1, getConfiguredRoomsCount(6));
+  const cfg = getRoomsUiConfig();
+  return Array.from({length:n}, (_,i)=>{
+    const slot = i + 1;
+    const color = (cfg.rooms && cfg.rooms[String(slot)] && (cfg.rooms[String(slot)].bg || cfg.rooms[String(slot)])) || (__ROOMS_UI_DEFAULT_ROOM_COLORS__[i] || 'blue-4');
+    return { id:`room-${slot}`, slot, nome:`Stanza ${slot}`, tag:String(slot), numero:String(slot), colore:__normalizeChannelColor__(color), coloreTesto:'' };
+  });
+}
+function __roomCatalogNormalizeList__(list){
+  const arr = Array.isArray(list) ? list : [];
+  return arr.map((item, idx)=>{
+    const slot = Math.max(1, parseInt(item?.slot ?? item?.ordine ?? (idx+1), 10) || (idx+1));
+    const numero = String(item?.numero ?? item?.roomNumber ?? item?.number ?? slot).trim() || String(slot);
+    const nome = String(item?.nome ?? item?.name ?? `Stanza ${numero}`).trim();
+    const tag = String(item?.tag ?? item?.iniziale ?? numero).trim().slice(0,3).toUpperCase() || String(numero).slice(0,3);
+    return {
+      id:String(item?.id || `room-${slot}`), slot, nome, tag, numero,
+      colore:__normalizeChannelColor__(item?.colore || item?.color || (__ROOMS_UI_DEFAULT_ROOM_COLORS__[(slot-1)%__ROOMS_UI_DEFAULT_ROOM_COLORS__.length] || 'blue-4')),
+      coloreTesto:__normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor)
+    };
+  }).filter(x=>x.nome).sort((a,b)=>(a.slot||0)-(b.slot||0)).map((x,i)=>({ ...x, slot:i+1 }));
+}
+function getRoomCatalogFromSettings(){
+  try{
+    const raw = getSettingText('stanze_catalogo','');
+    if (String(raw||'').trim()){
+      const parsed = JSON.parse(String(raw||'[]'));
+      const clean = __roomCatalogNormalizeList__(parsed);
+      if (clean.length) return clean;
+    }
+  }catch(_){ }
+  return __roomCatalogDefaultList__();
+}
+function getRoomCatalogItemBySlot(slot){
+  const n = Math.max(1, parseInt(slot,10)||1);
+  return getRoomCatalogFromSettings().find(x=>Number(x.slot)===n) || null;
+}
+function getRoomDisplayLabel(slot){
+  const item = getRoomCatalogItemBySlot(slot);
+  return String(item?.numero || slot || '').trim() || String(slot||'');
+}
+function getRoomNameLabel(slot){
+  const item = getRoomCatalogItemBySlot(slot);
+  return String(item?.nome || `Stanza ${slot}`).trim();
+}
+function __syncRoomCatalogColorsToRoomsUi__(list){
+  const cfg = getRoomsUiConfig();
+  const next = __sanitizeRoomsUiConfig__(cfg);
+  const clean = __roomCatalogNormalizeList__(list);
+  clean.forEach((item)=>{
+    next.rooms[String(item.slot)] = __roomsUiColorPair__({ bg:item.colore || 'blue-4', border:item.colore || 'blue-4', fg:item.coloreTesto || '', opacity:0.92 }, item.colore || 'blue-4');
+  });
+  return next;
+}
+async function saveRoomCatalogToSettings(list){
+  const clean = __roomCatalogNormalizeList__(list);
+  const raw = JSON.stringify(clean);
+  const ui = __syncRoomCatalogColorsToRoomsUi__(clean);
+  await api('impostazioni', { method:'POST', body:{ stanze_catalogo:clean, numero_stanze:clean.length, stanze_ui:JSON.stringify(ui) }, showLoader:true });
+  try{
+    state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
+    state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
+    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
+  }catch(_){ }
+  await ensureSettingsLoaded({ force:true, showLoader:false });
+  try{ __applyRoomsUiConfig__(); }catch(_){ }
+  try{ if (state?.page === 'calendario') renderCalendario(); }catch(_){ }
+  return clean;
+}
+function __roomCatalogSetSelectedColor__(color){
+  __roomCatalogPageUi.color = __normalizeChannelColor__(color || 'blue-4');
+  __setTagPreviewButtonStyle__('roomCatalogEditorTagColor', __roomCatalogPageUi.color || 'blue-4', __roomCatalogPageUi.textColor || '', false);
+}
+function __roomCatalogSetSelectedTextColor__(color){
+  __roomCatalogPageUi.textColor = __normalizeChannelTextColor__(color || '');
+  __setTagPreviewButtonStyle__('roomCatalogEditorTagColor', __roomCatalogPageUi.color || 'blue-4', __roomCatalogPageUi.textColor || '', false);
+}
+function __roomCatalogOpenModal__(item){
+  const modal = document.getElementById('roomCatalogEditorModal'); if (!modal) return;
+  const current = item || null;
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
+  const title=document.getElementById('roomCatalogEditorTitle'); if(title) title.textContent=current?'Modifica stanza':'Nuova stanza';
+  set('roomCatalogEditorId', current?.id ? String(current.id) : '');
+  set('roomCatalogEditorNome', current?.nome ? String(current.nome) : '');
+  set('roomCatalogEditorTag', current?.tag ? String(current.tag) : '');
+  set('roomCatalogEditorNumero', current?.numero ? String(current.numero) : '');
+  const del=document.getElementById('roomCatalogEditorDelete'); if(del) del.hidden=!current;
+  __roomCatalogPageUi.editingId=current?.id?String(current.id):'';
+  __roomCatalogSetSelectedColor__(current?.colore || 'blue-4');
+  __roomCatalogSetSelectedTextColor__(current?.coloreTesto || '');
+  modal.hidden=false; modal.setAttribute('aria-hidden','false');
+  try{ __markSettingsEditorModalOpened__(); }catch(_){ }
+  try{ refreshFloatingLabels(); }catch(_){ }
+  try{ __applySettingsEditorButtonBoldAndVisuals__(); }catch(_){ }
+}
+function __roomCatalogCloseModal__(){
+  const modal=document.getElementById('roomCatalogEditorModal'); if(!modal) return;
+  modal.hidden=true; modal.setAttribute('aria-hidden','true');
+  ['roomCatalogEditorId','roomCatalogEditorNome','roomCatalogEditorTag','roomCatalogEditorNumero'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  __roomCatalogPageUi.editingId=''; __roomCatalogSetSelectedColor__('blue-4'); __roomCatalogSetSelectedTextColor__('');
+}
+async function renderRoomCatalogPage(){
+  await ensureSettingsLoaded({ force:false, showLoader:false });
+  const listEl=document.getElementById('roomCatalogList'); const emptyEl=document.getElementById('roomCatalogEmpty'); if(!listEl) return;
+  const items=getRoomCatalogFromSettings();
+  if(!items.length){ listEl.innerHTML=''; if(emptyEl) emptyEl.hidden=false; return; }
+  if(emptyEl) emptyEl.hidden=true;
+  listEl.innerHTML=items.map((item)=>`
+    <article class="operatori-item channel-item room-catalog-item" data-id="${String(item.id).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}">
+      <div class="operatori-item-top">
+        <div class="operatori-item-left">
+          <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'blue-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.tag || item.numero || item.slot).slice(0,3).toUpperCase()}</span></span>
+          <div class="operatori-name">${String(item.nome || '').replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}</div>
+          <span class="channel-graph-dot" style="background:${__laundryEscapeAttr__(__graphColorValueToHex__(item.colore || 'blue-4', '#2b7cb4'))}"></span>
+        </div>
+        <div class="operatori-item-actions">
+          <button aria-label="Modifica stanza" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          <button aria-label="Elimina stanza" class="operatori-mini-btn is-delete" data-action="delete" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+      <div class="operatori-metrics channel-metrics-single room-catalog-metrics">
+        <div class="operatori-metric"><div class="operatori-metric-label">Numero stanza</div><div class="operatori-metric-value">${String(item.numero || item.slot).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}</div></div>
+      </div>
+    </article>`).join('');
+}
+async function loadRoomCatalogPage(){ await renderRoomCatalogPage(); }
+function setupRoomCatalogPage(){
+  const goBtn=document.getElementById('settingsRoomCatalogBtn'); if(goBtn) bindFastTap(goBtn,()=>{ hideLauncher(); showPage('roomcatalog'); });
+  const addBtn=document.getElementById('btnAddRoomCatalogCard'); if(addBtn) bindFastTap(addBtn,()=>__roomCatalogOpenModal__(null));
+  const closeBtn=document.getElementById('roomCatalogEditorClose'); if(closeBtn) bindFastTap(closeBtn,__roomCatalogCloseModal__);
+  const tagBtn=document.getElementById('roomCatalogEditorTagColor'); if(tagBtn) bindFastTap(tagBtn,()=>{
+    __tagColorPopupOpen__('roomcatalog', { bg:__roomCatalogPageUi.color || 'blue-4', fg:__roomCatalogPageUi.textColor || '' }, (payload)=>{
+      const colors=(payload&&payload.colors&&typeof payload.colors==='object')?payload.colors:{};
+      __roomCatalogSetSelectedColor__(colors.bg || __roomCatalogPageUi.color || 'blue-4');
+      __roomCatalogSetSelectedTextColor__(colors.fg || '');
+    }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, defaultMode:'bg', fallbackBg:'blue-4' });
+  });
+  const saveBtn=document.getElementById('roomCatalogEditorSave'); if(saveBtn) bindFastTap(saveBtn, async()=>{
+    try{
+      const nome=String(document.getElementById('roomCatalogEditorNome')?.value||'').trim(); if(!nome){ toast('Inserisci il nome della stanza'); return; }
+      const tag=String(document.getElementById('roomCatalogEditorTag')?.value||'').trim().slice(0,3).toUpperCase() || nome.slice(0,1).toUpperCase();
+      const numero=String(document.getElementById('roomCatalogEditorNumero')?.value||'').trim(); if(!numero){ toast('Inserisci il numero stanza'); return; }
+      const id=String(document.getElementById('roomCatalogEditorId')?.value||'').trim();
+      const list=getRoomCatalogFromSettings();
+      const idx=list.findIndex(x=>String(x.id)===id);
+      const next={ id:id || `room-${Date.now()}`, slot: idx>=0 ? list[idx].slot : list.length+1, nome, tag, numero, colore:__roomCatalogPageUi.color||'blue-4', coloreTesto:__roomCatalogPageUi.textColor||'' };
+      if(idx>=0) list[idx]=next; else list.push(next);
+      await saveRoomCatalogToSettings(list);
+      __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast('Stanza salvata');
+    }catch(e){ toast(e?.message||'Errore'); }
+  });
+  const delBtn=document.getElementById('roomCatalogEditorDelete'); if(delBtn) bindFastTap(delBtn, async()=>{
+    try{ const id=String(document.getElementById('roomCatalogEditorId')?.value||'').trim(); if(!id) return; if(!confirm('Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast('Stanza eliminata'); }catch(e){ toast(e?.message||'Errore'); }
+  });
+  const listEl=document.getElementById('roomCatalogList'); if(listEl) listEl.addEventListener('click', async(ev)=>{
+    const btn=ev.target.closest?.('button[data-action]'); const card=ev.target.closest?.('.room-catalog-item'); if(!card) return;
+    const id=String(card.getAttribute('data-id')||'').trim(); const item=getRoomCatalogFromSettings().find(x=>String(x.id)===id); if(!item) return;
+    const action=btn?String(btn.getAttribute('data-action')||''):'edit';
+    if(action==='delete'){ if(!confirm('Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); await renderRoomCatalogPage(); toast('Stanza eliminata'); return; }
+    __roomCatalogOpenModal__(item);
   });
 }
 
@@ -16015,7 +16185,7 @@ state.page = page;
   // Sync footer: visibile anche in Calendario; resta nascosto nelle pagine operative dedicate.
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || String(page || "").startsWith("stat");
+    const hideSync = (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "roomcatalog") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -16051,6 +16221,9 @@ state.page = page;
   }
   if (page === "channel"){
     try{ loadChannelPage(); }catch(_){ }
+  }
+  if (page === "roomcatalog"){
+    try{ loadRoomCatalogPage(); }catch(_){ }
   }
   if (page === "laundrycatalog"){
     try{ loadLaundryCatalogPage(); }catch(_){ }
@@ -16124,7 +16297,7 @@ state.page = page;
   // Top back button (Impostazioni + modifica spesa)
   const backBtnTop = $("#backBtnTop");
   if (backBtnTop){
-    const isSettingsChild = (page === "operatori" || page === "channel" || page === "laundrycatalog" || page === "roomsettings");
+    const isSettingsChild = (page === "operatori" || page === "channel" || page === "roomcatalog" || page === "laundrycatalog" || page === "roomsettings");
     const isSpesaEdit = (page === "inserisci" && !!String(state?.spesaEditingId || '').trim());
     backBtnTop.hidden = !(isSettingsChild || isSpesaEdit);
     backBtnTop.classList.toggle("icon-btn-whiteblue", false);
@@ -16531,7 +16704,7 @@ function setupHeader(){
       showPage("spese");
       return;
     }
-    if (state.page === "operatori" || state.page === "channel" || state.page === "laundrycatalog" || state.page === "roomsettings") { showPage("impostazioni"); return; }
+    if (state.page === "operatori" || state.page === "channel" || state.page === "roomcatalog" || state.page === "laundrycatalog" || state.page === "roomsettings") { showPage("impostazioni"); return; }
     if (state.page === "calendario") {
       if (state.session && isOperatoreSession(state.session)) { showPage("pulizie"); return; }
       showPage("ospiti");
@@ -19541,6 +19714,9 @@ function __defaultSingleActionButtonVisual__(btn){
     laundryCatalogEditorDotColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    roomCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    roomCatalogEditorTagColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    roomCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionCall:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     guestPhoneActionWhatsApp:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -19668,6 +19844,9 @@ function __singleActionButtonCategoryForId__(id){
     laundryCatalogEditorDotColor:'tag',
     operatoriEditorSave:'save',
     channelEditorSave:'save',
+    roomCatalogEditorDelete:'delete',
+    roomCatalogEditorTagColor:'tag',
+    roomCatalogEditorSave:'save',
     laundryCatalogEditorSave:'save',
     licenseGeneratorCancel:'cancel',
     licenseDateRangeCancel:'cancel',
@@ -33396,6 +33575,7 @@ async function init(){
   try{ __applyRoomsUiConfig__(); }catch(_){ }
   setupOperatoriPage();
   setupChannelPage();
+  setupRoomCatalogPage();
   setupTagColorPopup();
   setupRoomSettingsPage();
   setupLaundryCatalogPage();
@@ -35098,10 +35278,13 @@ function renderCalendarRoomRail(roomsCount){
   for (let r = 1; r <= roomsCount; r++){
     const pill = document.createElement("div");
     pill.className = `cal-room-rail-pill room-${r}`;
-    pill.setAttribute("aria-label", `Stanza ${r}`);
+    try{ pill.setAttribute("style", __roomsUiBadgeStyle__(getRoomsUiConfig().rooms?.[String(r)] || 'blue-4')); }catch(_){ }
+    const roomLabel = (typeof getRoomDisplayLabel === 'function') ? getRoomDisplayLabel(r) : String(r);
+    const roomName = (typeof getRoomNameLabel === 'function') ? getRoomNameLabel(r) : `Stanza ${r}`;
+    pill.setAttribute("aria-label", `${roomName} ${roomLabel}`);
     const rn = document.createElement("span");
     rn.className = "cal-room-num";
-    rn.textContent = String(r);
+    rn.textContent = String(roomLabel);
     pill.appendChild(rn);
     rail.appendChild(pill);
   }
@@ -35167,7 +35350,7 @@ function renderCalendarioWeek(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r}`;
-      cell.setAttribute("aria-label", `Stanza ${r}, ${weekdayShortIT(d)} ${d.getDate()}`);
+      cell.setAttribute("aria-label", `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       if (getCalendarTodayColumnIndexForWeek(anchor) === (i + 1)) cell.classList.add('is-today-col');
@@ -35948,7 +36131,7 @@ function renderCalendarioMonth(){
         const cell = document.createElement("button");
         cell.type = "button";
         cell.className = `cal-cell room-${r}`;
-        cell.setAttribute("aria-label", `Stanza ${r}, ${weekdayShortIT(d)} ${d.getDate()}`);
+        cell.setAttribute("aria-label", `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
         cell.dataset.date = dIso;
         cell.dataset.room = String(r);
         if (todayCol === (i + 1)) cell.classList.add('is-today-col');
@@ -35974,8 +36157,8 @@ function renderCalendarioMonth(){
       cell.dataset.spanDays = String(span);
       cell.style.gridColumn = `${i + 1} / span ${span}`;
       cell.setAttribute("aria-label", span > 1
-        ? `Stanza ${r}, dal ${days[i].getDate()} al ${days[i + span - 1].getDate()}`
-        : `Stanza ${r}, ${weekdayShortIT(d)} ${d.getDate()}`);
+        ? `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, dal ${days[i].getDate()} al ${days[i + span - 1].getDate()}`
+        : `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
 
       const coversToday = (todayCol >= (i + 1) && todayCol <= (i + span));
       if (coversToday) {
@@ -39071,14 +39254,14 @@ function syncGuestPhoneWhatsAppLink(isView){
           el.style.setProperty('user-select','none','important');
         }catch(_){ }
       });
-      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+      ['operatoriEditorModal','channelEditorModal','roomCatalogEditorModal','laundryCatalogEditorModal'].forEach(function(id){
         try{ var e=document.getElementById(id); if (e && !e.hidden) e.style.setProperty('pointer-events','none','important'); }catch(_){ }
       });
     }catch(_){ }
   }
   function clearLayer(){
     try{
-      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+      ['operatoriEditorModal','channelEditorModal','roomCatalogEditorModal','laundryCatalogEditorModal'].forEach(function(id){
         try{ var e=document.getElementById(id); if (e) e.style.removeProperty('pointer-events'); }catch(_){ }
       });
     }catch(_){ }
@@ -39244,7 +39427,7 @@ function syncGuestPhoneWhatsAppLink(isView){
       modal.style.setProperty('z-index','2147483647','important');
       modal.style.setProperty('pointer-events','auto','important');
       modal.style.setProperty('touch-action','auto','important');
-      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+      ['operatoriEditorModal','channelEditorModal','roomCatalogEditorModal','laundryCatalogEditorModal'].forEach(function(id){
         var under=document.getElementById(id);
         if (isOpen(under)) under.style.setProperty('pointer-events','none','important');
       });
@@ -39255,7 +39438,7 @@ function syncGuestPhoneWhatsAppLink(isView){
       var modal=document.getElementById('tagColorModal');
       if (isOpen(modal)) return;
       document.body.classList.remove('tag-color-modal-open');
-      ['operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal'].forEach(function(id){
+      ['operatoriEditorModal','channelEditorModal','roomCatalogEditorModal','laundryCatalogEditorModal'].forEach(function(id){
         var under=document.getElementById(id);
         if (under) under.style.removeProperty('pointer-events');
       });
@@ -40617,7 +40800,7 @@ function syncGuestPhoneWhatsAppLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_2.985';
+  var BUILD_TAG='dDAE_2.986';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -42139,7 +42322,7 @@ function syncGuestPhoneWhatsAppLink(isView){
   try{ document.addEventListener('visibilitychange', function(){ if (!document.hidden) init(); }, { passive:true }); }catch(_){ }
 })();
 
-/* dDAE_2.985 — Statistiche Mensili: griglia 3x4, card mese con channel e confronto anni ripristinato */
+/* dDAE_2.986 — Statistiche Mensili: griglia 3x4, card mese con channel e confronto anni ripristinato */
 try{
   (function(){
     const __ddae2957OldStatMensiliI18n__ = (typeof __statMensiliI18n__ === 'function') ? __statMensiliI18n__ : null;
@@ -42451,7 +42634,7 @@ try{
 }catch(_){ }
 
 
-/* dDAE_2.985 — Lavanderia: giorno/cadenza report con LED beige in top bar */
+/* dDAE_2.986 — Lavanderia: giorno/cadenza report con LED beige in top bar */
 (function(){
   var KEY='ddae_laundry_report_schedule_v1';
   function todayStart(d){ var x=d?new Date(d):new Date(); return new Date(x.getFullYear(), x.getMonth(), x.getDate()); }
@@ -42562,7 +42745,7 @@ try{
 })();
 
 
-/* dDAE_2.985 — Categoria Design "Alert" per LED topbar */
+/* dDAE_2.986 — Categoria Design "Alert" per LED topbar */
 (function(){
   'use strict';
   var KEY = 'dDAE_alert_led_visual_v1';
@@ -42758,7 +42941,7 @@ try{
 })();
 
 
-/* dDAE_2.985 — Design: pallini letti nella riga Tag colore opzioni */
+/* dDAE_2.986 — Design: pallini letti nella riga Tag colore opzioni */
 (function(){
   'use strict';
   function moveBedDotsIntoOptions(){
@@ -42795,7 +42978,7 @@ try{
 
 
 
-/* dDAE_2.985 — Design: culla in Tag colore opzioni + long press significato tag */
+/* dDAE_2.986 — Design: culla in Tag colore opzioni + long press significato tag */
 (function(){
   'use strict';
 
@@ -42950,7 +43133,7 @@ try{
 
 
 
-/* dDAE_2.985 — Design: dopo long press tag non aprire popup colore */
+/* dDAE_2.986 — Design: dopo long press tag non aprire popup colore */
 (function(){
   'use strict';
 
@@ -43064,7 +43247,7 @@ try{
 
 
 
-/* dDAE_2.985 — Statistiche: etichetta "Ricevuta" */
+/* dDAE_2.986 — Statistiche: etichetta "Ricevuta" */
 (function(){
   'use strict';
   function fixReceiptLabel(){
@@ -43101,7 +43284,7 @@ try{
 
 
 
-/* dDAE_2.985 — Backup: login automatico utente dopo import a logout avvenuto */
+/* dDAE_2.986 — Backup: login automatico utente dopo import a logout avvenuto */
 (function(){
   'use strict';
 
@@ -43228,7 +43411,7 @@ try{
 
 
 
-/* dDAE_2.985 — Backup: login da logout + ripristino multi-anno */
+/* dDAE_2.986 — Backup: login da logout + ripristino multi-anno */
 async function __ddaeBackupCollectMultiYear__(tables){
   try{
     const uid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
@@ -43401,7 +43584,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
 
 
-/* dDAE_2.985 — Login account dal backup caricato nella schermata logout */
+/* dDAE_2.986 — Login account dal backup caricato nella schermata logout */
 (function(){
   'use strict';
 
@@ -43652,7 +43835,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
 
 
-/* dDAE_2.985 — Calendario: numero stanza solo nella cella zoomata calendario */
+/* dDAE_2.986 — Calendario: numero stanza solo nella cella zoomata calendario */
 (function(){
   'use strict';
   function text(el){ try{ return String(el && el.textContent || '').replace(/\s+/g,' ').trim(); }catch(_){ return ''; } }
@@ -43729,7 +43912,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
 
 
-/* dDAE_2.985 — Calendario: numero stanza nello zoom cella, non nel form ospite */
+/* dDAE_2.986 — Calendario: numero stanza nello zoom cella, non nel form ospite */
 (function(){
   'use strict';
 

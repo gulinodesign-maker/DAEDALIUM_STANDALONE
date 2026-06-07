@@ -28051,7 +28051,7 @@ body.ddae-dark .design-tag-meaning-pill{
 }
 body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
 
-/* dDAE_2.985 — Calendario: numero stanza nello zoom cella */
+/* dDAE_2.986 — Calendario: numero stanza nello zoom cella */
 #page-calendario .cal-zoom-room-number{
   position:absolute;
   top:18px;
@@ -28084,3 +28084,11 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
   position:relative;
 }
 body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
+
+
+/* dDAE_2.986 — Stanze: pagina gestione con layout identico a Channel */
+.room-catalog-list .operatori-item{ min-height: 140px; }
+.room-catalog-metrics .operatori-metric{ min-width: 132px; }
+.room-catalog-metrics .operatori-metric-value{ font-size: 1.15rem; }
+.settings-btn-roomcatalog .ui-ico{ width: 25px; height: 25px; }
+.cal-room-rail-pill .cal-room-num{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
