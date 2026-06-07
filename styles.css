@@ -28093,7 +28093,60 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
 .settings-btn-roomcatalog .ui-ico{ width: 25px; height: 25px; }
 .cal-room-rail-pill .cal-room-num{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* dDAE_2.989 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
+/* dDAE_2.990 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
 #roomCatalogEditorModal #roomCatalogEditorNumero{ width:100%; }
 #roomCatalogEditorModal .operatori-editor-body > .field.float{ width:100%; }
 #roomSettingsCountSection{ display:none !important; }
+
+
+/* dDAE_2.990 — Calendario: nome e numero stanza nella cella zoomata */
+.calendar-cell-zoom .cal-cell-room-info{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  margin-top:12px;
+  padding:9px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(15,23,42,.10);
+  color:#0f172a;
+  text-align:center;
+  max-width:100%;
+}
+.calendar-cell-zoom .cal-cell-room-info span{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  opacity:.68;
+  line-height:1;
+  font-weight:900;
+}
+.calendar-cell-zoom .cal-cell-room-info strong{
+  font-size:16px;
+  line-height:1.16;
+  font-weight:900;
+}
+.calendar-cell-zoom .cal-cell-room-info em{
+  font-style:normal;
+  font-size:14px;
+  line-height:1.1;
+  font-weight:800;
+  opacity:.82;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-room-info{
+  margin-top:16px;
+  padding:10px 16px;
+  border-radius:20px;
+}
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-room-info strong{ font-size:18px; }
+.calendar-cell-zoom-stage .calendar-cell-zoom .cal-cell-room-info em{ font-size:16px; }
+body.ddae-dark .calendar-cell-zoom .cal-cell-room-info{
+  background:rgba(15,23,42,.72);
+  border-color:rgba(148,163,184,.24);
+  color:#f8fafc;
+  -webkit-text-fill-color:#f8fafc;
+}
