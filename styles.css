@@ -28136,3 +28136,7 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
   text-transform:uppercase;
   white-space:nowrap;
 }
+
+/* dDAE_2.987 — card Stanze Impostazioni */
+.settings-btn-roomcatalog{ color:#4d9cc5; }
+.settings-btn-roomcatalog .ui-ico{ color:currentColor; }
