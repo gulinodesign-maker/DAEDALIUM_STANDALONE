@@ -28093,13 +28093,13 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
 .settings-btn-roomcatalog .ui-ico{ width: 25px; height: 25px; }
 .cal-room-rail-pill .cal-room-num{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* dDAE_2.992 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
+/* dDAE_2.993 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
 #roomCatalogEditorModal #roomCatalogEditorNumero{ width:100%; }
 #roomCatalogEditorModal .operatori-editor-body > .field.float{ width:100%; }
 #roomSettingsCountSection{ display:none !important; }
 
 
-/* dDAE_2.992 — Calendario: nome e numero stanza nella cella zoomata */
+/* dDAE_2.993 — Calendario: nome e numero stanza nella cella zoomata */
 .calendar-cell-zoom .cal-cell-room-info{
   position:relative;
   z-index:2;
@@ -28152,7 +28152,7 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-room-info{
 }
 
 
-/* dDAE_2.992 — Impostazioni: elenco card scrollabile fino a Logout su iOS */
+/* dDAE_2.993 — Impostazioni: elenco card scrollabile fino a Logout su iOS */
 body[data-page="impostazioni"],
 html body[data-page="impostazioni"]{
   overflow-y: auto !important;
@@ -28190,4 +28190,63 @@ html body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni .setti
 #page-impostazioni #settingsLogoutBtn{
   flex: 0 0 auto !important;
   margin-bottom: calc(var(--safe-bottom) + 10px) !important;
+}
+
+
+/* dDAE_2.993 — Impostazioni: scroll reale delle card fino a Logout su iOS */
+body[data-page="impostazioni"],
+body[data-page="opsettings"]{
+  height:auto !important;
+  min-height:100dvh !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:auto !important;
+}
+html:has(body[data-page="impostazioni"]),
+html:has(body[data-page="opsettings"]){
+  height:auto !important;
+  min-height:100dvh !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+body[data-page="impostazioni"] main.wrap,
+body[data-page="opsettings"] main.wrap{
+  height:auto !important;
+  min-height:calc(100dvh - var(--app-topbar-offset, 64px)) !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding-bottom:calc(var(--safe-bottom) + 140px) !important;
+}
+body[data-page="impostazioni"] #page-impostazioni,
+body[data-page="opsettings"] #page-opsettings{
+  height:auto !important;
+  min-height:calc(100dvh - var(--app-topbar-offset, 64px)) !important;
+  max-height:none !important;
+  overflow:visible !important;
+  display:block;
+}
+body[data-page="impostazioni"] #page-impostazioni[hidden],
+body[data-page="opsettings"] #page-opsettings[hidden]{
+  display:none !important;
+}
+body[data-page="impostazioni"] #page-impostazioni .settings-page-reference,
+body[data-page="opsettings"] #page-opsettings .settings-page-reference{
+  height:auto !important;
+  min-height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding-bottom:calc(var(--safe-bottom) + 160px) !important;
+}
+body[data-page="impostazioni"] #page-impostazioni .settings-actions.settings-actions-reference,
+body[data-page="opsettings"] #page-opsettings .settings-actions.settings-actions-reference{
+  overflow:visible !important;
+  padding-bottom:calc(var(--safe-bottom) + 24px) !important;
+}
+body[data-page="impostazioni"] #settingsLogoutBtn,
+body[data-page="opsettings"] #opSettingsLogoutBtn{
+  margin-bottom:calc(var(--safe-bottom) + 42px) !important;
 }
