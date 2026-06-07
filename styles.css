@@ -28093,13 +28093,13 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
 .settings-btn-roomcatalog .ui-ico{ width: 25px; height: 25px; }
 .cal-room-rail-pill .cal-room-num{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* dDAE_2.991 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
+/* dDAE_2.992 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
 #roomCatalogEditorModal #roomCatalogEditorNumero{ width:100%; }
 #roomCatalogEditorModal .operatori-editor-body > .field.float{ width:100%; }
 #roomSettingsCountSection{ display:none !important; }
 
 
-/* dDAE_2.991 — Calendario: nome e numero stanza nella cella zoomata */
+/* dDAE_2.992 — Calendario: nome e numero stanza nella cella zoomata */
 .calendar-cell-zoom .cal-cell-room-info{
   position:relative;
   z-index:2;
@@ -28149,4 +28149,45 @@ body.ddae-dark .calendar-cell-zoom .cal-cell-room-info{
   border-color:rgba(148,163,184,.24);
   color:#f8fafc;
   -webkit-text-fill-color:#f8fafc;
+}
+
+
+/* dDAE_2.992 — Impostazioni: elenco card scrollabile fino a Logout su iOS */
+body[data-page="impostazioni"],
+html body[data-page="impostazioni"]{
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: auto !important;
+}
+body.page-lock-vertical[data-page="impostazioni"] main.wrap,
+html body.page-lock-vertical[data-page="impostazioni"] main.wrap{
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  padding-bottom: calc(var(--safe-bottom) + 84px) !important;
+}
+body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni,
+html body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni{
+  height: auto !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni .settings-page-reference,
+html body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni .settings-page-reference{
+  height: auto !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-bottom: calc(var(--safe-bottom) + 120px) !important;
+}
+#page-impostazioni .settings-actions.settings-actions-reference{
+  padding-bottom: calc(var(--safe-bottom) + 96px) !important;
+}
+#page-impostazioni #settingsLogoutBtn{
+  flex: 0 0 auto !important;
+  margin-bottom: calc(var(--safe-bottom) + 10px) !important;
 }
