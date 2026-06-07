@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.989" rel="stylesheet"/>
-<link href="./manifest.json?v=2.989" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.989" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.989" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.989" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.989" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.989" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.989" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.985" rel="stylesheet"/>
+<link href="./manifest.json?v=2.985" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.985" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.985" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.985" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.985" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.985" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.985" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "2.989";
+window.APP_VERSION = "2.985";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.989";
+  const LOCAL_BUILD = "dDAE_2.985";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "2.989";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.989")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.989")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.985")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.985")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "2.989";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.989"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=2.985"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -296,7 +296,7 @@ window.APP_VERSION = "2.989";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.989"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=2.985"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -504,7 +504,7 @@ window.APP_VERSION = "2.989";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_2.989</div></div></section>
+<div class="build" id="buildText">dDAE_2.985</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1036,12 +1036,6 @@ window.APP_VERSION = "2.989";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path><path d="M7 4v16"></path><path d="M12 4v16"></path><path d="M17 4v16"></path></svg>
 <span class="settings-btn-label">Design</span>
 </button>
-
-<button aria-label="Stanze" class="settings-btn settings-btn-roomcatalog" id="settingsRoomCatalogBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 20V5.8c0-.5.3-.9.8-1.1l7-2.4c.7-.2 1.2.3 1.2 1v17"></path><path d="M13 7h6c.6 0 1 .4 1 1v12"></path><path d="M8.5 12h.01"></path><path d="M3 20h18"></path></svg>
-<span class="settings-btn-label">Stanze</span>
-</button>
-
 <button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
 <span class="settings-btn-label">Operatori</span>
@@ -1284,6 +1278,15 @@ window.APP_VERSION = "2.989";
 </div>
 </div>
 <div class="room-settings-panel room-settings-panel-main">
+<div class="room-settings-section room-settings-section-card room-settings-section-count" id="roomSettingsCountSection">
+<div class="room-settings-top">
+<div class="room-settings-title-block">
+<div class="room-settings-title">Numero stanze</div>
+</div>
+<button aria-label="Numero stanze" class="room-settings-count-btn" id="roomSettingsCountBtn" type="button">1</button>
+</div>
+</div>
+<div aria-hidden="true" class="settings-divider room-settings-divider"></div>
 <div class="room-settings-section room-settings-section-card room-settings-section-text" id="roomSettingsTextSection">
 <div class="room-settings-section-head">
 <div class="room-settings-section-title" id="roomSettingsTextTitle">Testi</div>
@@ -1295,6 +1298,8 @@ window.APP_VERSION = "2.989";
 </div>
 </div>
 <div class="room-settings-section">
+<div class="room-settings-section-title">Tag colore stanze</div>
+<div class="room-settings-dots room-settings-room-dots" id="roomSettingsDots"></div>
 </div>
 <div class="room-settings-section room-settings-section-alerts">
 <div class="room-settings-section-title">Alert</div>
@@ -1769,17 +1774,6 @@ window.APP_VERSION = "2.989";
 </div>
 </div>
 </section>
-
-<section class="page" hidden id="page-roomsettings-list">
-  <div class="page-head">
-    <h2 id="roomCatalogTitle">Stanze</h2>
-    <div class="hd-actions">
-      <button aria-label="Aggiungi stanza" class="icon-btn" id="roomCatalogAddBtn" type="button">+</button>
-    </div>
-  </div>
-  <div class="channel-list" id="roomCatalogList"></div>
-</section>
-
 </main>
 <div class="toast" id="toast"></div>
 <section class="page" hidden="" id="page-orepulizia">
@@ -2756,7 +2750,7 @@ window.APP_VERSION = "2.989";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=2.989"></script>
-<script defer="" src="./app.js?v=2.989"></script>
+<script defer="" src="./config.js?v=2.985"></script>
+<script defer="" src="./app.js?v=2.985"></script>
 </body>
 </html>
