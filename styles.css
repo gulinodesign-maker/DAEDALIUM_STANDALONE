@@ -28084,3 +28084,140 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
   position:relative;
 }
 body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
+
+/* dDAE_2.986 — Impostazioni Stanze */
+.room-catalog-row{
+  width:100%;
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:12px 18px;
+  border-radius:22px;
+}
+.room-catalog-dot{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(15,23,42,.12);
+  color:#fff;
+  font-weight:900;
+  font-size:18px;
+}
+.room-catalog-modal-card{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.room-editor-color-btn{
+  min-height:58px;
+  border-radius:18px;
+  border:1px solid rgba(15,23,42,.12);
+  background:rgba(255,255,255,.72);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:8px 14px;
+  font-weight:900;
+  color:var(--ico-blue-night);
+}
+#page-calendario .cal-zoom-room-number.cal-zoom-room-label{
+  top:16px;
+  min-width:0;
+  height:auto;
+  padding:0 12px;
+  font-size:18px;
+  line-height:1.15;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+/* dDAE_2.987 — card Stanze Impostazioni */
+.settings-btn-roomcatalog{ color:#4d9cc5; }
+.settings-btn-roomcatalog .ui-ico{ color:currentColor; }
+
+/* dDAE_2.988 — Stanze con grafica Channel */
+.room-channel-card.channel-card{
+  position:relative;
+}
+.room-channel-card .channel-card-main{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.room-channel-dot.channel-dot{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:900;
+  font-size:18px;
+  border:1px solid rgba(15,23,42,.12);
+}
+.room-card-number-pill{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-width:108px;
+  min-height:54px;
+  margin-top:12px;
+  padding:7px 16px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,.10);
+  background:rgba(241,245,249,.78);
+  color:rgba(15,23,42,.70);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.12em;
+  line-height:1.15;
+  text-transform:uppercase;
+}
+.room-card-number-pill strong{
+  color:var(--ico-blue-night);
+  font-size:20px;
+  letter-spacing:0;
+}
+.room-card-color-dot{
+  width:12px;
+  min-width:12px;
+  height:12px;
+  border-radius:999px;
+  display:inline-block;
+  margin-left:4px;
+}
+.room-editor-modal .field.two-col{
+  display:grid;
+  grid-template-columns:1fr;
+}
+.room-editor-modal .channel-editor-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+}
+#page-calendario .cal-zoom-room-number.cal-zoom-room-label{
+  top:16px;
+  min-width:0;
+  height:auto;
+  padding:0 12px;
+  font-size:18px;
+  line-height:1.15;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+body.ddae-dark .room-card-number-pill{
+  background:rgba(15,23,42,.58);
+  border-color:rgba(255,255,255,.14);
+  color:rgba(248,250,252,.72);
+}
+body.ddae-dark .room-card-number-pill strong{ color:#f8fafc; }
