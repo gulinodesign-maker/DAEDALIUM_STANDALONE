@@ -28050,3 +28050,37 @@ body.ddae-dark .design-tag-meaning-pill{
   position:relative;
 }
 body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
+
+/* dDAE_2.985 — Calendario: numero stanza nello zoom cella */
+#page-calendario .cal-zoom-room-number{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:4;
+  min-width:58px;
+  height:58px;
+  padding:0 16px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:46px;
+  line-height:1;
+  font-weight:900;
+  color:rgba(15,23,42,0.92);
+  background:transparent;
+  pointer-events:none;
+}
+#page-calendario .cal-zoom-card,
+#page-calendario .calendar-zoom-card,
+#page-calendario .cal-cell-zoom,
+#page-calendario .calendar-cell-zoom,
+#page-calendario .calendar-day-zoom,
+#page-calendario .calendar-zoom-popover,
+#page-calendario .cal-day-popover,
+#page-calendario .booking-zoom-card,
+#page-calendario .cal-booking-popover{
+  position:relative;
+}
+body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
