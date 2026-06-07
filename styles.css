@@ -28093,13 +28093,13 @@ body.ddae-dark #page-calendario .cal-zoom-room-number{ color:rgba(248,250,252,0.
 .settings-btn-roomcatalog .ui-ico{ width: 25px; height: 25px; }
 .cal-room-rail-pill .cal-room-num{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* dDAE_2.990 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
+/* dDAE_2.991 — Stanze: popup senza card Tag; numero stanza full-width come nome stanza */
 #roomCatalogEditorModal #roomCatalogEditorNumero{ width:100%; }
 #roomCatalogEditorModal .operatori-editor-body > .field.float{ width:100%; }
 #roomSettingsCountSection{ display:none !important; }
 
 
-/* dDAE_2.990 — Calendario: nome e numero stanza nella cella zoomata */
+/* dDAE_2.991 — Calendario: nome e numero stanza nella cella zoomata */
 .calendar-cell-zoom .cal-cell-room-info{
   position:relative;
   z-index:2;
