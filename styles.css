@@ -28017,3 +28017,27 @@ body.ddae-dark .design-tag-meaning-pill{
   border-color:rgba(255,255,255,0.18);
   color:#f8fafc;
 }
+
+/* dDAE_2.980 — Calendario: numero stanza nella cella zoomata */
+.cal-zoom-room-number{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  min-width:58px;
+  height:58px;
+  padding:0 16px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:46px;
+  line-height:1;
+  font-weight:900;
+  color:rgba(15,23,42,0.92);
+  background:transparent;
+  pointer-events:none;
+}
+.cal-zoom-card,.calendar-zoom-card,.cal-cell-zoom,.calendar-cell-zoom,.cal-booking-popover,.booking-zoom-card,.guest-zoom-card,.cal-detail-card,.modal:not([hidden]) .card,.modal:not([hidden]) [class*="card"]{ position:relative; }
+body.ddae-dark .cal-zoom-room-number{ color:rgba(248,250,252,0.94); }
