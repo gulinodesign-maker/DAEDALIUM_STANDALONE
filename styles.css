@@ -28351,3 +28351,8 @@ body.calendar-insert-dragging #page-calendario .cal-body{
 #page-calendario .cal-cell.is-insert-range{
   transition: outline-color .08s linear, box-shadow .08s linear !important;
 }
+
+/* dDAE_3.006 — Calendario: apertura nuovo ospite solo al rilascio finale */
+body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
+  cursor: grabbing !important;
+}
