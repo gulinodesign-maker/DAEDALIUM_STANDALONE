@@ -28356,3 +28356,8 @@ body.calendar-insert-dragging #page-calendario .cal-body{
 body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   cursor: grabbing !important;
 }
+
+/* dDAE_3.007 — Calendario: conferma selezione immediata al rilascio dito */
+body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
+  cursor: grabbing !important;
+}
