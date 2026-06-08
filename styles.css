@@ -28346,3 +28346,8 @@ body.calendar-insert-dragging #page-calendario .cal-body{
   overscroll-behavior-x: contain !important;
   scroll-behavior: auto !important;
 }
+
+/* dDAE_3.005 — Calendario: swipe selezione più stabile */
+#page-calendario .cal-cell.is-insert-range{
+  transition: outline-color .08s linear, box-shadow .08s linear !important;
+}
