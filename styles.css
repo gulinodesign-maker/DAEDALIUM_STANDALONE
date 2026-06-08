@@ -28252,19 +28252,23 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
 }
 
 
-/* dDAE_2.995 — Calendario: lampeggio check-out con opacità del colore stanza, senza cerchiatura */
+/* dDAE_2.996 — Calendario: lampeggio reale del numero stanza in check-out, senza bordo o grassetto */
 #page-calendario .cal-room-rail-pill.is-checkout-blink{
-  animation: ddaeCalCheckoutRoomBlink .9s ease-in-out infinite;
+  animation: none !important;
+  opacity: 1 !important;
   outline: none !important;
   box-shadow: none !important;
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{
-  font-weight: 900 !important;
+  font-weight: 500 !important;
+  opacity: 1;
+  animation: ddaeCalCheckoutRoomNumberBlink .85s ease-in-out infinite;
+  will-change: opacity;
 }
-@keyframes ddaeCalCheckoutRoomBlink{
+@keyframes ddaeCalCheckoutRoomNumberBlink{
   0%, 100% { opacity: 1; }
   50% { opacity: .10; }
 }
 @media (prefers-reduced-motion: reduce){
-  #page-calendario .cal-room-rail-pill.is-checkout-blink{ animation: none; opacity: 1; }
+  #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{ animation: none; opacity: 1; }
 }
