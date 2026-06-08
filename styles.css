@@ -28252,18 +28252,17 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
 }
 
 
-/* dDAE_2.997 — Calendario: check-out evidenziato con bagliore LED dello stesso colore cella */
+/* dDAE_2.997 — Calendario: check-out evidenziato con bordo LED colore stanza */
 #page-calendario .cal-room-rail-pill.is-checkout-blink{
   animation: none !important;
   opacity: 1 !important;
   outline: none !important;
-  position: relative !important;
-  z-index: 4 !important;
+  border-color: var(--cal-room-led-color) !important;
+  border-width: 2px !important;
+  border-style: solid !important;
   box-shadow:
-    0 0 0 1px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .90),
-    0 0 8px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .95),
-    0 0 18px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .72),
-    0 0 30px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .42) !important;
+    0 0 0 2px var(--cal-room-led-color),
+    0 0 10px 1px rgba(var(--cal-room-led-rgb, 59,130,246), .95) !important;
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{
   font-size: clamp(17px, 4.8vw, 22px) !important;

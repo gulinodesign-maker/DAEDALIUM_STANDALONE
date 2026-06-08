@@ -25283,14 +25283,18 @@ function __roomsUiBadgeStyle__(spec){
   const main = __operatoreColorHex__(pair.bg || 'blue-4');
   const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
   const opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.92);
-  let glowRgb = '30,136,229';
+  return `background:${hexToRgba(main, opacity)};background-color:${hexToRgba(main, opacity)};border-color:${hexToRgba(borderHex, opacity)};color:${__roomsUiTextColor__(pair)};-webkit-text-fill-color:${__roomsUiTextColor__(pair)};`;
+}
+
+function __roomsUiBadgeLedStyle__(spec){
   try{
-    const h = String(main || '').replace('#','');
-    if (h.length === 6){
-      glowRgb = `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
-    }
-  }catch(_){ }
-  return `background:${hexToRgba(main, opacity)};background-color:${hexToRgba(main, opacity)};border-color:${hexToRgba(borderHex, opacity)};color:${__roomsUiTextColor__(pair)};-webkit-text-fill-color:${__roomsUiTextColor__(pair)};--ddae-room-cell-glow-rgb:${glowRgb};`;
+    const pair = __roomsUiVisualNormalize__(spec, 'blue-4');
+    const main = __operatoreColorHex__(pair.bg || 'blue-4');
+    const borderHex = __operatoreColorHex__(pair.border || pair.bg || 'blue-4');
+    return `--cal-room-led-color:${hexToRgba(borderHex || main, 1)};--cal-room-led-rgb:${String(borderHex || main).replace('#','').match(/../g).map(x=>parseInt(x,16)).join(',')};`;
+  }catch(_){
+    return '--cal-room-led-color:rgba(59,130,246,1);--cal-room-led-rgb:59,130,246;';
+  }
 }
 
 function __applyRoomsUiConfig__(){
@@ -35422,7 +35426,11 @@ function renderCalendarRoomRail(roomsCount){
     const pill = document.createElement("div");
     pill.className = `cal-room-rail-pill room-${r}`;
     if (checkoutRooms && checkoutRooms.has(String(r))) pill.classList.add('is-checkout-blink');
-    try{ pill.setAttribute("style", __roomsUiBadgeStyle__(getRoomsUiConfig().rooms?.[String(r)] || 'blue-4')); }catch(_){ }
+    try{
+      const roomVisual = getRoomsUiConfig().rooms?.[String(r)] || 'blue-4';
+      const ledExtra = (checkoutRooms && checkoutRooms.has(String(r))) ? __roomsUiBadgeLedStyle__(roomVisual) : '';
+      pill.setAttribute("style", __roomsUiBadgeStyle__(roomVisual) + ledExtra);
+    }catch(_){ }
     const roomLabel = (typeof getRoomDisplayLabel === 'function') ? getRoomDisplayLabel(r) : String(r);
     const roomName = (typeof getRoomNameLabel === 'function') ? getRoomNameLabel(r) : `Stanza ${r}`;
     pill.setAttribute("aria-label", `${roomName} ${roomLabel}${checkoutRooms && checkoutRooms.has(String(r)) ? ' - check-out oggi' : ''}`);
@@ -44403,4 +44411,4 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 })();
 
 
-/* dDAE_2.997 — Calendario: lampeggio numero stanza in check-out nel giorno selezionato */
+/* dDAE_2.997 — Calendario: bordo LED stanza in check-out nel giorno selezionato */
