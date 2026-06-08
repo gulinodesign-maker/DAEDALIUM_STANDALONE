@@ -28251,30 +28251,43 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
   margin-bottom:calc(var(--safe-bottom) + 42px) !important;
 }
 
-
-/* dDAE_2.998 — Calendario: bordo LED stanza in check-out con lampeggio */
-@keyframes ddaeRoomCheckoutBorderPulse{
-  0%{
-    border-color: rgba(var(--cal-room-led-rgb, 59,130,246), .20) !important;
+/* dDAE_2.999 — Calendario: bordo LED stanza in check-out con lampeggio reale */
+@keyframes ddaeRoomCheckoutLedPulse{
+  0%, 100%{
+    opacity: .18;
+    transform: scale(.985);
     box-shadow:
-      0 0 0 1px rgba(var(--cal-room-led-rgb, 59,130,246), .18),
-      0 0 4px 0 rgba(var(--cal-room-led-rgb, 59,130,246), .12) !important;
+      0 0 0 1px rgba(var(--cal-room-led-rgb, 59,130,246), .22),
+      0 0 2px 0 rgba(var(--cal-room-led-rgb, 59,130,246), .18);
   }
-  100%{
-    border-color: var(--cal-room-led-color) !important;
+  50%{
+    opacity: 1;
+    transform: scale(1.035);
     box-shadow:
-      0 0 0 2px var(--cal-room-led-color),
-      0 0 14px 2px rgba(var(--cal-room-led-rgb, 59,130,246), .98) !important;
+      0 0 0 2px rgba(var(--cal-room-led-rgb, 59,130,246), 1),
+      0 0 12px 3px rgba(var(--cal-room-led-rgb, 59,130,246), .95),
+      0 0 22px 5px rgba(var(--cal-room-led-rgb, 59,130,246), .45);
   }
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink{
   opacity: 1 !important;
   outline: none !important;
-  border-width: 2px !important;
+  border-color: transparent !important;
+  border-width: 1px !important;
   border-style: solid !important;
-  border-color: var(--cal-room-led-color) !important;
-  will-change: border-color, box-shadow;
-  animation: ddaeRoomCheckoutBorderPulse 1.05s ease-in-out infinite alternate !important;
+  overflow: visible !important;
+}
+#page-calendario .cal-room-rail-pill.is-checkout-blink::after{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius: 17px;
+  border: 2px solid var(--cal-room-led-color);
+  pointer-events:none;
+  z-index: 3;
+  opacity: 1;
+  will-change: opacity, transform, box-shadow;
+  animation: ddaeRoomCheckoutLedPulse .82s ease-in-out infinite !important;
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{
   font-size: clamp(17px, 4.8vw, 22px) !important;
@@ -28284,4 +28297,5 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
   transform: scale(1.14) !important;
   transform-origin: center center !important;
   text-shadow: 0 0 0 currentColor !important;
+  z-index: 4 !important;
 }
