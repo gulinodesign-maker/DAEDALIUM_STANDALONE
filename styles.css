@@ -28316,3 +28316,17 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
   border-top-right-radius: 14px !important;
   border-bottom-right-radius: 14px !important;
 }
+
+/* dDAE_3.003 — Calendario: blocco scroll durante selezione inserimento */
+html.calendar-insert-dragging,
+body.calendar-insert-dragging{
+  overscroll-behavior-x: contain !important;
+  touch-action: none !important;
+}
+body.calendar-insert-dragging #page-calendario .cal-grid-wrap,
+body.calendar-insert-dragging #page-calendario .cal-days-wrap,
+body.calendar-insert-dragging #page-calendario .cal-body{
+  overflow-x: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior-x: contain !important;
+}
