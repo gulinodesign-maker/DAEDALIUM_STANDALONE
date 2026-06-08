@@ -28330,3 +28330,19 @@ body.calendar-insert-dragging #page-calendario .cal-body{
   touch-action: none !important;
   overscroll-behavior-x: contain !important;
 }
+
+/* dDAE_3.004 — Calendario: swipe selezione stabile con auto-scroll orizzontale */
+html.calendar-insert-dragging,
+body.calendar-insert-dragging{
+  overscroll-behavior-x: contain !important;
+  touch-action: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+body.calendar-insert-dragging #page-calendario .cal-grid-wrap,
+body.calendar-insert-dragging #page-calendario .cal-days-wrap,
+body.calendar-insert-dragging #page-calendario .cal-body{
+  touch-action: none !important;
+  overscroll-behavior-x: contain !important;
+  scroll-behavior: auto !important;
+}
