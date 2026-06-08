@@ -28252,29 +28252,17 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
 }
 
 
-/* dDAE_2.998 — Calendario: bordo LED stanza in check-out con lampeggio */
-@keyframes ddaeRoomCheckoutBorderPulse{
-  0%{
-    border-color: rgba(var(--cal-room-led-rgb, 59,130,246), .20) !important;
-    box-shadow:
-      0 0 0 1px rgba(var(--cal-room-led-rgb, 59,130,246), .18),
-      0 0 4px 0 rgba(var(--cal-room-led-rgb, 59,130,246), .12) !important;
-  }
-  100%{
-    border-color: var(--cal-room-led-color) !important;
-    box-shadow:
-      0 0 0 2px var(--cal-room-led-color),
-      0 0 14px 2px rgba(var(--cal-room-led-rgb, 59,130,246), .98) !important;
-  }
-}
+/* dDAE_2.997 — Calendario: check-out evidenziato con bordo LED colore stanza */
 #page-calendario .cal-room-rail-pill.is-checkout-blink{
+  animation: none !important;
   opacity: 1 !important;
   outline: none !important;
+  border-color: var(--cal-room-led-color) !important;
   border-width: 2px !important;
   border-style: solid !important;
-  border-color: var(--cal-room-led-color) !important;
-  will-change: border-color, box-shadow;
-  animation: ddaeRoomCheckoutBorderPulse 1.05s ease-in-out infinite alternate !important;
+  box-shadow:
+    0 0 0 2px var(--cal-room-led-color),
+    0 0 10px 1px rgba(var(--cal-room-led-rgb, 59,130,246), .95) !important;
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{
   font-size: clamp(17px, 4.8vw, 22px) !important;
