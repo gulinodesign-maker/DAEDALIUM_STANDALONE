@@ -28252,12 +28252,18 @@ body[data-page="opsettings"] #opSettingsLogoutBtn{
 }
 
 
-/* dDAE_2.996 — Calendario: check-out su giorno selezionato più evidente senza cerchiatura */
+/* dDAE_2.997 — Calendario: check-out evidenziato con bagliore LED dello stesso colore cella */
 #page-calendario .cal-room-rail-pill.is-checkout-blink{
   animation: none !important;
   opacity: 1 !important;
   outline: none !important;
-  box-shadow: none !important;
+  position: relative !important;
+  z-index: 4 !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .90),
+    0 0 8px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .95),
+    0 0 18px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .72),
+    0 0 30px rgba(var(--ddae-room-cell-glow-rgb, 30,136,229), .42) !important;
 }
 #page-calendario .cal-room-rail-pill.is-checkout-blink .cal-room-num{
   font-size: clamp(17px, 4.8vw, 22px) !important;
