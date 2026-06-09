@@ -28357,12 +28357,12 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   cursor: grabbing !important;
 }
 
-/* dDAE_3.008 — Calendario: conferma selezione immediata al rilascio dito */
+/* dDAE_3.009 — Calendario: conferma selezione immediata al rilascio dito */
 body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   cursor: grabbing !important;
 }
 
-/* dDAE_3.008 — Richiesta fattura: LED ricevuta viola */
+/* dDAE_3.009 — Richiesta fattura: LED ricevuta viola */
 .top-led-alert.is-violet,
 .guest-card-alert-led.is-violet{
   background: var(--ddae-alert-invoice-bg, rgba(122,70,209,.96)) !important;
