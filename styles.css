@@ -28459,7 +28459,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 }
 
 
-/* dDAE_3.016 — LED richiesta fattura sempre indipendente e bagliore card ospite */
+/* dDAE_3.017 — LED richiesta fattura sempre indipendente e bagliore card ospite */
 #dbLedInvoice.top-led-alert.is-violet,
 #page-ospiti .guest-card-alert-led.top-led.top-led-alert.is-violet,
 #page-ospiti .guest-card-alert-led.is-violet{
@@ -28476,4 +28476,21 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   border-color:var(--ddae-alert-invoice-border, rgba(90,46,166,1)) !important;
   opacity:1 !important;
   box-shadow:var(--ddae-alert-led-highlight, none), var(--ddae-alert-invoice-shadow, 0 0 0 3px rgba(122,70,209,.22), 0 0 18px rgba(122,70,209,.66), 0 0 36px rgba(122,70,209,.38)) !important;
+}
+
+
+/* dDAE_3.017 — LED richiesta fattura: bagliore esterno sempre valido come gli altri alert */
+#dbLedInvoice.top-led-alert.is-violet:not(.is-off),
+#page-ospiti .guest-card-alert-led.top-led.top-led-alert.is-violet:not(.is-off),
+#page-ospiti .guest-card-alert-led.is-violet:not(.is-off){
+  background:var(--ddae-alert-invoice-bg, rgba(122,70,209,.96)) !important;
+  border-color:var(--ddae-alert-invoice-border, rgba(90,46,166,1)) !important;
+  color:var(--ddae-alert-invoice-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-invoice-shadow, 0 0 0 2px rgba(122,70,209,.14), 0 0 10px rgba(122,70,209,.40), 0 0 20px rgba(122,70,209,.18)) !important;
+}
+#dbLedInvoice.top-led-alert.is-violet:not(.is-off)::after,
+#page-ospiti .guest-card-alert-led.top-led.top-led-alert.is-violet:not(.is-off)::after,
+#page-ospiti .guest-card-alert-led.is-violet:not(.is-off)::after{
+  display:none !important;
 }
