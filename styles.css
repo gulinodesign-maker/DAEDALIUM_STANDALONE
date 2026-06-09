@@ -28637,3 +28637,37 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
     border-radius:21px !important;
   }
 }
+
+/* dDAE_3.023 — Statistiche Mensili: Generale come tasto grande espandibile sotto griglia 3x4 */
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card{
+  grid-column:1 / -1 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:74px !important;
+  padding:10px 8px !important;
+  text-align:center !important;
+  cursor:pointer !important;
+  border-radius:22px !important;
+}
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-button-label,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-name{
+  justify-content:center !important;
+  text-align:center !important;
+  font-size:clamp(18px, 4.8vw, 26px) !important;
+  line-height:1.05 !important;
+  letter-spacing:0.02em !important;
+}
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-left,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-head,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-val,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-bar,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-expanded-panel{
+  display:none !important;
+}
+#page-statmensili .month-stack.has-expanded-month .month-general-card:not(.is-expanded){
+  display:none !important;
+}
+#page-statmensili .month-stack.has-expanded-month .month-general-card.is-expanded{
+  display:flex !important;
+}
