@@ -304,9 +304,9 @@ body.ddae-dark.bg-dark-ready{
 /* dDAE_2.724 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
-  grid-template-columns: repeat(7, 15px);
+  grid-template-columns: repeat(8, 15px);
   grid-auto-rows: 15px;
-  gap: 11px;
+  gap: 9px;
   margin: 0;
   flex: 0 0 auto;
   align-self: center;
@@ -28375,4 +28375,67 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   background: rgba(122,70,209,.96) !important;
   border-color: rgba(90,46,166,1) !important;
   color:#fff !important;
+}
+
+
+/* dDAE_3.013 — Design: massimo 6 pallini per riga + LED fattura coerente */
+#roomSettingsAlertDots,
+#roomSettingsOptionDots{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0, 48px)) !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  width:100% !important;
+  column-gap:0 !important;
+  row-gap:16px !important;
+}
+#roomSettingsAlertDots .room-settings-color-dot,
+#roomSettingsOptionDots .room-settings-color-dot{
+  width:48px !important;
+  min-width:48px !important;
+  height:48px !important;
+  justify-self:center !important;
+  flex:0 0 auto !important;
+}
+@media (max-width:390px){
+  #roomSettingsAlertDots,
+  #roomSettingsOptionDots{
+    grid-template-columns:repeat(6, minmax(0, 44px)) !important;
+    row-gap:15px !important;
+  }
+  #roomSettingsAlertDots .room-settings-color-dot,
+  #roomSettingsOptionDots .room-settings-color-dot{
+    width:44px !important;
+    min-width:44px !important;
+    height:44px !important;
+  }
+}
+.top-led-alert.is-violet,
+.guest-card-alert-led.is-violet{
+  background:var(--ddae-alert-invoice-bg, rgba(122,70,209,.96)) !important;
+  border-color:var(--ddae-alert-invoice-border, rgba(90,46,166,1)) !important;
+  color:var(--ddae-alert-invoice-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight), var(--ddae-alert-invoice-shadow, 0 0 0 3px rgba(122,70,209,.20), 0 0 18px rgba(122,70,209,.62), 0 0 36px rgba(122,70,209,.36)) !important;
+}
+#page-ospiti .guest-card-alert-led.top-led.top-led-alert{
+  width:15px !important;
+  min-width:15px !important;
+  height:15px !important;
+  min-height:15px !important;
+  max-width:15px !important;
+  max-height:15px !important;
+  border-radius:999px !important;
+  aspect-ratio:1 / 1 !important;
+  padding:0 !important;
+}
+@media (max-width:480px){
+  #page-ospiti .guest-card-alert-led.top-led.top-led-alert{
+    width:14px !important;
+    min-width:14px !important;
+    height:14px !important;
+    min-height:14px !important;
+    max-width:14px !important;
+    max-height:14px !important;
+  }
 }
