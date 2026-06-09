@@ -28357,7 +28357,22 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   cursor: grabbing !important;
 }
 
-/* dDAE_3.007 — Calendario: conferma selezione immediata al rilascio dito */
+/* dDAE_3.008 — Calendario: conferma selezione immediata al rilascio dito */
 body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   cursor: grabbing !important;
+}
+
+/* dDAE_3.008 — Richiesta fattura: LED ricevuta viola */
+.top-led-alert.is-violet,
+.guest-card-alert-led.is-violet{
+  background: var(--ddae-alert-invoice-bg, rgba(122,70,209,.96)) !important;
+  border-color: var(--ddae-alert-invoice-border, rgba(90,46,166,1)) !important;
+  color: var(--ddae-alert-invoice-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow: var(--ddae-alert-led-highlight, none), var(--ddae-alert-invoice-shadow, 0 0 0 3px rgba(122,70,209,.20), 0 0 18px rgba(122,70,209,.62), 0 0 36px rgba(122,70,209,.36)) !important;
+}
+.guest-alert-tag.tag-violet{
+  background: rgba(122,70,209,.96) !important;
+  border-color: rgba(90,46,166,1) !important;
+  color:#fff !important;
 }
