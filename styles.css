@@ -28378,7 +28378,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 }
 
 
-/* dDAE_3.013 — Design: massimo 6 pallini per riga + LED fattura coerente */
+/* dDAE_3.014 — Design: massimo 6 pallini per riga + LED fattura coerente */
 #roomSettingsAlertDots,
 #roomSettingsOptionDots{
   display:grid !important;
