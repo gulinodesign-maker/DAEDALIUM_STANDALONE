@@ -28459,7 +28459,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 }
 
 
-/* dDAE_3.017 — LED richiesta fattura sempre indipendente e bagliore card ospite */
+/* dDAE_3.018 — LED richiesta fattura sempre indipendente e bagliore card ospite */
 #dbLedInvoice.top-led-alert.is-violet,
 #page-ospiti .guest-card-alert-led.top-led.top-led-alert.is-violet,
 #page-ospiti .guest-card-alert-led.is-violet{
@@ -28479,7 +28479,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 }
 
 
-/* dDAE_3.017 — LED richiesta fattura: bagliore esterno sempre valido come gli altri alert */
+/* dDAE_3.018 — LED richiesta fattura: bagliore esterno sempre valido come gli altri alert */
 #dbLedInvoice.top-led-alert.is-violet:not(.is-off),
 #page-ospiti .guest-card-alert-led.top-led.top-led-alert.is-violet:not(.is-off),
 #page-ospiti .guest-card-alert-led.is-violet:not(.is-off){
@@ -28494,3 +28494,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 #page-ospiti .guest-card-alert-led.is-violet:not(.is-off)::after{
   display:none !important;
 }
+
+/* dDAE_3.018 — Card popup alert topbar cliccabili */
+.guest-alert-card{ cursor:pointer; -webkit-tap-highlight-color: transparent; }
+.guest-alert-card .guest-alert-dismiss{ cursor:pointer; }
