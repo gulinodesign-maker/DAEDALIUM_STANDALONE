@@ -28671,3 +28671,17 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 #page-statmensili .month-stack.has-expanded-month .month-general-card.is-expanded{
   display:flex !important;
 }
+
+/* dDAE_3.026 — sezione Account e password */
+.settings-btn-account{ color:#2d9cdb; }
+.settings-account-modal-card{ width:min(92vw,430px); padding:18px 16px 16px; border-radius:24px; }
+.settings-account-modal-title{ text-align:center !important; width:100%; }
+.settings-account-modal-subtitle{ text-align:center; font-weight:800; color:#60738a; letter-spacing:.04em; margin:4px 0 14px; }
+.settings-account-form{ display:grid; gap:12px; margin:8px 0 14px; }
+.settings-account-field{ display:grid; gap:6px; font-weight:800; color:#60738a; }
+.settings-account-field span{ font-size:14px; letter-spacing:.02em; }
+.settings-account-field input{ width:100%; min-height:58px; border-radius:16px; border:1px solid rgba(15,23,42,.12); background:rgba(237,243,248,.82); color:#10243e; font-size:22px; font-weight:900; padding:0 16px; outline:none; }
+.settings-account-field input:focus{ border-color:rgba(45,156,219,.8); box-shadow:0 0 0 3px rgba(45,156,219,.12); }
+.settings-account-actions .auth-btn{ min-height:64px; height:64px; }
+body.ddae-dark .settings-account-field{ color:#d7e3f0; }
+body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }

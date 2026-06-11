@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.025" rel="stylesheet"/>
-<link href="./manifest.json?v=3.025" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.025" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.025" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.025" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.025" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.025" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.025" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.026" rel="stylesheet"/>
+<link href="./manifest.json?v=3.026" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.026" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.026" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.026" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.026" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.026" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.026" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.025";
+window.APP_VERSION = "3.026";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.025";
+  const LOCAL_BUILD = "dDAE_3.026";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.025";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.025")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.025")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.026")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.026")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "3.025";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.025"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.026"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -297,7 +297,7 @@ window.APP_VERSION = "3.025";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.025"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.026"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -505,7 +505,7 @@ window.APP_VERSION = "3.025";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.025</div></div></section>
+<div class="build" id="buildText">dDAE_3.026</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1077,6 +1077,10 @@ window.APP_VERSION = "3.025";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h9"></path><path d="M8.5 5c0 6-2 10-5.5 13"></path><path d="M6 11c1.5 2 3.5 3.5 6 4.5"></path><path d="M14 19h7"></path><path d="M17.5 5l4.5 14"></path><path d="M15 13h5"></path></svg>
 <span class="settings-btn-label">Lingua</span>
 </button>
+<button aria-label="Account e password" class="settings-btn settings-btn-account" id="settingsAccountBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M15 17h4"></path><path d="M17 15v4"></path></svg>
+<span class="settings-btn-label">Account</span>
+</button>
 <button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
 <span class="settings-btn-label">Licenza</span>
@@ -1128,6 +1132,10 @@ window.APP_VERSION = "3.025";
 <path d="M18 14v6"></path>
 </svg>
 <span class="settings-btn-label">Codice Operatore</span>
+</button>
+<button aria-label="Account e password" class="settings-btn settings-btn-account settings-btn-account-operator" id="opSettingsAccountBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M15 17h4"></path><path d="M17 15v4"></path></svg>
+<span class="settings-btn-label">Account</span>
 </button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout settings-btn-logout-pill" id="opSettingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
@@ -2659,6 +2667,34 @@ window.APP_VERSION = "3.025";
 <div class="settings-license-hint" id="settingsLicenseHint"></div>
 </div>
 </div>
+<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsAccountModal">
+<div aria-label="Account e password" aria-modal="true" class="modal-card settings-account-modal-card" role="dialog">
+<div class="db-menu-title settings-account-modal-title">ACCOUNT</div>
+<div class="settings-account-modal-subtitle">Nome account e password</div>
+<div class="settings-account-form">
+<label class="settings-account-field">
+<span>Nome account</span>
+<input autocomplete="name" id="settingsAccountNameInput" maxlength="42" type="text"/>
+</label>
+<label class="settings-account-field">
+<span>Password attuale</span>
+<input autocomplete="current-password" id="settingsAccountCurrentPasswordInput" type="password"/>
+</label>
+<label class="settings-account-field">
+<span>Nuova password</span>
+<input autocomplete="new-password" id="settingsAccountNewPasswordInput" type="password"/>
+</label>
+<label class="settings-account-field">
+<span>Conferma password</span>
+<input autocomplete="new-password" id="settingsAccountConfirmPasswordInput" type="password"/>
+</label>
+</div>
+<div class="settings-license-actions settings-account-actions">
+<button class="auth-btn auth-btn-green" id="settingsAccountSaveBtn" type="button">salva</button>
+<button class="auth-btn auth-btn-gray" id="settingsAccountCancelBtn" type="button">annulla</button>
+</div>
+</div>
+</div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="confirmYesNoModal">
 <div aria-label="Conferma" aria-modal="true" class="modal-card confirm-card" role="dialog">
 <div class="confirm-text" id="confirmYesNoText">—</div>
@@ -2783,7 +2819,7 @@ window.APP_VERSION = "3.025";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=3.025"></script>
-<script defer="" src="./app.js?v=3.025"></script>
+<script defer="" src="./config.js?v=3.026"></script>
+<script defer="" src="./app.js?v=3.026"></script>
 </body>
 </html>
