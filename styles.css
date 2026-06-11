@@ -28638,7 +28638,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   }
 }
 
-/* dDAE_3.023 — Statistiche Mensili: Generale come tasto grande espandibile sotto griglia 3x4 */
+/* dDAE_3.024 — Statistiche Mensili: Generale come tasto grande espandibile sotto griglia 3x4 */
 #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card{
   grid-column:1 / -1 !important;
   display:flex !important;
