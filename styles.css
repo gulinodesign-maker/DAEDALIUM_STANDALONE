@@ -28686,3 +28686,39 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 .settings-account-actions .auth-btn{ min-height:64px; height:64px; }
 body.ddae-dark .settings-account-field{ color:#d7e3f0; }
 body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }
+
+/* dDAE_3.028 — Impostazioni: macrocategoria Dati */
+.settings-btn-data{
+  color:#2f9bd6;
+}
+.settings-data-card{
+  width:min(680px,92vw);
+  max-height:calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 56px);
+  overflow:auto;
+  border-radius:28px;
+  padding:22px 18px 20px;
+}
+.settings-data-title{
+  text-align:center;
+  margin-bottom:18px;
+}
+.settings-data-actions{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.settings-data-actions .settings-btn{
+  width:100%;
+  min-height:78px;
+  margin:0;
+}
+.settings-data-close{
+  width:100%;
+  min-height:64px;
+  margin-top:4px;
+  border-radius:18px;
+}
+body.ddae-dark .settings-data-card{
+  background:rgba(20,24,32,0.96);
+  color:#eef2f7;
+}

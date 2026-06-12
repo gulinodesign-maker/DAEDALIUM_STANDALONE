@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.027" rel="stylesheet"/>
-<link href="./manifest.json?v=3.027" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.027" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.027" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.027" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.027" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.027" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.027" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.028" rel="stylesheet"/>
+<link href="./manifest.json?v=3.028" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.028" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.028" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.028" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.028" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.028" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.028" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.027";
+window.APP_VERSION = "3.028";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.027";
+  const LOCAL_BUILD = "dDAE_3.028";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.027";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.027")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.027")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.028")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.028")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "3.027";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.027"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.028"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -297,7 +297,7 @@ window.APP_VERSION = "3.027";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.027"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.028"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -505,7 +505,7 @@ window.APP_VERSION = "3.027";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.027</div></div></section>
+<div class="build" id="buildText">dDAE_3.028</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1037,21 +1037,9 @@ window.APP_VERSION = "3.027";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path><path d="M7 4v16"></path><path d="M12 4v16"></path><path d="M17 4v16"></path></svg>
 <span class="settings-btn-label">Design</span>
 </button>
-<button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
-<span class="settings-btn-label">Operatori</span>
-</button>
-<button aria-label="Channel" class="settings-btn settings-btn-channel" id="settingsChannelBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
-<span class="settings-btn-label">Channel</span>
-</button>
-<button aria-label="Stanze" class="settings-btn settings-btn-roomcatalog" id="settingsRoomCatalogBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="16" rx="2" ry="2" width="16" x="4" y="4"></rect><path d="M9 4v16"></path><path d="M15 4v16"></path><path d="M4 10h16"></path><path d="M4 15h16"></path></svg>
-<span class="settings-btn-label">Stanze</span>
-</button>
-<button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
-<span class="settings-btn-label">Lavanderia</span>
+<button aria-label="Dati" class="settings-btn settings-btn-data" id="settingsDataBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path><path d="M8 4v16"></path><path d="M16 4v16"></path></svg>
+<span class="settings-btn-label">Dati</span>
 </button>
 <button aria-label="Anno, tassa e giorni tassa soggiorno" class="settings-btn settings-btn-config settings-btn-tax-year" id="settingsConfigBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -2006,6 +1994,31 @@ window.APP_VERSION = "3.027";
 </div>
 </div>
 </div>
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsDataModal">
+<div aria-label="Dati" aria-modal="true" class="modal-card settings-data-card" role="dialog">
+<div class="db-menu-title settings-data-title">DATI</div>
+<div class="settings-data-actions">
+<button aria-label="Operatori" class="settings-btn settings-btn-operator" id="settingsOperatoriBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+<span class="settings-btn-label">Operatori</span>
+</button>
+<button aria-label="Channel" class="settings-btn settings-btn-channel" id="settingsChannelBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="M17 12h3"></path><path d="M18.5 15.5v-7"></path></svg>
+<span class="settings-btn-label">Channel</span>
+</button>
+<button aria-label="Stanze" class="settings-btn settings-btn-roomcatalog" id="settingsRoomCatalogBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><rect height="16" rx="2" ry="2" width="16" x="4" y="4"></rect><path d="M9 4v16"></path><path d="M15 4v16"></path><path d="M4 10h16"></path><path d="M4 15h16"></path></svg>
+<span class="settings-btn-label">Stanze</span>
+</button>
+<button aria-label="Componenti lavanderia" class="settings-btn settings-btn-laundrycatalog" id="settingsLaundryCatalogBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
+<span class="settings-btn-label">Lavanderia</span>
+</button>
+<button aria-label="Chiudi dati" class="auth-btn auth-btn-gray settings-data-close" id="settingsDataCloseBtn" type="button">annulla</button>
+</div>
+</div>
+</div>
 <div aria-hidden="true" class="modal" hidden="" id="settingsConfigModal">
 <div aria-modal="true" class="modal-card operatori-editor-card settings-popup-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2809,7 +2822,7 @@ window.APP_VERSION = "3.027";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=3.027"></script>
-<script defer="" src="./app.js?v=3.027"></script>
+<script defer="" src="./config.js?v=3.028"></script>
+<script defer="" src="./app.js?v=3.028"></script>
 </body>
 </html>
