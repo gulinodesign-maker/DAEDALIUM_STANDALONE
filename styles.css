@@ -2972,6 +2972,7 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 .auth-btn-azure{ background: rgba(90, 160, 210, 0.80); }
 .auth-btn-gray{ background: rgba(140, 140, 140, 0.80); }
 .auth-btn-orange{ background: rgba(230, 140, 70, 0.80); }
+.auth-btn-violet{ background: rgba(120, 70, 190, 0.80); }
 
 .auth-extra{ margin-top: 6px; }
 .auth-extra[hidden]{ display:none !important; }
