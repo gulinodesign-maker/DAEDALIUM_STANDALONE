@@ -28687,7 +28687,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 body.ddae-dark .settings-account-field{ color:#d7e3f0; }
 body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }
 
-/* dDAE_3.032 — Impostazioni: macrocategoria Dati */
+/* dDAE_3.033 — Impostazioni: macrocategoria Dati */
 .settings-btn-data{
   color:#2f9bd6;
 }
@@ -28724,7 +28724,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.032 — Popup Dati: testo e icone più grandi e in grassetto */
+/* dDAE_3.033 — Popup Dati: testo e icone più grandi e in grassetto */
 #settingsDataModal .settings-data-actions .settings-btn{
   min-height:92px;
   display:flex;
@@ -28760,7 +28760,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.032 — Popup Dati: anche Annulla grande e grassetto */
+/* dDAE_3.033 — Popup Dati: anche Annulla grande e grassetto */
 #settingsDataModal .settings-data-close{
   min-height:92px !important;
   font-size:26px !important;
@@ -28779,7 +28779,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.032 — Popup Dati: tasti ridotti del 30% e Annulla con maiuscola */
+/* dDAE_3.033 — Popup Dati: tasti ridotti del 30% e Annulla con maiuscola */
 #settingsDataModal .settings-data-actions{
   gap:10px !important;
 }
@@ -28831,5 +28831,28 @@ body.ddae-dark .settings-data-card{
   #settingsDataModal .settings-data-close{
     min-height:62px !important;
     height:62px !important;
+  }
+}
+
+
+/* dDAE_3.033 — Popup Account: tasti coerenti con design editabile */
+#settingsAccountModal .settings-account-actions .auth-btn{
+  min-height:64px !important;
+  height:64px !important;
+  border-radius:18px !important;
+  font-size:20px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  letter-spacing:0.02em !important;
+  text-transform:none !important;
+  border-width:1px !important;
+  border-style:solid !important;
+  box-shadow:none !important;
+}
+@media (max-width:420px){
+  #settingsAccountModal .settings-account-actions .auth-btn{
+    min-height:62px !important;
+    height:62px !important;
+    font-size:19px !important;
   }
 }
