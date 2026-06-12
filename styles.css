@@ -28687,7 +28687,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 body.ddae-dark .settings-account-field{ color:#d7e3f0; }
 body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }
 
-/* dDAE_3.031 — Impostazioni: macrocategoria Dati */
+/* dDAE_3.032 — Impostazioni: macrocategoria Dati */
 .settings-btn-data{
   color:#2f9bd6;
 }
@@ -28724,7 +28724,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.031 — Popup Dati: testo e icone più grandi e in grassetto */
+/* dDAE_3.032 — Popup Dati: testo e icone più grandi e in grassetto */
 #settingsDataModal .settings-data-actions .settings-btn{
   min-height:92px;
   display:flex;
@@ -28760,7 +28760,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.031 — Popup Dati: anche Annulla grande e grassetto */
+/* dDAE_3.032 — Popup Dati: anche Annulla grande e grassetto */
 #settingsDataModal .settings-data-close{
   min-height:92px !important;
   font-size:26px !important;
@@ -28775,5 +28775,61 @@ body.ddae-dark .settings-data-card{
   #settingsDataModal .settings-data-close{
     min-height:88px !important;
     font-size:23px !important;
+  }
+}
+
+
+/* dDAE_3.032 — Popup Dati: tasti ridotti del 30% e Annulla con maiuscola */
+#settingsDataModal .settings-data-actions{
+  gap:10px !important;
+}
+#settingsDataModal .settings-data-actions .settings-btn{
+  min-height:64px !important;
+  height:64px !important;
+  padding:10px 18px !important;
+  border-radius:18px !important;
+  gap:10px !important;
+}
+#settingsDataModal .settings-data-actions .settings-btn .ui-ico{
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  stroke-width:2.7 !important;
+}
+#settingsDataModal .settings-data-actions .settings-btn .settings-btn-label{
+  font-size:20px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+}
+#settingsDataModal .settings-data-close{
+  min-height:64px !important;
+  height:64px !important;
+  padding:10px 18px !important;
+  border-radius:18px !important;
+  font-size:20px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  text-transform:none !important;
+}
+@media (max-width:420px){
+  #settingsDataModal .settings-data-actions{
+    gap:10px !important;
+  }
+  #settingsDataModal .settings-data-actions .settings-btn{
+    min-height:62px !important;
+    height:62px !important;
+  }
+  #settingsDataModal .settings-data-actions .settings-btn .ui-ico{
+    width:23px !important;
+    height:23px !important;
+    min-width:23px !important;
+  }
+  #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label,
+  #settingsDataModal .settings-data-close{
+    font-size:19px !important;
+  }
+  #settingsDataModal .settings-data-close{
+    min-height:62px !important;
+    height:62px !important;
   }
 }
