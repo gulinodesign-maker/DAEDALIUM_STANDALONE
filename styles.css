@@ -28687,7 +28687,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 body.ddae-dark .settings-account-field{ color:#d7e3f0; }
 body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }
 
-/* dDAE_3.030 — Impostazioni: macrocategoria Dati */
+/* dDAE_3.031 — Impostazioni: macrocategoria Dati */
 .settings-btn-data{
   color:#2f9bd6;
 }
@@ -28724,7 +28724,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.030 — Popup Dati: testo e icone più grandi e in grassetto */
+/* dDAE_3.031 — Popup Dati: testo e icone più grandi e in grassetto */
 #settingsDataModal .settings-data-actions .settings-btn{
   min-height:92px;
   display:flex;
@@ -28755,6 +28755,25 @@ body.ddae-dark .settings-data-card{
     min-width:31px !important;
   }
   #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label{
+    font-size:23px !important;
+  }
+}
+
+
+/* dDAE_3.031 — Popup Dati: anche Annulla grande e grassetto */
+#settingsDataModal .settings-data-close{
+  min-height:92px !important;
+  font-size:26px !important;
+  line-height:1.12 !important;
+  font-weight:900 !important;
+  letter-spacing:0.02em !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+@media (max-width:420px){
+  #settingsDataModal .settings-data-close{
+    min-height:88px !important;
     font-size:23px !important;
   }
 }
