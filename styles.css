@@ -28687,7 +28687,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 body.ddae-dark .settings-account-field{ color:#d7e3f0; }
 body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); color:#edf3f8; border-color:rgba(255,255,255,.14); }
 
-/* dDAE_3.029 — Impostazioni: macrocategoria Dati */
+/* dDAE_3.030 — Impostazioni: macrocategoria Dati */
 .settings-btn-data{
   color:#2f9bd6;
 }
@@ -28721,4 +28721,40 @@ body.ddae-dark .settings-account-field input{ background:rgba(15,23,42,.72); col
 body.ddae-dark .settings-data-card{
   background:rgba(20,24,32,0.96);
   color:#eef2f7;
+}
+
+
+/* dDAE_3.030 — Popup Dati: testo e icone più grandi e in grassetto */
+#settingsDataModal .settings-data-actions .settings-btn{
+  min-height:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+#settingsDataModal .settings-data-actions .settings-btn .ui-ico{
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  stroke-width:2.8 !important;
+}
+#settingsDataModal .settings-data-actions .settings-btn .settings-btn-label{
+  font-size:26px !important;
+  line-height:1.12 !important;
+  font-weight:900 !important;
+  letter-spacing:0.02em !important;
+}
+@media (max-width:420px){
+  #settingsDataModal .settings-data-actions .settings-btn{
+    min-height:88px;
+    gap:12px;
+  }
+  #settingsDataModal .settings-data-actions .settings-btn .ui-ico{
+    width:31px !important;
+    height:31px !important;
+    min-width:31px !important;
+  }
+  #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label{
+    font-size:23px !important;
+  }
 }
