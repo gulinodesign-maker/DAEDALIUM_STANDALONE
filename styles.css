@@ -28856,3 +28856,24 @@ body.ddae-dark .settings-data-card{
     font-size:19px !important;
   }
 }
+
+
+/* dDAE_3.035 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+#settingsDataModal:not([hidden]),
+#settingsAccountModal:not([hidden]),
+#roomCatalogEditorModal:not([hidden]){
+  pointer-events:auto !important;
+  touch-action:none !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#settingsDataModal:not([hidden]) .modal-card,
+#settingsAccountModal:not([hidden]) .modal-card,
+#roomCatalogEditorModal:not([hidden]) .modal-card{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+body.ddae-settings-modal-open main,
+body.ddae-settings-modal-open .wrap{
+  overscroll-behavior:contain !important;
+}
