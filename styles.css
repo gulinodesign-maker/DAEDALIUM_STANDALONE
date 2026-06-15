@@ -29121,3 +29121,19 @@ body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
     max-height:60px !important;
   }
 }
+
+/* dDAE_3.042 — Calendario range: testo Check-in/Check-out separato dal testo mese */
+.guest-date-range-top-field.is-start .guest-date-range-top-label,
+.guest-date-range-top-field.is-start .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-end .guest-date-range-top-label,
+.guest-date-range-top-field.is-end .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-monthtitle{
+  color:var(--ddae-range-part-month-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-month-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
