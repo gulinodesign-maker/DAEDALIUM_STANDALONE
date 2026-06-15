@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 2.652
+ * Build: 3.046
  */
-const BUILD_VERSION = "3.035";
+const BUILD_VERSION = "3.046";
 
 const __BACKUP_GRAPHIC_DEFAULTS_VERSION__ = 'dDAE_2.687';
 const __BACKUP_GRAPHIC_DEFAULTS_LOCAL_STORAGE__ = {"dDAE_spese_card_visual_v1":"{\"CAT:iva_22\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"\",\"opacity\":0.25},\"CAT:tassa_soggiorno\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_4\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:iva_10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"\",\"opacity\":0.25},\"CAT:contanti\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"\",\"opacity\":0.25},\"CAT:fuori_budget\":{\"bg\":\"indigo-4\",\"border\":\"indigo-4\",\"fg\":\"\",\"opacity\":0.25}}","ddae_graph_colors_2026_ricevute":"{\"Senza ricevuta\":\"gray-5\",\"Con ricevuta\":\"sky-5\"}","dDAE_stat_shared_line_chart_local_v1_statmensili":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"gray-6\",\"opacity\":0.25}","dDAE_statcard_colors_statcancellazioni":"{\"cancellate\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-5\",\"opacity\":0.75},\"totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.8},\"percentuale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75}}","dDAE_spese_card_opacity_v1":"{\"CAT:iva_22\":0.25,\"CAT:tassa_soggiorno\":0.25,\"CAT:iva_4\":0.25,\"CAT:iva_10\":0.25,\"CAT:contanti\":0.25,\"CAT:fuori_budget\":0.25}","dDAE_stat_fiscal_btn_visual_v1":"{\"on\":{\"bg\":\"orange-5\",\"border\":\"orange-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_design_bg_opacity_v1":"0.5","dDAE_pill_colors_v1":"{\"settingsYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"gray-4\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-3\",\"border\":\"red-6\",\"opacity\":0.25},\"opSettingsYearPill\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"opSettingsLogoutBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.5},\"taxYearBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"taxEstimateBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.8},\"setTassaMaxNottiBtn\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-5\",\"opacity\":0.75},\"settingsConfigCancelBtn\":{\"fg\":\"gray-1\",\"bg\":\"red-6\",\"border\":\"red-6\",\"opacity\":1},\"settingsConfigSaveBtn\":{\"fg\":\"gray-1\",\"bg\":\"green-5\",\"border\":\"green-5\",\"opacity\":1},\"setTassaFieldPill\":{\"fg\":\"gray-1\",\"bg\":\"gray-4\",\"border\":\"gray-4\",\"opacity\":0.75}}","dDAE_statcard_colors_statchannel":"{\"channel\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"direct\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"channel:ch-1773321894018\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"channel:ch-1773320830990\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"blue-6\",\"opacity\":0.75},\"channel:ch-1773854223825\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","dDAE_tax_page_card_visual_v1":"{\"taxPayingCard\":{\"bg\":\"sky-2\",\"border\":\"sky-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxTotalRow\":{\"bg\":\"gray-1\",\"border\":\"gray-2\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxKidsCard\":{\"bg\":\"gray-2\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.8},\"taxReducedCard\":{\"bg\":\"beige-2\",\"border\":\"beige-3\",\"fg\":\"gray-6\",\"opacity\":0.8}}","ddae_graph_colors_2026_occupazione-mensile":"{\"Gennaio\":\"gray-3\",\"Febbraio\":\"gray-3\",\"Marzo\":\"acid-5\",\"Aprile\":\"green-5\",\"Maggio\":\"mint-5\",\"Giugno\":\"yellow-4\",\"Luglio\":\"orange-4\",\"Agosto\":\"red-5\",\"Settembre\":\"pink-5\",\"Ottobre\":\"violet-5\",\"Novembre\":\"gray-3\",\"Dicembre\":\"gray-3\"}","dDAE_stat_shared_line_chart_visual_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_statcard_colors_statprenotazioni":"{\"ricevute\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"occupazione\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"cancellazioni\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"booking\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"pulizie\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"graph-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"statprenotazioni-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.8},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75}}","dDAE_statgen_compare_btn_visual_v1":"{\"on\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"off\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75}}","dDAE_statcard_colors_statgen":"{\"fatturato-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"spese-totali\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"senza-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"con-ricevuta\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"iva-da-versare\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"guadagno-totale\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"giacenza-in-cassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-4\",\"opacity\":0.75},\"statgen-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"statgen-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statgen-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.75},\"statgen-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statgen-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statgen-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"statgen-7\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75}}","ddae_app_text_ui_v1":"{\"bold\":false,\"size\":\"1\"}","dDAE_guest_filter_button_visual_v1":"{\"guestToday\":{\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-4\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"today\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"3days\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":1},\"all\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByCheckout\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"distractive\":{\"bg\":\"sky-3\",\"border\":\"sky-3\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_date_range_calendar_theme_v1":"{\"bg\":\"sky-2\",\"border\":\"sky-2\",\"fg\":\"gray-5\",\"opacity\":0.5}","ddae_stat_fiscal_mode":"forfettario","dDAE_tax_quarter_visual_v1":"{\"taxQ1Btn\":{\"bg\":\"blue-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ2Btn\":{\"bg\":\"acid-5\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ3Btn\":{\"bg\":\"yellow-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75},\"taxQ4Btn\":{\"bg\":\"orange-4\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":0.75}}","dDAE_single_action_button_visual_v1":"{\"confirmYesNoNo\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"confirmYesNoYes\":{\"bg\":\"green-5\",\"border\":\"green-6\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorCancel\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"operatoriEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"laundryCatalogEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsConfigSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupExport\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupImport\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"settingsBackupCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_save\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"rc_cancel\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByArrivo\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestToday\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByInserimento\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestSortByNome\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"channelEditorTagColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionWhatsApp\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionCall\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":1},\"guestPhoneActionSms\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":1},\"channelEditorGraphColor\":{\"bg\":\"yellow-4\",\"border\":\"yellow-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnContanti\":{\"bg\":\"acid-6\",\"border\":\"acid-6\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnFuoriBudget\":{\"bg\":\"violet-5\",\"border\":\"violet-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva4\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnTassa\":{\"bg\":\"gray-4\",\"border\":\"gray-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva22\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":0.75},\"spesaCatBtnIva10\":{\"bg\":\"orange-4\",\"border\":\"orange-4\",\"fg\":\"gray-1\",\"opacity\":0.75},\"licenseDateRangeTrigger\":{\"bg\":\"sky-5\",\"border\":\"sky-5\",\"fg\":\"gray-1\",\"opacity\":0.5},\"licenseGeneratorConfirm\":{\"bg\":\"green-4\",\"border\":\"green-4\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseGeneratorCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeCancel\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeApply\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1},\"licenseDateRangeNext\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"licenseDateRangePrev\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"blue-4\",\"opacity\":0.75},\"roomCatalogEditorDelete\":{\"bg\":\"red-5\",\"border\":\"red-5\",\"fg\":\"gray-1\",\"opacity\":1},\"roomCatalogEditorTagColor\":{\"bg\":\"blue-4\",\"border\":\"blue-4\",\"fg\":\"gray-1\",\"opacity\":1},\"roomCatalogEditorSave\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}","dDAE_statcard_colors_statmensili":"{\"Gennaio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Febbraio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Marzo\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"Aprile\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"Maggio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"mint-5\",\"opacity\":0.75},\"Giugno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"Luglio\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-4\",\"opacity\":0.75},\"Agosto\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-5\",\"opacity\":0.75},\"Settembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"pink-5\",\"opacity\":0.75},\"Ottobre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"violet-5\",\"opacity\":0.75},\"Novembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75},\"Dicembre\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-3\",\"opacity\":0.75}}","dDAE_pill_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"blue-4\",\"opacity\":0.8}","dDAE_statgen_compare_year_v1":"2025","dDAE_roomsettings_text_button_visual_v1":"{\"1\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"acid-5\",\"border\":\"acid-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"2\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"yellow-4\",\"border\":\"yellow-5\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"3\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":0.75}},\"bold\":{\"distractive\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"active\":{\"bg\":\"gray-3\",\"border\":\"gray-4\",\"fg\":\"gray-6\",\"opacity\":1}}}","dDAE_stat_shared_line_chart_local_v1_statchannel":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_guest_filter_theme_v1":"{\"guestToday\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"red-6\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByArrivo\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByInserimento\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}},\"guestSortByNome\":{\"inactive\":{\"bg\":\"sky-4\",\"border\":\"sky-4\",\"fg\":\"gray-1\",\"opacity\":1},\"active\":{\"bg\":\"green-5\",\"border\":\"green-5\",\"fg\":\"gray-1\",\"opacity\":1}}}","dDAE_room_settings_shell_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-4\",\"opacity\":0.5}","dDAE_launcher_icon_colors_v2":"{\"goProdotti\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goTassaSoggiorno\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goPulizie\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOspite\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goCalendario\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"openLauncher\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goLavanderia\":{\"fg\":\"orange-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goOrePuliziaHome\":{\"fg\":\"beige-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatistiche\":{\"fg\":\"beige-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsRoomsBtn\":{\"fg\":\"yellow-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsChannelBtn\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPiscina\":{\"fg\":\"beige-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatCancellazioni\":{\"fg\":\"orange-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatGen\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatMensili\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeYearPill\":{\"fg\":\"gray-1\",\"bg\":\"sky-5\",\"border\":\"sky-6\"},\"settingsLaundryCatalogBtn\":{\"fg\":\"mint-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsLanguageBtn\":{\"fg\":\"sky-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatPrenotazioni\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsSaveBtn\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsDbBtn\":{\"fg\":\"acid-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsConfigBtn\":{\"fg\":\"red-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsExportRosterBtn\":{\"fg\":\"violet-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsOperatoriBtn\":{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatSpese\":{\"fg\":\"orange-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"settingsYearPill\":{\"fg\":\"sky-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsLanguageBtn\":{\"fg\":\"sky-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsDarkBtn\":{\"fg\":\"gray-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"opSettingsCodeBtn\":{\"fg\":\"violet-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goDbSync\":{\"fg\":\"gray-1\",\"bg\":\"sky-6\",\"border\":\"sky-5\",\"opacity\":0.5},\"settingsLogoutBtn\":{\"fg\":\"red-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.25},\"goStatRicevute\":{\"fg\":\"beige-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatChannel\":{\"fg\":\"gray-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"goStatPulizie\":{\"fg\":\"gray-3\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.75},\"settingsMasterBtn\":{\"fg\":\"violet-6\",\"bg\":\"gray-1\",\"border\":\"gray-3\",\"opacity\":0.5}}","dDAE_statistics_card_theme_v1":"{\"bg\":\"gray-1\",\"border\":\"gray-4\"}","dDAE_stat_shared_line_chart_local_v1_statspese":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-5\",\"opacity\":0.25}","dDAE_statcard_colors_statspese":"{\"totale-spese\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"ssRowContanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-5\",\"opacity\":0.75},\"ssRowTassa\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"ssRowIva22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"ssRowIva10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"ssRowIva4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.75},\"statspese-1\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"red-6\",\"opacity\":0.75},\"statspese-3\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-6\",\"opacity\":0.75},\"statspese-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-5\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"statspese-6\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"green-5\",\"opacity\":0.75},\"contanti\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"acid-6\",\"opacity\":0.75},\"tassa-soggiorno\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"beige-5\",\"opacity\":0.75},\"iva-22\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-5\",\"opacity\":0.75},\"iva-10\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"iva-4\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"yellow-4\",\"opacity\":0.75},\"statspese-2\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"\",\"opacity\":0.75}}","ddae_graph_colors_2026_booking":"{\"Senza Booking\":\"beige-3\",\"Con Booking\":\"sky-6\"}","ddae_graph_colors_2026_cancellazioni":"{\"Attive\":\"sky-5\",\"Cancellate\":\"red-6\"}","dDAE_stat_shared_line_chart_local_v1_statgen":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"red-6\",\"opacity\":0.25}","dDAE_room_settings_card_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-3\",\"border\":\"gray-3\",\"opacity\":0.5}","dDAE_launcher_grid_theme_v1":"{\"fg\":\"blue-4\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_guest_list_card_visual_v1":"{\"o_1775159136175_205486\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"guestListCard\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775106659733_825381\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1775037422844_962992\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774807633140_367898\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774794698864_733386\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778434592_574573\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774778165179_164222\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774695769615_181323\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774615813484_431417\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774590073970_135493\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774549182199_792803\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774349131194_396554\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774294070132_23569\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1774203333472_622307\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773778665053_934130\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773762596108_240957\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773521761925_160207\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773515378156_532027\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1773512685129_208087\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772051711254_242171\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883347678_865997\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771883151252_58020\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771798354312_572208\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771792262655_567122\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772990996388_449132\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772915461283_912499\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772911991089_836567\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772892000802_222541\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772891893203_185070\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665612075_899841\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772665387668_658518\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1772463249357_353585\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771768094736_352578\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771423554826_640378\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771403404996_105952\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771198573691_351745\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1771013142824_95142\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770194242017_352048\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1770061837013_848028\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769361483914_35511\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769337888993_664215\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1769104205714_730627\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836330926_608858\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768836070933_131311\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835923047_6795\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835740696_729080\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835674348_109544\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835594932_997589\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835494641_952861\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835302917_647166\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768835082197_683146\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834969050_816317\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834741905_422496\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834624196_315583\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834490336_837552\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25},\"o_1768834134049_32972\":{\"bg\":\"gray-3\",\"border\":\"gray-3\",\"fg\":\"gray-5\",\"opacity\":0.25}}","dDAE_header_action_theme_v1":"{\"fg\":\"sky-5\",\"bg\":\"gray-1\",\"border\":\"gray-3\"}","dDAE_statcard_colors_statpulizie":"{\"operatore-costanza\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"sky-6\",\"opacity\":0.75},\"operatore-giovanna\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"orange-5\",\"opacity\":0.75},\"operatore-gero\":{\"bg\":\"gray-1\",\"border\":\"gray-4\",\"fg\":\"beige-5\",\"opacity\":0.75}}","ddae_graph_colors_2026_spese":"{\"Contanti\":\"acid-5\",\"Tassa soggiorno\":\"beige-4\",\"IVA 22%\":\"red-6\",\"IVA 10%\":\"orange-5\",\"IVA 4%\":\"sky-5\"}","dDAE_statgen_compare_enabled_v1":"0","dDAE_header_action_colors_v1":"{\"backBtnTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistiche\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheMensili\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheSpese\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePrenotazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheCancellazioni\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAzienda\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheAmministratore\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAdminInputsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatistichePiscina\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"homeSettingsTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"opImportRosterTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"opLogoutTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnIrapTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"guestBackTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"authImportBackupTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"hamburgerBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"prodAddBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"prodResetBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddOperatoreCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddChannelCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddLaundryComponentCard\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnAddSpesa\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnNewGuestTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnLaundryGenerateTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaSimTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnPiscinaBackfillTop\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"piscinaShareBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calPrevMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calTodayBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"calNextMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanPrev\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanToday\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"cleanNext\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.25},\"btnBackStatisticheChannel\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.5},\"btnBackStatistichePulizie\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statFiscalModeBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareToggleBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"statGenCompareYearBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75},\"piscinaResetMonthBtn\":{\"fg\":\"sky-6\",\"bg\":\"gray-2\",\"border\":\"gray-3\",\"opacity\":0.75}}","dDAE_roomsettings_theme_button_visual_v1":"{\"1\":{\"bg\":\"red-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25},\"active\":{\"bg\":\"red-5\",\"border\":\"red-6\",\"fg\":\"gray-1\",\"opacity\":1}},\"2\":{\"bg\":\"orange-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"3\":{\"bg\":\"yellow-4\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}},\"4\":{\"bg\":\"acid-5\",\"border\":\"gray-3\",\"fg\":\"gray-1\",\"opacity\":1,\"distractive\":{\"bg\":\"gray-1\",\"border\":\"gray-3\",\"fg\":\"gray-6\",\"opacity\":0.25}}}","dDAE_statgen_reg_chart_visual_v1":"{\"bg\":\"gray-2\",\"border\":\"gray-5\",\"fg\":\"yellow-5\",\"opacity\":0.25}","dDAE_stat_shared_line_chart_local_v1_statpulizie":"{\"bg\":\"gray-1\",\"border\":\"gray-5\",\"fg\":\"orange-6\",\"opacity\":0.25}"};
@@ -324,6 +324,10 @@ function __normIsoDate__(s){
   // accetta YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(v0)) return v0;
 
+  // accetta ISO datetime: usa la parte data, evitando shift di timezone su Android/Chrome
+  const mIsoDateTime = v0.match(/^(\d{4})-(\d{2})-(\d{2})[T\s]/);
+  if (mIsoDateTime) return `${mIsoDateTime[1]}-${mIsoDateTime[2]}-${mIsoDateTime[3]}`;
+
   // accetta DD/MM/YYYY o DD-MM-YYYY
   let m = v0.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
   if (m){
@@ -406,6 +410,38 @@ function __overlapRange__(start, end, from, to){
   if (a && e && e < a) return false;
   if (b && s && s > b) return false;
   return true;
+}
+
+// dDAE_3.046 — Normalizzazione robusta campi ospite per sync Android/operatore.
+// Alcuni backup/import o browser possono conservare nomi colonna diversi: il calendario deve leggerli tutti.
+const __GUEST_CHECKIN_KEYS__ = ["check_in", "checkIn", "checkin", "check_in_date", "data_check_in", "dataCheckIn", "arrivo", "data_arrivo", "dataArrivo", "arrival", "arrivalDate", "startDate", "start_date", "from", "dal"];
+const __GUEST_CHECKOUT_KEYS__ = ["check_out", "checkOut", "checkout", "check_out_date", "data_check_out", "dataCheckOut", "partenza", "data_partenza", "dataPartenza", "departure", "departureDate", "endDate", "end_date", "to", "al"];
+const __GUEST_ROOMS_KEYS__ = ["stanze", "stanza", "rooms", "room", "camere", "camera", "roomNumbers", "room_numbers", "stanze_num", "stanzeNum", "roomIds", "room_ids"];
+
+function __guestFirstFieldValue__(row, keys){
+  try{
+    if (!row || typeof row !== "object") return "";
+    for (const k of (Array.isArray(keys) ? keys : [])){
+      if (!k) continue;
+      const v = row[k];
+      if (v !== undefined && v !== null && String(v).trim() !== "") return v;
+    }
+  }catch(_){ }
+  return "";
+}
+function __guestCheckInRaw__(row){ return __guestFirstFieldValue__(row, __GUEST_CHECKIN_KEYS__); }
+function __guestCheckOutRaw__(row){ return __guestFirstFieldValue__(row, __GUEST_CHECKOUT_KEYS__); }
+function __guestRoomsRaw__(row){ return __guestFirstFieldValue__(row, __GUEST_ROOMS_KEYS__); }
+function __guestRoomsArrayForCalendar__(row, maxRooms){
+  try{
+    let roomsArr = [];
+    const raw = __guestRoomsRaw__(row);
+    if (Array.isArray(raw)) roomsArr = raw;
+    else if (raw !== undefined && raw !== null && String(raw).trim().length) roomsArr = _parseRoomsArr(raw);
+    const max = (Number(maxRooms) > 0) ? Number(maxRooms) : ((typeof getConfiguredRoomsCount === "function") ? getConfiguredRoomsCount(6) : 6);
+    if (typeof normalizeRoomsList === "function") return normalizeRoomsList(roomsArr, max);
+    return (Array.isArray(roomsArr) ? roomsArr : []).map(n=>Number(n)||0).filter(n=>n>0 && n<=max);
+  }catch(_){ return []; }
 }
 
 function __normBool01(v){
@@ -1110,7 +1146,7 @@ async function __localApiTable__(action, method, params, body){
     if (action === "ospiti"){
       const from = params?.from || params?.da || "";
       const to = params?.to || params?.a || "";
-      return rows.filter(r => __overlapRange__(r?.check_in, r?.check_out, from, to));
+      return rows.filter(r => __overlapRange__(__guestCheckInRaw__(r), __guestCheckOutRaw__(r), from, to));
     }
 
     if (action === "ospiti_eliminati"){
@@ -1659,6 +1695,7 @@ async function __fbWriteAdminPayload__(payload){
   if (raw.length <= __FB_ADMIN_CHUNK_SIZE__){
     await __fsSet__(`sync/${teamId}`, {
       admin_json: raw,
+      admin_core_json: "",
       admin_chunked: "false",
       admin_chunk_count: "0",
       admin_size: String(raw.length),
@@ -1689,14 +1726,28 @@ async function __fbWriteAdminPayload__(payload){
       try{ await __fsDelete__(`sync/${teamId}/admin_chunks/${id}`); }catch(_){}
     }
   }
-  await __fsSet__(`sync/${teamId}`, {
+
+  let coreRaw = "";
+  try{
+    const ds = (payload && payload.datasets && typeof payload.datasets === "object") ? payload.datasets : {};
+    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), datasets:{} };
+    ["impostazioni", "ospiti", "stanze", "servizi"].forEach((t)=>{
+      if (ds[t] !== undefined) core.datasets[t] = ds[t];
+    });
+    const r = JSON.stringify(core);
+    if (r && r.length <= 450000) coreRaw = r;
+  }catch(_){}
+
+  const rootData = {
     admin_chunked: "true",
     admin_chunk_count: String(chunks.length),
     admin_size: String(raw.length),
     adminUpdatedAt: { __ts: nowIso },
     updatedAt: { __ts: nowIso },
     build: BUILD_VERSION
-  });
+  };
+  if (coreRaw) rootData.admin_core_json = coreRaw;
+  await __fsSet__(`sync/${teamId}`, rootData);
   return true;
 }
 
@@ -1704,31 +1755,88 @@ async function __fbReadAdminPayload__(){
   __fbLoadLink__();
   const teamId = String(__FB_STATE__.teamId || "").trim();
   if (!teamId) return null;
+
+  const parsePayload = (raw) => {
+    try{
+      const s = String(raw || "");
+      if (!s) return null;
+      const p = JSON.parse(s);
+      return (p && p.datasets) ? p : null;
+    }catch(_){ return null; }
+  };
+
+  const readChunkedByCount = async (dataA) => {
+    let n = parseInt(String(dataA.admin_chunk_count || dataA.adminChunks || "0"), 10);
+    if (!Number.isFinite(n) || n < 1) return null;
+    const parts = [];
+    const getPart = async (id) => {
+      for (let attempt = 0; attempt < 3; attempt++){
+        try{
+          const partDoc = await __fsGet__(`sync/${teamId}/admin_chunks/${id}`);
+          if (partDoc) return partDoc;
+        }catch(_){ }
+        try{ await new Promise(r => setTimeout(r, 180 + attempt * 260)); }catch(_){ }
+      }
+      return null;
+    };
+    for (let i = 0; i < n; i++){
+      const id = String(i).padStart(4, "0");
+      const partDoc = await getPart(id);
+      if (!partDoc) return null;
+      const partData = __fsDecode__(partDoc);
+      parts.push(String(partData.part || ""));
+    }
+    return parsePayload(parts.join(""));
+  };
+
+  const readChunkedByList = async () => {
+    try{
+      const docs = await __fsList__(`sync/${teamId}/admin_chunks`);
+      if (!Array.isArray(docs) || !docs.length) return null;
+      let rows = docs.map((doc)=>{
+        const d = __fsDecode__(doc);
+        const name = String(doc?.name || "");
+        const id = name.split("/").pop() || "";
+        const idx = parseInt(String(d.index || id || "0"), 10);
+        const total = parseInt(String(d.total || "0"), 10);
+        return { idx: Number.isFinite(idx) ? idx : 0, total: Number.isFinite(total) ? total : 0, part: String(d.part || "") };
+      }).filter(r => r.part);
+      if (!rows.length) return null;
+      const maxTotal = Math.max.apply(null, rows.map(r=>r.total || 0));
+      if (maxTotal > 0){
+        rows = rows.filter(r => r.idx >= 0 && r.idx < maxTotal);
+        const got = new Set(rows.map(r=>r.idx));
+        if (got.size < maxTotal) return null;
+      }
+      rows.sort((a,b)=>a.idx-b.idx);
+      return parsePayload(rows.map(r=>r.part).join(""));
+    }catch(_){ return null; }
+  };
+
   try{
     const docAdmin = await __fsGet__(`sync/${teamId}`);
     if (!docAdmin) return null;
     const dataA = __fsDecode__(docAdmin);
     const rawA = String(dataA.admin_json || "");
-    if (rawA){
-      try{
-        const pA = JSON.parse(rawA);
-        if (pA && pA.datasets) return pA;
-      }catch(_){}
+    const isChunked = String(dataA.admin_chunked || "").toLowerCase() === "true" || (parseInt(String(dataA.admin_chunk_count || dataA.adminChunks || "0"), 10) > 0);
+
+    if (isChunked){
+      const pChunk = await readChunkedByCount(dataA) || await readChunkedByList();
+      if (pChunk && pChunk.datasets) return pChunk;
     }
-    let n = parseInt(String(dataA.admin_chunk_count || dataA.adminChunks || "0"), 10);
-    if (!Number.isFinite(n) || n < 1) return null;
-    const parts = [];
-    for (let i = 0; i < n; i++){
-      const id = String(i).padStart(4, "0");
-      const partDoc = await __fsGet__(`sync/${teamId}/admin_chunks/${id}`);
-      if (!partDoc) return null;
-      const partData = __fsDecode__(partDoc);
-      parts.push(String(partData.part || ""));
+
+    const pLegacy = parsePayload(rawA);
+    if (pLegacy && pLegacy.datasets) return pLegacy;
+
+    if (!isChunked){
+      const pChunk = await readChunkedByCount(dataA) || await readChunkedByList();
+      if (pChunk && pChunk.datasets) return pChunk;
     }
-    const joined = parts.join("");
-    if (!joined) return null;
-    const p = JSON.parse(joined);
-    return (p && p.datasets) ? p : null;
+
+    const pCore = parsePayload(dataA.admin_core_json || "");
+    if (pCore && pCore.datasets) return pCore;
+
+    return null;
   }catch(_){
     return null;
   }
@@ -2364,9 +2472,11 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
-  try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
-    if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  if (!opts?.skipRefresh){
+    const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+    try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
+      if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+    }
   }
   return true;
 }
@@ -2755,9 +2865,11 @@ async function __fbImportAdmin__(opts){
     if (!opts?.skipSpesaExport){ try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ } }
 
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
-  const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
-  try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
-    if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+  if (!opts?.skipRefresh){
+    const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
+    try{ await __refreshAfterSync__(__restoreAfterSync); }catch(_){
+      if(!opts?.skipReload){ setTimeout(()=>{ try{ __writeRestoreState(__restoreAfterSync); }catch(_){ } try{ location.reload(); }catch(_){ } }, 250); }
+    }
   }
   return true;
 }
@@ -2803,8 +2915,10 @@ async function __handleSyncBoth__(){
       imported = await __attemptSync__("admin import operatori", ()=>__fbImportAdmin__({ silent:true, skipReload:true, skipCentralExport:true, skipSpesaExport:true, restoreState }), 3, 450);
       exported = await __attemptSync__("admin export centrale", ()=>__fbExportAdmin__({ silent:true, restoreState }), 2, 350);
     }else{
-      exported = await __attemptSync__("operatore export", ()=>__fbExportOperator__({ silent:true, restoreState }), 2, 350);
+      // Operatore: prima importa il payload centrale (ospiti/calendario), poi esporta le modifiche operative.
+      // Così un dispositivo vuoto o appena aggiornato non resta con calendario vuoto se l'export locale parte prima dell'import.
       imported = await __attemptSync__("operatore import admin", ()=>__fbImportOperator__({ silent:true, skipReload:true, restoreState }), 3, 450);
+      exported = await __attemptSync__("operatore export", ()=>__fbExportOperator__({ silent:true, restoreState }), 2, 350);
     }
   }catch(_){ }
   const ok = (exported !== false) || (imported !== false);
@@ -16775,6 +16889,7 @@ state.page = page;
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
   const el = $(`#page-${page}`);
   if (el) el.hidden = false;
+  try{ __syncGuestContactActionDock(!!(page === "ospite" && state && state.guestMode === "view")); }catch(_){ }
   try{ __scheduleStatLandscapeGraphOnlyRefresh__(); }catch(_){ }
   if (page === "home"){
     // HOME: ricalcola sempre la visibilità del SYNC dopo operazioni in Impostazioni (es. generazione codice Roster)
@@ -20245,7 +20360,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
@@ -20307,9 +20422,10 @@ function __defaultSingleActionButtonVisual__(btn){
     roomCatalogEditorTagColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     roomCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    guestPhoneActionCall:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    guestPhoneActionWhatsApp:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
-    guestPhoneActionSms:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
+    guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
+    guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
+    guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
+    guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
     guestHdCheckinBtn:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
@@ -20468,6 +20584,10 @@ function __singleActionButtonCategoryForId__(id){
     settingsLicenseRequestBtn:'trigger',
     settingsLicenseOperatorCodeBtn:'trigger',
     settingsLicenseGeneratorBtn:'trigger',
+    guestPhoneActionCall:'guest-contact',
+    guestPhoneActionWhatsApp:'guest-contact',
+    guestPhoneActionSms:'guest-contact',
+    guestEmailActionMail:'guest-contact',
     guestGenderMale:'guest-gender',
     guestGenderFemale:'guest-gender',
     themeTransferImport:'themeimport',
@@ -20687,8 +20807,27 @@ function __bindSingleActionButtonColorHold__(btn){
   try{ btn.addEventListener('selectstart', (e)=>{ block(e); }, true); }catch(_){ }
 }
 
+function __ensureGuestContactActionButtonVisualDefaults__(){
+  try{
+    const ids = ['guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail'];
+    const map = __loadSingleActionButtonVisualMap__();
+    let changed = false;
+    ids.forEach((id) => {
+      try{
+        if (map[id] && typeof map[id] === 'object') return;
+        const btn = document.getElementById(id) || { id, dataset:{ singleActionKey:id } };
+        const visual = __defaultSingleActionButtonVisual__(btn);
+        map[id] = { bg:visual.bg || 'blue-4', border:visual.border || visual.bg || 'blue-4', fg:visual.fg || 'white', opacity:__designBgOpacityNormalize__(visual.opacity ?? 0.90), bold:!!visual.bold };
+        changed = true;
+      }catch(_){ }
+    });
+    if (changed) __saveSingleActionButtonVisualMap__(map);
+  }catch(_){ }
+}
+
 function __setupSingleActionButtonPaletteBindings__(){
   try{
+    try{ __ensureGuestContactActionButtonVisualDefaults__(); }catch(_){ }
     __SINGLE_ACTION_BUTTON_TARGET_IDS__.forEach((id) => {
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -29090,6 +29229,8 @@ function setGuestFormViewOnly(isView, ospite){
 
   try{ const notesEl = document.getElementById("guestNotes"); if (notesEl) notesEl.readOnly = !!isView; }catch(_){}
   try{ syncGuestPhoneWhatsAppLink(!!isView); }catch(_){}
+  try{ syncGuestEmailActionLink(!!isView); }catch(_){}
+  try{ __syncGuestContactActionDock(!!isView); }catch(_){}
   try{ __syncGuestGenderTabs__(); }catch(_){}
   try{ __setupGuestGenderTabs__(); }catch(_){}
   try{ updateGuestNationalityButton(); }catch(_){}
@@ -31594,7 +31735,7 @@ function __guestReportCanvas__(guest){
     return size;
   };
 
-  // dDAE_3.035 — Report ospite: nome account fuori dal riquadro, in alto centrato, grande e azzurro.
+  // dDAE_3.040 — Report ospite: nome account fuori dal riquadro, in alto centrato, grande e azzurro.
   ctx.textAlign='center';
   ctx.fillStyle='#2d9cdb';
   const accountFontSize=fitFont(accountName, 64, 42, '900');
@@ -35688,15 +35829,11 @@ function __calendarOccupiedRoomsCountForDate__(dateIso){
     const rooms = new Set();
     for (const g of guests){
       try{
-        const ciStr = formatISODateLocal(g.check_in || g.checkIn || "");
-        const coStr = formatISODateLocal(g.check_out || g.checkOut || "");
+        const ciStr = formatISODateLocal(__guestCheckInRaw__(g));
+        const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
         if (!ciStr || !coStr) continue;
         if (!(ciStr <= safeIso && safeIso < coStr)) continue;
-        let roomsArr = [];
-        const st = g.stanze;
-        if (Array.isArray(st)) roomsArr = st;
-        else if (st != null && String(st).trim().length) roomsArr = _parseRoomsArr(st);
-        roomsArr = normalizeRoomsList(roomsArr, getConfiguredRoomsCount(6));
+        const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
         roomsArr.forEach((r) => { const n = Number(r || 0) || 0; if (n > 0) rooms.add(String(n)); });
       }catch(_){ }
     }
@@ -35711,13 +35848,9 @@ function __calendarCheckoutRoomsCountForDate__(dateIso){
     const rooms = new Set();
     for (const g of guests){
       try{
-        const coStr = formatISODateLocal(g.check_out || g.checkOut || "");
+        const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
         if (!coStr || coStr !== safeIso) continue;
-        let roomsArr = [];
-        const st = g.stanze;
-        if (Array.isArray(st)) roomsArr = st;
-        else if (st != null && String(st).trim().length) roomsArr = _parseRoomsArr(st);
-        roomsArr = normalizeRoomsList(roomsArr, getConfiguredRoomsCount(6));
+        const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
         roomsArr.forEach((r) => { const n = Number(r || 0) || 0; if (n > 0) rooms.add(String(n)); });
       }catch(_){ }
     }
@@ -35839,6 +35972,7 @@ function setupCalendario(){
         syncBtn.disabled = true;
         syncBtn.classList.add("is-loading");
         if (state.calendar) state.calendar.ready = false;
+        try{ await __calendarAndroidOperatorSyncFromFirebase__({ force:true }); }catch(_){ }
         await ensureCalendarData({ force:true, showLoader:false });
         renderCalendario();
         try{ toast("Aggiornato"); }catch(_){ }
@@ -35967,6 +36101,43 @@ function setupCalendario(){
 
 
 
+// dDAE_3.046 — Android: se il calendario operatore è vuoto, importa prima il payload Firebase centrale.
+let __calendarAndroidOperatorImportPromise__ = null;
+let __calendarAndroidOperatorImportLastAt__ = 0;
+function __calendarIsAndroidRuntime__(){
+  try{
+    const ua = String(navigator.userAgent || navigator.vendor || "").toLowerCase();
+    return ua.includes("android");
+  }catch(_){ return false; }
+}
+function __calendarCanOperatorFirebaseImport__(){
+  try{
+    if (!__calendarIsAndroidRuntime__()) return false;
+    if (typeof __isAdmin__ === "function" && __isAdmin__()) return false;
+    if (typeof __fbLoadLink__ === "function") __fbLoadLink__();
+    return !!(__FB_STATE__ && String(__FB_STATE__.teamId || "").trim());
+  }catch(_){ return false; }
+}
+async function __calendarAndroidOperatorSyncFromFirebase__({ force = false } = {}){
+  try{
+    if (!__calendarCanOperatorFirebaseImport__()) return false;
+    const now = Date.now();
+    if (!force && now - __calendarAndroidOperatorImportLastAt__ < 30000) return false;
+    if (__calendarAndroidOperatorImportPromise__) return await __calendarAndroidOperatorImportPromise__;
+    __calendarAndroidOperatorImportLastAt__ = now;
+    const restoreState = (typeof __captureSyncRestoreState === "function") ? __captureSyncRestoreState() : null;
+    __calendarAndroidOperatorImportPromise__ = (async()=>{
+      try{
+        const ok = await __fbImportOperator__({ silent:true, skipReload:true, skipRefresh:true, skipCentralExport:true, skipSpesaExport:true, restoreState });
+        try{ __invalidateSyncCaches__({ resetHomeRefresh:false }); }catch(_){ }
+        return ok !== false;
+      }catch(_){ return false; }
+      finally{ __calendarAndroidOperatorImportPromise__ = null; }
+    })();
+    return await __calendarAndroidOperatorImportPromise__;
+  }catch(_){ return false; }
+}
+
 async function ensureCalendarData({ force = false, showLoader = false } = {}) {
   if (!state.calendar) state.calendar = { anchor: new Date(), ready: false, guests: [], rangeKey: "" };
 
@@ -35992,15 +36163,23 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
     rangeKey = `W:${winFrom}|${winTo}`;
   }
 
-  // Se ho già i dati per questa finestra, non ricarico
-  if (!force && state.calendar.ready && state.calendar.rangeKey === rangeKey) return;
+  // Se ho già i dati per questa finestra, non ricarico; su Android operatore non bloccare il recupero se il mese è vuoto.
+  const __calendarHasRows__ = !!(state.calendar && Array.isArray(state.calendar.guests) && state.calendar.guests.length);
+  if (!force && state.calendar.ready && state.calendar.rangeKey === rangeKey && (__calendarHasRows__ || !__calendarCanOperatorFirebaseImport__())) return;
 
   // Carica configurazione letti ("stanze") solo se serve (evita loader ad ogni navigazione)
   if (!state.stanzeRows || !state.stanzeRows.length){
     try{ await load({ showLoader }); }catch(_){ }
   }
 
-  const data = await cachedGet("ospiti", { from: winFrom, to: winTo }, { showLoader, ttlMs: 60*1000, force });
+  let data = await cachedGet("ospiti", { from: winFrom, to: winTo }, { showLoader, ttlMs: 60*1000, force });
+  if ((!Array.isArray(data) || !data.length) && __calendarCanOperatorFirebaseImport__()){
+    const imported = await __calendarAndroidOperatorSyncFromFirebase__({ force:false });
+    if (imported){
+      try{ invalidateApiCache("ospiti|"); }catch(_){ }
+      data = await cachedGet("ospiti", { from: winFrom, to: winTo }, { showLoader:false, ttlMs: 60*1000, force:true });
+    }
+  }
   state.calendar.guests = __guestFilterPreventiviRows__(Array.isArray(data) ? data : [], false);
   state.calendar.ready = true;
   state.calendar.rangeKey = rangeKey;
@@ -36078,15 +36257,9 @@ function __calendarCheckoutRoomsForSelectedDate__(){
     const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
     const maxRooms = (typeof getConfiguredRoomsCount === 'function') ? getConfiguredRoomsCount(6) : 6;
     for (const g of guests){
-      const coStr = formatISODateLocal(g && (g.check_out || g.checkOut || g.checkout || g.data_check_out || g.partenza || g.departure || g.guestCheckOut || ''));
+      const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
       if (!coStr || coStr !== selectedIso) continue;
-      let roomsArr = [];
-      try{
-        const st = g.stanze ?? g.rooms ?? g.camere ?? g.roomNumbers ?? g.room_numbers ?? g.stanze_num ?? g.stanzeNum;
-        if (Array.isArray(st)) roomsArr = st;
-        else if (st != null && String(st).trim().length) roomsArr = _parseRoomsArr(st);
-      }catch(_){ }
-      roomsArr = normalizeRoomsList(roomsArr, maxRooms);
+      const roomsArr = __guestRoomsArrayForCalendar__(g, maxRooms);
       for (const r of roomsArr){
         const n = Number(r);
         if (isFinite(n) && n >= 1 && n <= maxRooms) rooms.add(String(Math.floor(n)));
@@ -37403,8 +37576,8 @@ function buildMonthOccupancy(monthStart, daysCount){
     const guestId = String(g.id ?? g.ID ?? g.ospite_id ?? g.ospiteId ?? g.guest_id ?? g.guestId ?? "").trim();
     if (!guestId) continue;
 
-    const ciStr = formatISODateLocal(g.check_in || g.checkIn || "");
-    const coStr = formatISODateLocal(g.check_out || g.checkOut || "");
+    const ciStr = formatISODateLocal(__guestCheckInRaw__(g));
+    const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
     if (!ciStr || !coStr) continue;
 
     const ci = new Date(ciStr + "T00:00:00");
@@ -37412,15 +37585,7 @@ function buildMonthOccupancy(monthStart, daysCount){
     const last = addDays(co, -1);
     const lastIso = isoDate(last);
 
-    let roomsArr = [];
-    try {
-      const st = g.stanze;
-      if (Array.isArray(st)) roomsArr = st;
-      else if (st != null && String(st).trim().length) {
-        roomsArr = _parseRoomsArr(st);
-      }
-    } catch (_) {}
-    roomsArr = normalizeRoomsList(roomsArr, 6);
+    const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
     if (!roomsArr.length) continue;
 
     const initials = initialsFromName(g.nome || g.name || g.Nome || g.NOME || g.guestName || g.fullName || g.full_name || "");
@@ -37455,8 +37620,8 @@ function buildWeekOccupancy(weekStart){
     const guestId = String(g.id ?? g.ID ?? g.ospite_id ?? g.ospiteId ?? g.guest_id ?? g.guestId ?? "").trim();
     if (!guestId) continue;
 
-    const ciStr = formatISODateLocal(g.check_in || g.checkIn || "");
-    const coStr = formatISODateLocal(g.check_out || g.checkOut || "");
+    const ciStr = formatISODateLocal(__guestCheckInRaw__(g));
+    const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
     if (!ciStr || !coStr) continue;
 
     const ci = new Date(ciStr + "T00:00:00");
@@ -37465,15 +37630,7 @@ function buildWeekOccupancy(weekStart){
     const lastIso = isoDate(last);
     const lastIsPresentOrFuture = (lastIso >= todayIso);
 
-    let roomsArr = [];
-    try {
-      const st = g.stanze;
-      if (Array.isArray(st)) roomsArr = st;
-      else if (st != null && String(st).trim().length) {
-        roomsArr = _parseRoomsArr(st);
-      }
-    } catch (_) {}
-    roomsArr = normalizeRoomsList(roomsArr, 6);
+    const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
     if (!roomsArr.length) continue;
 
     const initials = initialsFromName(g.nome || g.name || g.Nome || g.NOME || g.guestName || g.fullName || g.full_name || "");
@@ -39978,47 +40135,119 @@ function openGuestPhoneWhatsApp(rawPhone){
 
 function openGuestPhoneActionsModal(){
   try{
-    const phoneEl = document.getElementById('guestPhone');
     const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
-    if (!phoneEl || !isView) return;
-    const raw = String(phoneEl.value || '').trim();
-    if (!raw) return;
-    const modal = document.getElementById('guestPhoneActionsModal');
-    const titleEl = document.getElementById('guestPhoneActionsTitle');
-    if (!modal || !titleEl) return;
-    modal.dataset.phoneRaw = raw;
-    modal.dataset.phoneDial = normalizeGuestDialPhone(raw);
-    modal.dataset.phoneWhatsapp = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-    titleEl.textContent = raw;
-    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
-    modal.hidden = false;
-    modal.setAttribute('aria-hidden', 'false');
+    if (!isView) return;
+    try{ closeGuestPhoneActionsModal(); }catch(_){ }
+    try{ __syncGuestContactActionDock(true); }catch(_){ }
   }catch(_){ }
+}
+
+function __guestPhoneRawForContactAction__(){
+  try{
+    const field = document.getElementById('guestPhone');
+    const value = String(field?.value || '').trim();
+    if (value) return value;
+    const item = state?.guestViewItem || state?.guestEditSourceItem || null;
+    return String(item?.telefono ?? item?.tel ?? item?.phone ?? item?.numeroTelefono ?? item?.numero_telefono ?? '').trim();
+  }catch(_){ return ''; }
+}
+
+function __guestEmailRawForContactAction__(){
+  try{
+    const field = document.getElementById('guestEmail');
+    const value = String(field?.value || '').trim();
+    if (value) return value;
+    const item = state?.guestViewItem || state?.guestEditSourceItem || null;
+    return String(item?.email ?? item?.mail ?? item?.e_mail ?? item?.guestEmail ?? '').trim();
+  }catch(_){ return ''; }
 }
 
 function triggerGuestPhoneAction(action){
   try{
+    const safeAction = String(action || '').trim().toLowerCase();
     const modal = document.getElementById('guestPhoneActionsModal');
-    if (!modal) return;
-    const raw = String(modal.dataset.phoneRaw || '').trim();
-    const dial = String(modal.dataset.phoneDial || '').trim();
-    const wa = String(modal.dataset.phoneWhatsapp || '').trim();
-    if (action === 'call'){
+    const fromModalRaw = modal ? String(modal.dataset.phoneRaw || '').trim() : '';
+    const raw = fromModalRaw || __guestPhoneRawForContactAction__();
+    const dial = (modal ? String(modal.dataset.phoneDial || '').trim() : '') || normalizeGuestDialPhone(raw);
+    const wa = (modal ? String(modal.dataset.phoneWhatsapp || '').trim() : '') || normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
+    if (!raw){
+      try{ toast('Telefono non presente', 'orange'); }catch(_){ }
+      return;
+    }
+    if (safeAction === 'call'){
       const target = dial || raw;
-      if (!target) return;
+      if (!target){ try{ toast('Telefono non presente', 'orange'); }catch(_){ } return; }
       window.location.href = 'tel:' + target;
       return;
     }
-    if (action === 'sms'){
+    if (safeAction === 'sms'){
       const target = dial || raw;
-      if (!target) return;
+      if (!target){ try{ toast('Telefono non presente', 'orange'); }catch(_){ } return; }
       window.location.href = 'sms:' + target;
       return;
     }
-    if (action === 'whatsapp'){
+    if (safeAction === 'whatsapp'){
+      if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
       openGuestPhoneWhatsApp(wa || raw);
       return;
     }
+  }catch(_){ }
+}
+
+function triggerGuestContactAction(action){
+  try{
+    const safeAction = String(action || '').trim().toLowerCase();
+    if (safeAction === 'email' || safeAction === 'mail'){
+      openGuestEmailAction();
+      return;
+    }
+    triggerGuestPhoneAction(safeAction);
+  }catch(_){ }
+}
+
+function setupGuestContactActionDock(){
+  try{
+    const dock = document.getElementById('guestContactActionDock');
+    if (!dock) return;
+    dock.querySelectorAll('[data-contact-action]').forEach((btn) => {
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+      try{ __bindSingleActionButtonColorHold__(btn); }catch(_){ }
+      if (btn.dataset.guestContactActionBound === '1') return;
+      btn.dataset.guestContactActionBound = '1';
+      const handler = (ev) => {
+        try{
+          if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
+          ev && ev.preventDefault && ev.preventDefault();
+          ev && ev.stopPropagation && ev.stopPropagation();
+        }catch(_){ }
+        try{ triggerGuestContactAction(btn.getAttribute('data-contact-action') || ''); }catch(_){ }
+      };
+      if (typeof bindFastTap === 'function') bindFastTap(btn, handler);
+      else btn.addEventListener('click', handler);
+    });
+  }catch(_){ }
+}
+
+function __syncGuestContactActionDock(isView){
+  try{
+    const dock = document.getElementById('guestContactActionDock');
+    if (!dock) return;
+    setupGuestContactActionDock();
+    const page = document.getElementById('page-ospite');
+    const active = !!isView && !!(state && state.page === 'ospite' && state.guestMode === 'view') && !(page && page.hidden);
+    dock.hidden = !active;
+    dock.setAttribute('aria-hidden', active ? 'false' : 'true');
+    if (!active) return;
+    const hasPhone = !!__guestPhoneRawForContactAction__();
+    const hasEmail = !!__guestEmailRawForContactAction__();
+    dock.querySelectorAll('[data-phone-action]').forEach((btn) => {
+      try{ btn.classList.toggle('is-missing', !hasPhone); btn.setAttribute('aria-disabled', hasPhone ? 'false' : 'true'); }catch(_){ }
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+    });
+    dock.querySelectorAll('[data-contact-action="email"]').forEach((btn) => {
+      try{ btn.classList.toggle('is-missing', !hasEmail); btn.setAttribute('aria-disabled', hasEmail ? 'false' : 'true'); }catch(_){ }
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+    });
   }catch(_){ }
 }
 
@@ -40055,37 +40284,65 @@ function setupGuestPhoneActionsModal(){
 
 function syncGuestPhoneWhatsAppLink(isView){
   try{
-    setupGuestPhoneActionsModal();
+    setupGuestContactActionDock();
     const phoneEl = document.getElementById('guestPhone');
     if (!phoneEl) return;
-    if (!phoneEl.dataset.phoneActionsBound){
-      phoneEl.addEventListener('click', function(){
-        try{ openGuestPhoneActionsModal(); }catch(_){ }
-      });
-      phoneEl.addEventListener('keydown', function(ev){
-        const key = ev && (ev.key || ev.code || '');
-        if (key === 'Enter' || key === ' ' || key === 'Spacebar'){
-          try{ ev.preventDefault(); }catch(_){ }
-          try{ openGuestPhoneActionsModal(); }catch(_){ }
-        }
-      });
-      phoneEl.dataset.phoneActionsBound = '1';
-    }
-    const enabled = !!isView && !!String(phoneEl.value || '').trim();
-    phoneEl.classList.toggle('guest-phone-action-link', enabled);
+    phoneEl.classList.remove('guest-phone-action-link');
     phoneEl.classList.remove('whatsapp-link');
-    try{ phoneEl.setAttribute('aria-label', enabled ? 'Apri azioni telefono' : 'Telefono'); }catch(_){ }
-    try{ phoneEl.setAttribute('title', enabled ? 'Apri azioni telefono' : ''); }catch(_){ }
+    try{ phoneEl.setAttribute('aria-label', 'Telefono'); }catch(_){ }
+    try{ phoneEl.setAttribute('title', ''); }catch(_){ }
     try{ phoneEl.readOnly = !!isView; }catch(_){ }
-    try{ phoneEl.tabIndex = enabled ? 0 : -1; }catch(_){ }
+    try{ if (isView) phoneEl.tabIndex = -1; else phoneEl.removeAttribute('tabindex'); }catch(_){ }
+    try{ __syncGuestContactActionDock(!!isView); }catch(_){ }
+  }catch(_){ }
+}
+
+function __guestEmailValueForAction__(){
+  try{
+    return String(document.getElementById('guestEmail')?.value || '').trim();
+  }catch(_){ return ''; }
+}
+
+function openGuestEmailAction(){
+  try{
+    const emailEl = document.getElementById('guestEmail');
+    const isView = !!(state && state.page === 'ospite' && state.guestMode === 'view');
+    if (!emailEl || !isView) return;
+    try{ emailEl.blur(); }catch(_){ }
+    const raw = (typeof __guestEmailRawForContactAction__ === 'function') ? __guestEmailRawForContactAction__() : __guestEmailValueForAction__();
+    if (!raw){
+      try{ toast('E-mail non presente', 'orange'); }catch(_){ }
+      return;
+    }
+    const target = raw.replace(/[\r\n]/g, '').trim();
+    if (!target){
+      try{ toast('E-mail non presente', 'orange'); }catch(_){ }
+      return;
+    }
+    window.location.href = 'mailto:' + encodeURIComponent(target);
+  }catch(_){ }
+}
+
+function syncGuestEmailActionLink(isView){
+  try{
+    const emailEl = document.getElementById('guestEmail');
+    if (!emailEl) return;
+    emailEl.classList.remove('guest-email-action-link');
+    try{ emailEl.setAttribute('aria-label', 'Email'); }catch(_){ }
+    try{ emailEl.setAttribute('title', ''); }catch(_){ }
+    try{ emailEl.readOnly = !!isView; }catch(_){ }
+    try{ if (isView) emailEl.tabIndex = -1; else emailEl.removeAttribute('tabindex'); }catch(_){ }
+    try{ __syncGuestContactActionDock(!!isView); }catch(_){ }
   }catch(_){ }
 }
 
 (function __bindGuestPhoneActionsModalWatcher__(){
-  const run = ()=>{ try{ setupGuestPhoneActionsModal(); }catch(_){ } };
+  const run = ()=>{ try{ setupGuestPhoneActionsModal(); }catch(_){ } try{ setupGuestContactActionDock(); }catch(_){ } try{ __syncGuestContactActionDock(!!(state && state.page === 'ospite' && state.guestMode === 'view')); }catch(_){ } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once:true });
   else setTimeout(run, 0);
   try{ window.addEventListener('pageshow', run, { passive:true }); }catch(_){ }
+  try{ window.addEventListener('resize', run, { passive:true }); }catch(_){ }
+  try{ window.addEventListener('orientationchange', run, { passive:true }); }catch(_){ }
 })();
 
 /* dDAE_2.579 — Statistiche generali: serie Ricevuta allineate alla data prenotazione */
@@ -41978,7 +42235,7 @@ function syncGuestPhoneWhatsAppLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.035';
+  var BUILD_TAG='dDAE_3.046';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -42297,12 +42554,18 @@ function syncGuestPhoneWhatsAppLink(isView){
   var PART_DEFAULTS = {
     fill:{ bg:'sky-6', border:'sky-6', fg:'gray-1', opacity:1 },
     numbers:{ bg:'gray-1', border:'gray-1', fg:'gray-6', opacity:0 },
-    lines:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0.55 }
+    lines:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0.55 },
+    checkin:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 },
+    checkout:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 },
+    month:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 }
   };
   var PART_LABELS = {
     fill:'Calendario - riempimenti tasti e pallini',
     numbers:'Calendario - testo numeri',
-    lines:'Calendario - contorni e linee'
+    lines:'Calendario - contorni e linee',
+    checkin:'Calendario - testo Check-in',
+    checkout:'Calendario - testo Check-out',
+    month:'Calendario - testo mese'
   };
   var OLD_PARTS = ['modal','title','checkin','checkout','month','nav','weekdays','days','muteddays','rangedays','selecteddays','cancel','apply'];
   function norm(v, part){
@@ -42313,13 +42576,25 @@ function syncGuestPhoneWhatsAppLink(isView){
   }
   function compact(input){
     input = (input && typeof input === 'object') ? input : {};
-    if (input.fill || input.numbers || input.lines){
-      return { fill:norm(input.fill,'fill'), numbers:norm(input.numbers,'numbers'), lines:norm(input.lines,'lines') };
+    var hasSimple = !!(input.fill || input.numbers || input.lines || input.checkin || input.checkout || input.month);
+    var linesSrc = input.lines || input.modal || input.nav || input.checkin || input.checkout || input.month || null;
+    if (hasSimple){
+      return {
+        fill:norm(input.fill,'fill'),
+        numbers:norm(input.numbers,'numbers'),
+        lines:norm(input.lines,'lines'),
+        checkin:norm(input.checkin || input.lines || linesSrc, 'checkin'),
+        checkout:norm(input.checkout || input.lines || linesSrc, 'checkout'),
+        month:norm(input.month || input.lines || linesSrc, 'month')
+      };
     }
     var out = {
       fill:norm(input.selecteddays || input.apply || input.rangedays || null, 'fill'),
       numbers:norm(input.days || input.weekdays || input.muteddays || null, 'numbers'),
-      lines:norm(input.modal || input.checkin || input.checkout || input.nav || null, 'lines')
+      lines:norm(linesSrc, 'lines'),
+      checkin:norm(input.checkin || linesSrc, 'checkin'),
+      checkout:norm(input.checkout || linesSrc, 'checkout'),
+      month:norm(input.month || input.title || linesSrc, 'month')
     };
     return out;
   }
@@ -42345,7 +42620,11 @@ function syncGuestPhoneWhatsAppLink(isView){
     try{
       var map = read();
       var fill = map.fill, nums = map.numbers, lines = map.lines;
+      var checkin = map.checkin || lines, checkout = map.checkout || lines, monthText = map.month || lines;
       var fillBg = color(fill.bg), fillFg = readable(fill), numFg = color(nums.fg), line = color(lines.border || lines.bg || 'gray-3');
+      var checkinFg = color(checkin.fg || lines.fg || 'gray-6');
+      var checkoutFg = color(checkout.fg || lines.fg || 'gray-6');
+      var monthFg = color(monthText.fg || lines.fg || 'gray-6');
       var fillOp = Math.max(0.08, op(fill, 1));
       var lineOp = Math.max(0.12, op(lines, 0.55));
       var lineCss = rgba(line, lineOp);
@@ -42361,9 +42640,10 @@ function syncGuestPhoneWhatsAppLink(isView){
       ['checkin','checkout'].forEach(function(k){
         setVar('--ddae-range-part-' + k + '-bg', 'var(--ddae-range-field-bg, rgba(255,255,255,.94))');
         setVar('--ddae-range-part-' + k + '-border', lineCss);
-        setVar('--ddae-range-part-' + k + '-fg', 'var(--ddae-range-modal-text, #111827)');
       });
-      setVar('--ddae-range-part-month-fg', 'var(--ddae-range-modal-text, #111827)');
+      setVar('--ddae-range-part-checkin-fg', checkinFg);
+      setVar('--ddae-range-part-checkout-fg', checkoutFg);
+      setVar('--ddae-range-part-month-fg', monthFg);
       setVar('--ddae-range-part-nav-bg', fillSoft);
       setVar('--ddae-range-part-nav-border', lineCss);
       setVar('--ddae-range-part-nav-fg', fillBg);
@@ -42422,8 +42702,8 @@ function syncGuestPhoneWhatsAppLink(isView){
       var opts = {
         supportsBg: category === 'fill',
         supportsBorder: category === 'lines',
-        supportsFg: category === 'numbers',
-        supportsOpacity: category !== 'numbers',
+        supportsFg: category !== 'fill' && category !== 'lines',
+        supportsOpacity: category === 'fill' || category === 'lines',
         opacity: current.opacity,
         defaultMode: category === 'fill' ? 'bg' : (category === 'lines' ? 'border' : 'fg'),
         fallbackBg: current.bg || 'gray-1',
@@ -42447,6 +42727,9 @@ function syncGuestPhoneWhatsAppLink(isView){
   function categoryFromTarget(t){
     try{
       if (!t || !t.closest) return 'lines';
+      if (t.closest('.guest-date-range-top-field.is-start')) return 'checkin';
+      if (t.closest('.guest-date-range-top-field.is-end')) return 'checkout';
+      if (t.closest('.guest-date-range-monthtitle')) return 'month';
       if (t.closest('.guest-date-range-actions .btn, .guest-date-range-nav')) return 'fill';
       var day = t.closest('.guest-date-range-day');
       if (day){
@@ -42462,7 +42745,10 @@ function syncGuestPhoneWhatsAppLink(isView){
       if (!modal) return;
       modal.querySelectorAll('.guest-date-range-actions .btn, .guest-date-range-nav, .guest-date-range-day.is-selected, .guest-date-range-day.is-edge, .guest-date-range-day.is-in-range').forEach(function(el){ el.setAttribute('data-range-theme-part','fill'); });
       modal.querySelectorAll('.guest-date-range-day:not(.is-selected):not(.is-edge):not(.is-in-range), .guest-date-range-weekdays span').forEach(function(el){ el.setAttribute('data-range-theme-part','numbers'); });
-      modal.querySelectorAll('.guest-date-range-modal-card, .guest-date-range-top-field, .guest-date-range-monthtitle, .guest-date-range-modal-range-title').forEach(function(el){ el.setAttribute('data-range-theme-part','lines'); });
+      modal.querySelectorAll('.guest-date-range-top-field.is-start').forEach(function(el){ el.setAttribute('data-range-theme-part','checkin'); });
+      modal.querySelectorAll('.guest-date-range-top-field.is-end').forEach(function(el){ el.setAttribute('data-range-theme-part','checkout'); });
+      modal.querySelectorAll('.guest-date-range-monthtitle').forEach(function(el){ el.setAttribute('data-range-theme-part','month'); });
+      modal.querySelectorAll('.guest-date-range-modal-card, .guest-date-range-modal-range-title').forEach(function(el){ el.setAttribute('data-range-theme-part','lines'); });
     }catch(_){ }
   }
   function markAll(){ ['guestDateRangeModal','laundryDateRangeModal','speseDateRangeModal','licenseDateRangeModal'].forEach(function(id){ markModal(document.getElementById(id)); }); }
@@ -42546,12 +42832,18 @@ function syncGuestPhoneWhatsAppLink(isView){
   var PART_DEFAULTS = {
     fill:{ bg:'sky-6', border:'sky-6', fg:'gray-1', opacity:1 },
     numbers:{ bg:'gray-1', border:'gray-1', fg:'gray-6', opacity:0 },
-    lines:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0.55 }
+    lines:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0.55 },
+    checkin:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 },
+    checkout:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 },
+    month:{ bg:'gray-1', border:'gray-3', fg:'gray-6', opacity:0 }
   };
   var PART_LABELS = {
     fill:'Riempimenti tasti e pallini',
     numbers:'Testo numeri',
-    lines:'Contorni e linee'
+    lines:'Contorni e linee',
+    checkin:'Testo Check-in',
+    checkout:'Testo Check-out',
+    month:'Testo mese'
   };
   function norm(v, key){
     var d = PART_DEFAULTS[key] || PART_DEFAULTS.lines;
@@ -42560,7 +42852,15 @@ function syncGuestPhoneWhatsAppLink(isView){
   }
   function compact(input){
     input = (input && typeof input === 'object') ? input : {};
-    return { fill:norm(input.fill,'fill'), numbers:norm(input.numbers,'numbers'), lines:norm(input.lines,'lines') };
+    var linesSrc = input.lines || input.modal || input.nav || input.checkin || input.checkout || input.month || null;
+    return {
+      fill:norm(input.fill,'fill'),
+      numbers:norm(input.numbers,'numbers'),
+      lines:norm(input.lines || linesSrc,'lines'),
+      checkin:norm(input.checkin || input.lines || linesSrc,'checkin'),
+      checkout:norm(input.checkout || input.lines || linesSrc,'checkout'),
+      month:norm(input.month || input.lines || linesSrc,'month')
+    };
   }
   function read(){
     try{
@@ -42585,7 +42885,7 @@ function syncGuestPhoneWhatsAppLink(isView){
       var current = before[category] || norm(null, category);
       function apply(payload, changed){
         var now = read();
-        var flags = changed || (category === 'fill' ? {bg:true,opacity:true} : (category === 'numbers' ? {fg:true} : {border:true,opacity:true}));
+        var flags = changed || (category === 'fill' ? {bg:true,opacity:true} : (category === 'lines' ? {border:true,opacity:true} : {fg:true}));
         var next;
         try{ next = __applyDesignPayloadToVisual__(now[category] || current, payload, flags, current.bg || 'gray-1'); }
         catch(_){ next = payload || current; }
@@ -42597,10 +42897,10 @@ function syncGuestPhoneWhatsAppLink(isView){
       __tagColorPopupOpen__('date-range-calendar-' + category, current, function(payload){ apply(payload); }, {
         supportsBg: category === 'fill',
         supportsBorder: category === 'lines',
-        supportsFg: category === 'numbers',
-        supportsOpacity: category !== 'numbers',
+        supportsFg: category !== 'fill' && category !== 'lines',
+        supportsOpacity: category === 'fill' || category === 'lines',
         opacity: current.opacity,
-        defaultMode: category === 'fill' ? 'bg' : (category === 'numbers' ? 'fg' : 'border'),
+        defaultMode: category === 'fill' ? 'bg' : (category === 'lines' ? 'border' : 'fg'),
         fallbackBg: current.bg || 'gray-1',
         onPreview:function(payload, changed){ apply(payload, changed); },
         onRevert:function(){ write(before); refresh(); }
@@ -42610,6 +42910,9 @@ function syncGuestPhoneWhatsAppLink(isView){
   function categoryFromTarget(t){
     try{
       if (!t || !t.closest) return 'lines';
+      if (t.closest('.guest-date-range-top-field.is-start')) return 'checkin';
+      if (t.closest('.guest-date-range-top-field.is-end')) return 'checkout';
+      if (t.closest('.guest-date-range-monthtitle')) return 'month';
       if (t.closest('.guest-date-range-actions .btn, .guest-date-range-nav')) return 'fill';
       var day = t.closest('.guest-date-range-day');
       if (day){
@@ -45549,7 +45852,7 @@ try{
 /* dDAE_3.022 — Audio: suono grave globale su ogni long press */
 
 
-/* dDAE_3.035 — Impostazioni: scudo globale anti click-through per tutti i popup impostazioni */
+/* dDAE_3.040 — Impostazioni: scudo globale anti click-through per tutti i popup impostazioni */
 (function __ddae3034SettingsPopupClickThroughShield__(){
   if (typeof document === 'undefined') return;
   const IDS = [
@@ -45624,4 +45927,53 @@ try{
   else setTimeout(setup, 0);
   try{ window.addEventListener('pageshow', setup, { passive:true }); }catch(_){ }
   try{ setInterval(setup, 700); }catch(_){ }
+})();
+
+
+/* dDAE_3.040 — Campi numerici: lo zero iniziale sparisce al focus per inserimento immediato */
+(function __ddae3037ClearZeroOnNumericFocus__(){
+  if (typeof document === 'undefined') return;
+  function isEditableNumeric(el){
+    try{
+      if (!el || el.tagName !== 'INPUT') return false;
+      if (el.disabled || el.readOnly) return false;
+      const type = String(el.getAttribute('type') || el.type || '').toLowerCase();
+      const mode = String(el.getAttribute('inputmode') || '').toLowerCase();
+      if (type === 'tel' || type === 'email' || type === 'password' || type === 'date' || type === 'time') return false;
+      if (type === 'number') return true;
+      if (mode === 'decimal' || mode === 'numeric') return true;
+      return false;
+    }catch(_){ return false; }
+  }
+  function isZeroValue(v){
+    try{
+      let s = String(v == null ? '' : v).trim();
+      if (!s) return false;
+      s = s.replace(/\s+/g,'').replace('€','').replace(',', '.');
+      return /^[+-]?(?:0+)(?:\.0+)?$/.test(s);
+    }catch(_){ return false; }
+  }
+  function clearIfZero(el){
+    try{
+      if (!isEditableNumeric(el)) return;
+      if (!isZeroValue(el.value)) return;
+      el.dataset.ddaeZeroClearedOnFocus = '1';
+      el.value = '';
+      try{ el.setSelectionRange(0,0); }catch(_){ }
+    }catch(_){ }
+  }
+  function restoreIfLeftEmpty(el){
+    try{
+      if (!isEditableNumeric(el)) return;
+      if (el.dataset.ddaeZeroClearedOnFocus !== '1') return;
+      delete el.dataset.ddaeZeroClearedOnFocus;
+      if (String(el.value || '').trim() !== '') return;
+      el.value = '0';
+      try{ el.dispatchEvent(new Event('input', { bubbles:true })); }catch(_){ }
+      try{ el.dispatchEvent(new Event('change', { bubbles:true })); }catch(_){ }
+    }catch(_){ }
+  }
+  try{ document.addEventListener('focusin', (ev)=>clearIfZero(ev.target), true); }catch(_){ }
+  try{ document.addEventListener('pointerdown', (ev)=>{ try{ if (ev && ev.target) setTimeout(()=>clearIfZero(ev.target), 0); }catch(_){} }, true); }catch(_){ }
+  try{ document.addEventListener('blur', (ev)=>restoreIfLeftEmpty(ev.target), true); }catch(_){ }
 })();

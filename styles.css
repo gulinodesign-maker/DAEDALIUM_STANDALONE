@@ -28858,7 +28858,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.035 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+/* dDAE_3.040 — Impostazioni: popup Data/Account/editor stanze realmente modali */
 #settingsDataModal:not([hidden]),
 #settingsAccountModal:not([hidden]),
 #roomCatalogEditorModal:not([hidden]){
@@ -28877,3 +28877,301 @@ body.ddae-settings-modal-open main,
 body.ddae-settings-modal-open .wrap{
   overscroll-behavior:contain !important;
 }
+
+
+/* dDAE_3.040 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
+#page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  width:100% !important;
+  min-height:56px !important;
+  height:56px !important;
+  padding:0 !important;
+  border:1px solid #1f9a4c !important;
+  border-radius:18px !important;
+  background-color:#1f9a4c !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.19a2 2 0 0 1 2.11-.45c.83.29 1.7.5 2.6.62A2 2 0 0 1 22 16.92z' fill='none' stroke='%23ffffff' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:32px 32px !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:none !important;
+  caret-color:transparent !important;
+  opacity:1 !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link::selection{
+  background:transparent !important;
+  color:transparent !important;
+}
+#page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link + label{
+  display:none !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
+  background-color:#1f9a4c !important;
+  border-color:#1f9a4c !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+}
+
+
+/* dDAE_3.040 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
+#page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link{
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  width:100% !important;
+  min-height:56px !important;
+  height:56px !important;
+  padding:0 !important;
+  border:1px solid #2d9cdb !important;
+  border-radius:18px !important;
+  background-color:#2d9cdb !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='12' y='16.2' text-anchor='middle' font-family='Arial, Helvetica, sans-serif' font-size='16.5' font-weight='900' fill='%23ffffff'%3E%40%3C/text%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:34px 34px !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:none !important;
+  caret-color:transparent !important;
+  opacity:1 !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link::selection{
+  background:transparent !important;
+  color:transparent !important;
+}
+#page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link + label{
+  display:none !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link{
+  background-color:#2d9cdb !important;
+  border-color:#2d9cdb !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+}
+
+/* dDAE_3.040 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month),
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month){
+    grid-auto-rows:minmax(0, 1fr) !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month) .month-general-card,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card{
+    grid-column:1 / -1 !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:8px 8px !important;
+    border-radius:18px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month) .month-general-card::after,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card::after{
+    border-radius:18px !important;
+  }
+}
+
+/* dDAE_3.040 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
+#page-statmensili .month-stack .month-row .month-name,
+#page-statmensili .month-stack .month-row .month-button-label,
+#page-statmensili .month-stack .month-general-card .month-name,
+#page-statmensili .month-stack .month-general-card .month-button-label{
+  font-weight:950 !important;
+}
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-row .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-row .month-button-label,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-button-label{
+    font-weight:950 !important;
+  }
+}
+
+/* dDAE_3.041 — Scheda ospite: azioni telefono/e-mail esplose in basso display */
+#guestContactActionDock[hidden]{
+  display:none !important;
+}
+#guestContactActionDock{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  transform:translateX(-50%) !important;
+  z-index:4600 !important;
+  width:min(700px, calc(100vw - 36px)) !important;
+  max-width:calc(100vw - 36px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  padding:0 !important;
+  margin:0 !important;
+  pointer-events:none !important;
+  touch-action:none !important;
+}
+#guestContactActionDock .guest-contact-action-btn{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  flex:0 0 66px !important;
+  width:66px !important;
+  height:66px !important;
+  min-width:66px !important;
+  min-height:66px !important;
+  max-width:66px !important;
+  max-height:66px !important;
+  border-radius:999px !important;
+  border:1px solid currentColor !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  box-shadow:none !important;
+  filter:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+  cursor:pointer !important;
+  transition:transform .12s ease !important;
+}
+#guestContactActionDock .guest-contact-action-btn:active{
+  transform:scale(.94) !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+#guestContactActionDock .guest-contact-action-btn.is-pressing{
+  transform:scale(.94) !important;
+}
+#guestContactActionDock .guest-contact-action-btn.is-missing{
+  opacity:.58 !important;
+}
+#guestContactActionDock .guest-contact-action-btn .ui-ico{
+  width:30px !important;
+  height:30px !important;
+  display:block !important;
+  color:currentColor !important;
+  stroke:currentColor !important;
+  fill:none !important;
+  stroke-width:2.15 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  pointer-events:none !important;
+}
+#guestContactActionDock .guest-contact-action-btn[data-contact-action="whatsapp"] .ui-ico{
+  width:32px !important;
+  height:32px !important;
+}
+#guestContactActionDock .guest-contact-action-btn .ui-ico path,
+#guestContactActionDock .guest-contact-action-btn .ui-ico circle,
+#guestContactActionDock .guest-contact-action-btn .ui-ico rect,
+#guestContactActionDock .guest-contact-action-btn .ui-ico line,
+#guestContactActionDock .guest-contact-action-btn .ui-ico polyline,
+#guestContactActionDock .guest-contact-action-btn .ui-ico polygon,
+#guestContactActionDock .guest-contact-action-btn .ui-ico ellipse{
+  stroke:currentColor !important;
+  fill:none !important;
+}
+#guestContactActionDock .guest-email-action-btn .ui-ico-mail{
+  stroke:none !important;
+}
+#guestContactActionDock .guest-email-action-btn .guest-mail-at{
+  font-family:Arial, Helvetica, sans-serif !important;
+  font-size:17px !important;
+  font-weight:900 !important;
+  fill:currentColor !important;
+  stroke:none !important;
+}
+body[data-page="ospite"] #page-ospite .guest-form-card.is-view #guestContactRow{
+  display:none !important;
+}
+body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
+  padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+}
+#page-ospite .guest-form-card.is-view #guestPhone,
+#page-ospite .guest-form-card.is-view #guestEmail{
+  background-image:none !important;
+}
+@media (max-width:360px){
+  #guestContactActionDock{
+    width:calc(100vw - 28px) !important;
+    gap:12px !important;
+  }
+  #guestContactActionDock .guest-contact-action-btn{
+    flex-basis:60px !important;
+    width:60px !important;
+    height:60px !important;
+    min-width:60px !important;
+    min-height:60px !important;
+    max-width:60px !important;
+    max-height:60px !important;
+  }
+}
+
+/* dDAE_3.046 — Calendario range: testo Check-in/Check-out separato dal testo mese */
+.guest-date-range-top-field.is-start .guest-date-range-top-label,
+.guest-date-range-top-field.is-start .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-top-field.is-end .guest-date-range-top-label,
+.guest-date-range-top-field.is-end .guest-date-range-top-value{
+  color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-checkout-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+.guest-date-range-monthtitle{
+  color:var(--ddae-range-part-month-fg, var(--ddae-range-modal-text, #111827)) !important;
+  -webkit-text-fill-color:var(--ddae-range-part-month-fg, var(--ddae-range-modal-text, #111827)) !important;
+}
+
+
+/* dDAE_3.046 — Account operatore: LED topbar sempre su una sola riga */
+body[data-role="operatore"] .top-led-grid,
+.top-led-grid.is-operator-leds{
+  display: grid !important;
+  grid-template-columns: repeat(3, 15px) !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 15px !important;
+  grid-auto-rows: 15px !important;
+  grid-template-rows: 15px !important;
+  gap: 9px !important;
+  align-items: center !important;
+  justify-items: center !important;
+  justify-content: center !important;
+  align-content: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+body[data-role="operatore"] .top-led-grid .top-led-product,
+body[data-role="operatore"] .top-led-grid .top-led-laundry,
+.top-led-grid.is-operator-leds .top-led-product,
+.top-led-grid.is-operator-leds .top-led-laundry{
+  display: inline-block !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: center !important;
+}
+body[data-role="operatore"] .top-led-grid .top-led-alert,
+.top-led-grid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+body[data-role="operatore"] #prodLedColazione,
+.top-led-grid.is-operator-leds #prodLedColazione{ grid-column: 1 !important; }
+body[data-role="operatore"] #prodLedPulizia,
+.top-led-grid.is-operator-leds #prodLedPulizia{ grid-column: 2 !important; }
+body[data-role="operatore"] #laundryReportLed,
+.top-led-grid.is-operator-leds #laundryReportLed{ grid-column: 3 !important; }
