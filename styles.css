@@ -28858,7 +28858,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.036 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+/* dDAE_3.037 — Impostazioni: popup Data/Account/editor stanze realmente modali */
 #settingsDataModal:not([hidden]),
 #settingsAccountModal:not([hidden]),
 #roomCatalogEditorModal:not([hidden]){
@@ -28879,7 +28879,7 @@ body.ddae-settings-modal-open .wrap{
 }
 
 
-/* dDAE_3.036 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
+/* dDAE_3.037 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
 #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
