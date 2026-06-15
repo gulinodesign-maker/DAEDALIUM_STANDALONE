@@ -28858,7 +28858,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.041 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+/* dDAE_3.042 — Impostazioni: popup Data/Account/editor stanze realmente modali */
 #settingsDataModal:not([hidden]),
 #settingsAccountModal:not([hidden]),
 #roomCatalogEditorModal:not([hidden]){
@@ -28879,7 +28879,7 @@ body.ddae-settings-modal-open .wrap{
 }
 
 
-/* dDAE_3.041 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
+/* dDAE_3.042 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
 #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28918,7 +28918,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-act
 }
 
 
-/* dDAE_3.041 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
+/* dDAE_3.042 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
 #page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28956,7 +28956,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   -webkit-text-fill-color:transparent !important;
 }
 
-/* dDAE_3.041 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
+/* dDAE_3.042 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
 @media (orientation: landscape){
   body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month),
   body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month){
@@ -28981,7 +28981,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   }
 }
 
-/* dDAE_3.041 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
+/* dDAE_3.042 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
 #page-statmensili .month-stack .month-row .month-name,
 #page-statmensili .month-stack .month-row .month-button-label,
 #page-statmensili .month-stack .month-general-card .month-name,
@@ -28998,7 +28998,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
 }
 
 
-/* dDAE_3.041 — Scheda ospite: contatti esplosi in basso, solo in sola lettura */
+/* dDAE_3.042 — Scheda ospite: contatti esplosi in basso, solo in sola lettura */
 #page-ospite .guest-form-card.is-view #guestContactRow{
   display:none !important;
 }
