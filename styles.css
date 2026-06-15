@@ -29122,7 +29122,7 @@ body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
   }
 }
 
-/* dDAE_3.042 — Calendario range: testo Check-in/Check-out separato dal testo mese */
+/* dDAE_3.043 — Calendario range: testo Check-in/Check-out separato dal testo mese */
 .guest-date-range-top-field.is-start .guest-date-range-top-label,
 .guest-date-range-top-field.is-start .guest-date-range-top-value{
   color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
