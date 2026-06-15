@@ -28858,7 +28858,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.042 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+/* dDAE_3.040 — Impostazioni: popup Data/Account/editor stanze realmente modali */
 #settingsDataModal:not([hidden]),
 #settingsAccountModal:not([hidden]),
 #roomCatalogEditorModal:not([hidden]){
@@ -28879,7 +28879,7 @@ body.ddae-settings-modal-open .wrap{
 }
 
 
-/* dDAE_3.042 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
+/* dDAE_3.040 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
 #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28918,7 +28918,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-act
 }
 
 
-/* dDAE_3.042 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
+/* dDAE_3.040 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
 #page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28956,7 +28956,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   -webkit-text-fill-color:transparent !important;
 }
 
-/* dDAE_3.042 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
+/* dDAE_3.040 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
 @media (orientation: landscape){
   body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month),
   body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month){
@@ -28981,7 +28981,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   }
 }
 
-/* dDAE_3.042 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
+/* dDAE_3.040 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
 #page-statmensili .month-stack .month-row .month-name,
 #page-statmensili .month-stack .month-row .month-button-label,
 #page-statmensili .month-stack .month-general-card .month-name,
@@ -28995,114 +28995,4 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-button-label{
     font-weight:950 !important;
   }
-}
-
-
-/* dDAE_3.042 — Scheda ospite: contatti esplosi in basso, solo in sola lettura */
-#page-ospite .guest-form-card.is-view #guestContactRow{
-  display:none !important;
-}
-#guestContactDock[hidden]{
-  display:none !important;
-}
-#guestContactDock.guest-contact-dock{
-  position:fixed !important;
-  left:0 !important;
-  right:0 !important;
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 18px) !important;
-  z-index:5200 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  pointer-events:none !important;
-  padding:0 16px !important;
-  box-sizing:border-box !important;
-}
-#guestContactDock .guest-contact-dock-inner{
-  width:min(420px, calc(100vw - 34px)) !important;
-  display:grid !important;
-  grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
-  gap:14px !important;
-  align-items:center !important;
-  justify-items:center !important;
-  pointer-events:auto !important;
-}
-#guestContactDock .guest-contact-dock-btn{
-  appearance:none !important;
-  -webkit-appearance:none !important;
-  width:72px !important;
-  height:72px !important;
-  min-width:72px !important;
-  min-height:72px !important;
-  border-radius:999px !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 !important;
-  box-sizing:border-box !important;
-  background-image:none !important;
-  box-shadow:none !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
-  touch-action:manipulation !important;
-}
-#guestContactDock .guest-contact-dock-btn:active{
-  transform:scale(0.96) !important;
-}
-#guestContactDock .guest-contact-dock-btn .ui-ico{
-  width:34px !important;
-  height:34px !important;
-  color:currentColor !important;
-  stroke:currentColor !important;
-  fill:none !important;
-  stroke-width:2.25 !important;
-  stroke-linecap:round !important;
-  stroke-linejoin:round !important;
-}
-#guestContactDock .guest-contact-dock-btn .ui-ico path,
-#guestContactDock .guest-contact-dock-btn .ui-ico circle,
-#guestContactDock .guest-contact-dock-btn .ui-ico rect,
-#guestContactDock .guest-contact-dock-btn .ui-ico line,
-#guestContactDock .guest-contact-dock-btn .ui-ico polyline,
-#guestContactDock .guest-contact-dock-btn .ui-ico polygon{
-  stroke:currentColor !important;
-  fill:none !important;
-}
-#guestContactDock .guest-contact-dock-btn .ui-ico-wa{
-  width:37px !important;
-  height:37px !important;
-}
-#guestContactDock .guest-contact-dock-btn .ui-ico-email text{
-  fill:currentColor !important;
-  stroke:none !important;
-  dominant-baseline:auto !important;
-}
-@media (max-width:390px){
-  #guestContactDock .guest-contact-dock-inner{ gap:10px !important; }
-  #guestContactDock .guest-contact-dock-btn{
-    width:66px !important;
-    height:66px !important;
-    min-width:66px !important;
-    min-height:66px !important;
-  }
-  #guestContactDock .guest-contact-dock-btn .ui-ico{ width:31px !important; height:31px !important; }
-}
-@media (orientation:landscape){
-  #guestContactDock.guest-contact-dock{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
-  }
-  #guestContactDock .guest-contact-dock-inner{
-    width:min(380px, calc(100vw - 34px)) !important;
-    gap:12px !important;
-  }
-  #guestContactDock .guest-contact-dock-btn{
-    width:58px !important;
-    height:58px !important;
-    min-width:58px !important;
-    min-height:58px !important;
-  }
-  #guestContactDock .guest-contact-dock-btn .ui-ico{ width:27px !important; height:27px !important; }
-}
-#guestContactDock.guest-contact-dock[hidden]{
-  display:none !important;
 }
