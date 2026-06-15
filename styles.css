@@ -29122,7 +29122,7 @@ body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
   }
 }
 
-/* dDAE_3.044 — Calendario range: testo Check-in/Check-out separato dal testo mese */
+/* dDAE_3.045 — Calendario range: testo Check-in/Check-out separato dal testo mese */
 .guest-date-range-top-field.is-start .guest-date-range-top-label,
 .guest-date-range-top-field.is-start .guest-date-range-top-value{
   color:var(--ddae-range-part-checkin-fg, var(--ddae-range-modal-text, #111827)) !important;
@@ -29139,7 +29139,7 @@ body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
 }
 
 
-/* dDAE_3.044 — Account operatore: LED topbar sempre su una sola riga */
+/* dDAE_3.045 — Account operatore: LED topbar sempre su una sola riga */
 body[data-role="operatore"] .top-led-grid,
 .top-led-grid.is-operator-leds{
   display: grid !important;
