@@ -28858,7 +28858,7 @@ body.ddae-dark .settings-data-card{
 }
 
 
-/* dDAE_3.038 — Impostazioni: popup Data/Account/editor stanze realmente modali */
+/* dDAE_3.040 — Impostazioni: popup Data/Account/editor stanze realmente modali */
 #settingsDataModal:not([hidden]),
 #settingsAccountModal:not([hidden]),
 #roomCatalogEditorModal:not([hidden]){
@@ -28879,7 +28879,7 @@ body.ddae-settings-modal-open .wrap{
 }
 
 
-/* dDAE_3.038 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
+/* dDAE_3.040 — Ospite sola lettura: telefono come tasto verde con cornetta bianca, numero nascosto */
 #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28918,7 +28918,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestPhone.guest-phone-act
 }
 
 
-/* dDAE_3.038 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
+/* dDAE_3.040 — Ospite sola lettura: email come tasto azzurro con chiocciola, indirizzo nascosto */
 #page-ospite .guest-form-card.is-view #guestEmail.guest-email-action-link{
   pointer-events:auto !important;
   cursor:pointer !important;
@@ -28954,4 +28954,45 @@ body.ddae-dark #page-ospite .guest-form-card.is-view #guestEmail.guest-email-act
   border-color:#2d9cdb !important;
   color:transparent !important;
   -webkit-text-fill-color:transparent !important;
+}
+
+/* dDAE_3.040 — Statistiche Mensili: in landscape Generale ha la stessa altezza dei tasti mese */
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month),
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month){
+    grid-auto-rows:minmax(0, 1fr) !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month) .month-general-card,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card{
+    grid-column:1 / -1 !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:8px 8px !important;
+    border-radius:18px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+  }
+  body[data-page="statmensili"] #page-statmensili .stats-scroll-layer > .month-stack:not(.has-expanded-month) .month-general-card::after,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card::after{
+    border-radius:18px !important;
+  }
+}
+
+/* dDAE_3.040 — Statistiche Mensili: testi mesi e Generale sempre in grassetto */
+#page-statmensili .month-stack .month-row .month-name,
+#page-statmensili .month-stack .month-row .month-button-label,
+#page-statmensili .month-stack .month-general-card .month-name,
+#page-statmensili .month-stack .month-general-card .month-button-label{
+  font-weight:950 !important;
+}
+@media (orientation: landscape){
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-row .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-row .month-button-label,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-name,
+  body[data-page="statmensili"] #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-button-label{
+    font-weight:950 !important;
+  }
 }
