@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.040" rel="stylesheet"/>
-<link href="./manifest.json?v=3.040" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.040" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.040" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.040" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.040" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.040" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.040" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.041" rel="stylesheet"/>
+<link href="./manifest.json?v=3.041" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.041" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.041" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.041" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.041" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.041" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.041" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.040";
+window.APP_VERSION = "3.041";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.040";
+  const LOCAL_BUILD = "dDAE_3.041";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.040";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.040")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.040")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.041")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.041")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -156,7 +156,7 @@ window.APP_VERSION = "3.040";
 <header class="topbar">
 <div class="brand">
 <div class="brand-left" id="topbarBrandLeft">
-<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.040"/>
+<img alt="Daedalium logo" class="logo" src="./assets/logo.jpg?v=3.041"/>
 </div>
 <div class="topbar-center" id="topbarCenterWrap">
 <div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
@@ -297,7 +297,7 @@ window.APP_VERSION = "3.040";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.040"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.041"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -505,7 +505,7 @@ window.APP_VERSION = "3.040";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.040</div></div></section>
+<div class="build" id="buildText">dDAE_3.041</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2198,6 +2198,26 @@ window.APP_VERSION = "3.040";
 </div>
 </div>
 </div>
+<div aria-hidden="true" class="guest-contact-dock" hidden="" id="guestContactDock">
+  <div aria-label="Azioni contatto ospite" class="guest-contact-dock-inner" role="group">
+    <button aria-label="Chiama" class="guest-contact-dock-btn guest-contact-dock-call" data-guest-contact-dock-action="call" id="guestContactDockCall" type="button">
+      <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.19a2 2 0 0 1 2.11-.45c.83.29 1.7.5 2.6.62A2 2 0 0 1 22 16.92z"></path></svg>
+      <span class="sr-only">Chiama</span>
+    </button>
+    <button aria-label="WhatsApp" class="guest-contact-dock-btn guest-contact-dock-whatsapp" data-guest-contact-dock-action="whatsapp" id="guestContactDockWhatsApp" type="button">
+      <svg aria-hidden="true" class="ui-ico ui-ico-wa" viewbox="0 0 24 24"><path class="wa-bubble" d="M12 3.25c-4.83 0-8.75 3.72-8.75 8.31 0 1.67.5 3.24 1.42 4.56L3.5 20.75l4.88-1.03c1.08.61 2.32.93 3.62.93 4.83 0 8.75-3.72 8.75-8.31S16.83 3.25 12 3.25Z"></path><path class="wa-tail" d="M6.08 18.48l-.55 1.72 1.74-.37"></path><path class="wa-phone" d="M9.36 8.93c-.15-.33-.31-.35-.57-.36h-.42c-.18 0-.44.07-.66.31-.22.24-.85.82-.85 2s.86 2.32.98 2.48c.12.16 1.69 2.69 4.08 3.65 1.99.79 2.39.64 2.82.6.43-.05 1.38-.57 1.58-1.13.2-.56.2-1.04.14-1.14-.06-.1-.23-.17-.48-.29-.25-.12-1.44-.71-1.67-.79-.23-.08-.4-.12-.57.13-.17.25-.66.81-.81.98-.15.17-.31.19-.56.06-.25-.13-1.08-.39-2.05-1.25-.76-.67-1.28-1.5-1.43-1.76-.15-.26-.02-.4.11-.54.12-.12.26-.31.39-.46.13-.15.17-.26.25-.43.08-.17.04-.33-.02-.46-.06-.13-.56-1.35-.77-1.85Z"></path></svg>
+      <span class="sr-only">WhatsApp</span>
+    </button>
+    <button aria-label="SMS" class="guest-contact-dock-btn guest-contact-dock-sms" data-guest-contact-dock-action="sms" id="guestContactDockSms" type="button">
+      <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
+      <span class="sr-only">SMS</span>
+    </button>
+    <button aria-label="E-mail" class="guest-contact-dock-btn guest-contact-dock-email" data-guest-contact-dock-action="email" id="guestContactDockEmail" type="button">
+      <svg aria-hidden="true" class="ui-ico ui-ico-email" viewbox="0 0 24 24"><text x="12" y="16" text-anchor="middle" font-size="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="900">@</text></svg>
+      <span class="sr-only">E-mail</span>
+    </button>
+  </div>
+</div>
 <div aria-hidden="true" class="modal" hidden="" id="languageModal">
 <div aria-modal="true" class="modal-card operatori-editor-card language-modal-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2822,7 +2842,7 @@ window.APP_VERSION = "3.040";
 <span class="home-sync-text">SYNC</span>
 </button>
 </div>
-<script defer="" src="./config.js?v=3.040"></script>
-<script defer="" src="./app.js?v=3.040"></script>
+<script defer="" src="./config.js?v=3.041"></script>
+<script defer="" src="./app.js?v=3.041"></script>
 </body>
 </html>
