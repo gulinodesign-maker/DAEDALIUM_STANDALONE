@@ -29176,7 +29176,7 @@ body[data-role="operatore"] #prodLedPulizia,
 body[data-role="operatore"] #laundryReportLed,
 .top-led-grid.is-operator-leds #laundryReportLed{ grid-column: 3 !important; }
 
-/* dDAE_3.047 — LED alert topbar: dimensione +20%, distanza +30% */
+/* dDAE_3.048 — LED alert topbar: dimensione +20%, distanza +30% */
 #topLedGrid{
   grid-template-columns:repeat(8, 18px) !important;
   grid-auto-columns:18px !important;
