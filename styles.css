@@ -29175,3 +29175,28 @@ body[data-role="operatore"] #prodLedPulizia,
 .top-led-grid.is-operator-leds #prodLedPulizia{ grid-column: 2 !important; }
 body[data-role="operatore"] #laundryReportLed,
 .top-led-grid.is-operator-leds #laundryReportLed{ grid-column: 3 !important; }
+
+/* dDAE_3.047 — LED alert topbar: dimensione +20%, distanza +30% */
+#topLedGrid{
+  grid-template-columns:repeat(8, 18px) !important;
+  grid-auto-columns:18px !important;
+  grid-auto-rows:18px !important;
+  grid-template-rows:18px !important;
+  gap:11.7px !important;
+}
+#topLedGrid > .top-led{
+  width:18px !important;
+  min-width:18px !important;
+  max-width:18px !important;
+  height:18px !important;
+  min-height:18px !important;
+  max-height:18px !important;
+}
+body[data-role="operatore"] #topLedGrid,
+#topLedGrid.is-operator-leds{
+  grid-template-columns:repeat(3, 18px) !important;
+  grid-auto-columns:18px !important;
+  grid-auto-rows:18px !important;
+  grid-template-rows:18px !important;
+  gap:11.7px !important;
+}
