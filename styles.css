@@ -29200,3 +29200,26 @@ body[data-role="operatore"] #topLedGrid,
   grid-template-rows:18px !important;
   gap:11.7px !important;
 }
+
+/* dDAE_3.049 — Topbar: tutti i LED ridotti del 20% */
+#topLedGrid{
+  grid-template-columns:repeat(8, 14.4px) !important;
+  grid-auto-columns:14.4px !important;
+  grid-auto-rows:14.4px !important;
+  grid-template-rows:14.4px !important;
+}
+#topLedGrid > .top-led{
+  width:14.4px !important;
+  min-width:14.4px !important;
+  max-width:14.4px !important;
+  height:14.4px !important;
+  min-height:14.4px !important;
+  max-height:14.4px !important;
+}
+body[data-role="operatore"] #topLedGrid,
+#topLedGrid.is-operator-leds{
+  grid-template-columns:repeat(3, 14.4px) !important;
+  grid-auto-columns:14.4px !important;
+  grid-auto-rows:14.4px !important;
+  grid-template-rows:14.4px !important;
+}
