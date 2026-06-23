@@ -29226,24 +29226,3 @@ body[data-role="operatore"] #topLedGrid,
 
 
 /* dDAE_3.050 — Calendario: sola navigazione mensile, con Oggi tra le frecce */
-
-
-/* dDAE_3.051 — Calendario portrait: continuità orizzontale nel mese successivo */
-@media (orientation: portrait){
-  #page-calendario.is-month-view .cal-days-wrap{
-    overflow-x:auto !important;
-    overscroll-behavior-x:contain;
-    scroll-behavior:auto;
-  }
-  #page-calendario.is-month-view #calGridMonth .cal-head[data-month-start="true"]{
-    scroll-margin-left:0;
-  }
-}
-
-
-/* dDAE_3.052 — Calendario portrait: finestra multi-mese bidirezionale con estensione continua */
-@media (orientation: portrait){
-  #page-calendario.is-month-view .cal-days-wrap{
-    -webkit-overflow-scrolling:touch;
-  }
-}
