@@ -29239,3 +29239,11 @@ body[data-role="operatore"] #topLedGrid,
     scroll-margin-left:0;
   }
 }
+
+
+/* dDAE_3.052 — Calendario portrait: finestra multi-mese bidirezionale con estensione continua */
+@media (orientation: portrait){
+  #page-calendario.is-month-view .cal-days-wrap{
+    -webkit-overflow-scrolling:touch;
+  }
+}
