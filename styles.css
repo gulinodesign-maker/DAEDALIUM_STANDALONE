@@ -29225,4 +29225,13 @@ body[data-role="operatore"] #topLedGrid,
 }
 
 
-/* dDAE_3.050 — Calendario: sola navigazione mensile, con Oggi tra le frecce */
+/* dDAE_3.051 — Calendario: sola navigazione mensile, con Oggi tra le frecce */
+
+
+/* dDAE_3.051 — Backup: eliminato Chiudi, Importa/Esporta centrati su due colonne */
+#settingsBackupModal .settings-backup-actions{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  width:100% !important;
+  align-items:stretch !important;
+}
