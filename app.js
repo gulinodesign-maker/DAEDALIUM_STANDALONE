@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.054
+ * Build: 3.055
  */
-const BUILD_VERSION = "3.054";
+const BUILD_VERSION = "3.055";
 
-/* dDAE_3.054 — Scudo globale anti click-through per tutti i popup/modal */
+/* dDAE_3.055 — Backup 2025/2026: split multi-anno e cache dati non ripristinate */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -479,9 +479,131 @@ function __tblKey__(name){
   return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
+function __tableDateFieldsForYear__(name){
+  const t = String(name || '').trim().toLowerCase();
+  if (t === 'ospiti' || t === 'ospiti_eliminati') return ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at'];
+  if (t === 'spese') return ['dataSpesa','data','data_spesa','createdAt','created_at','updatedAt','updated_at'];
+  if (t === 'pulizie' || t === 'operatori') return ['data','giorno','date','createdAt','created_at','updatedAt','updated_at'];
+  if (t === 'lavanderia') return ['data','mese_data','createdAt','created_at','updatedAt','updated_at'];
+  if (t === 'piscina') return ['timestamp_report','data','date','createdAt','created_at','updatedAt','updated_at'];
+  return ['data','date','createdAt','created_at','updatedAt','updated_at'];
+}
+
+function __yearFromValueLoose__(v){
+  try{
+    if (v === undefined || v === null) return '';
+    const s = String(v).trim();
+    if (!s) return '';
+    const m = s.match(/^([0-9]{4})(?:[-\/]|$|T|\s)/);
+    if (m) return m[1];
+    const m2 = s.match(/^[0-9]{1,2}[-\/][0-9]{1,2}[-\/]([0-9]{4})$/);
+    if (m2) return m2[1];
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return String(d.getFullYear());
+  }catch(_){ }
+  return '';
+}
+
+function __rowYearsForTable__(row, table){
+  const out = new Set();
+  try{
+    if (!row || typeof row !== 'object') return out;
+    ['anno','year','esercizio'].forEach((f)=>{
+      try{
+        const y = String(row[f] ?? '').trim();
+        if (/^[0-9]{4}$/.test(y)) out.add(y);
+      }catch(_){ }
+    });
+    const fields = __tableDateFieldsForYear__(table);
+    fields.forEach((f)=>{
+      try{
+        const y = __yearFromValueLoose__(row[f]);
+        if (/^[0-9]{4}$/.test(y)) out.add(y);
+      }catch(_){ }
+    });
+  }catch(_){ }
+  return out;
+}
+
+function __tableRowsForYear__(rows, table, year){
+  try{
+    const yy = String(year || '').trim();
+    const list = Array.isArray(rows) ? rows : [];
+    if (!/^[0-9]{4}$/.test(yy)) return [];
+    const t = String(table || '').trim().toLowerCase();
+    if (t === 'impostazioni') return list.slice();
+    return list.filter((row)=>{
+      try{
+        const yrs = __rowYearsForTable__(row, table);
+        if (yrs.size) return yrs.has(yy);
+      }catch(_){ }
+      return false;
+    });
+  }catch(_){ return []; }
+}
+
+function __dedupeRowsForBackupYear__(rows){
+  try{
+    const out = [];
+    const seen = new Set();
+    (Array.isArray(rows) ? rows : []).forEach((row)=>{
+      let key = '';
+      try{ key = String(row && (row.id || row.uid || row.guest_id || row.ospite_id || row.stanza_id || row.spesa_id || row.numero_prenotazione || row.numeroPrenotazione) || ''); }catch(_){ key = ''; }
+      if (!key){ try{ key = JSON.stringify(row); }catch(_){ key = String(Math.random()); } }
+      if (seen.has(key)) return;
+      seen.add(key);
+      out.push(row);
+    });
+    return out;
+  }catch(_){ return Array.isArray(rows) ? rows : []; }
+}
+
+async function __repairTableYearFromOtherContexts__(name, year){
+  try{
+    const table = String(name || '').trim();
+    const yy = String(year || __ctxYear__() || '').trim();
+    if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti') return null;
+    if (typeof __kvKeys__ !== 'function' || typeof __kvGet__ !== 'function' || typeof __kvSet__ !== 'function') return null;
+    const uid = String(__ctxUid__() || '').trim();
+    const targetKey = `ctx:${uid}:${yy}:tbl:${table}`;
+    const keys = await __kvKeys__('ctx:');
+    let candidates = (Array.isArray(keys) ? keys : []).filter((k)=>{
+      const ks = String(k || '');
+      return ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
+    });
+    candidates.sort((a,b)=>{
+      const au = String(a).split(':')[1] || '';
+      const bu = String(b).split(':')[1] || '';
+      const ap = uid && au === uid ? 0 : 1;
+      const bp = uid && bu === uid ? 0 : 1;
+      return ap - bp || String(a).localeCompare(String(b));
+    });
+    for (const k of candidates){
+      const val = await __kvGet__(k);
+      if (table === 'impostazioni' && (Array.isArray(val) || (val && typeof val === 'object'))){
+        await __kvSet__(targetKey, val);
+        return val;
+      }
+      if (!Array.isArray(val)) continue;
+      const rows = __dedupeRowsForBackupYear__(__tableRowsForYear__(val, table, yy));
+      if (rows.length){
+        await __kvSet__(targetKey, rows);
+        return rows;
+      }
+    }
+  }catch(_){ }
+  return null;
+}
+
 async function __tblGet__(name, fallback){
   const v = await __kvGet__(__tblKey__(name));
-  if (v === null || v === undefined) return fallback;
+  if (v === null || v === undefined){
+    try{
+      const repaired = await __repairTableYearFromOtherContexts__(name, __ctxYear__());
+      if (repaired !== null && repaired !== undefined) return repaired;
+    }catch(_){ }
+    return fallback;
+  }
   return v;
 }
 
@@ -3245,6 +3367,28 @@ function __safeFileName__(base){
   return String(base || "backup").replace(/[^\w\-\.]+/g, "_");
 }
 
+function __isBackupLocalCacheKey__(key){
+  try{
+    const k = String(key || '').trim();
+    if (!k) return false;
+    const lower = k.toLowerCase();
+    return lower.startsWith('ddae_local_cache_v');
+  }catch(_){ return false; }
+}
+
+function __purgeBackupLocalDataCaches__(){
+  try{
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (k && __isBackupLocalCacheKey__(k)) keys.push(k);
+    }
+    keys.forEach((k)=>{ try{ localStorage.removeItem(k); }catch(_){ } });
+  }catch(_){ }
+  try{ if (typeof __apiCache !== 'undefined' && __apiCache && __apiCache.clear) __apiCache.clear(); }catch(_){ }
+  try{ if (typeof __apiInflight !== 'undefined' && __apiInflight && __apiInflight.clear) __apiInflight.clear(); }catch(_){ }
+}
+
 function __dbBackupExcludedLocalStorageKeys__(){
   try{
     return new Set([
@@ -3269,6 +3413,7 @@ function __collectBackupLocalStorage__(){
       const isAppKey = key.startsWith("dDAE_") || key.startsWith("ddae_") || key.startsWith("__ddae_") || lower.startsWith("ddae:");
       if (!isAppKey) continue;
       if (excluded.has(key)) continue;
+      if (__isBackupLocalCacheKey__(key)) continue;
       try{ out[key] = String(localStorage.getItem(key) ?? ""); }catch(_){ }
     }
   }catch(_){ }
@@ -3277,17 +3422,20 @@ function __collectBackupLocalStorage__(){
 
 function __restoreBackupLocalStorage__(payload){
   try{
+    try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
     if (!payload || typeof payload !== "object") return;
     const excluded = __dbBackupExcludedLocalStorageKeys__();
     Object.keys(payload).forEach((key)=>{
       try{
         const k = String(key || "");
         if (!k || excluded.has(k)) return;
+        if (__isBackupLocalCacheKey__(k)) return;
         const v = payload[key];
         if (v === null || v === undefined) localStorage.removeItem(k);
         else localStorage.setItem(k, String(v));
       }catch(_){ }
     });
+    try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -3726,7 +3874,9 @@ async function __dbImport__(kind){
       }
     }catch(_){ }
 
-    try{ await __ddaeBackupRestoreMultiYear__(data, tables); }catch(_){ }
+    try{ await __ddaeBackupRestoreTopLevelYears__(data, allowedTables); }catch(_){ }
+    try{ await __ddaeBackupRestoreMultiYear__(data, allowedTables); }catch(_){ }
+    try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
 
     try{
       if (__isAuthEntryBackupImport__){
@@ -3956,6 +4106,12 @@ async function __dbExport__(kind, preopenWin){
         themeSlots: backupThemeSlots
       }
     };
+
+    try{
+      const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
+      payload.multiYear = __multiYearBackup__;
+      payload.meta.multiYear = __multiYearBackup__;
+    }catch(_){ }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -16404,11 +16560,20 @@ function __lsClearAll(){
     const keys = [];
     for (let i=0; i<localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.startsWith(__lsPrefixBase)) keys.push(k);
+      if (k && (__isBackupLocalCacheKey__(k) || k.startsWith(__lsPrefixBase))) keys.push(k);
     }
     keys.forEach(k => { try{ localStorage.removeItem(k); }catch(_ ){} });
   } catch(_ ){ }
 }
+
+(function __ddaePurgeDataCachesOnce3055__(){
+  try{
+    const mark = 'dDAE_data_cache_purged_build_3_055';
+    if (localStorage.getItem(mark) === '1') return;
+    __lsClearAll();
+    try{ localStorage.setItem(mark, '1'); }catch(_){ }
+  }catch(_){ }
+})();
 
 function __lsClearCtx(){
   // cancella solo la cache del contesto corrente (account+anno)
@@ -42526,7 +42691,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.054';
+  var BUILD_TAG='dDAE_3.055';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -45330,6 +45495,54 @@ async function __ddaeBackupCollectMultiYear__(tables){
   }catch(_){
     return { uid:'', years:{} };
   }
+}
+
+async function __ddaeBackupRestoreTopLevelYears__(payload, tables){
+  try{
+    if (typeof __kvSet__ !== 'function') return false;
+    const root = (payload && typeof payload === 'object') ? payload : {};
+    const ds = root.datasets && typeof root.datasets === 'object' ? root.datasets : {};
+    if (!ds || !Object.keys(ds).length) return false;
+    const list = Array.isArray(tables) ? tables : Array.from(tables || []);
+    const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
+    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    if (!targetUid) return false;
+
+    const years = new Set();
+    Object.keys(ds).forEach((table)=>{
+      if (!allowed.has(table) || table === 'utenti') return;
+      const rows = ds[table];
+      if (!Array.isArray(rows)) return;
+      rows.forEach((row)=>{
+        try{ __rowYearsForTable__(row, table).forEach((y)=>{ if (/^[0-9]{4}$/.test(y)) years.add(y); }); }catch(_){ }
+      });
+    });
+    try{
+      const yLocal = String(root?.localStorage?.dDAE_exerciseYear || root?.meta?.localStorage?.dDAE_exerciseYear || '').trim();
+      if (/^[0-9]{4}$/.test(yLocal)) years.add(yLocal);
+    }catch(_){ }
+    if (!years.size) years.add(String((typeof __ctxYear__ === 'function' ? __ctxYear__() : new Date().getFullYear()) || new Date().getFullYear()));
+
+    const yearList = Array.from(years).filter((y)=>/^[0-9]{4}$/.test(String(y))).sort();
+    for (const table of Object.keys(ds)){
+      if (!allowed.has(table) || table === 'utenti') continue;
+      const val = ds[table];
+      if (table === 'impostazioni'){
+        for (const y of yearList) await __kvSet__(`ctx:${targetUid}:${y}:tbl:${table}`, val);
+        continue;
+      }
+      if (Array.isArray(val)){
+        for (const y of yearList){
+          const rows = __dedupeRowsForBackupYear__(__tableRowsForYear__(val, table, y));
+          await __kvSet__(`ctx:${targetUid}:${y}:tbl:${table}`, rows);
+        }
+      } else if (val && typeof val === 'object'){
+        for (const y of yearList) await __kvSet__(`ctx:${targetUid}:${y}:tbl:${table}`, val);
+      }
+    }
+    try{ await __kvSet__(`backup:topLevelYears:lastRestore:${targetUid}`, { at: (typeof __nowIso__ === 'function' ? __nowIso__() : new Date().toISOString()), years: yearList }); }catch(_){ }
+    return true;
+  }catch(_){ return false; }
 }
 
 function __ddaeBackupNormalizeMultiYear__(payload){
