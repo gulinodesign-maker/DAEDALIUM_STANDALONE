@@ -29235,3 +29235,10 @@ body[data-role="operatore"] #topLedGrid,
   width:100% !important;
   align-items:stretch !important;
 }
+
+/* dDAE_3.057 — città di residenza: solo scheda ospite in sola lettura */
+#page-ospite .guest-form-card.is-create #guestResidenceCityField,
+#page-ospite .guest-form-card.is-edit #guestResidenceCityField,
+#page-ospite #guestResidenceCityField.ddae-hidden-outside-view{
+  display:none !important;
+}

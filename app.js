@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.056
+ * Build: 3.057
  */
-const BUILD_VERSION = "3.056";
+const BUILD_VERSION = "3.057";
 
-/* dDAE_3.056 — Backup 2025/2026: split multi-anno e cache dati non ripristinate */
+/* dDAE_3.057 — Città di residenza visibile solo in scheda in sola lettura */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -28863,6 +28863,7 @@ function updateGuestFormModeClass(){
     card.classList.toggle("is-create", !isView && mode === "create");
     card.classList.toggle("is-edit", !isView && mode === "edit");
     try{ __syncGuestNationalityPlacement__(); }catch(_){}
+    try{ __syncGuestResidenceCityVisibility__(); }catch(_){}
   }catch(_){}
 }
 
@@ -29617,6 +29618,7 @@ function setGuestFormViewOnly(isView, ospite){
   if (card) card.classList.toggle("is-view", !!isView);
   try{ const nameEl = document.getElementById('guestName'); if (nameEl) nameEl.readOnly = !!isView; }catch(_){ }
   try{ const cityEl = document.getElementById('guestResidenceCity'); if (cityEl) cityEl.readOnly = !!isView; }catch(_){ }
+  try{ __syncGuestResidenceCityVisibility__(); }catch(_){ }
   try{ __syncGuestSexCountInputsReadonly__(!!isView); }catch(_){ }
 
   const btn = document.getElementById("createGuestCard");
@@ -29763,6 +29765,19 @@ function serviziPreviewText(items){
 
 function __guestResidenceCityValue__(item){
   return String(item?.citta_residenza ?? item?.cittaResidenza ?? item?.cittaresidenza ?? item?.residenza_citta ?? item?.residenzaCitta ?? item?.citta ?? item?.city ?? item?.residence_city ?? item?.residenceCity ?? "").trim();
+}
+
+function __syncGuestResidenceCityVisibility__(){
+  try{
+    const field = document.getElementById('guestResidenceCityField');
+    if (!field) return;
+    const mode = String(state.guestMode || '').toLowerCase();
+    const visible = (mode === 'view');
+    field.hidden = !visible;
+    field.classList.toggle('ddae-hidden-outside-view', !visible);
+    if (!visible) field.setAttribute('aria-hidden', 'true');
+    else field.removeAttribute('aria-hidden');
+  }catch(_){ }
 }
 
 function guestNotesValue(item){
@@ -30272,7 +30287,14 @@ async function saveGuest(opts = {}){
   const telefono = (document.getElementById("guestPhone")?.value || "").trim();
   const nationalityOption = __getGuestNationalityOption__(document.getElementById("guestNationality")?.value || "");
   const email = (document.getElementById("guestEmail")?.value || "").trim();
-  const residenceCity = (document.getElementById("guestResidenceCity")?.value || "").trim();
+  const residenceCityField = document.getElementById("guestResidenceCity");
+  const residenceCityRaw = (residenceCityField?.value || "").trim();
+  let residenceCityFieldVisible = false;
+  try{
+    const cityWrap = residenceCityField ? residenceCityField.closest('.field') : null;
+    residenceCityFieldVisible = !!(residenceCityField && cityWrap && !cityWrap.hidden && getComputedStyle(cityWrap).display !== 'none' && getComputedStyle(cityWrap).visibility !== 'hidden');
+  }catch(_){ residenceCityFieldVisible = !!residenceCityField; }
+  const residenceCity = (String(state.guestMode || '').toLowerCase() === 'edit' && !residenceCityFieldVisible) ? __guestResidenceCityValue__(state.guestEditSourceItem || {}) : residenceCityRaw;
   const menCount = parseInt(document.getElementById("guestMen")?.value || "0", 10) || 0;
   const womenCount = parseInt(document.getElementById("guestWomen")?.value || "0", 10) || 0;
   const bookingNumber = (document.getElementById("guestBookingNumber")?.value || "").trim();
@@ -42706,7 +42728,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.056';
+  var BUILD_TAG='dDAE_3.057';
   var busy=false;
   var lastStart=0;
   var active=null;
