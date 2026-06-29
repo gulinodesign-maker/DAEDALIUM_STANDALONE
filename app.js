@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.055
+ * Build: 3.056
  */
-const BUILD_VERSION = "3.055";
+const BUILD_VERSION = "3.056";
 
-/* dDAE_3.055 — Backup 2025/2026: split multi-anno e cache dati non ripristinate */
+/* dDAE_3.056 — Backup 2025/2026: split multi-anno e cache dati non ripristinate */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -16568,7 +16568,7 @@ function __lsClearAll(){
 
 (function __ddaePurgeDataCachesOnce3055__(){
   try{
-    const mark = 'dDAE_data_cache_purged_build_3_055';
+    const mark = 'dDAE_data_cache_purged_build_3_056';
     if (localStorage.getItem(mark) === '1') return;
     __lsClearAll();
     try{ localStorage.setItem(mark, '1'); }catch(_){ }
@@ -26030,7 +26030,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestBookingNumber","guestMen","guestWomen","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestResidenceCity","guestBookingNumber","guestMen","guestWomen","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   try{ __applyGuestNameUppercase__(document.getElementById("guestName")); }catch(_){ }
   // reset servizi state
@@ -26165,6 +26165,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   document.getElementById("guestPhone").value = ospite.telefono ?? ospite.tel ?? ospite.phone ?? "";
   try{ setGuestNationality(__readGuestNationalityFromRecord__(ospite).code || "", { manual:true }); }catch(_){}
   document.getElementById("guestEmail").value = ospite.email ?? ospite.mail ?? "";
+  try{ const cityEl = document.getElementById("guestResidenceCity"); if (cityEl) cityEl.value = __guestResidenceCityValue__(ospite); }catch(_){ }
   try{ document.getElementById("guestMen").value = __readGuestPeopleCount__(ospite, 'men'); }catch(_){ }
   try{ document.getElementById("guestWomen").value = __readGuestPeopleCount__(ospite, 'women'); }catch(_){ }
   try{ state.guestGender = __readGuestGender__(ospite); __syncGuestGenderTabs__(); }catch(_){ }
@@ -29615,6 +29616,7 @@ function setGuestFormViewOnly(isView, ospite){
   const card = document.querySelector("#page-ospite .guest-form-card");
   if (card) card.classList.toggle("is-view", !!isView);
   try{ const nameEl = document.getElementById('guestName'); if (nameEl) nameEl.readOnly = !!isView; }catch(_){ }
+  try{ const cityEl = document.getElementById('guestResidenceCity'); if (cityEl) cityEl.readOnly = !!isView; }catch(_){ }
   try{ __syncGuestSexCountInputsReadonly__(!!isView); }catch(_){ }
 
   const btn = document.getElementById("createGuestCard");
@@ -29758,6 +29760,10 @@ function serviziPreviewText(items){
   return n > 0 ? (n + " servizi") : "";
 }
 
+
+function __guestResidenceCityValue__(item){
+  return String(item?.citta_residenza ?? item?.cittaResidenza ?? item?.cittaresidenza ?? item?.residenza_citta ?? item?.residenzaCitta ?? item?.citta ?? item?.city ?? item?.residence_city ?? item?.residenceCity ?? "").trim();
+}
 
 function guestNotesValue(item){
   return String(item?.note ?? item?.notes ?? item?.nota ?? "").trim();
@@ -30266,6 +30272,7 @@ async function saveGuest(opts = {}){
   const telefono = (document.getElementById("guestPhone")?.value || "").trim();
   const nationalityOption = __getGuestNationalityOption__(document.getElementById("guestNationality")?.value || "");
   const email = (document.getElementById("guestEmail")?.value || "").trim();
+  const residenceCity = (document.getElementById("guestResidenceCity")?.value || "").trim();
   const menCount = parseInt(document.getElementById("guestMen")?.value || "0", 10) || 0;
   const womenCount = parseInt(document.getElementById("guestWomen")?.value || "0", 10) || 0;
   const bookingNumber = (document.getElementById("guestBookingNumber")?.value || "").trim();
@@ -30307,6 +30314,14 @@ if (!name) return toast("Inserisci il nome");
     country_name: nationalityOption.name || "",
     country_flag: nationalityOption.flag || "",
     email: email,
+    citta_residenza: residenceCity,
+    cittaResidenza: residenceCity,
+    residenza_citta: residenceCity,
+    residenzaCitta: residenceCity,
+    citta: residenceCity,
+    city: residenceCity,
+    residence_city: residenceCity,
+    residenceCity: residenceCity,
     sesso: String(state.guestGender || "").trim(),
     gender: String(state.guestGender || "").trim(),
     genere: String(state.guestGender || "").trim(),
@@ -42691,7 +42706,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.055';
+  var BUILD_TAG='dDAE_3.056';
   var busy=false;
   var lastStart=0;
   var active=null;
