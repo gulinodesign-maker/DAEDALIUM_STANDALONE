@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.060
+ * Build: 3.061
  */
-const BUILD_VERSION = "3.060";
+const BUILD_VERSION = "3.061";
 
-/* dDAE_3.060 — PMS: unifica canali omonimi legacy */
+/* dDAE_3.061 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -2771,6 +2771,7 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
 
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
+try{ __invalidateSyncCaches__({ resetHomeRefresh:true }); }catch(_){ }
 try{ if(!opts?.silent) toast("Operazione completata", "green"); }catch(_){}
   if (!opts?.skipRefresh){
     const __restoreAfterSync = opts?.restoreState || __captureSyncRestoreState();
@@ -36656,7 +36657,8 @@ function setupCalendario(){
 
 
 
-// dDAE_3.046 — Android: se il calendario operatore è vuoto, importa prima il payload Firebase centrale.
+// dDAE_3.061 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
 function __calendarIsAndroidRuntime__(){
@@ -36667,10 +36669,12 @@ function __calendarIsAndroidRuntime__(){
 }
 function __calendarCanOperatorFirebaseImport__(){
   try{
-    if (!__calendarIsAndroidRuntime__()) return false;
     if (typeof __isAdmin__ === "function" && __isAdmin__()) return false;
+    try{
+      if (state && state.session && typeof isOperatoreSession === "function" && !isOperatoreSession(state.session)) return false;
+    }catch(_){ }
     if (typeof __fbLoadLink__ === "function") __fbLoadLink__();
-    return !!(__FB_STATE__ && String(__FB_STATE__.teamId || "").trim());
+    return !!(__FB_STATE__ && String(__FB_STATE__.teamId || "").trim() && typeof __fbImportOperator__ === "function");
   }catch(_){ return false; }
 }
 async function __calendarAndroidOperatorSyncFromFirebase__({ force = false } = {}){
@@ -36685,6 +36689,7 @@ async function __calendarAndroidOperatorSyncFromFirebase__({ force = false } = {
       try{
         const ok = await __fbImportOperator__({ silent:true, skipReload:true, skipRefresh:true, skipCentralExport:true, skipSpesaExport:true, restoreState });
         try{ __invalidateSyncCaches__({ resetHomeRefresh:false }); }catch(_){ }
+        try{ if (state && state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; } }catch(_){ }
         return ok !== false;
       }catch(_){ return false; }
       finally{ __calendarAndroidOperatorImportPromise__ = null; }
@@ -36734,6 +36739,15 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
       try{ invalidateApiCache("ospiti|"); }catch(_){ }
       data = await cachedGet("ospiti", { from: winFrom, to: winTo }, { showLoader:false, ttlMs: 60*1000, force:true });
     }
+  }
+  // Fallback locale: se una cache/API vuota resta in mezzo dopo la sync, usa comunque il dataset ospiti importato.
+  if (!Array.isArray(data) || !data.length){
+    try{
+      const localRows = await __tblGet__("ospiti", []);
+      if (Array.isArray(localRows) && localRows.length){
+        data = localRows.filter(r => __overlapRange__(__guestCheckInRaw__(r), __guestCheckOutRaw__(r), winFrom, winTo));
+      }
+    }catch(_){ }
   }
   state.calendar.guests = __guestFilterPreventiviRows__(Array.isArray(data) ? data : [], false);
   state.calendar.ready = true;
@@ -42819,7 +42833,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.060';
+  var BUILD_TAG='dDAE_3.061';
   var busy=false;
   var lastStart=0;
   var active=null;
