@@ -29294,3 +29294,139 @@ body[data-role="operatore"] #topLedGrid,
   caret-color:auto !important;
   touch-action:manipulation !important;
 }
+
+/* dDAE_3.063 — LED alert spostati dalla top bar al layer basso sempre visibile */
+body{
+  padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
+}
+.topbar #topLedGrid,
+.topbar .top-led-grid{
+  display:none !important;
+}
+.bottom-led-layer{
+  position:fixed !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:calc(7px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index:2147482500 !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  pointer-events:none !important;
+  padding:0 max(10px, env(safe-area-inset-left, 0px)) 0 max(10px, env(safe-area-inset-right, 0px)) !important;
+  box-sizing:border-box !important;
+}
+.bottom-led-layer .bottom-led-grid,
+#bottomLedLayer #topLedGrid{
+  width:min(100%, 640px) !important;
+  display:grid !important;
+  grid-template-columns:repeat(9, minmax(0, 1fr)) !important;
+  grid-auto-columns:auto !important;
+  grid-auto-rows:minmax(48px, auto) !important;
+  grid-template-rows:minmax(48px, auto) !important;
+  gap:clamp(5px, 1.7vw, 12px) !important;
+  align-items:center !important;
+  justify-items:center !important;
+  justify-content:center !important;
+  align-content:center !important;
+  margin:0 auto !important;
+  padding:7px 9px !important;
+  box-sizing:border-box !important;
+  pointer-events:auto !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.82) !important;
+  border:1px solid rgba(15,23,42,.10) !important;
+  box-shadow:0 8px 22px rgba(15,23,42,.10) !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  overflow:visible !important;
+}
+#bottomLedLayer #topLedGrid > .top-led,
+#bottomLedLayer #topLedGrid > .top-led-alert,
+#bottomLedLayer #topLedGrid > .top-led-product,
+#bottomLedLayer #topLedGrid > .top-led-laundry{
+  width:clamp(27px, 7.1vw, 38px) !important;
+  min-width:clamp(27px, 7.1vw, 38px) !important;
+  max-width:clamp(27px, 7.1vw, 38px) !important;
+  height:clamp(27px, 7.1vw, 38px) !important;
+  min-height:clamp(27px, 7.1vw, 38px) !important;
+  max-height:clamp(27px, 7.1vw, 38px) !important;
+  justify-self:center !important;
+  align-self:center !important;
+  cursor:pointer !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:rgba(0,0,0,0) !important;
+}
+#bottomLedLayer #topLedGrid > .top-led[role="button"]::before,
+#bottomLedLayer #topLedGrid > .top-led-product::before,
+#bottomLedLayer #topLedGrid > .top-led-laundry::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:46px;
+  height:46px;
+  transform:translate(-50%, -50%);
+  border-radius:999px;
+  background:transparent;
+  pointer-events:auto;
+}
+@keyframes bottomLedPulse{
+  0%, 100% { transform:scale(1); filter:brightness(1); }
+  50% { transform:scale(1.12); filter:brightness(1.18); }
+}
+@keyframes bottomLedGlowPulse{
+  0%, 100% { opacity:.52; transform:scale(1); }
+  50% { opacity:1; transform:scale(1.34); }
+}
+#bottomLedLayer .top-led-alert:not(.is-off),
+#bottomLedLayer .top-led-product.is-on,
+#bottomLedLayer .top-led-laundry:not(.is-off){
+  animation:bottomLedPulse 1.18s ease-in-out infinite !important;
+  -webkit-animation:bottomLedPulse 1.18s ease-in-out infinite !important;
+}
+#bottomLedLayer .top-led-alert:not(.is-off)::after,
+#bottomLedLayer .top-led-product.is-on::after,
+#bottomLedLayer .top-led-laundry:not(.is-off)::after{
+  animation:bottomLedGlowPulse 1.18s ease-in-out infinite !important;
+  -webkit-animation:bottomLedGlowPulse 1.18s ease-in-out infinite !important;
+}
+#bottomLedLayer .top-led-alert.is-off,
+#bottomLedLayer .top-led-product:not(.is-on),
+#bottomLedLayer .top-led-laundry.is-off{
+  animation:none !important;
+  -webkit-animation:none !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid,
+#bottomLedLayer #topLedGrid.is-operator-leds{
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-columns:auto !important;
+  grid-auto-rows:minmax(48px, auto) !important;
+  grid-template-rows:minmax(48px, auto) !important;
+  max-width:min(220px, 70vw) !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
+#bottomLedLayer #topLedGrid.is-operator-leds .top-led-alert{
+  display:none !important;
+}
+body[data-role="operatore"] #bottomLedLayer #prodLedColazione,
+#bottomLedLayer #topLedGrid.is-operator-leds #prodLedColazione{ grid-column:1 !important; }
+body[data-role="operatore"] #bottomLedLayer #prodLedPulizia,
+#bottomLedLayer #topLedGrid.is-operator-leds #prodLedPulizia{ grid-column:2 !important; }
+body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
+#bottomLedLayer #topLedGrid.is-operator-leds #laundryReportLed{ grid-column:3 !important; }
+@media (max-width:360px){
+  #bottomLedLayer #topLedGrid > .top-led,
+  #bottomLedLayer #topLedGrid > .top-led-alert,
+  #bottomLedLayer #topLedGrid > .top-led-product,
+  #bottomLedLayer #topLedGrid > .top-led-laundry{
+    width:25px !important;
+    min-width:25px !important;
+    max-width:25px !important;
+    height:25px !important;
+    min-height:25px !important;
+    max-height:25px !important;
+  }
+  .bottom-led-layer .bottom-led-grid,
+  #bottomLedLayer #topLedGrid{ gap:4px !important; padding-left:7px !important; padding-right:7px !important; }
+}
