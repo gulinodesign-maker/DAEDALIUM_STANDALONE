@@ -29295,7 +29295,7 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.067 — LED alert spostati dalla top bar al layer basso sempre visibile */
+/* dDAE_3.068 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
@@ -29432,7 +29432,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
 }
 
 
-/* dDAE_3.067 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
+/* dDAE_3.068 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
 :root{
   --sync-footer-space: 150px;
   --ddae-bottom-led-safe-space: 34px;
@@ -29589,7 +29589,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
   }
 }
 
-/* dDAE_3.067 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
+/* dDAE_3.068 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
 body.guest-contact-dock-active #bottomLedLayer,
 body[data-guest-contact-dock="1"] #bottomLedLayer,
 body[data-page="ospite"] #bottomLedLayer{
@@ -29599,7 +29599,7 @@ body[data-page="ospite"] #bottomLedLayer{
 }
 
 
-/* dDAE_3.067 — Superficie bassa fissa sotto SYNC + LED: resta in basso e copre il contenuto che scorre sotto */
+/* dDAE_3.068 — Superficie bassa fissa sotto SYNC + LED: resta in basso e copre il contenuto che scorre sotto */
 :root{
   --ddae-bottom-fixed-surface-height: calc(var(--sync-footer-space, 150px) + env(safe-area-inset-bottom, 0px));
   --ddae-bottom-fixed-surface-bg: #f7fbff;
@@ -29654,4 +29654,198 @@ body[data-page="prodotti"] #page-prodotti .content,
 body[data-page="spese"] #page-spese .content,
 body[data-page="lavanderia"] #page-lavanderia .content{
   padding-bottom: calc(var(--ddae-bottom-fixed-surface-height) + 18px) !important;
+}
+
+/* dDAE_3.068 — SYNC nella topbar al posto del logo; barra bassa solo sotto i LED alert */
+:root{
+  --sync-footer-space: 0px;
+  --ddae-bottom-led-safe-space: 58px;
+  --ddae-bottom-fixed-surface-height: 0px;
+}
+.brand-left{
+  overflow: visible !important;
+  flex: 0 0 auto !important;
+}
+.topbar .home-sync-top-btn,
+#topbarBrandLeft #goDbSync.home-sync-top-btn{
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  border-radius: 14px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 44px !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+}
+.topbar .home-sync-top-btn .ui-ico,
+#topbarBrandLeft #goDbSync.home-sync-top-btn .ui-ico{
+  width: 24px !important;
+  height: 24px !important;
+  stroke-width: 2.3 !important;
+}
+.sync-footer,
+#homeSyncBar.sync-footer,
+.ddae-bottom-fixed-surface,
+#ddaeBottomFixedSurface{
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+}
+body{
+  padding-bottom: calc(var(--ddae-bottom-led-safe-space, 58px) + env(safe-area-inset-bottom, 0px)) !important;
+}
+.bottom-led-layer,
+#bottomLedLayer{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 2147482500 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  pointer-events: none !important;
+  padding: 0 max(10px, env(safe-area-inset-left, 0px)) 0 max(10px, env(safe-area-inset-right, 0px)) !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.bottom-led-layer .bottom-led-grid,
+#bottomLedLayer #topLedGrid{
+  width: max-content !important;
+  max-width: calc(100vw - 20px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(9, 24px) !important;
+  grid-auto-columns: 24px !important;
+  grid-auto-rows: 34px !important;
+  grid-template-rows: 34px !important;
+  gap: clamp(5px, 1.65vw, 10px) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  justify-content: center !important;
+  align-content: center !important;
+  margin: 0 auto !important;
+  padding: 7px 10px !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  border-radius: 999px !important;
+  background: #f7fbff !important;
+  border: 1px solid rgba(15,23,42,0.10) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+body.ddae-dark .bottom-led-layer .bottom-led-grid,
+body.ddae-dark #bottomLedLayer #topLedGrid{
+  background: #08101f !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+#bottomLedLayer #topLedGrid > .top-led,
+#bottomLedLayer #topLedGrid > .top-led-alert,
+#bottomLedLayer #topLedGrid > .top-led-product,
+#bottomLedLayer #topLedGrid > .top-led-laundry{
+  position: relative !important;
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  max-height: 20px !important;
+  justify-self: center !important;
+  align-self: center !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+}
+#bottomLedLayer #topLedGrid > .top-led[role="button"]::before,
+#bottomLedLayer #topLedGrid > .top-led-product::before,
+#bottomLedLayer #topLedGrid > .top-led-laundry::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+@keyframes bottomLedPulse_3068{
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.10); filter: brightness(1.22); }
+}
+#bottomLedLayer .top-led-alert:not(.is-off),
+#bottomLedLayer .top-led-product.is-on,
+#bottomLedLayer .top-led-laundry:not(.is-off){
+  animation: bottomLedPulse_3068 1.18s ease-in-out infinite !important;
+  -webkit-animation: bottomLedPulse_3068 1.18s ease-in-out infinite !important;
+  transform-origin: center center !important;
+}
+#bottomLedLayer .top-led-alert.is-off,
+#bottomLedLayer .top-led-product:not(.is-on),
+#bottomLedLayer .top-led-laundry.is-off{
+  animation: none !important;
+  -webkit-animation: none !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid,
+#bottomLedLayer #topLedGrid.is-operator-leds{
+  grid-template-columns: repeat(3, 24px) !important;
+  grid-auto-columns: 24px !important;
+  max-width: max-content !important;
+  gap: 12px !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
+#bottomLedLayer #topLedGrid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+main.wrap,
+.page:not([hidden]){
+  scroll-padding-bottom: calc(var(--ddae-bottom-led-safe-space, 58px) + env(safe-area-inset-bottom, 0px) + 12px) !important;
+}
+body[data-page="pulizie"] #page-pulizie .bd,
+body[data-page="pulizie"] #page-pulizie .clean-mainGroup,
+body[data-page="pulizie"] #page-pulizie .clean-ops,
+body[data-page="calendario"] #page-calendario .content.calendar-page,
+body[data-page="ospiti"] #page-ospiti .content,
+body[data-page="prodotti"] #page-prodotti .content,
+body[data-page="spese"] #page-spese .content,
+body[data-page="lavanderia"] #page-lavanderia .content{
+  padding-bottom: calc(var(--ddae-bottom-led-safe-space, 58px) + env(safe-area-inset-bottom, 0px) + 12px) !important;
+}
+body.page-lock-vertical #page-home .home-page{
+  padding-bottom: calc(var(--safe-bottom) + 12px) !important;
+}
+@media (max-width:360px){
+  .bottom-led-layer .bottom-led-grid,
+  #bottomLedLayer #topLedGrid{
+    grid-template-columns: repeat(9, 21px) !important;
+    grid-auto-columns: 21px !important;
+    gap: 4px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  #bottomLedLayer #topLedGrid > .top-led,
+  #bottomLedLayer #topLedGrid > .top-led-alert,
+  #bottomLedLayer #topLedGrid > .top-led-product,
+  #bottomLedLayer #topLedGrid > .top-led-laundry{
+    width: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+  }
 }
