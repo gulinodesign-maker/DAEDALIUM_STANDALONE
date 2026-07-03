@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.061
+ * Build: 3.062
  */
-const BUILD_VERSION = "3.061";
+const BUILD_VERSION = "3.062";
 
-/* dDAE_3.061 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
+/* dDAE_3.062 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -29707,8 +29707,17 @@ function setGuestFormViewOnly(isView, ospite){
   const card = document.querySelector("#page-ospite .guest-form-card");
   if (card) card.classList.toggle("is-view", !!isView);
   try{ const nameEl = document.getElementById('guestName'); if (nameEl) nameEl.readOnly = !!isView; }catch(_){ }
-  try{ const cityEl = document.getElementById('guestResidenceCity'); if (cityEl) cityEl.readOnly = !!isView; }catch(_){ }
+  try{
+    const cityEl = document.getElementById('guestResidenceCity');
+    if (cityEl){
+      cityEl.readOnly = false;
+      cityEl.removeAttribute('readonly');
+      cityEl.tabIndex = isView ? 0 : -1;
+      if (isView) cityEl.__guestResidenceCityLastSaved = String(cityEl.value || '').trim();
+    }
+  }catch(_){ }
   try{ __syncGuestResidenceCityVisibility__(); }catch(_){ }
+  try{ if (isView) __setupGuestResidenceCityInputInView__(); }catch(_){ }
   try{ __syncGuestSexCountInputsReadonly__(!!isView); }catch(_){ }
 
   const btn = document.getElementById("createGuestCard");
@@ -29855,6 +29864,78 @@ function serviziPreviewText(items){
 
 function __guestResidenceCityValue__(item){
   return String(item?.citta_residenza ?? item?.cittaResidenza ?? item?.cittaresidenza ?? item?.residenza_citta ?? item?.residenzaCitta ?? item?.citta ?? item?.city ?? item?.residence_city ?? item?.residenceCity ?? "").trim();
+}
+
+function __guestResidenceCityPayload__(value){
+  const city = String(value ?? '').trim();
+  return {
+    citta_residenza: city,
+    cittaResidenza: city,
+    residenza_citta: city,
+    residenzaCitta: city,
+    citta: city,
+    city: city,
+    residence_city: city,
+    residenceCity: city
+  };
+}
+
+async function __saveGuestResidenceCityFromView__(value){
+  try{
+    const base = state.guestViewItem || state.guestEditSourceItem || null;
+    const id = guestIdOf(base) || base?.id || state.guestEditId || '';
+    if (!id) return;
+    const patch = __guestResidenceCityPayload__(value);
+    const body = Object.assign({ id:String(id) }, patch);
+    await api('ospiti', { method:'PUT', body, showLoader:false });
+    try{
+      if (state.guestViewItem) Object.assign(state.guestViewItem, patch);
+      if (state.guestEditSourceItem) Object.assign(state.guestEditSourceItem, patch);
+      const gid = String(id || '').trim();
+      [state.ospiti, state.guests, state.bookings, state.guestList, state.statsGuests].forEach((list)=>{
+        if (!Array.isArray(list)) return;
+        list.forEach((row)=>{ try{ if (String(guestIdOf(row) || row?.id || '').trim() === gid) Object.assign(row, patch); }catch(_){ } });
+      });
+    }catch(_){ }
+    try{ invalidateApiCache('ospiti|'); }catch(_){ }
+  }catch(e){ try{ toast(e?.message || 'Errore salvataggio città'); }catch(_){ } }
+}
+
+function __setupGuestResidenceCityInputInView__(){
+  try{
+    const el = document.getElementById('guestResidenceCity');
+    if (!el) return;
+    try{ el.readOnly = false; el.removeAttribute('readonly'); }catch(_){ }
+    const isActiveView = ()=> !!(state && state.page === 'ospite' && String(state.guestMode || '').toLowerCase() === 'view');
+    if (el.__guestResidenceCityBound) return;
+    el.__guestResidenceCityBound = true;
+    let saveTimer = null;
+    const scheduleSave = (immediate = false) => {
+      try{
+        if (!isActiveView()) return;
+        const value = String(el.value || '').trim();
+        const last = String(el.__guestResidenceCityLastSaved ?? '').trim();
+        if (value === last) return;
+        if (saveTimer) clearTimeout(saveTimer);
+        const run = async()=>{
+          try{
+            await __saveGuestResidenceCityFromView__(value);
+            el.__guestResidenceCityLastSaved = value;
+          }catch(_){ }
+        };
+        if (immediate) run(); else saveTimer = setTimeout(run, 450);
+      }catch(_){ }
+    };
+    const unlock = ()=>{
+      try{ el.readOnly = false; el.removeAttribute('readonly'); el.tabIndex = 0; }catch(_){ }
+    };
+    ['focus','pointerdown','touchstart','mousedown'].forEach((evt)=>{
+      try{ el.addEventListener(evt, unlock, { passive:true }); }catch(_){ }
+    });
+    try{ el.addEventListener('input', ()=>scheduleSave(false)); }catch(_){ }
+    try{ el.addEventListener('change', ()=>scheduleSave(true)); }catch(_){ }
+    try{ el.addEventListener('blur', ()=>scheduleSave(true)); }catch(_){ }
+  }catch(_){ }
 }
 
 function __syncGuestResidenceCityVisibility__(){
@@ -36657,7 +36738,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.061 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.062 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42833,7 +42914,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.061';
+  var BUILD_TAG='dDAE_3.062';
   var busy=false;
   var lastStart=0;
   var active=null;

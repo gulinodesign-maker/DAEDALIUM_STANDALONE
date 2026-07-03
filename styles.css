@@ -29267,7 +29267,7 @@ body[data-role="operatore"] #topLedGrid,
 }
 
 
-/* dDAE_3.061 — LED topbar contanti senza ricevuta: stesso bagliore degli altri alert */
+/* dDAE_3.062 — LED topbar contanti senza ricevuta: stesso bagliore degli altri alert */
 #dbLedCashReceipt.top-led.top-led-alert.is-cashreceipt:not(.is-off){
   background:var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,.96)) !important;
   border-color:var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1)) !important;
@@ -29277,4 +29277,20 @@ body[data-role="operatore"] #topLedGrid,
 }
 #dbLedCashReceipt.top-led.top-led-alert.is-cashreceipt:not(.is-off)::after{
   display:none !important;
+}
+
+
+/* dDAE_3.062 — città di residenza editabile anche in scheda ospite in sola lettura */
+#page-ospite .guest-form-card.is-view #guestResidenceCityField,
+#page-ospite .guest-form-card.is-view #guestResidenceCityField label,
+#page-ospite .guest-form-card.is-view #guestResidenceCity{
+  pointer-events:auto !important;
+}
+#page-ospite .guest-form-card.is-view #guestResidenceCity{
+  cursor:text !important;
+  -webkit-user-select:text !important;
+  user-select:text !important;
+  -webkit-touch-callout:default !important;
+  caret-color:auto !important;
+  touch-action:manipulation !important;
 }
