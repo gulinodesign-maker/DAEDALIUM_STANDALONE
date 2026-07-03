@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.058
+ * Build: 3.059
  */
-const BUILD_VERSION = "3.058";
+const BUILD_VERSION = "3.059";
 
-/* dDAE_3.058 — Alert topbar contanti senza ricevuta + tag Design */
+/* dDAE_3.059 — Separazione popup ricevute/contanti + glow LED contanti */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -7220,11 +7220,47 @@ function __filterGuestAlertItemsForLed__(items, cfg){
   const tagLc = String(cfg.tag || '').toLowerCase();
   const needleLc = String(cfg.detailNeedle || '').toLowerCase();
   return src.map((it) => {
-    const tags = (Array.isArray(it.tags) ? it.tags : []).filter(t => String(t && t.label || '').toLowerCase() === tagLc);
-    const details = (Array.isArray(it.details) ? it.details : []).filter(d => {
-      const x = String(d || '').toLowerCase();
-      return x.includes(needleLc) || x.includes(tagLc);
-    });
+    const allTags = Array.isArray(it && it.tags) ? it.tags : [];
+    const allDetails = Array.isArray(it && it.details) ? it.details : [];
+    const tagMatches = allTags.filter(t => String(t && t.label || '').toLowerCase() === tagLc);
+
+    let enabled = true;
+    let details = [];
+    let tags = tagMatches;
+
+    if (tagLc === 'ricevuta'){
+      // L'alert ricevute deve restare separato dall'alert "contanti senza ricevuta".
+      // I dettagli dei contanti contengono comunque la parola "ricevuta", quindi qui
+      // si usa il flag specifico receiptMissingAlert e si scartano i testi contanti/fattura.
+      enabled = !!(it && it.receiptMissingAlert);
+      details = allDetails.filter(d => {
+        const x = String(d || '').toLowerCase();
+        return x.includes('ricevuta') && !x.includes('contant') && !x.includes('fattura');
+      });
+      if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
+    }else if (tagLc === 'contanti' || tagLc === 'contante'){
+      enabled = !!(it && it.cashReceiptAlert);
+      details = allDetails.filter(d => String(d || '').toLowerCase().includes('contant'));
+      if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
+    }else if (tagLc === 'pagamento'){
+      enabled = !!(it && it.paymentAlert);
+      details = allDetails.filter(d => {
+        const x = String(d || '').toLowerCase();
+        return x.includes('pagamento') || x.includes('rimanenza');
+      });
+      if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
+    }else if (tagLc === 'fattura'){
+      enabled = !!(it && it.invoiceAlert);
+      details = allDetails.filter(d => String(d || '').toLowerCase().includes('fattura'));
+      if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
+    }else{
+      details = allDetails.filter(d => {
+        const x = String(d || '').toLowerCase();
+        return x.includes(needleLc) || x.includes(tagLc);
+      });
+    }
+
+    if (!enabled) return null;
     return (tags.length || details.length) ? { item: it, details: details.length ? details : [cfg.title.replace(/^Alert\s+/i, '')], tags: tags.length ? tags : [{ label: cfg.tag, cls: cfg.tagCls }] } : null;
   }).filter(Boolean);
 }
@@ -42767,7 +42803,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.058';
+  var BUILD_TAG='dDAE_3.059';
   var busy=false;
   var lastStart=0;
   var active=null;
