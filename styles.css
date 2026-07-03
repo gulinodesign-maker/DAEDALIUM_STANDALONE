@@ -29295,7 +29295,7 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.066 — LED alert spostati dalla top bar al layer basso sempre visibile */
+/* dDAE_3.067 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
@@ -29432,7 +29432,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
 }
 
 
-/* dDAE_3.066 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
+/* dDAE_3.067 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
 :root{
   --sync-footer-space: 150px;
   --ddae-bottom-led-safe-space: 34px;
@@ -29589,7 +29589,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
   }
 }
 
-/* dDAE_3.066 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
+/* dDAE_3.067 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
 body.guest-contact-dock-active #bottomLedLayer,
 body[data-guest-contact-dock="1"] #bottomLedLayer,
 body[data-page="ospite"] #bottomLedLayer{
@@ -29599,50 +29599,51 @@ body[data-page="ospite"] #bottomLedLayer{
 }
 
 
-/* dDAE_3.066 — Superficie fissa sotto SYNC + LED: il contenuto scorre sotto senza trasparire */
+/* dDAE_3.067 — Superficie bassa fissa sotto SYNC + LED: resta in basso e copre il contenuto che scorre sotto */
 :root{
   --ddae-bottom-fixed-surface-height: calc(var(--sync-footer-space, 150px) + env(safe-area-inset-bottom, 0px));
-  --ddae-bottom-fixed-surface-bg: rgba(248,250,252,0.96);
+  --ddae-bottom-fixed-surface-bg: #f7fbff;
 }
-body::before{
-  content:"";
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  height:var(--ddae-bottom-fixed-surface-height);
-  z-index:690;
-  pointer-events:none;
-  background:var(--ddae-bottom-fixed-surface-bg);
-  border-top:1px solid rgba(15,23,42,0.10);
-  box-shadow:none;
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-  transform:translateZ(0);
-  -webkit-transform:translateZ(0);
+.ddae-bottom-fixed-surface{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: var(--ddae-bottom-fixed-surface-height) !important;
+  z-index: 680 !important;
+  pointer-events: none !important;
+  background: var(--ddae-bottom-fixed-surface-bg) !important;
+  border-top: 1px solid rgba(15,23,42,0.12) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
 }
-body.ddae-dark::before{
-  background:rgba(8,16,31,0.96);
-  border-top-color:rgba(255,255,255,0.12);
+body.ddae-dark .ddae-bottom-fixed-surface{
+  background: #08101f !important;
+  border-top-color: rgba(255,255,255,0.12) !important;
 }
 .sync-footer,
 #homeSyncBar.sync-footer{
-  z-index:700 !important;
+  bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 700 !important;
 }
 #bottomLedLayer,
 .bottom-led-layer{
-  z-index:710 !important;
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 710 !important;
 }
 /* Il pannello basso non deve comparire nella scheda ospite in lettura/contatto. */
-body.guest-contact-dock-active::before,
-body[data-guest-contact-dock="1"]::before,
-body[data-page="ospite"]::before{
-  display:none !important;
+body.guest-contact-dock-active .ddae-bottom-fixed-surface,
+body[data-guest-contact-dock="1"] .ddae-bottom-fixed-surface,
+body[data-page="ospite"] .ddae-bottom-fixed-surface{
+  display: none !important;
 }
-/* Mantiene abbastanza aria in fondo alle pagine scrollabili: gli elementi finiscono sotto la superficie, non sopra di essa. */
+/* Mantiene aria in fondo alle pagine scrollabili senza spostare SYNC/LED dall'area bassa. */
 main.wrap,
 .page:not([hidden]){
-  scroll-padding-bottom:calc(var(--sync-footer-space, 150px) + env(safe-area-inset-bottom, 0px) + 18px) !important;
+  scroll-padding-bottom: calc(var(--ddae-bottom-fixed-surface-height) + 18px) !important;
 }
 body[data-page="pulizie"] #page-pulizie .bd,
 body[data-page="pulizie"] #page-pulizie .clean-mainGroup,
@@ -29652,5 +29653,5 @@ body[data-page="ospiti"] #page-ospiti .content,
 body[data-page="prodotti"] #page-prodotti .content,
 body[data-page="spese"] #page-spese .content,
 body[data-page="lavanderia"] #page-lavanderia .content{
-  padding-bottom:calc(var(--sync-footer-space, 150px) + env(safe-area-inset-bottom, 0px) + 18px) !important;
+  padding-bottom: calc(var(--ddae-bottom-fixed-surface-height) + 18px) !important;
 }

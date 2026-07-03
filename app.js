@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.066
+ * Build: 3.067
  */
-const BUILD_VERSION = "3.066";
+const BUILD_VERSION = "3.067";
 
-/* dDAE_3.066 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
+/* dDAE_3.067 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -36738,7 +36738,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.066 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.067 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42920,7 +42920,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.066';
+  var BUILD_TAG='dDAE_3.067';
   var busy=false;
   var lastStart=0;
   var active=null;
