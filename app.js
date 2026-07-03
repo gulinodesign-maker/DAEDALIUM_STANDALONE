@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.064
+ * Build: 3.065
  */
-const BUILD_VERSION = "3.064";
+const BUILD_VERSION = "3.065";
 
-/* dDAE_3.064 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
+/* dDAE_3.065 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -36738,7 +36738,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.064 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.065 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -40914,6 +40914,12 @@ function __syncGuestContactActionDock(isView){
     setupGuestContactActionDock();
     const page = document.getElementById('page-ospite');
     const active = !!isView && !!(state && state.page === 'ospite' && state.guestMode === 'view') && !(page && page.hidden);
+    try{
+      if (document.body){
+        document.body.classList.toggle('guest-contact-dock-active', !!active);
+        document.body.dataset.guestContactDock = active ? '1' : '0';
+      }
+    }catch(_){ }
     dock.hidden = !active;
     dock.setAttribute('aria-hidden', active ? 'false' : 'true');
     if (!active) return;
@@ -42914,7 +42920,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.064';
+  var BUILD_TAG='dDAE_3.065';
   var busy=false;
   var lastStart=0;
   var active=null;

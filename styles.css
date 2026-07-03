@@ -29295,7 +29295,7 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.064 — LED alert spostati dalla top bar al layer basso sempre visibile */
+/* dDAE_3.065 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
@@ -29432,7 +29432,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
 }
 
 
-/* dDAE_3.064 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
+/* dDAE_3.065 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
 :root{
   --sync-footer-space: 150px;
   --ddae-bottom-led-safe-space: 34px;
@@ -29587,4 +29587,13 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
     width: 31px !important;
     height: 31px !important;
   }
+}
+
+/* dDAE_3.065 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
+body.guest-contact-dock-active #bottomLedLayer,
+body[data-guest-contact-dock="1"] #bottomLedLayer,
+body[data-page="ospite"] #bottomLedLayer{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
 }
