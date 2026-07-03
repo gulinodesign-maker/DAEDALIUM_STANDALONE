@@ -29295,7 +29295,7 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.063 — LED alert spostati dalla top bar al layer basso sempre visibile */
+/* dDAE_3.064 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
@@ -29429,4 +29429,162 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
   }
   .bottom-led-layer .bottom-led-grid,
   #bottomLedLayer #topLedGrid{ gap:4px !important; padding-left:7px !important; padding-right:7px !important; }
+}
+
+
+/* dDAE_3.064 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
+:root{
+  --sync-footer-space: 150px;
+  --ddae-bottom-led-safe-space: 34px;
+}
+body{
+  padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.topbar #topLedGrid,
+.topbar .top-led-grid{
+  display:none !important;
+}
+.sync-footer,
+#homeSyncBar.sync-footer{
+  bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 700 !important;
+}
+.bottom-led-layer{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 2147482500 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  pointer-events: none !important;
+  padding: 0 max(12px, env(safe-area-inset-left, 0px)) 0 max(12px, env(safe-area-inset-right, 0px)) !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.bottom-led-layer .bottom-led-grid,
+#bottomLedLayer #topLedGrid{
+  width: min(100%, 430px) !important;
+  max-width: calc(100vw - 24px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(9, minmax(22px, 1fr)) !important;
+  grid-auto-columns: auto !important;
+  grid-auto-rows: 30px !important;
+  grid-template-rows: 30px !important;
+  gap: clamp(4px, 1.45vw, 9px) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  justify-content: center !important;
+  align-content: center !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+#bottomLedLayer #topLedGrid > .top-led,
+#bottomLedLayer #topLedGrid > .top-led-alert,
+#bottomLedLayer #topLedGrid > .top-led-product,
+#bottomLedLayer #topLedGrid > .top-led-laundry{
+  position: relative !important;
+  width: clamp(18px, 5.25vw, 23px) !important;
+  min-width: clamp(18px, 5.25vw, 23px) !important;
+  max-width: clamp(18px, 5.25vw, 23px) !important;
+  height: clamp(18px, 5.25vw, 23px) !important;
+  min-height: clamp(18px, 5.25vw, 23px) !important;
+  max-height: clamp(18px, 5.25vw, 23px) !important;
+  justify-self: center !important;
+  align-self: center !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+}
+#bottomLedLayer #topLedGrid > .top-led[role="button"]::before,
+#bottomLedLayer #topLedGrid > .top-led-product::before,
+#bottomLedLayer #topLedGrid > .top-led-laundry::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 34px !important;
+  height: 34px !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+@keyframes bottomLedPulse_3064{
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.10); filter: brightness(1.22); }
+}
+@keyframes bottomLedHalo_3064{
+  0%, 100% { box-shadow: inherit; opacity: 1; }
+  50% { opacity: 1; }
+}
+#bottomLedLayer .top-led-alert:not(.is-off),
+#bottomLedLayer .top-led-product.is-on,
+#bottomLedLayer .top-led-laundry:not(.is-off){
+  animation: bottomLedPulse_3064 1.2s ease-in-out infinite !important;
+  -webkit-animation: bottomLedPulse_3064 1.2s ease-in-out infinite !important;
+  transform-origin: center center !important;
+}
+#bottomLedLayer .top-led-alert.is-off,
+#bottomLedLayer .top-led-product:not(.is-on),
+#bottomLedLayer .top-led-laundry.is-off{
+  animation: none !important;
+  -webkit-animation: none !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid,
+#bottomLedLayer #topLedGrid.is-operator-leds{
+  grid-template-columns: repeat(3, minmax(24px, 1fr)) !important;
+  grid-auto-columns: auto !important;
+  grid-auto-rows: 30px !important;
+  grid-template-rows: 30px !important;
+  max-width: min(150px, 54vw) !important;
+  gap: clamp(10px, 4vw, 18px) !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
+#bottomLedLayer #topLedGrid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+body[data-role="operatore"] #bottomLedLayer #prodLedColazione,
+#bottomLedLayer #topLedGrid.is-operator-leds #prodLedColazione{ grid-column: 1 !important; }
+body[data-role="operatore"] #bottomLedLayer #prodLedPulizia,
+#bottomLedLayer #topLedGrid.is-operator-leds #prodLedPulizia{ grid-column: 2 !important; }
+body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
+#bottomLedLayer #topLedGrid.is-operator-leds #laundryReportLed{ grid-column: 3 !important; }
+@media (max-width:360px){
+  #bottomLedLayer #topLedGrid{
+    grid-template-columns: repeat(9, minmax(18px, 1fr)) !important;
+    gap: 4px !important;
+    max-width: calc(100vw - 18px) !important;
+  }
+  #bottomLedLayer #topLedGrid > .top-led,
+  #bottomLedLayer #topLedGrid > .top-led-alert,
+  #bottomLedLayer #topLedGrid > .top-led-product,
+  #bottomLedLayer #topLedGrid > .top-led-laundry{
+    width: 17px !important;
+    min-width: 17px !important;
+    max-width: 17px !important;
+    height: 17px !important;
+    min-height: 17px !important;
+    max-height: 17px !important;
+  }
+  #bottomLedLayer #topLedGrid > .top-led[role="button"]::before,
+  #bottomLedLayer #topLedGrid > .top-led-product::before,
+  #bottomLedLayer #topLedGrid > .top-led-laundry::before{
+    width: 31px !important;
+    height: 31px !important;
+  }
 }
