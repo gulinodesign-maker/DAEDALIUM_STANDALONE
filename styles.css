@@ -28496,6 +28496,29 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   display:none !important;
 }
 
+
+/* dDAE_3.058 — Alert contanti senza ricevuta */
+.top-led-alert.is-cashreceipt,
+#dbLedCashReceipt.top-led-alert.is-cashreceipt{
+  background:var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,.96)) !important;
+  border-color:var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1)) !important;
+  color:var(--ddae-alert-cashreceipt-fg, #fff) !important;
+  opacity:1 !important;
+  box-shadow:var(--ddae-alert-led-highlight, none), var(--ddae-alert-cashreceipt-shadow, 0 0 0 2px rgba(34,197,94,.14), 0 0 10px rgba(34,197,94,.40), 0 0 20px rgba(34,197,94,.18)) !important;
+}
+#dbLedCashReceipt.top-led-alert.is-off{
+  background:rgba(148,163,184,.34) !important;
+  border-color:rgba(100,116,139,.34) !important;
+  opacity:.72 !important;
+  box-shadow:var(--ddae-alert-off-shadow) !important;
+}
+.guest-alert-tag.tag-cash{
+  background:var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,.96)) !important;
+  border-color:var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1)) !important;
+  color:var(--ddae-alert-cashreceipt-fg, #fff) !important;
+  box-shadow:var(--ddae-alert-cashreceipt-shadow, 0 0 16px rgba(34,197,94,.46)) !important;
+}
+
 /* dDAE_3.019 — Card popup alert topbar cliccabili */
 .guest-alert-card{ cursor:pointer; -webkit-tap-highlight-color: transparent; }
 .guest-alert-card .guest-alert-dismiss{ cursor:pointer; }
@@ -29178,7 +29201,7 @@ body[data-role="operatore"] #laundryReportLed,
 
 /* dDAE_3.048 — LED alert topbar: dimensione +20%, distanza +30% */
 #topLedGrid{
-  grid-template-columns:repeat(8, 18px) !important;
+  grid-template-columns:repeat(9, 18px) !important;
   grid-auto-columns:18px !important;
   grid-auto-rows:18px !important;
   grid-template-rows:18px !important;
@@ -29203,7 +29226,7 @@ body[data-role="operatore"] #topLedGrid,
 
 /* dDAE_3.049 — Topbar: tutti i LED ridotti del 20% */
 #topLedGrid{
-  grid-template-columns:repeat(8, 14.4px) !important;
+  grid-template-columns:repeat(9, 14.4px) !important;
   grid-auto-columns:14.4px !important;
   grid-auto-rows:14.4px !important;
   grid-template-rows:14.4px !important;
@@ -29236,7 +29259,7 @@ body[data-role="operatore"] #topLedGrid,
   align-items:stretch !important;
 }
 
-/* dDAE_3.057 — città di residenza: solo scheda ospite in sola lettura */
+/* dDAE_3.058 — città di residenza: solo scheda ospite in sola lettura */
 #page-ospite .guest-form-card.is-create #guestResidenceCityField,
 #page-ospite .guest-form-card.is-edit #guestResidenceCityField,
 #page-ospite #guestResidenceCityField.ddae-hidden-outside-view{

@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.057
+ * Build: 3.058
  */
-const BUILD_VERSION = "3.057";
+const BUILD_VERSION = "3.058";
 
-/* dDAE_3.057 — Città di residenza visibile solo in scheda in sola lettura */
+/* dDAE_3.058 — Alert topbar contanti senza ricevuta + tag Design */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -6927,6 +6927,20 @@ function _guestReceiptMissingNow(g){
   }
   return missing;
 }
+function _guestCashReceiptMissingNow(g){
+  const missing = [];
+  const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? 0);
+  const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? '');
+  if (dep > 0 && _isCashTypeStr_(depType) && !_isRicevutaFlag(g, 'acconto')) {
+    missing.push(`Acconto contante senza ricevuta — Acconto incassato: ${euro(dep)}`);
+  }
+  const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
+  const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? '');
+  if (saldo > 0 && _isCashTypeStr_(saldoType) && !_isRicevutaFlag(g, 'saldo')) {
+    missing.push(`Saldo contante senza ricevuta — Saldo incassato: ${euro(saldo)}`);
+  }
+  return missing;
+}
 
 function __guestCheckInDone__(g){
   try{
@@ -7074,10 +7088,12 @@ function computeTopGuestAlerts(guests){
 
     const fin = _guestStayFinancials(g);
     const receiptMissing = _guestReceiptMissingNow(g);
+    const cashReceiptMissing = _guestCashReceiptMissingNow(g);
     const invoiceAlert = __guestInvoiceAlertNow__(g);
     const paymentMissing = _guestPaymentMissingNow(g);
     const receiptMissingAlert = receiptMissing.length > 0;
-    const receiptOrInvoiceAlert = receiptMissingAlert || invoiceAlert;
+    const cashReceiptAlert = cashReceiptMissing.length > 0;
+    const receiptOrInvoiceAlert = receiptMissingAlert || cashReceiptAlert || invoiceAlert;
     const canDismissRightAlert = !paymentMissing && rightDismissed.has(guestId);
     if ((paymentMissing || receiptOrInvoiceAlert) && !canDismissRightAlert){
       right.push({
@@ -7087,14 +7103,18 @@ function computeTopGuestAlerts(guests){
         details: [
           paymentMissing ? `Pagamento mancante — Rimanenza da pagare: ${euro(fin.remaining)}` : '',
           invoiceAlert ? 'Richiesta fattura — ricevuta da emettere' : '',
-          ...receiptMissing
+          ...receiptMissing,
+          ...cashReceiptMissing
         ].filter(Boolean),
-        mode: (paymentMissing && receiptMissingAlert) ? 'dual' : (receiptMissingAlert ? 'red' : (invoiceAlert ? 'violet' : 'yellow')),
+        mode: (paymentMissing && receiptMissingAlert) ? 'dual' : (receiptMissingAlert ? 'red' : (cashReceiptAlert ? 'cashreceipt' : (invoiceAlert ? 'violet' : 'yellow'))),
+        paymentAlert: !!paymentMissing,
         invoiceAlert: !!invoiceAlert,
         receiptMissingAlert: !!receiptMissingAlert,
+        cashReceiptAlert: !!cashReceiptAlert,
         tags: [
           paymentMissing ? { label: 'Pagamento', cls: 'tag-yellow' } : null,
           receiptMissingAlert ? { label: 'Ricevuta', cls: 'tag-red' } : null,
+          cashReceiptAlert ? { label: 'Contanti', cls: 'tag-cash' } : null,
           invoiceAlert ? { label: 'Fattura', cls: 'tag-violet' } : null
         ].filter(Boolean),
         checkInTs,
@@ -7132,7 +7152,7 @@ function syncTopGuestDualTimer(){
 function __setTopLedState__(id, active, cls, label){
   const el = document.getElementById(id);
   if (!el) return;
-  el.classList.remove('is-off','is-black','is-sky','is-yellow','is-red','is-violet','is-blink','is-dual-left','is-dual-right');
+  el.classList.remove('is-off','is-black','is-sky','is-yellow','is-red','is-violet','is-cashreceipt','is-blink','is-dual-left','is-dual-right');
   if (active){
     el.classList.add(cls);
   }else{
@@ -7145,8 +7165,9 @@ function applyTopGuestAlertLed(side){
   const items = (state.guestAlerts && Array.isArray(state.guestAlerts[side])) ? state.guestAlerts[side] : [];
   const hasBlack = items.some(x => x.mode === 'black' || x.mode === 'dual');
   const hasSky = items.some(x => x.mode === 'sky' || x.mode === 'dual');
-  const hasYellow = items.some(x => x.mode === 'yellow' || x.mode === 'dual');
+  const hasYellow = items.some(x => x.mode === 'yellow' || x.mode === 'dual' || x.paymentAlert);
   const hasInvoice = items.some(x => x.mode === 'violet' || x.invoiceAlert);
+  const hasCashReceipt = items.some(x => x.mode === 'cashreceipt' || x.cashReceiptAlert);
   const hasRed = items.some(x => x.mode === 'red' || x.mode === 'dual' || x.receiptMissingAlert);
   if (side === 'left'){
     __setTopLedState__('dbLedRead', hasBlack, 'is-black', hasBlack ? 'Schedine PS mancanti' : 'Nessun alert schedine PS');
@@ -7154,6 +7175,7 @@ function applyTopGuestAlertLed(side){
   }else{
     __setTopLedState__('dbLedWrite', hasYellow, 'is-yellow', hasYellow ? 'Pagamento mancante' : 'Nessun alert pagamenti');
     __setTopLedState__('dbLedReceipt', hasRed, 'is-red', hasRed ? 'Ricevuta mancante' : 'Nessun alert ricevute');
+    __setTopLedState__('dbLedCashReceipt', hasCashReceipt, 'is-cashreceipt', hasCashReceipt ? 'Contanti senza ricevuta' : 'Nessun alert contanti senza ricevuta');
     __setTopLedState__('dbLedInvoice', hasInvoice, 'is-violet', hasInvoice ? 'Richiesta fattura' : 'Nessun alert fatture');
   }
   try{ syncTopGuestDualTimer(); }catch(_){ }
@@ -7164,6 +7186,14 @@ function updateTopGuestAlertLeds(){
   try{
     const hasInvoice = !!(state.guestAlerts && Array.isArray(state.guestAlerts.right) && state.guestAlerts.right.some(x => x && (x.invoiceAlert || x.mode === 'violet')));
     const hasRed = !!(state.guestAlerts && Array.isArray(state.guestAlerts.right) && state.guestAlerts.right.some(x => x && (x.receiptMissingAlert || x.mode === 'red' || x.mode === 'dual')));
+    const hasCashReceipt = !!(state.guestAlerts && Array.isArray(state.guestAlerts.right) && state.guestAlerts.right.some(x => x && (x.cashReceiptAlert || x.mode === 'cashreceipt')));
+    const cashEl = document.getElementById('dbLedCashReceipt');
+    if (cashEl){
+      cashEl.classList.toggle('is-cashreceipt', hasCashReceipt);
+      cashEl.classList.toggle('is-off', !hasCashReceipt);
+      cashEl.setAttribute('aria-label', hasCashReceipt ? 'Contanti senza ricevuta' : 'Nessun alert contanti senza ricevuta');
+      cashEl.setAttribute('title', hasCashReceipt ? 'Contanti senza ricevuta' : 'Nessun alert contanti senza ricevuta');
+    }
     const el = document.getElementById('dbLedInvoice');
     if (el){
       el.classList.toggle('is-violet', hasInvoice);
@@ -7178,6 +7208,7 @@ function __guestAlertLedConfig__(kind){
   if (k === 'istat') return { side:'left', title:'Alert ISTAT', tag:'ISTAT', tagCls:'tag-sky', detailNeedle:'ISTAT', empty:'Nessun alert ISTAT.' };
   if (k === 'payment') return { side:'right', title:'Alert pagamenti', tag:'Pagamento', tagCls:'tag-yellow', detailNeedle:'pagamento', empty:'Nessun pagamento mancante.' };
   if (k === 'receipt') return { side:'right', title:'Alert ricevute', tag:'Ricevuta', tagCls:'tag-red', detailNeedle:'ricevuta', empty:'Nessuna ricevuta mancante.' };
+  if (k === 'cashreceipt') return { side:'right', title:'Alert contanti senza ricevuta', tag:'Contanti', tagCls:'tag-cash', detailNeedle:'contante', empty:'Nessun pagamento in contanti senza ricevuta.' };
   if (k === 'invoice') return { side:'right', title:'Alert fatture', tag:'Fattura', tagCls:'tag-violet', detailNeedle:'fattura', empty:'Nessuna richiesta fattura attiva.' };
   if (k === 'right') return { side:'right', title:'Alert pagamenti e ricevute', tag:'', tagCls:'', detailNeedle:'', empty:'Nessun ospite in alert.' };
   if (k === 'left') return { side:'left', title:'Alert registrazioni', tag:'', tagCls:'', detailNeedle:'', empty:'Nessun ospite in alert.' };
@@ -17379,7 +17410,7 @@ state.page = page;
     if (authImportTop) authImportTop.hidden = !isAuth;
     if (leds2) leds2.hidden = isAuth;
     try{
-      ['dbLedRead','dbLedIstat','dbLedWrite','dbLedReceipt','dbLedInvoice'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = !!isOp; });
+      ['dbLedRead','dbLedIstat','dbLedWrite','dbLedReceipt','dbLedCashReceipt','dbLedInvoice'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = !!isOp; });
       ['prodLedColazione','prodLedPulizia'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = false; });
     }catch(_){ }
     try{ const opImpTop = document.getElementById("opImportRosterTop"); if (opImpTop) opImpTop.hidden = true; }catch(_){ }
@@ -17737,6 +17768,8 @@ function setupHeader(){
   if (guestLedRight) bindFastTap(guestLedRight, () => openGuestAlertModal('payment'));
   const guestLedReceipt = document.getElementById("dbLedReceipt");
   if (guestLedReceipt) bindFastTap(guestLedReceipt, () => openGuestAlertModal('receipt'));
+  const guestLedCashReceipt = document.getElementById("dbLedCashReceipt");
+  if (guestLedCashReceipt) bindFastTap(guestLedCashReceipt, () => openGuestAlertModal('cashreceipt'));
   const guestLedInvoice = document.getElementById("dbLedInvoice");
   if (guestLedInvoice) bindFastTap(guestLedInvoice, () => openGuestAlertModal('invoice'));
   const guestAlertClose = document.getElementById("guestAlertClose");
@@ -24588,6 +24621,10 @@ function _isElectronicTypeStr_(s){
   const t = String(s ?? "").toLowerCase();
   return t.includes("elet");
 }
+function _isCashTypeStr_(s){
+  const t = String(s ?? "").trim().toLowerCase();
+  return t.includes("contant") || t === "cash" || t === "c";
+}
 
 function computePendingReceipts(guests){
   const now = Date.now();
@@ -30711,6 +30748,8 @@ function setupOspite(){
   if (guestLedRight) bindFastTap(guestLedRight, () => openGuestAlertModal('payment'));
   const guestLedReceipt = document.getElementById("dbLedReceipt");
   if (guestLedReceipt) bindFastTap(guestLedReceipt, () => openGuestAlertModal('receipt'));
+  const guestLedCashReceipt = document.getElementById("dbLedCashReceipt");
+  if (guestLedCashReceipt) bindFastTap(guestLedCashReceipt, () => openGuestAlertModal('cashreceipt'));
   const guestLedInvoice = document.getElementById("dbLedInvoice");
   if (guestLedInvoice) bindFastTap(guestLedInvoice, () => openGuestAlertModal('invoice'));
   const guestAlertClose = document.getElementById("guestAlertClose");
@@ -42728,7 +42767,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.057';
+  var BUILD_TAG='dDAE_3.058';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -44837,6 +44876,7 @@ try{
     istat:   { label:'I', title:'Alert ISTAT',       bg:'sky-5',   border:'sky-5',   fg:'white', opacity:0.92 },
     payment: { label:'€', title:'Alert pagamenti',   bg:'yellow-4',border:'yellow-5',fg:'gray-6', opacity:0.96 },
     receipt: { label:'R', title:'Alert ricevute',    bg:'red-5',   border:'red-6',   fg:'white', opacity:0.96 },
+    cashreceipt: { label:'CR', title:'Alert contanti senza ricevuta', bg:'green-5', border:'green-6', fg:'white', opacity:0.96 },
     invoice: { label:'F', title:'Alert fatture',     bg:'violet-5',border:'violet-6',fg:'white', opacity:0.96 },
     shopping:{ label:'S', title:'Alert lista spesa', bg:'blue-4',  border:'blue-5',  fg:'white', opacity:0.92 },
     products:{ label:'Pr', title:'Alert prodotti',   bg:'orange-4',border:'orange-5',fg:'white', opacity:0.92 },
@@ -45095,6 +45135,7 @@ try{
       if(alertKey === 'istat') return 'ISTAT';
       if(alertKey === 'payment') return 'Pagamenti';
       if(alertKey === 'receipt') return 'Ricevute';
+      if(alertKey === 'cashreceipt') return 'Contanti senza ricevuta';
       if(alertKey === 'invoice') return 'Fatture';
       if(alertKey === 'shopping') return 'Spesa';
       if(alertKey === 'products') return 'Prodotti';
