@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.059
+ * Build: 3.060
  */
-const BUILD_VERSION = "3.059";
+const BUILD_VERSION = "3.060";
 
-/* dDAE_3.059 — Separazione popup ricevute/contanti + glow LED contanti */
+/* dDAE_3.060 — PMS: unifica canali omonimi legacy */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -22513,6 +22513,18 @@ function __statChannelBucketLabelFromGuest__(guest){
 function __statChannelSeriesBundle__(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
   const catalog = getChannelCatalogFromSettings();
+  const normalizeChannelName = (value) => {
+    try{
+      return String(value || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase();
+    }catch(_){
+      return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+  };
+  const catalogByName = new Map();
+  catalog.forEach((item) => {
+    const cleanName = normalizeChannelName(item?.nome);
+    if (cleanName && !catalogByName.has(cleanName)) catalogByName.set(cleanName, item);
+  });
   const bucketMap = new Map();
   const ensureBucket = (key, cfg = {}) => {
     const safeKey = String(key || '').trim();
@@ -22554,9 +22566,13 @@ function __statChannelSeriesBundle__(){
     const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
     if (monthIdx < 0 || monthIdx > 11) return;
     const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
-    const item = channelId ? getChannelCatalogItemById(channelId) : null;
-    const fallbackLabel = item?.nome || __statChannelBucketLabelFromGuest__(guest) || 'PMS';
-    const bucketKey = channelId ? `channel:${channelId}` : `channel-name:${String(fallbackLabel).trim().toLowerCase()}`;
+    const rawItem = channelId ? getChannelCatalogItemById(channelId) : null;
+    const fallbackLabelRaw = rawItem?.nome || __statChannelBucketLabelFromGuest__(guest) || 'PMS';
+    const matchedByName = catalogByName.get(normalizeChannelName(fallbackLabelRaw)) || null;
+    const item = rawItem || matchedByName;
+    const fallbackLabel = item?.nome || fallbackLabelRaw || 'PMS';
+    const canonicalId = item?.id ? String(item.id).trim() : '';
+    const bucketKey = canonicalId ? `channel:${canonicalId}` : `channel-name:${normalizeChannelName(fallbackLabel) || 'pms'}`;
     const bucket = ensureBucket(bucketKey, {
       label: fallbackLabel,
       bg: item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
@@ -42803,7 +42819,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.059';
+  var BUILD_TAG='dDAE_3.060';
   var busy=false;
   var lastStart=0;
   var active=null;
