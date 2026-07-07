@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.070
+ * Build: 3.071
  */
-const BUILD_VERSION = "3.070";
+const BUILD_VERSION = "3.071";
 
-/* dDAE_3.070 — Ripristino calendario operatori dopo sync + PMS canali omonimi */
+/* dDAE_3.071 — Alert generico ospite con testo libero */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -6668,8 +6668,8 @@ function __syncGuestInvoiceButton__(){
     btn.classList.toggle('is-on', on);
     btn.classList.toggle('is-off', !on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.setAttribute('title', on ? 'Richiesta fattura attiva' : 'Richiesta fattura');
-    btn.setAttribute('aria-label', on ? 'Richiesta fattura attiva' : 'Richiesta fattura');
+    btn.setAttribute('title', on ? 'Alert generico attivo' : 'Alert generico');
+    btn.setAttribute('aria-label', on ? 'Alert generico attivo' : 'Alert generico');
     try{ __applySingleActionButtonVisual__(btn, on ? 'on' : 'off'); }catch(_){ }
   }catch(_){ }
 }
@@ -7033,7 +7033,7 @@ function buildGuestCardAlertLedsHTML(guest){
     ${led(!!f.istat, 'is-sky', 'ISTAT mancante', 'ISTAT ok')}
     ${led(!!f.payment, 'is-yellow', 'Pagamento mancante', 'Pagamento ok')}
     ${led(!!f.receipt, 'is-red', 'Ricevuta mancante', 'Ricevuta ok')}
-    ${led(!!f.invoice, 'is-violet', 'Richiesta fattura', 'Richiesta fattura non richiesta')}
+    ${led(!!f.invoice, 'is-violet', 'Alert generico', 'Nessun alert generico')}
   </div>`;
 }
 function computeTopGuestAlerts(guests){
@@ -7103,7 +7103,7 @@ function computeTopGuestAlerts(guests){
         guest: g,
         details: [
           paymentMissing ? `Pagamento mancante — Rimanenza da pagare: ${euro(fin.remaining)}` : '',
-          invoiceAlert ? 'Richiesta fattura — ricevuta da emettere' : '',
+          invoiceAlert ? (__guestGenericAlertText__(g) || 'Alert generico') : '',
           ...receiptMissing,
           ...cashReceiptMissing
         ].filter(Boolean),
@@ -7116,7 +7116,7 @@ function computeTopGuestAlerts(guests){
           paymentMissing ? { label: 'Pagamento', cls: 'tag-yellow' } : null,
           receiptMissingAlert ? { label: 'Ricevuta', cls: 'tag-red' } : null,
           cashReceiptAlert ? { label: 'Contanti', cls: 'tag-cash' } : null,
-          invoiceAlert ? { label: 'Fattura', cls: 'tag-violet' } : null
+          invoiceAlert ? { label: 'Alert', cls: 'tag-violet' } : null
         ].filter(Boolean),
         checkInTs,
         checkOutTs
@@ -7177,7 +7177,7 @@ function applyTopGuestAlertLed(side){
     __setTopLedState__('dbLedWrite', hasYellow, 'is-yellow', hasYellow ? 'Pagamento mancante' : 'Nessun alert pagamenti');
     __setTopLedState__('dbLedReceipt', hasRed, 'is-red', hasRed ? 'Ricevuta mancante' : 'Nessun alert ricevute');
     __setTopLedState__('dbLedCashReceipt', hasCashReceipt, 'is-cashreceipt', hasCashReceipt ? 'Contanti senza ricevuta' : 'Nessun alert contanti senza ricevuta');
-    __setTopLedState__('dbLedInvoice', hasInvoice, 'is-violet', hasInvoice ? 'Richiesta fattura' : 'Nessun alert fatture');
+    __setTopLedState__('dbLedInvoice', hasInvoice, 'is-violet', hasInvoice ? 'Alert generico' : 'Nessun alert generico');
   }
   try{ syncTopGuestDualTimer(); }catch(_){ }
 }
@@ -7199,8 +7199,8 @@ function updateTopGuestAlertLeds(){
     if (el){
       el.classList.toggle('is-violet', hasInvoice);
       el.classList.toggle('is-off', !hasInvoice);
-      el.setAttribute('aria-label', hasInvoice ? 'Richiesta fattura' : 'Nessun alert fatture');
-      el.setAttribute('title', hasInvoice ? 'Richiesta fattura' : 'Nessun alert fatture');
+      el.setAttribute('aria-label', hasInvoice ? 'Alert generico' : 'Nessun alert generico');
+      el.setAttribute('title', hasInvoice ? 'Alert generico' : 'Nessun alert generico');
     }
   }catch(_){ }
 }
@@ -7210,7 +7210,7 @@ function __guestAlertLedConfig__(kind){
   if (k === 'payment') return { side:'right', title:'Alert pagamenti', tag:'Pagamento', tagCls:'tag-yellow', detailNeedle:'pagamento', empty:'Nessun pagamento mancante.' };
   if (k === 'receipt') return { side:'right', title:'Alert ricevute', tag:'Ricevuta', tagCls:'tag-red', detailNeedle:'ricevuta', empty:'Nessuna ricevuta mancante.' };
   if (k === 'cashreceipt') return { side:'right', title:'Alert contanti senza ricevuta', tag:'Contanti', tagCls:'tag-cash', detailNeedle:'contante', empty:'Nessun pagamento in contanti senza ricevuta.' };
-  if (k === 'invoice') return { side:'right', title:'Alert fatture', tag:'Fattura', tagCls:'tag-violet', detailNeedle:'fattura', empty:'Nessuna richiesta fattura attiva.' };
+  if (k === 'invoice') return { side:'right', title:'Alert generico', tag:'Alert', tagCls:'tag-violet', detailNeedle:'alert', empty:'Nessun alert generico attivo.' };
   if (k === 'right') return { side:'right', title:'Alert pagamenti e ricevute', tag:'', tagCls:'', detailNeedle:'', empty:'Nessun ospite in alert.' };
   if (k === 'left') return { side:'left', title:'Alert registrazioni', tag:'', tagCls:'', detailNeedle:'', empty:'Nessun ospite in alert.' };
   return { side:'left', title:'Alert schedine PS', tag:'Polizia', tagCls:'tag-black', detailNeedle:'Polizia', empty:'Nessun alert schedine PS.' };
@@ -7250,9 +7250,16 @@ function __filterGuestAlertItemsForLed__(items, cfg){
         return x.includes('pagamento') || x.includes('rimanenza');
       });
       if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
-    }else if (tagLc === 'fattura'){
+    }else if (tagLc === 'alert'){
       enabled = !!(it && it.invoiceAlert);
-      details = allDetails.filter(d => String(d || '').toLowerCase().includes('fattura'));
+      details = allDetails.filter(d => {
+        const x = String(d || '').toLowerCase();
+        return x.includes('alert') || x.includes('nota') || x.includes('avviso') || (typeof __guestGenericAlertText__ === 'function' && String(__guestGenericAlertText__(it.guest || {}) || '').trim() && String(d || '').trim() === String(__guestGenericAlertText__(it.guest || {}) || '').trim());
+      });
+      if (!details.length && typeof __guestGenericAlertText__ === 'function'){
+        const txt = String(__guestGenericAlertText__(it.guest || {}) || '').trim();
+        if (txt) details = [txt];
+      }
       if (!tags.length) tags = enabled ? [{ label: cfg.tag, cls: cfg.tagCls }] : [];
     }else{
       details = allDetails.filter(d => {
@@ -30493,7 +30500,8 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  if (state.guestDepositReceipt || state.guestSaldoReceipt) state.guestInvoiceRequested = false;
+  /* dDAE_3.071: alert generico non legato alle ricevute */
+  try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
   const payload = {
@@ -30563,10 +30571,18 @@ if (!name) return toast("Inserisci il nome");
     acconto_ricevutain: !!(deposit > 0 && state.guestDepositReceipt),
     saldo_ricevuta: !!(saldoPagato > 0 && state.guestSaldoReceipt),
     saldo_ricevutain: !!(saldoPagato > 0 && state.guestSaldoReceipt),
-    richiesta_fattura: (state.guestInvoiceRequested && !(state.guestDepositReceipt || state.guestSaldoReceipt)) ? "1" : "",
-    richiestaFattura: (state.guestInvoiceRequested && !(state.guestDepositReceipt || state.guestSaldoReceipt)) ? "1" : "",
-    fattura_richiesta: (state.guestInvoiceRequested && !(state.guestDepositReceipt || state.guestSaldoReceipt)) ? "1" : "",
-    invoice_requested: (state.guestInvoiceRequested && !(state.guestDepositReceipt || state.guestSaldoReceipt)) ? "1" : "",
+    richiesta_fattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
+    richiestaFattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
+    fattura_richiesta: state.guestInvoiceRequested ? "1" : "",
+    invoice_requested: state.guestInvoiceRequested ? "1" : "",
+    alert_generico: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    alertGenerico: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    generic_alert_text: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    genericAlertText: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    alert_text: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    alertText: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    richiesta_fattura_testo: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
+    richiestaFatturaTesto: (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) : ""),
     note: notes,
     notes: notes,
     nota: notes,
@@ -30583,7 +30599,7 @@ if (!name) return toast("Inserisci il nome");
     stanze: JSON.stringify(rooms)
   };
   __guestSetPreventivoFields__(payload, isPreventivoPayload);
-  try{ __guestInvoiceStoreSet__(payload.id || state.guestEditId || '', !!(state.guestInvoiceRequested && !(state.guestDepositReceipt || state.guestSaldoReceipt))); }catch(_){ }
+  try{ __guestInvoiceStoreSet__(payload.id || state.guestEditId || '', !!state.guestInvoiceRequested, (typeof __guestGenericAlertText__ === 'function' ? __guestGenericAlertText__(payload) : '')); }catch(_){ }
 
 
 
@@ -31063,13 +31079,13 @@ function setupOspite(){
           try{ __syncGuestInvoiceButton__(); }catch(_){ }
           try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
           try{ renderOspiti && renderOspiti(); }catch(_){ }
-          toast(next ? 'Richiesta fattura attiva' : 'Richiesta fattura disattivata');
+          toast(next ? 'Alert generico attivo' : 'Alert generico disattivato');
         }catch(err){
           state.guestInvoiceRequested = !next;
           __setGuestInvoiceRequestedOnPayload__(item, !next);
           try{ __guestInvoiceStoreSet__(id, !next); }catch(_){ }
           try{ __syncGuestInvoiceButton__(); }catch(_){ }
-          toast(err?.message || 'Errore salvataggio richiesta fattura');
+          toast(err?.message || 'Errore salvataggio alert generico');
         }
         return;
       }
@@ -36738,7 +36754,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.070 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.071 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42920,7 +42936,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.070';
+  var BUILD_TAG='dDAE_3.071';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -45030,7 +45046,7 @@ try{
     payment: { label:'€', title:'Alert pagamenti',   bg:'yellow-4',border:'yellow-5',fg:'gray-6', opacity:0.96 },
     receipt: { label:'R', title:'Alert ricevute',    bg:'red-5',   border:'red-6',   fg:'white', opacity:0.96 },
     cashreceipt: { label:'CR', title:'Alert contanti senza ricevuta', bg:'green-5', border:'green-6', fg:'white', opacity:0.96 },
-    invoice: { label:'F', title:'Alert fatture',     bg:'violet-5',border:'violet-6',fg:'white', opacity:0.96 },
+    invoice: { label:'A', title:'Alert generico',     bg:'violet-5',border:'violet-6',fg:'white', opacity:0.96 },
     shopping:{ label:'S', title:'Alert lista spesa', bg:'blue-4',  border:'blue-5',  fg:'white', opacity:0.92 },
     products:{ label:'Pr', title:'Alert prodotti',   bg:'orange-4',border:'orange-5',fg:'white', opacity:0.92 },
     laundry: { label:'L', title:'Alert lavanderia',  bg:'beige-4', border:'beige-5', fg:'white', opacity:0.92 }
@@ -45289,7 +45305,7 @@ try{
       if(alertKey === 'payment') return 'Pagamenti';
       if(alertKey === 'receipt') return 'Ricevute';
       if(alertKey === 'cashreceipt') return 'Contanti senza ricevuta';
-      if(alertKey === 'invoice') return 'Fatture';
+      if(alertKey === 'invoice') return 'Alert generico';
       if(alertKey === 'shopping') return 'Spesa';
       if(alertKey === 'products') return 'Prodotti';
       if(alertKey === 'laundry') return 'Lavanderia';
@@ -46711,4 +46727,256 @@ try{
   try{ document.addEventListener('focusin', (ev)=>clearIfZero(ev.target), true); }catch(_){ }
   try{ document.addEventListener('pointerdown', (ev)=>{ try{ if (ev && ev.target) setTimeout(()=>clearIfZero(ev.target), 0); }catch(_){} }, true); }catch(_){ }
   try{ document.addEventListener('blur', (ev)=>restoreIfLeftEmpty(ev.target), true); }catch(_){ }
+})();
+
+
+/* dDAE_3.071 — Alert generico ospite con testo libero */
+(function(){
+  'use strict';
+
+  function safeId(g){
+    try{ return (typeof g === 'object') ? String(guestIdOf(g) || g?.id || g?.guest_id || g?.booking_id || '').trim() : String(g || '').trim(); }catch(_){ return String(g || '').trim(); }
+  }
+  function uidYearKey(prefix){
+    try{
+      var uid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : 'anon';
+      var year = (state && state.exerciseYear) ? String(state.exerciseYear) : 'year';
+      return prefix + '_' + uid + '_' + year;
+    }catch(_){ return prefix + '_anon_year'; }
+  }
+  function readJson(key, fallback){
+    try{ var obj = JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback || {})); return obj && typeof obj === 'object' && !Array.isArray(obj) ? obj : (fallback || {}); }catch(_){ return fallback || {}; }
+  }
+  function writeJson(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj || {})); }catch(_){ } }
+  function textStoreKey(){ return uidYearKey('dDAE_guest_generic_alert_texts'); }
+  function boolStoreKey(){ try{ return __guestInvoiceStoreKey__(); }catch(_){ return uidYearKey('dDAE_guest_invoice_requests'); } }
+  function getStoredText(g){
+    try{ var id = safeId(g); if(!id) return ''; var map = readJson(textStoreKey(), {}); return String(map[id] || '').trim(); }catch(_){ return ''; }
+  }
+  function setStoredText(g, text){
+    try{
+      var id = safeId(g); if(!id) return;
+      var map = readJson(textStoreKey(), {});
+      var t = String(text || '').trim();
+      if(t) map[id] = t; else delete map[id];
+      writeJson(textStoreKey(), map);
+    }catch(_){ }
+  }
+  function explicitText(g){
+    try{
+      if(!g || typeof g !== 'object') return '';
+      var vals = [
+        g.alert_generico, g.alertGenerico, g.generic_alert, g.genericAlert,
+        g.generic_alert_text, g.genericAlertText, g.alert_text, g.alertText,
+        g.richiesta_fattura, g.richiestaFattura,
+        g.richiesta_alert_text, g.richiestaAlertText, g.alert_ospite, g.alertOspite,
+        g.richiesta_fattura_testo, g.richiestaFatturaTesto, g.fattura_testo, g.fatturaTesto,
+        g.invoice_text, g.invoiceText
+      ];
+      for(var i=0;i<vals.length;i++){
+        var t = String(vals[i] == null ? '' : vals[i]).trim();
+        if(t && t !== '1' && t.toLowerCase() !== 'true') return t;
+      }
+    }catch(_){ }
+    return '';
+  }
+  function legacyBool(g){
+    try{
+      if(!g || typeof g !== 'object') return false;
+      var vals = [g.richiesta_fattura, g.richiestaFattura, g.fattura_richiesta, g.fatturaRichiesta, g.invoice_requested, g.invoiceRequested, g.request_invoice, g.requestInvoice];
+      for(var i=0;i<vals.length;i++){ if(typeof truthy === 'function' ? truthy(vals[i]) : String(vals[i] || '').trim() === '1') return true; }
+      var id = safeId(g); if(id){ var b = readJson(boolStoreKey(), {}); if(typeof truthy === 'function' ? truthy(b[id]) : !!b[id]) return true; }
+    }catch(_){ }
+    return false;
+  }
+
+  window.__guestGenericAlertText__ = function(g){
+    try{
+      var t = explicitText(g);
+      if(!t) t = getStoredText(g);
+      if(!t && legacyBool(g)) t = 'Alert generico';
+      return String(t || '').trim();
+    }catch(_){ return ''; }
+  };
+  window.__guestGenericAlertStoreGet__ = getStoredText;
+  window.__guestGenericAlertStoreSet__ = setStoredText;
+
+  window.__guestInvoiceStoreSet__ = function(guestOrId, on, text){
+    try{
+      var id = safeId(guestOrId); if(!id) return;
+      var b = readJson(boolStoreKey(), {});
+      if(on) b[id] = '1'; else delete b[id];
+      writeJson(boolStoreKey(), b);
+      if(!on) setStoredText(id, '');
+      else if(arguments.length >= 3) setStoredText(id, text || '');
+    }catch(_){ }
+  };
+  window.__guestInvoiceStoreGet__ = function(guestOrId){
+    try{ var id=safeId(guestOrId); if(!id) return false; var b=readJson(boolStoreKey(), {}); return (typeof truthy === 'function') ? truthy(b[id]) : !!b[id]; }catch(_){ return false; }
+  };
+  window.__guestInvoiceRequested__ = function(g){
+    try{ return !!(window.__guestGenericAlertText__(g) || legacyBool(g)); }catch(_){ return false; }
+  };
+  window.__guestInvoiceAlertNow__ = function(g){
+    try{ return !!window.__guestInvoiceRequested__(g); }catch(_){ return false; }
+  };
+  window.__setGuestInvoiceRequestedOnPayload__ = function(payload, on, text){
+    try{
+      var t = String((text !== undefined ? text : (on ? window.__guestGenericAlertText__(payload) : '')) || '').trim();
+      var active = !!on && !!t;
+      payload.richiesta_fattura = active ? t : '';
+      payload.richiestaFattura = active ? t : '';
+      payload.fattura_richiesta = active ? '1' : '';
+      payload.fatturaRichiesta = active ? '1' : '';
+      payload.invoice_requested = active ? '1' : '';
+      payload.invoiceRequested = active ? '1' : '';
+      payload.alert_generico = active ? t : '';
+      payload.alertGenerico = active ? t : '';
+      payload.generic_alert_text = active ? t : '';
+      payload.genericAlertText = active ? t : '';
+      payload.alert_text = active ? t : '';
+      payload.alertText = active ? t : '';
+      payload.richiesta_fattura_testo = active ? t : '';
+      payload.richiestaFatturaTesto = active ? t : '';
+      payload.fattura_testo = active ? t : '';
+      payload.fatturaTesto = active ? t : '';
+      payload.invoice_text = active ? t : '';
+      payload.invoiceText = active ? t : '';
+    }catch(_){ }
+    return payload;
+  };
+  window.__clearGuestInvoiceRequestIfReceipted__ = function(){
+    try{ if(typeof __syncGuestInvoiceButton__ === 'function') __syncGuestInvoiceButton__(); }catch(_){ }
+  };
+
+  function patchRow(row, id, text){
+    try{
+      if(!row) return;
+      var rid = safeId(row);
+      if(id && rid && String(rid) !== String(id)) return;
+      window.__setGuestInvoiceRequestedOnPayload__(row, !!String(text || '').trim(), text);
+    }catch(_){ }
+  }
+  window.__syncGuestInvoiceButton__ = function(){
+    try{
+      var btn = document.querySelector('#ospiteHdActions [data-guest-invoice]');
+      if(!btn) return;
+      var mode = String(state.guestMode || '').toLowerCase();
+      var item = null;
+      try{ item = (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null) || state.guestViewItem || null; }catch(_){ item = state.guestViewItem || null; }
+      var activeGroup = !!String(state.guestGroupActiveId || '').trim() || !!(item || state.guestEditId);
+      var on = item ? window.__guestInvoiceAlertNow__(item) : !!state.guestInvoiceRequested;
+      state.guestInvoiceRequested = !!on;
+      btn.hidden = (mode !== 'view');
+      btn.disabled = (mode === 'view' && !activeGroup);
+      btn.classList.toggle('is-disabled', !!btn.disabled);
+      btn.classList.toggle('is-selected', !!on);
+      btn.classList.toggle('is-on', !!on);
+      btn.classList.toggle('is-off', !on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.setAttribute('title', on ? 'Alert generico attivo' : 'Alert generico');
+      btn.setAttribute('aria-label', on ? 'Alert generico attivo' : 'Alert generico');
+      try{ __applySingleActionButtonVisual__(btn, on ? 'on' : 'off'); }catch(_){ }
+    }catch(_){ }
+  };
+
+  function ensureModal(){
+    var modal = document.getElementById('guestGenericAlertModal');
+    if(modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'guestGenericAlertModal';
+    modal.className = 'modal generic-alert-editor-modal';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML = '<div class="modal-card generic-alert-editor-card" role="dialog" aria-modal="true" aria-labelledby="guestGenericAlertTitle">'
+      + '<h3 id="guestGenericAlertTitle">Alert generico</h3>'
+      + '<p class="generic-alert-editor-help">Scrivi il testo dell\'alert da mostrare nel popup del LED.</p>'
+      + '<textarea id="guestGenericAlertText" class="generic-alert-editor-text" maxlength="500" placeholder="Testo alert"></textarea>'
+      + '<div class="modal-actions generic-alert-editor-actions">'
+      + '<button type="button" class="btn ghost" id="guestGenericAlertCancel">Annulla</button>'
+      + '<button type="button" class="btn danger" id="guestGenericAlertClear">Elimina</button>'
+      + '<button type="button" class="btn primary" id="guestGenericAlertSave">Salva</button>'
+      + '</div></div>';
+    document.body.appendChild(modal);
+    return modal;
+  }
+  function closeModal(){
+    try{ var m=document.getElementById('guestGenericAlertModal'); if(m){ m.hidden=true; m.setAttribute('aria-hidden','true'); } }catch(_){ }
+  }
+  async function saveGenericAlert(item, text){
+    var id = safeId(item) || String(state.guestEditId || '').trim();
+    if(!item || !id){ try{ toast('Seleziona prima un gruppo stanze'); }catch(_){ } return; }
+    var t = String(text || '').trim();
+    var active = !!t;
+    var prevText = window.__guestGenericAlertText__(item);
+    try{
+      window.__guestInvoiceStoreSet__(id, active, t);
+      patchRow(item, id, t);
+      state.guestInvoiceRequested = active;
+      [state.ospiti, state.guests, state.bookings, state.guestList, state.statsGuests, state.guestGroupBookings].forEach(function(list){
+        if(!Array.isArray(list)) return;
+        list.forEach(function(row){ patchRow(row, id, t); });
+      });
+      try{ window.__syncGuestInvoiceButton__(); }catch(_){ }
+      try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+      var payload = window.__setGuestInvoiceRequestedOnPayload__(Object.assign({}, item, { id:id }), active, t);
+      await api('ospiti', { method:'PUT', body: payload });
+      try{ invalidateApiCache('ospiti|'); }catch(_){ }
+      try{ await loadOspiti({ ...(state.period || {}), force:true }); }catch(_){ }
+      try{
+        var fresh = (typeof __guestBookingById__ === 'function') ? __guestBookingById__(id) : null;
+        if(fresh){ state.guestViewItem = fresh; state.guestInvoiceRequested = window.__guestInvoiceAlertNow__(fresh); }
+      }catch(_){ }
+      try{ renderRoomsReadOnly(state.guestViewItem || (typeof __guestBookingById__ === 'function' ? __guestBookingById__(state.guestViewPrimaryId) : null) || item); renderGuestMulti({ mode:'view' }); }catch(_){ }
+      try{ window.__syncGuestInvoiceButton__(); }catch(_){ }
+      try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+      try{ renderOspiti && renderOspiti(); }catch(_){ }
+      try{ toast(active ? 'Alert generico salvato' : 'Alert generico eliminato'); }catch(_){ }
+    }catch(err){
+      try{ window.__guestInvoiceStoreSet__(id, !!prevText, prevText); patchRow(item, id, prevText); state.guestInvoiceRequested = !!prevText; window.__syncGuestInvoiceButton__(); }catch(_){ }
+      try{ toast((err && err.message) || 'Errore salvataggio alert generico'); }catch(_){ }
+    }
+  }
+  window.__openGuestGenericAlertEditor__ = function(){
+    try{
+      var item = (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null) || state.guestViewItem || null;
+      var id = safeId(item) || String(state.guestEditId || '').trim();
+      if(!item || !id){ try{ toast('Seleziona prima un gruppo stanze'); }catch(_){ } return; }
+      var modal = ensureModal();
+      var ta = document.getElementById('guestGenericAlertText');
+      if(ta) ta.value = window.__guestGenericAlertText__(item);
+      modal.hidden = false; modal.setAttribute('aria-hidden','false');
+      setTimeout(function(){ try{ ta && ta.focus(); }catch(_){ } }, 60);
+      var cancel = document.getElementById('guestGenericAlertCancel');
+      var clear = document.getElementById('guestGenericAlertClear');
+      var save = document.getElementById('guestGenericAlertSave');
+      if(cancel && !cancel.__ddaeGenericAlertBound){ cancel.__ddaeGenericAlertBound = true; cancel.addEventListener('click', closeModal); }
+      if(clear && !clear.__ddaeGenericAlertBound){ clear.__ddaeGenericAlertBound = true; clear.addEventListener('click', async function(){ var it=(typeof __guestActiveBookingForAction__==='function'?__guestActiveBookingForAction__():null)||state.guestViewItem||item; closeModal(); await saveGenericAlert(it, ''); }); }
+      if(save && !save.__ddaeGenericAlertBound){ save.__ddaeGenericAlertBound = true; save.addEventListener('click', async function(){ var it=(typeof __guestActiveBookingForAction__==='function'?__guestActiveBookingForAction__():null)||state.guestViewItem||item; var txt=String(document.getElementById('guestGenericAlertText')?.value || '').trim(); closeModal(); await saveGenericAlert(it, txt); }); }
+      if(!modal.__ddaeGenericAlertEsc){
+        modal.__ddaeGenericAlertEsc = true;
+        modal.addEventListener('click', function(ev){ try{ if(ev.target === modal) closeModal(); }catch(_){ } });
+      }
+    }catch(err){ try{ toast((err && err.message) || 'Errore apertura alert'); }catch(_){ } }
+  };
+
+  function interceptInvoiceButton(ev){
+    try{
+      var btn = ev && ev.target && ev.target.closest ? ev.target.closest('#guestHdInvoiceBtn,[data-guest-invoice]') : null;
+      if(!btn || btn.hidden || btn.disabled) return;
+      if(ev && ev.cancelable !== false) ev.preventDefault();
+      if(ev) ev.stopPropagation();
+      if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      window.__openGuestGenericAlertEditor__();
+    }catch(_){ }
+  }
+  if(!window.__ddaeGenericAlertButtonBound){
+    window.__ddaeGenericAlertButtonBound = true;
+    document.addEventListener('click', interceptInvoiceButton, true);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    try{ window.__syncGuestInvoiceButton__(); }catch(_){ }
+    try{ if(typeof __alertLedVisualsApply__ === 'function') __alertLedVisualsApply__(); }catch(_){ }
+  });
+  setTimeout(function(){ try{ window.__syncGuestInvoiceButton__(); }catch(_){ } try{ if(typeof refreshTopGuestAlerts==='function') refreshTopGuestAlerts({ force:false, keepModal:true }); }catch(_){ } }, 250);
 })();
