@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.073
+ * Build: 3.074
  */
-const BUILD_VERSION = "3.073";
+const BUILD_VERSION = "3.074";
 
-/* dDAE_3.073 — Alert generico ospite con testo libero */
+/* dDAE_3.074 — Alert generico ospite con testo libero */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -30510,7 +30510,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.073: alert generico non legato alle ricevute */
+  /* dDAE_3.074: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -36764,7 +36764,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.073 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.074 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42946,7 +42946,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.073';
+  var BUILD_TAG='dDAE_3.074';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46740,7 +46740,7 @@ try{
 })();
 
 
-/* dDAE_3.073 — Alert generico ospite con testo libero */
+/* dDAE_3.074 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
