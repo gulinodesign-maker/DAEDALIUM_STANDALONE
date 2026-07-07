@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.071
+ * Build: 3.072
  */
-const BUILD_VERSION = "3.071";
+const BUILD_VERSION = "3.072";
 
-/* dDAE_3.071 — Alert generico ospite con testo libero */
+/* dDAE_3.072 — Alert generico ospite con testo libero */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -7350,7 +7350,17 @@ function openGuestAlertModal(kind){
         }
       });
       const closeBtn = card.querySelector('.guest-alert-dismiss');
-      if (closeBtn) bindFastTap(closeBtn, () => dismissGuestAlert(cfg.side, it.id));
+      if (closeBtn) bindFastTap(closeBtn, () => {
+        try{
+          if (String(kind || '').trim() === 'invoice' || String(cfg.tag || '').toLowerCase() === 'alert'){
+            if (typeof window !== 'undefined' && typeof window.__deleteGuestGenericAlert__ === 'function'){
+              window.__deleteGuestGenericAlert__(it.guest || it);
+              return;
+            }
+          }
+        }catch(_){ }
+        dismissGuestAlert(cfg.side, it.id);
+      });
       list.appendChild(card);
     });
   }
@@ -30500,7 +30510,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.071: alert generico non legato alle ricevute */
+  /* dDAE_3.072: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -36754,7 +36764,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.071 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.072 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42936,7 +42946,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.071';
+  var BUILD_TAG='dDAE_3.072';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46730,7 +46740,7 @@ try{
 })();
 
 
-/* dDAE_3.071 — Alert generico ospite con testo libero */
+/* dDAE_3.072 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
@@ -46937,6 +46947,41 @@ try{
       try{ toast((err && err.message) || 'Errore salvataggio alert generico'); }catch(_){ }
     }
   }
+  window.__deleteGuestGenericAlert__ = async function(guestOrId){
+    try{
+      var id = safeId(guestOrId);
+      var item = (guestOrId && typeof guestOrId === 'object') ? guestOrId : null;
+      if(!item && id){
+        var lists = [];
+        try{ lists = [state.ospiti, state.guests, state.bookings, state.guestList, state.statsGuests, state.guestGroupBookings]; }catch(_){ lists = []; }
+        for(var li=0; li<lists.length && !item; li++){
+          var list = lists[li];
+          if(!Array.isArray(list)) continue;
+          for(var ri=0; ri<list.length; ri++){
+            try{ if(String(safeId(list[ri]) || '').trim() === String(id)){ item = list[ri]; break; } }catch(_){ }
+          }
+        }
+        try{
+          if(!item && state && state.guestAlerts){
+            var pools = [].concat((state.guestAlerts.left || []), (state.guestAlerts.right || []));
+            for(var pi=0; pi<pools.length; pi++){
+              var row = pools[pi];
+              if(row && String(row.id || safeId(row.guest) || '').trim() === String(id)){ item = row.guest || row; break; }
+            }
+          }
+        }catch(_){ }
+      }
+      if(!item && id) item = { id:id };
+      if(!item || !id){ try{ toast('Alert non trovato'); }catch(_){ } return; }
+      try{ if(typeof clearDismissedGuestAlert === 'function') clearDismissedGuestAlert('right', id); }catch(_){ }
+      await saveGenericAlert(item, '');
+      try{
+        var modal = document.getElementById('guestAlertModal');
+        if(modal && !modal.hidden && typeof openGuestAlertModal === 'function') openGuestAlertModal('invoice');
+      }catch(_){ }
+    }catch(err){ try{ toast((err && err.message) || 'Errore eliminazione alert generico'); }catch(_){ } }
+  };
+
   window.__openGuestGenericAlertEditor__ = function(){
     try{
       var item = (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null) || state.guestViewItem || null;
