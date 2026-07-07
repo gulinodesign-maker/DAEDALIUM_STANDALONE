@@ -29295,7 +29295,7 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.072 — LED alert spostati dalla top bar al layer basso sempre visibile */
+/* dDAE_3.073 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
@@ -29432,7 +29432,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
 }
 
 
-/* dDAE_3.072 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
+/* dDAE_3.073 — LED alert sotto SYNC, liberi, più piccoli e sempre cliccabili */
 :root{
   --sync-footer-space: 150px;
   --ddae-bottom-led-safe-space: 34px;
@@ -29589,7 +29589,7 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
   }
 }
 
-/* dDAE_3.072 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
+/* dDAE_3.073 — Scheda ospite sola lettura: i LED alert non devono sovrapporsi ai tasti contatto */
 body.guest-contact-dock-active #bottomLedLayer,
 body[data-guest-contact-dock="1"] #bottomLedLayer,
 body[data-page="ospite"] #bottomLedLayer{
@@ -29599,7 +29599,7 @@ body[data-page="ospite"] #bottomLedLayer{
 }
 
 
-/* dDAE_3.072 — Superficie bassa fissa sotto SYNC + LED: resta in basso e copre il contenuto che scorre sotto */
+/* dDAE_3.073 — Superficie bassa fissa sotto SYNC + LED: resta in basso e copre il contenuto che scorre sotto */
 :root{
   --ddae-bottom-fixed-surface-height: calc(var(--sync-footer-space, 150px) + env(safe-area-inset-bottom, 0px));
   --ddae-bottom-fixed-surface-bg: #f7fbff;
@@ -29656,7 +29656,7 @@ body[data-page="lavanderia"] #page-lavanderia .content{
   padding-bottom: calc(var(--ddae-bottom-fixed-surface-height) + 18px) !important;
 }
 
-/* dDAE_3.072 — SYNC nella topbar al posto del logo; barra bassa solo sotto i LED alert */
+/* dDAE_3.073 — SYNC nella topbar al posto del logo; barra bassa solo sotto i LED alert */
 :root{
   --sync-footer-space: 0px;
   --ddae-bottom-led-safe-space: 58px;
@@ -29850,7 +29850,7 @@ body.page-lock-vertical #page-home .home-page{
   }
 }
 
-/* dDAE_3.072 — Home build sempre leggibile + LED alert adattivi alla larghezza display */
+/* dDAE_3.073 — Home build sempre leggibile + LED alert adattivi alla larghezza display */
 #page-home #buildText.build,
 #page-home .build#buildText{
   position: fixed !important;
@@ -29914,7 +29914,7 @@ body.page-lock-vertical #page-home .home-page{
 }
 
 
-/* dDAE_3.072 — Statistiche: nessun LED alert visibile nelle pagine e sottopagine statistiche */
+/* dDAE_3.073 — Statistiche: nessun LED alert visibile nelle pagine e sottopagine statistiche */
 body[data-page="statistiche"] #bottomLedLayer,
 body[data-page^="stat"] #bottomLedLayer,
 body[data-page="orepulizia"] #bottomLedLayer{
@@ -29938,7 +29938,7 @@ body[data-page="orepulizia"] .page:not([hidden]){
   scroll-padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
 }
 
-/* dDAE_3.072 — Popup alert generico ospite */
+/* dDAE_3.073 — Popup alert generico ospite */
 .generic-alert-editor-modal{
   position: fixed !important;
   inset: 0 !important;
@@ -30013,4 +30013,43 @@ body.ddae-dark .generic-alert-editor-text{
   background: rgba(15,23,42,0.96) !important;
   border-color: rgba(255,255,255,0.18) !important;
   color: #f8fafc !important;
+}
+
+
+/* dDAE_3.073 — Le pill dei popup alert seguono il colore del LED corrispondente */
+.guest-alert-tag.tag-black{
+  background:var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,0.88))) !important;
+  border-color:var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,1))) !important;
+  color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-ps-shadow, none) !important;
+}
+.guest-alert-tag.tag-sky{
+  background:var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,0.96))) !important;
+  border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1))) !important;
+  color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff)) !important;
+  box-shadow:var(--ddae-alert-istat-shadow, none) !important;
+}
+.guest-alert-tag.tag-yellow{
+  background:var(--ddae-alert-payment-bg, rgba(232,178,26,0.96)) !important;
+  border-color:var(--ddae-alert-payment-border, rgba(202,138,4,1)) !important;
+  color:var(--ddae-alert-payment-fg, #1f2937) !important;
+  box-shadow:var(--ddae-alert-payment-shadow, none) !important;
+}
+.guest-alert-tag.tag-red{
+  background:var(--ddae-alert-receipt-bg, rgba(239,68,68,0.96)) !important;
+  border-color:var(--ddae-alert-receipt-border, rgba(220,38,38,1)) !important;
+  color:var(--ddae-alert-receipt-fg, #fff) !important;
+  box-shadow:var(--ddae-alert-receipt-shadow, none) !important;
+}
+.guest-alert-tag.tag-violet{
+  background:var(--ddae-alert-invoice-bg, rgba(122,70,209,0.96)) !important;
+  border-color:var(--ddae-alert-invoice-border, rgba(90,46,166,1)) !important;
+  color:var(--ddae-alert-invoice-fg, #fff) !important;
+  box-shadow:var(--ddae-alert-invoice-shadow, none) !important;
+}
+.guest-alert-tag.tag-cash{
+  background:var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,0.96)) !important;
+  border-color:var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1)) !important;
+  color:var(--ddae-alert-cashreceipt-fg, #fff) !important;
+  box-shadow:var(--ddae-alert-cashreceipt-shadow, none) !important;
 }
