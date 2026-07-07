@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.074
+ * Build: 3.075
  */
-const BUILD_VERSION = "3.074";
+const BUILD_VERSION = "3.075";
 
-/* dDAE_3.074 — Alert generico ospite con testo libero */
+/* dDAE_3.075 — Alert generico ospite con testo libero */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -3262,11 +3262,15 @@ async function __confirmTwoActions__(message, yesLabel, noLabel){
     const prevYes = yesBtn ? yesBtn.textContent : null;
     const prevNo  = noBtn  ? noBtn.textContent  : null;
 
-    if (yesBtn) yesBtn.textContent = String(yesLabel || "Sì");
-    if (noBtn)  noBtn.textContent  = String(noLabel  || "No");
+    const actionYesLabel = String(yesLabel || "Sì");
+    const actionNoLabel = String(noLabel || "No");
+    if (yesBtn) yesBtn.textContent = actionYesLabel;
+    if (noBtn)  noBtn.textContent  = actionNoLabel;
+    try{ window.__ddaeConfirmActionLabels__ = { yes: actionYesLabel, no: actionNoLabel }; }catch(_){ }
 
     const ok = await confirmYesNo(String(message || "Confermare?"));
     try{ __confirmYesNoForceClose__(); }catch(_){ }
+    try{ delete window.__ddaeConfirmActionLabels__; }catch(_){ try{ window.__ddaeConfirmActionLabels__ = null; }catch(__){ } }
 
     // restore
     if (yesBtn && prevYes !== null) yesBtn.textContent = prevYes;
@@ -18567,7 +18571,7 @@ function __guestFilterButtonStateLabel__(stateKey){
   if (key === '-3days') return __translateExactText__('-3 giorni') || '-3 giorni';
   if (key === '-7days') return __translateExactText__('-7 giorni') || '-7 giorni';
   if (key === 'all') return __translateExactText__('Tutti') || 'Tutti';
-  return __translateExactText__(key === 'active' ? 'Attivo' : 'Disattivo');
+  return key === 'active' ? String(__translateExactText__('Attivo') || 'Attivo').toUpperCase() : String(__translateExactText__('Disattivo') || 'Disattivo').toUpperCase();
 }
 
 function __guestFilterButtonLocalizedLabel__(btn){
@@ -18582,11 +18586,11 @@ function __guestFilterButtonLocalizedLabel__(btn){
 function __guestFilterButtonEditStatePrompt__(label){
   const safeLabel = String(label || '').trim() || (__translateExactText__('Tasto') || 'Tasto');
   switch (__getAppLanguage__()){
-    case 'en': return `Which state do you want to edit for ${safeLabel}?`;
-    case 'fr': return `Quel état voulez-vous modifier pour ${safeLabel} ?`;
-    case 'de': return `Welchen Status möchten Sie für ${safeLabel} bearbeiten?`;
-    case 'es': return `¿Qué estado quieres modificar para ${safeLabel}?`;
-    default: return `Quale stato vuoi modificare per ${safeLabel}?`;
+    case 'en': return `Which active/inactive state do you want to edit for ${safeLabel}?`;
+    case 'fr': return `Quel état actif/inactif voulez-vous modifier pour ${safeLabel} ?`;
+    case 'de': return `Welchen Aktiv/Inaktiv-Status möchten Sie für ${safeLabel} bearbeiten?`;
+    case 'es': return `¿Qué estado activo/inactivo quieres modificar para ${safeLabel}?`;
+    default: return `Quale stato attivo/disattivo vuoi modificare per ${safeLabel}?`;
   }
 }
 
@@ -30510,7 +30514,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.074: alert generico non legato alle ricevute */
+  /* dDAE_3.075: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -36764,7 +36768,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.074 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.075 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42946,7 +42950,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.074';
+  var BUILD_TAG='dDAE_3.075';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -43062,11 +43066,13 @@ function syncGuestEmailActionLink(isView){
         text.style.cssText='margin:0 0 18px!important;text-align:center!important;font-size:17px!important;line-height:1.25!important;font-weight:900!important;';
         var actions=document.createElement('div');
         actions.style.cssText='display:grid!important;grid-template-columns:1fr 1fr!important;gap:14px!important;';
+        var labels=null;
+        try{ labels=(typeof window!=='undefined' && window.__ddaeConfirmActionLabels__ && typeof window.__ddaeConfirmActionLabels__==='object') ? window.__ddaeConfirmActionLabels__ : null; }catch(_){ labels=null; }
         var yes=document.createElement('button');
-        yes.id='ddae2880ConfirmYes'; yes.type='button'; yes.textContent='SÌ';
+        yes.id='ddae2880ConfirmYes'; yes.type='button'; yes.textContent=String((labels && labels.yes) || 'SÌ');
         yes.style.cssText='width:100%!important;min-height:50px!important;border:0!important;border-radius:12px!important;background:#188038!important;color:#fff!important;font-size:17px!important;font-weight:900!important;box-shadow:none!important;text-transform:uppercase!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;';
         var no=document.createElement('button');
-        no.id='ddae2880ConfirmNo'; no.type='button'; no.textContent='NO';
+        no.id='ddae2880ConfirmNo'; no.type='button'; no.textContent=String((labels && labels.no) || 'NO');
         no.style.cssText='width:100%!important;min-height:50px!important;border:0!important;border-radius:12px!important;background:#c5221f!important;color:#fff!important;font-size:17px!important;font-weight:900!important;box-shadow:none!important;text-transform:uppercase!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;';
         actions.appendChild(yes); actions.appendChild(no); card.appendChild(text); card.appendChild(actions); overlay.appendChild(card); document.body.appendChild(overlay);
         active={resolve:resolve,done:false,timer:null};
@@ -46740,7 +46746,7 @@ try{
 })();
 
 
-/* dDAE_3.074 — Alert generico ospite con testo libero */
+/* dDAE_3.075 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
@@ -47025,3 +47031,6 @@ try{
   });
   setTimeout(function(){ try{ window.__syncGuestInvoiceButton__(); }catch(_){ } try{ if(typeof refreshTopGuestAlerts==='function') refreshTopGuestAlerts({ force:false, keepModal:true }); }catch(_){ } }, 250);
 })();
+
+
+/* dDAE_3.075 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
