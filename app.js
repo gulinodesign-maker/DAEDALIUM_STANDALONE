@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.078
+ * Build: 3.079
  */
-const BUILD_VERSION = "3.078";
+const BUILD_VERSION = "3.079";
 
-/* dDAE_3.078 — Prenotazioni svincolate dall’anno impostato in creazione */
+/* dDAE_3.079 — Tag Calendario collegati al Design + LED Lista spesa navigabile */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -18398,6 +18398,28 @@ if (guestScrollTodayBtn){
   const goCol = $("#goProdotti");
   if (goCol){
     bindFastTap(goCol, () => { hideLauncher(); showPage("prodotti"); });
+  }
+
+  // dDAE_3.079 — Il LED "Lista spesa" apre direttamente la relativa pagina.
+  const shoppingLed = $("#prodLedColazione");
+  if (shoppingLed && !shoppingLed.__shoppingPageBound){
+    shoppingLed.__shoppingPageBound = true;
+    const openShoppingPage = () => {
+      try{
+        state.prodottiUI = state.prodottiUI || { list:"colazione" };
+        state.prodottiUI.list = "colazione";
+      }catch(_){ }
+      try{ hideLauncher(); }catch(_){ }
+      showPage("prodotti");
+    };
+    bindFastTap(shoppingLed, openShoppingPage);
+    shoppingLed.setAttribute("role", "button");
+    shoppingLed.setAttribute("tabindex", "0");
+    shoppingLed.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      try{ e.preventDefault(); }catch(_){ }
+      openShoppingPage();
+    });
   }
 
 
@@ -43307,7 +43329,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.078';
+  var BUILD_TAG='dDAE_3.079';
   var busy=false;
   var lastStart=0;
   var active=null;

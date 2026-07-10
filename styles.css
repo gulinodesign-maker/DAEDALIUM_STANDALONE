@@ -4135,9 +4135,21 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   text-transform:uppercase;
   border:1px solid rgba(15,23,42,0.10);
 }
-.cal-flag-m{ background: rgba(50,173,230,0.95); color: #fff; }
-.cal-flag-g{ background: rgba(255,204,0,0.95); color: var(--ico-blue-night); }
-.cal-flag-c{ background: rgba(11,42,91,0.95); color: #fff; }
+.cal-flag-m{
+  background: var(--ddae-room-m-bg, rgba(50,173,230,0.95));
+  color: var(--ddae-room-m-fg, #fff);
+  border-color: var(--ddae-room-m-border, rgba(15,23,42,0.10));
+}
+.cal-flag-g{
+  background: var(--ddae-room-g-bg, rgba(255,204,0,0.95));
+  color: var(--ddae-room-g-fg, var(--ico-blue-night));
+  border-color: var(--ddae-room-g-border, rgba(15,23,42,0.10));
+}
+.cal-flag-c{
+  background: var(--ddae-room-c-bg, rgba(11,42,91,0.95));
+  color: var(--ddae-room-c-fg, #fff);
+  border-color: var(--ddae-room-c-border, rgba(15,23,42,0.10));
+}
 
 
 .cal-cell.empty-selected{
