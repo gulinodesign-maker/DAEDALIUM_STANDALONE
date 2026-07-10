@@ -30114,3 +30114,45 @@ body[data-page="spese"] #page-spese .spese-list-separator{
 #page-ospite .room-row > .bed-dots{
   justify-content: flex-start !important;
 }
+
+
+/* dDAE_3.081 — Stanze/Locali: classificazione evento senza pernottamento */
+#roomCatalogEditorModal .editor-modal-actions > .btn{
+  padding-inline:6px !important;
+  white-space:nowrap;
+}
+.room-catalog-kind-badge,
+.room-kind-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:24px;
+  padding:2px 9px;
+  border:1px solid rgba(238,137,46,0.72);
+  border-radius:999px;
+  background:rgba(238,137,46,0.16);
+  color:#7b3f00;
+  font-size:0.72rem;
+  font-weight:900;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.room-row.is-locale{
+  align-items:center;
+}
+#page-ospite #roomsPicker .room-dot.is-locale{
+  outline:2px solid rgba(238,137,46,0.58);
+  outline-offset:2px;
+}
+body.ddae-dark .room-catalog-kind-badge,
+body.ddae-dark .room-kind-badge{
+  background:rgba(238,137,46,0.18);
+  border-color:rgba(255,181,93,0.72);
+  color:#ffd29c;
+}
+#page-ospite .is-locale-exempt{
+  display:none !important;
+}

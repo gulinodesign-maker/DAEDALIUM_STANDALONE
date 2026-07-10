@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.080
+ * Build: 3.081
  */
-const BUILD_VERSION = "3.080";
+const BUILD_VERSION = "3.081";
 
-/* dDAE_3.080 — Tag Calendario collegati al Design + LED Lista spesa navigabile */
+/* dDAE_3.081 — Locali evento senza letti, tassa di soggiorno, ISTAT o Polizia */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -7103,6 +7103,14 @@ function __guestRegistrationExtraInfo__(g, kind){
 function __applyGuestRegistrationExtensionOnPayload__(payload, original){
   try{
     if (!payload || !original) return;
+    if (__guestUsesOnlyLocaleRooms__(payload)){
+      payload.ps_registrato = '';
+      payload.istat_registrato = '';
+      payload.ps_registrazione_extra_da = ''; payload.ps_registrazione_extra_a = ''; payload.ps_registrazione_extra_date = '';
+      payload.istat_registrazione_extra_da = ''; payload.istat_registrazione_extra_a = ''; payload.istat_registrazione_extra_date = '';
+      try{ __clearGuestRegistrationExtraStore__(payload.id, 'ps'); __clearGuestRegistrationExtraStore__(payload.id, 'istat'); }catch(_){ }
+      return;
+    }
     const oldOut = formatISODateLocal(original?.check_out ?? original?.checkOut ?? original?.checkout ?? original?.data_check_out ?? '');
     const newOut = formatISODateLocal(payload?.check_out ?? payload?.checkOut ?? '');
     if (!oldOut || !newOut || !/^\d{4}-\d{2}-\d{2}$/.test(oldOut) || !/^\d{4}-\d{2}-\d{2}$/.test(newOut) || newOut <= oldOut){
@@ -7257,8 +7265,9 @@ function __guestCardAlertFlags__(guest){
     rows.forEach((g) => {
       if (!g) return;
       const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-      const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
-      const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
+      const localeOnly = __guestUsesOnlyLocaleRooms__(g);
+      const psReg = localeOnly || truthy(g?.ps_registrato ?? g?.psRegistrato);
+      const istatReg = localeOnly || truthy(g?.istat_registrato ?? g?.istatRegistrato);
       const checkInDone = __guestCheckInDone__(g);
       if (checkInDone){
         if (!psReg) flags.ps = true;
@@ -7305,8 +7314,9 @@ function computeTopGuestAlerts(guests){
     const name = collapseSpaces(String(rawName || '').trim()) || 'Prenotazione';
     const checkInTs = parseDateTs(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
     const checkOutTs = parseDateTs(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
-    const psReg = truthy(g?.ps_registrato ?? g?.psRegistrato);
-    const istatReg = truthy(g?.istat_registrato ?? g?.istatRegistrato);
+    const localeOnly = __guestUsesOnlyLocaleRooms__(g);
+    const psReg = localeOnly || truthy(g?.ps_registrato ?? g?.psRegistrato);
+    const istatReg = localeOnly || truthy(g?.istat_registrato ?? g?.istatRegistrato);
     const checkInDone = __guestCheckInDone__(g);
 
     if (checkInDone){
@@ -10526,6 +10536,8 @@ function formatEUR(value){
 }
 
 function calcTouristTax(ospite, nights){
+  // I locali per eventi non costituiscono pernottamento e sono sempre esenti.
+  if (__guestUsesOnlyLocaleRooms__(ospite)) return { total:0, adults:0, taxableDays:0, rate:0, exemptLocale:true };
   // Tassa di soggiorno: per persona > 10 anni (usa 'adulti'), max notti configurabile
   const adultsRaw = ospite?.adulti ?? ospite?.adults ?? 0;
   const adults = Math.max(0, parseInt(adultsRaw, 10) || 0);
@@ -10571,6 +10583,12 @@ function updateGuestTaxTotalPill(targetGuest){
       : ((Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length)
         ? state.guestGroupBookings
         : (state.guestViewItem ? [state.guestViewItem] : []));
+
+    if ((list || []).length && (list || []).every(g => __guestUsesOnlyLocaleRooms__(g))){
+      if (valEl) valEl.textContent = "€0,00";
+      el.hidden = true;
+      return;
+    }
 
     let sum = 0;
     for (const g of (list || [])){
@@ -14225,8 +14243,8 @@ function __applySettingsEditorButtonBoldAndVisuals__(){
   try{
     [
       'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor',
-      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorTagColor',
-      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorTagColor'
+      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor',
+      'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor'
     ].forEach((id)=>{
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -14680,7 +14698,7 @@ function setupChannelPage(){
 }
 
 
-const __roomCatalogPageUi = { color: "blue-4", borderColor: "blue-4", textColor: "", opacity: 0.80, editingId: "" };
+const __roomCatalogPageUi = { color: "blue-4", borderColor: "blue-4", textColor: "", opacity: 0.80, editingId: "", isLocale: false };
 const __ROOM_CATALOG_STORAGE_KEY__ = "dDAE_room_catalog_v1";
 
 
@@ -14690,9 +14708,99 @@ function __roomCatalogDefaultList__(){
   return Array.from({length:n}, (_,i)=>{
     const slot = i + 1;
     const visual = __roomsUiVisualNormalize__(cfg.rooms?.[String(slot)] || (__ROOMS_UI_DEFAULT_ROOM_COLORS__[i] || 'blue-4'), (__ROOMS_UI_DEFAULT_ROOM_COLORS__[i] || 'blue-4'));
-    return { id:`room-${slot}`, slot, nome:`Stanza ${slot}`, tag:String(slot), numero:String(slot), colore:__normalizeChannelColor__(visual.bg || 'blue-4'), coloreBordo:__normalizeChannelColor__(visual.border || visual.bg || 'blue-4'), coloreTesto:__normalizeChannelTextColor__(visual.fg || ''), opacita:__designBgOpacityNormalize__(visual.opacity ?? 0.80) };
+    return { id:`room-${slot}`, slot, nome:`Stanza ${slot}`, tag:String(slot), numero:String(slot), tipo:'stanza', colore:__normalizeChannelColor__(visual.bg || 'blue-4'), coloreBordo:__normalizeChannelColor__(visual.border || visual.bg || 'blue-4'), coloreTesto:__normalizeChannelTextColor__(visual.fg || ''), opacita:__designBgOpacityNormalize__(visual.opacity ?? 0.80) };
   });
 }
+function __roomCatalogTypeNormalize__(item){
+  try{
+    if (item && typeof item === 'object'){
+      const boolLocale = item.isLocale ?? item.is_locale ?? item.locale ?? item.nonStanza ?? item.non_stanza ?? item.isVenue ?? item.is_venue;
+      if (boolLocale === true || String(boolLocale ?? '').trim().toLowerCase() === 'true' || String(boolLocale ?? '').trim() === '1') return 'locale';
+      const raw = String(item.tipo ?? item.type ?? item.kind ?? item.roomType ?? item.room_type ?? item.categoria ?? (typeof item.locale === 'string' ? item.locale : '') ?? '').trim().toLowerCase();
+      if (['locale','local','venue','evento','event','sala','piscina','area'].includes(raw)) return 'locale';
+    }
+  }catch(_){ }
+  return 'stanza';
+}
+function __roomCatalogItemIsLocale__(item){
+  return __roomCatalogTypeNormalize__(item) === 'locale';
+}
+function isRoomSlotLocale(slot){
+  try{
+    const item = getRoomCatalogItemBySlot(slot);
+    return !!(item && __roomCatalogItemIsLocale__(item));
+  }catch(_){ return false; }
+}
+function __roomSlotsForLocaleRules__(rooms){
+  try{
+    let raw = rooms;
+    if (!Array.isArray(raw)){
+      const text = String(raw ?? '').trim();
+      if (!text) return [];
+      if (text.startsWith('[')){
+        try{ const parsed = JSON.parse(text); if (Array.isArray(parsed)) raw = parsed; }catch(_){ }
+      }
+      if (!Array.isArray(raw)) raw = text.split(/[^0-9]+/).filter(Boolean);
+    }
+    return Array.from(new Set(raw.map((value) => {
+      if (value && typeof value === 'object') value = value.stanza_num ?? value.stanzaNum ?? value.room ?? value.stanza ?? value.slot;
+      return parseInt(value, 10);
+    }).filter((value) => Number.isFinite(value) && value > 0))).sort((a,b)=>a-b);
+  }catch(_){ return []; }
+}
+function __roomsUseOnlyLocales__(rooms){
+  try{
+    const arr = __roomSlotsForLocaleRules__(rooms);
+    return arr.length > 0 && arr.every((slot) => isRoomSlotLocale(slot));
+  }catch(_){ return false; }
+}
+function __guestUsesOnlyLocaleRooms__(guest){
+  try{
+    if (!guest) return false;
+    const raw = __guestRoomsRaw__(guest) || guest?.stanze || guest?.rooms || guest?.stanza || guest?.room || '';
+    return __roomsUseOnlyLocales__(raw);
+  }catch(_){ return false; }
+}
+function __currentGuestUsesOnlyLocaleRooms__(){
+  try{
+    const mode = String(state?.guestMode || '').toLowerCase();
+    if (mode === 'view'){
+      const active = String(state?.guestGroupActiveId || '').trim() ? __guestActiveBookingForAction__() : (state?.guestViewItem || null);
+      if (active) return __guestUsesOnlyLocaleRooms__(active);
+    }
+    const selected = Array.from(state?.guestRooms || []).map(n=>parseInt(n,10)).filter(Number.isFinite);
+    if (selected.length) return __roomsUseOnlyLocales__(selected);
+    if (mode === 'edit' && state?.guestEditSourceItem) return __guestUsesOnlyLocaleRooms__(state.guestEditSourceItem);
+  }catch(_){ }
+  return false;
+}
+function __syncGuestLocaleRulesUi__(guest){
+  try{
+    const localeOnly = guest ? __guestUsesOnlyLocaleRooms__(guest) : __currentGuestUsesOnlyLocaleRooms__();
+    const reg = document.getElementById('regTags');
+    const regWrap = reg?.closest?.('.subfield.paywrap') || reg;
+    if (regWrap){
+      regWrap.hidden = !!localeOnly;
+      regWrap.classList.toggle('is-locale-exempt', !!localeOnly);
+      regWrap.setAttribute('aria-hidden', localeOnly ? 'true' : 'false');
+    }
+    if (reg){
+      reg.setAttribute('aria-disabled', localeOnly ? 'true' : 'false');
+      reg.dataset.localeExempt = localeOnly ? '1' : '0';
+    }
+    if (localeOnly){
+      try{ state.guestPSRegistered = false; state.guestISTATRegistered = false; }catch(_){ }
+      try{ setRegFlags('regTags', false, false); }catch(_){ }
+      const tax = document.getElementById('guestTaxTotal');
+      const val = document.getElementById('guestTaxTotalVal');
+      if (val) val.textContent = '€0,00';
+      if (tax) tax.hidden = true;
+    }
+    try{ document.querySelector('#page-ospite .guest-form-card')?.classList.toggle('guest-locale-only', !!localeOnly); }catch(_){ }
+    return localeOnly;
+  }catch(_){ return false; }
+}
+
 function __roomCatalogNormalizeList__(list){
   const arr = Array.isArray(list) ? list : [];
   return arr.map((item, idx)=>{
@@ -14700,12 +14808,13 @@ function __roomCatalogNormalizeList__(list){
     const numero = String(item?.numero ?? item?.roomNumber ?? item?.number ?? slot).trim() || String(slot);
     const nome = String(item?.nome ?? item?.name ?? `Stanza ${numero}`).trim();
     const tag = String(item?.tag ?? item?.iniziale ?? numero).trim().slice(0,3).toUpperCase() || String(numero).slice(0,3);
+    const tipo = __roomCatalogTypeNormalize__(item);
     const fallback = __ROOMS_UI_DEFAULT_ROOM_COLORS__[(slot-1)%__ROOMS_UI_DEFAULT_ROOM_COLORS__.length] || 'blue-4';
     const bg = __normalizeChannelColor__(item?.colore || item?.color || item?.bg || fallback);
     const border = __normalizeChannelColor__(item?.coloreBordo || item?.border || item?.borderColor || bg);
     const fg = __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor ?? item?.fg);
     return {
-      id:String(item?.id || `room-${slot}`), slot, nome, tag, numero,
+      id:String(item?.id || `room-${slot}`), slot, nome, tag, numero, tipo,
       colore:bg,
       coloreBordo:border,
       coloreTesto:fg,
@@ -14840,17 +14949,38 @@ function __roomCatalogSetSelectedColor__(color){
 function __roomCatalogSetSelectedTextColor__(color){
   __roomCatalogSetSelectedVisual__({ bg:__roomCatalogPageUi.color || 'blue-4', border:__roomCatalogPageUi.borderColor || __roomCatalogPageUi.color || 'blue-4', fg:color || '', opacity:__roomCatalogPageUi.opacity ?? 0.80 });
 }
+function __roomCatalogApplyTypeButton__(){
+  try{
+    const isLocale = !!__roomCatalogPageUi.isLocale;
+    const btn = document.getElementById('roomCatalogEditorLocale');
+    if (btn){
+      btn.classList.toggle('is-selected', isLocale);
+      btn.setAttribute('aria-pressed', isLocale ? 'true' : 'false');
+      btn.setAttribute('aria-label', isLocale ? 'Tipo locale attivo' : 'Imposta come locale');
+      btn.title = isLocale ? 'Locale: nessun letto, tassa di soggiorno, ISTAT o Polizia' : 'Imposta come locale';
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+    }
+    const editing = !!String(__roomCatalogPageUi.editingId || '').trim();
+    const title = document.getElementById('roomCatalogEditorTitle');
+    if (title) title.textContent = editing ? `Modifica ${isLocale ? 'locale' : 'stanza'}` : (isLocale ? 'Nuovo locale' : 'Nuova stanza');
+    const nameLabel = document.querySelector('label[for="roomCatalogEditorNome"]');
+    if (nameLabel) nameLabel.textContent = isLocale ? 'Nome del locale' : 'Nome della stanza';
+    const numberLabel = document.querySelector('label[for="roomCatalogEditorNumero"]');
+    if (numberLabel) numberLabel.textContent = isLocale ? 'Numero locale' : 'Numero stanza';
+  }catch(_){ }
+}
 function __roomCatalogOpenModal__(item){
   const modal = document.getElementById('roomCatalogEditorModal'); if (!modal) return;
   const current = item || null;
   const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
-  const title=document.getElementById('roomCatalogEditorTitle'); if(title) title.textContent=current?'Modifica stanza':'Nuova stanza';
   set('roomCatalogEditorId', current?.id ? String(current.id) : '');
   set('roomCatalogEditorNome', current?.nome ? String(current.nome) : '');
   set('roomCatalogEditorNumero', current?.numero ? String(current.numero) : '');
   const del=document.getElementById('roomCatalogEditorDelete'); if(del) del.hidden=!current;
   __roomCatalogPageUi.editingId=current?.id?String(current.id):'';
+  __roomCatalogPageUi.isLocale = current ? __roomCatalogItemIsLocale__(current) : false;
   __roomCatalogSetSelectedVisual__(current ? __roomCatalogVisualFromRoomsUi__(current.slot, current) : { bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 });
+  __roomCatalogApplyTypeButton__();
   modal.hidden=false; modal.setAttribute('aria-hidden','false');
   try{ __markSettingsEditorModalOpened__(); }catch(_){ }
   try{ refreshFloatingLabels(); }catch(_){ }
@@ -14861,7 +14991,7 @@ function __roomCatalogCloseModal__(){
   const modal=document.getElementById('roomCatalogEditorModal'); if(!modal) return;
   modal.hidden=true; modal.setAttribute('aria-hidden','true');
   ['roomCatalogEditorId','roomCatalogEditorNome','roomCatalogEditorNumero'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  __roomCatalogPageUi.editingId=''; __roomCatalogSetSelectedVisual__({ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 });
+  __roomCatalogPageUi.editingId=''; __roomCatalogPageUi.isLocale=false; __roomCatalogSetSelectedVisual__({ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }); __roomCatalogApplyTypeButton__();
 }
 async function renderRoomCatalogPage(){
   await ensureSettingsLoaded({ force:false, showLoader:false });
@@ -14873,21 +15003,24 @@ async function renderRoomCatalogPage(){
     const visual = __roomCatalogVisualFromRoomsUi__(item.slot, item);
     const tagStyle = __roomsUiBadgeStyle__(visual);
     const graphHex = __operatoreColorHex__(visual.bg || 'blue-4');
+    const isLocale = __roomCatalogItemIsLocale__(item);
+    const kindLabel = isLocale ? 'Locale' : 'Stanza';
     return `
     <article class="operatori-item channel-item room-catalog-item" data-id="${String(item.id).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}">
       <div class="operatori-item-top">
         <div class="operatori-item-left">
           <span class="operatori-tag color-${visual.bg || item.colore}" style="${__laundryEscapeAttr__(tagStyle)}"><span class="channel-tag-letter">${String(item.tag || item.numero || item.slot).slice(0,3).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}</div>
+          ${isLocale ? '<span class="room-catalog-kind-badge">Locale</span>' : ''}
           <span class="channel-graph-dot" style="background:${__laundryEscapeAttr__(graphHex)}"></span>
         </div>
         <div class="operatori-item-actions">
-          <button aria-label="Modifica stanza" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
-          <button aria-label="Elimina stanza" class="operatori-mini-btn is-delete" data-action="delete" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+          <button aria-label="Modifica ${kindLabel.toLowerCase()}" class="operatori-mini-btn" data-action="edit" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          <button aria-label="Elimina ${kindLabel.toLowerCase()}" class="operatori-mini-btn is-delete" data-action="delete" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg></button>
         </div>
       </div>
       <div class="operatori-metrics channel-metrics-single room-catalog-metrics">
-        <div class="operatori-metric"><div class="operatori-metric-label">Numero stanza</div><div class="operatori-metric-value">${String(item.numero || item.slot).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}</div></div>
+        <div class="operatori-metric"><div class="operatori-metric-label">Numero ${isLocale ? 'locale' : 'stanza'}</div><div class="operatori-metric-value">${String(item.numero || item.slot).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]||s))}</div></div>
       </div>
     </article>`;
   }).join('');
@@ -14897,6 +15030,10 @@ function setupRoomCatalogPage(){
   const goBtn=document.getElementById('settingsRoomCatalogBtn'); if(goBtn) bindFastTap(goBtn,()=>{ try{ window.__settingsDataReturnActive = true; }catch(_){} try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){} hideLauncher(); showPage('roomcatalog'); });
   const addBtn=document.getElementById('btnAddRoomCatalogCard'); if(addBtn){ try{ ['pointerdown','touchstart','mousedown'].forEach((evt)=>addBtn.addEventListener(evt,()=>{ try{ __suppressSettingsEditorColorPopups__(3200); }catch(_){} }, { passive:true, capture:true })); }catch(_){ } bindFastTap(addBtn,()=>{ try{ __suppressSettingsEditorColorPopups__(3200); }catch(_){} __roomCatalogOpenModal__(null); }); }
   const closeBtn=document.getElementById('roomCatalogEditorClose'); if(closeBtn) bindFastTap(closeBtn,__roomCatalogCloseModal__);
+  const localeBtn=document.getElementById('roomCatalogEditorLocale'); if(localeBtn) bindFastTap(localeBtn,()=>{
+    __roomCatalogPageUi.isLocale = !__roomCatalogPageUi.isLocale;
+    __roomCatalogApplyTypeButton__();
+  });
   const tagBtn=document.getElementById('roomCatalogEditorTagColor'); if(tagBtn) bindFastTap(tagBtn,()=>{
     const currentVisual = { bg:__roomCatalogPageUi.color || 'blue-4', border:__roomCatalogPageUi.borderColor || __roomCatalogPageUi.color || 'blue-4', fg:__roomCatalogPageUi.textColor || '', opacity:__designBgOpacityNormalize__(__roomCatalogPageUi.opacity ?? 0.80) };
     __tagColorPopupOpen__('roomcatalog', currentVisual, (payload)=>{
@@ -14906,26 +15043,27 @@ function setupRoomCatalogPage(){
   });
   const saveBtn=document.getElementById('roomCatalogEditorSave'); if(saveBtn) bindFastTap(saveBtn, async()=>{
     try{
-      const nome=String(document.getElementById('roomCatalogEditorNome')?.value||'').trim(); if(!nome){ toast('Inserisci il nome della stanza'); return; }
-      const numero=String(document.getElementById('roomCatalogEditorNumero')?.value||'').trim(); if(!numero){ toast('Inserisci il numero stanza'); return; }
+      const isLocale=!!__roomCatalogPageUi.isLocale;
+      const nome=String(document.getElementById('roomCatalogEditorNome')?.value||'').trim(); if(!nome){ toast(isLocale ? 'Inserisci il nome del locale' : 'Inserisci il nome della stanza'); return; }
+      const numero=String(document.getElementById('roomCatalogEditorNumero')?.value||'').trim(); if(!numero){ toast(isLocale ? 'Inserisci il numero locale' : 'Inserisci il numero stanza'); return; }
       const tag=String(numero || nome).trim().slice(0,3).toUpperCase() || nome.slice(0,1).toUpperCase();
       const id=String(document.getElementById('roomCatalogEditorId')?.value||'').trim();
       const list=getRoomCatalogFromSettings();
       const idx=list.findIndex(x=>String(x.id)===id);
-      const next={ id:id || `room-${Date.now()}`, slot: idx>=0 ? list[idx].slot : list.length+1, nome, tag, numero, colore:__roomCatalogPageUi.color||'blue-4', coloreBordo:__roomCatalogPageUi.borderColor||__roomCatalogPageUi.color||'blue-4', coloreTesto:__roomCatalogPageUi.textColor||'', opacita:__designBgOpacityNormalize__(__roomCatalogPageUi.opacity ?? 0.80) };
+      const next={ id:id || `room-${Date.now()}`, slot: idx>=0 ? list[idx].slot : list.length+1, nome, tag, numero, tipo:(isLocale ? 'locale' : 'stanza'), colore:__roomCatalogPageUi.color||'blue-4', coloreBordo:__roomCatalogPageUi.borderColor||__roomCatalogPageUi.color||'blue-4', coloreTesto:__roomCatalogPageUi.textColor||'', opacita:__designBgOpacityNormalize__(__roomCatalogPageUi.opacity ?? 0.80) };
       if(idx>=0) list[idx]=next; else list.push(next);
       await saveRoomCatalogToSettings(list);
-      __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast('Stanza salvata');
+      __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast(isLocale ? 'Locale salvato' : 'Stanza salvata');
     }catch(e){ toast(e?.message||'Errore'); }
   });
   const delBtn=document.getElementById('roomCatalogEditorDelete'); if(delBtn) bindFastTap(delBtn, async()=>{
-    try{ const id=String(document.getElementById('roomCatalogEditorId')?.value||'').trim(); if(!id) return; if(!confirm('Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast('Stanza eliminata'); }catch(e){ toast(e?.message||'Errore'); }
+    try{ const id=String(document.getElementById('roomCatalogEditorId')?.value||'').trim(); if(!id) return; const isLocale=!!__roomCatalogPageUi.isLocale; if(!confirm(isLocale ? 'Eliminare questo locale?' : 'Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); __roomCatalogCloseModal__(); await renderRoomCatalogPage(); toast(isLocale ? 'Locale eliminato' : 'Stanza eliminata'); }catch(e){ toast(e?.message||'Errore'); }
   });
   const listEl=document.getElementById('roomCatalogList'); if(listEl) listEl.addEventListener('click', async(ev)=>{
     const btn=ev.target.closest?.('button[data-action]'); const card=ev.target.closest?.('.room-catalog-item'); if(!card) return;
     const id=String(card.getAttribute('data-id')||'').trim(); const item=getRoomCatalogFromSettings().find(x=>String(x.id)===id); if(!item) return;
     const action=btn?String(btn.getAttribute('data-action')||''):'edit';
-    if(action==='delete'){ if(!confirm('Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); await renderRoomCatalogPage(); toast('Stanza eliminata'); return; }
+    if(action==='delete'){ const isLocale=__roomCatalogItemIsLocale__(item); if(!confirm(isLocale ? 'Eliminare questo locale?' : 'Eliminare questa stanza?')) return; const list=getRoomCatalogFromSettings().filter(x=>String(x.id)!==id); await saveRoomCatalogToSettings(list); await renderRoomCatalogPage(); toast(isLocale ? 'Locale eliminato' : 'Stanza eliminata'); return; }
     __roomCatalogOpenModal__(item);
   });
 }
@@ -21240,7 +21378,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
   'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorDotColor','channelEditorSave',
-  'roomCatalogEditorDelete','roomCatalogEditorTagColor','roomCatalogEditorSave',
+  'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
@@ -21302,6 +21440,7 @@ function __defaultSingleActionButtonVisual__(btn){
     operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     roomCatalogEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
+    roomCatalogEditorLocale:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 },
     roomCatalogEditorTagColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     roomCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     laundryCatalogEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -21350,13 +21489,14 @@ function __defaultSingleActionButtonVisual__(btn){
 }
 
 function __singleActionButtonSupportsDualState__(btn){
-  try{ return !!(btn && btn.classList && (btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.hasAttribute('data-guest-invoice'))); }catch(_){ return false; }
+  try{ return !!(btn && btn.classList && (btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice'))); }catch(_){ return false; }
 }
 
 function __defaultSingleActionButtonStateVisuals__(btn){
   const base = __defaultSingleActionButtonVisual__(btn);
   try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
+  try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
   const on = { ...base, opacity:0.88 };
@@ -21444,6 +21584,7 @@ function __singleActionButtonCategoryForId__(id){
     operatoriEditorSave:'save',
     channelEditorSave:'save',
     roomCatalogEditorDelete:'delete',
+    roomCatalogEditorLocale:'room-type',
     roomCatalogEditorTagColor:'tag',
     roomCatalogEditorSave:'save',
     laundryCatalogEditorSave:'save',
@@ -21523,7 +21664,7 @@ function __forceSettingsEditorActionButtonBold__(btn){
     const ids = new Set([
       'operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorSave',
       'channelEditorDelete','channelEditorGraphColor','channelEditorSave',
-      'roomCatalogEditorDelete','roomCatalogEditorTagColor','roomCatalogEditorSave',
+      'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
       'laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorSave'
     ]);
     if (!ids.has(btn.id)) return;
@@ -26553,6 +26694,7 @@ function enterGuestCreateMode(){
   state.guestISTATRegistered = false;
   state.guestCheckInDone = false;
   setRegFlags("regTags", state.guestPSRegistered, state.guestISTATRegistered);
+  try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
   try{ __syncGuestCheckInButton__(); }catch(_){ }
   // refresh rooms UI if present
   try {
@@ -26740,10 +26882,11 @@ refreshFloatingLabels();
     for (const rn of roomsNow){
       const key = `${gid}:${String(rn)}`;
       const d = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : {};
+      const isLocale = isRoomSlotLocale(rn);
       next[String(rn)] = {
-        matrimoniale: !!(d.letto_m),
-        singoli: parseInt(d.letto_s || 0, 10) || 0,
-        culla: !!(d.culla),
+        matrimoniale: isLocale ? false : !!(d.letto_m),
+        singoli: isLocale ? 0 : (parseInt(d.letto_s || 0, 10) || 0),
+        culla: isLocale ? false : !!(d.culla),
         note: ""
       };
     }
@@ -26753,6 +26896,7 @@ refreshFloatingLabels();
     state.stanzeSnapshotOriginal = JSON.stringify(buildArrayFromState());
   } catch (_) {}
 
+  try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
   try { updateOspiteHdActions(); } catch (_) {}
 
   // ✅ FIX dDAE: entrando in modifica con date gia' valorizzate, ricalcola subito disponibilita' stanze.
@@ -28589,7 +28733,9 @@ function ensureRoomsPickerButtons(){
     const parts = [];
     for (let i = 1; i <= count; i++) {
       const on = selected.has(i);
-      parts.push(`<button aria-pressed="${on ? "true" : "false"}" class="room-dot${on ? " selected" : ""}" data-room="${i}" type="button">${i}</button>`);
+      const locale = isRoomSlotLocale(i);
+      const label = getRoomDisplayLabel(i) || i;
+      parts.push(`<button aria-label="${locale ? 'Locale' : 'Stanza'} ${escapeHtml(label)}" aria-pressed="${on ? "true" : "false"}" class="room-dot${on ? " selected" : ""}${locale ? " is-locale" : ""}" data-room="${i}" title="${locale ? 'Locale' : 'Stanza'} ${escapeHtml(label)}" type="button">${escapeHtml(label)}</button>`);
     }
     picker.innerHTML = parts.join('');
   }catch(_){ }
@@ -28789,6 +28935,7 @@ function buildRoomsStackHTML(guestId, roomsArr){
   if (!roomsArr || !roomsArr.length) return `<span class="room-dot-badge is-empty" aria-label="Nessuna stanza">—</span>`;
   return `<div class="rooms-stack" aria-label=" e letti">` + normalizeRoomsList(roomsArr, 6).map((n) => {
     const key = `${guestId}:${n}`;
+    const isLocale = isRoomSlotLocale(n);
     const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m: 0, letto_s: 0, culla: 0 };
     const lettoM = Number(info.letto_m || 0) || 0;
     const lettoS = Number(info.letto_s || 0) || 0;
@@ -28799,9 +28946,9 @@ function buildRoomsStackHTML(guestId, roomsArr){
     for (let i = 0; i < lettoS; i++) dots += `<span class="bed-dot bed-dot-s" aria-label="Letto singolo"></span>`;
     if (culla > 0) dots += `<span class="bed-dot bed-dot-c" aria-label="Culla"></span>`;
 
-    return `<div class="room-row">
-      <span class="room-dot-badge room-${n}" style="${__roomsUiBadgeStyle__(getRoomsUiConfig().rooms?.[String(n)] || 'blue-4')}">${n}</span>
-      <div class="bed-dots" aria-label="Letti">${dots || `<span class="bed-dot bed-dot-empty" aria-label="Nessun letto"></span>`}</div>
+    return `<div class="room-row ${isLocale ? 'is-locale' : ''}">
+      <span class="room-dot-badge room-${n}" style="${__roomsUiBadgeStyle__(getRoomsUiConfig().rooms?.[String(n)] || 'blue-4')}">${escapeHtml(getRoomDisplayLabel(n) || n)}</span>
+      ${isLocale ? `<span class="room-kind-badge" aria-label="Locale">Locale</span>` : `<div class="bed-dots" aria-label="Letti">${dots || `<span class="bed-dot bed-dot-empty" aria-label="Nessun letto"></span>`}</div>`}
     </div>`;
   }).join("") + `</div>`;
 }
@@ -28919,6 +29066,7 @@ function __populateGuestGroupInfoFromBooking__(ospite){
     try{ updateGuestRemaining(); }catch(_){ }
     try{ updateGuestNotesIndicator(); }catch(_){ }
     try{ refreshFloatingLabels(); }catch(_){ }
+    try{ __syncGuestLocaleRulesUi__(ospite); }catch(_){ }
     try{ updateGuestTaxTotalPill(ospite); }catch(_){ try{ updateGuestTaxTotalPill(); }catch(__){ } }
     try{ loadServiziForOspite(ospite); }catch(_){ }
     try{ __syncGuestCheckInButton__(); }catch(_){ }
@@ -29009,6 +29157,7 @@ function renderRoomsReadOnly(ospite){
     </div>
   `;
 
+  try{ __syncGuestLocaleRulesUi__(primaryActive ? ospite : null); }catch(_){ }
   try{ updateGuestTaxTotalPill(); }catch(_){ }
 }
 
@@ -29153,6 +29302,7 @@ function __guestCommissionAmountOfBooking__(guest){
 
 function __guestTaxAmountOfBooking__(guest){
   try{
+    if (__guestUsesOnlyLocaleRooms__(guest)) return 0;
     const direct = guest?.tassa_soggiorno ?? guest?.tassaSoggiorno ?? guest?.tourist_tax ?? guest?.touristTax ?? guest?.city_tax ?? guest?.cityTax;
     const directText = String(direct ?? '').trim();
     const dn = __guestMoneyValue__(direct);
@@ -30204,6 +30354,7 @@ const title = document.getElementById("ospiteFormTitle");
   try{ __syncGuestNationalityPlacement__(); }catch(_){}
 
   setGuestFormViewOnly(true, ospite);
+  try{ __syncGuestLocaleRulesUi__(ospite); }catch(_){ }
   // Multi prenotazioni: mostra prenotazioni aggiuntive sotto la prima
   try{
     if (Array.isArray(state.guestGroupBookings) && state.guestGroupBookings.length > 1){
@@ -30879,6 +31030,7 @@ async function saveGuest(opts = {}){
     .map(n => parseInt(n,10))
     .filter(n => Number.isFinite(n) && n>=1 && n<=getConfiguredRoomsCount(6))
     .sort((a,b)=>a-b);
+  const localeOnly = __roomsUseOnlyLocales__(rooms);
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
@@ -30976,8 +31128,8 @@ if (!name) return toast("Inserisci il nome");
     g: g ? "1" : "",
     col_c: (state.guestColC ? "1" : ""),
     c: (state.guestColC ? "1" : ""),
-    ps_registrato: state.guestPSRegistered ? "1" : "",
-    istat_registrato: state.guestISTATRegistered ? "1" : "",
+    ps_registrato: (!localeOnly && state.guestPSRegistered) ? "1" : "",
+    istat_registrato: (!localeOnly && state.guestISTATRegistered) ? "1" : "",
     checkin_effettuato: state.guestCheckInDone ? "1" : "",
     check_in_effettuato: state.guestCheckInDone ? "1" : "",
     checkInEffettuato: state.guestCheckInDone ? "1" : "",
@@ -31803,10 +31955,12 @@ function setupOspite(){
 
       const n = parseInt(btn.getAttribute("data-room"), 10);
       const on = state.guestRooms.has(n);
+      const locale = isRoomSlotLocale(n);
       const occ = !locked && occSet.has(n);
       const occReal = !locked && occRealSet.has(n);
 
       btn.classList.toggle("selected", on);
+      btn.classList.toggle("is-locale", locale);
       btn.classList.toggle("occupied", occ);
       btn.classList.toggle("occupied-real", occReal);
 
@@ -31814,11 +31968,14 @@ function setupOspite(){
       btn.disabled = !!dis;
       btn.setAttribute("aria-disabled", dis ? "true" : "false");
       btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-label", `${locale ? 'Locale' : 'Stanza'} ${getRoomDisplayLabel(n) || n}`);
+      btn.title = `${locale ? 'Locale' : 'Stanza'} ${getRoomDisplayLabel(n) || n}`;
     });
 
     // matrimonio dot (rimane gestibile come flag)
     setMarriage(state.guestMarriage);
     setGroup(state.guestGroup);
+    try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
   }
 
   // Espone le funzioni (scope setupOspite) per poterle richiamare da enterGuestEditMode
@@ -31929,6 +32086,13 @@ function setupOspite(){
     if (!state.guestRooms.has(n)) {
       state.guestRooms.add(n);
       renderRooms();
+    }
+
+    // I locali non hanno configurazione letti.
+    if (isRoomSlotLocale(n)){
+      try{ if (state.lettiPerStanza) delete state.lettiPerStanza[String(n)]; }catch(_){ }
+      try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
+      return;
     }
 
     // Tap breve su stanza accesa/spenta => apre popup configurazione letti
@@ -32073,6 +32237,7 @@ function setupOspite(){
     const wrap = document.getElementById(containerId);
     if (!wrap) return;
     wrap.addEventListener("click", (e) => {
+      if (__currentGuestUsesOnlyLocaleRooms__()){ try{ toast('Locale: registrazioni Polizia e ISTAT non richieste'); }catch(_){ } return; }
       const btn = e.target.closest('.pay-dot[data-flag]');
       if (!btn || !wrap.contains(btn)) return;
 
@@ -32480,6 +32645,7 @@ function __guestReportTextMap__(){ return {
   whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
   whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
   room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' },
+  venue:{ it:'Locale', en:'Venue', fr:'Espace', de:'Bereich', es:'Local' },
   date:{ it:'Data', en:'Date', fr:'Date', de:'Datum', es:'Fecha' }
 }; }
 function __guestReportT__(lang, key){ const map=__guestReportTextMap__(); const row=map[key] || {}; return String(row[lang] || row.it || key || ''); }
@@ -32603,16 +32769,19 @@ function __guestReportResolveRoomCards__(lang, guest){
     const gid = _guestIdOf(booking);
     roomsArr.forEach((n) => {
       const key = `${gid}:${n}`;
+      const isLocale = isRoomSlotLocale(n);
       const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m:0, letto_s:0, culla:0 };
       const range = __guestReportFormatRange__(lang, booking?.check_in ?? booking?.checkIn ?? '', booking?.check_out ?? booking?.checkOut ?? '');
-      const beds = __guestReportRoomBedsValue__(lang, info);
+      const beds = isLocale ? '' : __guestReportRoomBedsValue__(lang, info);
+      const displayNumber = getRoomDisplayLabel(n) || n;
       cards.push({
         kind:'roomCard',
-        label:`${__guestReportT__(lang, 'room')} ${n}`,
-        value:(range ? `${range} ${beds}` : beds),
+        label:`${__guestReportT__(lang, isLocale ? 'venue' : 'room')} ${displayNumber}`,
+        value:isLocale ? (range || __guestReportT__(lang, 'none')) : (range ? `${range} ${beds}` : beds),
         dateRange:range,
         bedsValue:beds,
         roomNumber:n,
+        isLocale,
         visual:__guestReportRoomVisual__(n)
       });
     });
@@ -32850,19 +33019,21 @@ function __guestReportCanvas__(guest){
       lines.forEach((line)=>{ ctx.fillText(line,134,ny); ny+=46; });
     }
     else if(isRoom){
-      // dDAE_2.785 — Nel tab stanza il periodo resta sopra, la tipologia letti sotto.
+      // Nei locali evento viene mostrato solo il periodo: nessun dato letto.
       ctx.textAlign='right';
       const dateTxt = String(row.dateRange || '').trim();
       const bedsTxt = String(row.bedsValue || '').trim();
       const dateLines = wrapText(dateTxt || __guestReportT__(lang, 'none'), 30, 1);
-      const bedLines = wrapText(bedsTxt || __guestReportT__(lang, 'none'), 38, 2);
       ctx.font='900 44px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif';
       ctx.fillStyle='#10243e';
-      ctx.fillText(dateLines[0] || __guestReportT__(lang, 'none'), width-134, y+92);
-      ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif';
-      ctx.fillStyle='#526173';
-      ctx.fillText(bedLines[0] || __guestReportT__(lang, 'none'), width-134, y+144);
-      if(bedLines[1]){ ctx.font='900 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(bedLines[1], width-134, y+180); }
+      ctx.fillText(dateLines[0] || __guestReportT__(lang, 'none'), width-134, row.isLocale ? y+118 : y+92);
+      if(!row.isLocale){
+        const bedLines = wrapText(bedsTxt || __guestReportT__(lang, 'none'), 38, 2);
+        ctx.font='900 34px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif';
+        ctx.fillStyle='#526173';
+        ctx.fillText(bedLines[0] || __guestReportT__(lang, 'none'), width-134, y+144);
+        if(bedLines[1]){ ctx.font='900 30px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(bedLines[1], width-134, y+180); }
+      }
     }
     else { const lines=wrapText(val, 28, 2); ctx.textAlign='right'; ctx.font='900 52px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),width-134,y+96); if(lines[1]){ ctx.font='900 38px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],width-134,y+150); } }
     ctx.textAlign='left'; y += rowH + gap;
@@ -37762,6 +37933,7 @@ function __calendarGuestDisplayName__(info, span){
 }
 
 function getCalendarRoomBedSummary(guestId, room){
+  if (isRoomSlotLocale(room)) return { lettoM:0, lettoS:0, culla:0, items:[], text:'', isLocale:true };
   const key = `${String(guestId || '').trim()}:${String(room || '').trim()}`;
   const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m:0, letto_s:0, culla:0 };
   const lettoM = Number(info.letto_m || 0) || 0;
@@ -37781,7 +37953,8 @@ function buildCalendarCellPayload(info, room, dateIso){
   const dateLabel = formatFullDateIT(new Date(`${dateIso}T00:00:00`)) || String(dateIso || '');
   const rangeLabel = guest ? (formatRangeCompactIT(guest.check_in || guest.checkIn || '', guest.check_out || guest.checkOut || '') || '') : '';
   const roomSlot = String(room || '').trim();
-  let roomNameLabel = roomSlot ? `Stanza ${roomSlot}` : '';
+  const isLocale = isRoomSlotLocale(roomSlot);
+  let roomNameLabel = roomSlot ? `${isLocale ? 'Locale' : 'Stanza'} ${roomSlot}` : '';
   let roomNumberLabel = roomSlot;
   try{
     if (typeof getRoomNameLabel === 'function') roomNameLabel = String(getRoomNameLabel(roomSlot) || roomNameLabel || '').trim();
@@ -37792,6 +37965,7 @@ function buildCalendarCellPayload(info, room, dateIso){
     room: roomSlot,
     roomNameLabel,
     roomNumberLabel,
+    isLocale,
     dateIso: String(dateIso || ''),
     dateLabel,
     guest,
@@ -37830,11 +38004,12 @@ function buildCalendarCellZoomMarkup(payload){
   const bedsListItems = bedsItems.length ? bedsItems : (bedsText ? [bedsText] : []);
   const roomName = String(data.roomNameLabel || '').trim();
   const roomNumber = String(data.roomNumberLabel || data.room || '').trim();
-  const roomNameClean = roomName.replace(/^stanza\s*\d*\s*[-–—:]?\s*/i, '').trim();
-  const roomLabel = roomNumber ? `STANZA ${roomNumber}` : (roomName ? 'STANZA' : '');
+  const roomNameClean = roomName.replace(/^(?:stanza|locale)\s*\d*\s*[-–—:]?\s*/i, '').trim();
+  const roomKind = data.isLocale ? 'LOCALE' : 'STANZA';
+  const roomLabel = roomNumber ? `${roomKind} ${roomNumber}` : (roomName ? roomKind : '');
   const showRoomName = roomNameClean && roomNameClean.toLowerCase() !== roomLabel.trim().toLowerCase();
   const roomInfoLine = (roomLabel || showRoomName) ? `<div class="cal-cell-room-info">${roomLabel ? `<span>${escapeHtml(roomLabel)}</span>` : ''}${showRoomName ? `<strong>${escapeHtml(roomNameClean)}</strong>` : ''}</div>` : '';
-  const bedsLine = bedsListItems.length ? `<div class="cal-cell-beds-text"><span>Letti</span><ul class="cal-cell-beds-list">${bedsListItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>` : '';
+  const bedsLine = (!data.isLocale && bedsListItems.length) ? `<div class="cal-cell-beds-text"><span>Letti</span><ul class="cal-cell-beds-list">${bedsListItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>` : '';
   const saldoLine = (!data.isEmpty && __currentOperatorCanViewGuestBalance__())
     ? `<div class="cal-cell-balance"><span>Rimanenza da pagare</span><strong>${escapeHtml(__calendarGuestRemainingBalanceText__(data.guest))}</strong></div>`
     : '';
@@ -38010,8 +38185,9 @@ function openCalendarCellModal(payload, mode){
   if (!modal || !title || !subtitle || !content) return;
 
   const isOperatorMode = String(mode || '').toLowerCase() === 'operator-detail';
-  title.textContent = payload && !payload.isEmpty ? payload.guestName : `Stanza ${payload?.room || ''}`;
-  subtitle.textContent = `Stanza ${payload?.room || ''} • ${payload?.dateLabel || ''}`;
+  const roomKindLabel = payload?.isLocale ? 'Locale' : 'Stanza';
+  title.textContent = payload && !payload.isEmpty ? payload.guestName : `${roomKindLabel} ${payload?.room || ''}`;
+  subtitle.textContent = `${roomKindLabel} ${payload?.room || ''} • ${payload?.dateLabel || ''}`;
   if (preview) preview.hidden = !!isOperatorMode;
   if (!isOperatorMode) renderCalendarCellModalPreview(payload || {});
   else if (preview) preview.innerHTML = '';
@@ -38025,9 +38201,9 @@ function openCalendarCellModal(payload, mode){
     content.innerHTML = `
       <div class="calendar-cell-modal-grid">
         ${mgcRows}
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Stanza</span><strong>${escapeHtml(payload.roomNameLabel || '—')}</strong></div>
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Numero stanza</span><strong>${escapeHtml(payload.roomNumberLabel || payload.room || '—')}</strong></div>
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${payload.isLocale ? 'Locale' : 'Stanza'}</span><strong>${escapeHtml(payload.roomNameLabel || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Numero ${payload.isLocale ? 'locale' : 'stanza'}</span><strong>${escapeHtml(payload.roomNumberLabel || payload.room || '—')}</strong></div>
+        ${payload.isLocale ? '' : `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>`}
         <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Channel</span><strong>${escapeHtml(payload.channelName || 'Non impostato')}</strong></div>
         ${saldoRow}
       </div>`;
@@ -38036,10 +38212,10 @@ function openCalendarCellModal(payload, mode){
     content.innerHTML = `
       <div class="calendar-cell-modal-grid">
         <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Periodo</span><strong>${escapeHtml(payload.rangeLabel || payload.dateLabel || '—')}</strong></div>
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Stanza</span><strong>${escapeHtml(payload.roomNameLabel || '—')}</strong></div>
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Numero stanza</span><strong>${escapeHtml(payload.roomNumberLabel || payload.room || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">${payload.isLocale ? 'Locale' : 'Stanza'}</span><strong>${escapeHtml(payload.roomNameLabel || '—')}</strong></div>
+        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Numero ${payload.isLocale ? 'locale' : 'stanza'}</span><strong>${escapeHtml(payload.roomNumberLabel || payload.room || '—')}</strong></div>
         <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Channel</span><strong>${escapeHtml(payload.channelName || 'Non impostato')}</strong></div>
-        <div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>
+        ${payload.isLocale ? '' : `<div class="calendar-cell-detail-row"><span class="calendar-cell-detail-label">Letti</span><strong>${escapeHtml(payload.beds.text || '—')}</strong></div>`}
       </div>
       <div class="calendar-cell-status-list">${badges}</div>`;
   }
@@ -38743,6 +38919,7 @@ function buildWeekOccupancy(weekStart){
 }
 
 function dotsForGuestRoom(guestId, room){
+  if (isRoomSlotLocale(room)) return [];
   const key = `${guestId}:${room}`;
   const info = (state.stanzeByKey && state.stanzeByKey[key]) ? state.stanzeByKey[key] : { letto_m:0, letto_s:0, culla:0 };
   const lettoM = Number(info.letto_m || 0) || 0;
@@ -39975,13 +40152,14 @@ function buildArrayFromState(){
   const rooms = Array.from(state.guestRooms || []).map(n=>parseInt(n,10)).filter(n=>isFinite(n)).sort((a,b)=>a-b);
   const lp = state.lettiPerStanza || {};
   return rooms.map((n)=>{
+    const isLocale = isRoomSlotLocale(n);
     const d = lp[String(n)] || lp[n] || {};
     return {
       stanza_num: n,
-      letto_m: !!d.matrimoniale,
-      letto_s: parseInt(d.singoli || 0, 10) || 0,
-      culla: !!d.culla,
-      note: (d.note || "").toString()
+      letto_m: isLocale ? false : !!d.matrimoniale,
+      letto_s: isLocale ? 0 : (parseInt(d.singoli || 0, 10) || 0),
+      culla: isLocale ? false : !!d.culla,
+      note: isLocale ? "" : (d.note || "").toString()
     };
   });
 }
@@ -39996,11 +40174,12 @@ function applyToState(rows){
     const n = parseInt(r.stanza_num ?? r.stanzaNum ?? r.room ?? r.stanza, 10);
     if (!isFinite(n) || n<=0) return;
     state.guestRooms.add(n);
+    const isLocale = isRoomSlotLocale(n);
     state.lettiPerStanza[String(n)] = {
-      matrimoniale: !!(r.letto_m ?? r.lettoM ?? r.matrimoniale),
-      singoli: parseInt(r.letto_s ?? r.lettoS ?? r.singoli, 10) || 0,
-      culla: !!(r.culla),
-      note: (r.note || "").toString()
+      matrimoniale: isLocale ? false : !!(r.letto_m ?? r.lettoM ?? r.matrimoniale),
+      singoli: isLocale ? 0 : (parseInt(r.letto_s ?? r.lettoS ?? r.singoli, 10) || 0),
+      culla: isLocale ? false : !!(r.culla),
+      note: isLocale ? "" : (r.note || "").toString()
     };
   });
 }
@@ -40042,6 +40221,11 @@ function __rc_renderSingoli(el, n){
 }
 
 function openRoomConfig(room){
+  if (isRoomSlotLocale(room)){
+    try{ if (state.lettiPerStanza) delete state.lettiPerStanza[String(room)]; }catch(_){ }
+    try{ document.getElementById('roomConfigModal').hidden = true; }catch(_){ }
+    return;
+  }
   __rc_room = String(room);
   const d = state.lettiPerStanza[__rc_room] || {matrimoniale:false,singoli:0,culla:false};
   document.getElementById('roomConfigTitle').textContent = 'Stanza '+room;
@@ -40053,6 +40237,7 @@ function openRoomConfig(room){
 
 
 document.getElementById('rc_save')?.addEventListener('click', ()=>{
+  if (isRoomSlotLocale(__rc_room)){ try{ delete state.lettiPerStanza[String(__rc_room)]; }catch(_){ } document.getElementById('roomConfigModal').hidden = true; return; }
   const matrimoniale = document.querySelector('#rc_matrimoniale .dot')?.classList.contains('on')||false;
   const culla = document.querySelector('#rc_culla .dot')?.classList.contains('on')||false;
   const singoli = document.querySelectorAll('#rc_singoli .dot.on').length;
@@ -40359,6 +40544,7 @@ async function calcTassa(fromOverride, toOverride, opts){
   let totalAmt = 0;
 
   for (const o of ospiti){
+    if (__guestUsesOnlyLocaleRooms__(o)) continue;
     const inISO  = __parseDateFlexibleToISO(o.check_in || o.checkIn);
     const outISO = __parseDateFlexibleToISO(o.check_out || o.checkOut);
     if (!inISO || !outISO) continue;
@@ -41917,7 +42103,7 @@ function syncGuestEmailActionLink(isView){
   const IDS = [
     'operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorCancel','operatoriEditorSave',
     'channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','channelEditorCancel','channelEditorSave',
-    'roomCatalogEditorDelete','roomCatalogEditorTagColor','roomCatalogEditorSave',
+    'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
     'laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorCancel','laundryCatalogEditorSave'
   ];
   function bindAll(){
@@ -43329,7 +43515,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.080';
+  var BUILD_TAG='dDAE_3.081';
   var busy=false;
   var lastStart=0;
   var active=null;
