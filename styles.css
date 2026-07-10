@@ -30096,3 +30096,21 @@ body[data-page="spese"] #page-spese .spese-list-separator{
   margin-left:0 !important;
   margin-right:0 !important;
 }
+
+/* dDAE_3.080 — Scheda ospite: numero stanza sempre allineato in alto.
+   La quantità di indicatori letto non deve spostare verticalmente il badge stanza. */
+#page-ospite .rooms-stack{
+  align-items: flex-start !important;
+}
+#page-ospite .room-row{
+  align-items: flex-start !important;
+  align-self: flex-start !important;
+}
+#page-ospite .room-row > .room-dot-badge,
+#page-ospite .room-row > .bed-dots{
+  align-self: flex-start !important;
+  margin-top: 0 !important;
+}
+#page-ospite .room-row > .bed-dots{
+  justify-content: flex-start !important;
+}

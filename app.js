@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.079
+ * Build: 3.080
  */
-const BUILD_VERSION = "3.079";
+const BUILD_VERSION = "3.080";
 
-/* dDAE_3.079 — Tag Calendario collegati al Design + LED Lista spesa navigabile */
+/* dDAE_3.080 — Tag Calendario collegati al Design + LED Lista spesa navigabile */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -18400,7 +18400,7 @@ if (guestScrollTodayBtn){
     bindFastTap(goCol, () => { hideLauncher(); showPage("prodotti"); });
   }
 
-  // dDAE_3.079 — Il LED "Lista spesa" apre direttamente la relativa pagina.
+  // dDAE_3.080 — Il LED "Lista spesa" apre direttamente la relativa pagina.
   const shoppingLed = $("#prodLedColazione");
   if (shoppingLed && !shoppingLed.__shoppingPageBound){
     shoppingLed.__shoppingPageBound = true;
@@ -43329,7 +43329,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.079';
+  var BUILD_TAG='dDAE_3.080';
   var busy=false;
   var lastStart=0;
   var active=null;
