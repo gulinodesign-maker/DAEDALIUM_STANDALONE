@@ -30156,3 +30156,15 @@ body.ddae-dark .room-kind-badge{
 #page-ospite .is-locale-exempt{
   display:none !important;
 }
+
+
+/* dDAE_3.082 — Locale evento: selezione di una sola giornata, senza check-out */
+#guestDateRangeModal.is-locale-single-day .guest-date-range-top-fields{
+  grid-template-columns:minmax(0,1fr) !important;
+}
+#guestDateRangeModal.is-locale-single-day .guest-date-range-top-field.is-end{
+  display:none !important;
+}
+#guestDateRangeModal.is-locale-single-day .guest-date-range-top-field.is-start{
+  width:100% !important;
+}
