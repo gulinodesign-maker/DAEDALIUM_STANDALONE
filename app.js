@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.075
+ * Build: 3.076
  */
-const BUILD_VERSION = "3.075";
+const BUILD_VERSION = "3.076";
 
-/* dDAE_3.075 — Alert generico ospite con testo libero */
+/* dDAE_3.076 — Prenotazioni svincolate dall’anno impostato in creazione */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -4665,6 +4665,18 @@ function __applyExerciseYearChange__(nextYear){
     if (y){
       setPresetValue("ytd");
       setPeriod(`${y}-01-01`, `${y}-12-31`);
+      try{
+        if (!state.calendar) state.calendar = { anchor:new Date(Number(y), 0, 1), ready:false, guests:[], rangeKey:"" };
+        const oldAnchor = state.calendar.anchor ? new Date(state.calendar.anchor) : new Date();
+        const month = Number.isFinite(oldAnchor.getMonth()) ? oldAnchor.getMonth() : 0;
+        const day = Number.isFinite(oldAnchor.getDate()) ? oldAnchor.getDate() : 1;
+        const nextAnchor = new Date(Number(y), month, Math.min(day, 28));
+        nextAnchor.setHours(0,0,0,0);
+        state.calendar.anchor = nextAnchor;
+        state.calendar.selectedDateISO = isoDate(nextAnchor);
+        state.calendar.ready = false;
+        state.calendar.rangeKey = "";
+      }catch(_){ }
     }
   }catch(_){ }
   invalidateApiCache();
@@ -10563,8 +10575,12 @@ async function api(action, { method="GET", params={}, body=null, showLoader=true
       if (params.user_id === undefined || params.user_id === null || String(params.user_id).trim() === "") {
         params.user_id = String(state.session.user_id);
       }
-      if (!__globalChannelCatalogRequest && (params.anno === undefined || params.anno === null || String(params.anno).trim() === "")) {
-        params.anno = String(state.exerciseYear || new Date().getFullYear());
+      if (__apiUsesExerciseYear__(action)){
+        if (!__globalChannelCatalogRequest && (params.anno === undefined || params.anno === null || String(params.anno).trim() === "")) {
+          params.anno = String(state.exerciseYear || new Date().getFullYear());
+        }
+      } else {
+        try{ delete params.anno; delete params.year; }catch(_){ }
       }
     }
   }catch(_){ }
@@ -10601,8 +10617,12 @@ async function api(action, { method="GET", params={}, body=null, showLoader=true
           if (!o || typeof o !== "object") return o;
           __stripGlobalChannelCatalogMarker__(o);
           if (o.user_id === undefined || o.user_id === null || String(o.user_id).trim() === "") o.user_id = uid;
-          if (!__globalChannelCatalogRequest && (o.anno === undefined || o.anno === null || String(o.anno).trim() === "")) o.anno = yr;
-          else if (__globalChannelCatalogRequest) { try{ delete o.anno; delete o.year; }catch(_){} }
+          if (__apiUsesExerciseYear__(action)){
+            if (!__globalChannelCatalogRequest && (o.anno === undefined || o.anno === null || String(o.anno).trim() === "")) o.anno = yr;
+            else if (__globalChannelCatalogRequest) { try{ delete o.anno; delete o.year; }catch(_){} }
+          } else if (__globalChannelCatalogRequest) {
+            try{ delete o.anno; delete o.year; }catch(_){}
+          }
           return o;
         };
 
@@ -16450,8 +16470,12 @@ function __applyCtxToParams(action, params){
       if (p.user_id === undefined || p.user_id === null || String(p.user_id).trim() === "") {
         p.user_id = String(state.session.user_id);
       }
-      if (!__globalChannelCatalogRequest && (p.anno === undefined || p.anno === null || String(p.anno).trim() === "")) {
-        p.anno = String(state.exerciseYear || "");
+      if (__apiUsesExerciseYear__(action)){
+        if (!__globalChannelCatalogRequest && (p.anno === undefined || p.anno === null || String(p.anno).trim() === "")) {
+          p.anno = String(state.exerciseYear || "");
+        }
+      } else {
+        try{ delete p.anno; delete p.year; }catch(_){ }
       }
     }
   }catch(_){ }
@@ -16639,6 +16663,59 @@ function __filterByExerciseYear__(rows, year, candidateFields){
     });
   }catch(_){ }
   return Array.isArray(rows) ? rows : [];
+}
+
+function __guestBookingDateField__(g, kind){
+  try{
+    if (!g || typeof g !== "object") return "";
+    if (kind === "out") return g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? g?.dataPartenza ?? g?.partenza ?? g?.departure ?? g?.guestCheckOut ?? "";
+    return g?.check_in ?? g?.checkIn ?? g?.checkin ?? g?.arrivo ?? g?.dataArrivo ?? g?.arrival ?? g?.guestCheckIn ?? "";
+  }catch(_){ return ""; }
+}
+
+function __guestBookingYearFromDates__(g, fallbackYear){
+  try{
+    const inIso = formatISODateLocal(__guestBookingDateField__(g, "in"));
+    const outIso = formatISODateLocal(__guestBookingDateField__(g, "out"));
+    if (inIso && /^[0-9]{4}/.test(inIso)) return String(inIso.slice(0,4));
+    if (outIso && /^[0-9]{4}/.test(outIso)) return String(outIso.slice(0,4));
+  }catch(_){ }
+  try{
+    const y = String(fallbackYear || (state && state.exerciseYear) || loadExerciseYear() || new Date().getFullYear()).trim();
+    if (/^[0-9]{4}$/.test(y)) return y;
+  }catch(_){ }
+  return String(new Date().getFullYear());
+}
+
+function __guestOverlapsExerciseYear__(g, year){
+  try{
+    const y = String(year || state?.exerciseYear || loadExerciseYear() || "").trim();
+    if (!y || !/^[0-9]{4}$/.test(y)) return true;
+    const from = `${y}-01-01`;
+    const toEx = `${Number(y) + 1}-01-01`;
+    const ci = formatISODateLocal(__guestBookingDateField__(g, "in"));
+    const coRaw = formatISODateLocal(__guestBookingDateField__(g, "out"));
+    if (!ci && !coRaw) return false;
+    const co = coRaw || ci;
+    if (ci && co && co > ci) return ci < toEx && co > from;
+    const d = ci || co;
+    return d >= from && d < toEx;
+  }catch(_){ return true; }
+}
+
+function __filterGuestsByExerciseYear__(rows, year){
+  try{
+    const list = Array.isArray(rows) ? rows : [];
+    return list.filter(r => __guestOverlapsExerciseYear__(r, year));
+  }catch(_){ return Array.isArray(rows) ? rows : []; }
+}
+
+function __apiUsesExerciseYear__(action){
+  try{
+    const a = String(action || "").trim().toLowerCase();
+    if (["ospiti","ospiti_eliminati","stanze","servizi"].includes(a)) return false;
+  }catch(_){ }
+  return true;
 }
 
 function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
@@ -19195,10 +19272,7 @@ async function loadOspiti({ from="", to="", force=false } = {}){
         // aggiorna solo se l'utente è ancora nella lista ospiti
         if (state.page !== "ospiti") return;
         const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
-          "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-          "createdAt","created_at","updatedAt","updated_at"
-        ]);
+        const next = __filterGuestsByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear());
         // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
         if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
           state.guests = next;
@@ -19219,10 +19293,7 @@ async function loadOspiti({ from="", to="", force=false } = {}){
 
   const [ , data ] = await Promise.all([p, refresh()]);
   const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear(), [
-          "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-          "createdAt","created_at","updatedAt","updated_at"
-        ]);
+        const next = __filterGuestsByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear());
   // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
   if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
     state.guests = next;
@@ -19343,10 +19414,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
       state.reportAll = hitR.data;
     }
     if (hitG && Array.isArray(hitG.data)) {
-      state.statsGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(hitG.data, state.exerciseYear || loadExerciseYear(), [
-        "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-        "createdAt","created_at","updatedAt","updated_at"
-      ]), false);
+      state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(hitG.data, state.exerciseYear || loadExerciseYear()), false);
     }
     if (hasLocal) state._statsDataKey = key;
   }
@@ -19368,10 +19436,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
         state._statsDataKey = key;
         __lsSet(lsReportKey, state.reportAll);
         __lsSet(lsSpeseKey, state.speseAll);
-        state.statsGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear(), [
-          "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-          "createdAt","created_at","updatedAt","updated_at"
-        ]), false);
+        state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear()), false);
         __lsSet(lsGuestsKey, state.statsGuests);
 
         try{
@@ -19395,10 +19460,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
   state._statsDataKey = key;
   __lsSet(lsReportKey, state.reportAll);
   __lsSet(lsSpeseKey, state.speseAll);
-  state.statsGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear(), [
-    "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-    "createdAt","created_at","updatedAt","updated_at"
-  ]), false);
+  state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear()), false);
   __lsSet(lsGuestsKey, state.statsGuests);
 }
 
@@ -30514,7 +30576,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.075: alert generico non legato alle ricevute */
+  /* dDAE_3.076: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -30564,6 +30626,10 @@ if (!name) return toast("Inserisci il nome");
     bambini_u10: kidsU10,
     check_in: checkIn,
     check_out: checkOut,
+    anno: __guestBookingYearFromDates__({ check_in: checkIn, check_out: checkOut }, state.exerciseYear),
+    year: __guestBookingYearFromDates__({ check_in: checkIn, check_out: checkOut }, state.exerciseYear),
+    anno_prenotazione: __guestBookingYearFromDates__({ check_in: checkIn, check_out: checkOut }, state.exerciseYear),
+    booking_year: __guestBookingYearFromDates__({ check_in: checkIn, check_out: checkOut }, state.exerciseYear),
     importo_prenotazione: total,
     channel_id: channelItem ? String(channelItem.id) : "",
     channel_nome: channelItem ? String(channelItem.nome) : "",
@@ -30667,13 +30733,13 @@ if (!name) return toast("Inserisci il nome");
 
   // stanze: backend gestisce POST e sovrascrive (deleteWhere + append)
   if (shouldSave){
-    try { await api("stanze", { method:"POST", body: { ospite_id: ospiteId, stanze: stanzeSnap } }); } catch (_) {}
+    try { await api("stanze", { method:"POST", body: { ospite_id: ospiteId, stanze: stanzeSnap, anno: payload.anno, year: payload.year } }); } catch (_) {}
   }
 
   // servizi: salva elenco (se presente)
   try{
     if (Array.isArray(state.guestServicesItems) && state.guestServicesItems.length){
-      await api("servizi", { method:"POST", body: { ospite_id: ospiteId, servizi: (state.guestServicesItems||[]).filter(s=>!(String(s?.isDeleted||s?.deleted||"" )==="1"||s?.isDeleted===true||s?.deleted===true)).map(s=>({ servizio:String(s.servizio??s.name??"").trim(), descrizione:String(s.descrizione??s.desc??"").trim(), importo: parseFloat(s.importo??s.amount??0)||0, qty: parseFloat(s.qty??1)||1 })) } });
+      await api("servizi", { method:"POST", body: { ospite_id: ospiteId, anno: payload.anno, year: payload.year, servizi: (state.guestServicesItems||[]).filter(s=>!(String(s?.isDeleted||s?.deleted||"" )==="1"||s?.isDeleted===true||s?.deleted===true)).map(s=>({ servizio:String(s.servizio??s.name??"").trim(), descrizione:String(s.descrizione??s.desc??"").trim(), importo: parseFloat(s.importo??s.amount??0)||0, qty: parseFloat(s.qty??1)||1 })) } });
     }
   }catch(_){ }
 
@@ -32698,10 +32764,7 @@ function renderGuestCards(){
   // Filtro per anno di esercizio (obbligatorio, anche per la guest list)
   try{
     const y = state.exerciseYear || loadExerciseYear();
-    items = __filterByExerciseYear__(items, y, [
-      "check_in","checkIn","arrivo","dataArrivo","check_out","checkOut","partenza","dataPartenza",
-      "createdAt","created_at","updatedAt","updated_at"
-    ]);
+    items = __filterGuestsByExerciseYear__(items, y);
   }catch(_){ }
 
   // Preventivi: di default nascosti dalla guest list; il tasto dedicato mostra solo preventivi.
@@ -36768,7 +36831,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.075 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.076 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -42950,7 +43013,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.075';
+  var BUILD_TAG='dDAE_3.076';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46746,7 +46809,7 @@ try{
 })();
 
 
-/* dDAE_3.075 — Alert generico ospite con testo libero */
+/* dDAE_3.076 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
@@ -47033,4 +47096,4 @@ try{
 })();
 
 
-/* dDAE_3.075 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+/* dDAE_3.076 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
