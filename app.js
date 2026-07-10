@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.077
+ * Build: 3.078
  */
-const BUILD_VERSION = "3.077";
+const BUILD_VERSION = "3.078";
 
-/* dDAE_3.077 — Prenotazioni svincolate dall’anno impostato in creazione */
+/* dDAE_3.078 — Prenotazioni svincolate dall’anno impostato in creazione */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -479,9 +479,23 @@ function __tblKey__(name){
   return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
+// dDAE_3.078 — Le tabelle collegate alle prenotazioni sono logicamente indipendenti
+// dall'anno attivo. I dati restano compatibili con le chiavi storiche per anno,
+// ma ogni lettura unisce tutti gli anni dello stesso account e ogni scrittura
+// mantiene allineate le copie esistenti. La sincronizzazione continua a usare
+// gli stessi nomi tabella e le stesse funzioni __tblGet__/__tblSet__.
+const __YEAR_INDEPENDENT_LOCAL_TABLES__ = new Set(["ospiti", "ospiti_eliminati", "stanze", "servizi"]);
+
+function __isYearIndependentLocalTable__(name){
+  try{ return __YEAR_INDEPENDENT_LOCAL_TABLES__.has(String(name || '').trim().toLowerCase()); }
+  catch(_){ return false; }
+}
+
 function __tableDateFieldsForYear__(name){
   const t = String(name || '').trim().toLowerCase();
-  if (t === 'ospiti' || t === 'ospiti_eliminati') return ['check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza','createdAt','created_at','updatedAt','updated_at'];
+  // Per le prenotazioni contano esclusivamente le date reali del soggiorno.
+  // createdAt/updatedAt e i vecchi campi anno non devono stabilire l'appartenenza.
+  if (t === 'ospiti' || t === 'ospiti_eliminati') return ['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal','check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al'];
   if (t === 'spese') return ['dataSpesa','data','data_spesa','createdAt','created_at','updatedAt','updated_at'];
   if (t === 'pulizie' || t === 'operatori') return ['data','giorno','date','createdAt','created_at','updatedAt','updated_at'];
   if (t === 'lavanderia') return ['data','mese_data','createdAt','created_at','updatedAt','updated_at'];
@@ -508,12 +522,16 @@ function __rowYearsForTable__(row, table){
   const out = new Set();
   try{
     if (!row || typeof row !== 'object') return out;
-    ['anno','year','esercizio'].forEach((f)=>{
-      try{
-        const y = String(row[f] ?? '').trim();
-        if (/^[0-9]{4}$/.test(y)) out.add(y);
-      }catch(_){ }
-    });
+    const t = String(table || '').trim().toLowerCase();
+    // I campi anno storici sono ignorati per ospiti: prevalgono sempre check-in/out.
+    if (t !== 'ospiti' && t !== 'ospiti_eliminati'){
+      ['anno','year','esercizio'].forEach((f)=>{
+        try{
+          const y = String(row[f] ?? '').trim();
+          if (/^[0-9]{4}$/.test(y)) out.add(y);
+        }catch(_){ }
+      });
+    }
     const fields = __tableDateFieldsForYear__(table);
     fields.forEach((f)=>{
       try{
@@ -525,6 +543,37 @@ function __rowYearsForTable__(row, table){
   return out;
 }
 
+function __bookingYearsFromRealDates__(row){
+  const out = new Set();
+  try{
+    const first = (keys)=>{
+      for (const k of keys){
+        const v = row && row[k];
+        if (v !== undefined && v !== null && String(v).trim()) return v;
+      }
+      return '';
+    };
+    const ci = __normIsoDate__(first(['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal']));
+    const co = __normIsoDate__(first(['check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al']));
+    const start = /^\d{4}-\d{2}-\d{2}$/.test(ci) ? ci : (/^\d{4}-\d{2}-\d{2}$/.test(co) ? co : '');
+    if (!start) return out;
+    let endInclusive = start;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(co) && co > start){
+      const d = new Date(`${co}T00:00:00Z`);
+      if (!isNaN(d.getTime())){
+        d.setUTCDate(d.getUTCDate() - 1);
+        endInclusive = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+      }
+    }
+    const y0 = Number(start.slice(0,4));
+    const y1 = Number(endInclusive.slice(0,4));
+    if (Number.isFinite(y0) && Number.isFinite(y1)){
+      for (let y = Math.max(2000, Math.min(y0,y1)); y <= Math.min(2100, Math.max(y0,y1)); y++) out.add(String(y));
+    }
+  }catch(_){ }
+  return out;
+}
+
 function __tableRowsForYear__(rows, table, year){
   try{
     const yy = String(year || '').trim();
@@ -532,6 +581,9 @@ function __tableRowsForYear__(rows, table, year){
     if (!/^[0-9]{4}$/.test(yy)) return [];
     const t = String(table || '').trim().toLowerCase();
     if (t === 'impostazioni') return list.slice();
+    if (t === 'ospiti' || t === 'ospiti_eliminati'){
+      return list.filter((row)=>__bookingYearsFromRealDates__(row).has(yy));
+    }
     return list.filter((row)=>{
       try{
         const yrs = __rowYearsForTable__(row, table);
@@ -558,11 +610,188 @@ function __dedupeRowsForBackupYear__(rows){
   }catch(_){ return Array.isArray(rows) ? rows : []; }
 }
 
+function __yearIndependentRowKey__(row, table, index){
+  try{
+    const t = String(table || '').trim().toLowerCase();
+    let id = String(row?.id ?? row?.ID ?? row?.uid ?? '').trim();
+    if (!id && (t === 'ospiti' || t === 'ospiti_eliminati')) id = String(row?.guest_id ?? row?.ospite_id ?? '').trim();
+    if (t === 'stanze'){
+      const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
+      const room = String(row?.stanza_num ?? row?.stanzaNum ?? row?.room_number ?? row?.roomNumber ?? row?.stanza ?? row?.room ?? '').trim();
+      if (gid && room) return `room:${gid}|${room}`;
+    }
+    if (id) return `id:${id}`;
+    if (t === 'servizi'){
+      const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
+      const service = String(row?.servizio ?? row?.name ?? row?.nome ?? '').trim().toLowerCase();
+      const desc = String(row?.descrizione ?? row?.desc ?? '').trim().toLowerCase();
+      if (gid || service || desc) return `service:${gid}|${service}|${desc}|${String(row?.importo ?? row?.amount ?? '')}`;
+    }
+    if (t === 'ospiti' || t === 'ospiti_eliminati'){
+      const name = String(row?.nome ?? row?.name ?? '').trim().toLowerCase();
+      const ci = __normIsoDate__(row?.check_in ?? row?.checkIn ?? row?.arrivo ?? row?.dataArrivo ?? '');
+      const co = __normIsoDate__(row?.check_out ?? row?.checkOut ?? row?.partenza ?? row?.dataPartenza ?? '');
+      const rooms = String(row?.stanze ?? row?.rooms ?? row?.stanza ?? row?.room ?? '').trim();
+      if (name || ci || co || rooms) return `guest:${name}|${ci}|${co}|${rooms}`;
+    }
+    try{ return `raw:${JSON.stringify(row)}`; }catch(_){ return `idx:${index}`; }
+  }catch(_){ return `idx:${index}`; }
+}
+
+function __yearIndependentRowTimestamp__(row){
+  try{ return String(row?.deletedAt ?? row?.deleted_at ?? row?.updatedAt ?? row?.updated_at ?? row?.createdAt ?? row?.created_at ?? ''); }
+  catch(_){ return ''; }
+}
+
+function __mergeYearIndependentRows__(table, sources){
+  const map = new Map();
+  try{
+    (Array.isArray(sources) ? sources : []).forEach((rows)=>{
+      (Array.isArray(rows) ? rows : []).forEach((row, index)=>{
+        if (!row || typeof row !== 'object') return;
+        const key = __yearIndependentRowKey__(row, table, index);
+        const prev = map.get(key);
+        if (!prev){ map.set(key, row); return; }
+        const tp = __yearIndependentRowTimestamp__(prev);
+        const tn = __yearIndependentRowTimestamp__(row);
+        if (!tp || (tn && tn >= tp)) map.set(key, Object.assign({}, prev, row));
+        else map.set(key, Object.assign({}, row, prev));
+      });
+    });
+  }catch(_){ }
+  return Array.from(map.values());
+}
+
+function __relationGuestId__(row){
+  try{ return String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim(); }
+  catch(_){ return ''; }
+}
+
+function __guestYearsIndex__(guestRows){
+  const map = new Map();
+  try{
+    (Array.isArray(guestRows) ? guestRows : []).forEach((guest)=>{
+      const id = String(guest?.id ?? guest?.ID ?? guest?.uid ?? guest?.guest_id ?? guest?.ospite_id ?? '').trim();
+      if (!id) return;
+      map.set(id, __bookingYearsFromRealDates__(guest));
+    });
+  }catch(_){ }
+  return map;
+}
+
+function __rowYearsForYearIndependentMirror__(row, table, guestYears){
+  const out = new Set();
+  try{
+    const t = String(table || '').trim().toLowerCase();
+    if (t === 'ospiti' || t === 'ospiti_eliminati') return __bookingYearsFromRealDates__(row);
+    const gid = __relationGuestId__(row);
+    if (gid && guestYears instanceof Map && guestYears.has(gid)){
+      guestYears.get(gid).forEach((year)=>out.add(year));
+    }
+    ['anno','year','booking_year','anno_prenotazione'].forEach((f)=>{
+      const y = String(row?.[f] ?? '').trim();
+      if (/^[0-9]{4}$/.test(y)) out.add(y);
+    });
+  }catch(_){ }
+  return out;
+}
+
+function __rowsForYearIndependentMirror__(rows, table, year, guestRows){
+  try{
+    const yy = String(year || '').trim();
+    if (!/^\d{4}$/.test(yy)) return [];
+    const t = String(table || '').trim().toLowerCase();
+    const list = Array.isArray(rows) ? rows : [];
+    if (t === 'ospiti' || t === 'ospiti_eliminati') return __tableRowsForYear__(list, t, yy);
+    const guestYears = __guestYearsIndex__(guestRows);
+    return list.filter((row)=>{
+      const years = __rowYearsForYearIndependentMirror__(row, t, guestYears);
+      if (years.size) return years.has(yy);
+      // Riga relazionale storica senza anno: resta nel contesto corrente finché
+      // non viene associata a una prenotazione con date valide.
+      return yy === String(__ctxYear__());
+    });
+  }catch(_){ return []; }
+}
+
+async function __yearIndependentTableKeys__(name, data, guestRows){
+  const table = String(name || '').trim().toLowerCase();
+  const uid = String(__ctxUid__() || '').trim();
+  const suffix = `:tbl:${table}`;
+  const prefix = `ctx:${uid}:`;
+  const out = new Set([`ctx:${uid}:${__ctxYear__()}:tbl:${table}`]);
+  try{
+    const keys = await __kvKeys__(prefix);
+    (Array.isArray(keys) ? keys : []).forEach((key)=>{
+      const k = String(key || '');
+      if (!k.startsWith(prefix) || !k.endsWith(suffix)) return;
+      const middle = k.slice(prefix.length, k.length - suffix.length);
+      if (/^[0-9]{4}$/.test(middle)) out.add(k);
+    });
+  }catch(_){ }
+  try{
+    const guestYears = __guestYearsIndex__(guestRows);
+    (Array.isArray(data) ? data : []).forEach((row)=>{
+      const years = __rowYearsForYearIndependentMirror__(row, table, guestYears);
+      years.forEach((year)=>out.add(`ctx:${uid}:${year}:tbl:${table}`));
+    });
+  }catch(_){ }
+  return Array.from(out);
+}
+
+function __yearFromYearIndependentKey__(key, table){
+  try{
+    const uid = String(__ctxUid__() || '').trim();
+    const prefix = `ctx:${uid}:`;
+    const suffix = `:tbl:${String(table || '').trim().toLowerCase()}`;
+    const k = String(key || '');
+    if (!k.startsWith(prefix) || !k.endsWith(suffix)) return '';
+    const year = k.slice(prefix.length, k.length - suffix.length);
+    return /^\d{4}$/.test(year) ? year : '';
+  }catch(_){ return ''; }
+}
+
+async function __writeYearIndependentMirrors__(table, rows, guestRows){
+  try{
+    const keys = await __yearIndependentTableKeys__(table, rows, guestRows);
+    const writes = keys.map((key)=>{
+      const year = __yearFromYearIndependentKey__(key, table);
+      const subset = __rowsForYearIndependentMirror__(rows, table, year, guestRows);
+      return __kvSet__(key, subset);
+    });
+    const results = await Promise.all(writes);
+    return results.every(Boolean);
+  }catch(_){ return false; }
+}
+
+async function __readYearIndependentTable__(name, fallback){
+  try{
+    const table = String(name || '').trim().toLowerCase();
+    const keys = await __yearIndependentTableKeys__(table);
+    const sources = [];
+    let found = false;
+    for (const key of keys){
+      const val = await __kvGet__(key);
+      if (Array.isArray(val)){ sources.push(val); found = true; }
+    }
+    if (!found) return fallback;
+    const merged = __mergeYearIndependentRows__(table, sources);
+    let guestRows = [];
+    if (table === 'stanze' || table === 'servizi'){
+      try{ guestRows = await __readYearIndependentTable__('ospiti', []); }catch(_){ guestRows = []; }
+    }
+    // Normalizza le vecchie copie annuali: ogni anno contiene solo le righe che
+    // gli appartengono secondo le date reali, mentre __tblGet__ restituisce l'unione.
+    try{ await __writeYearIndependentMirrors__(table, merged, guestRows); }catch(_){ }
+    return merged;
+  }catch(_){ return fallback; }
+}
+
 async function __repairTableYearFromOtherContexts__(name, year){
   try{
     const table = String(name || '').trim();
     const yy = String(year || __ctxYear__() || '').trim();
-    if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti') return null;
+    if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti' || __isYearIndependentLocalTable__(table)) return null;
     if (typeof __kvKeys__ !== 'function' || typeof __kvGet__ !== 'function' || typeof __kvSet__ !== 'function') return null;
     const uid = String(__ctxUid__() || '').trim();
     const targetKey = `ctx:${uid}:${yy}:tbl:${table}`;
@@ -596,6 +825,7 @@ async function __repairTableYearFromOtherContexts__(name, year){
 }
 
 async function __tblGet__(name, fallback){
+  if (__isYearIndependentLocalTable__(name)) return await __readYearIndependentTable__(name, fallback);
   const v = await __kvGet__(__tblKey__(name));
   if (v === null || v === undefined){
     try{
@@ -608,10 +838,27 @@ async function __tblGet__(name, fallback){
 }
 
 async function __tblSet__(name, data){
+  if (__isYearIndependentLocalTable__(name)){
+    try{
+      const table = String(name || '').trim().toLowerCase();
+      let guestRows = [];
+      if (table === 'stanze' || table === 'servizi'){
+        try{ guestRows = await __readYearIndependentTable__('ospiti', []); }catch(_){ guestRows = []; }
+      }
+      return await __writeYearIndependentMirrors__(table, Array.isArray(data) ? data : [], guestRows);
+    }catch(_){ return false; }
+  }
   return __kvSet__(__tblKey__(name), data);
 }
 
 async function __tblDel__(name){
+  if (__isYearIndependentLocalTable__(name)){
+    try{
+      const keys = await __yearIndependentTableKeys__(name);
+      const results = await Promise.all(keys.map((key)=>__kvDel__(key)));
+      return results.every(Boolean);
+    }catch(_){ return false; }
+  }
   return __kvDel__(__tblKey__(name));
 }
 
@@ -4665,18 +4912,18 @@ function __applyExerciseYearChange__(nextYear){
     if (y){
       setPresetValue("ytd");
       setPeriod(`${y}-01-01`, `${y}-12-31`);
-      // dDAE_3.077: il filtro anno delle Impostazioni deve influenzare la Guest List,
+      // dDAE_3.078: il filtro anno delle Impostazioni deve influenzare la Guest List,
       // non il Calendario. Non spostare l'anchor del calendario quando cambia l'anno.
     }
   }catch(_){ }
   invalidateApiCache();
   try{ refreshHome(); }catch(_){ }
   try{ if (state.page==="spese") ensurePeriodData({showLoader:true,force:true}).then(()=>{ try{ renderSpese(); }catch(_){ } }); }catch(_){ }
-  try{ if (state.page==="ospiti") ensureGuestsForPeriod(true); }catch(_){ }
+  try{ if (state.page==="ospiti") loadOspiti({ ...(state.period || {}), force:true }).catch(()=>{}); }catch(_){ }
   try{ if (state.page==="statistiche") loadStatistichePage({ force:true }); }catch(_){ }
   try{ if (state.page==="pulizie") loadPuliziePage(); }catch(_){ }
   try{ if (state.page==="lavanderia") loadLavanderiaPage(); }catch(_){ }
-  // dDAE_3.077: cambio anno impostazioni indipendente dal Calendario.
+  // dDAE_3.078: cambio anno impostazioni indipendente dal Calendario.
   try{ updateSettingsAccountName(); }catch(_){ }
   return true;
 }
@@ -16658,8 +16905,7 @@ function __filterByExerciseYear__(rows, year, candidateFields){
 function __guestBookingDateField__(g, kind){
   try{
     if (!g || typeof g !== "object") return "";
-    if (kind === "out") return g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? g?.dataPartenza ?? g?.partenza ?? g?.departure ?? g?.guestCheckOut ?? "";
-    return g?.check_in ?? g?.checkIn ?? g?.checkin ?? g?.arrivo ?? g?.dataArrivo ?? g?.arrival ?? g?.guestCheckIn ?? "";
+    return kind === "out" ? __guestCheckOutRaw__(g) : __guestCheckInRaw__(g);
   }catch(_){ return ""; }
 }
 
@@ -19283,7 +19529,7 @@ async function load({ showLoader=true } = {}){
 }
 
 async function loadOspiti({ from="", to="", force=false } = {}){
-  // dDAE_3.077 — Guest List: le prenotazioni non devono dipendere dall'anno salvato
+  // dDAE_3.078 — Guest List: le prenotazioni non devono dipendere dall'anno salvato
   // al momento della creazione né dal filtro server. Legge il dataset completo e poi
   // filtra lato client usando solo le date reali check-in / check-out.
   const selectedYear = String(state.exerciseYear || loadExerciseYear() || '').trim();
@@ -30614,7 +30860,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.077: alert generico non legato alle ricevute */
+  /* dDAE_3.078: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -36869,7 +37115,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.077 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.078 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -43061,7 +43307,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.077';
+  var BUILD_TAG='dDAE_3.078';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46857,7 +47103,7 @@ try{
 })();
 
 
-/* dDAE_3.077 — Alert generico ospite con testo libero */
+/* dDAE_3.078 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
@@ -47144,4 +47390,4 @@ try{
 })();
 
 
-/* dDAE_3.077 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+/* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
