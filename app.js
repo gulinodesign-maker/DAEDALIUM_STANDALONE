@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.076
+ * Build: 3.077
  */
-const BUILD_VERSION = "3.076";
+const BUILD_VERSION = "3.077";
 
-/* dDAE_3.076 — Prenotazioni svincolate dall’anno impostato in creazione */
+/* dDAE_3.077 — Prenotazioni svincolate dall’anno impostato in creazione */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -4665,18 +4665,8 @@ function __applyExerciseYearChange__(nextYear){
     if (y){
       setPresetValue("ytd");
       setPeriod(`${y}-01-01`, `${y}-12-31`);
-      try{
-        if (!state.calendar) state.calendar = { anchor:new Date(Number(y), 0, 1), ready:false, guests:[], rangeKey:"" };
-        const oldAnchor = state.calendar.anchor ? new Date(state.calendar.anchor) : new Date();
-        const month = Number.isFinite(oldAnchor.getMonth()) ? oldAnchor.getMonth() : 0;
-        const day = Number.isFinite(oldAnchor.getDate()) ? oldAnchor.getDate() : 1;
-        const nextAnchor = new Date(Number(y), month, Math.min(day, 28));
-        nextAnchor.setHours(0,0,0,0);
-        state.calendar.anchor = nextAnchor;
-        state.calendar.selectedDateISO = isoDate(nextAnchor);
-        state.calendar.ready = false;
-        state.calendar.rangeKey = "";
-      }catch(_){ }
+      // dDAE_3.077: il filtro anno delle Impostazioni deve influenzare la Guest List,
+      // non il Calendario. Non spostare l'anchor del calendario quando cambia l'anno.
     }
   }catch(_){ }
   invalidateApiCache();
@@ -4686,7 +4676,7 @@ function __applyExerciseYearChange__(nextYear){
   try{ if (state.page==="statistiche") loadStatistichePage({ force:true }); }catch(_){ }
   try{ if (state.page==="pulizie") loadPuliziePage(); }catch(_){ }
   try{ if (state.page==="lavanderia") loadLavanderiaPage(); }catch(_){ }
-  try{ if (state.page==="calendario") renderCalendar(); }catch(_){ }
+  // dDAE_3.077: cambio anno impostazioni indipendente dal Calendario.
   try{ updateSettingsAccountName(); }catch(_){ }
   return true;
 }
@@ -16710,6 +16700,58 @@ function __filterGuestsByExerciseYear__(rows, year){
   }catch(_){ return Array.isArray(rows) ? rows : []; }
 }
 
+
+function __guestRowsMergeByStableId__(...sources){
+  const out = [];
+  const seen = new Set();
+  const keyOf = (r, idx) => {
+    try{
+      const id = String(guestIdOf(r) || r?.id || r?.ID || r?.ospite_id || r?.guest_id || '').trim();
+      if (id) return `id:${id}`;
+      const ci = formatISODateLocal(__guestBookingDateField__(r, 'in')) || '';
+      const co = formatISODateLocal(__guestBookingDateField__(r, 'out')) || '';
+      const nm = normalizeGuestNameKey(String(r?.nome ?? r?.name ?? '').trim());
+      const rooms = String(r?.stanze ?? r?.rooms ?? r?.stanza ?? r?.room ?? '').trim();
+      return `raw:${nm}|${ci}|${co}|${rooms}|${idx}`;
+    }catch(_){ return `idx:${idx}`; }
+  };
+  try{
+    (sources || []).forEach((src) => {
+      (Array.isArray(src) ? src : []).forEach((row, idx) => {
+        if (!row || typeof row !== 'object') return;
+        const k = keyOf(row, idx);
+        if (seen.has(k)) return;
+        seen.add(k);
+        out.push(row);
+      });
+    });
+  }catch(_){ }
+  return out;
+}
+
+function __filterGuestsByRealDateRange__(rows, fromISO, toISO){
+  try{
+    const list = Array.isArray(rows) ? rows : [];
+    const from = formatISODateLocal(fromISO) || String(fromISO || '').trim();
+    const to = formatISODateLocal(toISO) || String(toISO || '').trim();
+    if (!from && !to) return list.slice();
+    return list.filter(r => __overlapRange__(__guestBookingDateField__(r, 'in'), __guestBookingDateField__(r, 'out'), from, to));
+  }catch(_){ return Array.isArray(rows) ? rows : []; }
+}
+
+async function __readAllOspitiRowsForGuestYear__({ force = false, showLoader = false } = {}){
+  let allRows = [];
+  try{
+    const data = await cachedGet('ospiti', {}, { showLoader, ttlMs: 60*1000, swrMs: 5*60*1000, force });
+    if (Array.isArray(data)) allRows = data;
+  }catch(_){ }
+  try{
+    const localRows = await __tblGet__('ospiti', []);
+    if (Array.isArray(localRows) && localRows.length) allRows = __guestRowsMergeByStableId__(allRows, localRows);
+  }catch(_){ }
+  return Array.isArray(allRows) ? allRows : [];
+}
+
 function __apiUsesExerciseYear__(action){
   try{
     const a = String(action || "").trim().toLowerCase();
@@ -19241,12 +19283,14 @@ async function load({ showLoader=true } = {}){
 }
 
 async function loadOspiti({ from="", to="", force=false } = {}){
-  // Prefill rapido da cache locale (poi refresh in background)
-  const lsKey = `ospiti|${from}|${to}`;
-  const hit = __lsGet(lsKey);
+  // dDAE_3.077 — Guest List: le prenotazioni non devono dipendere dall'anno salvato
+  // al momento della creazione né dal filtro server. Legge il dataset completo e poi
+  // filtra lato client usando solo le date reali check-in / check-out.
+  const selectedYear = String(state.exerciseYear || loadExerciseYear() || '').trim();
+  const lsKey = `ospiti|ALL|guestlist`;
+  const hit = !force ? __lsGet(lsKey) : null;
   if (hit && Array.isArray(hit.data) && hit.data.length){
-    state.guests = hit.data;
-    // render subito (perceived speed)
+    state.guests = __filterGuestsByExerciseYear__(hit.data, selectedYear);
     try{ requestAnimationFrame(renderGuestCards); } catch(_){ renderGuestCards(); }
   }
 
@@ -19254,29 +19298,26 @@ async function loadOspiti({ from="", to="", force=false } = {}){
   const p = load({ showLoader:false });
   const hasLocal = !!(hit && Array.isArray(hit.data) && hit.data.length);
 
-  // Se ho già dati locali, aggiorna in background (senza loader e senza bloccare la navigazione)
   const refresh = async () => {
-    const data = await cachedGet("ospiti", { from, to }, {
-      showLoader: !hasLocal,
-      ttlMs: 2*60*1000,
-      swrMs: 10*60*1000,
-      force,
-    });
-    return data;
+    let allRows = await __readAllOspitiRowsForGuestYear__({ force, showLoader: !hasLocal });
+    // Fallback: se l'endpoint senza periodo non restituisce righe, prova anche il periodo richiesto.
+    if ((!Array.isArray(allRows) || !allRows.length) && (from || to)){
+      try{
+        const ranged = await cachedGet("ospiti", { from, to }, { showLoader: !hasLocal, ttlMs: 60*1000, swrMs: 5*60*1000, force:true });
+        if (Array.isArray(ranged) && ranged.length) allRows = ranged;
+      }catch(_){ }
+    }
+    return Array.isArray(allRows) ? allRows : [];
   };
 
   if (hasLocal && !force) {
-    // fire-and-forget
     Promise.all([p, refresh()])
-      .then(([ , data ]) => {
-        // aggiorna solo se l'utente è ancora nella lista ospiti
+      .then(([ , allRows ]) => {
         if (state.page !== "ospiti") return;
-        const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterGuestsByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear());
-        // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
+        const next = __filterGuestsByExerciseYear__(allRows, state.exerciseYear || loadExerciseYear());
         if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
           state.guests = next;
-          __lsSet(lsKey, state.guests);
+          __lsSet(lsKey, allRows);
         }
         try{ requestAnimationFrame(renderGuestCards); }catch(_){ renderGuestCards(); }
       })
@@ -19291,17 +19332,14 @@ async function loadOspiti({ from="", to="", force=false } = {}){
     return;
   }
 
-  const [ , data ] = await Promise.all([p, refresh()]);
-  const nextRaw = Array.isArray(data) ? data : [];
-        const next = __filterGuestsByExerciseYear__(nextRaw, state.exerciseYear || loadExerciseYear());
-  // Evita di sovrascrivere con vuoto se ho già dati (flash → scomparsa)
+  const [ , allRows ] = await Promise.all([p, refresh()]);
+  const next = __filterGuestsByExerciseYear__(allRows, state.exerciseYear || loadExerciseYear());
   if (next.length || !(Array.isArray(state.guests) && state.guests.length)) {
     state.guests = next;
-    __lsSet(lsKey, state.guests);
+    __lsSet(lsKey, allRows);
   }
   renderGuestCards();
 }
-
 
 async function ensurePeriodData({ showLoader=true, force=false } = {}){
   const { from, to } = state.period;
@@ -30576,7 +30614,7 @@ async function saveGuest(opts = {}){
   const depositType = (deposit > 0) ? (state.guestDepositType || "") : "";
   const matrimonio = !!(state.guestMarriage);
   const g = !!(state.guestGroup);
-  /* dDAE_3.076: alert generico non legato alle ricevute */
+  /* dDAE_3.077: alert generico non legato alle ricevute */
   try{ state.guestInvoiceRequested = !!state.guestInvoiceRequested; }catch(_){}
 if (!name) return toast("Inserisci il nome");
   if (!channelItem) return toast("Seleziona il channel");
@@ -36831,7 +36869,7 @@ function setupCalendario(){
 
 
 
-// dDAE_3.076 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
+// dDAE_3.077 — Calendario operatori: il recupero Firebase non deve essere limitato ad Android.
 // Dopo la sync un operatore iOS deve poter ricaricare il payload admin e vedere subito il calendario.
 let __calendarAndroidOperatorImportPromise__ = null;
 let __calendarAndroidOperatorImportLastAt__ = 0;
@@ -36914,6 +36952,16 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
       data = await cachedGet("ospiti", { from: winFrom, to: winTo }, { showLoader:false, ttlMs: 60*1000, force:true });
     }
   }
+  // Fallback/merge completo: il Calendario dipende solo dal mese/anno visualizzato,
+  // non dal filtro anno delle Impostazioni né dall'anno salvato nella riga.
+  try{
+    const allRows = await __readAllOspitiRowsForGuestYear__({ force:false, showLoader:false });
+    if (Array.isArray(allRows) && allRows.length){
+      const overlap = __filterGuestsByRealDateRange__(allRows, winFrom, winTo);
+      data = __guestRowsMergeByStableId__(Array.isArray(data) ? data : [], overlap);
+    }
+  }catch(_){ }
+
   // Fallback locale: se una cache/API vuota resta in mezzo dopo la sync, usa comunque il dataset ospiti importato.
   if (!Array.isArray(data) || !data.length){
     try{
@@ -43013,7 +43061,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.076';
+  var BUILD_TAG='dDAE_3.077';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46809,7 +46857,7 @@ try{
 })();
 
 
-/* dDAE_3.076 — Alert generico ospite con testo libero */
+/* dDAE_3.077 — Alert generico ospite con testo libero */
 (function(){
   'use strict';
 
@@ -47096,4 +47144,4 @@ try{
 })();
 
 
-/* dDAE_3.076 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+/* dDAE_3.077 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
