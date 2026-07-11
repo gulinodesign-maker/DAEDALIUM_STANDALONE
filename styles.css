@@ -23660,7 +23660,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
 }
 #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{
   display:grid !important;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+  grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
   align-items:center !important;
   justify-content:center !important;
   gap:8px !important;
@@ -30167,4 +30167,18 @@ body.ddae-dark .room-kind-badge{
 }
 #guestDateRangeModal.is-locale-single-day .guest-date-range-top-field.is-start{
   width:100% !important;
+}
+
+
+/* dDAE_3.084 — Guest List: sette filtri perfettamente allineati */
+#page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{
+  grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
+  gap:7px !important;
+}
+#page-ospiti .gf-locali-btn{
+  width:100% !important;
+  min-width:0 !important;
+}
+@media (max-width:390px){
+  #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{ gap:5px !important; }
 }

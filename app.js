@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.083
+ * Build: 3.084
  */
-const BUILD_VERSION = "3.083";
+const BUILD_VERSION = "3.084";
 
-/* dDAE_3.083 — Locali evento a giornata singola: solo check-in, nessun check-out */
+/* dDAE_3.084 — Guest List: filtro Locali e dicitura Stanze & Locali */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -18875,6 +18875,7 @@ function setupGuestListControls(){
   const dirBtn = $("#guestSortDir");
   const todayBtn = $("#guestToday");
   const preventiviBtn = $("#guestPreventivi");
+  const localiBtn = $("#guestLocali");
   const sortButtons = Array.from(document.querySelectorAll(".gf-sort-btn[data-sort-by]"));
   if (!sortSel) return;
 
@@ -18920,6 +18921,7 @@ function setupGuestListControls(){
   );
 
   try{ state.guestShowPreventiviOnly = (localStorage.getItem("dDAE_guestShowPreventiviOnly") === "1"); }catch(_){ state.guestShowPreventiviOnly = false; }
+  try{ state.guestShowLocaliOnly = (localStorage.getItem("dDAE_guestShowLocaliOnly") === "1"); }catch(_){ state.guestShowLocaliOnly = false; }
 
   try{ __ensureGuestArrivalFilterVisualStates__(); }catch(_){ }
 
@@ -18958,10 +18960,24 @@ function setupGuestListControls(){
     try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
   };
 
+  const paintLocali = () => {
+    if (!localiBtn) return;
+    const on = !!state.guestShowLocaliOnly;
+    localiBtn.classList.toggle("is-active", on);
+    localiBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    localiBtn.dataset.filterState = on ? "active" : "distractive";
+    localiBtn.setAttribute("aria-label", on ? "Mostra tutte le prenotazioni" : "Mostra solo eventi e prenotazioni sui locali");
+    localiBtn.setAttribute("title", "Locali");
+    localiBtn.innerHTML = '<svg aria-hidden="true" class="gf-filter-ico" viewBox="0 0 24 24"><path d="M4 20h16"></path><path d="M6 20V9l6-5 6 5v11"></path><path d="M9 20v-6h6v6"></path></svg><span class="sr-only">Locali</span>';
+    try { __translateTree__(localiBtn); } catch(_) {}
+    try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
+  };
+
   syncSortSelect();
   paintSortButtons();
   paintToday();
   paintPreventivi();
+  paintLocali();
 
   if (todayBtn){
     todayBtn.addEventListener("click", () => {
@@ -18979,6 +18995,15 @@ function setupGuestListControls(){
       state.guestShowPreventiviOnly = !state.guestShowPreventiviOnly;
       try{ localStorage.setItem("dDAE_guestShowPreventiviOnly", state.guestShowPreventiviOnly ? "1" : "0"); }catch(_){ }
       paintPreventivi();
+      renderGuestCards();
+    });
+  }
+
+  if (localiBtn){
+    localiBtn.addEventListener("click", () => {
+      state.guestShowLocaliOnly = !state.guestShowLocaliOnly;
+      try{ localStorage.setItem("dDAE_guestShowLocaliOnly", state.guestShowLocaliOnly ? "1" : "0"); }catch(_){ }
+      paintLocali();
       renderGuestCards();
     });
   }
@@ -19222,7 +19247,7 @@ function __guestFilterButtonCategoryPrompt__(){
 }
 
 function __guestFilterButtonTargetIds__(){
-  return ['guestPreventivi','guestSortByArrivo','guestSortByCheckout','guestSortByInserimento','guestSortByNome'];
+  return ['guestPreventivi','guestLocali','guestSortByArrivo','guestSortByCheckout','guestSortByInserimento','guestSortByNome'];
 }
 
 function __guestAuxButtonTargetIds__(){
@@ -19246,6 +19271,7 @@ function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
   const rawMode = String(stateKey || 'distractive').trim().toLowerCase();
   const isToday = id === 'guestToday';
   const isPreventivi = id === 'guestPreventivi';
+  const isLocali = id === 'guestLocali';
   const isAuxTodayScroll = id === 'guestScrollTodayBtn';
   if (isAuxTodayScroll){
     const mode = rawMode === 'distractive' ? 'distractive' : 'active';
@@ -19258,6 +19284,10 @@ function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
   }
   if (isPreventivi){
     if (rawMode === 'active') return __launcherVisualNormalize__({ bg:'yellow-4', border:'orange-4', fg:'gray-6', opacity:0.90 }, 'yellow-4');
+    return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
+  }
+  if (isLocali){
+    if (rawMode === 'active') return __launcherVisualNormalize__({ bg:'violet-5', border:'violet-6', fg:'white', opacity:0.90 }, 'violet-5');
     return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
   }
   const mode = rawMode === 'active' ? 'active' : 'distractive';
@@ -19313,6 +19343,7 @@ function __guestFilterButtonCurrentState__(btn){
   try{
     if (btn && btn.id === 'guestToday') return String(state.guestArrivalFilter || btn?.dataset?.filterState || 'today');
     if (btn && btn.id === 'guestPreventivi') return state.guestShowPreventiviOnly ? 'active' : 'distractive';
+    if (btn && btn.id === 'guestLocali') return state.guestShowLocaliOnly ? 'active' : 'distractive';
     if (btn && btn.id === 'guestScrollTodayBtn') return (btn.hidden || btn.getAttribute('aria-hidden') === 'true') ? 'distractive' : 'active';
     return btn && btn.classList && btn.classList.contains('is-active') ? 'active' : 'distractive';
   }catch(_){ return (btn && btn.id === 'guestToday') ? 'today' : ((btn && btn.id === 'guestScrollTodayBtn') ? 'active' : 'distractive'); }
@@ -33378,6 +33409,13 @@ function renderGuestCards(){
     items = __guestFilterPreventiviRows__(items, onlyPreventivi);
   }catch(_){ }
 
+  // Locali: mostra soltanto eventi/prenotazioni associati esclusivamente a elementi di tipo Locale.
+  try{
+    if (state.guestShowLocaliOnly){
+      items = (items || []).filter((guest) => __guestUsesOnlyLocaleRooms__(guest));
+    }
+  }catch(_){ }
+
   // Base completa della guest list dopo il filtro anno: serve anche per mantenere
   // stabile il numero del pallino prenotazione quando si passa da Tutti a Oggi.
   const allItemsForGuestListNumbering = (items || []).slice();
@@ -33423,7 +33461,13 @@ function renderGuestCards(){
     empty.style.padding = "8px";
     const arrivalFilter = __ddae2862NormalizeFilterMode__(state.guestArrivalFilter || 'today', 'guest');
     if (state.guestShowPreventiviOnly){
-      empty.textContent = 'Nessun preventivo nel periodo.';
+      empty.textContent = state.guestShowLocaliOnly ? 'Nessun preventivo associato ai locali nel periodo.' : 'Nessun preventivo nel periodo.';
+      frag.appendChild(empty);
+      wrap.appendChild(frag);
+      return;
+    }
+    if (state.guestShowLocaliOnly){
+      empty.textContent = 'Nessun evento o prenotazione sui locali nel periodo.';
       frag.appendChild(empty);
       wrap.appendChild(frag);
       return;
@@ -43648,7 +43692,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.083';
+  var BUILD_TAG='dDAE_3.084';
   var busy=false;
   var lastStart=0;
   var active=null;
