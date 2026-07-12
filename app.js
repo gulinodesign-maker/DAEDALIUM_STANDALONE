@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.086
+ * Build: 3.087
  */
-const BUILD_VERSION = "3.086";
+const BUILD_VERSION = "3.087";
 
-/* dDAE_3.086 — Salvataggio nuovo ospite affidabile al primo tentativo */
+/* dDAE_3.087 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -31301,7 +31301,7 @@ if (!name) return toast("Inserisci il nome");
 
   const instantGoList = !!(opts && opts.instantGoList);
 
-  // dDAE_3.086: non lasciare la scheda prima che la scrittura sia conclusa.
+  // dDAE_3.087: non lasciare la scheda prima che la scrittura sia conclusa.
   // Su iOS il precedente cambio pagina anticipato poteva avviare un reload della Guest List
   // mentre il POST era ancora in corso, facendo apparire il nuovo ospite come non creato.
   const res = await api("ospiti", { method, body: payload });
@@ -43688,7 +43688,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.086';
+  var BUILD_TAG='dDAE_3.087';
   var busy=false;
   var lastStart=0;
   var active=null;

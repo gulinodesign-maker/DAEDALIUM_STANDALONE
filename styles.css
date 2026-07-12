@@ -30183,7 +30183,33 @@ body.ddae-dark .room-kind-badge{
   #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{ gap:5px !important; }
 }
 
-/* dDAE_3.086 — blocco visivo durante il salvataggio della scheda ospite */
+/* dDAE_3.087 — blocco visivo durante il salvataggio della scheda ospite */
 #createGuestCard[aria-busy="true"],
 #createGuestBookingBtn[aria-busy="true"],
 #createGuestEstimateBtn[aria-busy="true"] { pointer-events: none !important; }
+
+/* dDAE_3.087 — Statistiche: grafici +90% in altezza esclusivamente in portrait */
+@media (orientation: portrait){
+  #page-statgen .statgen-line-chart,
+  #page-statmensili .statgen-line-chart,
+  #page-statspese .statgen-line-chart,
+  #page-statprenotazioni .statgen-line-chart,
+  #page-statchannel .statgen-line-chart,
+  #page-statpulizie .statgen-line-chart,
+  #page-statcancellazioni .statgen-line-chart,
+  #page-statamministratore .statgen-line-chart{
+    height:224px !important;
+    max-height:224px !important;
+  }
+
+  #page-statgen .statgen-line-chart-wrap,
+  #page-statmensili .statgen-line-chart-wrap,
+  #page-statspese .statgen-line-chart-wrap,
+  #page-statprenotazioni .statgen-line-chart-wrap,
+  #page-statchannel .statgen-line-chart-wrap,
+  #page-statpulizie .statgen-line-chart-wrap,
+  #page-statcancellazioni .statgen-line-chart-wrap,
+  #page-statamministratore .statgen-line-chart-wrap{
+    min-height:224px !important;
+  }
+}
