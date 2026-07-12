@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.085
+ * Build: 3.086
  */
-const BUILD_VERSION = "3.085";
+const BUILD_VERSION = "3.086";
 
-/* dDAE_3.085 — Long press colore ripristinato sul tasto Lavanderia */
+/* dDAE_3.086 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -31300,11 +31300,10 @@ if (!name) return toast("Inserisci il nome");
   }
 
   const instantGoList = !!(opts && opts.instantGoList);
-  if (instantGoList){
-    // Naviga SUBITO alla guest list
-    try { showPage("ospiti"); } catch (_) {}
-  }
 
+  // dDAE_3.086: non lasciare la scheda prima che la scrittura sia conclusa.
+  // Su iOS il precedente cambio pagina anticipato poteva avviare un reload della Guest List
+  // mentre il POST era ancora in corso, facendo apparire il nuovo ospite come non creato.
   const res = await api("ospiti", { method, body: payload });
 
   // stanze: backend gestisce POST e sovrascrive (deleteWhere + append)
@@ -31332,15 +31331,14 @@ if (!name) return toast("Inserisci il nome");
   try{ if (state.calendar){ state.calendar.ready = false; state.calendar.rangeKey = ""; state.calendar.winFrom = ""; state.calendar.winTo = ""; } state._roomsAvailKey = ""; }catch(_){ }
 
   if (instantGoList){
-    // Sei già in lista: aggiorna subito lista e LED top bar senza bloccare la UI.
-    try{
-      loadOspiti({ ...(state.period || {}), force:true })
-        .then(()=>{ try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ } })
-        .catch(e => toast(e.message));
-    }catch(_){ }
-    try{ setTimeout(()=>{ try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ } }, 120); }catch(_){ }
+    // Prima conferma la persistenza, poi ricarica i dati e soltanto dopo torna alla Guest List.
+    // In questo modo il primo salvataggio è immediatamente visibile e non viene perso in un reload concorrente.
+    await loadOspiti({ ...(state.period || {}), force:true });
+    try { showPage("ospiti"); } catch (_) {}
+    try{ renderGuestCards(); }catch(_){ }
+    try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
     try{ __sfxSave(); }catch(_){ }
-  toast(isEdit ? "Modifiche salvate" : "Ospite creato");
+    toast(isEdit ? "Modifiche salvate" : "Ospite creato");
     return;
   }
 
@@ -32505,31 +32503,30 @@ function setupOspite(){
 
   try{ __translateTree__(document.getElementById("guestCreateChoiceRow")); }catch(_){}
 
+  const __runGuestCreateOnce__ = (button, options) => {
+    if (!button || button.__ddaeGuestSaveBusy) return;
+    button.__ddaeGuestSaveBusy = true;
+    try{ button.disabled = true; button.setAttribute('aria-busy','true'); }catch(_){ }
+    Promise.resolve(saveGuest(Object.assign({ instantGoList:true }, options || {})))
+      .catch((e) => { try { toast(e?.message || "Errore salvataggio ospite"); } catch (_) {} })
+      .finally(() => {
+        button.__ddaeGuestSaveBusy = false;
+        try{ button.disabled = false; button.removeAttribute('aria-busy'); }catch(_){ }
+      });
+  };
+
   const btnBookingCreate = document.getElementById("createGuestBookingBtn");
   btnBookingCreate?.addEventListener("click", () => {
-    try{
-      Promise.resolve(saveGuest({ instantGoList: true, tipoScheda: "prenotazione" }))
-        .catch((e) => { try { toast(e?.message || "Errore"); } catch (_) {} });
-    }catch(e){ try { toast(e?.message || "Errore"); } catch (_) {} }
+    __runGuestCreateOnce__(btnBookingCreate, { tipoScheda:"prenotazione" });
   });
   const btnEstimateCreate = document.getElementById("createGuestEstimateBtn");
   btnEstimateCreate?.addEventListener("click", () => {
-    try{
-      Promise.resolve(saveGuest({ instantGoList: true, tipoScheda: "preventivo" }))
-        .catch((e) => { try { toast(e?.message || "Errore"); } catch (_) {} });
-    }catch(e){ try { toast(e?.message || "Errore"); } catch (_) {} }
+    __runGuestCreateOnce__(btnEstimateCreate, { tipoScheda:"preventivo" });
   });
 
   const btnCreate = document.getElementById("createGuestCard");
   btnCreate?.addEventListener("click", () => {
-    try {
-      // Richiesta: al tap su Salva/Crea, vai SUBITO alla guest list.
-      // saveGuest gestisce la navigazione immediata e prosegue il salvataggio in background.
-      Promise.resolve(saveGuest({ instantGoList: true }))
-        .catch((e) => { try { toast(e?.message || "Errore"); } catch (_) {} });
-    } catch (e) {
-      try { toast(e?.message || "Errore"); } catch (_) {}
-    }
+    __runGuestCreateOnce__(btnCreate, {});
   });
 
   // Default: check-in oggi (solo UI)
@@ -43691,7 +43688,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.085';
+  var BUILD_TAG='dDAE_3.086';
   var busy=false;
   var lastStart=0;
   var active=null;

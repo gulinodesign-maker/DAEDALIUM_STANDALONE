@@ -30182,3 +30182,8 @@ body.ddae-dark .room-kind-badge{
 @media (max-width:390px){
   #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{ gap:5px !important; }
 }
+
+/* dDAE_3.086 — blocco visivo durante il salvataggio della scheda ospite */
+#createGuestCard[aria-busy="true"],
+#createGuestBookingBtn[aria-busy="true"],
+#createGuestEstimateBtn[aria-busy="true"] { pointer-events: none !important; }
