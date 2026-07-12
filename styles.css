@@ -30170,7 +30170,7 @@ body.ddae-dark .room-kind-badge{
 }
 
 
-/* dDAE_3.084 — Guest List: sette filtri perfettamente allineati */
+/* dDAE_3.085 — Guest List: sette filtri perfettamente allineati */
 #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{
   grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
   gap:7px !important;

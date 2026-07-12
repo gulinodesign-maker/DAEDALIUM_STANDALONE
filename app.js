@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.084
+ * Build: 3.085
  */
-const BUILD_VERSION = "3.084";
+const BUILD_VERSION = "3.085";
 
-/* dDAE_3.084 — Guest List: filtro Locali e dicitura Stanze & Locali */
+/* dDAE_3.085 — Long press colore ripristinato sul tasto Lavanderia */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -13061,7 +13061,6 @@ function __ddae841IsOperationalNoColorPopupButton__(btn){
   try{
     const id = String((btn && btn.id) || '').trim();
     const blocked = new Set([
-      'goLavanderia',
       'btnAddOperatoreCard','btnAddChannelCard','btnAddRoomCatalogCard','btnAddLaundryComponentCard'
     ]);
     if (blocked.has(id)) return true;
@@ -43692,7 +43691,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.084';
+  var BUILD_TAG='dDAE_3.085';
   var busy=false;
   var lastStart=0;
   var active=null;
