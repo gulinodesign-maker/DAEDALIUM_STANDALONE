@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.086
+ * Build: 3.087
  */
-const BUILD_VERSION = "3.086";
+const BUILD_VERSION = "3.087";
 
-/* dDAE_3.086 — Salvataggio nuovo ospite affidabile al primo tentativo */
+/* dDAE_3.087 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -31301,7 +31301,7 @@ if (!name) return toast("Inserisci il nome");
 
   const instantGoList = !!(opts && opts.instantGoList);
 
-  // dDAE_3.086: non lasciare la scheda prima che la scrittura sia conclusa.
+  // dDAE_3.087: non lasciare la scheda prima che la scrittura sia conclusa.
   // Su iOS il precedente cambio pagina anticipato poteva avviare un reload della Guest List
   // mentre il POST era ancora in corso, facendo apparire il nuovo ospite come non creato.
   const res = await api("ospiti", { method, body: payload });
@@ -43688,7 +43688,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.086';
+  var BUILD_TAG='dDAE_3.087';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47772,3 +47772,92 @@ try{
 
 
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+
+/* dDAE_3.087 — Statistiche Mensili: dashboard responsive portrait/landscape */
+(function(){
+  function monthIcon(index){
+    const icons = ['❄','❄','◒','◒','✿','☀','☀','★','◒','●','◒','❄'];
+    return icons[index] || '●';
+  }
+  function ensureDashboardChrome(){
+    const page = document.getElementById('page-statmensili');
+    const chartWrap = page && page.querySelector('.statgen-line-chart-wrap');
+    const monthWrap = document.getElementById('smList');
+    if (!page || !chartWrap || !monthWrap) return;
+
+    if (!chartWrap.querySelector('.sm-chart-heading')){
+      const heading = document.createElement('div');
+      heading.className = 'sm-chart-heading';
+      heading.innerHTML = '<span class="sm-chart-heading-icon" aria-hidden="true">▥</span><span><strong>Rendimento mensile</strong><small id="smChartYear"></small></span>';
+      chartWrap.insertBefore(heading, chartWrap.firstChild);
+    }
+
+    let kpis = document.getElementById('smKpis');
+    if (!kpis){
+      kpis = document.createElement('div');
+      kpis.id = 'smKpis';
+      kpis.className = 'sm-kpi-grid';
+      chartWrap.insertAdjacentElement('afterend', kpis);
+    }
+
+    const year = String((window.state && state.exerciseYear) || (typeof loadExerciseYear === 'function' ? loadExerciseYear() : '') || '');
+    const yearEl = document.getElementById('smChartYear');
+    if (yearEl) yearEl.textContent = year ? ('Anno ' + year) : '';
+
+    const stats = (window.state && state.statMensili) || (typeof computeStatMensili === 'function' ? computeStatMensili() : {});
+    const months = Array.isArray(stats.byMonth) ? stats.byMonth.map(v => Number(v || 0) || 0) : new Array(12).fill(0);
+    const total = months.reduce((a,b)=>a+b,0);
+    const active = months.filter(v => v > 0).length;
+    const avg = active ? total / active : 0;
+    let bestIndex = 0;
+    for (let i=1;i<months.length;i+=1){ if (months[i] > months[bestIndex]) bestIndex = i; }
+    const bestName = String((window.__MONTHS_IT && __MONTHS_IT[bestIndex]) || ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'][bestIndex] || '—');
+    const money = (typeof euro === 'function') ? euro : (v => '€ ' + Number(v||0).toFixed(2));
+    kpis.innerHTML = `
+      <div class="sm-kpi-card"><span class="sm-kpi-icon is-total" aria-hidden="true">▥</span><span><small>Totale anno</small><strong>${money(total)}</strong></span></div>
+      <div class="sm-kpi-card"><span class="sm-kpi-icon is-average" aria-hidden="true">↗</span><span><small>Media mensile</small><strong>${money(avg)}</strong></span></div>
+      <div class="sm-kpi-card"><span class="sm-kpi-icon is-best" aria-hidden="true">◎</span><span><small>Mese migliore</small><strong>${months[bestIndex] > 0 ? bestName : '—'}</strong><em>${months[bestIndex] > 0 ? money(months[bestIndex]) : ''}</em></span></div>`;
+
+    const monthButtons = Array.from(monthWrap.querySelectorAll('.month-grid-button:not(.month-general-card)'));
+    monthButtons.forEach((btn, index)=>{
+      if (!btn.querySelector('.sm-month-icon')){
+        const icon = document.createElement('span');
+        icon.className = 'sm-month-icon';
+        icon.setAttribute('aria-hidden','true');
+        icon.textContent = monthIcon(index);
+        const label = btn.querySelector('.month-button-label');
+        if (label) btn.insertBefore(icon, label);
+      }
+    });
+    const general = monthWrap.querySelector('.month-general-card');
+    if (general && !general.querySelector('.sm-general-icon') && !general.classList.contains('is-expanded')){
+      const icon = document.createElement('span');
+      icon.className = 'sm-general-icon';
+      icon.setAttribute('aria-hidden','true');
+      icon.textContent = '▥';
+      const label = general.querySelector('.month-button-label');
+      if (label) general.insertBefore(icon, label);
+    }
+  }
+
+  try{
+    const oldRender = (typeof renderStatMensili === 'function') ? renderStatMensili : window.renderStatMensili;
+    if (typeof oldRender === 'function' && !oldRender.__ddae3087Wrapped){
+      const wrapped = function(){
+        const result = oldRender.apply(this, arguments);
+        try{ ensureDashboardChrome(); }catch(_){ }
+        try{ setTimeout(ensureDashboardChrome, 40); }catch(_){ }
+        return result;
+      };
+      wrapped.__ddae3087Wrapped = true;
+      try{ renderStatMensili = wrapped; }catch(_){ }
+      try{ window.renderStatMensili = wrapped; }catch(_){ }
+    }
+  }catch(_){ }
+
+  function init(){
+    try{ if ((document.body && document.body.dataset.page) === 'statmensili') ensureDashboardChrome(); }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
+  window.addEventListener('resize', ()=>{ try{ if (document.body.dataset.page === 'statmensili') ensureDashboardChrome(); }catch(_){ } }, {passive:true});
+})();
