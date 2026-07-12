@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.087
+ * Build: 3.088
  */
-const BUILD_VERSION = "3.087";
+const BUILD_VERSION = "3.088";
 
-/* dDAE_3.087 — Salvataggio nuovo ospite affidabile al primo tentativo */
+/* dDAE_3.088 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -24059,10 +24059,26 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const wrap = (canvas.closest && canvas.closest('.statgen-line-chart-wrap')) ? canvas.closest('.statgen-line-chart-wrap') : parent;
   const pageKey = __statSharedLineChartPageKeyNormalize__(wrap?.dataset?.statLineChartKey || 'statgen');
   try{ __applyStatLandscapeGraphOnlyLayout__(); }catch(_){ }
+  if (!__isLandscapeOrientation__()){
+    try{
+      if (wrap){
+        wrap.style.setProperty('min-height', '224px', 'important');
+        wrap.style.setProperty('height', '224px', 'important');
+      }
+      if (parent && parent !== wrap){
+        parent.style.setProperty('min-height', '224px', 'important');
+        parent.style.setProperty('height', '224px', 'important');
+      }
+    }catch(_){ }
+  }
   const parentRect = parent.getBoundingClientRect ? parent.getBoundingClientRect() : { width: parent.clientWidth || 0, height: parent.clientHeight || 0 };
   const width = Math.max(280, Math.round(parentRect.width || parent.clientWidth || 0));
-  const minChartHeight = (__isLandscapeOrientation__() && __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.has(pageKey)) ? 72 : 118;
-  const height = Math.max(minChartHeight, Math.round(parentRect.height || parent.clientHeight || canvas.clientHeight || minChartHeight));
+  const isLandscapeStatChart = (__isLandscapeOrientation__() && __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.has(pageKey));
+  // dDAE_3.088: in portrait il canvas deve avere davvero il +90% di altezza.
+  // Non ci affidiamo soltanto al CSS, perché iOS può conservare la misura inline precedente.
+  const minChartHeight = isLandscapeStatChart ? 72 : 224;
+  const measuredHeight = Math.round(parentRect.height || parent.clientHeight || canvas.clientHeight || minChartHeight);
+  const height = isLandscapeStatChart ? Math.max(minChartHeight, measuredHeight) : Math.max(224, measuredHeight);
   const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
   canvas.width = Math.round(width * dpr);
   canvas.height = Math.round(height * dpr);
@@ -31301,7 +31317,7 @@ if (!name) return toast("Inserisci il nome");
 
   const instantGoList = !!(opts && opts.instantGoList);
 
-  // dDAE_3.087: non lasciare la scheda prima che la scrittura sia conclusa.
+  // dDAE_3.088: non lasciare la scheda prima che la scrittura sia conclusa.
   // Su iOS il precedente cambio pagina anticipato poteva avviare un reload della Guest List
   // mentre il POST era ancora in corso, facendo apparire il nuovo ospite come non creato.
   const res = await api("ospiti", { method, body: payload });
@@ -43688,7 +43704,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.087';
+  var BUILD_TAG='dDAE_3.088';
   var busy=false;
   var lastStart=0;
   var active=null;

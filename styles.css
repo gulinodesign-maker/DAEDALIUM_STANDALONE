@@ -30183,25 +30183,21 @@ body.ddae-dark .room-kind-badge{
   #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{ gap:5px !important; }
 }
 
-/* dDAE_3.087 — blocco visivo durante il salvataggio della scheda ospite */
+/* dDAE_3.088 — blocco visivo durante il salvataggio della scheda ospite */
 #createGuestCard[aria-busy="true"],
 #createGuestBookingBtn[aria-busy="true"],
 #createGuestEstimateBtn[aria-busy="true"] { pointer-events: none !important; }
 
-/* dDAE_3.087 — Statistiche: grafici +90% in altezza esclusivamente in portrait */
-@media (orientation: portrait){
-  #page-statgen .statgen-line-chart,
-  #page-statmensili .statgen-line-chart,
-  #page-statspese .statgen-line-chart,
-  #page-statprenotazioni .statgen-line-chart,
-  #page-statchannel .statgen-line-chart,
-  #page-statpulizie .statgen-line-chart,
-  #page-statcancellazioni .statgen-line-chart,
-  #page-statamministratore .statgen-line-chart{
-    height:224px !important;
-    max-height:224px !important;
-  }
-
+/* dDAE_3.088 — Statistiche: altezza reale dei grafici +90% esclusivamente in portrait */
+@media screen and (orientation: portrait){
+  body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
+  body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
+  body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
+  body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
+  body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
+  body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap,
+  body[data-page="statamministratore"] #page-statamministratore .statgen-line-chart-wrap,
   #page-statgen .statgen-line-chart-wrap,
   #page-statmensili .statgen-line-chart-wrap,
   #page-statspese .statgen-line-chart-wrap,
@@ -30210,6 +30206,36 @@ body.ddae-dark .room-kind-badge{
   #page-statpulizie .statgen-line-chart-wrap,
   #page-statcancellazioni .statgen-line-chart-wrap,
   #page-statamministratore .statgen-line-chart-wrap{
+    height:224px !important;
     min-height:224px !important;
+    max-height:none !important;
+    overflow:hidden !important;
+  }
+
+  #page-statgen canvas.statgen-line-chart,
+  #page-statmensili canvas.statgen-line-chart,
+  #page-statspese canvas.statgen-line-chart,
+  #page-statprenotazioni canvas.statgen-line-chart,
+  #page-statchannel canvas.statgen-line-chart,
+  #page-statpulizie canvas.statgen-line-chart,
+  #page-statcancellazioni canvas.statgen-line-chart,
+  #page-statamministratore canvas.statgen-line-chart{
+    display:block !important;
+    width:100% !important;
+    height:224px !important;
+    min-height:224px !important;
+    max-height:224px !important;
+  }
+
+  /* Anche i contenitori dei grafici circolari delle sottocategorie ricevono il +90% verticale. */
+  #page-statprenotazioni .stats-pie-chart-wrap,
+  #page-statchannel .stats-pie-chart-wrap,
+  #page-statpulizie .stats-pie-chart-wrap,
+  #page-statprenotazioni .stats-pie-chart-canvas,
+  #page-statchannel .stats-pie-chart-canvas,
+  #page-statpulizie .stats-pie-chart-canvas{
+    min-height:448px !important;
+    height:448px !important;
+    max-height:none !important;
   }
 }
