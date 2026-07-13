@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.091
+ * Build: 3.090
  */
-const BUILD_VERSION = "3.091";
+const BUILD_VERSION = "3.090";
 
-/* dDAE_3.091 — Statistiche landscape e zoom universale grafici */
+/* dDAE_3.090 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -47802,106 +47802,3 @@ try{
 
 
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
-
-/* dDAE_3.091 — Statistiche: offset geometrico colonna destra + zoom universale grafici */
-(function(){
-  'use strict';
-
-  const STAT_PAGE_IDS = [
-    'page-statgen','page-statmensili','page-statspese','page-statprenotazioni',
-    'page-statchannel','page-statpulizie','page-statcancellazioni','page-statamministratore'
-  ];
-
-  function isLandscape(){
-    try{ return window.matchMedia('(orientation: landscape)').matches; }catch(_){ return innerWidth > innerHeight; }
-  }
-
-  function updateRightColumnOffsets(){
-    STAT_PAGE_IDS.forEach((pageId)=>{
-      const page = document.getElementById(pageId);
-      if (!page) return;
-      const layered = page.querySelector('.stats-gen.stats-layered');
-      const fixed = layered && layered.querySelector(':scope > .stats-fixed-layer');
-      const scroll = layered && layered.querySelector(':scope > .stats-scroll-layer');
-      if (!layered || !fixed || !scroll) return;
-      if (!isLandscape()){
-        layered.style.removeProperty('--ddae-stats-right-offset');
-        return;
-      }
-      const head = fixed.querySelector('.stats-head-row');
-      const divider = fixed.querySelector('.stats-divider');
-      let offset = 52;
-      try{
-        const base = fixed.getBoundingClientRect();
-        const ref = (divider && getComputedStyle(divider).display !== 'none') ? divider : head;
-        if (ref){
-          const rect = ref.getBoundingClientRect();
-          offset = Math.max(42, Math.ceil(rect.bottom - base.top + 6));
-        }
-      }catch(_){ }
-      layered.style.setProperty('--ddae-stats-right-offset', `${offset}px`);
-    });
-  }
-
-  function redrawStatisticsCharts(){
-    try{ if (typeof __refreshCurrentStatLandscapeGraphOnlyPage__ === 'function') __refreshCurrentStatLandscapeGraphOnlyPage__(); }catch(_){ }
-    try{ if (typeof window.__redrawAllStatCompareCharts__ === 'function') window.__redrawAllStatCompareCharts__(); }catch(_){ }
-    try{ window.dispatchEvent(new Event('resize')); }catch(_){ }
-  }
-
-  function closeExpandedChart(){
-    const open = document.querySelector('.ddae-stat-chart-expandable.ddae-stat-chart-expanded');
-    if (!open) return false;
-    open.classList.remove('ddae-stat-chart-expanded');
-    open.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('ddae-stat-chart-expanded');
-    setTimeout(redrawStatisticsCharts, 30);
-    return true;
-  }
-
-  function toggleChart(wrap, ev){
-    if (!wrap) return;
-    if (ev){
-      ev.preventDefault();
-      ev.stopPropagation();
-    }
-    const alreadyOpen = wrap.classList.contains('ddae-stat-chart-expanded');
-    closeExpandedChart();
-    if (!alreadyOpen){
-      wrap.classList.add('ddae-stat-chart-expanded');
-      wrap.setAttribute('aria-expanded', 'true');
-      document.body.classList.add('ddae-stat-chart-expanded');
-      setTimeout(redrawStatisticsCharts, 30);
-    }
-  }
-
-  function bindChart(wrap){
-    if (!wrap || wrap.dataset.ddaeChartExpandBound === '1') return;
-    wrap.dataset.ddaeChartExpandBound = '1';
-    wrap.classList.add('ddae-stat-chart-expandable');
-    wrap.setAttribute('role', wrap.getAttribute('role') || 'button');
-    wrap.setAttribute('aria-expanded', 'false');
-    wrap.setAttribute('aria-label', wrap.getAttribute('aria-label') || 'Ingrandisci grafico');
-    wrap.addEventListener('click', (ev)=>toggleChart(wrap, ev), true);
-  }
-
-  function bindAllCharts(){
-    STAT_PAGE_IDS.forEach((pageId)=>{
-      const page = document.getElementById(pageId);
-      if (!page) return;
-      page.querySelectorAll('.statgen-line-chart-wrap, .stats-pie-chart-wrap').forEach(bindChart);
-    });
-    updateRightColumnOffsets();
-  }
-
-  const schedule = ()=>setTimeout(()=>{ bindAllCharts(); updateRightColumnOffsets(); }, 40);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule, { once:true });
-  else schedule();
-  window.addEventListener('resize', schedule, { passive:true });
-  window.addEventListener('orientationchange', schedule, { passive:true });
-
-  try{
-    const observer = new MutationObserver(()=>schedule());
-    observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class'] });
-  }catch(_){ }
-})();
