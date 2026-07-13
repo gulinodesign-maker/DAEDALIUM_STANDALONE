@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.092
+ * Build: 3.090
  */
-const BUILD_VERSION = "3.092";
+const BUILD_VERSION = "3.090";
 
-/* dDAE_3.092 — Correzione layout Statistiche e zoom grafici */
+/* dDAE_3.090 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -47802,135 +47802,3 @@ try{
 
 
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
-
-/* dDAE_3.092 — Statistiche: limite geometrico colonna destra + zoom grafici in overlay */
-(function(){
-  'use strict';
-
-  const STAT_PAGE_IDS = [
-    'page-statgen','page-statmensili','page-statspese','page-statprenotazioni',
-    'page-statchannel','page-statpulizie','page-statcancellazioni','page-statamministratore'
-  ];
-  let expanded = null;
-
-  function isLandscape(){
-    try{ return window.matchMedia('(orientation: landscape)').matches; }
-    catch(_){ return window.innerWidth > window.innerHeight; }
-  }
-
-  function updateRightColumnOffsets(){
-    STAT_PAGE_IDS.forEach((pageId)=>{
-      const page = document.getElementById(pageId);
-      if (!page) return;
-      const layered = page.querySelector('.stats-gen.stats-layered');
-      const fixed = layered && layered.querySelector(':scope > .stats-fixed-layer');
-      const scroll = layered && layered.querySelector(':scope > .stats-scroll-layer');
-      if (!layered || !fixed || !scroll) return;
-      if (!isLandscape()){
-        layered.style.removeProperty('--ddae-stats-right-offset');
-        return;
-      }
-      let offset = 58;
-      try{
-        const layeredRect = layered.getBoundingClientRect();
-        const divider = fixed.querySelector('.stats-divider');
-        const head = fixed.querySelector('.stats-head-row');
-        const ref = divider && getComputedStyle(divider).display !== 'none' ? divider : head;
-        if (ref){
-          const refRect = ref.getBoundingClientRect();
-          offset = Math.max(48, Math.ceil(refRect.bottom - layeredRect.top + 8));
-        }
-      }catch(_){ }
-      layered.style.setProperty('--ddae-stats-right-offset', offset + 'px');
-    });
-  }
-
-  function forceChartResize(){
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      try{ window.dispatchEvent(new Event('resize')); }catch(_){ }
-    }));
-  }
-
-  function closeExpandedChart(ev){
-    if (!expanded) return false;
-    if (ev){ ev.preventDefault(); ev.stopPropagation(); }
-    const { wrap, placeholder, parent, nextSibling, overlay } = expanded;
-    try{
-      if (nextSibling && nextSibling.parentNode === parent) parent.insertBefore(wrap, nextSibling);
-      else parent.appendChild(wrap);
-    }catch(_){ }
-    try{ placeholder.remove(); }catch(_){ }
-    try{ overlay.remove(); }catch(_){ }
-    wrap.setAttribute('aria-expanded','false');
-    document.body.classList.remove('ddae-stat-chart-expanded');
-    expanded = null;
-    forceChartResize();
-    return true;
-  }
-
-  function openExpandedChart(wrap, ev){
-    if (!wrap) return;
-    if (ev){ ev.preventDefault(); ev.stopPropagation(); }
-    if (expanded && expanded.wrap === wrap){ closeExpandedChart(ev); return; }
-    if (expanded) closeExpandedChart();
-
-    const parent = wrap.parentNode;
-    if (!parent) return;
-    const nextSibling = wrap.nextSibling;
-    const placeholder = document.createElement('div');
-    placeholder.className = 'ddae-stat-chart-placeholder';
-    const rect = wrap.getBoundingClientRect();
-    placeholder.style.width = Math.max(1, rect.width) + 'px';
-    placeholder.style.height = Math.max(1, rect.height) + 'px';
-    parent.insertBefore(placeholder, wrap);
-
-    const overlay = document.createElement('div');
-    overlay.id = 'ddaeStatChartOverlay';
-    overlay.setAttribute('role','dialog');
-    overlay.setAttribute('aria-label','Grafico ingrandito');
-    document.body.appendChild(overlay);
-    overlay.appendChild(wrap);
-    wrap.setAttribute('aria-expanded','true');
-    document.body.classList.add('ddae-stat-chart-expanded');
-    expanded = { wrap, placeholder, parent, nextSibling, overlay };
-
-    overlay.addEventListener('click', (e)=>{
-      if (e.target === overlay) closeExpandedChart(e);
-    }, true);
-    forceChartResize();
-  }
-
-  function bindChart(wrap){
-    if (!wrap || wrap.dataset.ddaeChartExpandBound === '1') return;
-    wrap.dataset.ddaeChartExpandBound = '1';
-    wrap.classList.add('ddae-stat-chart-expandable');
-    wrap.setAttribute('role', wrap.getAttribute('role') || 'button');
-    wrap.setAttribute('aria-expanded','false');
-    wrap.setAttribute('aria-label', wrap.getAttribute('aria-label') || 'Ingrandisci grafico');
-    wrap.addEventListener('click', (ev)=>openExpandedChart(wrap, ev), true);
-  }
-
-  function bindAllCharts(){
-    STAT_PAGE_IDS.forEach((pageId)=>{
-      const page = document.getElementById(pageId);
-      if (!page) return;
-      page.querySelectorAll('.statgen-line-chart-wrap, .stats-pie-chart-wrap, .stats-graph-card').forEach(bindChart);
-    });
-    updateRightColumnOffsets();
-  }
-
-  let scheduled = 0;
-  function schedule(){
-    clearTimeout(scheduled);
-    scheduled = setTimeout(bindAllCharts, 40);
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule, {once:true});
-  else schedule();
-  window.addEventListener('resize', schedule, {passive:true});
-  window.addEventListener('orientationchange', schedule, {passive:true});
-  document.addEventListener('keydown', (ev)=>{ if (ev.key === 'Escape') closeExpandedChart(ev); });
-  try{
-    const observer = new MutationObserver(schedule);
-    observer.observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class']});
-  }catch(_){ }
-})();
