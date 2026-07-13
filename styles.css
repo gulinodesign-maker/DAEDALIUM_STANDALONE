@@ -30183,12 +30183,12 @@ body.ddae-dark .room-kind-badge{
   #page-ospiti .guest-filter-row-1.guest-filter-row-sort-buttons{ gap:5px !important; }
 }
 
-/* dDAE_3.089 — blocco visivo durante il salvataggio della scheda ospite */
+/* dDAE_3.090 — blocco visivo durante il salvataggio della scheda ospite */
 #createGuestCard[aria-busy="true"],
 #createGuestBookingBtn[aria-busy="true"],
 #createGuestEstimateBtn[aria-busy="true"] { pointer-events: none !important; }
 
-/* dDAE_3.089 — Statistiche: altezza reale dei grafici +90% esclusivamente in portrait */
+/* dDAE_3.090 — Statistiche: altezza reale dei grafici +90% esclusivamente in portrait */
 @media screen and (orientation: portrait){
   body[data-page="statgen"] #page-statgen .statgen-line-chart-wrap,
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
@@ -30238,4 +30238,9 @@ body.ddae-dark .room-kind-badge{
     height:448px !important;
     max-height:none !important;
   }
+}
+
+/* dDAE_3.090 — Uomini/Donne non applicabili alle prenotazioni composte solo da Locali */
+#page-ospite .guest-form-card.is-view.guest-locale-only #guestSexCountRow{
+  display:none !important;
 }
