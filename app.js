@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.088
+ * Build: 3.089
  */
-const BUILD_VERSION = "3.088";
+const BUILD_VERSION = "3.089";
 
-/* dDAE_3.088 — Salvataggio nuovo ospite affidabile al primo tentativo */
+/* dDAE_3.089 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
   try{
@@ -14812,6 +14812,19 @@ function __roomsUseOnlyLocales__(rooms){
     return arr.length > 0 && arr.every((slot) => isRoomSlotLocale(slot));
   }catch(_){ return false; }
 }
+function __roomsUseAnyLocale__(rooms){
+  try{
+    const arr = __roomSlotsForLocaleRules__(rooms);
+    return arr.some((slot) => isRoomSlotLocale(slot));
+  }catch(_){ return false; }
+}
+function __guestUsesAnyLocaleRoom__(guest){
+  try{
+    if (!guest) return false;
+    const raw = __guestRoomsRaw__(guest) || guest?.stanze || guest?.rooms || guest?.stanza || guest?.room || '';
+    return __roomsUseAnyLocale__(raw);
+  }catch(_){ return false; }
+}
 function __guestUsesOnlyLocaleRooms__(guest){
   try{
     if (!guest) return false;
@@ -24074,7 +24087,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const parentRect = parent.getBoundingClientRect ? parent.getBoundingClientRect() : { width: parent.clientWidth || 0, height: parent.clientHeight || 0 };
   const width = Math.max(280, Math.round(parentRect.width || parent.clientWidth || 0));
   const isLandscapeStatChart = (__isLandscapeOrientation__() && __STAT_LANDSCAPE_GRAPH_ONLY_PAGES__.has(pageKey));
-  // dDAE_3.088: in portrait il canvas deve avere davvero il +90% di altezza.
+  // dDAE_3.089: in portrait il canvas deve avere davvero il +90% di altezza.
   // Non ci affidiamo soltanto al CSS, perché iOS può conservare la misura inline precedente.
   const minChartHeight = isLandscapeStatChart ? 72 : 224;
   const measuredHeight = Math.round(parentRect.height || parent.clientHeight || canvas.clientHeight || minChartHeight);
@@ -31317,7 +31330,7 @@ if (!name) return toast("Inserisci il nome");
 
   const instantGoList = !!(opts && opts.instantGoList);
 
-  // dDAE_3.088: non lasciare la scheda prima che la scrittura sia conclusa.
+  // dDAE_3.089: non lasciare la scheda prima che la scrittura sia conclusa.
   // Su iOS il precedente cambio pagina anticipato poteva avviare un reload della Guest List
   // mentre il POST era ancora in corso, facendo apparire il nuovo ospite come non creato.
   const res = await api("ospiti", { method, body: payload });
@@ -33421,10 +33434,11 @@ function renderGuestCards(){
     items = __guestFilterPreventiviRows__(items, onlyPreventivi);
   }catch(_){ }
 
-  // Locali: mostra soltanto eventi/prenotazioni associati esclusivamente a elementi di tipo Locale.
+  // Locali: mostra ogni evento/prenotazione che comprende almeno un elemento di tipo Locale,
+  // anche quando la stessa scheda contiene contemporaneamente normali Stanze.
   try{
     if (state.guestShowLocaliOnly){
-      items = (items || []).filter((guest) => __guestUsesOnlyLocaleRooms__(guest));
+      items = (items || []).filter((guest) => __guestUsesAnyLocaleRoom__(guest));
     }
   }catch(_){ }
 
@@ -43704,7 +43718,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.088';
+  var BUILD_TAG='dDAE_3.089';
   var busy=false;
   var lastStart=0;
   var active=null;
