@@ -30244,3 +30244,68 @@ body.ddae-dark .room-kind-badge{
 #page-ospite .guest-form-card.is-view.guest-locale-only #guestSexCountRow{
   display:none !important;
 }
+
+/* dDAE_3.091 — Statistiche landscape: la colonna destra inizia sotto titolo e controlli */
+@media screen and (orientation: landscape){
+  body[data-page^="stat"] .stats-gen.stats-layered > .stats-scroll-layer{
+    top: var(--ddae-stats-right-offset, 52px) !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+  }
+
+  /* La griglia mantiene geometria, dimensioni e spaziature: viene solo traslata verso il basso. */
+  body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer{
+    height: calc(100% - var(--ddae-stats-right-offset, 52px)) !important;
+    max-height: calc(100% - var(--ddae-stats-right-offset, 52px)) !important;
+  }
+}
+
+/* dDAE_3.091 — Tap su qualunque grafico Statistiche: espansione a tutto display e secondo tap per chiudere */
+body.ddae-stat-chart-expanded{
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+.ddae-stat-chart-expandable{
+  cursor: zoom-in;
+  touch-action: manipulation;
+}
+.ddae-stat-chart-expandable.ddae-stat-chart-expanded{
+  position: fixed !important;
+  z-index: 2147482000 !important;
+  top: calc(58px + var(--safe-top, 0px)) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: calc(100dvh - 58px - var(--safe-top, 0px)) !important;
+  min-width: 100vw !important;
+  max-width: 100vw !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  background: var(--surface, #ffffff) !important;
+  cursor: zoom-out !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+.ddae-stat-chart-expandable.ddae-stat-chart-expanded canvas,
+.ddae-stat-chart-expandable.ddae-stat-chart-expanded .statgen-line-chart,
+.ddae-stat-chart-expandable.ddae-stat-chart-expanded .stats-pie-chart,
+.ddae-stat-chart-expandable.ddae-stat-chart-expanded .stats-pie-chart-canvas{
+  display: block !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+body.ddae-dark .ddae-stat-chart-expandable.ddae-stat-chart-expanded{
+  background: var(--surface, #08101f) !important;
+}
