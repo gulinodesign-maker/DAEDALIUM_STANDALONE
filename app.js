@@ -92,10 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.091
+ * Build: 3.092
  */
-const BUILD_VERSION = "3.091";
+const BUILD_VERSION = "3.092";
 
+/* dDAE_3.092 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
@@ -32958,9 +32959,10 @@ function __guestReportResolveRoomCards__(lang, guest){
       const range = __guestReportFormatRange__(lang, booking?.check_in ?? booking?.checkIn ?? '', booking?.check_out ?? booking?.checkOut ?? '');
       const beds = isLocale ? '' : __guestReportRoomBedsValue__(lang, info);
       const displayNumber = getRoomDisplayLabel(n) || n;
+      const roomName = getRoomNameLabel(n) || String(displayNumber);
       cards.push({
         kind:'roomCard',
-        label:`${__guestReportT__(lang, isLocale ? 'venue' : 'room')} ${displayNumber}`,
+        label:`${displayNumber} - ${roomName}`,
         value:isLocale ? (range || __guestReportT__(lang, 'none')) : (range ? `${range} ${beds}` : beds),
         dateRange:range,
         bedsValue:beds,
@@ -43722,7 +43724,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.091';
+  var BUILD_TAG='dDAE_3.092';
   var busy=false;
   var lastStart=0;
   var active=null;
