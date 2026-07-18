@@ -92,11 +92,11 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.092
+ * Build: 3.093
  */
-const BUILD_VERSION = "3.092";
+const BUILD_VERSION = "3.093";
 
-/* dDAE_3.092 — Report ospite: numero e nome configurato di stanza/locale */
+/* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
 (function __ddae3053GlobalModalClickThroughShield__(){
   if (typeof document === 'undefined') return;
@@ -3026,8 +3026,23 @@ if (!payload || !payload.datasets){ try{ if(!opts?.silent) toast("Dati non valid
 
     if (payload.datasets[t] !== undefined){
       await __tblSet__(t, payload.datasets[t]);
+      if (t === "impostazioni"){
+        // L'amministratore è autoritativo anche per il catalogo stanze/locali.
+        // Invalida le copie in memoria/localStorage: altrimenti l'operatore può
+        // continuare a interpretare il Locale 1 (slot interno 7) come Stanza 7,
+        // facendo inoltre sparire gli eventi a giornata singola dal calendario.
+        try{
+          state.settings = state.settings || {};
+          state.settings.loaded = false;
+          state.settings.roomCatalogGlobal = null;
+          state.settings.roomCatalogGlobalLoadedAt = 0;
+        }catch(_){ }
+        try{ localStorage.removeItem("dDAE_room_catalog_v1"); }catch(_){ }
+      }
     }
   }
+
+  try{ await ensureSettingsLoaded({ force:true, showLoader:false }); }catch(_){ }
 
     try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
 
@@ -3327,7 +3342,13 @@ async function __fbImportAdmin__(opts){
             byKey.set(k, takeRemote ? Object.assign({}, prev, row) : Object.assign({}, row, prev));
           });
           await __tblSet__("impostazioni", Array.from(byKey.values()));
-          try{ state.settings.loaded = false; }catch(_){ }
+          try{
+            state.settings = state.settings || {};
+            state.settings.loaded = false;
+            state.settings.roomCatalogGlobal = null;
+            state.settings.roomCatalogGlobalLoadedAt = 0;
+          }catch(_){ }
+          try{ localStorage.removeItem("dDAE_room_catalog_v1"); }catch(_){ }
           try{ await ensureSettingsLoaded({ force:true, showLoader:false }); }catch(_){ }
         }
       }
@@ -43724,7 +43745,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.092';
+  var BUILD_TAG='dDAE_3.093';
   var busy=false;
   var lastStart=0;
   var active=null;
