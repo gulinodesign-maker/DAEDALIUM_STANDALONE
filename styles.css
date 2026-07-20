@@ -30251,7 +30251,7 @@ body.ddae-dark .room-kind-badge{
   display:none !important;
 }
 
-/* dDAE_3.096 — stato guest card sull'intera superficie, senza LED */
+/* dDAE_3.097 — stato guest card sull'intera superficie, con urgenze odierne lampeggianti */
 #page-ospiti .guest-card .guest-led{ display:none !important; }
 #page-ospiti .guest-card.is-status-card-blink::after{
   content:"";
