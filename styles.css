@@ -30251,7 +30251,7 @@ body.ddae-dark .room-kind-badge{
   display:none !important;
 }
 
-/* dDAE_3.096 — stato guest card sull'intera superficie, senza LED */
+/* dDAE_3.097 — stato guest card sull'intera superficie, con urgenze odierne lampeggianti */
 #page-ospiti .guest-card .guest-led{ display:none !important; }
 #page-ospiti .guest-card.is-status-card-blink::after{
   content:"";
@@ -30322,48 +30322,44 @@ body.ddae-dark .room-kind-badge{
 }
 
 
-/* dDAE_3.097 — Guest List: alert odierni flat, con priorità checkout rosso. */
-#page-ospiti .guest-card.checkout-pending,
-#page-ospiti .guest-card.checkin-pending{
-  background-image:none !important;
-  box-shadow:none !important;
+/* dDAE_3.098 — lampeggio guest card affidabile su iOS/Safari, anche con Riduci movimento */
+#page-ospiti .guest-card.checkout-pending::before,
+#page-ospiti .guest-card.is-status-card-blink::after{
+  display:block !important;
+  visibility:visible !important;
+  opacity:0.10;
+  will-change:opacity;
+  -webkit-animation-duration:0.9s !important;
+  animation-duration:0.9s !important;
+  -webkit-animation-timing-function:ease-in-out !important;
+  animation-timing-function:ease-in-out !important;
+  -webkit-animation-iteration-count:infinite !important;
+  animation-iteration-count:infinite !important;
 }
-#page-ospiti .guest-card.checkout-pending{
-  background:rgba(239,68,68,0.30) !important;
-  background-color:rgba(239,68,68,0.30) !important;
-  border-color:rgba(220,38,38,0.95) !important;
-  --guest-card-alert-red:rgba(239,68,68,0.72) !important;
+#page-ospiti .guest-card.checkout-pending::before{
+  -webkit-animation-name:ddaeGuestCardRedAlert !important;
+  animation-name:ddaeGuestCardRedAlert !important;
 }
-#page-ospiti .guest-card.checkin-pending{
-  position:relative;
-  background:rgba(34,197,94,0.30) !important;
-  background-color:rgba(34,197,94,0.30) !important;
-  border-color:rgba(22,163,74,0.95) !important;
+#page-ospiti .guest-card.is-status-card-blink::after{
+  -webkit-animation-name:ddaeGuestCardStatusPulse !important;
+  animation-name:ddaeGuestCardStatusPulse !important;
 }
-#page-ospiti .guest-card.checkin-pending::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background:rgba(34,197,94,0.72);
-  opacity:0;
-  pointer-events:none;
-  animation:ddaeGuestCardGreenAlert 1s ease-in-out infinite;
-  z-index:0;
-}
-#page-ospiti .guest-card.checkin-pending > *{ position:relative; z-index:1; }
-@keyframes ddaeGuestCardGreenAlert{
-  0%,100%{ opacity:0.16; }
+@-webkit-keyframes ddaeGuestCardRedAlert{
+  0%,100%{ opacity:0.10; }
   50%{ opacity:1; }
 }
+@-webkit-keyframes ddaeGuestCardStatusPulse{
+  0%,100%{ opacity:0.10; }
+  50%{ opacity:1; }
+}
+/* Gli alert operativi devono restare animati anche quando iOS segnala Riduci movimento. */
 @media (prefers-reduced-motion: reduce){
-  #page-ospiti .guest-card.checkin-pending::after{ animation:none; opacity:0.55; }
-}
-body.ddae-dark #page-ospiti .guest-card.checkout-pending{
-  background:rgba(239,68,68,0.34) !important;
-  background-color:rgba(239,68,68,0.34) !important;
-}
-body.ddae-dark #page-ospiti .guest-card.checkin-pending{
-  background:rgba(34,197,94,0.34) !important;
-  background-color:rgba(34,197,94,0.34) !important;
+  #page-ospiti .guest-card.checkout-pending::before{
+    -webkit-animation:ddaeGuestCardRedAlert 0.9s ease-in-out infinite !important;
+    animation:ddaeGuestCardRedAlert 0.9s ease-in-out infinite !important;
+  }
+  #page-ospiti .guest-card.is-status-card-blink::after{
+    -webkit-animation:ddaeGuestCardStatusPulse 0.9s ease-in-out infinite !important;
+    animation:ddaeGuestCardStatusPulse 0.9s ease-in-out infinite !important;
+  }
 }

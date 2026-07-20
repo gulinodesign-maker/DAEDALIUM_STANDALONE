@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.097
+ * Build: 3.098
  */
-const BUILD_VERSION = "3.097";
+const BUILD_VERSION = "3.098";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7257,6 +7257,32 @@ function __guestGroupCheckInExpectedToday__(guest){
     const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
     return rows.some(g => __guestCheckInExpectedToday__(g));
   }catch(_){ return false; }
+}
+
+
+// dDAE_3.097 — priorità visiva guest card:
+// 1) checkout odierno con saldo mancante = rosso lampeggiante;
+// 2) check-in odierno non confermato = verde lampeggiante.
+function __guestGroupCheckoutTodayUnpaid__(guest){
+  try{
+    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
+    const today = todayISO();
+    const hasCheckoutToday = rows.some((g) => {
+      const out = __parseDateFlexibleToISO(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
+      return !!out && out === today;
+    });
+    if (!hasCheckoutToday) return false;
+    const remaining = __guestRemainingForLed__(guest);
+    return isFinite(remaining) && remaining > 0.0001;
+  }catch(_){ return false; }
+}
+
+function __guestCardUrgentVisualState__(guest){
+  try{
+    if (__guestGroupCheckoutTodayUnpaid__(guest)) return 'checkout-unpaid';
+    if (__guestGroupCheckInExpectedToday__(guest)) return 'checkin-unconfirmed';
+  }catch(_){ }
+  return '';
 }
 
 function __syncGuestCheckInButton__(){
@@ -21429,7 +21455,7 @@ function __applyGuestCardStatusSurface__(card, ledClass){
     card.style.setProperty('background-color', hexToRgba(statusHex, opacity), 'important');
     card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
     card.style.setProperty('--guest-card-alert-red', hexToRgba(__operatoreColorHex__('red-5'), opacity), 'important');
-    card.style.setProperty('--guest-card-pulse-status', hexToRgba(statusHex, Math.max(0.04, opacity * 0.45)), 'important');
+    card.style.setProperty('--guest-card-pulse-status', hexToRgba(statusHex, opacity), 'important');
     card.dataset.guestStatusColor = token;
   }catch(_){ }
 }
@@ -33674,27 +33700,14 @@ function renderGuestCards(){
   cards.forEach(first => {
     if (!first) return;
 
-    // dDAE_3.097 — Alert card Guest List, calcolati su tutte le prenotazioni raggruppate.
-    // Priorità: check-out odierno con rimanenza (rosso) prima del check-in odierno non confermato (verde).
-    const __today = todayISO();
-    const __alertRows = (Array.isArray(first?._groupBookings) && first._groupBookings.length) ? first._groupBookings : [first];
-    const __hasCheckoutPending = __alertRows.some((row) => {
-      try{
-        const outRaw = row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut ?? '';
-        const outISO = __parseDateFlexibleToISO(outRaw);
-        const fin = _guestStayFinancials(row);
-        return !!(outISO && outISO.slice(0,10) === __today && isFinite(fin.remaining) && fin.remaining > 0.0001);
-      }catch(_){ return false; }
-    });
-    const __hasCheckInPending = !__hasCheckoutPending && __alertRows.some((row) => __guestCheckInExpectedToday__(row));
+    // dDAE_3.097 — l'intera card segnala le sole urgenze operative odierne.
+    // Il checkout non pagato ha priorità sul check-in non ancora confermato.
+    const urgentVisualState = __guestCardUrgentVisualState__(first);
 
     const card = document.createElement("div");
     card.className = "guest-card";
     if (__guestIsPreventivo__(first)) card.classList.add("is-preventivo");
-    if (!__guestIsPreventivo__(first)){
-      if (__hasCheckoutPending) card.classList.add("checkout-pending");
-      else if (__hasCheckInPending) card.classList.add("checkin-pending");
-    }
+    if (!__guestIsPreventivo__(first) && urgentVisualState === 'checkout-unpaid') card.classList.add("checkout-pending");
 
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
 
@@ -33705,7 +33718,9 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.097 — lo stato ordinario colora la card; gli alert odierni rosso/verde hanno priorità.
+    // dDAE_3.097 — check-in oggi non confermato: card verde lampeggiante.
+    // La classe non viene applicata quando è attivo l'allarme rosso di checkout.
+    if (!__guestIsPreventivo__(first) && urgentVisualState === 'checkin-unconfirmed') card.classList.add("is-status-card-blink");
     card.dataset.guestStatusClass = String(led.cls || 'led-gray');
     card.setAttribute('title', led.label || 'Stato ospite');
 
@@ -43778,7 +43793,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.097';
+  var BUILD_TAG='dDAE_3.098';
   var busy=false;
   var lastStart=0;
   var active=null;
