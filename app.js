@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.098
+ * Build: 3.099
  */
-const BUILD_VERSION = "3.098";
+const BUILD_VERSION = "3.099";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5845,6 +5845,13 @@ async function hardUpdateCheck(){
       return;
     }
 
+    // La build nuova resta in attesa finché la prenotazione non viene salvata o abbandonata.
+    if (__guestFormEditingInProgress__()){
+      try{ sessionStorage.setItem("dDAE_pending_build", remote); }catch(_){ }
+      __persistGuestDraftNow__();
+      return;
+    }
+
     const lastBuild = String(sessionStorage.getItem("dDAE_update_attempt_build") || "").trim();
     const lastAt = parseInt(String(sessionStorage.getItem("dDAE_update_attempt_at") || "0"), 10) || 0;
     const tooSoon = (lastBuild === remote) && ((Date.now() - lastAt) < 15000);
@@ -5991,12 +5998,56 @@ function __rememberPage(page){
 }
 
 
+// dDAE_3.099 — Protezione compilazione prenotazione su iOS.
+// Un aggiornamento del Service Worker non deve mai azzerare una scheda ospite in corso.
+let __GUEST_FORM_DIRTY = false;
+let __GUEST_DRAFT_TIMER = null;
+function __guestFormEditingInProgress__(){
+  try{
+    if (String(state?.page || "") !== "ospite") return false;
+    const mode = String(state?.guestMode || "").toLowerCase();
+    return (mode === "create" || mode === "edit") && !!__GUEST_FORM_DIRTY;
+  }catch(_){ return false; }
+}
+function __persistGuestDraftNow__(){
+  try{
+    if (String(state?.page || "") !== "ospite") return;
+    __writeRestoreState(__captureUiState());
+  }catch(_){ }
+}
+function __markGuestFormDirty__(){
+  try{
+    const mode = String(state?.guestMode || "").toLowerCase();
+    if (String(state?.page || "") !== "ospite" || (mode !== "create" && mode !== "edit")) return;
+    __GUEST_FORM_DIRTY = true;
+    try{ clearTimeout(__GUEST_DRAFT_TIMER); }catch(_){ }
+    __GUEST_DRAFT_TIMER = setTimeout(__persistGuestDraftNow__, 180);
+  }catch(_){ }
+}
+function __clearGuestFormDirty__(){
+  __GUEST_FORM_DIRTY = false;
+  try{ clearTimeout(__GUEST_DRAFT_TIMER); }catch(_){ }
+}
+try{
+  document.addEventListener("input", (e)=>{
+    try{ if (e?.target?.closest?.("#page-ospite")) __markGuestFormDirty__(); }catch(_){ }
+  }, true);
+  document.addEventListener("change", (e)=>{
+    try{ if (e?.target?.closest?.("#page-ospite")) __markGuestFormDirty__(); }catch(_){ }
+  }, true);
+}catch(_){ }
+
 // ===== Service Worker reload "safe": non interrompere i caricamenti DB =====
 let __SW_RELOAD_PENDING = false;
 let __SW_RELOADING = false;
 
 function __performSwReload(){
   if (__SW_RELOADING) return;
+  if (__guestFormEditingInProgress__()){
+    __SW_RELOAD_PENDING = true;
+    __persistGuestDraftNow__();
+    return;
+  }
   __SW_RELOADING = true;
   try { __writeRestoreState(__captureUiState()); } catch (_) {}
   location.reload();
@@ -6004,6 +6055,12 @@ function __performSwReload(){
 
 function __requestSwReload(){
   try { __writeRestoreState(__captureUiState()); } catch (_) {}
+  // Non interrompere mai una prenotazione in compilazione.
+  if (__guestFormEditingInProgress__()){
+    __SW_RELOAD_PENDING = true;
+    __persistGuestDraftNow__();
+    return;
+  }
   // Se stiamo caricando dati (API), rimanda il reload a fine richieste
   if (loadingState && loadingState.requestCount > 0){
     __SW_RELOAD_PENDING = true;
@@ -6070,6 +6127,12 @@ function __captureUiState(){
       form: {
         guestName: __captureFormValue("guestName"),
         guestNationality: __captureFormValue("guestNationality"),
+        guestPhone: __captureFormValue("guestPhone"),
+        guestEmail: __captureFormValue("guestEmail"),
+        guestResidenceCity: __captureFormValue("guestResidenceCity"),
+        guestBookingNumber: __captureFormValue("guestBookingNumber"),
+        guestMen: __captureFormValue("guestMen"),
+        guestWomen: __captureFormValue("guestWomen"),
         guestAdults: __captureFormValue("guestAdults"),
         guestKidsU10: __captureFormValue("guestKidsU10"),
         guestCheckIn: __captureFormValue("guestCheckIn"),
@@ -6078,9 +6141,12 @@ function __captureUiState(){
         guestChannel: __captureFormValue("guestChannel"),
         guestChannelCommission: __captureFormValue("guestChannelCommission"),
         guestBooking: __captureFormValue("guestBooking"),
+        guestServices: __captureFormValue("guestServices"),
         guestDiscount: __captureFormValue("guestDiscount"),
         guestDeposit: __captureFormValue("guestDeposit"),
         guestSaldo: __captureFormValue("guestSaldo"),
+        guestRemaining: __captureFormValue("guestRemaining"),
+        guestNotes: __captureFormValue("guestNotes"),
       }
     } : null,
     calendar: {
@@ -6133,6 +6199,12 @@ function __applyUiState(restore){
       __applyFormValue("guestName", f.guestName);
       __applyFormValue("guestNationality", f.guestNationality);
       try{ updateGuestNationalityButton(); }catch(_){}
+      __applyFormValue("guestPhone", f.guestPhone);
+      __applyFormValue("guestEmail", f.guestEmail);
+      __applyFormValue("guestResidenceCity", f.guestResidenceCity);
+      __applyFormValue("guestBookingNumber", f.guestBookingNumber);
+      __applyFormValue("guestMen", f.guestMen);
+      __applyFormValue("guestWomen", f.guestWomen);
       __applyFormValue("guestAdults", f.guestAdults);
       __applyFormValue("guestKidsU10", f.guestKidsU10);
       __applyFormValue("guestCheckIn", f.guestCheckIn);
@@ -6142,6 +6214,12 @@ function __applyUiState(restore){
       __applyFormValue("guestChannel", f.guestChannel);
       __applyFormValue("guestChannelCommission", f.guestChannelCommission);
       __applyFormValue("guestBooking", f.guestBooking);
+      __applyFormValue("guestServices", f.guestServices);
+      __applyFormValue("guestDiscount", f.guestDiscount);
+      __applyFormValue("guestDeposit", f.guestDeposit);
+      __applyFormValue("guestSaldo", f.guestSaldo);
+      __applyFormValue("guestRemaining", f.guestRemaining);
+      __applyFormValue("guestNotes", f.guestNotes);
       try { applySelectedChannelToGuestForm(f.guestChannel, { preserveManual:true }); } catch (_) {}
       __applyFormValue("guestDiscount", f.guestDiscount);
       __applyFormValue("guestDeposit", f.guestDeposit);
@@ -17990,6 +18068,13 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
+  if (prevPage === "ospite" && page !== "ospite"){
+    try{ __clearGuestFormDirty__(); }catch(_){ }
+    if (__SW_RELOAD_PENDING){
+      __SW_RELOAD_PENDING = false;
+      setTimeout(()=>{ try{ __performSwReload(); }catch(_){ } }, 120);
+    }
+  }
   try{ __applyVerticalPageLock__(page); }catch(_){ }
 
   // Sync footer: visibile anche in Calendario; resta nascosto nelle pagine operative dedicate.
@@ -26803,6 +26888,7 @@ function updateGuestPriceVisibility(){
 
 
 function enterGuestCreateMode(){
+  __clearGuestFormDirty__();
   setGuestFormViewOnly(false);
 
   state.guestViewItem = null;
@@ -31397,6 +31483,9 @@ if (!name) return toast("Inserisci il nome");
       await api("servizi", { method:"POST", body: { ospite_id: ospiteId, anno: payload.anno, year: payload.year, servizi: (state.guestServicesItems||[]).filter(s=>!(String(s?.isDeleted||s?.deleted||"" )==="1"||s?.isDeleted===true||s?.deleted===true)).map(s=>({ servizio:String(s.servizio??s.name??"").trim(), descrizione:String(s.descrizione??s.desc??"").trim(), importo: parseFloat(s.importo??s.amount??0)||0, qty: parseFloat(s.qty??1)||1 })) } });
     }
   }catch(_){ }
+
+  // La prenotazione è ormai persistita: può essere rimosso il blocco anti-reload.
+  try{ __clearGuestFormDirty__(); }catch(_){ }
 
   // Invalida cache in-memory/locali (ospiti/stanze/statistiche) e forza refresh Calendario.
   // Le statistiche devono rispecchiare subito la scheda ospite appena salvata,
@@ -43785,7 +43874,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.098';
+  var BUILD_TAG='dDAE_3.099';
   var busy=false;
   var lastStart=0;
   var active=null;
