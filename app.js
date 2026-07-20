@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.094
+ * Build: 3.095
  */
-const BUILD_VERSION = "3.094";
+const BUILD_VERSION = "3.095";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7637,7 +7637,9 @@ function openGuestAlertModal(kind){
       const tagsHtml = (row.tags || []).map(tag => `<span class="guest-alert-tag ${escapeHtml(tag.cls || '')}">${escapeHtml(tag.label || '')}</span>`).join('');
       const details = (row.details || []).map(x => escapeHtml(x)).join(' · ');
       const range = formatRangeCompactIT(it.guest?.check_in ?? it.guest?.checkIn ?? '', it.guest?.check_out ?? it.guest?.checkOut ?? '');
-      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(it.name)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>`;
+      const channelBadge = getGuestChannelBadgeData(it.guest || {});
+      const channelDotHtml = `<span class="guest-alert-channel-dot color-${escapeHtml(channelBadge.color || 'orange')}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="Channel: ${escapeHtml(channelBadge.name || channelBadge.initial || 'Channel')}" title="${escapeHtml(channelBadge.name || 'Channel')}"><span>${escapeHtml(channelBadge.initial || 'C')}</span></span>`;
+      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(it.name)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>${channelDotHtml}`;
       const openGuestFromCard = () => __openGuestFromAlertCard__(it.guest || null);
       bindFastTap(card, openGuestFromCard);
       card.addEventListener('keydown', (ev) => {
@@ -33698,7 +33700,7 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.094 — lo stato non usa più un LED: colora l'intera guest card.
+    // dDAE_3.095 — lo stato non usa più un LED: colora l'intera guest card.
     const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
     if (checkInDueBlink) card.classList.add("is-status-card-blink");
     card.dataset.guestStatusClass = String(led.cls || 'led-gray');
@@ -43773,7 +43775,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.094';
+  var BUILD_TAG='dDAE_3.095';
   var busy=false;
   var lastStart=0;
   var active=null;
