@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.099
+ * Build: 3.096
  */
-const BUILD_VERSION = "3.099";
+const BUILD_VERSION = "3.096";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5845,13 +5845,6 @@ async function hardUpdateCheck(){
       return;
     }
 
-    // La build nuova resta in attesa finché la prenotazione non viene salvata o abbandonata.
-    if (__guestFormEditingInProgress__()){
-      try{ sessionStorage.setItem("dDAE_pending_build", remote); }catch(_){ }
-      __persistGuestDraftNow__();
-      return;
-    }
-
     const lastBuild = String(sessionStorage.getItem("dDAE_update_attempt_build") || "").trim();
     const lastAt = parseInt(String(sessionStorage.getItem("dDAE_update_attempt_at") || "0"), 10) || 0;
     const tooSoon = (lastBuild === remote) && ((Date.now() - lastAt) < 15000);
@@ -5998,56 +5991,12 @@ function __rememberPage(page){
 }
 
 
-// dDAE_3.099 — Protezione compilazione prenotazione su iOS.
-// Un aggiornamento del Service Worker non deve mai azzerare una scheda ospite in corso.
-let __GUEST_FORM_DIRTY = false;
-let __GUEST_DRAFT_TIMER = null;
-function __guestFormEditingInProgress__(){
-  try{
-    if (String(state?.page || "") !== "ospite") return false;
-    const mode = String(state?.guestMode || "").toLowerCase();
-    return (mode === "create" || mode === "edit") && !!__GUEST_FORM_DIRTY;
-  }catch(_){ return false; }
-}
-function __persistGuestDraftNow__(){
-  try{
-    if (String(state?.page || "") !== "ospite") return;
-    __writeRestoreState(__captureUiState());
-  }catch(_){ }
-}
-function __markGuestFormDirty__(){
-  try{
-    const mode = String(state?.guestMode || "").toLowerCase();
-    if (String(state?.page || "") !== "ospite" || (mode !== "create" && mode !== "edit")) return;
-    __GUEST_FORM_DIRTY = true;
-    try{ clearTimeout(__GUEST_DRAFT_TIMER); }catch(_){ }
-    __GUEST_DRAFT_TIMER = setTimeout(__persistGuestDraftNow__, 180);
-  }catch(_){ }
-}
-function __clearGuestFormDirty__(){
-  __GUEST_FORM_DIRTY = false;
-  try{ clearTimeout(__GUEST_DRAFT_TIMER); }catch(_){ }
-}
-try{
-  document.addEventListener("input", (e)=>{
-    try{ if (e?.target?.closest?.("#page-ospite")) __markGuestFormDirty__(); }catch(_){ }
-  }, true);
-  document.addEventListener("change", (e)=>{
-    try{ if (e?.target?.closest?.("#page-ospite")) __markGuestFormDirty__(); }catch(_){ }
-  }, true);
-}catch(_){ }
-
 // ===== Service Worker reload "safe": non interrompere i caricamenti DB =====
 let __SW_RELOAD_PENDING = false;
 let __SW_RELOADING = false;
 
 function __performSwReload(){
   if (__SW_RELOADING) return;
-  if (__guestFormEditingInProgress__()){
-    __SW_RELOAD_PENDING = true;
-    __persistGuestDraftNow__();
-    return;
-  }
   __SW_RELOADING = true;
   try { __writeRestoreState(__captureUiState()); } catch (_) {}
   location.reload();
@@ -6055,12 +6004,6 @@ function __performSwReload(){
 
 function __requestSwReload(){
   try { __writeRestoreState(__captureUiState()); } catch (_) {}
-  // Non interrompere mai una prenotazione in compilazione.
-  if (__guestFormEditingInProgress__()){
-    __SW_RELOAD_PENDING = true;
-    __persistGuestDraftNow__();
-    return;
-  }
   // Se stiamo caricando dati (API), rimanda il reload a fine richieste
   if (loadingState && loadingState.requestCount > 0){
     __SW_RELOAD_PENDING = true;
@@ -6127,12 +6070,6 @@ function __captureUiState(){
       form: {
         guestName: __captureFormValue("guestName"),
         guestNationality: __captureFormValue("guestNationality"),
-        guestPhone: __captureFormValue("guestPhone"),
-        guestEmail: __captureFormValue("guestEmail"),
-        guestResidenceCity: __captureFormValue("guestResidenceCity"),
-        guestBookingNumber: __captureFormValue("guestBookingNumber"),
-        guestMen: __captureFormValue("guestMen"),
-        guestWomen: __captureFormValue("guestWomen"),
         guestAdults: __captureFormValue("guestAdults"),
         guestKidsU10: __captureFormValue("guestKidsU10"),
         guestCheckIn: __captureFormValue("guestCheckIn"),
@@ -6141,12 +6078,9 @@ function __captureUiState(){
         guestChannel: __captureFormValue("guestChannel"),
         guestChannelCommission: __captureFormValue("guestChannelCommission"),
         guestBooking: __captureFormValue("guestBooking"),
-        guestServices: __captureFormValue("guestServices"),
         guestDiscount: __captureFormValue("guestDiscount"),
         guestDeposit: __captureFormValue("guestDeposit"),
         guestSaldo: __captureFormValue("guestSaldo"),
-        guestRemaining: __captureFormValue("guestRemaining"),
-        guestNotes: __captureFormValue("guestNotes"),
       }
     } : null,
     calendar: {
@@ -6199,12 +6133,6 @@ function __applyUiState(restore){
       __applyFormValue("guestName", f.guestName);
       __applyFormValue("guestNationality", f.guestNationality);
       try{ updateGuestNationalityButton(); }catch(_){}
-      __applyFormValue("guestPhone", f.guestPhone);
-      __applyFormValue("guestEmail", f.guestEmail);
-      __applyFormValue("guestResidenceCity", f.guestResidenceCity);
-      __applyFormValue("guestBookingNumber", f.guestBookingNumber);
-      __applyFormValue("guestMen", f.guestMen);
-      __applyFormValue("guestWomen", f.guestWomen);
       __applyFormValue("guestAdults", f.guestAdults);
       __applyFormValue("guestKidsU10", f.guestKidsU10);
       __applyFormValue("guestCheckIn", f.guestCheckIn);
@@ -6214,12 +6142,6 @@ function __applyUiState(restore){
       __applyFormValue("guestChannel", f.guestChannel);
       __applyFormValue("guestChannelCommission", f.guestChannelCommission);
       __applyFormValue("guestBooking", f.guestBooking);
-      __applyFormValue("guestServices", f.guestServices);
-      __applyFormValue("guestDiscount", f.guestDiscount);
-      __applyFormValue("guestDeposit", f.guestDeposit);
-      __applyFormValue("guestSaldo", f.guestSaldo);
-      __applyFormValue("guestRemaining", f.guestRemaining);
-      __applyFormValue("guestNotes", f.guestNotes);
       try { applySelectedChannelToGuestForm(f.guestChannel, { preserveManual:true }); } catch (_) {}
       __applyFormValue("guestDiscount", f.guestDiscount);
       __applyFormValue("guestDeposit", f.guestDeposit);
@@ -18068,13 +17990,6 @@ function showPage(page){
 
 state.page = page;
   document.body.dataset.page = page;
-  if (prevPage === "ospite" && page !== "ospite"){
-    try{ __clearGuestFormDirty__(); }catch(_){ }
-    if (__SW_RELOAD_PENDING){
-      __SW_RELOAD_PENDING = false;
-      setTimeout(()=>{ try{ __performSwReload(); }catch(_){ } }, 120);
-    }
-  }
   try{ __applyVerticalPageLock__(page); }catch(_){ }
 
   // Sync footer: visibile anche in Calendario; resta nascosto nelle pagine operative dedicate.
@@ -26888,7 +26803,6 @@ function updateGuestPriceVisibility(){
 
 
 function enterGuestCreateMode(){
-  __clearGuestFormDirty__();
   setGuestFormViewOnly(false);
 
   state.guestViewItem = null;
@@ -31484,9 +31398,6 @@ if (!name) return toast("Inserisci il nome");
     }
   }catch(_){ }
 
-  // La prenotazione è ormai persistita: può essere rimosso il blocco anti-reload.
-  try{ __clearGuestFormDirty__(); }catch(_){ }
-
   // Invalida cache in-memory/locali (ospiti/stanze/statistiche) e forza refresh Calendario.
   // Le statistiche devono rispecchiare subito la scheda ospite appena salvata,
   // soprattutto quando una spunta ricevuta viene tolta.
@@ -33763,23 +33674,17 @@ function renderGuestCards(){
   cards.forEach(first => {
     if (!first) return;
 
-    // dDAE_3.097 — checkout odierno non saldato: considera tutti i blocchi della guest card.
-    // La card raggruppata deve lampeggiare anche quando il soggiorno in uscita non è il primo record del gruppo.
+    // Evidenzia checkout oggi con pagamento in sospeso (rimanenza > 0)
     const __today = todayISO();
-    const __checkoutRows = (Array.isArray(first?._groupBookings) && first._groupBookings.length) ? first._groupBookings : [first];
-    const __hasCheckoutPending = __checkoutRows.some((row) => {
-      try{
-        const outRaw = (typeof __guestEffectiveCheckOutRaw__ === 'function')
-          ? __guestEffectiveCheckOutRaw__(row)
-          : (row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut ?? '');
-        const outISO = __parseDateFlexibleToISO(outRaw);
-        if (!outISO || outISO.slice(0,10) !== __today) return false;
-        const remaining = (typeof __guestRemainingForLed__ === 'function')
-          ? __guestRemainingForLed__(row)
-          : ((typeof _guestStayFinancials === 'function') ? Number(_guestStayFinancials(row)?.remaining) : null);
-        return isFinite(remaining) && Number(remaining) > 0.0001;
-      }catch(_){ return false; }
-    });
+    const outISO = __parseDateFlexibleToISO(first?.check_out || first?.checkOut);
+    const total = money(first?.importo_prenotazione ?? first?.importo_prenota ?? first?.total ?? 0);
+    const services = money(first?.servizi_totale ?? first?.serviziTotal ?? first?.importo_servizi ?? 0);
+    const dep = money(first?.acconto_importo ?? first?.accontoImporto ?? first?.deposit ?? 0);
+    const saldo = money(first?.saldo_pagato ?? first?.saldoPagato ?? first?.saldo ?? 0);
+    const discount = money(first?.sconto ?? first?.discount ?? first?.sconto_importo ?? first?.scontoImporto ?? 0);
+    const remainingRaw = (total + services) - discount - dep - saldo;
+    const remaining = Math.max(0, Math.round((isFinite(remainingRaw) ? remainingRaw : 0) * 100) / 100);
+    const __hasCheckoutPending = !!(outISO && outISO === __today && isFinite(remaining) && remaining > 0.0001);
 
     const card = document.createElement("div");
     card.className = "guest-card";
@@ -33795,15 +33700,11 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.098 — check-in odierno non confermato: la guest card lampeggia sempre in verde.
-    // La verifica considera tutti i soggiorni raggruppati; il checkout odierno non saldato resta prioritario.
-    const checkInDueBlink = !__hasCheckoutPending && __guestGroupCheckInExpectedToday__(first);
-    const cardStatus = checkInDueBlink
-      ? { cls: "led-green", label: "Check-in oggi da confermare" }
-      : led;
-    if (checkInDueBlink) card.classList.add("is-status-card-blink", "is-checkin-due");
-    card.dataset.guestStatusClass = String(cardStatus.cls || 'led-gray');
-    card.setAttribute('title', cardStatus.label || 'Stato ospite');
+    // dDAE_3.096 — lo stato non usa più un LED: colora l'intera guest card.
+    const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
+    if (checkInDueBlink) card.classList.add("is-status-card-blink");
+    card.dataset.guestStatusClass = String(led.cls || 'led-gray');
+    card.setAttribute('title', led.label || 'Stato ospite');
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
@@ -33849,7 +33750,7 @@ function renderGuestCards(){
     `;
 
     try{ __applyGuestListCardVisual__(card); }catch(_){ }
-    try{ __applyGuestCardStatusSurface__(card, cardStatus.cls); }catch(_){ }
+    try{ __applyGuestCardStatusSurface__(card, led.cls); }catch(_){ }
     try{ __bindGuestListCardColorHold__(card); }catch(_){ }
 
     const open = () => {
@@ -43874,7 +43775,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.099';
+  var BUILD_TAG='dDAE_3.096';
   var busy=false;
   var lastStart=0;
   var active=null;
