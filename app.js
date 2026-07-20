@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.095
+ * Build: 3.096
  */
-const BUILD_VERSION = "3.095";
+const BUILD_VERSION = "3.096";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -33700,7 +33700,7 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.095 — lo stato non usa più un LED: colora l'intera guest card.
+    // dDAE_3.096 — lo stato non usa più un LED: colora l'intera guest card.
     const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
     if (checkInDueBlink) card.classList.add("is-status-card-blink");
     card.dataset.guestStatusClass = String(led.cls || 'led-gray');
@@ -43775,7 +43775,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.095';
+  var BUILD_TAG='dDAE_3.096';
   var busy=false;
   var lastStart=0;
   var active=null;

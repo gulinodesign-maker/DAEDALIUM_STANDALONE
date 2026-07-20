@@ -30251,7 +30251,7 @@ body.ddae-dark .room-kind-badge{
   display:none !important;
 }
 
-/* dDAE_3.095 — stato guest card sull'intera superficie, senza LED */
+/* dDAE_3.096 — stato guest card sull'intera superficie, senza LED */
 #page-ospiti .guest-card .guest-led{ display:none !important; }
 #page-ospiti .guest-card.is-status-card-blink::after{
   content:"";
@@ -30274,7 +30274,7 @@ body.ddae-dark .room-kind-badge{
 }
 
 
-/* dDAE_3.095 — Popup alert: indicatore CHANNEL in basso a destra su ogni scheda */
+/* dDAE_3.096 — Popup alert: indicatore CHANNEL in basso a destra su ogni scheda */
 #guestAlertModal .guest-alert-card{
   position:relative !important;
   padding-right:64px !important;
@@ -30303,4 +30303,20 @@ body.ddae-dark .room-kind-badge{
 #guestAlertModal .guest-alert-channel-dot > span{
   display:block !important;
   line-height:1 !important;
+}
+
+/* dDAE_3.096 — Popup alert: X e CHANNEL sulla stessa colonna destra */
+#guestAlertModal .guest-alert-card{
+  position:relative !important;
+  padding-right:64px !important;
+}
+#guestAlertModal .guest-alert-dismiss{
+  position:absolute !important;
+  right:14px !important;
+  top:12px !important;
+  margin:0 !important;
+  z-index:3 !important;
+}
+#guestAlertModal .guest-alert-channel-dot{
+  right:15px !important;
 }
