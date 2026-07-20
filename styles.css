@@ -30320,3 +30320,50 @@ body.ddae-dark .room-kind-badge{
 #guestAlertModal .guest-alert-channel-dot{
   right:15px !important;
 }
+
+
+/* dDAE_3.097 — Guest List: alert odierni flat, con priorità checkout rosso. */
+#page-ospiti .guest-card.checkout-pending,
+#page-ospiti .guest-card.checkin-pending{
+  background-image:none !important;
+  box-shadow:none !important;
+}
+#page-ospiti .guest-card.checkout-pending{
+  background:rgba(239,68,68,0.30) !important;
+  background-color:rgba(239,68,68,0.30) !important;
+  border-color:rgba(220,38,38,0.95) !important;
+  --guest-card-alert-red:rgba(239,68,68,0.72) !important;
+}
+#page-ospiti .guest-card.checkin-pending{
+  position:relative;
+  background:rgba(34,197,94,0.30) !important;
+  background-color:rgba(34,197,94,0.30) !important;
+  border-color:rgba(22,163,74,0.95) !important;
+}
+#page-ospiti .guest-card.checkin-pending::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:rgba(34,197,94,0.72);
+  opacity:0;
+  pointer-events:none;
+  animation:ddaeGuestCardGreenAlert 1s ease-in-out infinite;
+  z-index:0;
+}
+#page-ospiti .guest-card.checkin-pending > *{ position:relative; z-index:1; }
+@keyframes ddaeGuestCardGreenAlert{
+  0%,100%{ opacity:0.16; }
+  50%{ opacity:1; }
+}
+@media (prefers-reduced-motion: reduce){
+  #page-ospiti .guest-card.checkin-pending::after{ animation:none; opacity:0.55; }
+}
+body.ddae-dark #page-ospiti .guest-card.checkout-pending{
+  background:rgba(239,68,68,0.34) !important;
+  background-color:rgba(239,68,68,0.34) !important;
+}
+body.ddae-dark #page-ospiti .guest-card.checkin-pending{
+  background:rgba(34,197,94,0.34) !important;
+  background-color:rgba(34,197,94,0.34) !important;
+}

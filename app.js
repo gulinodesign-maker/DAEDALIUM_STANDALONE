@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.096
+ * Build: 3.097
  */
-const BUILD_VERSION = "3.096";
+const BUILD_VERSION = "3.097";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -33674,22 +33674,27 @@ function renderGuestCards(){
   cards.forEach(first => {
     if (!first) return;
 
-    // Evidenzia checkout oggi con pagamento in sospeso (rimanenza > 0)
+    // dDAE_3.097 — Alert card Guest List, calcolati su tutte le prenotazioni raggruppate.
+    // Priorità: check-out odierno con rimanenza (rosso) prima del check-in odierno non confermato (verde).
     const __today = todayISO();
-    const outISO = __parseDateFlexibleToISO(first?.check_out || first?.checkOut);
-    const total = money(first?.importo_prenotazione ?? first?.importo_prenota ?? first?.total ?? 0);
-    const services = money(first?.servizi_totale ?? first?.serviziTotal ?? first?.importo_servizi ?? 0);
-    const dep = money(first?.acconto_importo ?? first?.accontoImporto ?? first?.deposit ?? 0);
-    const saldo = money(first?.saldo_pagato ?? first?.saldoPagato ?? first?.saldo ?? 0);
-    const discount = money(first?.sconto ?? first?.discount ?? first?.sconto_importo ?? first?.scontoImporto ?? 0);
-    const remainingRaw = (total + services) - discount - dep - saldo;
-    const remaining = Math.max(0, Math.round((isFinite(remainingRaw) ? remainingRaw : 0) * 100) / 100);
-    const __hasCheckoutPending = !!(outISO && outISO === __today && isFinite(remaining) && remaining > 0.0001);
+    const __alertRows = (Array.isArray(first?._groupBookings) && first._groupBookings.length) ? first._groupBookings : [first];
+    const __hasCheckoutPending = __alertRows.some((row) => {
+      try{
+        const outRaw = row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut ?? '';
+        const outISO = __parseDateFlexibleToISO(outRaw);
+        const fin = _guestStayFinancials(row);
+        return !!(outISO && outISO.slice(0,10) === __today && isFinite(fin.remaining) && fin.remaining > 0.0001);
+      }catch(_){ return false; }
+    });
+    const __hasCheckInPending = !__hasCheckoutPending && __alertRows.some((row) => __guestCheckInExpectedToday__(row));
 
     const card = document.createElement("div");
     card.className = "guest-card";
     if (__guestIsPreventivo__(first)) card.classList.add("is-preventivo");
-    if (__hasCheckoutPending && !__guestIsPreventivo__(first)) card.classList.add("checkout-pending");
+    if (!__guestIsPreventivo__(first)){
+      if (__hasCheckoutPending) card.classList.add("checkout-pending");
+      else if (__hasCheckInPending) card.classList.add("checkin-pending");
+    }
 
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
 
@@ -33700,9 +33705,7 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.096 — lo stato non usa più un LED: colora l'intera guest card.
-    const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
-    if (checkInDueBlink) card.classList.add("is-status-card-blink");
+    // dDAE_3.097 — lo stato ordinario colora la card; gli alert odierni rosso/verde hanno priorità.
     card.dataset.guestStatusClass = String(led.cls || 'led-gray');
     card.setAttribute('title', led.label || 'Stato ospite');
 
@@ -43775,7 +43778,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.096';
+  var BUILD_TAG='dDAE_3.097';
   var busy=false;
   var lastStart=0;
   var active=null;
