@@ -30320,3 +30320,26 @@ body.ddae-dark .room-kind-badge{
 #guestAlertModal .guest-alert-channel-dot{
   right:15px !important;
 }
+
+
+/* dDAE_3.097 — checkout oggi con saldo residuo: intera card rossa e lampeggiante */
+#page-ospiti .guest-card.checkout-pending{
+  border-color:rgba(239,68,68,1) !important;
+  overflow:hidden !important;
+}
+#page-ospiti .guest-card.checkout-pending::before{
+  inset:0 !important;
+  border-radius:inherit !important;
+  background:var(--guest-card-alert-red, rgba(239,68,68,.22)) !important;
+  animation:ddaeGuestCardCheckoutRedPulse .9s ease-in-out infinite !important;
+}
+#page-ospiti .guest-card.checkout-pending.is-status-card-blink::after{
+  display:none !important;
+}
+@keyframes ddaeGuestCardCheckoutRedPulse{
+  0%,100%{ opacity:.24; }
+  50%{ opacity:1; }
+}
+@media (prefers-reduced-motion: reduce){
+  #page-ospiti .guest-card.checkout-pending::before{ animation:none !important; opacity:.72 !important; }
+}

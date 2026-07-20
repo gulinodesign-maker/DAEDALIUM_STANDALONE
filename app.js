@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.096
+ * Build: 3.097
  */
-const BUILD_VERSION = "3.096";
+const BUILD_VERSION = "3.097";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -33674,17 +33674,23 @@ function renderGuestCards(){
   cards.forEach(first => {
     if (!first) return;
 
-    // Evidenzia checkout oggi con pagamento in sospeso (rimanenza > 0)
+    // dDAE_3.097 — checkout odierno non saldato: considera tutti i blocchi della guest card.
+    // La card raggruppata deve lampeggiare anche quando il soggiorno in uscita non è il primo record del gruppo.
     const __today = todayISO();
-    const outISO = __parseDateFlexibleToISO(first?.check_out || first?.checkOut);
-    const total = money(first?.importo_prenotazione ?? first?.importo_prenota ?? first?.total ?? 0);
-    const services = money(first?.servizi_totale ?? first?.serviziTotal ?? first?.importo_servizi ?? 0);
-    const dep = money(first?.acconto_importo ?? first?.accontoImporto ?? first?.deposit ?? 0);
-    const saldo = money(first?.saldo_pagato ?? first?.saldoPagato ?? first?.saldo ?? 0);
-    const discount = money(first?.sconto ?? first?.discount ?? first?.sconto_importo ?? first?.scontoImporto ?? 0);
-    const remainingRaw = (total + services) - discount - dep - saldo;
-    const remaining = Math.max(0, Math.round((isFinite(remainingRaw) ? remainingRaw : 0) * 100) / 100);
-    const __hasCheckoutPending = !!(outISO && outISO === __today && isFinite(remaining) && remaining > 0.0001);
+    const __checkoutRows = (Array.isArray(first?._groupBookings) && first._groupBookings.length) ? first._groupBookings : [first];
+    const __hasCheckoutPending = __checkoutRows.some((row) => {
+      try{
+        const outRaw = (typeof __guestEffectiveCheckOutRaw__ === 'function')
+          ? __guestEffectiveCheckOutRaw__(row)
+          : (row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut ?? '');
+        const outISO = __parseDateFlexibleToISO(outRaw);
+        if (!outISO || outISO.slice(0,10) !== __today) return false;
+        const remaining = (typeof __guestRemainingForLed__ === 'function')
+          ? __guestRemainingForLed__(row)
+          : ((typeof _guestStayFinancials === 'function') ? Number(_guestStayFinancials(row)?.remaining) : null);
+        return isFinite(remaining) && Number(remaining) > 0.0001;
+      }catch(_){ return false; }
+    });
 
     const card = document.createElement("div");
     card.className = "guest-card";
@@ -33701,7 +33707,7 @@ function renderGuestCards(){
 
     const led = guestLedStatus(first);
     // dDAE_3.096 — lo stato non usa più un LED: colora l'intera guest card.
-    const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
+    const checkInDueBlink = !__hasCheckoutPending && __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
     if (checkInDueBlink) card.classList.add("is-status-card-blink");
     card.dataset.guestStatusClass = String(led.cls || 'led-gray');
     card.setAttribute('title', led.label || 'Stato ospite');
@@ -43775,7 +43781,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.096';
+  var BUILD_TAG='dDAE_3.097';
   var busy=false;
   var lastStart=0;
   var active=null;
