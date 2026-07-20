@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.097
+ * Build: 3.098
  */
-const BUILD_VERSION = "3.097";
+const BUILD_VERSION = "3.098";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -33706,11 +33706,15 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_3.096 — lo stato non usa più un LED: colora l'intera guest card.
-    const checkInDueBlink = !__hasCheckoutPending && __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
-    if (checkInDueBlink) card.classList.add("is-status-card-blink");
-    card.dataset.guestStatusClass = String(led.cls || 'led-gray');
-    card.setAttribute('title', led.label || 'Stato ospite');
+    // dDAE_3.098 — check-in odierno non confermato: la guest card lampeggia sempre in verde.
+    // La verifica considera tutti i soggiorni raggruppati; il checkout odierno non saldato resta prioritario.
+    const checkInDueBlink = !__hasCheckoutPending && __guestGroupCheckInExpectedToday__(first);
+    const cardStatus = checkInDueBlink
+      ? { cls: "led-green", label: "Check-in oggi da confermare" }
+      : led;
+    if (checkInDueBlink) card.classList.add("is-status-card-blink", "is-checkin-due");
+    card.dataset.guestStatusClass = String(cardStatus.cls || 'led-gray');
+    card.setAttribute('title', cardStatus.label || 'Stato ospite');
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
@@ -33756,7 +33760,7 @@ function renderGuestCards(){
     `;
 
     try{ __applyGuestListCardVisual__(card); }catch(_){ }
-    try{ __applyGuestCardStatusSurface__(card, led.cls); }catch(_){ }
+    try{ __applyGuestCardStatusSurface__(card, cardStatus.cls); }catch(_){ }
     try{ __bindGuestListCardColorHold__(card); }catch(_){ }
 
     const open = () => {
@@ -43781,7 +43785,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.097';
+  var BUILD_TAG='dDAE_3.098';
   var busy=false;
   var lastStart=0;
   var active=null;

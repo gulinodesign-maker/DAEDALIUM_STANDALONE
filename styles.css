@@ -30343,3 +30343,20 @@ body.ddae-dark .room-kind-badge{
 @media (prefers-reduced-motion: reduce){
   #page-ospiti .guest-card.checkout-pending::before{ animation:none !important; opacity:.72 !important; }
 }
+
+
+/* dDAE_3.098 — check-in oggi non confermato: intera guest card verde lampeggiante */
+#page-ospiti .guest-card.is-checkin-due{
+  overflow:hidden !important;
+}
+#page-ospiti .guest-card.is-checkin-due::after{
+  background:var(--guest-card-pulse-status, rgba(34,197,94,.22)) !important;
+  animation:ddaeGuestCardCheckInGreenPulse .9s ease-in-out infinite !important;
+}
+@keyframes ddaeGuestCardCheckInGreenPulse{
+  0%,100%{ opacity:.24; }
+  50%{ opacity:1; }
+}
+@media (prefers-reduced-motion: reduce){
+  #page-ospiti .guest-card.is-checkin-due::after{ animation:none !important; opacity:.72 !important; }
+}
