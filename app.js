@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.093
+ * Build: 3.094
  */
-const BUILD_VERSION = "3.093";
+const BUILD_VERSION = "3.094";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -21406,6 +21406,32 @@ function __guestListCardApplyVisualToAllKeys__(visual){
   }catch(_){ }
 }
 
+function __guestStatusVisualColor__(ledClass){
+  const cls = String(ledClass || '');
+  if (cls.includes('led-red')) return 'red-5';
+  if (cls.includes('led-orange')) return 'orange-4';
+  if (cls.includes('led-green')) return 'green-5';
+  if (cls.includes('led-blue')) return 'sky-5';
+  return 'gray-3';
+}
+
+function __applyGuestCardStatusSurface__(card, ledClass){
+  try{
+    if (!card) return;
+    const visual = __guestListCardVisualRead__(card);
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 0.22);
+    const token = __guestStatusVisualColor__(ledClass);
+    const statusHex = __operatoreColorHex__(token);
+    const borderHex = __operatoreColorHex__(visual.border || token);
+    card.style.setProperty('background', hexToRgba(statusHex, opacity), 'important');
+    card.style.setProperty('background-color', hexToRgba(statusHex, opacity), 'important');
+    card.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    card.style.setProperty('--guest-card-alert-red', hexToRgba(__operatoreColorHex__('red-5'), opacity), 'important');
+    card.style.setProperty('--guest-card-pulse-status', hexToRgba(statusHex, Math.max(0.04, opacity * 0.45)), 'important');
+    card.dataset.guestStatusColor = token;
+  }catch(_){ }
+}
+
 function __applyGuestListCardVisual__(card){
   try{
     if (!card) return;
@@ -21496,6 +21522,7 @@ function __openGuestListCardColorPicker__(card){
         }
       }
     });
+    try{ if (card.dataset.guestStatusClass) __applyGuestCardStatusSurface__(card, card.dataset.guestStatusClass); }catch(_){ }
   }catch(_){ }
 }
 
@@ -33671,10 +33698,11 @@ function renderGuestCards(){
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
     const led = guestLedStatus(first);
-    // dDAE_2.748 — Il LED stato della guest list deve lampeggiare per gli arrivi di oggi
-    // quando il check-in non è ancora stato confermato. Include anche eventuali classi
-    // stato composte/legacy, evitando solo stati grigi/rossi.
+    // dDAE_3.094 — lo stato non usa più un LED: colora l'intera guest card.
     const checkInDueBlink = __guestGroupCheckInExpectedToday__(first) && !String(led.cls || '').includes('led-gray') && !String(led.cls || '').includes('led-red');
+    if (checkInDueBlink) card.classList.add("is-status-card-blink");
+    card.dataset.guestStatusClass = String(led.cls || 'led-gray');
+    card.setAttribute('title', led.label || 'Stato ospite');
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
@@ -33713,7 +33741,6 @@ function renderGuestCards(){
             ${marriageOn ? `<span class="marriage-dot" aria-label="${escapeHtml(__translateExactText__('Matrimonio') || 'Matrimonio')}">M</span>` : ``}
             ${(truthy(first?.g ?? first?.flag_g ?? first?.gruppo_g ?? first?.group ?? first?.g_flag) ? `<span class="g-dot" aria-label="G">G</span>` : ``)}
             ${(truthy(first?.col_c ?? first?.colC ?? first?.c ?? first?.C ?? first?.flag_c ?? first?.flagC ?? first?.colc ?? first?.c_flag) ? `<span class="c-dot" aria-label="C">C</span>` : ``)}
-            <span class="guest-led ${led.cls}${checkInDueBlink ? ' is-checkin-due-blink' : ''}" aria-label="${led.label}${checkInDueBlink ? ' — ' + (__translateExactText__('check-in non effettuato') || 'check-in non effettuato') : ''}" title="${led.label}${checkInDueBlink ? ' — ' + (__translateExactText__('check-in non effettuato') || 'check-in non effettuato') : ''}"></span>
           </div>
           ${buildGuestCardAlertLedsHTML(first)}
         </div>
@@ -33721,6 +33748,7 @@ function renderGuestCards(){
     `;
 
     try{ __applyGuestListCardVisual__(card); }catch(_){ }
+    try{ __applyGuestCardStatusSurface__(card, led.cls); }catch(_){ }
     try{ __bindGuestListCardColorHold__(card); }catch(_){ }
 
     const open = () => {
@@ -43745,7 +43773,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.093';
+  var BUILD_TAG='dDAE_3.094';
   var busy=false;
   var lastStart=0;
   var active=null;
