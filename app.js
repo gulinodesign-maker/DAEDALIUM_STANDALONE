@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.105';
+  var BUILD_TAG='dDAE_3.106';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47986,4 +47986,43 @@ try{
   document.addEventListener('DOMContentLoaded', () => { bind(); syncLanguage(); });
   window.addEventListener('ddae:language-change', syncLanguage);
   setTimeout(() => { bind(); syncLanguage(); }, 0);
+})();
+
+
+/* dDAE_3.106 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+(function __fixBarCategoryPages3106__(){
+  const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
+  function syncBarBack(){
+    try{
+      const btn=document.getElementById('barBackTop');
+      if(!btn) return;
+      const page=String((window.state&&window.state.page)||document.body.dataset.page||'');
+      btn.hidden=!categoryPages.has(page);
+      btn.setAttribute('aria-label', (typeof __translateText__==='function') ? __translateText__('Torna a Bar') : 'Torna a Bar');
+      if(!btn.dataset.barBackBound){
+        btn.dataset.barBackBound='1';
+        bindFastTap(btn, function(){ try{ showPage('statistichecopy'); hideLauncher(); }catch(_){ } });
+      }
+      try{ if(typeof __bindHeaderActionLongPress__==='function') __bindHeaderActionLongPress__(btn); }catch(_){ }
+      try{ if(typeof __headerActionApplyToButton__==='function') __headerActionApplyToButton__(btn); }catch(_){ }
+    }catch(_){ }
+  }
+  function ensureSlots(){
+    try{
+      document.querySelectorAll('.bar-category-page').forEach(function(page){
+        const grid=page.querySelector('.bar-slots-grid');
+        if(!grid) return;
+        grid.hidden=false;
+        grid.style.removeProperty('display');
+        grid.querySelectorAll('.bar-slot-btn').forEach(function(btn){
+          btn.hidden=false;
+          btn.removeAttribute('aria-hidden');
+        });
+      });
+    }catch(_){ }
+  }
+  document.addEventListener('DOMContentLoaded',function(){ ensureSlots(); syncBarBack(); });
+  window.addEventListener('ddae:language-change',syncBarBack);
+  try{ new MutationObserver(function(){ syncBarBack(); }).observe(document.body,{attributes:true,attributeFilter:['data-page']}); }catch(_){ }
+  setTimeout(function(){ ensureSlots(); syncBarBack(); },0);
 })();

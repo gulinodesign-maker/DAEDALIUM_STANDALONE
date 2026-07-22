@@ -30407,3 +30407,22 @@ body.ddae-dark #page-statistichecopy .stats-title{
 .bar-slots-grid .bar-slot-btn{width:100%;min-width:0;height:82px;min-height:82px;margin:0;display:flex;align-items:center;justify-content:center;position:relative;}
 .bar-slot-empty{display:block;width:1px;height:1px;opacity:0;pointer-events:none;}
 @media (max-width:430px){.bar-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.bar-slots-grid .bar-slot-btn{height:76px;min-height:76px;}}
+
+
+/* dDAE_3.106 — Slot Bar visibili e stabili */
+.bar-category-page:not([hidden]){display:block !important;}
+.bar-category-page .bar-page{display:block !important; min-height:calc(100dvh - 150px);}
+.bar-category-page .bar-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
+.bar-category-page .bar-slots-grid .bar-slot-btn{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1;
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(148,163,184,.38);
+  border-radius:22px;
+  box-shadow:none;
+}
+body.ddae-dark .bar-category-page .bar-slots-grid .bar-slot-btn{
+  background:rgba(15,23,42,.82);
+  border-color:rgba(148,163,184,.34);
+}
