@@ -96,9 +96,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.101
+ * Build: 3.102
  */
-const BUILD_VERSION = "3.101";
+const BUILD_VERSION = "3.102";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -8309,6 +8309,11 @@ let __applyingLanguage__ = false;
 let __languageObserver__ = null;
 let __MONTHS_IT = [];
 const __I18N_PHRASES__ = {
+  "Bar": { "en":"Bar", "fr":"Bar", "de":"Bar", "es":"Bar" },
+  "Cocktail": { "en":"Cocktails", "fr":"Cocktails", "de":"Cocktails", "es":"Cócteles" },
+  "Vino": { "en":"Wine", "fr":"Vin", "de":"Wein", "es":"Vino" },
+  "Birra": { "en":"Beer", "fr":"Bière", "de":"Bier", "es":"Cerveza" },
+  "Analcolici": { "en":"Soft drinks", "fr":"Sans alcool", "de":"Alkoholfrei", "es":"Sin alcohol" },
   "crea account": {
     "en": "create account",
     "fr": "créer un compte",
@@ -11566,7 +11571,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
@@ -11589,6 +11594,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsChannelBtn: 'orange-4',
   settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
+  settingsBarBtn: 'beige-5',
   settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
@@ -12810,7 +12816,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
 
@@ -12892,7 +12898,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -17440,11 +17446,12 @@ function bindFastTap(el, fn){
     settingsOperatoriBtn: 'operatori',
     settingsChannelBtn: 'channel',
     settingsRoomCatalogBtn: 'roomcatalog',
-    settingsLaundryCatalogBtn: 'laundrycatalog'
+    settingsLaundryCatalogBtn: 'laundrycatalog',
+    settingsBarBtn: 'bar'
   };
   let lastTap = 0;
   const handler = (e) => {
-    const btn = e.target && e.target.closest ? e.target.closest('#settingsDataModal #settingsOperatoriBtn,#settingsDataModal #settingsChannelBtn,#settingsDataModal #settingsRoomCatalogBtn,#settingsDataModal #settingsLaundryCatalogBtn') : null;
+    const btn = e.target && e.target.closest ? e.target.closest('#settingsDataModal #settingsOperatoriBtn,#settingsDataModal #settingsChannelBtn,#settingsDataModal #settingsRoomCatalogBtn,#settingsDataModal #settingsLaundryCatalogBtn,#settingsDataModal #settingsBarBtn') : null;
     if (!btn) return;
     const now = Date.now();
     if (now - lastTap < 450) return;
@@ -43806,7 +43813,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.101';
+  var BUILD_TAG='dDAE_3.102';
   var busy=false;
   var lastStart=0;
   var active=null;
