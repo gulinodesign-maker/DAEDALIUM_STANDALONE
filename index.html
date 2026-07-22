@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.099" rel="stylesheet"/>
-<link href="./manifest.json?v=3.099" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.099" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.099" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.099" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.099" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.099" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.099" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.100" rel="stylesheet"/>
+<link href="./manifest.json?v=3.100" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.100" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.100" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.100" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.100" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.100" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.100" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.099";
+window.APP_VERSION = "3.100";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.099";
+  const LOCAL_BUILD = "dDAE_3.100";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.099";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.099")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.099")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.100")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.100")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -308,7 +308,7 @@ window.APP_VERSION = "3.099";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.099"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.100"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -476,14 +476,14 @@ window.APP_VERSION = "3.099";
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Statistiche" class="home-main" id="goOrePuliziaHome" type="button">
+<button aria-label="Bar" class="home-main" id="goOrePuliziaHome" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 9V7.5A2.5 2.5 0 0 1 9.5 5h5A2.5 2.5 0 0 1 17 7.5V9"></path>
-<path d="M6 9h12a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z"></path>
-<path d="M9 15h6"></path>
-<path d="M12 12v6"></path>
+<path d="M5 3h14"></path>
+<path d="M7 3l5 7 5-7"></path>
+<path d="M12 10v8"></path>
+<path d="M8 21h8"></path>
 </svg></div>
-<div class="home-main-label">Statistiche</div>
+<div class="home-main-label">Bar</div>
 </button>
 <button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -516,7 +516,7 @@ window.APP_VERSION = "3.099";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.099</div></div></section>
+<div class="build" id="buildText">dDAE_3.100</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -657,106 +657,31 @@ window.APP_VERSION = "3.099";
 </div>
 </div>
 </section>
-<!-- STATISTICHE: COPIA DISATTIVA -->
+<!-- BAR -->
 <section class="page" hidden="" id="page-statistichecopy">
-<div class="stats-page">
-<div class="stats-title">Statistiche</div>
+<div class="stats-page bar-page">
+<div class="stats-title">Bar</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Sezioni statistiche" class="home-grid" role="navigation">
-<button disabled="" aria-disabled="true" aria-label="Generali" class="home-main" id="copy_goStatGen" type="button">
+<div aria-label="Categorie bar" class="home-grid bar-grid" role="navigation">
+<button disabled="" aria-disabled="true" aria-label="Cocktail" class="home-main" id="copy_goStatGen" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 9V7.5A2.5 2.5 0 0 1 9.5 5h5A2.5 2.5 0 0 1 17 7.5V9"></path>
-<path d="M6 9h12a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z"></path>
-<path d="M9 15h6"></path>
-<path d="M12 12v6"></path>
-</svg></div>
-<div class="home-main-label">Generali</div>
+<path d="M4 3h16"></path><path d="M6 3l6 8 6-8"></path><path d="M12 11v7"></path><path d="M8 21h8"></path><path d="M16 6h3"></path>
+</svg></div><div class="home-main-label">Cocktail</div>
 </button>
-<button disabled="" aria-disabled="true" aria-label="Mensili" class="home-main" id="copy_goStatMensili" type="button">
+<button disabled="" aria-disabled="true" aria-label="Vino" class="home-main" id="copy_goStatMensili" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M4 19V5"></path>
-<path d="M4 19h16"></path>
-<path d="M8 17v-6"></path>
-<path d="M12 17V7"></path>
-<path d="M16 17v-3"></path>
-</svg></div>
-<div class="home-main-label">Mensili</div>
+<path d="M7 3h10v5a5 5 0 0 1-10 0V3Z"></path><path d="M12 13v6"></path><path d="M8 21h8"></path><path d="M7 7h10"></path>
+</svg></div><div class="home-main-label">Vino</div>
 </button>
-<button disabled="" aria-disabled="true" aria-label="Spese" class="home-main" id="copy_goStatSpese" type="button">
+<button disabled="" aria-disabled="true" aria-label="Birra" class="home-main" id="copy_goStatSpese" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M9 6.5h6"></path>
-<path d="M9 6.5V5.5A2.5 2.5 0 0 1 11.5 3h1A2.5 2.5 0 0 1 15 5.5v1"></path>
-<path d="M4.5 9.5h15a2 2 0 0 1 2 2v6.5a3 3 0 0 1-3 3h-13a3 3 0 0 1-3-3V11.5a2 2 0 0 1 2-2Z"></path>
-<path d="M4.5 13h15"></path>
-</svg></div>
-<div class="home-main-label">Spese</div>
+<path d="M6 5h10v16H6Z"></path><path d="M16 8h2a3 3 0 0 1 0 6h-2"></path><path d="M8 3h6"></path><path d="M9 8v9"></path><path d="M13 8v9"></path>
+</svg></div><div class="home-main-label">Birra</div>
 </button>
-<button disabled="" aria-disabled="true" aria-label="Cancellazioni" class="home-main" id="copy_goStatCancellazioni" type="button">
+<button disabled="" aria-disabled="true" aria-label="Analcolici" class="home-main" id="copy_goStatCancellazioni" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"></path>
-<path d="M15 9l-6 6"></path>
-<path d="M9 9l6 6"></path>
-</svg></div>
-<div class="home-main-label">Cancellazioni</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="Con senza ricevuta" class="home-main" id="copy_goStatRicevute" type="button">
-<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M7 3h7l3 3v15H7z"></path>
-<path d="M14 3v4h4"></path>
-<path d="M9 10h6"></path>
-<path d="M9 14h3"></path>
-<path d="M15 13l-2.5 3"></path>
-<path d="M12.5 13l2.5 3"></path>
-</svg></div>
-<div class="home-main-label">Ricevuta</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="PMS" class="home-main" id="copy_goStatChannel" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M4 7h7v10H4z"></path>
-<path d="M13 5h7v6h-7z"></path>
-<path d="M13 13h7v6h-7z"></path>
-<path d="M11 10h2"></path>
-<path d="M11 14h2"></path>
-</svg></div>
-<div class="home-main-label">PMS</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="Ore pulizia operatori" class="home-main" id="copy_goStatPiscina" type="button">
-<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 20V11"></path>
-<path d="M12 20V7"></path>
-<path d="M18 20V4"></path>
-<path d="M4 20h16"></path>
-</svg></div>
-<div class="home-main-label small">Ore pulizie</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="Grafici pulizie" class="home-main" id="copy_goStatPulizie" type="button">
-<div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M6 3h12"></path>
-<path d="M8 3v4"></path>
-<path d="M16 3v4"></path>
-<path d="M12 12v4"></path>
-<path d="M12 12l3-2"></path>
-<path d="M12 21a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"></path>
-</svg></div>
-<div class="home-main-label small">Grafici pulizie</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="Ricavi" class="home-main" id="copy_goStatAmministratore" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
-<path d="M4 21a8 8 0 0 1 16 0"></path>
-<path d="M12 14v4"></path>
-<path d="M9.5 16h5"></path>
-</svg></div>
-<div class="home-main-label small">Ricavi</div>
-</button>
-<button disabled="" aria-disabled="true" aria-label="Piscina" class="home-main" id="copy_goStatPiscinaReport" type="button">
-<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M10 2h4"></path>
-<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
-<path d="M8 14h8"></path>
-<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
-</svg></div>
-<div class="home-main-label">Piscina</div>
+<path d="M7 4h10l-1 17H8L7 4Z"></path><path d="M8 9h8"></path><path d="M13 4l3-3"></path><path d="M10 13h4"></path>
+</svg></div><div class="home-main-label small">Analcolici</div>
 </button>
 </div>
 </div>
@@ -2932,7 +2857,7 @@ window.APP_VERSION = "3.099";
 </div>
 </div>
 
-<script defer="" src="./config.js?v=3.099"></script>
-<script defer="" src="./app.js?v=3.099"></script>
+<script defer="" src="./config.js?v=3.100"></script>
+<script defer="" src="./app.js?v=3.100"></script>
 </body>
 </html>

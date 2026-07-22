@@ -30363,3 +30363,23 @@ body.ddae-dark .room-kind-badge{
     animation:ddaeGuestCardStatusPulse 0.9s ease-in-out infinite !important;
   }
 }
+
+
+/* dDAE_3.100 — pagina Bar 2x2 */
+#page-statistichecopy .bar-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows:repeat(2, minmax(0, 1fr)) !important;
+  gap:16px !important;
+  width:min(100%, 420px) !important;
+  margin:0 auto !important;
+  align-content:start !important;
+}
+#page-statistichecopy .bar-grid > .home-main{
+  width:100% !important;
+  min-width:0 !important;
+}
+#page-statistichecopy .bar-grid > .home-main:disabled{
+  opacity:1 !important;
+  cursor:default !important;
+}

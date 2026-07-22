@@ -94,9 +94,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.099
+ * Build: 3.100
  */
-const BUILD_VERSION = "3.099";
+const BUILD_VERSION = "3.100";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43799,7 +43799,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.099';
+  var BUILD_TAG='dDAE_3.100';
   var busy=false;
   var lastStart=0;
   var active=null;
