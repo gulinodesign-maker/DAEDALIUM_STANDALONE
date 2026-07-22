@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.111";
+const BUILD_VERSION = "3.112";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.111';
+  var BUILD_TAG='dDAE_3.112';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.111 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.112 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.111 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.112 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.111 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.112 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48186,7 +48186,7 @@ try{
     const all=read(); all[activeSlot]={name,description:$('cocktailDescriptionInput').value.trim(),ingredients,steps,image:imageData,updatedAt:Date.now()}; write(all); render(); closeEditor();
   }
   function render(){
-    const all=read(); document.querySelectorAll('#page-barcocktail .bar-slot-btn').forEach(btn=>{
+    const all=read(); document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(btn=>{
       const d=all[btn.id]; const glyph=btn.querySelector('.bar-slot-glyph');
       btn.classList.toggle('cocktail-slot-filled',!!(d&&d.name)); btn.setAttribute('aria-label',d&&d.name?d.name:(btn.dataset.emptyLabel||btn.getAttribute('aria-label')||'Slot'));
       if(glyph){glyph.style.backgroundImage=d&&d.image?'url("'+d.image.replace(/"/g,'%22')+'")':'';glyph.style.backgroundSize=d&&d.image?'cover':'';glyph.style.backgroundPosition=d&&d.image?'center':'';}
@@ -48204,8 +48204,10 @@ try{
     btn.addEventListener('contextmenu',ev=>ev.preventDefault());
     btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopImmediatePropagation();if(longFired){longFired=false;return;}openView(btn.id);},true);
   }
+  window.__ddaeOpenBarSlotEditor__=openEditor;
+  window.__ddaeOpenBarSlotView__=openView;
   function init(){
-    document.querySelectorAll('#page-barcocktail .bar-slot-btn').forEach(bindSlot);
+    document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(bindSlot);
     $('barSlotModalCancel')?.addEventListener('click',closeEditor);
     $('cocktailAddIngredientBtn')?.addEventListener('click',()=>addIngredient({}));
     $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
@@ -48219,4 +48221,55 @@ try{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
   window.addEventListener('ddae:language-change',syncText);
+})();
+
+
+/* dDAE_3.112 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+(function __barSlotDedicatedLongPressCapture3112__(){
+  'use strict';
+  const HOLD_MS=560;
+  let active=null, timer=0, longFired=false, startX=0, startY=0, suppressClickUntil=0;
+  function slotFromEvent(ev){
+    try{
+      const btn=ev.target&&ev.target.closest&&ev.target.closest('.bar-category-page .bar-slot-btn');
+      return btn||null;
+    }catch(_){return null;}
+  }
+  function stop(ev){
+    try{ if(ev.cancelable!==false) ev.preventDefault(); }catch(_){ }
+    try{ ev.stopPropagation(); }catch(_){ }
+    try{ ev.stopImmediatePropagation(); }catch(_){ }
+  }
+  function clear(){ if(timer){clearTimeout(timer);timer=0;} }
+  function begin(ev){
+    const btn=slotFromEvent(ev); if(!btn)return;
+    stop(ev); clear(); active=btn; longFired=false;
+    startX=Number(ev.clientX||0); startY=Number(ev.clientY||0);
+    timer=setTimeout(function(){
+      timer=0; longFired=true; suppressClickUntil=Date.now()+900;
+      try{navigator.vibrate&&navigator.vibrate(20);}catch(_){ }
+      try{window.__ddaeOpenBarSlotEditor__&&window.__ddaeOpenBarSlotEditor__(btn.id);}catch(_){ }
+    },HOLD_MS);
+  }
+  function move(ev){
+    if(!active)return; const btn=slotFromEvent(ev); if(!btn||btn!==active)return;
+    stop(ev);
+    if(Math.abs(Number(ev.clientX||0)-startX)>12||Math.abs(Number(ev.clientY||0)-startY)>12) clear();
+  }
+  function end(ev){
+    const btn=slotFromEvent(ev); if(!btn)return;
+    stop(ev); clear(); active=null;
+  }
+  function click(ev){
+    const btn=slotFromEvent(ev); if(!btn)return;
+    stop(ev);
+    if(longFired||Date.now()<suppressClickUntil){longFired=false;return;}
+    try{window.__ddaeOpenBarSlotView__&&window.__ddaeOpenBarSlotView__(btn.id);}catch(_){ }
+  }
+  function context(ev){const btn=slotFromEvent(ev);if(!btn)return;stop(ev);}
+  window.addEventListener('pointerdown',begin,{capture:true,passive:false});
+  window.addEventListener('pointermove',move,{capture:true,passive:false});
+  ['pointerup','pointercancel'].forEach(n=>window.addEventListener(n,end,{capture:true,passive:false}));
+  window.addEventListener('click',click,{capture:true,passive:false});
+  window.addEventListener('contextmenu',context,{capture:true,passive:false});
 })();
