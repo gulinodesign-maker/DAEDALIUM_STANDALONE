@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.128";
+const BUILD_VERSION = "3.129";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43864,7 +43864,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.128';
+  var BUILD_TAG='dDAE_3.129';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47993,7 +47993,7 @@ try{
 })();
 
 
-/* dDAE_3.128 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.129 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48032,7 +48032,7 @@ try{
 })();
 
 
-/* dDAE_3.128 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.129 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48120,7 +48120,7 @@ try{
 })();
 
 
-/* dDAE_3.128 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.129 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48388,12 +48388,27 @@ try{
     const preview=$('cocktailImagePreview');
     if(preview){preview.hidden=false;preview.style.backgroundImage='url("'+data.image.replace(/"/g,'%22')+'")';}
   }
+  async function readCocktailFileText(file){
+    if(!file)throw new Error('File cocktail mancante');
+    if(typeof file.text==='function'){
+      try{return await file.text();}catch(_){ }
+    }
+    return await new Promise(function(resolve,reject){
+      try{
+        const reader=new FileReader();
+        reader.onload=function(){resolve(String(reader.result||''));};
+        reader.onerror=function(){reject(new Error('File cocktail non leggibile'));};
+        reader.onabort=function(){reject(new Error('Importazione annullata'));};
+        reader.readAsText(file,'UTF-8');
+      }catch(_){reject(new Error('File cocktail non leggibile'));}
+    });
+  }
   async function importCocktailFile(file){
     if(!file)return;
     if(file.size>12*1024*1024)throw new Error('File troppo grande');
-    const text=await file.text();
+    const text=await readCocktailFileText(file);
     let raw;
-    try{raw=JSON.parse(text.replace(/^\uFEFF/,''));}catch(_){throw new Error('File cocktail non leggibile');}
+    try{raw=JSON.parse(String(text||'').replace(/^\uFEFF/,''));}catch(_){throw new Error('File cocktail non leggibile');}
     const data=normalizeImportedCocktail(raw);
     applyImportedCocktail(data);
     try{toast('Cocktail importato. Premi Salva per confermare.');}catch(_){ }
@@ -48415,7 +48430,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.128',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.129',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48567,7 +48582,7 @@ try{
 })();
 
 
-/* dDAE_3.128 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.129 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
