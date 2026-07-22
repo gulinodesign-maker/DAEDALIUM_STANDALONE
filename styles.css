@@ -30409,7 +30409,7 @@ body.ddae-dark #page-statistichecopy .stats-title{
 @media (max-width:430px){.bar-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.bar-slots-grid .bar-slot-btn{height:76px;min-height:76px;}}
 
 
-/* dDAE_3.108 — Slot Bar visibili e stabili */
+/* dDAE_3.109 — Slot Bar visibili e stabili */
 .bar-category-page:not([hidden]){display:block !important;}
 .bar-category-page .bar-page{display:block !important; min-height:calc(100dvh - 150px);}
 .bar-category-page .bar-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
@@ -30428,7 +30428,7 @@ body.ddae-dark .bar-category-page .bar-slots-grid .bar-slot-btn{
 }
 
 
-/* dDAE_3.108 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
+/* dDAE_3.109 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
 body[data-page="barcocktail"] #barBackTop,
 body[data-page="barvini"] #barBackTop,
 body[data-page="barbirre"] #barBackTop,
@@ -30493,7 +30493,7 @@ body.ddae-dark .bar-category-page .bar-slots-grid > .bar-slot-btn{
 }
 
 
-/* dDAE_3.108 — slot Bar 3x5 come i tasti Home */
+/* dDAE_3.109 — slot Bar 3x5 come i tasti Home */
 .bar-category-page .bar-slots-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
@@ -30553,4 +30553,49 @@ body.ddae-dark .bar-category-page .bar-slot-glyph{
 @media (max-width:360px){
   .bar-category-page .bar-slots-grid{gap:9px !important;padding-left:8px !important;padding-right:8px !important;}
   .bar-category-page .bar-slot-glyph{width:82px !important;height:82px !important;min-width:82px !important;min-height:82px !important;}
+}
+
+/* dDAE_3.109 — griglia Bar 3x5 senza sovrapposizioni */
+.bar-category-page .bar-slots-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:none !important;
+  grid-auto-rows:auto !important;
+  column-gap:12px !important;
+  row-gap:16px !important;
+  align-items:start !important;
+  justify-items:stretch !important;
+}
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
+  position:relative !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:1 / 1 !important;
+  overflow:visible !important;
+}
+.bar-category-page .bar-slot-glyph{
+  position:static !important;
+  inset:auto !important;
+  transform:none !important;
+  width:100% !important;
+  height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+@media (max-width:360px){
+  .bar-category-page .bar-slots-grid{
+    column-gap:9px !important;
+    row-gap:13px !important;
+  }
+  .bar-category-page .bar-slot-glyph{
+    width:100% !important;
+    height:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+  }
 }

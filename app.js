@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.108';
+  var BUILD_TAG='dDAE_3.109';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.108 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.109 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.108 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.109 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.108 — pressione prolungata slot Bar */
+/* dDAE_3.109 — pressione prolungata slot Bar */
 (function __barSlotLongPress3108__(){
   'use strict';
   var HOLD_MS=650;
