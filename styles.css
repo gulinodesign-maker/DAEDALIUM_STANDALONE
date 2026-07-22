@@ -30668,7 +30668,7 @@ body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !imp
   }
 }
 
-/* dDAE_3.107 — Bar: intestazione alla quota di Statistiche e tasti identici alla Home */
+/* dDAE_3.108 — Bar: intestazione alla quota di Statistiche e tasti identici alla Home */
 #page-bar .bar-shell{
   width:100% !important;
   max-width:none !important;
@@ -30792,7 +30792,7 @@ body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !imp
   justify-content:center !important;
 }
 
-/* dDAE_3.107 — Bar: intestazione indipendente in alto, griglia 2x2 centrata */
+/* dDAE_3.108 — Bar: intestazione indipendente in alto, griglia 2x2 centrata */
 body.page-lock-vertical #page-bar{
   height:100% !important;
   min-height:0 !important;
@@ -30844,6 +30844,75 @@ body.page-lock-vertical #page-bar .bar-shell,
   top:50% !important;
   transform:translate(-50%,-44%) !important;
   margin:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,var(--bar-home-cell)) !important;
+  column-gap:5px !important;
+  row-gap:5px !important;
+  width:auto !important;
+  max-width:none !important;
+  padding:0 !important;
+  align-content:center !important;
+  justify-content:center !important;
+  justify-items:center !important;
+}
+
+/* dDAE_3.108 — Bar: intestazione svincolata dalla griglia e ancorata come Statistiche */
+body.page-lock-vertical #page-bar,
+#page-bar{
+  position:relative !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+body.page-lock-vertical #page-bar .bar-shell,
+#page-bar .bar-shell{
+  position:relative !important;
+  inset:auto !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  display:block !important;
+}
+#page-bar .stats-title{
+  position:absolute !important;
+  top:24px !important;
+  left:20px !important;
+  right:20px !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  z-index:2 !important;
+  text-align:left !important;
+  font-size:20px !important;
+  line-height:24px !important;
+  font-weight:400 !important;
+  transform:none !important;
+}
+#page-bar .stats-divider{
+  position:absolute !important;
+  top:62px !important;
+  left:20px !important;
+  right:20px !important;
+  width:auto !important;
+  max-width:none !important;
+  height:1px !important;
+  margin:0 !important;
+  z-index:2 !important;
+  transform:none !important;
+}
+#page-bar .bar-icon-grid{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  margin:0 !important;
+  transform:translate(-50%,-50%) !important;
   display:grid !important;
   grid-template-columns:repeat(2,var(--bar-home-cell)) !important;
   column-gap:5px !important;
