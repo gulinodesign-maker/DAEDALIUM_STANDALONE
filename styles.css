@@ -30486,3 +30486,62 @@ body.ddae-dark .room-kind-badge{
 }
 body.ddae-dark #page-bar .home-main-label,
 body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !important}
+
+/* dDAE_3.103 — Bar: intestazione come Statistiche e griglia 2x2 centrata */
+#page-bar .bar-shell{
+  width:100% !important;
+  max-width:none !important;
+  min-height:calc(100svh - 64px - var(--safe-top) - var(--sync-footer-space) - 28px) !important;
+  margin:0 !important;
+  padding:18px 14px 26px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+}
+#page-bar .stats-title{
+  align-self:stretch !important;
+  width:auto !important;
+  margin:6px 6px 14px !important;
+  text-align:left !important;
+  font-size:20px !important;
+  line-height:1.2 !important;
+}
+#page-bar .stats-divider{
+  align-self:stretch !important;
+}
+#page-bar .bar-icon-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,170px)) !important;
+  column-gap:5px !important;
+  row-gap:5px !important;
+  width:min(345px,calc(100vw - 28px)) !important;
+  max-width:345px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  flex:1 1 auto !important;
+  align-content:center !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+}
+#page-bar .bar-icon-grid .home-main{
+  width:100% !important;
+  max-width:170px !important;
+  min-width:0 !important;
+  margin:0 !important;
+  justify-self:center !important;
+}
+@media(max-width:390px){
+  #page-bar .bar-icon-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    width:calc(100vw - 28px) !important;
+    max-width:345px !important;
+    column-gap:5px !important;
+    row-gap:5px !important;
+  }
+  #page-bar .bar-icon-grid .home-main{
+    width:100% !important;
+    max-width:170px !important;
+  }
+}
