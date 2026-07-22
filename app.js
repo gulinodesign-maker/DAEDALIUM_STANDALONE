@@ -48461,7 +48461,15 @@ try{
     cocktailImportBtn?.addEventListener('click',ev=>{
       ev.preventDefault();
       ev.stopPropagation();
-      if(cocktailImportInput){cocktailImportInput.value='';cocktailImportInput.click();}
+      if(cocktailImportInput){
+      cocktailImportInput.removeAttribute('hidden');
+      cocktailImportInput.style.position='fixed';
+      cocktailImportInput.style.left='-9999px';
+      cocktailImportInput.accept='.daecocktail,.json,application/json,text/json';
+      cocktailImportInput.value='';
+      cocktailImportInput.click();
+      setTimeout(()=>{cocktailImportInput.setAttribute('hidden','');},500);
+    }
     });
     cocktailImportInput?.addEventListener('change',async function(){
       const file=this.files&&this.files[0];
