@@ -30545,3 +30545,125 @@ body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !imp
     max-width:170px !important;
   }
 }
+
+/* dDAE_3.104 — Bar standardizzato sui tasti Home */
+#page-bar .bar-shell{
+  display:block !important;
+  width:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:18px 14px 26px !important;
+  box-sizing:border-box !important;
+}
+#page-bar .stats-title{
+  width:auto !important;
+  margin:6px 6px 14px !important;
+  padding:0 !important;
+  text-align:left !important;
+  font-size:20px !important;
+  line-height:1.2 !important;
+  font-weight:400 !important;
+}
+#page-bar .stats-divider{
+  width:calc(100% - 20px) !important;
+  height:1px !important;
+  margin:0 10px 14px !important;
+}
+#page-bar .bar-icon-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,112px) !important;
+  grid-auto-rows:auto !important;
+  width:229px !important;
+  max-width:229px !important;
+  margin:18px auto 0 !important;
+  padding:0 !important;
+  column-gap:5px !important;
+  row-gap:5px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  transform:none !important;
+  position:static !important;
+}
+#page-bar .bar-icon-grid .home-main{
+  width:112px !important;
+  max-width:112px !important;
+  min-width:112px !important;
+  height:auto !important;
+  aspect-ratio:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#page-bar .bar-icon-grid .home-main-glyph{
+  width:90px !important;
+  height:90px !important;
+  min-width:90px !important;
+  min-height:90px !important;
+  max-width:90px !important;
+  max-height:90px !important;
+  aspect-ratio:1/1 !important;
+  margin:0 auto !important;
+  border-radius:24px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+}
+#page-bar .bar-icon-grid .home-main-glyph .ui-ico{
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
+  stroke-width:1.8 !important;
+}
+#page-bar .bar-icon-grid .home-main-label{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:112px !important;
+  min-height:28px !important;
+  margin:6px 0 0 !important;
+  padding:0 !important;
+  font-size:13px !important;
+  line-height:1.05 !important;
+  text-align:center !important;
+}
+@media(max-width:390px){
+  #page-bar .bar-icon-grid{
+    grid-template-columns:repeat(2,104px) !important;
+    width:213px !important;
+    max-width:213px !important;
+    column-gap:5px !important;
+    row-gap:5px !important;
+  }
+  #page-bar .bar-icon-grid .home-main{
+    width:104px !important;
+    min-width:104px !important;
+    max-width:104px !important;
+  }
+  #page-bar .bar-icon-grid .home-main-glyph{
+    width:76px !important;
+    height:76px !important;
+    min-width:76px !important;
+    min-height:76px !important;
+    max-width:76px !important;
+    max-height:76px !important;
+    border-radius:22px !important;
+  }
+  #page-bar .bar-icon-grid .home-main-glyph .ui-ico{
+    width:36px !important;
+    height:36px !important;
+    min-width:36px !important;
+    min-height:36px !important;
+  }
+  #page-bar .bar-icon-grid .home-main-label{
+    width:104px !important;
+    font-size:12px !important;
+  }
+}
