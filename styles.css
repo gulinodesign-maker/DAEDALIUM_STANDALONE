@@ -30785,6 +30785,6 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 .cocktail-quantity-btn{width:58px;height:58px;border:1px solid rgba(15,23,42,.22);border-radius:16px;background:#fff;color:#0f172a;font:inherit;font-size:32px;font-weight:700;line-height:1;touch-action:manipulation;}
 .cocktail-quantity-value{display:flex;align-items:center;justify-content:center;min-height:58px;border:1px solid rgba(15,23,42,.22);border-radius:16px;background:rgba(255,255,255,.9);color:#0f172a;font-size:24px;font-weight:800;}
 
-/* dDAE_3.129 — quattro azioni Cocktail: Foto, Importa, Esporta, Salva */
+/* dDAE_3.130 — quattro azioni Cocktail: Foto, Importa, Esporta, Salva */
 .cocktail-export-btn{width:100%;min-width:0;height:56px;border-radius:16px;border:1px solid rgba(148,163,184,.45);background:#fff;color:#0f172a;font-weight:800;box-shadow:none;}
 @media(max-width:430px){.cocktail-editor-actions{gap:7px !important}.cocktail-editor-actions .cocktail-icon-action{min-height:56px !important;padding:8px !important}.cocktail-editor-actions .cocktail-icon-action svg{width:27px !important;height:27px !important}}

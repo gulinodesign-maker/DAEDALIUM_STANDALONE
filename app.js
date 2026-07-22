@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.129";
+const BUILD_VERSION = "3.130";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43864,7 +43864,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.129';
+  var BUILD_TAG='dDAE_3.130';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47993,7 +47993,7 @@ try{
 })();
 
 
-/* dDAE_3.129 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.130 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48032,7 +48032,7 @@ try{
 })();
 
 
-/* dDAE_3.129 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.130 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48120,7 +48120,7 @@ try{
 })();
 
 
-/* dDAE_3.129 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.130 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48134,11 +48134,11 @@ try{
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
-    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
-    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail'},
-    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail'},
-    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügbar',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden'},
-    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel'}
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato'},
+    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted'},
+    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé'},
+    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügbar',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht'},
+    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado'}
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
@@ -48430,7 +48430,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.129',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.130',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48484,16 +48484,38 @@ try{
       label.setAttribute('aria-hidden',d&&d.name?'false':'true');
     });
   }
+  function deleteCocktail(slot){
+    const all=read();
+    if(!all[slot]||!all[slot].name)return;
+    if(!window.confirm(t('deleteConfirm')))return;
+    delete all[slot];
+    if(!write(all))return;
+    if(activeViewSlot===slot){activeViewSlot='';activeViewData=null;closeView();}
+    render();
+    try{toast(t('deleted'));}catch(_){ }
+  }
   function bindSlot(original){
     if(!original||original.dataset.cocktailEditorBound)return;
     const btn=original.cloneNode(true); original.replaceWith(btn); btn.dataset.cocktailEditorBound='1';
-    let timer=0,longFired=false,startX=0,startY=0;
+    let timer=0,tapTimer=0,longFired=false,startX=0,startY=0,lastTapAt=0;
     const clear=()=>{if(timer){clearTimeout(timer);timer=0;}};
-    btn.addEventListener('pointerdown',ev=>{longFired=false;startX=ev.clientX;startY=ev.clientY;clear();timer=setTimeout(()=>{timer=0;longFired=true;try{navigator.vibrate&&navigator.vibrate(20)}catch(_){}openEditor(btn.id);},HOLD_MS);},{passive:true});
+    btn.addEventListener('pointerdown',ev=>{longFired=false;startX=ev.clientX;startY=ev.clientY;clear();timer=setTimeout(()=>{timer=0;longFired=true;if(tapTimer){clearTimeout(tapTimer);tapTimer=0;}lastTapAt=0;try{navigator.vibrate&&navigator.vibrate(20)}catch(_){}openEditor(btn.id);},HOLD_MS);},{passive:true});
     btn.addEventListener('pointermove',ev=>{if(Math.abs(ev.clientX-startX)>12||Math.abs(ev.clientY-startY)>12)clear();},{passive:true});
     ['pointerup','pointercancel','pointerleave'].forEach(n=>btn.addEventListener(n,clear,{passive:true}));
     btn.addEventListener('contextmenu',ev=>ev.preventDefault());
-    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopImmediatePropagation();if(longFired){longFired=false;return;}openView(btn.id);},true);
+    btn.addEventListener('click',ev=>{
+      ev.preventDefault();ev.stopImmediatePropagation();
+      if(longFired){longFired=false;return;}
+      const now=Date.now();
+      if(lastTapAt&&now-lastTapAt<=340){
+        lastTapAt=0;
+        if(tapTimer){clearTimeout(tapTimer);tapTimer=0;}
+        deleteCocktail(btn.id);
+        return;
+      }
+      lastTapAt=now;
+      tapTimer=setTimeout(()=>{tapTimer=0;lastTapAt=0;openView(btn.id);},350);
+    },true);
   }
   window.__ddaeOpenBarSlotEditor__=openEditor;
   window.__ddaeOpenBarSlotView__=openView;
@@ -48582,7 +48604,7 @@ try{
 })();
 
 
-/* dDAE_3.129 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.130 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
