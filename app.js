@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.122";
+const BUILD_VERSION = "3.123";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.122';
+  var BUILD_TAG='dDAE_3.123';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.122 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.123 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.122 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.123 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,7 +48119,7 @@ try{
 })();
 
 
-/* dDAE_3.122 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.123 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48379,7 +48379,7 @@ try{
 })();
 
 
-/* dDAE_3.122 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.123 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
