@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.108";
+const BUILD_VERSION = "3.111";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.110';
+  var BUILD_TAG='dDAE_3.111';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.110 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.111 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.110 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.111 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,62 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.110 — pressione prolungata slot Bar */
-(function __barSlotLongPress3108__(){
-  'use strict';
-  var HOLD_MS=650;
-  var modal, title, cancel;
-  function openModal(btn){
-    modal=document.getElementById('barSlotModal');
-    title=document.getElementById('barSlotModalTitle');
-    if(!modal)return;
-    var page=btn && btn.closest('.bar-category-page');
-    var category=page && page.querySelector('.stats-title');
-    var slotNo='';
-    try{slotNo=String(btn.getAttribute('aria-label')||'').replace(/[^0-9]/g,'');}catch(_){ }
-    if(title) title.textContent=((category&&category.textContent)||'Bar')+(slotNo?' · '+slotNo:'');
-    modal.hidden=false;
-    modal.setAttribute('aria-hidden','false');
-    document.body.classList.add('modal-open');
-  }
-  function closeModal(){
-    modal=document.getElementById('barSlotModal');
-    if(!modal)return;
-    modal.hidden=true;
-    modal.setAttribute('aria-hidden','true');
-    document.body.classList.remove('modal-open');
-  }
-  function bind(btn){
-    if(!btn||btn.dataset.barSlotHoldBound)return;
-    btn.dataset.barSlotHoldBound='1';
-    var timer=0, fired=false;
-    function clear(){if(timer){clearTimeout(timer);timer=0;}}
-    function start(ev){
-      fired=false; clear();
-      timer=setTimeout(function(){timer=0;fired=true;try{if(navigator.vibrate)navigator.vibrate(20);}catch(_){ }openModal(btn);},HOLD_MS);
-    }
-    btn.addEventListener('pointerdown',start,{passive:true});
-    btn.addEventListener('pointerup',clear,{passive:true});
-    btn.addEventListener('pointercancel',clear,{passive:true});
-    btn.addEventListener('pointerleave',clear,{passive:true});
-    btn.addEventListener('contextmenu',function(ev){ev.preventDefault();});
-    btn.addEventListener('click',function(ev){
-      if(fired){ev.preventDefault();ev.stopImmediatePropagation();fired=false;}
-      else{ev.preventDefault();ev.stopPropagation();}
-    },true);
-  }
-  function init(){
-    document.querySelectorAll('.bar-slot-btn').forEach(bind);
-    cancel=document.getElementById('barSlotModalCancel');
-    modal=document.getElementById('barSlotModal');
-    if(cancel&&!cancel.dataset.bound){cancel.dataset.bound='1';cancel.addEventListener('click',closeModal);}
-    if(modal&&!modal.dataset.bound){modal.dataset.bound='1';modal.addEventListener('click',function(ev){if(ev.target===modal)closeModal();});}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-
-
-/* dDAE_3.110 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.111 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
