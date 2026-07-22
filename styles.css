@@ -30409,7 +30409,7 @@ body.ddae-dark #page-statistichecopy .stats-title{
 @media (max-width:430px){.bar-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.bar-slots-grid .bar-slot-btn{height:76px;min-height:76px;}}
 
 
-/* dDAE_3.107 — Slot Bar visibili e stabili */
+/* dDAE_3.108 — Slot Bar visibili e stabili */
 .bar-category-page:not([hidden]){display:block !important;}
 .bar-category-page .bar-page{display:block !important; min-height:calc(100dvh - 150px);}
 .bar-category-page .bar-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
@@ -30428,7 +30428,7 @@ body.ddae-dark .bar-category-page .bar-slots-grid .bar-slot-btn{
 }
 
 
-/* dDAE_3.107 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
+/* dDAE_3.108 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
 body[data-page="barcocktail"] #barBackTop,
 body[data-page="barvini"] #barBackTop,
 body[data-page="barbirre"] #barBackTop,
@@ -30490,4 +30490,67 @@ body.ddae-dark .bar-category-page .bar-slots-grid > .bar-slot-btn{
     height:82px !important;
     min-height:82px !important;
   }
+}
+
+
+/* dDAE_3.108 — slot Bar 3x5 come i tasti Home */
+.bar-category-page .bar-slots-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-auto-rows:auto !important;
+  gap:12px !important;
+  width:min(100%,420px) !important;
+  margin:0 auto !important;
+  padding:0 12px calc(22px + var(--safe-bottom)) !important;
+  box-sizing:border-box !important;
+  align-items:start !important;
+}
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  cursor:pointer !important;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.bar-category-page .bar-slot-glyph{
+  display:flex !important;
+  width:clamp(83px,23.4vw,112px) !important;
+  height:clamp(83px,23.4vw,112px) !important;
+  min-width:83px !important;
+  min-height:83px !important;
+  margin:0 auto !important;
+  border-radius:clamp(23px,6.5vw,32px) !important;
+  border:1px solid rgba(148,163,184,.24) !important;
+  background:var(--glass) !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:none !important;
+}
+body.ddae-dark .bar-category-page .bar-slot-glyph{
+  border-color:rgba(148,163,184,.34) !important;
+  background:var(--glass) !important;
+}
+.bar-slot-modal-card{width:min(360px,calc(100vw - 32px));text-align:center;}
+.bar-slot-modal-placeholder{height:18px;}
+@media (max-width:360px){
+  .bar-category-page .bar-slots-grid{gap:9px !important;padding-left:8px !important;padding-right:8px !important;}
+  .bar-category-page .bar-slot-glyph{width:82px !important;height:82px !important;min-width:82px !important;min-height:82px !important;}
 }
