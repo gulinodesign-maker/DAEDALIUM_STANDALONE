@@ -11573,7 +11573,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarVinoBtn','settingsBarBirraBtn','settingsBarAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11622,10 +11622,6 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   barVinoBtn: 'red-4',
   barBirraBtn: 'yellow-4',
   barAnalcoliciBtn: 'sky-4',
-  settingsBarCocktailBtn: 'orange-4',
-  settingsBarVinoBtn: 'red-4',
-  settingsBarBirraBtn: 'yellow-4',
-  settingsBarAnalcoliciBtn: 'sky-4',
   homeYearPill: 'sky-4'
 };
 
@@ -12821,7 +12817,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarVinoBtn','settingsBarBirraBtn','settingsBarAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -15723,7 +15719,13 @@ function setupImpostazioni() {
   const settingsDataBtn = document.getElementById("settingsDataBtn");
   const settingsDataModal = document.getElementById("settingsDataModal");
   const __openSettingsDataModal__ = () => {
-    try{ if (!settingsDataModal) return; settingsDataModal.hidden = false; settingsDataModal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); }catch(_){ }
+    try{
+      if (!settingsDataModal) return;
+      settingsDataModal.dataset.dataMode = 'active';
+      settingsDataModal.hidden = false;
+      settingsDataModal.setAttribute('aria-hidden','false');
+      document.body.classList.add('modal-open');
+    }catch(_){ }
     try{ setupLauncherIconLongPressPalette(); }catch(_){ }
     try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   };
@@ -17425,7 +17427,7 @@ function bindFastTap(el, fn){
     }catch(_){ }
     try{
       const target = e && e.currentTarget ? e.currentTarget : el;
-      const inSettingsPopup = !!(target && target.closest && target.closest('#settingsConfigModal,#settingsBackupModal,#settingsYearModal,#settingsDataModal,#settingsBarModal,#settingsAccountModal,#tagColorModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,#roomCatalogEditorModal,#languageModal,#settingsLicenseModal,#licenseRequestModal,#licenseUnlockModal,#licenseGeneratorModal,#licenseDateRangeModal,#themeTransferModal'));
+      const inSettingsPopup = !!(target && target.closest && target.closest('#settingsConfigModal,#settingsBackupModal,#settingsYearModal,#settingsDataModal,#settingsAccountModal,#tagColorModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,#roomCatalogEditorModal,#languageModal,#settingsLicenseModal,#licenseRequestModal,#licenseUnlockModal,#licenseGeneratorModal,#licenseDateRangeModal,#themeTransferModal'));
       if (inSettingsPopup) window.__ddaeSettingsPopupSuppressUntil = Date.now() + 1100;
     }catch(_){ }
     try{ __sfxTap(); }catch(_){ }
@@ -17450,23 +17452,36 @@ function bindFastTap(el, fn){
     settingsOperatoriBtn: 'operatori',
     settingsChannelBtn: 'channel',
     settingsRoomCatalogBtn: 'roomcatalog',
-    settingsLaundryCatalogBtn: 'laundrycatalog'
+    settingsLaundryCatalogBtn: 'laundrycatalog',
+    settingsBarBtn: 'bar'
   };
   let lastTap = 0;
   const handler = (e) => {
-    const btn = e.target && e.target.closest ? e.target.closest('#settingsDataModal #settingsOperatoriBtn,#settingsDataModal #settingsChannelBtn,#settingsDataModal #settingsRoomCatalogBtn,#settingsDataModal #settingsLaundryCatalogBtn') : null;
+    const btn = e.target && e.target.closest ? e.target.closest('#settingsDataModal #settingsOperatoriBtn,#settingsDataModal #settingsChannelBtn,#settingsDataModal #settingsRoomCatalogBtn,#settingsDataModal #settingsLaundryCatalogBtn,#settingsDataModal #settingsBarBtn') : null;
     if (!btn) return;
-    const now = Date.now();
-    if (now - lastTap < 450) return;
-    lastTap = now;
-    try{ window.__ddaeSettingsPopupSuppressUntil = Date.now() + 1100; }catch(_){ }
+    const modal = document.getElementById('settingsDataModal');
     try{ e.preventDefault(); }catch(_){ }
     try{ e.stopPropagation(); }catch(_){ }
     try{ e.stopImmediatePropagation(); }catch(_){ }
+
+    // Il popup riaperto tramite Bar è una copia inattiva: nessuno dei cinque tasti esegue azioni.
+    if (modal && modal.dataset.dataMode === 'inactive') return false;
+
+    const now = Date.now();
+    if (now - lastTap < 450) return false;
+    lastTap = now;
+    try{ window.__ddaeSettingsPopupSuppressUntil = Date.now() + 1100; }catch(_){ }
     try{ __sfxTap(); }catch(_){ }
+
+    // Bar riapre lo stesso popup in modalità puramente dimostrativa, lasciando attivo solo Annulla.
+    if (btn.id === 'settingsBarBtn'){
+      try{ if (modal) modal.dataset.dataMode = 'inactive'; }catch(_){ }
+      return false;
+    }
+
     try{ window.__settingsDataReturnActive = true; }catch(_){ }
     try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
-    try{ const m=document.getElementById('settingsDataModal'); if(m){ m.hidden=true; m.setAttribute('aria-hidden','true'); } document.body.classList.remove('modal-open'); }catch(_){ }
+    try{ if(modal){ modal.hidden=true; modal.setAttribute('aria-hidden','true'); } document.body.classList.remove('modal-open'); }catch(_){ }
     try{ hideLauncher(); }catch(_){ }
     try{ showPage(pageById[btn.id] || 'impostazioni'); }catch(_){ }
     return false;
@@ -17474,52 +17489,6 @@ function bindFastTap(el, fn){
   try{ document.addEventListener('pointerup', handler, true); }catch(_){ }
   try{ document.addEventListener('touchend', handler, true); }catch(_){ }
   try{ document.addEventListener('click', handler, true); }catch(_){ }
-})();
-
-
-function __openSettingsBarModal__(){
-  try{
-    const modal=document.getElementById('settingsBarModal');
-    if(!modal) return;
-    try{ window.__ddaeSettingsPopupSuppressUntil=Date.now()+1100; }catch(_){}
-    modal.hidden=false;
-    modal.setAttribute('aria-hidden','false');
-    modal.classList.add('is-open');
-    document.body.classList.add('modal-open');
-    try{ __launcherIconApplyAll__(); }catch(_){}
-    try{ __translateTree__(modal); }catch(_){}
-    try{ setupLauncherIconLongPressPalette(); }catch(_){}
-  }catch(_){}
-}
-function __closeSettingsBarModal__(){
-  try{
-    const modal=document.getElementById('settingsBarModal');
-    if(!modal) return;
-    modal.hidden=true;
-    modal.setAttribute('aria-hidden','true');
-    modal.classList.remove('is-open');
-    const anyOpen=document.querySelector('.modal:not([hidden])');
-    if(!anyOpen) document.body.classList.remove('modal-open');
-  }catch(_){}
-}
-(function __bindSettingsBarModal__(){
-  if(typeof document==='undefined') return;
-  try{ if(window.__settingsBarModalBound) return; window.__settingsBarModalBound=true; }catch(_){}
-  const handler=(e)=>{
-    const open=e.target&&e.target.closest?e.target.closest('#settingsDataModal #settingsBarBtn'):null;
-    const close=e.target&&e.target.closest?e.target.closest('#settingsBarCloseBtn'):null;
-    if(!open&&!close) return;
-    try{ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); }catch(_){}
-    try{ __sfxTap(); }catch(_){}
-    if(open){
-      try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){}
-      try{ const m=document.getElementById('settingsDataModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');m.classList.remove('is-open');} }catch(_){}
-      __openSettingsBarModal__();
-    }else __closeSettingsBarModal__();
-    return false;
-  };
-  ['pointerup','touchend','click'].forEach(evt=>{ try{ document.addEventListener(evt,handler,true); }catch(_){} });
-  document.addEventListener('click',(e)=>{ try{ const m=document.getElementById('settingsBarModal'); if(m&&!m.hidden&&e.target===m) __closeSettingsBarModal__(); }catch(_){} });
 })();
 
 function __forceCloseEditorModal__(btnId){

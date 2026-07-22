@@ -30399,22 +30399,3 @@ body.ddae-dark #page-statistichecopy .stats-title{
   color:#f8fafc !important;
   -webkit-text-fill-color:#f8fafc !important;
 }
-
-
-/* dDAE_3.103 — Popup configurazione Bar */
-#settingsBarModal:not([hidden]){display:flex;align-items:center;justify-content:center;}
-#settingsBarModal .settings-bar-card{width:min(92vw,650px);max-height:min(82vh,840px);overflow:auto;}
-#settingsBarModal .settings-bar-actions{display:grid;grid-template-columns:1fr;gap:16px;}
-#settingsBarModal .settings-btn{min-height:100px;width:100%;display:flex;align-items:center;justify-content:center;gap:14px;border-radius:28px;}
-#settingsBarModal .settings-btn .ui-ico{width:38px;height:38px;flex:0 0 38px;}
-#settingsBarModal .settings-btn .settings-btn-label{font-size:clamp(25px,4.8vw,34px);line-height:1;white-space:nowrap;}
-#settingsBarModal .settings-data-close{min-height:100px;width:100%;margin-top:6px;border-radius:28px;font-size:clamp(25px,4.8vw,34px);}
-@media (max-height:760px){
-  #settingsBarModal .settings-bar-card{max-height:88vh;}
-  #settingsBarModal .settings-bar-actions{gap:10px;}
-  #settingsBarModal .settings-btn,#settingsBarModal .settings-data-close{min-height:76px;}
-}
-body.dark #settingsBarModal .settings-bar-card,
-html[data-theme="dark"] #settingsBarModal .settings-bar-card{background:#17191d;color:#f4f6f8;border-color:#343941;}
-body.dark #settingsBarModal .settings-btn,
-html[data-theme="dark"] #settingsBarModal .settings-btn{box-shadow:none;}
