@@ -97,9 +97,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.105
+ * Build: 3.106
  */
-const BUILD_VERSION = "3.105";
+const BUILD_VERSION = "3.106";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -17757,7 +17757,7 @@ function ensureTopbarIconContrast(){
 }
 
 
-const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","prodotti"]);
+const __VERTICAL_LOCK_PAGES__ = new Set(["home","tassa","orepulizia","statistiche","prodotti","bar"]);
 function __isVerticalLockPage__(page){
   return __VERTICAL_LOCK_PAGES__.has(String(page || "").trim().toLowerCase());
 }
@@ -43798,7 +43798,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.105';
+  var BUILD_TAG='dDAE_3.106';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47884,7 +47884,7 @@ try{
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
 
 
-/* dDAE_3.105 — Bar micro app */
+/* dDAE_3.106 — Bar micro app */
 (()=>{
  const KEY='dDAE_bar_catalog_v1'; let adminCategory='cocktails', publicCategory='cocktails', editingId=null, imageData='';
  const LABELS={cocktails:'Cocktails',vini:'Vini',birre:'Birre',bevande:'Bevande'};
