@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.123";
+const BUILD_VERSION = "3.124";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.123';
+  var BUILD_TAG='dDAE_3.124';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.123 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.124 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.123 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.124 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,7 +48119,7 @@ try{
 })();
 
 
-/* dDAE_3.123 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.124 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48207,11 +48207,71 @@ try{
     const n=parseFloat(String(v??'').replace(/[^0-9,.-]/g,'').replace(',','.'));
     return Number.isFinite(n)?Math.max(0,n):0;
   }
+  function localTodayISO(){
+    const d=new Date();
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+  function guestDateISO(g, keys){
+    for(const key of keys){
+      const raw=g?.[key];
+      if(raw==null || String(raw).trim()==='')continue;
+      try{
+        if(typeof __parseDateFlexibleToISO==='function'){
+          const iso=__parseDateFlexibleToISO(raw);
+          if(iso)return String(iso).slice(0,10);
+        }
+      }catch(_){ }
+      try{
+        if(typeof formatISODateLocal==='function'){
+          const iso=formatISODateLocal(raw);
+          if(iso)return String(iso).slice(0,10);
+        }
+      }catch(_){ }
+      const m=String(raw).match(/(\d{4})[-\/]([01]?\d)[-\/]([0-3]?\d)/);
+      if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+    }
+    return '';
+  }
+  function isGuestStayingToday(g){
+    if(!validGuest(g))return false;
+    const status=String(g?.stato ?? g?.status ?? g?.booking_status ?? '').trim().toLowerCase();
+    if(/annull|cancel|no[ -]?show|elimin/.test(status))return false;
+    const checkIn=guestDateISO(g,['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal']);
+    const checkOut=guestDateISO(g,['check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al']);
+    const today=localTodayISO();
+    // Il giorno di check-out non è una notte di soggiorno: check-in <= oggi < check-out.
+    return !!(checkIn && checkOut && checkIn<=today && today<checkOut);
+  }
   async function loadChargeGuests(){
     let guests=[];
     try{ guests=await api('ospiti',{method:'GET',showLoader:false}); }catch(_){ guests=[]; }
     if(!Array.isArray(guests)) guests=Array.isArray(guests?.data)?guests.data:Array.isArray(guests?.ospiti)?guests.ospiti:[];
-    return guests.filter(validGuest).flatMap(g=>guestRoomsOf(g).map(room=>({guest:g,room:String(room)}))).sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+
+    const candidates=[];
+    guests.forEach(parent=>{
+      const bookings=Array.isArray(parent?.bookings)&&parent.bookings.length ? parent.bookings : [parent];
+      bookings.forEach(booking=>{
+        const row=(booking===parent)?parent:Object.assign({},parent,booking);
+        if(!isGuestStayingToday(row))return;
+        guestRoomsOf(row).forEach(room=>{
+          const guestId=String((typeof guestIdOf==='function'?guestIdOf(row):row?.id)||'').trim();
+          if(guestId)candidates.push({guest:row,room:String(room),guestId});
+        });
+      });
+    });
+
+    // Una stanza è addebitabile solo se oggi ha un unico ospite/prenotazione identificabile.
+    const byRoom=new Map();
+    candidates.forEach(row=>{
+      const key=String(row.room).trim();
+      if(!byRoom.has(key))byRoom.set(key,new Map());
+      byRoom.get(key).set(row.guestId,row);
+    });
+    return Array.from(byRoom.entries())
+      .filter(([,uniqueGuests])=>uniqueGuests.size===1)
+      .map(([,uniqueGuests])=>Array.from(uniqueGuests.values())[0])
+      .sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
   }
   function closeCharge(){
     const m=$('cocktailChargeModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}
@@ -48229,7 +48289,7 @@ try{
     select.innerHTML='';
     if(!rows.length){ const o=document.createElement('option');o.value='';o.textContent=t('noRooms');select.appendChild(o);confirm.disabled=true;return; }
     rows.forEach(row=>{
-      const id=String((typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
+      const id=String(row.guestId || (typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
       if(!id)return;
       const o=document.createElement('option'); o.value=id; o.dataset.room=row.room; o.textContent='Stanza '+row.room+' — '+guestNameOf(row.guest); select.appendChild(o);
     });
@@ -48242,6 +48302,10 @@ try{
     const amount=parsePrice(activeViewData.price);
     btn.disabled=true;
     try{
+      // Ricontrolla il soggiorno nel momento dell'addebito, evitando associazioni stale o casuali.
+      const activeRows=await loadChargeGuests();
+      const stillActive=activeRows.find(row=>String(row.guestId)===guestId && String(row.room)===String(room));
+      if(!stillActive)throw new Error('guest_not_staying_today');
       let current=[];
       try{ current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false})); }catch(_){ current=[]; }
       if(!Array.isArray(current))current=[];
@@ -48379,7 +48443,7 @@ try{
 })();
 
 
-/* dDAE_3.123 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.124 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
