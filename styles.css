@@ -30667,3 +30667,127 @@ body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !imp
     font-size:12px !important;
   }
 }
+
+/* dDAE_3.105 — Bar: intestazione alla quota di Statistiche e tasti identici alla Home */
+#page-bar .bar-shell{
+  width:100% !important;
+  max-width:none !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  position:relative !important;
+  top:auto !important;
+  transform:none !important;
+}
+#page-bar .stats-title{
+  width:min(520px,96vw) !important;
+  max-width:520px !important;
+  box-sizing:border-box !important;
+  align-self:center !important;
+  margin:6px 6px 14px !important;
+  padding:0 0 0 20px !important;
+  text-align:left !important;
+  font-size:20px !important;
+  line-height:1.2 !important;
+  font-weight:400 !important;
+  position:static !important;
+  transform:none !important;
+}
+#page-bar .stats-divider{
+  width:calc(min(520px,96vw) - 20px) !important;
+  max-width:500px !important;
+  height:1px !important;
+  margin:0 auto 14px !important;
+  align-self:center !important;
+  position:static !important;
+  transform:none !important;
+}
+#page-bar .bar-icon-grid{
+  --bar-home-cell:calc((min(520px,96vw) - 48px) / 3);
+  display:grid !important;
+  grid-template-columns:repeat(2,var(--bar-home-cell)) !important;
+  grid-auto-rows:auto !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:10px auto 0 !important;
+  padding:0 !important;
+  column-gap:5px !important;
+  row-gap:5px !important;
+  justify-content:center !important;
+  justify-items:center !important;
+  align-items:start !important;
+  align-content:start !important;
+  flex:0 0 auto !important;
+  position:static !important;
+  transform:none !important;
+  overflow:visible !important;
+}
+#page-bar .bar-icon-grid .home-main{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  width:var(--bar-home-cell) !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:auto !important;
+  aspect-ratio:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+#page-bar .bar-icon-grid .home-main-glyph{
+  width:clamp(83px,23.4vw,153px) !important;
+  height:clamp(83px,23.4vw,153px) !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:none !important;
+  max-height:none !important;
+  aspect-ratio:1/1 !important;
+  margin:0 auto !important;
+  border-radius:clamp(23px,6.5vw,44px) !important;
+  border:1px solid rgba(148,163,184,0.24) !important;
+  background:var(--glass) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+}
+#page-bar .bar-icon-grid .home-main-glyph .ui-ico,
+#page-bar .bar-icon-grid .home-main-glyph .ui-ico *{
+  width:52px !important;
+  height:52px !important;
+  max-width:52px !important;
+  max-height:52px !important;
+  stroke-width:2.2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+#page-bar .bar-icon-grid .home-main-label{
+  width:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  font-weight:400 !important;
+  letter-spacing:.2px !important;
+  font-size:17px !important;
+  line-height:1.15 !important;
+  text-align:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
