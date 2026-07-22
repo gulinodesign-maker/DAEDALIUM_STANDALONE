@@ -97,9 +97,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.101
+ * Build: 3.102
  */
-const BUILD_VERSION = "3.101";
+const BUILD_VERSION = "3.102";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43798,7 +43798,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.101';
+  var BUILD_TAG='dDAE_3.102';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47884,7 +47884,7 @@ try{
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
 
 
-/* dDAE_3.101 — Bar micro app */
+/* dDAE_3.102 — Bar micro app */
 (()=>{
  const KEY='dDAE_bar_catalog_v1'; let adminCategory='cocktails', publicCategory='cocktails', editingId=null, imageData='';
  const LABELS={cocktails:'Cocktails',vini:'Vini',birre:'Birre',bevande:'Bevande'};
@@ -47893,7 +47893,7 @@ try{
  function nav(page){try{hideLauncher()}catch(_){} try{showPage(page)}catch(_){} }
  function iconPlaceholder(){return '<div class="bar-product-placeholder"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M5 3h14l-5.5 7v8"></path><path d="M10.5 21h6"></path></svg></div>'}
  function renderAdmin(){const box=$('barCatalogList'),empty=$('barCatalogEmpty');if(!box)return;const rows=load().filter(x=>x.category===adminCategory);box.innerHTML=rows.map(x=>`<button type="button" class="bar-product-card" data-bar-edit="${esc(x.id)}">${x.image?`<img src="${x.image}" alt="">`:iconPlaceholder()}<div><h3>${esc(x.name)}</h3><p>${esc(x.description||'')}</p></div><span>›</span></button>`).join('');if(empty)empty.hidden=rows.length>0}
- function renderPublic(){const box=$('barProductsGrid'),empty=$('barProductsEmpty'),title=$('barProductsTitle');if(!box)return;const rows=load().filter(x=>x.category===publicCategory);if(title)title.textContent=LABELS[publicCategory]||'Bar';box.innerHTML=rows.map(x=>`<button type="button" class="home-main bar-product-tile${x.image?'':' no-image'}" data-bar-product="${esc(x.id)}" aria-label="${esc(x.name)}"${x.image?` style="background-image:url('${String(x.image).replace(/'/g,'%27')}')"`:''}><div class="home-main-label">${esc(x.name)}</div></button>`).join('');if(empty)empty.hidden=rows.length>0}
+ function renderPublic(){const box=$('barProductsGrid'),empty=$('barProductsEmpty'),title=$('barProductsTitle');if(!box)return;const rows=load().filter(x=>x.category===publicCategory);if(title)title.textContent=LABELS[publicCategory]||'Bar';box.innerHTML=rows.map(x=>`<button type="button" class="home-main bar-product-tile${x.image?'':' no-image'}" data-bar-product="${esc(x.id)}" aria-label="${esc(x.name)}"><div class="home-main-glyph bar-product-image"${x.image?` style="background-image:url('${String(x.image).replace(/'/g,'%27')}')"`:''}></div><div class="home-main-label">${esc(x.name)}</div></button>`).join('');if(empty)empty.hidden=rows.length>0}
  function addIngredient(v={}){const row=document.createElement('div');row.className='bar-dynamic-row';row.innerHTML=`<input class="bar-ing-name" placeholder="Ingrediente" value="${esc(v.name||'')}"><input class="bar-ing-dose" placeholder="Dose" value="${esc(v.dose||'')}"><button type="button" class="bar-remove">✕</button>`;row.querySelector('.bar-remove').onclick=()=>row.remove();$('barIngredients').append(row)}
  function addStep(v=''){const row=document.createElement('div');row.className='bar-dynamic-row bar-step-row';row.innerHTML=`<span class="bar-step-dot">•</span><input class="bar-step-text" placeholder="Passaggio" value="${esc(v)}"><button type="button" class="bar-remove">✕</button>`;row.querySelector('.bar-remove').onclick=()=>row.remove();$('barSteps').append(row)}
  function openEditor(item){editingId=item?.id||null;imageData=item?.image||'';$('barEditorTitle').textContent=item?'Modifica prodotto':'Nuovo prodotto';$('barName').value=item?.name||'';$('barDescription').value=item?.description||'';$('barImage').value='';$('barImagePreview').hidden=!imageData;$('barImagePreview').src=imageData||'';$('barCocktailFields').hidden=adminCategory!=='cocktails';$('barIngredients').innerHTML='';$('barSteps').innerHTML='';(item?.ingredients||[{}]).forEach(addIngredient);(item?.steps||['']).forEach(addStep);$('barDelete').hidden=!item;$('barEditorModal').hidden=false;$('barEditorModal').setAttribute('aria-hidden','false')}

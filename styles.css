@@ -30385,7 +30385,7 @@ body.ddae-dark .room-kind-badge{
 #page-barcatalog .bar-product-card{width:100%;display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:12px;border:1px solid var(--border);border-radius:14px;background:var(--glass);padding:10px;min-height:92px;text-align:left}
 .bar-product-card img{width:72px;height:72px;object-fit:cover;border-radius:10px}.bar-product-placeholder{width:72px;height:72px;border-radius:10px;border:1px dashed #aeb8c4;display:grid;place-items:center}.bar-product-card h3{margin:0 0 4px;font-size:17px}.bar-product-card p{margin:0;font-size:13px}.bar-editor-card{width:min(94vw,620px);max-height:88vh;overflow:auto}.bar-form{display:grid;gap:12px;padding:12px}.bar-form label{display:grid;gap:6px;font-weight:700}.bar-form input{height:44px;border:1px solid #cbd4de;border-radius:10px;padding:0 12px;font:inherit;background:#fff}.bar-image-preview{width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid #cbd4de}.bar-form-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.bar-dynamic-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.45fr) 42px;gap:8px;margin:8px 0;align-items:center}.bar-step-row{grid-template-columns:24px minmax(0,1fr) 42px}.bar-step-dot{font-size:22px;text-align:center}.bar-remove{height:42px;border:1px solid #cbd4de;border-radius:10px;background:#fff}.bar-editor-actions{display:flex;justify-content:space-between;gap:12px;padding:12px}.bar-empty{text-align:center;padding:28px 10px;color:#687586}.bar-public-list{display:grid;gap:12px;margin-top:18px}.bar-public-list .bar-product-card{display:grid;grid-template-columns:92px 1fr;align-items:start;gap:12px;border:1px solid var(--border);border-radius:14px;background:var(--glass);padding:10px}.bar-public-list .bar-product-card img,.bar-public-list .bar-product-placeholder{width:92px;height:92px}.bar-recipe{margin:10px 0 0;padding-left:18px}.bar-ingredients{margin:8px 0 0;padding:0;list-style:none}.bar-ingredients li{margin:3px 0}
 
-/* dDAE_3.101 — Bar: pagine dedicate, griglie native e editor centrato */
+/* dDAE_3.102 — Bar: pagine dedicate, griglie native e editor centrato */
 #page-bar .bar-shell,
 #page-barproducts .bar-products-shell{width:min(100%,760px);margin:0 auto;padding:0 14px 24px;box-sizing:border-box}
 #page-bar .bar-title,
@@ -30405,3 +30405,84 @@ body.ddae-dark .room-kind-badge{
 #barEditorModal .bar-image-preview{display:block;margin:0 auto}
 #barConfigMenuModal .settings-data-title{text-align:center!important;width:100%!important}
 @media(max-width:390px){#page-bar .bar-icon-grid,#page-barproducts .bar-products-grid{gap:8px!important}}
+\n/* dDAE_3.102 — Bar allineato alle regole grafiche di Statistiche */
+#page-bar .bar-shell,
+#page-barproducts .bar-products-shell{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box;
+}
+#page-bar .stats-title,
+#page-barproducts .stats-title{
+  text-align:left !important;
+  width:auto !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+#page-bar .bar-icon-grid,
+#page-barproducts .bar-products-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  gap:inherit !important;
+  justify-content:stretch !important;
+  align-items:start !important;
+}
+#page-bar .bar-icon-grid .home-main,
+#page-barproducts .bar-products-grid .home-main{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  height:auto !important;
+  aspect-ratio:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#page-bar .bar-icon-grid .home-main-glyph,
+#page-barproducts .bar-products-grid .home-main-glyph{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:1/1 !important;
+  margin:0 auto !important;
+  border-radius:var(--home-tile-radius,24px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#page-bar .bar-icon-grid .home-main-label,
+#page-barproducts .bar-products-grid .home-main-label{
+  position:static !important;
+  z-index:auto !important;
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin-top:8px !important;
+  color:var(--text,#172033) !important;
+  text-shadow:none !important;
+  text-align:center !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+#page-barproducts .bar-product-image{
+  background-size:cover !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  overflow:hidden !important;
+}
+#page-barproducts .bar-product-tile::before{display:none !important}
+#page-barproducts .bar-product-tile.no-image .bar-product-image{
+  background:var(--glass) !important;
+  border:1px solid var(--border) !important;
+}
+body.ddae-dark #page-bar .home-main-label,
+body.ddae-dark #page-barproducts .home-main-label{color:var(--text,#f5f7fb) !important}
