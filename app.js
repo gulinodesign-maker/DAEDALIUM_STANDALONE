@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.109';
+  var BUILD_TAG='dDAE_3.110';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.109 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.110 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.109 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.110 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.109 — pressione prolungata slot Bar */
+/* dDAE_3.110 — pressione prolungata slot Bar */
 (function __barSlotLongPress3108__(){
   'use strict';
   var HOLD_MS=650;
@@ -48168,4 +48168,110 @@ try{
     if(modal&&!modal.dataset.bound){modal.dataset.bound='1';modal.addEventListener('click',function(ev){if(ev.target===modal)closeModal();});}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+
+
+/* dDAE_3.110 — Editor e scheda Cocktail per i 15 slot */
+(function __cocktailSlotsEditor3110__(){
+  'use strict';
+  const STORE_KEY='dDAE_bar_cocktails_v1';
+  const HOLD_MS=650;
+  let activeSlot='';
+  let imageData='';
+  const $=id=>document.getElementById(id);
+  const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
+  const words={
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',description:'Descrizione',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine cocktail',save:'Salva',required:'Inserisci almeno il nome del cocktail'},
+    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',description:'Description',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose cocktail image',save:'Save',required:'Enter at least the cocktail name'},
+    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',description:'Description',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir une image du cocktail',save:'Enregistrer',required:'Saisissez au moins le nom du cocktail'},
+    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',description:'Beschreibung',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Cocktailbild auswählen',save:'Speichern',required:'Mindestens den Cocktailnamen eingeben'},
+    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',description:'Descripción',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen del cóctel',save:'Guardar',required:'Introduce al menos el nombre del cóctel'}
+  };
+  const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
+  function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
+  function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));}catch(_){try{toast('Immagine troppo grande');}catch(__){}}}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function addIngredient(value){
+    const row=document.createElement('div'); row.className='cocktail-dynamic-row cocktail-ingredient-row';
+    row.innerHTML='<input class="cocktail-ingredient-name" type="text" placeholder="'+esc(t('ingredient'))+'"><input class="cocktail-ingredient-dose" type="text" placeholder="'+esc(t('dose'))+'"><button class="cocktail-remove-row" type="button" aria-label="'+esc(t('close'))+'">×</button>';
+    if(value){row.querySelector('.cocktail-ingredient-name').value=value.name||'';row.querySelector('.cocktail-ingredient-dose').value=value.dose||'';}
+    row.querySelector('.cocktail-remove-row').addEventListener('click',()=>row.remove()); $('cocktailIngredientsList').appendChild(row);
+  }
+  function addStep(value){
+    const row=document.createElement('div'); row.className='cocktail-dynamic-row cocktail-step-row';
+    row.innerHTML='<span class="cocktail-step-dot">•</span><textarea class="cocktail-step-text" rows="2" placeholder="'+esc(t('step'))+'"></textarea><button class="cocktail-remove-row" type="button" aria-label="'+esc(t('close'))+'">×</button>';
+    if(value)row.querySelector('.cocktail-step-text').value=value;
+    row.querySelector('.cocktail-remove-row').addEventListener('click',()=>row.remove()); $('cocktailStepsList').appendChild(row);
+  }
+  function syncText(){
+    if($('barSlotModalTitle'))$('barSlotModalTitle').textContent=t('cocktail');
+    if($('barSlotModalCancel'))$('barSlotModalCancel').setAttribute('aria-label',t('close'));
+    if($('cocktailImportBtn'))$('cocktailImportBtn').textContent=t('import');
+    if($('cocktailNameLabel'))$('cocktailNameLabel').textContent=t('name');
+    if($('cocktailDescriptionLabel'))$('cocktailDescriptionLabel').textContent=t('description');
+    if($('cocktailIngredientsTitle'))$('cocktailIngredientsTitle').textContent=t('ingredients');
+    if($('cocktailProcedureTitle'))$('cocktailProcedureTitle').textContent=t('procedure');
+    if($('cocktailImageButtonLabel'))$('cocktailImageButtonLabel').textContent=t('image');
+    if($('cocktailSaveBtn'))$('cocktailSaveBtn').textContent=t('save');
+    if($('cocktailViewIngredientsHeading'))$('cocktailViewIngredientsHeading').textContent=t('ingredients');
+    if($('cocktailViewProcedureHeading'))$('cocktailViewProcedureHeading').textContent=t('procedure');
+  }
+  function closeEditor(){const m=$('barSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
+  function openEditor(slot){
+    activeSlot=slot; const data=read()[slot]||{}; imageData=data.image||''; syncText();
+    $('cocktailNameInput').value=data.name||''; $('cocktailDescriptionInput').value=data.description||'';
+    $('cocktailIngredientsList').innerHTML=''; (data.ingredients&&data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
+    $('cocktailStepsList').innerHTML=''; (data.steps&&data.steps.length?data.steps:['']).forEach(addStep);
+    const p=$('cocktailImagePreview'); p.hidden=!imageData; p.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';
+    $('cocktailImageInput').value=''; const m=$('barSlotModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
+  }
+  function closeView(){const m=$('cocktailViewModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
+  function openView(slot){
+    const data=read()[slot]; if(!data||!data.name)return;
+    syncText(); $('cocktailViewTitle').textContent=data.name||''; $('cocktailViewDescription').textContent=data.description||'';
+    const img=$('cocktailViewImage'); if(data.image){img.src=data.image;img.alt=data.name||t('cocktail');img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
+    $('cocktailViewIngredients').innerHTML=(data.ingredients||[]).map(x=>'<li><span>'+esc(x.dose||'')+'</span> '+esc(x.name||'')+'</li>').join('');
+    $('cocktailViewSteps').innerHTML=(data.steps||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
+    const m=$('cocktailViewModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
+  }
+  function save(){
+    const name=$('cocktailNameInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
+    const ingredients=Array.from(document.querySelectorAll('#cocktailIngredientsList .cocktail-ingredient-row')).map(r=>({name:r.querySelector('.cocktail-ingredient-name').value.trim(),dose:r.querySelector('.cocktail-ingredient-dose').value.trim()})).filter(x=>x.name||x.dose);
+    const steps=Array.from(document.querySelectorAll('#cocktailStepsList .cocktail-step-text')).map(x=>x.value.trim()).filter(Boolean);
+    const all=read(); all[activeSlot]={name,description:$('cocktailDescriptionInput').value.trim(),ingredients,steps,image:imageData,updatedAt:Date.now()}; write(all); render(); closeEditor();
+  }
+  function render(){
+    const all=read(); document.querySelectorAll('#page-barcocktail .bar-slot-btn').forEach(btn=>{
+      const d=all[btn.id]; const glyph=btn.querySelector('.bar-slot-glyph');
+      btn.classList.toggle('cocktail-slot-filled',!!(d&&d.name)); btn.setAttribute('aria-label',d&&d.name?d.name:(btn.dataset.emptyLabel||btn.getAttribute('aria-label')||'Slot'));
+      if(glyph){glyph.style.backgroundImage=d&&d.image?'url("'+d.image.replace(/"/g,'%22')+'")':'';glyph.style.backgroundSize=d&&d.image?'cover':'';glyph.style.backgroundPosition=d&&d.image?'center':'';}
+      let label=btn.querySelector('.cocktail-slot-name'); if(d&&d.name){if(!label){label=document.createElement('span');label.className='cocktail-slot-name';btn.appendChild(label);}label.textContent=d.name;}else if(label)label.remove();
+    });
+  }
+  function bindSlot(original){
+    if(!original||original.dataset.cocktailEditorBound)return;
+    const btn=original.cloneNode(true); original.replaceWith(btn); btn.dataset.cocktailEditorBound='1';
+    let timer=0,longFired=false,startX=0,startY=0;
+    const clear=()=>{if(timer){clearTimeout(timer);timer=0;}};
+    btn.addEventListener('pointerdown',ev=>{longFired=false;startX=ev.clientX;startY=ev.clientY;clear();timer=setTimeout(()=>{timer=0;longFired=true;try{navigator.vibrate&&navigator.vibrate(20)}catch(_){}openEditor(btn.id);},HOLD_MS);},{passive:true});
+    btn.addEventListener('pointermove',ev=>{if(Math.abs(ev.clientX-startX)>12||Math.abs(ev.clientY-startY)>12)clear();},{passive:true});
+    ['pointerup','pointercancel','pointerleave'].forEach(n=>btn.addEventListener(n,clear,{passive:true}));
+    btn.addEventListener('contextmenu',ev=>ev.preventDefault());
+    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopImmediatePropagation();if(longFired){longFired=false;return;}openView(btn.id);},true);
+  }
+  function init(){
+    document.querySelectorAll('#page-barcocktail .bar-slot-btn').forEach(bindSlot);
+    $('barSlotModalCancel')?.addEventListener('click',closeEditor);
+    $('cocktailAddIngredientBtn')?.addEventListener('click',()=>addIngredient({}));
+    $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
+    $('cocktailSaveBtn')?.addEventListener('click',save);
+    $('cocktailImportBtn')?.addEventListener('click',ev=>{ev.preventDefault();});
+    $('cocktailImageInput')?.addEventListener('change',function(){const f=this.files&&this.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{imageData=String(r.result||'');const p=$('cocktailImagePreview');p.hidden=false;p.style.backgroundImage='url("'+imageData.replace(/"/g,'%22')+'")';};r.readAsDataURL(f);});
+    $('cocktailViewClose')?.addEventListener('click',closeView);
+    $('barSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('barSlotModal'))closeEditor();});
+    $('cocktailViewModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailViewModal'))closeView();});
+    syncText();render();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+  window.addEventListener('ddae:language-change',syncText);
 })();

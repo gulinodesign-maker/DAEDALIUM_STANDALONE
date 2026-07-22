@@ -8,14 +8,14 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.108" rel="stylesheet"/>
-<link href="./manifest.json?v=3.108" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.108" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.108" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.108" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.108" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.108" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.108" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.110" rel="stylesheet"/>
+<link href="./manifest.json?v=3.110" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.110" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.110" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.110" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.110" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.110" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.110" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
@@ -23,7 +23,7 @@
 <script>
 window.APP_VERSION = "3.108";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.109";
+  const LOCAL_BUILD = "dDAE_3.110";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.108";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.108")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.108")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.110")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.110")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -309,7 +309,7 @@ window.APP_VERSION = "3.108";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.108"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.110"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -517,7 +517,7 @@ window.APP_VERSION = "3.108";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.109</div></div></section>
+<div class="build" id="buildText">dDAE_3.110</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2954,17 +2954,45 @@ window.APP_VERSION = "3.108";
 </div>
 </div>
 
-<div aria-hidden="true" class="modal modal-center" hidden="" id="barSlotModal">
-  <div aria-labelledby="barSlotModalTitle" aria-modal="true" class="modal-card bar-slot-modal-card" role="dialog">
-    <div class="db-menu-title" id="barSlotModalTitle">Slot</div>
-    <div class="bar-slot-modal-placeholder" aria-hidden="true"></div>
-    <div class="modal-actions">
-      <button class="btn" id="barSlotModalCancel" type="button">Annulla</button>
+<div aria-hidden="true" class="modal modal-center cocktail-editor-modal" hidden="" id="barSlotModal">
+  <div aria-labelledby="barSlotModalTitle" aria-modal="true" class="modal-card cocktail-editor-card" role="dialog">
+    <div class="cocktail-editor-top">
+      <div class="db-menu-title" id="barSlotModalTitle">Cocktail</div>
+      <button aria-label="Chiudi" class="cocktail-close-btn" id="barSlotModalCancel" type="button">×</button>
     </div>
+    <div class="cocktail-editor-toolbar">
+      <button class="cocktail-import-btn" id="cocktailImportBtn" type="button">Importa</button>
+    </div>
+    <label class="cocktail-field"><span id="cocktailNameLabel">Nome cocktail</span><input autocomplete="off" id="cocktailNameInput" type="text"></label>
+    <label class="cocktail-field"><span id="cocktailDescriptionLabel">Descrizione</span><textarea id="cocktailDescriptionInput" rows="3"></textarea></label>
+    <section class="cocktail-builder-section">
+      <div class="cocktail-builder-head"><strong id="cocktailIngredientsTitle">Ingredienti e dosi</strong><button aria-label="Aggiungi ingrediente" class="cocktail-add-btn" id="cocktailAddIngredientBtn" type="button">+</button></div>
+      <div class="cocktail-dynamic-list" id="cocktailIngredientsList"></div>
+    </section>
+    <section class="cocktail-builder-section">
+      <div class="cocktail-builder-head"><strong id="cocktailProcedureTitle">Preparazione</strong><button aria-label="Aggiungi passaggio" class="cocktail-add-btn" id="cocktailAddStepBtn" type="button">+</button></div>
+      <div class="cocktail-dynamic-list" id="cocktailStepsList"></div>
+    </section>
+    <label class="cocktail-image-picker" for="cocktailImageInput"><span id="cocktailImageButtonLabel">Scegli immagine cocktail</span><input accept="image/*" id="cocktailImageInput" type="file"></label>
+    <div class="cocktail-image-preview" hidden id="cocktailImagePreview"></div>
+    <button class="cocktail-save-btn" id="cocktailSaveBtn" type="button">Salva</button>
   </div>
 </div>
 
-<script defer="" src="./config.js?v=3.108"></script>
-<script defer="" src="./app.js?v=3.108"></script>
+<div aria-hidden="true" class="modal modal-center cocktail-view-modal" hidden="" id="cocktailViewModal">
+  <article aria-labelledby="cocktailViewTitle" aria-modal="true" class="modal-card cocktail-view-card" role="dialog">
+    <button aria-label="Chiudi" class="cocktail-close-btn cocktail-view-close" id="cocktailViewClose" type="button">×</button>
+    <h2 id="cocktailViewTitle"></h2>
+    <img alt="" class="cocktail-view-image" hidden id="cocktailViewImage">
+    <p class="cocktail-view-description" id="cocktailViewDescription"></p>
+    <h3 id="cocktailViewIngredientsHeading">Ingredienti e dosi</h3>
+    <ul class="cocktail-view-ingredients" id="cocktailViewIngredients"></ul>
+    <h3 id="cocktailViewProcedureHeading">Preparazione</h3>
+    <ol class="cocktail-view-steps" id="cocktailViewSteps"></ol>
+  </article>
+</div>
+
+<script defer="" src="./config.js?v=3.110"></script>
+<script defer="" src="./app.js?v=3.110"></script>
 </body>
 </html>
