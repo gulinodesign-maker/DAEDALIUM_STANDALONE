@@ -92,9 +92,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.098
+ * Build: 3.099
  */
-const BUILD_VERSION = "3.098";
+const BUILD_VERSION = "3.099";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -17518,7 +17518,7 @@ function bindHomeStrongTap(){
   go("goPulizie", "pulizie");
   go("goLavanderia", "lavanderia");
   go("goStatistiche", "statistiche");
-  go("goStatPiscina", "orepulizia");
+  go("goStatPiscina", "statpiscina");
   go("openLauncher", "spese", { before: ()=>{ try{ setSpeseView("list"); }catch(_){} } });
 }
 
@@ -18814,7 +18814,7 @@ if (guestScrollTodayBtn){
   const s6 = $("#goStatAmministratore");
   if (s6){ bindFastTap(s6, () => { hideLauncher(); showPage("statamministratore"); }); }
   const s7 = $("#goStatPiscina");
-  if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("orepulizia"); }); }
+  if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("statpiscina"); }); }
   const s8 = $("#goStatCancellazioni");
   if (s8){ bindFastTap(s8, () => { hideLauncher(); showPage("statcancellazioni"); }); }
 // STATGEN: topbar tools
@@ -43793,7 +43793,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.098';
+  var BUILD_TAG='dDAE_3.099';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47877,3 +47877,33 @@ try{
 
 
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+
+
+/* dDAE_3.099 — Bar micro app */
+(()=>{
+ const KEY='dDAE_bar_catalog_v1'; let adminCategory='cocktails', publicCategory='cocktails', editingId=null, imageData='';
+ const $=id=>document.getElementById(id); const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(_){return[]}}; const save=v=>localStorage.setItem(KEY,JSON.stringify(v));
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function nav(page){try{hideLauncher()}catch(_){} try{showPage(page)}catch(_){} }
+ function iconPlaceholder(){return '<div class="bar-product-placeholder"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M5 3h14l-5.5 7v8"></path><path d="M10.5 21h6"></path></svg></div>'}
+ function renderAdmin(){const box=$('barCatalogList');if(!box)return;document.querySelectorAll('[data-bar-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.barAdminTab===adminCategory));const rows=load().filter(x=>x.category===adminCategory);box.innerHTML=rows.length?rows.map(x=>`<button type="button" class="bar-product-card" data-bar-edit="${esc(x.id)}">${x.image?`<img src="${x.image}" alt="">`:iconPlaceholder()}<div><h3>${esc(x.name)}</h3><p>${esc(x.description||'')}</p></div><span>›</span></button>`).join(''):'<div class="bar-empty">Nessun prodotto configurato</div>'}
+ function renderPublic(){const box=$('barPublicList');if(!box)return;const rows=load().filter(x=>x.category===publicCategory);box.innerHTML=rows.map(x=>`<article class="bar-product-card">${x.image?`<img src="${x.image}" alt="${esc(x.name)}">`:iconPlaceholder()}<div><h3>${esc(x.name)}</h3><p>${esc(x.description||'')}</p>${x.category==='cocktails'&&x.ingredients?.length?`<ul class="bar-ingredients">${x.ingredients.map(i=>`<li><b>${esc(i.dose)}</b> ${esc(i.name)}</li>`).join('')}</ul>`:''}${x.category==='cocktails'&&x.steps?.length?`<ul class="bar-recipe">${x.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}</div></article>`).join('')}
+ function addIngredient(v={}){const row=document.createElement('div');row.className='bar-dynamic-row';row.innerHTML=`<input class="bar-ing-name" placeholder="Ingrediente" value="${esc(v.name||'')}"><input class="bar-ing-dose" placeholder="Dose" value="${esc(v.dose||'')}"><button type="button" class="bar-remove">✕</button>`;row.querySelector('.bar-remove').onclick=()=>row.remove();$('barIngredients').append(row)}
+ function addStep(v=''){const row=document.createElement('div');row.className='bar-dynamic-row bar-step-row';row.innerHTML=`<span class="bar-step-dot">•</span><input class="bar-step-text" placeholder="Passaggio" value="${esc(v)}"><button type="button" class="bar-remove">✕</button>`;row.querySelector('.bar-remove').onclick=()=>row.remove();$('barSteps').append(row)}
+ function openEditor(item){editingId=item?.id||null;imageData=item?.image||'';$('barEditorTitle').textContent=item?'Modifica prodotto':'Nuovo prodotto';$('barName').value=item?.name||'';$('barDescription').value=item?.description||'';$('barImage').value='';$('barImagePreview').hidden=!imageData;$('barImagePreview').src=imageData||'';$('barCocktailFields').hidden=adminCategory!=='cocktails';$('barIngredients').innerHTML='';$('barSteps').innerHTML='';(item?.ingredients||[{}]).forEach(addIngredient);(item?.steps||['']).forEach(addStep);$('barDelete').hidden=!item;$('barEditorModal').hidden=false;$('barEditorModal').setAttribute('aria-hidden','false')}
+ function closeEditor(){$('barEditorModal').hidden=true;$('barEditorModal').setAttribute('aria-hidden','true')}
+ function init(){
+  $('goBarHome')?.addEventListener('click',e=>{e.preventDefault();nav('bar');renderPublic()});
+  $('settingsBarBtn')?.addEventListener('click',e=>{e.preventDefault();try{window.__closeSettingsDataModal__?.()}catch(_){}nav('barcatalog');renderAdmin()});
+  $('goStatPiscina')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();nav('statpiscina')},true);
+  document.querySelectorAll('[data-bar-category]').forEach(b=>b.addEventListener('click',()=>{publicCategory=b.dataset.barCategory;renderPublic()}));
+  document.querySelectorAll('[data-bar-admin-tab]').forEach(b=>b.addEventListener('click',()=>{adminCategory=b.dataset.barAdminTab;renderAdmin()}));
+  $('barAddProduct')?.addEventListener('click',()=>openEditor(null)); $('barEditorClose')?.addEventListener('click',closeEditor); $('barAddIngredient')?.addEventListener('click',()=>addIngredient()); $('barAddStep')?.addEventListener('click',()=>addStep());
+  $('barCatalogList')?.addEventListener('click',e=>{const b=e.target.closest('[data-bar-edit]');if(b)openEditor(load().find(x=>x.id===b.dataset.barEdit))});
+  $('barImage')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{imageData=String(r.result||'');$('barImagePreview').src=imageData;$('barImagePreview').hidden=false};r.readAsDataURL(f)});
+  $('barSave')?.addEventListener('click',()=>{const name=$('barName').value.trim();if(!name){try{toast('Inserisci il nome','orange')}catch(_){}return}let rows=load();const item={id:editingId||('bar_'+Date.now()),category:adminCategory,name,description:$('barDescription').value.trim(),image:imageData,ingredients:[],steps:[]};if(adminCategory==='cocktails'){item.ingredients=[...document.querySelectorAll('#barIngredients .bar-dynamic-row')].map(r=>({name:r.querySelector('.bar-ing-name').value.trim(),dose:r.querySelector('.bar-ing-dose').value.trim()})).filter(x=>x.name||x.dose);item.steps=[...document.querySelectorAll('#barSteps .bar-step-text')].map(x=>x.value.trim()).filter(Boolean)}const i=rows.findIndex(x=>x.id===item.id);if(i>=0)rows[i]=item;else rows.push(item);save(rows);closeEditor();renderAdmin();renderPublic();try{toast('Salvato','green')}catch(_){}});
+  $('barDelete')?.addEventListener('click',()=>{if(!editingId)return;save(load().filter(x=>x.id!==editingId));closeEditor();renderAdmin();renderPublic()});
+  renderAdmin();renderPublic();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();

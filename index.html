@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.098" rel="stylesheet"/>
-<link href="./manifest.json?v=3.098" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.098" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.098" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.098" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.098" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.098" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.098" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.099" rel="stylesheet"/>
+<link href="./manifest.json?v=3.099" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.099" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.099" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.099" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.099" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.099" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.099" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.098";
+window.APP_VERSION = "3.099";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.098";
+  const LOCAL_BUILD = "dDAE_3.099";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.098";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.098")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.098")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.099")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.099")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -308,7 +308,7 @@ window.APP_VERSION = "3.098";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.098"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.099"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -476,14 +476,11 @@ window.APP_VERSION = "3.098";
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Piscina" class="home-main" id="goOrePuliziaHome" type="button">
+<button aria-label="Bar" class="home-main" id="goBarHome" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
-<path d="M10 2h4"></path>
-<path d="M10 2v6l-4 7a3 3 0 0 0 2.6 4.5h6.8A3 3 0 0 0 18 15l-4-7V2"></path>
-<path d="M8 14h8"></path>
-<path d="M8.5 18c.6-.6 1.6-.6 2.2 0s1.6.6 2.2 0 1.6-.6 2.2 0"></path>
+<path d="M5 3h14l-5.5 7v8"></path><path d="M10.5 21h6"></path><path d="M13.5 18v3"></path><path d="M8 7h8"></path>
 </svg></div>
-<div class="home-main-label">Piscina</div>
+<div class="home-main-label">Bar</div>
 </button>
 <button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -516,7 +513,7 @@ window.APP_VERSION = "3.098";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.098</div></div></section>
+<div class="build" id="buildText">dDAE_3.099</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -616,14 +613,14 @@ window.APP_VERSION = "3.098";
 </svg></div>
 <div class="home-main-label">PMS</div>
 </button>
-<button aria-label="Ore pulizia operatori" class="home-main" id="goStatPiscina" type="button">
+<button aria-label="Piscina" class="home-main" id="goStatPiscina" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M6 20V11"></path>
 <path d="M12 20V7"></path>
 <path d="M18 20V4"></path>
 <path d="M4 20h16"></path>
 </svg></div>
-<div class="home-main-label small">Ore pulizie</div>
+<div class="home-main-label">Piscina</div>
 </button>
 <button aria-label="Grafici pulizie" class="home-main" id="goStatPulizie" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -2038,6 +2035,10 @@ window.APP_VERSION = "3.098";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 4h12"></path><path d="M8 4v4"></path><path d="M16 4v4"></path><path d="M5 10h14"></path><path d="M7 10v10"></path><path d="M12 10v10"></path><path d="M17 10v10"></path><path d="M5 20h14"></path></svg>
 <span class="settings-btn-label">Lavanderia</span>
 </button>
+<button aria-label="Bar" class="settings-btn settings-btn-bar" id="settingsBarBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M5 3h14l-5.5 7v8"></path><path d="M10.5 21h6"></path><path d="M13.5 18v3"></path><path d="M8 7h8"></path></svg>
+<span class="settings-btn-label">Bar</span>
+</button>
 <button aria-label="Chiudi dati" class="auth-btn auth-btn-gray settings-data-close" id="settingsDataCloseBtn" type="button">Annulla</button>
 </div>
 </div>
@@ -2819,7 +2820,46 @@ window.APP_VERSION = "3.098";
 </div>
 </div>
 
-<script defer="" src="./config.js?v=3.098"></script>
-<script defer="" src="./app.js?v=3.098"></script>
+<!-- BAR MICRO APP -->
+<section class="page" hidden id="page-bar">
+  <div class="bar-shell">
+    <div class="bar-title">Bar</div><div class="stats-divider"></div>
+    <div class="bar-icon-grid" aria-label="Categorie Bar">
+      <button class="home-main bar-category" data-bar-category="cocktails" aria-label="Cocktails" type="button"><div class="home-main-glyph"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M5 3h14l-5.5 7v8"></path><path d="M10.5 21h6"></path><path d="M13.5 18v3"></path></svg></div><span class="sr-only">Cocktails</span></button>
+      <button class="home-main bar-category" data-bar-category="vini" aria-label="Vini" type="button"><div class="home-main-glyph"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M7 3h10v5a5 5 0 0 1-10 0Z"></path><path d="M12 13v8"></path><path d="M8 21h8"></path></svg></div><span class="sr-only">Vini</span></button>
+      <button class="home-main bar-category" data-bar-category="birre" aria-label="Birre" type="button"><div class="home-main-glyph"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M6 4h9v17H6z"></path><path d="M15 7h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-3"></path><path d="M8 2h5"></path></svg></div><span class="sr-only">Birre</span></button>
+      <button class="home-main bar-category" data-bar-category="bevande" aria-label="Bevande" type="button"><div class="home-main-glyph"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M8 3h8l-1 18H9Z"></path><path d="M9 8h6"></path><path d="M13 3l3-2"></path></svg></div><span class="sr-only">Bevande</span></button>
+    </div>
+    <div id="barPublicList" class="bar-public-list"></div>
+  </div>
+</section>
+<section class="page" hidden id="page-barcatalog">
+  <div class="bar-shell bar-admin-shell">
+    <div class="bar-title-row"><h2 class="bar-title">Bar</h2><button class="icon-btn icon-btn-whiteblue" id="barAddProduct" aria-label="Aggiungi prodotto" type="button"><svg class="ui-ico" viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></div>
+    <div class="stats-divider"></div>
+    <div class="bar-tabs" role="tablist">
+      <button type="button" data-bar-admin-tab="cocktails">Cocktails</button><button type="button" data-bar-admin-tab="vini">Vini</button><button type="button" data-bar-admin-tab="birre">Birre</button><button type="button" data-bar-admin-tab="bevande">Bevande</button>
+    </div>
+    <div id="barCatalogList" class="bar-catalog-list"></div>
+  </div>
+</section>
+<div class="modal modal-center" hidden id="barEditorModal" aria-hidden="true">
+ <div class="modal-card bar-editor-card" role="dialog" aria-modal="true" aria-label="Configura prodotto Bar">
+  <div class="operatori-editor-hd"><div class="operatori-editor-title" id="barEditorTitle">Nuovo prodotto</div><button class="btn ghost operatori-editor-close" id="barEditorClose" type="button">✕</button></div>
+  <div class="bar-form">
+   <label>Nome<input id="barName" type="text" autocomplete="off"></label>
+   <label>Descrizione<input id="barDescription" type="text" autocomplete="off"></label>
+   <label>Immagine<input id="barImage" type="file" accept="image/*"></label><img id="barImagePreview" class="bar-image-preview" hidden alt="Anteprima prodotto">
+   <div id="barCocktailFields">
+    <div class="bar-form-head"><strong>Ingredienti e dosi</strong><button type="button" class="btn" id="barAddIngredient">＋</button></div><div id="barIngredients"></div>
+    <div class="bar-form-head"><strong>Preparazione (elenco puntato)</strong><button type="button" class="btn" id="barAddStep">＋</button></div><div id="barSteps"></div>
+   </div>
+  </div>
+  <div class="bar-editor-actions"><button class="btn ghost" id="barDelete" type="button">Elimina</button><button class="btn primary" id="barSave" type="button">Salva</button></div>
+ </div>
+</div>
+
+<script defer="" src="./config.js?v=3.099"></script>
+<script defer="" src="./app.js?v=3.099"></script>
 </body>
 </html>
