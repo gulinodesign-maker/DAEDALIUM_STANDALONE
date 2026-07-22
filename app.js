@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.121";
+const BUILD_VERSION = "3.122";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.121';
+  var BUILD_TAG='dDAE_3.122';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.121 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.122 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.121 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.122 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,22 +48119,24 @@ try{
 })();
 
 
-/* dDAE_3.121 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.122 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
   const HOLD_MS=650;
   let activeSlot='';
+  let activeViewSlot='';
+  let activeViewData=null;
   let imageData='';
   let imageProcessPromise=Promise.resolve();
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
-    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',required:'Inserisci almeno il nome del cocktail'},
-    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',required:'Enter at least the cocktail name'},
-    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',required:'Saisissez au moins le nom du cocktail'},
-    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',required:'Mindestens den Cocktailnamen eingeben'},
-    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',required:'Introduce al menos el nombre del cóctel'}
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
+    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail'},
+    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail'},
+    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',noRooms:'Kein Zimmer verfügbar',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden'},
+    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel'}
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
@@ -48164,6 +48166,10 @@ try{
     if($('cocktailSaveBtn'))$('cocktailSaveBtn').textContent=t('save');
     if($('cocktailViewIngredientsHeading'))$('cocktailViewIngredientsHeading').textContent=t('ingredients');
     if($('cocktailViewProcedureHeading'))$('cocktailViewProcedureHeading').textContent=t('procedure');
+    if($('cocktailChargeBtn'))$('cocktailChargeBtn').textContent=t('charge');
+    if($('cocktailChargeTitle'))$('cocktailChargeTitle').textContent=t('chargeTitle');
+    if($('cocktailChargeRoomLabel'))$('cocktailChargeRoomLabel').textContent=t('roomGuest');
+    if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').textContent=t('confirmCharge');
   }
   function closeEditor(){const m=$('barSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
   function openEditor(slot){
@@ -48178,12 +48184,83 @@ try{
   function closeView(){const m=$('cocktailViewModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
   function openView(slot){
     const data=read()[slot]; if(!data||!data.name)return;
+    activeViewSlot=slot; activeViewData=data;
     syncText(); $('cocktailViewTitle').textContent=data.name||'';
     const priceEl=$('cocktailViewPrice'); if(priceEl){const price=String(data.price||'').trim();priceEl.textContent=price?(price.includes('€')?price:price+' €'):'';priceEl.hidden=!price;}
     const img=$('cocktailViewImage'); if(data.image){img.src=data.image;img.alt=data.name||t('cocktail');img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
     $('cocktailViewIngredients').innerHTML=(data.ingredients||[]).map(x=>'<li><span>'+esc(x.dose||'')+'</span> '+esc(x.name||'')+'</li>').join('');
     $('cocktailViewSteps').innerHTML=(data.steps||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
     const m=$('cocktailViewModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
+  }
+  function guestNameOf(g){
+    return String(g?.nome ?? g?.name ?? g?.ospite ?? g?.guest_name ?? g?.guestName ?? '').trim() || 'Ospite';
+  }
+  function guestRoomsOf(g){
+    try{ if(typeof _parseRoomsArr==='function') return _parseRoomsArr(g?.stanze ?? g?.rooms ?? g?.stanza ?? g?.room ?? ''); }catch(_){}
+    return String(g?.stanze ?? g?.rooms ?? g?.stanza ?? g?.room ?? '').split(/[,;|\s]+/).map(x=>String(x).trim()).filter(Boolean);
+  }
+  function validGuest(g){
+    const del=g?.isDeleted ?? g?.is_deleted ?? g?.deleted;
+    return !(del===true || String(del)==='1' || String(del).toLowerCase()==='true');
+  }
+  function parsePrice(v){
+    const n=parseFloat(String(v??'').replace(/[^0-9,.-]/g,'').replace(',','.'));
+    return Number.isFinite(n)?Math.max(0,n):0;
+  }
+  async function loadChargeGuests(){
+    let guests=[];
+    try{ guests=await api('ospiti',{method:'GET',showLoader:false}); }catch(_){ guests=[]; }
+    if(!Array.isArray(guests)) guests=Array.isArray(guests?.data)?guests.data:Array.isArray(guests?.ospiti)?guests.ospiti:[];
+    return guests.filter(validGuest).flatMap(g=>guestRoomsOf(g).map(room=>({guest:g,room:String(room)}))).sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+  }
+  function closeCharge(){
+    const m=$('cocktailChargeModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}
+    if($('cocktailViewModal') && !$('cocktailViewModal').hidden) document.body.classList.add('modal-open'); else document.body.classList.remove('modal-open');
+  }
+  async function openCharge(){
+    if(!activeViewData||!activeViewData.name)return;
+    syncText();
+    const modal=$('cocktailChargeModal'), select=$('cocktailChargeRoom'), summary=$('cocktailChargeSummary'), confirm=$('cocktailChargeConfirm');
+    if(!modal||!select||!confirm)return;
+    select.innerHTML='<option value="">…</option>'; confirm.disabled=true;
+    summary.textContent=(activeViewData.name||'')+' · '+parsePrice(activeViewData.price).toFixed(2).replace('.',',')+' €';
+    modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
+    const rows=await loadChargeGuests();
+    select.innerHTML='';
+    if(!rows.length){ const o=document.createElement('option');o.value='';o.textContent=t('noRooms');select.appendChild(o);confirm.disabled=true;return; }
+    rows.forEach(row=>{
+      const id=String((typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
+      if(!id)return;
+      const o=document.createElement('option'); o.value=id; o.dataset.room=row.room; o.textContent='Stanza '+row.room+' — '+guestNameOf(row.guest); select.appendChild(o);
+    });
+    confirm.disabled=!select.value;
+  }
+  async function confirmCharge(){
+    const select=$('cocktailChargeRoom'), btn=$('cocktailChargeConfirm');
+    const guestId=String(select?.value||'').trim(); if(!guestId||!activeViewData)return;
+    const room=select.options[select.selectedIndex]?.dataset?.room||'';
+    const amount=parsePrice(activeViewData.price);
+    btn.disabled=true;
+    try{
+      let current=[];
+      try{ current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false})); }catch(_){ current=[]; }
+      if(!Array.isArray(current))current=[];
+      const items=current.filter(s=>{
+        const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;
+        return !(del===true||String(del)==='1');
+      }).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
+      items.push({servizio:String(activeViewData.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+new Date().toLocaleString(),importo:amount,qty:1});
+      await api('servizi',{method:'POST',body:{ospite_id:guestId,servizi:items}});
+      try{
+        if(!state.guestServicesCacheById)state.guestServicesCacheById={};
+        const total=(typeof serviziComputeTotal==='function')?serviziComputeTotal(items):items.reduce((sum,x)=>sum+(Number(x.importo)||0)*(Number(x.qty)||1),0);
+        state.guestServicesCacheById[String(guestId)]={items:items.slice(),total,loadedAt:Date.now()};
+        const g=Array.isArray(state.guests)?state.guests.find(x=>String((typeof guestIdOf==='function'?guestIdOf(x):x?.id)||'')===guestId):null;
+        if(g){g.servizi_totale=total;try{g.servizi_preview=serviziPreviewText(items);}catch(_){}}
+      }catch(_){}
+      closeCharge();
+      try{toast(t('charged'));}catch(_){alert(t('charged'));}
+    }catch(e){ btn.disabled=false; try{toast(t('chargeError'));}catch(_){alert(t('chargeError'));} }
   }
   async function save(){
     try{ await imageProcessPromise; }catch(_){ }
@@ -48290,6 +48367,11 @@ try{
     $('cocktailViewClose')?.addEventListener('click',closeView);
     $('barSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('barSlotModal'))closeEditor();});
     $('cocktailViewModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailViewModal'))closeView();});
+    $('cocktailChargeBtn')?.addEventListener('click',openCharge);
+    $('cocktailChargeClose')?.addEventListener('click',closeCharge);
+    $('cocktailChargeModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailChargeModal'))closeCharge();});
+    $('cocktailChargeRoom')?.addEventListener('change',()=>{if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').disabled=!$('cocktailChargeRoom').value;});
+    $('cocktailChargeConfirm')?.addEventListener('click',confirmCharge);
     syncText();render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
@@ -48297,7 +48379,7 @@ try{
 })();
 
 
-/* dDAE_3.121 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.122 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;

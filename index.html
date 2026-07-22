@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.121" rel="stylesheet"/>
-<link href="./manifest.json?v=3.121" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.121" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.121" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.121" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.121" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.121" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.121" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.122" rel="stylesheet"/>
+<link href="./manifest.json?v=3.122" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.122" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.122" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.122" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.122" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.122" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.122" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.121";
+window.APP_VERSION = "3.122";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.121";
+  const LOCAL_BUILD = "dDAE_3.122";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.121";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.121")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.121")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.122")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.122")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -309,7 +309,7 @@ window.APP_VERSION = "3.121";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.121"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.122"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -517,7 +517,7 @@ window.APP_VERSION = "3.121";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.121</div></div></section>
+<div class="build" id="buildText">dDAE_3.122</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2989,10 +2989,22 @@ window.APP_VERSION = "3.121";
     <ul class="cocktail-view-ingredients" id="cocktailViewIngredients"></ul>
     <h3 id="cocktailViewProcedureHeading">Preparazione</h3>
     <ol class="cocktail-view-steps" id="cocktailViewSteps"></ol>
+    <button class="cocktail-charge-btn" id="cocktailChargeBtn" type="button">Addebita alla stanza</button>
   </article>
 </div>
 
-<script defer="" src="./config.js?v=3.121"></script>
-<script defer="" src="./app.js?v=3.121"></script>
+<div aria-hidden="true" class="modal modal-center cocktail-charge-modal" hidden id="cocktailChargeModal">
+  <article aria-labelledby="cocktailChargeTitle" aria-modal="true" class="modal-card cocktail-charge-card" role="dialog">
+    <button aria-label="Chiudi" class="cocktail-close-btn cocktail-charge-close" id="cocktailChargeClose" type="button">×</button>
+    <h2 id="cocktailChargeTitle">Addebita alla stanza</h2>
+    <label class="cocktail-charge-label" for="cocktailChargeRoom" id="cocktailChargeRoomLabel">Stanza / ospite</label>
+    <select class="cocktail-charge-select" id="cocktailChargeRoom"></select>
+    <div class="cocktail-charge-summary" id="cocktailChargeSummary"></div>
+    <button class="cocktail-charge-confirm" id="cocktailChargeConfirm" type="button">Conferma addebito</button>
+  </article>
+</div>
+
+<script defer="" src="./config.js?v=3.122"></script>
+<script defer="" src="./app.js?v=3.122"></script>
 </body>
 </html>
