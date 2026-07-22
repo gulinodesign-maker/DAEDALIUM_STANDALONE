@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.119";
+const BUILD_VERSION = "3.120";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.119';
+  var BUILD_TAG='dDAE_3.120';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.119 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.120 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.119 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.120 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,13 +48119,14 @@ try{
 })();
 
 
-/* dDAE_3.119 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.120 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
   const HOLD_MS=650;
   let activeSlot='';
   let imageData='';
+  let imageProcessPromise=Promise.resolve();
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
@@ -48184,7 +48185,8 @@ try{
     $('cocktailViewSteps').innerHTML=(data.steps||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
     const m=$('cocktailViewModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
   }
-  function save(){
+  async function save(){
+    try{ await imageProcessPromise; }catch(_){ }
     const name=$('cocktailNameInput').value.trim(); const price=$('cocktailPriceInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
     const ingredients=Array.from(document.querySelectorAll('#cocktailIngredientsList .cocktail-ingredient-row')).map(r=>({name:r.querySelector('.cocktail-ingredient-name').value.trim(),dose:r.querySelector('.cocktail-ingredient-dose').value.trim()})).filter(x=>x.name||x.dose);
     const steps=Array.from(document.querySelectorAll('#cocktailStepsList .cocktail-step-text')).map(x=>x.value.trim()).filter(Boolean);
@@ -48231,25 +48233,37 @@ try{
     if(cocktailImageInput){
       cocktailImageInput.dataset.ddaeCocktailImage='1';
       cocktailImageInput.setAttribute('data-ddae-cocktail-image','1');
-      const processCocktailImage=async function(input,ev){
+      const processCocktailImage=function(input,ev){
         try{ if(ev&&ev.cancelable!==false)ev.preventDefault(); }catch(_){ }
         try{ ev&&ev.stopPropagation(); ev&&ev.stopImmediatePropagation(); }catch(_){ }
-        const f=input&&input.files&&input.files[0]; if(!f)return;
-        if(!String(f.type||'').toLowerCase().startsWith('image/')){try{toast('File immagine non valido');}catch(_){ }return;}
-        try{
-          const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f);});
-          const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=raw;});
-          const maxSide=420, scale=Math.min(1,maxSide/Math.max(img.naturalWidth||1,img.naturalHeight||1));
-          const canvas=document.createElement('canvas');
-          canvas.width=Math.max(1,Math.round((img.naturalWidth||1)*scale));
-          canvas.height=Math.max(1,Math.round((img.naturalHeight||1)*scale));
-          const ctx=canvas.getContext('2d',{alpha:false});
-          ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-          ctx.drawImage(img,0,0,canvas.width,canvas.height);
-          imageData=canvas.toDataURL('image/jpeg',0.68);
-          const p=$('cocktailImagePreview');
-          if(p){p.hidden=false;p.style.backgroundImage='url("'+imageData.replace(/"/g,'%22')+'")';}
-        }catch(_){try{toast('Immagine non valida');}catch(__){ }}
+        const f=input&&input.files&&input.files[0]; if(!f)return Promise.resolve();
+        if(!String(f.type||'').toLowerCase().startsWith('image/')){try{toast('File immagine non valido');}catch(_){ }return Promise.resolve();}
+        const slotAtSelection=activeSlot;
+        imageProcessPromise=(async function(){
+          try{
+            const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f);});
+            const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=raw;});
+            const maxSide=360, scale=Math.min(1,maxSide/Math.max(img.naturalWidth||1,img.naturalHeight||1));
+            const canvas=document.createElement('canvas');
+            canvas.width=Math.max(1,Math.round((img.naturalWidth||1)*scale));
+            canvas.height=Math.max(1,Math.round((img.naturalHeight||1)*scale));
+            const ctx=canvas.getContext('2d',{alpha:false});
+            if(!ctx)throw new Error('canvas');
+            ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(img,0,0,canvas.width,canvas.height);
+            const encoded=canvas.toDataURL('image/jpeg',0.58);
+            if(!encoded||encoded.length<32)throw new Error('encode');
+            imageData=encoded;
+            const all=read();
+            const previous=(all[slotAtSelection]&&typeof all[slotAtSelection]==='object')?all[slotAtSelection]:{};
+            all[slotAtSelection]={...previous,image:encoded,imageUpdatedAt:Date.now()};
+            if(!write(all))throw new Error('storage');
+            const p=$('cocktailImagePreview');
+            if(p){p.hidden=false;p.style.backgroundImage='url("'+encoded.replace(/"/g,'%22')+'")';}
+            render();
+          }catch(_){try{toast('Immagine non valida o memoria piena');}catch(__){ }}
+        })();
+        return imageProcessPromise;
       };
       window.addEventListener('change',function(ev){
         const input=ev&&ev.target;
@@ -48267,7 +48281,7 @@ try{
 })();
 
 
-/* dDAE_3.119 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.120 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
