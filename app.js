@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.126";
+const BUILD_VERSION = "3.127";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.126';
+  var BUILD_TAG='dDAE_3.127';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.126 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.127 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.126 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.127 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,7 +48119,7 @@ try{
 })();
 
 
-/* dDAE_3.126 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.127 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48341,6 +48341,62 @@ try{
       try{toast(t('charged'));}catch(_){alert(t('charged'));}
     }catch(e){ btn.disabled=false; try{toast(t('chargeError'));}catch(_){alert(t('chargeError'));} }
   }
+  function normalizeImportedCocktail(raw){
+    if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('Formato cocktail non valido');
+    const source=(raw.cocktail&&typeof raw.cocktail==='object')?raw.cocktail:raw;
+    const name=String(source.name ?? source.nome ?? source.title ?? '').trim();
+    if(!name)throw new Error('Nome cocktail mancante');
+    const price=String(source.price ?? source.prezzo ?? '').trim();
+    const ingredientSource=Array.isArray(source.ingredients)?source.ingredients:(Array.isArray(source.ingredienti)?source.ingredienti:[]);
+    const ingredients=ingredientSource.map(function(item){
+      if(typeof item==='string')return {name:item.trim(),dose:''};
+      item=item&&typeof item==='object'?item:{};
+      return {
+        name:String(item.name ?? item.nome ?? item.ingredient ?? item.ingrediente ?? '').trim(),
+        dose:String(item.dose ?? item.qty ?? item.quantity ?? item.quantita ?? item.quantità ?? item.measure ?? '').trim()
+      };
+    }).filter(function(item){return item.name||item.dose;});
+    const stepSource=Array.isArray(source.steps)?source.steps:(Array.isArray(source.preparation)?source.preparation:(Array.isArray(source.preparazione)?source.preparazione:[]));
+    const steps=stepSource.map(function(item){
+      if(typeof item==='string')return item.trim();
+      if(item&&typeof item==='object')return String(item.text ?? item.step ?? item.passaggio ?? item.description ?? '').trim();
+      return '';
+    }).filter(Boolean);
+    let image=String(source.imageData ?? source.image_data ?? source.image ?? source.immagine ?? '').trim();
+    if(image&&!(image.startsWith('data:image/'))){
+      const mime=String(source.imageMime ?? source.image_mime ?? 'image/png').trim()||'image/png';
+      const base64=String(source.imageBase64 ?? source.image_base64 ?? '').trim();
+      if(base64)image='data:'+mime+';base64,'+base64;
+      else image='';
+    }
+    if(!image){
+      const base64=String(source.imageBase64 ?? source.image_base64 ?? '').trim();
+      if(base64){const mime=String(source.imageMime ?? source.image_mime ?? 'image/png').trim()||'image/png';image='data:'+mime+';base64,'+base64;}
+    }
+    if(!image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(image))throw new Error('Immagine incorporata mancante o non valida');
+    return {name,price,ingredients,steps,image};
+  }
+  function applyImportedCocktail(data){
+    $('cocktailNameInput').value=data.name;
+    $('cocktailPriceInput').value=data.price;
+    $('cocktailIngredientsList').innerHTML='';
+    (data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
+    $('cocktailStepsList').innerHTML='';
+    (data.steps.length?data.steps:['']).forEach(addStep);
+    imageData=data.image;
+    const preview=$('cocktailImagePreview');
+    if(preview){preview.hidden=false;preview.style.backgroundImage='url("'+data.image.replace(/"/g,'%22')+'")';}
+  }
+  async function importCocktailFile(file){
+    if(!file)return;
+    if(file.size>12*1024*1024)throw new Error('File troppo grande');
+    const text=await file.text();
+    let raw;
+    try{raw=JSON.parse(text.replace(/^\uFEFF/,''));}catch(_){throw new Error('File cocktail non leggibile');}
+    const data=normalizeImportedCocktail(raw);
+    applyImportedCocktail(data);
+    try{toast('Cocktail importato. Premi Salva per confermare.');}catch(_){ }
+  }
   async function save(){
     try{ await imageProcessPromise; }catch(_){ }
     const name=$('cocktailNameInput').value.trim(); const price=$('cocktailPriceInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
@@ -48400,7 +48456,20 @@ try{
     $('cocktailAddIngredientBtn')?.addEventListener('click',()=>addIngredient({}));
     $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
     $('cocktailSaveBtn')?.addEventListener('click',save);
-    $('cocktailImportBtn')?.addEventListener('click',ev=>{ev.preventDefault();});
+    const cocktailImportBtn=$('cocktailImportBtn');
+    const cocktailImportInput=$('cocktailImportInput');
+    cocktailImportBtn?.addEventListener('click',ev=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(cocktailImportInput){cocktailImportInput.value='';cocktailImportInput.click();}
+    });
+    cocktailImportInput?.addEventListener('change',async function(){
+      const file=this.files&&this.files[0];
+      if(!file)return;
+      if(cocktailImportBtn)cocktailImportBtn.disabled=true;
+      try{await importCocktailFile(file);}catch(err){try{toast(err&&err.message?err.message:'File cocktail non valido');}catch(_){alert(err&&err.message?err.message:'File cocktail non valido');}}
+      finally{if(cocktailImportBtn)cocktailImportBtn.disabled=false;this.value='';}
+    });
     const cocktailImageInput=$('cocktailImageInput');
     if(cocktailImageInput){
       cocktailImageInput.dataset.ddaeCocktailImage='1';
@@ -48460,7 +48529,7 @@ try{
 })();
 
 
-/* dDAE_3.126 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.127 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
