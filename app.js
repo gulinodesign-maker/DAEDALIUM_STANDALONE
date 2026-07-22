@@ -62,11 +62,13 @@ function applyIconPalette(){
         });
       }
     });
+    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
+      const fallbackColor = barIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
       const c = (typeof __launcherIconResolveHex__ === 'function')
-        ? __launcherIconResolveHex__(themeId, statsIconColors[themeId] || "#4D9CC5")
-        : (statsIconColors[themeId] || "#4D9CC5");
+        ? __launcherIconResolveHex__(themeId, fallbackColor)
+        : fallbackColor;
       btn.style.setProperty('--ico-color', c);
       const glyph = btn.querySelector('.home-main-glyph');
       if (glyph) glyph.style.color = c;
@@ -94,9 +96,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.100
+ * Build: 3.101
  */
-const BUILD_VERSION = "3.100";
+const BUILD_VERSION = "3.101";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11566,7 +11568,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11610,6 +11612,10 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatPiscinaReport: 'beige-5',
   goStatCancellazioni: 'sky-4',
   goStatAmministratore: 'violet-4',
+  barCocktailBtn: 'orange-4',
+  barVinoBtn: 'red-4',
+  barBirraBtn: 'yellow-4',
+  barAnalcoliciBtn: 'sky-4',
   homeYearPill: 'sky-4'
 };
 
@@ -12805,7 +12811,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -12917,7 +12923,7 @@ function __launcherIconApplyToButton__(btn){
     if (!btn || !btn.id) return;
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
-    const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-impostazioni') || btn.closest('#settingsDataModal'));
+    const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy') || btn.closest('#page-impostazioni') || btn.closest('#settingsDataModal'));
     const resolvedBgSpec = visual.bg || (allowGridTheme ? __launcherGridThemeResolveLayer__('bg', '') : '');
     const resolvedBorderSpec = visual.border || (allowGridTheme ? __launcherGridThemeResolveLayer__('border', resolvedBgSpec || '') : '');
     const bgHex = resolvedBgSpec ? __operatoreColorHex__(resolvedBgSpec) : '';
@@ -12972,7 +12978,7 @@ function __launcherIconApplyToButton__(btn){
       __applyVisualTextWeight__(btn, visual);
       return;
     }
-    if (btn.closest('#page-home') || btn.closest('#page-statistiche')){
+    if (btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy')){
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
       const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
       const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : '');
@@ -13153,6 +13159,7 @@ function __bindLauncherIconLongPress__(btn){
     const getReturnPage = () => {
       try{
         if (btn.closest('#page-impostazioni')) return 'impostazioni';
+        if (btn.closest('#page-statistichecopy')) return 'statistichecopy';
         if (btn.closest('#page-statistiche')) return 'statistiche';
       }catch(_){ }
       return 'home';
@@ -43799,7 +43806,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.100';
+  var BUILD_TAG='dDAE_3.101';
   var busy=false;
   var lastStart=0;
   var active=null;
