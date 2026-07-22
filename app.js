@@ -43,6 +43,7 @@ function applyIconPalette(){
       goStatChannel: "#C7B198",
       goStatPulizie: "#D9CCC0",
       goStatPiscina: "#D9CCC0",
+      goStatPiscinaReport: "#C7B198",
       goStatCancellazioni: "#AFC9D8"
     };
     document.querySelectorAll('#page-home .home-main').forEach((btn) => {
@@ -61,10 +62,11 @@ function applyIconPalette(){
         });
       }
     });
-    document.querySelectorAll('#page-statistiche .home-main').forEach((btn) => {
+    document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
+      const themeId = String(btn.id || '').replace(/^copy_/, '');
       const c = (typeof __launcherIconResolveHex__ === 'function')
-        ? __launcherIconResolveHex__(btn.id, statsIconColors[btn.id] || "#4D9CC5")
-        : (statsIconColors[btn.id] || "#4D9CC5");
+        ? __launcherIconResolveHex__(themeId, statsIconColors[themeId] || "#4D9CC5")
+        : (statsIconColors[themeId] || "#4D9CC5");
       btn.style.setProperty('--ico-color', c);
       const glyph = btn.querySelector('.home-main-glyph');
       if (glyph) glyph.style.color = c;
@@ -92,9 +94,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.098
+ * Build: 3.099
  */
-const BUILD_VERSION = "3.098";
+const BUILD_VERSION = "3.099";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11564,7 +11566,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni','goStatAmministratore'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11605,6 +11607,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatChannel: 'beige-5',
   goStatPulizie: 'gray-4',
   goStatPiscina: 'beige-4',
+  goStatPiscinaReport: 'beige-5',
   goStatCancellazioni: 'sky-4',
   goStatAmministratore: 'violet-4',
   homeYearPill: 'sky-4'
@@ -12802,7 +12805,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatCancellazioni','goStatAmministratore'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -17518,6 +17521,7 @@ function bindHomeStrongTap(){
   go("goPulizie", "pulizie");
   go("goLavanderia", "lavanderia");
   go("goStatistiche", "statistiche");
+  go("goOrePuliziaHome", "statistichecopy");
   go("goStatPiscina", "orepulizia");
   go("openLauncher", "spese", { before: ()=>{ try{ setSpeseView("list"); }catch(_){} } });
 }
@@ -17995,7 +17999,7 @@ function showPage(page){
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
     if (state.session && isOperatoreSession(state.session)){
-      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statpiscina","laundrycatalog","opsettings"]);
+      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statistichecopy","statpiscina","laundrycatalog","opsettings"]);
       if (!allowed.has(page)) page = "pulizie";
     }
   }catch(_){ }
@@ -18743,7 +18747,7 @@ if (guestScrollTodayBtn){
   }
   const goOrePulHome = $("#goOrePuliziaHome");
   if (goOrePulHome){
-    bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("statpiscina"); });
+    bindFastTap(goOrePulHome, () => { hideLauncher(); showPage("statistichecopy"); });
   }
   try{ __applyHomeIconGradients__(); }catch(_){ }
   try{
@@ -18815,6 +18819,8 @@ if (guestScrollTodayBtn){
   if (s6){ bindFastTap(s6, () => { hideLauncher(); showPage("statamministratore"); }); }
   const s7 = $("#goStatPiscina");
   if (s7){ bindFastTap(s7, () => { hideLauncher(); showPage("orepulizia"); }); }
+  const s7b = $("#goStatPiscinaReport");
+  if (s7b){ bindFastTap(s7b, () => { hideLauncher(); showPage("statpiscina"); }); }
   const s8 = $("#goStatCancellazioni");
   if (s8){ bindFastTap(s8, () => { hideLauncher(); showPage("statcancellazioni"); }); }
 // STATGEN: topbar tools
@@ -43793,7 +43799,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.098';
+  var BUILD_TAG='dDAE_3.099';
   var busy=false;
   var lastStart=0;
   var active=null;

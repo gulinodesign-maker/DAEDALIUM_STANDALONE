@@ -30322,7 +30322,7 @@ body.ddae-dark .room-kind-badge{
 }
 
 
-/* dDAE_3.098 — lampeggio guest card affidabile su iOS/Safari, anche con Riduci movimento */
+/* dDAE_3.099 — lampeggio guest card affidabile su iOS/Safari, anche con Riduci movimento */
 #page-ospiti .guest-card.checkout-pending::before,
 #page-ospiti .guest-card.is-status-card-blink::after{
   display:block !important;
