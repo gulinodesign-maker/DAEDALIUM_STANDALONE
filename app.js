@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.127";
+const BUILD_VERSION = "3.128";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -21656,7 +21656,8 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
   'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn',
-  'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn'
+  'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
+  'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailSaveBtn'
 ];
 
 function __loadSingleActionButtonVisualMap__(){
@@ -43863,7 +43864,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.127';
+  var BUILD_TAG='dDAE_3.128';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47992,7 +47993,7 @@ try{
 })();
 
 
-/* dDAE_3.127 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.128 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48031,7 +48032,7 @@ try{
 })();
 
 
-/* dDAE_3.127 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.128 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48119,7 +48120,7 @@ try{
 })();
 
 
-/* dDAE_3.127 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.128 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48397,6 +48398,37 @@ try{
     applyImportedCocktail(data);
     try{toast('Cocktail importato. Premi Salva per confermare.');}catch(_){ }
   }
+
+  function currentCocktailFromEditor(){
+    const name=String($('cocktailNameInput')?.value||'').trim();
+    const price=String($('cocktailPriceInput')?.value||'').trim();
+    const ingredients=Array.from(document.querySelectorAll('#cocktailIngredientsList .cocktail-ingredient-row')).map(r=>({name:String(r.querySelector('.cocktail-ingredient-name')?.value||'').trim(),dose:String(r.querySelector('.cocktail-ingredient-dose')?.value||'').trim()})).filter(x=>x.name||x.dose);
+    const steps=Array.from(document.querySelectorAll('#cocktailStepsList .cocktail-step-text')).map(x=>String(x.value||'').trim()).filter(Boolean);
+    return {name,price,ingredients,steps,image:imageData};
+  }
+  function safeCocktailFilename(name){
+    const base=String(name||'cocktail').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,60)||'cocktail';
+    return base+'.daecocktail';
+  }
+  async function exportCocktailFile(){
+    try{await imageProcessPromise;}catch(_){ }
+    const data=currentCocktailFromEditor();
+    if(!data.name)throw new Error('Nome cocktail mancante');
+    if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.128',exportedAt:new Date().toISOString(),cocktail:data};
+    const filename=safeCocktailFilename(data.name);
+    const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+    const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:data.name,text:'Cocktail '+data.name});
+      return;
+    }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1500);
+    try{toast('Cocktail esportato');}catch(_){ }
+  }
+
   async function save(){
     try{ await imageProcessPromise; }catch(_){ }
     const name=$('cocktailNameInput').value.trim(); const price=$('cocktailPriceInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
@@ -48456,20 +48488,18 @@ try{
     $('cocktailAddIngredientBtn')?.addEventListener('click',()=>addIngredient({}));
     $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
     $('cocktailSaveBtn')?.addEventListener('click',save);
+    const cocktailExportBtn=$('cocktailExportBtn');
+    cocktailExportBtn?.addEventListener('click',async ev=>{
+      ev.preventDefault();ev.stopPropagation();cocktailExportBtn.disabled=true;
+      try{await exportCocktailFile();}catch(err){if(err&&err.name==='AbortError')return;try{toast(err&&err.message?err.message:'Esportazione non riuscita');}catch(_){alert(err&&err.message?err.message:'Esportazione non riuscita');}}
+      finally{cocktailExportBtn.disabled=false;}
+    });
     const cocktailImportBtn=$('cocktailImportBtn');
     const cocktailImportInput=$('cocktailImportInput');
     cocktailImportBtn?.addEventListener('click',ev=>{
       ev.preventDefault();
       ev.stopPropagation();
-      if(cocktailImportInput){
-      cocktailImportInput.removeAttribute('hidden');
-      cocktailImportInput.style.position='fixed';
-      cocktailImportInput.style.left='-9999px';
-      cocktailImportInput.accept='.daecocktail,.json,application/json,text/json';
-      cocktailImportInput.value='';
-      cocktailImportInput.click();
-      setTimeout(()=>{cocktailImportInput.setAttribute('hidden','');},500);
-    }
+      if(cocktailImportInput){cocktailImportInput.value='';cocktailImportInput.click();}
     });
     cocktailImportInput?.addEventListener('change',async function(){
       const file=this.files&&this.files[0];
@@ -48537,7 +48567,7 @@ try{
 })();
 
 
-/* dDAE_3.127 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.128 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
