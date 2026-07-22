@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.117";
+const BUILD_VERSION = "3.118";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.117';
+  var BUILD_TAG='dDAE_3.118';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46601,6 +46601,7 @@ try{
     try{
       var input=ev.target;
       if(!input||input.type!=='file') return;
+      if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       var mark=String(input.id||input.name||input.className||input.accept||'').toLowerCase();
       if(mark.indexOf('backup')<0 && mark.indexOf('json')<0) return;
       var file=input.files&&input.files[0];
@@ -46837,6 +46838,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       const input = ev.target;
       if (!input || input.type !== 'file') return;
+      if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       const marker = String(input.id || input.name || input.className || input.accept || '').toLowerCase();
       if (marker.indexOf('backup') < 0 && marker.indexOf('json') < 0 && marker.indexOf('dbfileinput') < 0) return;
       const file = input.files && input.files[0];
@@ -47057,6 +47059,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       var input=ev.target;
       if(!input || input.type!=='file') return;
+      if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       var mark=String(input.id||input.name||input.className||input.accept||input.getAttribute('aria-label')||'').toLowerCase();
       var topRight = false;
       try{
@@ -47989,7 +47992,7 @@ try{
 })();
 
 
-/* dDAE_3.117 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.118 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48031,7 @@ try{
 })();
 
 
-/* dDAE_3.117 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.118 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48119,7 @@ try{
 })();
 
 
-/* dDAE_3.117 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.118 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48134,7 +48137,7 @@ try{
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
-  function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));}catch(_){try{toast('Immagine troppo grande');}catch(__){}}}
+  function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Immagine troppo grande');}catch(__){}return false;}}
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function addIngredient(value){
     const row=document.createElement('div'); row.className='cocktail-dynamic-row cocktail-ingredient-row';
@@ -48185,7 +48188,7 @@ try{
     const name=$('cocktailNameInput').value.trim(); const price=$('cocktailPriceInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
     const ingredients=Array.from(document.querySelectorAll('#cocktailIngredientsList .cocktail-ingredient-row')).map(r=>({name:r.querySelector('.cocktail-ingredient-name').value.trim(),dose:r.querySelector('.cocktail-ingredient-dose').value.trim()})).filter(x=>x.name||x.dose);
     const steps=Array.from(document.querySelectorAll('#cocktailStepsList .cocktail-step-text')).map(x=>x.value.trim()).filter(Boolean);
-    const all=read(); all[activeSlot]={name,price,ingredients,steps,image:imageData,updatedAt:Date.now()}; write(all); render(); closeEditor();
+    const all=read(); all[activeSlot]={name,price,ingredients,steps,image:imageData,updatedAt:Date.now()}; if(!write(all))return; render(); closeEditor();
   }
   function render(){
     const all=read(); document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(btn=>{
@@ -48224,7 +48227,24 @@ try{
     $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
     $('cocktailSaveBtn')?.addEventListener('click',save);
     $('cocktailImportBtn')?.addEventListener('click',ev=>{ev.preventDefault();});
-    $('cocktailImageInput')?.addEventListener('change',function(){const f=this.files&&this.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{imageData=String(r.result||'');const p=$('cocktailImagePreview');p.hidden=false;p.style.backgroundImage='url("'+imageData.replace(/"/g,'%22')+'")';};r.readAsDataURL(f);});
+    const cocktailImageInput=$('cocktailImageInput');
+    if(cocktailImageInput){
+      cocktailImageInput.dataset.ddaeCocktailImage='1';
+      cocktailImageInput.addEventListener('change',async function(ev){
+        try{ev.stopPropagation();ev.stopImmediatePropagation();}catch(_){ }
+        const f=this.files&&this.files[0];if(!f)return;
+        if(!String(f.type||'').toLowerCase().startsWith('image/')){try{toast('File immagine non valido');}catch(_){ }return;}
+        try{
+          const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f);});
+          const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=raw;});
+          const maxSide=720, scale=Math.min(1,maxSide/Math.max(img.naturalWidth||1,img.naturalHeight||1));
+          const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round((img.naturalWidth||1)*scale));canvas.height=Math.max(1,Math.round((img.naturalHeight||1)*scale));
+          const ctx=canvas.getContext('2d',{alpha:false});ctx.drawImage(img,0,0,canvas.width,canvas.height);
+          imageData=canvas.toDataURL('image/jpeg',0.78);
+          const p=$('cocktailImagePreview');p.hidden=false;p.style.backgroundImage='url("'+imageData.replace(/"/g,'%22')+'")';
+        }catch(_){try{toast('Immagine non valida');}catch(__){ }}
+      },true);
+    }
     $('cocktailViewClose')?.addEventListener('click',closeView);
     $('barSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('barSlotModal'))closeEditor();});
     $('cocktailViewModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailViewModal'))closeView();});
@@ -48235,7 +48255,7 @@ try{
 })();
 
 
-/* dDAE_3.117 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.118 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
