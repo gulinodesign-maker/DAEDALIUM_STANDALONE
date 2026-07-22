@@ -30399,3 +30399,10 @@ body.ddae-dark #page-statistichecopy .stats-title{
   color:#f8fafc !important;
   -webkit-text-fill-color:#f8fafc !important;
 }
+
+/* dDAE_3.104 — popup Bar inattivo, localizzato, dark mode e colori tema */
+#settingsBarModal .settings-bar-actions > .settings-btn{ cursor:default; }
+#settingsBarModal .settings-bar-actions > .settings-btn:active{ transform:none !important; }
+body.ddae-dark #settingsBarModal .settings-data-card{ background:#151b24 !important; border-color:rgba(255,255,255,.16) !important; }
+body.ddae-dark #settingsBarModal .settings-data-title{ color:#f8fafc !important; -webkit-text-fill-color:#f8fafc !important; }
+body.ddae-dark #settingsBarModal .settings-btn-label{ color:inherit; -webkit-text-fill-color:inherit; }

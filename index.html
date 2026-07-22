@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.103" rel="stylesheet"/>
-<link href="./manifest.json?v=3.103" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.103" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.103" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.103" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.103" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.103" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.103" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.104" rel="stylesheet"/>
+<link href="./manifest.json?v=3.104" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.104" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.104" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.104" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.104" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.104" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.104" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <script>
-window.APP_VERSION = "3.103";
+window.APP_VERSION = "3.104";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.103";
+  const LOCAL_BUILD = "dDAE_3.104";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.103";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.103")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.103")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.104")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.104")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -308,7 +308,7 @@ window.APP_VERSION = "3.103";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.103"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.104"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -516,7 +516,7 @@ window.APP_VERSION = "3.103";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.103</div></div></section>
+<div class="build" id="buildText">dDAE_3.104</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2084,6 +2084,21 @@ window.APP_VERSION = "3.103";
 </div>
 </div>
 </div>
+
+<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsBarModal">
+<div aria-label="Bar" aria-modal="true" class="modal-card settings-data-card" role="dialog">
+<div class="db-menu-title settings-data-title">BAR</div>
+<div class="settings-data-actions settings-bar-actions">
+<button aria-label="Cocktail" class="settings-btn settings-btn-bar-cocktail" data-bar-inert="true" id="settingsBarCocktailBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 3h16"></path><path d="M6 3l6 8 6-8"></path><path d="M12 11v7"></path><path d="M8 21h8"></path></svg><span class="settings-btn-label">Cocktail</span></button>
+<button aria-label="Vini" class="settings-btn settings-btn-bar-wines" data-bar-inert="true" id="settingsBarWinesBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 3h10v5a5 5 0 0 1-10 0V3Z"></path><path d="M12 13v6"></path><path d="M8 21h8"></path></svg><span class="settings-btn-label">Vini</span></button>
+<button aria-label="Birre" class="settings-btn settings-btn-bar-beers" data-bar-inert="true" id="settingsBarBeersBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 5h10v16H6Z"></path><path d="M16 8h2a3 3 0 0 1 0 6h-2"></path><path d="M8 3h6"></path></svg><span class="settings-btn-label">Birre</span></button>
+<button aria-label="Analcolici" class="settings-btn settings-btn-bar-soft" data-bar-inert="true" id="settingsBarSoftDrinksBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M7 4h10l-1 17H8L7 4Z"></path><path d="M8 9h8"></path><path d="M13 4l3-3"></path></svg><span class="settings-btn-label">Analcolici</span></button>
+<button aria-label="Chiudi bar" class="auth-btn auth-btn-gray settings-data-close" id="settingsBarCloseBtn" type="button">Annulla</button>
+</div></div></div>
 <div aria-hidden="true" class="modal" hidden="" id="settingsConfigModal">
 <div aria-modal="true" class="modal-card operatori-editor-card settings-popup-card" role="dialog">
 <div class="operatori-editor-hd">
@@ -2861,7 +2876,7 @@ window.APP_VERSION = "3.103";
 </div>
 </div>
 
-<script defer="" src="./config.js?v=3.103"></script>
-<script defer="" src="./app.js?v=3.103"></script>
+<script defer="" src="./config.js?v=3.104"></script>
+<script defer="" src="./app.js?v=3.104"></script>
 </body>
 </html>

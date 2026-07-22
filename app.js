@@ -96,9 +96,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.103
+ * Build: 3.104
  */
-const BUILD_VERSION = "3.103";
+const BUILD_VERSION = "3.104";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -8311,6 +8311,8 @@ let __MONTHS_IT = [];
 const __I18N_PHRASES__ = {
   "Bar": { "en":"Bar", "fr":"Bar", "de":"Bar", "es":"Bar" },
   "Cocktail": { "en":"Cocktails", "fr":"Cocktails", "de":"Cocktails", "es":"Cócteles" },
+  "Vini": { "en":"Wines", "fr":"Vins", "de":"Weine", "es":"Vinos" },
+  "Birre": { "en":"Beers", "fr":"Bières", "de":"Biere", "es":"Cervezas" },
   "Vino": { "en":"Wine", "fr":"Vin", "de":"Wein", "es":"Vino" },
   "Birra": { "en":"Beer", "fr":"Bière", "de":"Bier", "es":"Cerveza" },
   "Analcolici": { "en":"Soft drinks", "fr":"Sans alcool", "de":"Alkoholfrei", "es":"Sin alcohol" },
@@ -11573,7 +11575,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11622,6 +11624,10 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   barVinoBtn: 'red-4',
   barBirraBtn: 'yellow-4',
   barAnalcoliciBtn: 'sky-4',
+  settingsBarCocktailBtn: 'orange-4',
+  settingsBarWinesBtn: 'red-4',
+  settingsBarBeersBtn: 'yellow-4',
+  settingsBarSoftDrinksBtn: 'sky-4',
   homeYearPill: 'sky-4'
 };
 
@@ -12817,7 +12823,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -15718,6 +15724,7 @@ function setupImpostazioni() {
 
   const settingsDataBtn = document.getElementById("settingsDataBtn");
   const settingsDataModal = document.getElementById("settingsDataModal");
+  const settingsBarModal = document.getElementById("settingsBarModal");
   const __openSettingsDataModal__ = () => {
     try{
       if (!settingsDataModal) return;
@@ -15754,6 +15761,26 @@ function setupImpostazioni() {
   if (channelGo) bindFastTap(channelGo, () => { __goSettingsDataChild__("channel"); });
   const roomCatalogGo = document.getElementById("settingsRoomCatalogBtn");
   if (roomCatalogGo) bindFastTap(roomCatalogGo, () => { __goSettingsDataChild__("roomcatalog"); });
+  const __openSettingsBarModal__ = () => {
+    try{
+      if (!settingsBarModal) return;
+      __closeSettingsDataModal__();
+      settingsBarModal.hidden = false;
+      settingsBarModal.setAttribute('aria-hidden','false');
+      document.body.classList.add('modal-open');
+      try{ __applyAppLanguage__(__appLanguage__); }catch(_){ }
+      try{ setupLauncherIconLongPressPalette(); }catch(_){ }
+      try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+    }catch(_){ }
+  };
+  const __closeSettingsBarModal__ = () => {
+    try{ if (!settingsBarModal) return; settingsBarModal.hidden=true; settingsBarModal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }catch(_){ }
+  };
+  try{ window.__openSettingsBarModal__=__openSettingsBarModal__; window.__closeSettingsBarModal__=__closeSettingsBarModal__; }catch(_){ }
+  const settingsBarCloseBtn=document.getElementById('settingsBarCloseBtn');
+  if(settingsBarCloseBtn && !settingsBarCloseBtn.__boundBarClose){ settingsBarCloseBtn.__boundBarClose=true; bindFastTap(settingsBarCloseBtn,__closeSettingsBarModal__); }
+  if(settingsBarModal && !settingsBarModal.__boundBackdrop){ settingsBarModal.__boundBackdrop=true; settingsBarModal.addEventListener('click',(e)=>{ if(e.target===settingsBarModal) __closeSettingsBarModal__(); }); }
+
   const languageBtn = document.getElementById("settingsLanguageBtn");
   if (languageBtn) bindFastTap(languageBtn, () => { try{ __openLanguageModal__(); }catch(_){ } });
   const opLanguageBtn = document.getElementById("opSettingsLanguageBtn");
@@ -17427,7 +17454,7 @@ function bindFastTap(el, fn){
     }catch(_){ }
     try{
       const target = e && e.currentTarget ? e.currentTarget : el;
-      const inSettingsPopup = !!(target && target.closest && target.closest('#settingsConfigModal,#settingsBackupModal,#settingsYearModal,#settingsDataModal,#settingsAccountModal,#tagColorModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,#roomCatalogEditorModal,#languageModal,#settingsLicenseModal,#licenseRequestModal,#licenseUnlockModal,#licenseGeneratorModal,#licenseDateRangeModal,#themeTransferModal'));
+      const inSettingsPopup = !!(target && target.closest && target.closest('#settingsConfigModal,#settingsBackupModal,#settingsYearModal,#settingsDataModal,#settingsBarModal,#settingsAccountModal,#tagColorModal,#operatoriEditorModal,#channelEditorModal,#laundryCatalogEditorModal,#roomCatalogEditorModal,#languageModal,#settingsLicenseModal,#licenseRequestModal,#licenseUnlockModal,#licenseGeneratorModal,#licenseDateRangeModal,#themeTransferModal'));
       if (inSettingsPopup) window.__ddaeSettingsPopupSuppressUntil = Date.now() + 1100;
     }catch(_){ }
     try{ __sfxTap(); }catch(_){ }
@@ -17475,7 +17502,7 @@ function bindFastTap(el, fn){
 
     // Bar riapre lo stesso popup in modalità puramente dimostrativa, lasciando attivo solo Annulla.
     if (btn.id === 'settingsBarBtn'){
-      try{ if (modal) modal.dataset.dataMode = 'inactive'; }catch(_){ }
+      try{ if (window.__openSettingsBarModal__) window.__openSettingsBarModal__(); }catch(_){ }
       return false;
     }
 
@@ -41949,7 +41976,7 @@ function syncGuestEmailActionLink(isView){
     'settingsConfigModal',
     'settingsBackupModal',
     'settingsYearModal',
-    'settingsDataModal',
+    'settingsDataModal','settingsBarModal',
     'settingsAccountModal',
     'tagColorModal',
     'operatoriEditorModal',
@@ -43831,7 +43858,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.103';
+  var BUILD_TAG='dDAE_3.104';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47504,7 +47531,7 @@ try{
 (function __ddae3034SettingsPopupClickThroughShield__(){
   if (typeof document === 'undefined') return;
   const IDS = [
-    'settingsConfigModal','settingsBackupModal','settingsYearModal','settingsDataModal','settingsAccountModal',
+    'settingsConfigModal','settingsBackupModal','settingsYearModal','settingsDataModal','settingsBarModal','settingsAccountModal',
     'tagColorModal','operatoriEditorModal','channelEditorModal','laundryCatalogEditorModal','roomCatalogEditorModal',
     'languageModal','settingsLicenseModal','licenseRequestModal','licenseUnlockModal','licenseGeneratorModal','licenseDateRangeModal','themeTransferModal'
   ];
