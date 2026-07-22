@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.116";
+const BUILD_VERSION = "3.117";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.116';
+  var BUILD_TAG='dDAE_3.117';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.116 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.117 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.116 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.117 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.116 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.117 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48191,8 +48191,17 @@ try{
     const all=read(); document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(btn=>{
       const d=all[btn.id]; const glyph=btn.querySelector('.bar-slot-glyph');
       btn.classList.toggle('cocktail-slot-filled',!!(d&&d.name)); btn.setAttribute('aria-label',d&&d.name?d.name:(btn.dataset.emptyLabel||btn.getAttribute('aria-label')||'Slot'));
-      if(glyph){glyph.style.backgroundImage=d&&d.image?'url("'+d.image.replace(/"/g,'%22')+'")':'';glyph.style.backgroundSize=d&&d.image?'cover':'';glyph.style.backgroundPosition=d&&d.image?'center':'';}
-      let label=btn.querySelector('.cocktail-slot-name'); if(d&&d.name){if(!label){label=document.createElement('span');label.className='cocktail-slot-name';btn.appendChild(label);}label.textContent=d.name;}else if(label)label.remove();
+      if(glyph){
+        const bg=d&&d.image?'url("'+d.image.replace(/"/g,'%22')+'")':'none';
+        glyph.style.setProperty('background-image',bg,'important');
+        glyph.style.setProperty('background-size',d&&d.image?'cover':'auto','important');
+        glyph.style.setProperty('background-position','center','important');
+        glyph.style.setProperty('background-repeat','no-repeat','important');
+      }
+      let label=btn.querySelector('.cocktail-slot-name');
+      if(!label){label=document.createElement('span');label.className='cocktail-slot-name';btn.appendChild(label);}
+      label.textContent=d&&d.name?d.name:' ';
+      label.setAttribute('aria-hidden',d&&d.name?'false':'true');
     });
   }
   function bindSlot(original){
@@ -48226,7 +48235,7 @@ try{
 })();
 
 
-/* dDAE_3.116 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.117 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
