@@ -96,9 +96,9 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /* global API_BASE_URL, API_KEY */
 
 /**
- * Build: 3.105
+ * Build: 3.106
  */
-const BUILD_VERSION = "3.105";
+const BUILD_VERSION = "3.106";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11575,7 +11575,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn','barCocktailSlot1','barCocktailSlot2','barCocktailSlot3','barCocktailSlot4','barCocktailSlot5','barCocktailSlot6','barCocktailSlot7','barCocktailSlot8','barCocktailSlot9','barCocktailSlot10','barCocktailSlot11','barCocktailSlot12','barCocktailSlot13','barCocktailSlot14','barCocktailSlot15','barViniSlot1','barViniSlot2','barViniSlot3','barViniSlot4','barViniSlot5','barViniSlot6','barViniSlot7','barViniSlot8','barViniSlot9','barViniSlot10','barViniSlot11','barViniSlot12','barViniSlot13','barViniSlot14','barViniSlot15','barBirreSlot1','barBirreSlot2','barBirreSlot3','barBirreSlot4','barBirreSlot5','barBirreSlot6','barBirreSlot7','barBirreSlot8','barBirreSlot9','barBirreSlot10','barBirreSlot11','barBirreSlot12','barBirreSlot13','barBirreSlot14','barBirreSlot15','barAnalcoliciSlot1','barAnalcoliciSlot2','barAnalcoliciSlot3','barAnalcoliciSlot4','barAnalcoliciSlot5','barAnalcoliciSlot6','barAnalcoliciSlot7','barAnalcoliciSlot8','barAnalcoliciSlot9','barAnalcoliciSlot10','barAnalcoliciSlot11','barAnalcoliciSlot12','barAnalcoliciSlot13','barAnalcoliciSlot14','barAnalcoliciSlot15'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11628,6 +11628,66 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsBarWinesBtn: 'red-4',
   settingsBarBeersBtn: 'yellow-4',
   settingsBarSoftDrinksBtn: 'sky-4',
+  barCocktailSlot1: 'gray-3',
+  barCocktailSlot2: 'gray-3',
+  barCocktailSlot3: 'gray-3',
+  barCocktailSlot4: 'gray-3',
+  barCocktailSlot5: 'gray-3',
+  barCocktailSlot6: 'gray-3',
+  barCocktailSlot7: 'gray-3',
+  barCocktailSlot8: 'gray-3',
+  barCocktailSlot9: 'gray-3',
+  barCocktailSlot10: 'gray-3',
+  barCocktailSlot11: 'gray-3',
+  barCocktailSlot12: 'gray-3',
+  barCocktailSlot13: 'gray-3',
+  barCocktailSlot14: 'gray-3',
+  barCocktailSlot15: 'gray-3',
+  barViniSlot1: 'gray-3',
+  barViniSlot2: 'gray-3',
+  barViniSlot3: 'gray-3',
+  barViniSlot4: 'gray-3',
+  barViniSlot5: 'gray-3',
+  barViniSlot6: 'gray-3',
+  barViniSlot7: 'gray-3',
+  barViniSlot8: 'gray-3',
+  barViniSlot9: 'gray-3',
+  barViniSlot10: 'gray-3',
+  barViniSlot11: 'gray-3',
+  barViniSlot12: 'gray-3',
+  barViniSlot13: 'gray-3',
+  barViniSlot14: 'gray-3',
+  barViniSlot15: 'gray-3',
+  barBirreSlot1: 'gray-3',
+  barBirreSlot2: 'gray-3',
+  barBirreSlot3: 'gray-3',
+  barBirreSlot4: 'gray-3',
+  barBirreSlot5: 'gray-3',
+  barBirreSlot6: 'gray-3',
+  barBirreSlot7: 'gray-3',
+  barBirreSlot8: 'gray-3',
+  barBirreSlot9: 'gray-3',
+  barBirreSlot10: 'gray-3',
+  barBirreSlot11: 'gray-3',
+  barBirreSlot12: 'gray-3',
+  barBirreSlot13: 'gray-3',
+  barBirreSlot14: 'gray-3',
+  barBirreSlot15: 'gray-3',
+  barAnalcoliciSlot1: 'gray-3',
+  barAnalcoliciSlot2: 'gray-3',
+  barAnalcoliciSlot3: 'gray-3',
+  barAnalcoliciSlot4: 'gray-3',
+  barAnalcoliciSlot5: 'gray-3',
+  barAnalcoliciSlot6: 'gray-3',
+  barAnalcoliciSlot7: 'gray-3',
+  barAnalcoliciSlot8: 'gray-3',
+  barAnalcoliciSlot9: 'gray-3',
+  barAnalcoliciSlot10: 'gray-3',
+  barAnalcoliciSlot11: 'gray-3',
+  barAnalcoliciSlot12: 'gray-3',
+  barAnalcoliciSlot13: 'gray-3',
+  barAnalcoliciSlot14: 'gray-3',
+  barAnalcoliciSlot15: 'gray-3',
   homeYearPill: 'sky-4'
 };
 
@@ -12823,7 +12883,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsBarBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','settingsBarCocktailBtn','settingsBarWinesBtn','settingsBarBeersBtn','settingsBarSoftDrinksBtn','barCocktailSlot1','barCocktailSlot2','barCocktailSlot3','barCocktailSlot4','barCocktailSlot5','barCocktailSlot6','barCocktailSlot7','barCocktailSlot8','barCocktailSlot9','barCocktailSlot10','barCocktailSlot11','barCocktailSlot12','barCocktailSlot13','barCocktailSlot14','barCocktailSlot15','barViniSlot1','barViniSlot2','barViniSlot3','barViniSlot4','barViniSlot5','barViniSlot6','barViniSlot7','barViniSlot8','barViniSlot9','barViniSlot10','barViniSlot11','barViniSlot12','barViniSlot13','barViniSlot14','barViniSlot15','barBirreSlot1','barBirreSlot2','barBirreSlot3','barBirreSlot4','barBirreSlot5','barBirreSlot6','barBirreSlot7','barBirreSlot8','barBirreSlot9','barBirreSlot10','barBirreSlot11','barBirreSlot12','barBirreSlot13','barBirreSlot14','barBirreSlot15','barAnalcoliciSlot1','barAnalcoliciSlot2','barAnalcoliciSlot3','barAnalcoliciSlot4','barAnalcoliciSlot5','barAnalcoliciSlot6','barAnalcoliciSlot7','barAnalcoliciSlot8','barAnalcoliciSlot9','barAnalcoliciSlot10','barAnalcoliciSlot11','barAnalcoliciSlot12','barAnalcoliciSlot13','barAnalcoliciSlot14','barAnalcoliciSlot15'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -18058,7 +18118,7 @@ function showPage(page){
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
     if (state.session && isOperatoreSession(state.session)){
-      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statistichecopy","statpiscina","laundrycatalog","opsettings"]);
+      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statistichecopy","statpiscina","laundrycatalog","opsettings","barcocktail","barvini","barbirre","baranalcolici"]);
       if (!allowed.has(page)) page = "pulizie";
     }
   }catch(_){ }
@@ -18084,7 +18144,7 @@ state.page = page;
   // Sync footer: visibile anche in Calendario; resta nascosto nelle pagine operative dedicate.
   try{
     const sb = document.getElementById("homeSyncBar");
-    const hideSync = (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "roomcatalog") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || String(page || "").startsWith("stat");
+    const hideSync = (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "roomcatalog") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || (String(page || "").startsWith("stat") || String(page || "").startsWith("bar"));
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
@@ -43858,7 +43918,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.105';
+  var BUILD_TAG='dDAE_3.106';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47942,3 +48002,48 @@ try{
 
 
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
+
+
+/* dDAE_3.106_BAR_PAGES */
+(function(){
+  const pageMap = {
+    barCocktailBtn:'barcocktail',
+    barVinoBtn:'barvini',
+    barBirraBtn:'barbirre',
+    barAnalcoliciBtn:'baranalcolici'
+  };
+  const detailPages = new Set(Object.values(pageMap));
+  const bind = () => {
+    Object.entries(pageMap).forEach(([id,page]) => {
+      const btn=document.getElementById(id);
+      if(!btn || btn.__barPageBound) return;
+      btn.__barPageBound=true;
+      btn.removeAttribute('data-bar-inert');
+      btn.addEventListener('click',(ev)=>{
+        try{ev.preventDefault();ev.stopPropagation();}catch(_){}
+        try{showPage(page);}catch(_){}
+      });
+    });
+    const back=document.getElementById('barBackTop');
+    if(back && !back.__barBackBound){
+      back.__barBackBound=true;
+      back.addEventListener('click',(ev)=>{
+        try{ev.preventDefault();ev.stopPropagation();}catch(_){}
+        try{showPage('statistichecopy');}catch(_){}
+      });
+    }
+    document.querySelectorAll('.bar-slot-btn').forEach((btn)=>{
+      if(btn.__barSlotBound) return;
+      btn.__barSlotBound=true;
+      btn.addEventListener('click',(ev)=>{ try{ev.preventDefault();}catch(_){} });
+    });
+    sync();
+  };
+  const sync=()=>{
+    const page=String(document.body?.dataset?.page||'');
+    const back=document.getElementById('barBackTop');
+    if(back) back.hidden=!detailPages.has(page);
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
+  try{ new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-page']}); }catch(_){}
+})();
