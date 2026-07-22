@@ -30409,7 +30409,7 @@ body.ddae-dark #page-statistichecopy .stats-title{
 @media (max-width:430px){.bar-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.bar-slots-grid .bar-slot-btn{height:76px;min-height:76px;}}
 
 
-/* dDAE_3.106 — Slot Bar visibili e stabili */
+/* dDAE_3.107 — Slot Bar visibili e stabili */
 .bar-category-page:not([hidden]){display:block !important;}
 .bar-category-page .bar-page{display:block !important; min-height:calc(100dvh - 150px);}
 .bar-category-page .bar-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
@@ -30425,4 +30425,69 @@ body.ddae-dark #page-statistichecopy .stats-title{
 body.ddae-dark .bar-category-page .bar-slots-grid .bar-slot-btn{
   background:rgba(15,23,42,.82);
   border-color:rgba(148,163,184,.34);
+}
+
+
+/* dDAE_3.107 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
+body[data-page="barcocktail"] #barBackTop,
+body[data-page="barvini"] #barBackTop,
+body[data-page="barbirre"] #barBackTop,
+body[data-page="baranalcolici"] #barBackTop{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-page="barcocktail"] #page-barcocktail,
+body[data-page="barvini"] #page-barvini,
+body[data-page="barbirre"] #page-barbirre,
+body[data-page="baranalcolici"] #page-baranalcolici{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+.bar-category-page .stats-title{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-height:24px;
+}
+.bar-category-page .bar-slots-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:repeat(5,76px) !important;
+  gap:10px !important;
+  width:min(560px,100%) !important;
+  margin:0 auto !important;
+  padding:0 12px 18px !important;
+  box-sizing:border-box !important;
+}
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
+  display:flex !important;
+  width:100% !important;
+  height:76px !important;
+  min-height:76px !important;
+  padding:0 !important;
+  margin:0 !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  border:1px solid rgba(148,163,184,.58) !important;
+  border-radius:22px !important;
+  background:#ffffff !important;
+  box-shadow:none !important;
+}
+body.ddae-dark .bar-category-page .bar-slots-grid > .bar-slot-btn{
+  background:#172033 !important;
+  border-color:rgba(203,213,225,.48) !important;
+}
+@media (min-width:431px){
+  .bar-category-page .bar-slots-grid{
+    grid-template-rows:repeat(5,82px) !important;
+    gap:12px !important;
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+  .bar-category-page .bar-slots-grid > .bar-slot-btn{
+    height:82px !important;
+    min-height:82px !important;
+  }
 }

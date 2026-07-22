@@ -43862,7 +43862,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.106';
+  var BUILD_TAG='dDAE_3.107';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.106 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.107 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48025,4 +48025,92 @@ try{
   window.addEventListener('ddae:language-change',syncBarBack);
   try{ new MutationObserver(function(){ syncBarBack(); }).observe(document.body,{attributes:true,attributeFilter:['data-page']}); }catch(_){ }
   setTimeout(function(){ ensureSlots(); syncBarBack(); },0);
+})();
+
+
+/* dDAE_3.107 — navigazione Bar robusta e slot sempre renderizzati */
+(function __barPagesFinalFix3107__(){
+  'use strict';
+  var pages=['barcocktail','barvini','barbirre','baranalcolici'];
+  var routeMap={
+    barCocktailBtn:'barcocktail',
+    barVinoBtn:'barvini',
+    barBirraBtn:'barbirre',
+    barAnalcoliciBtn:'baranalcolici'
+  };
+  function current(){
+    try{return String((window.state&&window.state.page)||document.body.getAttribute('data-page')||'');}catch(_){return '';}
+  }
+  function isCategory(p){return pages.indexOf(String(p||''))>=0;}
+  function ensurePage(p){
+    try{
+      document.querySelectorAll('.page').forEach(function(el){el.hidden=true;});
+      var page=document.getElementById('page-'+p);
+      if(page){page.hidden=false;page.style.setProperty('display','block','important');}
+      document.body.setAttribute('data-page',p);
+      if(window.state) window.state.page=p;
+    }catch(_){ }
+  }
+  function ensureSlots(){
+    try{
+      pages.forEach(function(p){
+        var page=document.getElementById('page-'+p);
+        if(!page)return;
+        var grid=page.querySelector('.bar-slots-grid');
+        if(!grid)return;
+        grid.hidden=false;
+        grid.style.setProperty('display','grid','important');
+        var buttons=grid.querySelectorAll('.bar-slot-btn');
+        buttons.forEach(function(btn){
+          btn.hidden=false;
+          btn.removeAttribute('aria-hidden');
+          btn.style.setProperty('display','flex','important');
+          btn.style.setProperty('visibility','visible','important');
+          btn.style.setProperty('opacity','1','important');
+        });
+      });
+    }catch(_){ }
+  }
+  function syncBack(){
+    try{
+      var b=document.getElementById('barBackTop');
+      if(!b)return;
+      var active=isCategory(current());
+      b.hidden=!active;
+      if(active){
+        b.style.setProperty('display','inline-flex','important');
+        b.style.setProperty('visibility','visible','important');
+      }else{
+        b.style.removeProperty('display');
+        b.style.removeProperty('visibility');
+      }
+      if(!b.dataset.finalBarBackBound){
+        b.dataset.finalBarBackBound='1';
+        b.addEventListener('click',function(ev){
+          try{ev.preventDefault();ev.stopPropagation();}catch(_){ }
+          try{showPage('statistichecopy');}catch(_){ensurePage('statistichecopy');}
+          try{hideLauncher();}catch(_){ }
+        },true);
+      }
+    }catch(_){ }
+  }
+  function bindRoutes(){
+    Object.keys(routeMap).forEach(function(id){
+      var btn=document.getElementById(id);
+      if(!btn||btn.dataset.finalBarRouteBound)return;
+      btn.dataset.finalBarRouteBound='1';
+      btn.addEventListener('click',function(ev){
+        try{ev.preventDefault();ev.stopPropagation();}catch(_){ }
+        var p=routeMap[id];
+        try{showPage(p);}catch(_){ensurePage(p);}
+        setTimeout(function(){ensureSlots();syncBack();},0);
+      },true);
+    });
+  }
+  function refresh(){ensureSlots();bindRoutes();syncBack();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
+  document.addEventListener('click',function(){setTimeout(refresh,0);},true);
+  try{new MutationObserver(refresh).observe(document.body,{attributes:true,attributeFilter:['data-page']});}catch(_){ }
+  setTimeout(refresh,100);
+  setTimeout(refresh,600);
 })();
