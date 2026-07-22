@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.114";
+const BUILD_VERSION = "3.115";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43863,7 +43863,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.114';
+  var BUILD_TAG='dDAE_3.115';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47989,7 +47989,7 @@ try{
 })();
 
 
-/* dDAE_3.114 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+/* dDAE_3.115 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
   const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici']);
   function syncBarBack(){
@@ -48028,7 +48028,7 @@ try{
 })();
 
 
-/* dDAE_3.114 — navigazione Bar robusta e slot sempre renderizzati */
+/* dDAE_3.115 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
   var pages=['barcocktail','barvini','barbirre','baranalcolici'];
@@ -48116,7 +48116,7 @@ try{
 })();
 
 
-/* dDAE_3.114 — Editor e scheda Cocktail per i 15 slot */
+/* dDAE_3.115 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
   const STORE_KEY='dDAE_bar_cocktails_v1';
@@ -48144,7 +48144,7 @@ try{
   }
   function addStep(value){
     const row=document.createElement('div'); row.className='cocktail-dynamic-row cocktail-step-row';
-    row.innerHTML='<span class="cocktail-step-dot">•</span><textarea class="cocktail-step-text" rows="2" placeholder="'+esc(t('step'))+'"></textarea><button class="cocktail-remove-row" type="button" aria-label="'+esc(t('close'))+'">×</button>';
+    row.innerHTML='<input class="cocktail-step-text" type="text" placeholder="'+esc(t('step'))+'"><button class="cocktail-remove-row" type="button" aria-label="'+esc(t('close'))+'">×</button>';
     if(value)row.querySelector('.cocktail-step-text').value=value;
     row.querySelector('.cocktail-remove-row').addEventListener('click',()=>row.remove()); $('cocktailStepsList').appendChild(row);
   }
@@ -48223,7 +48223,7 @@ try{
 })();
 
 
-/* dDAE_3.114 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+/* dDAE_3.115 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
 (function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
