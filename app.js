@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.130";
+const BUILD_VERSION = "3.131";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43865,7 +43865,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.130';
+  var BUILD_TAG='dDAE_3.131';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48240,45 +48240,61 @@ try{
     }
     return '';
   }
-  function isGuestStayingToday(g){
+  function isGuestStayingOnDate(g,dateISO){
     if(!validGuest(g))return false;
     const status=String(g?.stato ?? g?.status ?? g?.booking_status ?? '').trim().toLowerCase();
     if(/annull|cancel|no[ -]?show|elimin/.test(status))return false;
     const checkIn=guestDateISO(g,['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal']);
     const checkOut=guestDateISO(g,['check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al']);
-    const today=localTodayISO();
-    // Il giorno di check-out non è una notte di soggiorno: check-in <= oggi < check-out.
-    return !!(checkIn && checkOut && checkIn<=today && today<checkOut);
+    // Il giorno di check-out non è una notte di soggiorno: check-in <= data < check-out.
+    return !!(checkIn && checkOut && checkIn<=dateISO && dateISO<checkOut);
+  }
+  function isGuestStayingToday(g){return isGuestStayingOnDate(g,localTodayISO());}
+  function previousLocalDayISO(){
+    const now=new Date();
+    now.setHours(12,0,0,0);
+    now.setDate(now.getDate()-1);
+    return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   }
   async function loadChargeGuests(){
     let guests=[];
     try{ guests=await api('ospiti',{method:'GET',showLoader:false}); }catch(_){ guests=[]; }
     if(!Array.isArray(guests)) guests=Array.isArray(guests?.data)?guests.data:Array.isArray(guests?.ospiti)?guests.ospiti:[];
 
-    const candidates=[];
+    const today=localTodayISO();
+    const yesterday=previousLocalDayISO();
+    const byDate={today:new Map(),yesterday:new Map()};
+    function addCandidate(bucket,row,room,guestId){
+      const key=String(room).trim();
+      if(!key||!guestId)return;
+      if(!bucket.has(key))bucket.set(key,new Map());
+      bucket.get(key).set(guestId,{guest:row,room:key,guestId});
+    }
     guests.forEach(parent=>{
       const bookings=Array.isArray(parent?.bookings)&&parent.bookings.length ? parent.bookings : [parent];
       bookings.forEach(booking=>{
         const row=(booking===parent)?parent:Object.assign({},parent,booking);
-        if(!isGuestStayingToday(row))return;
-        guestRoomsOf(row).forEach(room=>{
-          const guestId=String((typeof guestIdOf==='function'?guestIdOf(row):row?.id)||'').trim();
-          if(guestId)candidates.push({guest:row,room:String(room),guestId});
-        });
+        const guestId=String((typeof guestIdOf==='function'?guestIdOf(row):row?.id)||'').trim();
+        if(!guestId)return;
+        const rooms=guestRoomsOf(row);
+        if(isGuestStayingOnDate(row,today)) rooms.forEach(room=>addCandidate(byDate.today,row,room,guestId));
+        if(isGuestStayingOnDate(row,yesterday)) rooms.forEach(room=>addCandidate(byDate.yesterday,row,room,guestId));
       });
     });
 
-    // Una stanza è addebitabile solo se oggi ha un unico ospite/prenotazione identificabile.
-    const byRoom=new Map();
-    candidates.forEach(row=>{
-      const key=String(row.room).trim();
-      if(!byRoom.has(key))byRoom.set(key,new Map());
-      byRoom.get(key).set(row.guestId,row);
+    const result=[];
+    Array.from(byDate.today.keys()).sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true})).forEach(room=>{
+      const currentMap=byDate.today.get(room);
+      if(!currentMap||currentMap.size!==1)return;
+      const current=Array.from(currentMap.values())[0];
+      result.push({...current,previousDay:false});
+      const previousMap=byDate.yesterday.get(room);
+      if(previousMap&&previousMap.size===1){
+        const previous=Array.from(previousMap.values())[0];
+        if(String(previous.guestId)!==String(current.guestId)) result.push({...previous,previousDay:true});
+      }
     });
-    return Array.from(byRoom.entries())
-      .filter(([,uniqueGuests])=>uniqueGuests.size===1)
-      .map(([,uniqueGuests])=>Array.from(uniqueGuests.values())[0])
-      .sort((a,b)=>String(a.room).localeCompare(String(b.room),undefined,{numeric:true}));
+    return result;
   }
   function setChargeQuantity(value){
     chargeQuantity=Math.max(1,Math.min(99,Math.trunc(Number(value)||1)));
@@ -48308,7 +48324,13 @@ try{
     rows.forEach(row=>{
       const id=String(row.guestId || (typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
       if(!id)return;
-      const o=document.createElement('option'); o.value=id; o.dataset.room=row.room; o.textContent='Stanza '+row.room+' — '+guestNameOf(row.guest); select.appendChild(o);
+      const o=document.createElement('option');
+      o.value=id;
+      o.dataset.room=row.room;
+      o.dataset.previousDay=row.previousDay?'1':'0';
+      o.textContent='Stanza '+row.room+' — '+guestNameOf(row.guest)+(row.previousDay?' · ieri':'');
+      if(row.previousDay){o.className='cocktail-charge-previous-guest';o.style.color='#d70015';}
+      select.appendChild(o);
     });
     confirm.disabled=!select.value;
   }
@@ -48322,8 +48344,9 @@ try{
     try{
       // Ricontrolla il soggiorno nel momento dell'addebito, evitando associazioni stale o casuali.
       const activeRows=await loadChargeGuests();
-      const stillActive=activeRows.find(row=>String(row.guestId)===guestId && String(row.room)===String(room));
-      if(!stillActive)throw new Error('guest_not_staying_today');
+      const selectedPrevious=select.options[select.selectedIndex]?.dataset?.previousDay==='1';
+      const stillActive=activeRows.find(row=>String(row.guestId)===guestId && String(row.room)===String(room) && !!row.previousDay===selectedPrevious);
+      if(!stillActive)throw new Error('guest_not_available_for_charge');
       let current=[];
       try{ current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false})); }catch(_){ current=[]; }
       if(!Array.isArray(current))current=[];
@@ -48432,7 +48455,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.130',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.131',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -30790,3 +30790,9 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 /* dDAE_3.130 — cinque azioni Cocktail: Foto, Importa, Esporta, Elimina, Salva */
 .cocktail-export-btn{width:100%;min-width:0;height:56px;border-radius:16px;border:1px solid rgba(148,163,184,.45);background:#fff;color:#0f172a;font-weight:800;box-shadow:none;}
 @media(max-width:430px){.cocktail-editor-actions{gap:7px !important}.cocktail-editor-actions .cocktail-icon-action{min-height:56px !important;padding:8px !important}.cocktail-editor-actions .cocktail-icon-action svg{width:27px !important;height:27px !important}}
+
+/* dDAE_3.131 — ospite del giorno precedente nello scambio stanza */
+#cocktailChargeRoom option.cocktail-charge-previous-guest {
+  color: #d70015;
+  font-weight: 700;
+}
