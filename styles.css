@@ -30808,7 +30808,7 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 .cocktail-charge-picker-option.is-previous-day{color:#d70015;}
 .cocktail-charge-picker-option.is-selected{background:#dff2ff;}
 
-/* dDAE_3.138 — Bar: sei categorie in griglia 3x2 */
+/* dDAE_3.139 — Bar: sei categorie in griglia 3x2 */
 #page-statistichecopy .bar-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
@@ -30822,7 +30822,7 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 }
 
 
-/* dDAE_3.138 — nomi prodotti Bar su più righe e scheda senza pulsante X */
+/* dDAE_3.139 — nomi prodotti Bar su più righe e scheda senza pulsante X */
 .bar-category-page .bar-slots-grid > .bar-slot-btn{
   grid-template-rows:auto auto !important;
 }
