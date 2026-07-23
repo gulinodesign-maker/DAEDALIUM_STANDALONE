@@ -48135,13 +48135,32 @@ try{
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
-    it:{cocktail:'Cocktail',wine:'Vino',beer:'Birra',soft:'Analcolico',close:'Chiudi',import:'Importa',name:'Nome cocktail',wineName:'Nome vino',beerName:'Nome birra',softName:'Nome analcolico',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
     en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',deleteCocktail:'Delete cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted',emptyDelete:'No cocktail to delete',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail'},
     fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',deleteCocktail:'Supprimer le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé',emptyDelete:'Aucun cocktail à supprimer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail'},
     de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',deleteCocktail:'Cocktail löschen',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht',emptyDelete:'Kein Cocktail zum Löschen',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügbar',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden'},
     es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',deleteCocktail:'Eliminar cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado',emptyDelete:'No hay ningún cóctel para eliminar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel'}
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
+  function slotProductType(slot){
+    const value=String(slot||'');
+    if(value.indexOf('barViniSlot')===0)return 'vino';
+    if(value.indexOf('barBirreSlot')===0)return 'birra';
+    if(value.indexOf('barAnalcoliciSlot')===0)return 'analcolico';
+    return 'cocktail';
+  }
+  function editorProductText(slot){
+    const type=slotProductType(slot);
+    const locale=lang();
+    const labels={
+      it:{cocktail:['Cocktail','Nome cocktail'],vino:['Vino','Nome vino'],birra:['Birra','Nome birra'],analcolico:['Analcolico','Nome analcolico']},
+      en:{cocktail:['Cocktail','Cocktail name'],vino:['Wine','Wine name'],birra:['Beer','Beer name'],analcolico:['Soft drink','Soft drink name']},
+      fr:{cocktail:['Cocktail','Nom du cocktail'],vino:['Vin','Nom du vin'],birra:['Bière','Nom de la bière'],analcolico:['Boisson sans alcool','Nom de la boisson']},
+      de:{cocktail:['Cocktail','Cocktailname'],vino:['Wein','Weinname'],birra:['Bier','Biername'],analcolico:['Alkoholfreies Getränk','Name des Getränks']},
+      es:{cocktail:['Cóctel','Nombre del cóctel'],vino:['Vino','Nombre del vino'],birra:['Cerveza','Nombre de la cerveza'],analcolico:['Bebida sin alcohol','Nombre de la bebida']}
+    };
+    return (labels[locale]||labels.it)[type]||(labels[locale]||labels.it).cocktail;
+  }
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
   function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Immagine troppo grande');}catch(__){}return false;}}
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -48158,10 +48177,11 @@ try{
     row.querySelector('.cocktail-remove-row').addEventListener('click',()=>row.remove()); $('cocktailStepsList').appendChild(row);
   }
   function syncText(){
-    if($('barSlotModalTitle'))$('barSlotModalTitle').textContent=t('cocktail');
+    const productText=editorProductText(activeSlot);
+    if($('barSlotModalTitle'))$('barSlotModalTitle').textContent=productText[0];
     if($('barSlotModalCancel'))$('barSlotModalCancel').setAttribute('aria-label',t('close'));
     if($('cocktailImportBtn')){$('cocktailImportBtn').setAttribute('aria-label',t('import'));$('cocktailImportBtn').title=t('import');}
-    if($('cocktailNameLabel'))$('cocktailNameLabel').textContent=t('name');
+    if($('cocktailNameLabel'))$('cocktailNameLabel').textContent=productText[1];
     if($('cocktailPriceLabel'))$('cocktailPriceLabel').textContent=t('price');
     if($('cocktailIngredientsTitle'))$('cocktailIngredientsTitle').textContent=t('ingredients');
     if($('cocktailProcedureTitle'))$('cocktailProcedureTitle').textContent=t('procedure');
