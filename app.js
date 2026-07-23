@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.131";
+const BUILD_VERSION = "3.132";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43865,7 +43865,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.131';
+  var BUILD_TAG='dDAE_3.132';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48306,7 +48306,48 @@ try{
     const unit=parsePrice(activeViewData.price), total=unit*chargeQuantity;
     summary.textContent=(activeViewData.name||'')+' · '+chargeQuantity+' × '+unit.toFixed(2).replace('.',',')+' € = '+total.toFixed(2).replace('.',',')+' €';
   }
+  function closeChargePicker(){
+    const list=$('cocktailChargePickerList'),button=$('cocktailChargePickerButton');
+    if(list)list.hidden=true;
+    if(button)button.setAttribute('aria-expanded','false');
+  }
+  function syncChargePickerSelection(){
+    const select=$('cocktailChargeRoom'),button=$('cocktailChargePickerButton'),list=$('cocktailChargePickerList');
+    if(!select||!button)return;
+    const option=select.options[select.selectedIndex];
+    button.textContent=option?.textContent||'';
+    button.classList.toggle('is-previous-day',option?.dataset?.previousDay==='1');
+    if(list){
+      list.querySelectorAll('.cocktail-charge-picker-option').forEach(el=>{
+        const chosen=Number(el.dataset.index)===select.selectedIndex;
+        el.classList.toggle('is-selected',chosen);
+        el.setAttribute('aria-selected',chosen?'true':'false');
+      });
+    }
+  }
+  function renderChargePicker(){
+    const select=$('cocktailChargeRoom'),list=$('cocktailChargePickerList');
+    if(!select||!list)return;
+    list.innerHTML='';
+    Array.from(select.options).forEach((option,index)=>{
+      const item=document.createElement('button');
+      item.type='button';
+      item.className='cocktail-charge-picker-option';
+      if(option.dataset.previousDay==='1')item.classList.add('is-previous-day');
+      item.dataset.index=String(index);
+      item.setAttribute('role','option');
+      item.textContent=option.textContent;
+      item.addEventListener('click',()=>{
+        select.selectedIndex=index;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        closeChargePicker();
+      });
+      list.appendChild(item);
+    });
+    syncChargePickerSelection();
+  }
   function closeCharge(){
+    closeChargePicker();
     const m=$('cocktailChargeModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}
     if($('cocktailViewModal') && !$('cocktailViewModal').hidden) document.body.classList.add('modal-open'); else document.body.classList.remove('modal-open');
   }
@@ -48320,7 +48361,7 @@ try{
     modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
     const rows=await loadChargeGuests();
     select.innerHTML='';
-    if(!rows.length){ const o=document.createElement('option');o.value='';o.textContent=t('noRooms');select.appendChild(o);confirm.disabled=true;return; }
+    if(!rows.length){ const o=document.createElement('option');o.value='';o.textContent=t('noRooms');select.appendChild(o);renderChargePicker();confirm.disabled=true;return; }
     rows.forEach(row=>{
       const id=String(row.guestId || (typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
       if(!id)return;
@@ -48332,6 +48373,7 @@ try{
       if(row.previousDay){o.className='cocktail-charge-previous-guest';o.style.color='#d70015';}
       select.appendChild(o);
     });
+    renderChargePicker();
     confirm.disabled=!select.value;
   }
   async function confirmCharge(){
@@ -48455,7 +48497,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.131',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.132',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48609,7 +48651,8 @@ try{
     $('cocktailChargeBtn')?.addEventListener('click',openCharge);
     $('cocktailChargeClose')?.addEventListener('click',closeCharge);
     $('cocktailChargeModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailChargeModal'))closeCharge();});
-    $('cocktailChargeRoom')?.addEventListener('change',()=>{if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').disabled=!$('cocktailChargeRoom').value;});
+    $('cocktailChargeRoom')?.addEventListener('change',()=>{if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').disabled=!$('cocktailChargeRoom').value;syncChargePickerSelection();});
+    $('cocktailChargePickerButton')?.addEventListener('click',()=>{const list=$('cocktailChargePickerList'),button=$('cocktailChargePickerButton');if(!list||!button)return;const open=list.hidden;list.hidden=!open;button.setAttribute('aria-expanded',open?'true':'false');});
     $('cocktailChargeConfirm')?.addEventListener('click',confirmCharge);
     $('cocktailQuantityMinus')?.addEventListener('click',()=>setChargeQuantity(chargeQuantity-1));
     $('cocktailQuantityPlus')?.addEventListener('click',()=>setChargeQuantity(chargeQuantity+1));
