@@ -30807,3 +30807,16 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 .cocktail-charge-picker-option{display:block;width:100%;min-height:58px;padding:12px 16px;border:0;border-radius:14px;background:#fff;color:#0f172a;font:inherit;font-weight:700;text-align:left;box-shadow:none;}
 .cocktail-charge-picker-option.is-previous-day{color:#d70015;}
 .cocktail-charge-picker-option.is-selected{background:#dff2ff;}
+
+/* dDAE_3.136 — Bar: sei categorie in griglia 3x2 */
+#page-statistichecopy .bar-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:repeat(2,auto) !important;
+  align-items:stretch !important;
+}
+#page-statistichecopy .bar-grid > .home-main{
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
