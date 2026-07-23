@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.132";
+const BUILD_VERSION = "3.133";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43865,7 +43865,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.132';
+  var BUILD_TAG='dDAE_3.133';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48179,12 +48179,31 @@ try{
     if($('cocktailQuantityPlus'))$('cocktailQuantityPlus').setAttribute('aria-label',t('increaseQuantity'));
   }
   function closeEditor(){const m=$('barSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
+  function isCocktailSlot(slot){return String(slot||'').indexOf('barCocktailSlot')===0;}
+  function setRecipeFieldsVisible(visible){
+    const ingredientsSection=$('cocktailIngredientsList')?.closest('.cocktail-builder-section');
+    const procedureSection=$('cocktailStepsList')?.closest('.cocktail-builder-section');
+    if(ingredientsSection)ingredientsSection.hidden=!visible;
+    if(procedureSection)procedureSection.hidden=!visible;
+  }
+  function setRecipeViewVisible(visible){
+    const ingredientsHeading=$('cocktailViewIngredientsHeading');
+    const ingredientsList=$('cocktailViewIngredients');
+    const procedureHeading=$('cocktailViewProcedureHeading');
+    const stepsList=$('cocktailViewSteps');
+    if(ingredientsHeading)ingredientsHeading.hidden=!visible;
+    if(ingredientsList)ingredientsList.hidden=!visible;
+    if(procedureHeading)procedureHeading.hidden=!visible;
+    if(stepsList)stepsList.hidden=!visible;
+  }
   function openEditor(slot){
     activeSlot=slot; const data=read()[slot]||{}; imageData=data.image||''; syncText();
+    const showRecipe=isCocktailSlot(slot);
+    setRecipeFieldsVisible(showRecipe);
     $('cocktailNameInput').value=data.name||'';
     $('cocktailPriceInput').value=data.price||'';
-    $('cocktailIngredientsList').innerHTML=''; (data.ingredients&&data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
-    $('cocktailStepsList').innerHTML=''; (data.steps&&data.steps.length?data.steps:['']).forEach(addStep);
+    $('cocktailIngredientsList').innerHTML=''; if(showRecipe)(data.ingredients&&data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
+    $('cocktailStepsList').innerHTML=''; if(showRecipe)(data.steps&&data.steps.length?data.steps:['']).forEach(addStep);
     const p=$('cocktailImagePreview'); p.hidden=!imageData; p.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';
     $('cocktailImageInput').value=''; const deleteBtn=$('cocktailDeleteBtn'); if(deleteBtn)deleteBtn.disabled=!(data&&data.name); const m=$('barSlotModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
   }
@@ -48192,6 +48211,7 @@ try{
   function openView(slot){
     const data=read()[slot]; if(!data||!data.name)return;
     activeViewSlot=slot; activeViewData=data;
+    setRecipeViewVisible(isCocktailSlot(slot));
     syncText(); $('cocktailViewTitle').textContent=data.name||'';
     const priceEl=$('cocktailViewPrice'); if(priceEl){const price=String(data.price||'').trim();priceEl.textContent=price?(price.includes('€')?price:price+' €'):'';priceEl.hidden=!price;}
     const img=$('cocktailViewImage'); if(data.image){img.src=data.image;img.alt=data.name||t('cocktail');img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
@@ -48497,7 +48517,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.132',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.133',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
