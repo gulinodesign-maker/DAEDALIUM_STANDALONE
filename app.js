@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.140";
+const BUILD_VERSION = "3.141";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -43883,7 +43883,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.140';
+  var BUILD_TAG='dDAE_3.141';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48458,9 +48458,37 @@ try{
       try{
         if(!state.guestServicesCacheById)state.guestServicesCacheById={};
         const total=(typeof serviziComputeTotal==='function')?serviziComputeTotal(items):items.reduce((sum,x)=>sum+(Number(x.importo)||0)*(Number(x.qty)||1),0);
+        const preview=(typeof serviziPreviewText==='function')?serviziPreviewText(items):'';
         state.guestServicesCacheById[String(guestId)]={items:items.slice(),total,loadedAt:Date.now()};
-        const g=Array.isArray(state.guests)?state.guests.find(x=>String((typeof guestIdOf==='function'?guestIdOf(x):x?.id)||'')===guestId):null;
-        if(g){g.servizi_totale=total;try{g.servizi_preview=serviziPreviewText(items);}catch(_){}}
+        let guestRecord=guest;
+        const guestCollections=[state.guests,state.guestRows,state.ospitiRows,state.ospiti,state?.calendar?.guests];
+        guestCollections.forEach(list=>{
+          if(!Array.isArray(list))return;
+          list.forEach(row=>{
+            const rowId=String((typeof guestIdOf==='function'?guestIdOf(row):row?.id)||'').trim();
+            if(rowId!==guestId)return;
+            row.servizi_totale=total;
+            row.serviziTotal=total;
+            row.importo_servizi=total;
+            row.servizi_preview=preview;
+            if(!guestRecord)guestRecord=row;
+          });
+        });
+        if(state.guestViewItem&&String((typeof guestIdOf==='function'?guestIdOf(state.guestViewItem):state.guestViewItem?.id)||'').trim()===guestId){
+          state.guestViewItem.servizi_totale=total;
+          state.guestViewItem.serviziTotal=total;
+          state.guestViewItem.importo_servizi=total;
+          state.guestViewItem.servizi_preview=preview;
+          if(!guestRecord)guestRecord=state.guestViewItem;
+        }
+        const updatePayload=Object.assign({},guestRecord||guest||{}, {
+          id:guestId,
+          servizi_totale:total,
+          serviziTotal:total,
+          importo_servizi:total,
+          servizi_preview:preview
+        });
+        await api('ospiti',{method:'PUT',body:updatePayload,showLoader:false});
       }catch(_){}
       const back=String(ctx.returnPage||'barcocktail');
       window.__ddaeBarChargeContext=null;
@@ -48558,7 +48586,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.140',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.141',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -30843,7 +30843,7 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 }
 .cocktail-view-card{padding-top:22px !important;}
 
-/* dDAE_3.140 — Addebito Bar rapido: quantità multi-tap + selezione stanza da calendario */
+/* dDAE_3.141 — Addebito Bar rapido: quantità multi-tap + selezione stanza da calendario */
 #cocktailChargeModal .cocktail-charge-card.cocktail-charge-compact{width:min(88vw,430px);padding:18px;border-radius:28px;overflow:hidden;}
 .cocktail-charge-two-buttons{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center;}
 .cocktail-charge-action{min-width:0;height:112px;border:2px solid rgba(15,23,42,.18);border-radius:24px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;box-shadow:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
