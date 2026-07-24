@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.139";
+const BUILD_VERSION = "3.140";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -18075,6 +18075,9 @@ function showPage(page){
   const navId = ++state.navId;
 
   const prevPage = state.page;
+  if (prevPage === "calendario" && page !== "calendario" && window.__ddaeBarChargeContext) {
+    window.__ddaeBarChargeContext = null;
+  }
   if (prevPage === "ospiti" && page === "ospite") {
     try{ __captureGuestListScrollState__(); }catch(_){ }
   }
@@ -38363,6 +38366,7 @@ function buildCalendarCellZoomMarkup(payload){
   const saldoLine = (!data.isEmpty && __currentOperatorCanViewGuestBalance__())
     ? `<div class="cal-cell-balance"><span>Rimanenza da pagare</span><strong>${escapeHtml(__calendarGuestRemainingBalanceText__(data.guest))}</strong></div>`
     : '';
+  const barChargeAction = (!data.isEmpty && window.__ddaeBarChargeContext) ? `<button type="button" class="calendar-bar-charge-action" aria-label="Aggiungi prodotto ai servizi"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"></path></svg></button>` : '';
   return `
     <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
@@ -38372,6 +38376,7 @@ function buildCalendarCellZoomMarkup(payload){
         ${bedsLine}
         ${saldoLine}
         <div class="cal-dots">${dots.join('')}</div>
+        ${barChargeAction}
       </div>
     </div>`;
 }
@@ -38427,6 +38432,17 @@ function openCalendarCellZoom(cell, payload){
     if (zoomCard){
       const room = String(payload?.room || '').trim();
       if (room) zoomCard.classList.add(`room-${room}`);
+      const barChargeBtn = zoomCard.querySelector('.calendar-bar-charge-action');
+      if (barChargeBtn) {
+        barChargeBtn.addEventListener('click', async (ev) => {
+          try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
+          if (barChargeBtn.disabled) return;
+          barChargeBtn.disabled = true;
+          try{
+            if (typeof window.__ddaeConfirmBarChargeForPayload === 'function') await window.__ddaeConfirmBarChargeForPayload(payload);
+          }catch(_){ barChargeBtn.disabled = false; }
+        });
+      }
       // dDAE_2.755 — Secondo tap sulla cella zoomata = chiusura zoom.
       zoomCard.addEventListener('click', (ev) => {
         try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
@@ -43867,7 +43883,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.139';
+  var BUILD_TAG='dDAE_3.140';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48348,7 +48364,7 @@ try{
     return result;
   }
   function setChargeQuantity(value){
-    chargeQuantity=Math.max(1,Math.min(99,Math.trunc(Number(value)||1)));
+    chargeQuantity=Math.max(0,Math.min(99,Math.trunc(Number(value)||0)));
     const out=$('cocktailQuantityValue'); if(out)out.textContent=String(chargeQuantity);
     updateChargeSummary();
   }
@@ -48404,50 +48420,40 @@ try{
   }
   async function openCharge(){
     if(!activeViewData||!activeViewData.name)return;
-    syncText();
-    const modal=$('cocktailChargeModal'), select=$('cocktailChargeRoom'), summary=$('cocktailChargeSummary'), confirm=$('cocktailChargeConfirm');
-    if(!modal||!select||!confirm)return;
-    select.innerHTML='<option value="">…</option>'; confirm.disabled=true;
-    setChargeQuantity(1);
-    modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
-    const rows=await loadChargeGuests();
-    select.innerHTML='';
-    if(!rows.length){ const o=document.createElement('option');o.value='';o.textContent=t('noRooms');select.appendChild(o);renderChargePicker();confirm.disabled=true;return; }
-    rows.forEach(row=>{
-      const id=String(row.guestId || (typeof guestIdOf==='function'?guestIdOf(row.guest):row.guest?.id)||'');
-      if(!id)return;
-      const o=document.createElement('option');
-      o.value=id;
-      o.dataset.room=row.room;
-      o.dataset.previousDay=row.previousDay?'1':'0';
-      o.textContent='Stanza '+row.room+' — '+guestNameOf(row.guest)+(row.previousDay?' · ieri':'');
-      if(row.previousDay){o.className='cocktail-charge-previous-guest';o.style.color='#d70015';}
-      select.appendChild(o);
-    });
-    renderChargePicker();
-    confirm.disabled=!select.value;
+    setChargeQuantity(0);
+    const modal=$('cocktailChargeModal');
+    if(!modal)return;
+    modal.hidden=false;
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('modal-open');
   }
-  async function confirmCharge(){
-    const select=$('cocktailChargeRoom'), btn=$('cocktailChargeConfirm');
-    const guestId=String(select?.value||'').trim(); if(!guestId||!activeViewData)return;
-    const room=select.options[select.selectedIndex]?.dataset?.room||'';
-    const amount=parsePrice(activeViewData.price);
-    const qty=Math.max(1,Math.min(99,chargeQuantity));
-    btn.disabled=true;
+  function openChargeCalendar(){
+    if(!activeViewData||!activeViewData.name)return;
+    if(chargeQuantity<1){try{toast('Imposta la quantità');}catch(_){}return;}
+    const returnPage=String((window.state&&window.state.page)||document.body.dataset.page||'barcocktail');
+    window.__ddaeBarChargeContext={
+      product:{name:String(activeViewData.name),price:parsePrice(activeViewData.price)},
+      quantity:chargeQuantity,
+      returnPage:returnPage
+    };
+    closeCharge();
+    closeView();
+    try{showPage('calendario');}catch(_){}
+  }
+  window.__ddaeConfirmBarChargeForPayload=async function(payload){
+    const ctx=window.__ddaeBarChargeContext;
+    const guest=payload&&payload.guest;
+    const guestId=String(guest&&((typeof guestIdOf==='function'?guestIdOf(guest):guest.id)||'')||'').trim();
+    if(!ctx||!guestId||!ctx.product)return;
+    const room=String(payload.room||'');
+    const amount=parsePrice(ctx.product.price);
+    const qty=Math.max(1,Math.min(99,Number(ctx.quantity)||1));
     try{
-      // Ricontrolla il soggiorno nel momento dell'addebito, evitando associazioni stale o casuali.
-      const activeRows=await loadChargeGuests();
-      const selectedPrevious=select.options[select.selectedIndex]?.dataset?.previousDay==='1';
-      const stillActive=activeRows.find(row=>String(row.guestId)===guestId && String(row.room)===String(room) && !!row.previousDay===selectedPrevious);
-      if(!stillActive)throw new Error('guest_not_available_for_charge');
       let current=[];
-      try{ current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false})); }catch(_){ current=[]; }
+      try{current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false}));}catch(_){current=[];}
       if(!Array.isArray(current))current=[];
-      const items=current.filter(s=>{
-        const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;
-        return !(del===true||String(del)==='1');
-      }).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
-      items.push({servizio:String(activeViewData.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
+      const items=current.filter(s=>{const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;return !(del===true||String(del)==='1');}).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
+      items.push({servizio:String(ctx.product.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
       await api('servizi',{method:'POST',body:{ospite_id:guestId,servizi:items}});
       try{
         if(!state.guestServicesCacheById)state.guestServicesCacheById={};
@@ -48456,10 +48462,14 @@ try{
         const g=Array.isArray(state.guests)?state.guests.find(x=>String((typeof guestIdOf==='function'?guestIdOf(x):x?.id)||'')===guestId):null;
         if(g){g.servizi_totale=total;try{g.servizi_preview=serviziPreviewText(items);}catch(_){}}
       }catch(_){}
-      closeCharge();
+      const back=String(ctx.returnPage||'barcocktail');
+      window.__ddaeBarChargeContext=null;
+      try{closeCalendarCellZoom();}catch(_){}
+      try{closeCalendarCellModal();}catch(_){}
+      try{showPage(back);}catch(_){try{showPage('barcocktail');}catch(__){}}
       try{toast(t('charged'));}catch(_){alert(t('charged'));}
-    }catch(e){ btn.disabled=false; try{toast(t('chargeError'));}catch(_){alert(t('chargeError'));} }
-  }
+    }catch(e){try{toast(t('chargeError'));}catch(_){alert(t('chargeError'));}throw e;}
+  };
   function normalizeImportedCocktail(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('Formato cocktail non valido');
     const source=(raw.cocktail&&typeof raw.cocktail==='object')?raw.cocktail:raw;
@@ -48548,7 +48558,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.139',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.140',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48705,13 +48715,17 @@ try{
       closeView();
     });
     $('cocktailChargeBtn')?.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openCharge();});
-    $('cocktailChargeClose')?.addEventListener('click',closeCharge);
     $('cocktailChargeModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailChargeModal'))closeCharge();});
-    $('cocktailChargeRoom')?.addEventListener('change',()=>{if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').disabled=!$('cocktailChargeRoom').value;syncChargePickerSelection();});
-    $('cocktailChargePickerButton')?.addEventListener('click',()=>{const list=$('cocktailChargePickerList'),button=$('cocktailChargePickerButton');if(!list||!button)return;const open=list.hidden;list.hidden=!open;button.setAttribute('aria-expanded',open?'true':'false');});
-    $('cocktailChargeConfirm')?.addEventListener('click',confirmCharge);
-    $('cocktailQuantityMinus')?.addEventListener('click',()=>setChargeQuantity(chargeQuantity-1));
-    $('cocktailQuantityPlus')?.addEventListener('click',()=>setChargeQuantity(chargeQuantity+1));
+    const qtyTap=$('cocktailQuantityTap');
+    if(qtyTap){
+      let holdTimer=0,held=false;
+      const clearHold=()=>{if(holdTimer){clearTimeout(holdTimer);holdTimer=0;}};
+      qtyTap.addEventListener('pointerdown',()=>{held=false;clearHold();holdTimer=setTimeout(()=>{held=true;setChargeQuantity(0);},560);},{passive:true});
+      ['pointerup','pointercancel','pointerleave'].forEach(type=>qtyTap.addEventListener(type,clearHold,{passive:true}));
+      qtyTap.addEventListener('click',ev=>{ev.preventDefault();if(held){held=false;return;}setChargeQuantity(chargeQuantity+1);});
+      qtyTap.addEventListener('contextmenu',ev=>ev.preventDefault());
+    }
+    $('cocktailRoomCalendarBtn')?.addEventListener('click',openChargeCalendar);
     syncText();render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
