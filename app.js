@@ -98,7 +98,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
 /**
  * Build: 3.108
  */
-const BUILD_VERSION = "3.140";
+const BUILD_VERSION = "3.141";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5316,7 +5316,6 @@ function __openStatGenCompareYearModal__(){
   if (!modal || !wheel) return;
   const current = __ensureStatGenCompareYear__();
   __populateStatGenCompareYearPicker__(current);
-  try{ if(typeof window.__ddaeBarChargeCalendarMode==='function') window.__ddaeBarChargeCalendarMode(payload, content); }catch(_){ }
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   __statGenCompareYearWheelApplying__ = false;
@@ -38426,6 +38425,11 @@ function openCalendarCellZoom(cell, payload){
   try{
     const zoomCard = stage.querySelector('.calendar-cell-zoom');
     if (zoomCard){
+      try{
+        if (typeof window.__ddaeBarChargeCalendarMode === 'function') {
+          window.__ddaeBarChargeCalendarMode(payload, zoomCard);
+        }
+      }catch(_){ }
       const room = String(payload?.room || '').trim();
       if (room) zoomCard.classList.add(`room-${room}`);
       // dDAE_2.755 — Secondo tap sulla cella zoomata = chiusura zoom.
@@ -43868,7 +43872,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.140';
+  var BUILD_TAG='dDAE_3.141';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48204,6 +48208,8 @@ try{
     if($('cocktailViewProcedureHeading'))$('cocktailViewProcedureHeading').textContent=t('procedure');
     if($('cocktailChargeBtn'))$('cocktailChargeBtn').textContent=t('charge');
     if($('cocktailChargeTitle'))$('cocktailChargeTitle').textContent=t('chargeTitle');
+    if($('cocktailQuantityTap')){$('cocktailQuantityTap').setAttribute('aria-label',t('quantity'));$('cocktailQuantityTap').title=t('quantity');}
+    if($('cocktailRoomOpen')){$('cocktailRoomOpen').setAttribute('aria-label',t('roomGuest'));$('cocktailRoomOpen').title=t('roomGuest');}
     if($('cocktailChargeRoomLabel'))$('cocktailChargeRoomLabel').textContent=t('roomGuest');
     if($('cocktailChargeConfirm'))$('cocktailChargeConfirm').textContent=t('confirmCharge');
     if($('cocktailChargeQuantityLabel'))$('cocktailChargeQuantityLabel').textContent=t('quantity');
@@ -48466,7 +48472,8 @@ try{
     btn.id='calendarBarChargeConfirm';
     btn.type='button';
     btn.className='calendar-bar-charge-confirm';
-    btn.textContent='Aggiungi '+String(flow.product.name||'prodotto')+' ai servizi · '+String(flow.quantity||1);
+    btn.setAttribute('aria-label','Aggiungi prodotto ai servizi della stanza');
+    btn.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 17h16M6 17a6 6 0 0 1 12 0M12 8v3M9 10h6"></path></svg><span>Aggiungi ai servizi · '+String(flow.quantity||1)+'</span>';
     btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();btn.disabled=true;chargeCalendarGuest(payload).finally(()=>{btn.disabled=false;});});
     content.appendChild(btn);
   };
@@ -48591,7 +48598,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.140',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.141',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
