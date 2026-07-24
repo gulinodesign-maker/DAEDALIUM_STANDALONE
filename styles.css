@@ -30808,7 +30808,7 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 .cocktail-charge-picker-option.is-previous-day{color:#d70015;}
 .cocktail-charge-picker-option.is-selected{background:#dff2ff;}
 
-/* dDAE_3.139 — Bar: sei categorie in griglia 3x2 */
+/* dDAE_3.140 — Bar: sei categorie in griglia 3x2 */
 #page-statistichecopy .bar-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
@@ -30822,7 +30822,7 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
 }
 
 
-/* dDAE_3.139 — nomi prodotti Bar su più righe e scheda senza pulsante X */
+/* dDAE_3.140 — nomi prodotti Bar su più righe e scheda senza pulsante X */
 .bar-category-page .bar-slots-grid > .bar-slot-btn{
   grid-template-rows:auto auto !important;
 }
@@ -30842,3 +30842,12 @@ body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
   text-align:center !important;
 }
 .cocktail-view-card{padding-top:22px !important;}
+
+/* dDAE_3.140 — addebito Bar: due tasti e selezione ospite dal calendario */
+.cocktail-charge-card.cocktail-charge-two-actions{max-width:34rem;padding:1.5rem;}
+.cocktail-charge-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.25rem;}
+.cocktail-charge-main-action{min-height:8rem;border:1px solid var(--line,#d8dde6);border-radius:1.4rem;background:#fff;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;font:inherit;font-weight:700;touch-action:manipulation;}
+.cocktail-charge-main-action span{font-size:1.15rem;}
+.cocktail-charge-main-action strong{font-size:2rem;line-height:1;}
+.calendar-bar-charge-confirm{width:100%;min-height:3.5rem;margin-top:1rem;border:0;border-radius:1rem;background:#148dcc;color:#fff;font:inherit;font-weight:800;padding:.8rem 1rem;}
+@media (max-width:520px){.cocktail-charge-action-grid{grid-template-columns:1fr 1fr}.cocktail-charge-main-action{min-height:7rem}.cocktail-charge-main-action strong{font-size:1.7rem}}
