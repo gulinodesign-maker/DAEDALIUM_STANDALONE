@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.149";
+const BUILD_VERSION = "3.151";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -13018,6 +13018,16 @@ function __launcherIconApplyToButton__(btn){
       }
       btn.style.setProperty('--ico-color', hex);
       __applyVisualTextWeight__(btn, visual);
+      if (__isDarkModeEnabled__ && __isDarkModeEnabled__()) {
+        btn.querySelectorAll('.home-main-label, .home-main-label *, .cocktail-slot-name').forEach((node) => {
+          try{
+            node.style.setProperty('color', '#f8fafc', 'important');
+            node.style.setProperty('-webkit-text-fill-color', '#f8fafc', 'important');
+            node.style.setProperty('opacity', '1', 'important');
+            node.style.setProperty('text-shadow', 'none', 'important');
+          }catch(_){ }
+        });
+      }
       try{
         const launcherWeight = visual && visual.bold ? '700' : '400';
         btn.style.setProperty('font-weight', launcherWeight, 'important');
@@ -13030,7 +13040,7 @@ function __launcherIconApplyToButton__(btn){
     if (btn.closest('#page-impostazioni') || btn.closest('#page-opsettings') || btn.closest('#settingsDataModal')){
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
       const isDarkSettings = !!(__isDarkModeEnabled__ && __isDarkModeEnabled__());
-      const useForcedDarkPalette = isDarkSettings && !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings'));
+      const useForcedDarkPalette = isDarkSettings && !!(btn.closest('#page-impostazioni') || btn.closest('#page-opsettings') || btn.closest('#settingsDataModal'));
       const resolvedBg = useForcedDarkPalette
         ? 'rgba(15,23,42,0.80)'
         : (bgHex ? hexToRgba(bgHex, resolvedOpacity) : '');
@@ -43885,7 +43895,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.149';
+  var BUILD_TAG='dDAE_3.151';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48595,7 +48605,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.149',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.151',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48659,6 +48669,19 @@ try{
       if(!label){label=document.createElement('span');label.className='cocktail-slot-name';btn.appendChild(label);}
       label.textContent=d&&d.name?d.name:' ';
       label.setAttribute('aria-hidden',d&&d.name?'false':'true');
+      try{
+        if(document.body && document.body.classList.contains('ddae-dark')){
+          label.style.setProperty('color','#f8fafc','important');
+          label.style.setProperty('-webkit-text-fill-color','#f8fafc','important');
+          label.style.setProperty('opacity','1','important');
+          label.style.setProperty('text-shadow','none','important');
+        }else{
+          label.style.removeProperty('color');
+          label.style.removeProperty('-webkit-text-fill-color');
+          label.style.removeProperty('opacity');
+          label.style.removeProperty('text-shadow');
+        }
+      }catch(_){ }
     });
   }
   function bindSlot(original){
