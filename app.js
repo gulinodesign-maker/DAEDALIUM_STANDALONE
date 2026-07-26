@@ -62,7 +62,7 @@ function applyIconPalette(){
         });
       }
     });
-    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barSnackBtn:'#F29C50', barPatatineBtn:'#E7B93F' };
+    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barSnackBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
       const fallbackColor = barIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.144";
+const BUILD_VERSION = "3.145";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11576,7 +11576,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barPatatineBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11625,7 +11625,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   barBirraBtn: 'yellow-4',
   barAnalcoliciBtn: 'sky-4',
   barSnackBtn: 'orange-4',
-  barPatatineBtn: 'yellow-4',
+  barCocktailAnalcoliciBtn: 'blue-4',
   homeYearPill: 'sky-4'
 };
 
@@ -12821,7 +12821,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barPatatineBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -43885,7 +43885,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.144';
+  var BUILD_TAG='dDAE_3.145';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47987,10 +47987,10 @@ try{
     barBirraBtn: ['barbirre','Birre'],
     barAnalcoliciBtn: ['baranalcolici','Analcolici'],
     barSnackBtn: ['barsnack','Snack'],
-    barPatatineBtn: ['barpatatine','Patatine']
+    barCocktailAnalcoliciBtn: ['barcocktailanalcolici','Cocktail analcolici']
   };
   const slotIds = [];
-  ['Cocktail','Vini','Birre','Analcolici','Snack','Patatine'].forEach((name) => {
+  ['Cocktail','Vini','Birre','Analcolici','Snack','CocktailAnalcolici'].forEach((name) => {
     for (let i=1;i<=15;i++) slotIds.push(`bar${name}Slot${String(i).padStart(2,'0')}`);
   });
   try{
@@ -48023,7 +48023,7 @@ try{
 
 /* dDAE_3.130 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
 (function __fixBarCategoryPages3106__(){
-  const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici','barsnack','barpatatine']);
+  const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici','barsnack','barcocktailanalcolici']);
   function syncBarBack(){
     try{
       const btn=document.getElementById('barBackTop');
@@ -48063,14 +48063,14 @@ try{
 /* dDAE_3.130 — navigazione Bar robusta e slot sempre renderizzati */
 (function __barPagesFinalFix3107__(){
   'use strict';
-  var pages=['barcocktail','barvini','barbirre','baranalcolici','barsnack','barpatatine'];
+  var pages=['barcocktail','barvini','barbirre','baranalcolici','barsnack','barcocktailanalcolici'];
   var routeMap={
     barCocktailBtn:'barcocktail',
     barVinoBtn:'barvini',
     barBirraBtn:'barbirre',
     barAnalcoliciBtn:'baranalcolici',
     barSnackBtn:'barsnack',
-    barPatatineBtn:'barpatatine'
+    barCocktailAnalcoliciBtn:'barcocktailanalcolici'
   };
   function current(){
     try{return String((window.state&&window.state.page)||document.body.getAttribute('data-page')||'');}catch(_){return '';}
@@ -48173,6 +48173,24 @@ try{
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
   function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Immagine troppo grande');}catch(__){}return false;}}
+  function ensureCocktailAnalcoliciClone(){
+    try{
+      const marker='dDAE_bar_cocktail_analcolici_seeded_v1';
+      if(localStorage.getItem(marker)==='1')return;
+      const all=read();
+      let hasTarget=false;
+      for(let i=1;i<=15;i++){const id='barCocktailAnalcoliciSlot'+String(i).padStart(2,'0');if(all[id]&&typeof all[id]==='object'&&Object.keys(all[id]).length){hasTarget=true;break;}}
+      if(!hasTarget){
+        for(let i=1;i<=15;i++){
+          const n=String(i).padStart(2,'0');
+          const source=all['barCocktailSlot'+n];
+          if(source&&typeof source==='object')all['barCocktailAnalcoliciSlot'+n]=JSON.parse(JSON.stringify(source));
+        }
+        write(all);
+      }
+      localStorage.setItem(marker,'1');
+    }catch(_){ }
+  }
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function addIngredient(value){
     const row=document.createElement('div'); row.className='cocktail-dynamic-row cocktail-ingredient-row';
@@ -48190,18 +48208,18 @@ try{
     const value=String(slot||'');
     const currentLang=lang();
     const labels={
-      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Snack','Nome snack'],chips:['Patatine','Nome patatine']},
-      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Snack','Snack name'],chips:['Chips','Chips name']},
-      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Snack','Nom du snack'],chips:['Chips','Nom des chips']},
-      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Snack','Name des Snacks'],chips:['Chips','Name der Chips']},
-      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Snack','Nombre del snack'],chips:['Patatas fritas','Nombre de las patatas fritas']}
+      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Snack','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
+      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Snack','Snack name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
+      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Snack','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
+      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Snack','Name des Snacks'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
+      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Snack','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
     };
     let type='cocktail';
     if(value.indexOf('barViniSlot')===0)type='wine';
     else if(value.indexOf('barBirreSlot')===0)type='beer';
     else if(value.indexOf('barAnalcoliciSlot')===0)type='soft';
     else if(value.indexOf('barSnackSlot')===0)type='snack';
-    else if(value.indexOf('barPatatineSlot')===0)type='chips';
+    else if(value.indexOf('barCocktailAnalcoliciSlot')===0)type='mocktail';
     const pair=(labels[currentLang]||labels.it)[type];
     return {title:pair[0],name:pair[1]};
   }
@@ -48228,7 +48246,7 @@ try{
     if($('cocktailQuantityPlus'))$('cocktailQuantityPlus').setAttribute('aria-label',t('increaseQuantity'));
   }
   function closeEditor(){const m=$('barSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
-  function isCocktailSlot(slot){return String(slot||'').indexOf('barCocktailSlot')===0;}
+  function isCocktailSlot(slot){const value=String(slot||'');return value.indexOf('barCocktailSlot')===0||value.indexOf('barCocktailAnalcoliciSlot')===0;}
   function setRecipeFieldsVisible(visible){
     const ingredientsSection=$('cocktailIngredientsList')?.closest('.cocktail-builder-section');
     const procedureSection=$('cocktailStepsList')?.closest('.cocktail-builder-section');
@@ -48577,7 +48595,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.144',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.145',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -48745,6 +48763,7 @@ try{
       qtyTap.addEventListener('contextmenu',ev=>ev.preventDefault());
     }
     $('cocktailRoomCalendarBtn')?.addEventListener('click',openChargeCalendar);
+    ensureCocktailAnalcoliciClone();
     syncText();render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
