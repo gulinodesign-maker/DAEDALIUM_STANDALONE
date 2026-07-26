@@ -30927,3 +30927,95 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   align-items:flex-start !important;
   line-height:1.12 !important;
 }
+
+/* dDAE_3.149 — Dark mode: pulsanti Bar e popup Dati/Backup ottimizzati, stile flat */
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main{
+  background:#202733 !important;
+  background-image:none !important;
+  border:1px solid #3b4758 !important;
+  color:#eef4fb !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-glyph{
+  background:#2b3442 !important;
+  background-image:none !important;
+  border:1px solid #465469 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-label,
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-label.small{
+  color:#f1f5f9 !important;
+  -webkit-text-fill-color:#f1f5f9 !important;
+  text-shadow:none !important;
+}
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main:active{
+  background:#26303d !important;
+  transform:none !important;
+}
+
+body.ddae-dark #settingsDataModal .settings-data-card,
+body.ddae-dark #settingsBackupModal .modal-card,
+body.ddae-dark #dbMenuModal .db-menu-card{
+  background:#171d27 !important;
+  background-image:none !important;
+  border:1px solid #364255 !important;
+  color:#f1f5f9 !important;
+  box-shadow:none !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-title,
+body.ddae-dark #settingsBackupModal .operatori-editor-title,
+body.ddae-dark #dbMenuModal .db-menu-title{
+  color:#f8fafc !important;
+  -webkit-text-fill-color:#f8fafc !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn,
+body.ddae-dark #settingsBackupModal .settings-backup-actions .btn,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-tile,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-option{
+  background:#252e3b !important;
+  background-image:none !important;
+  border:1px solid #45536a !important;
+  color:#eaf2fb !important;
+  -webkit-text-fill-color:#eaf2fb !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label,
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn .ui-ico,
+body.ddae-dark #settingsBackupModal .settings-backup-actions .btn,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-tile span,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-tile .ui-ico,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-option .db-option-label{
+  color:#eaf2fb !important;
+  -webkit-text-fill-color:#eaf2fb !important;
+  stroke:currentColor !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn:active,
+body.ddae-dark #settingsBackupModal .settings-backup-actions .btn:active,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-tile:active,
+body.ddae-dark #dbMenuModal .db-menu-grid .db-option:active{
+  background:#2e3948 !important;
+  transform:none !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-close{
+  background:#8f2530 !important;
+  background-image:none !important;
+  border:1px solid #b4404b !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  box-shadow:none !important;
+}
+body.ddae-dark #settingsBackupModal .settings-backup-note{
+  color:#cbd5e1 !important;
+  -webkit-text-fill-color:#cbd5e1 !important;
+}
+body.ddae-dark #settingsBackupModal #settingsBackupImport{
+  color:#ef9aa2 !important;
+  -webkit-text-fill-color:#ef9aa2 !important;
+}
+body.ddae-dark #settingsBackupModal #settingsBackupExport{
+  color:#79d69a !important;
+  -webkit-text-fill-color:#79d69a !important;
+}
