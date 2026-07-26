@@ -150,7 +150,7 @@ body.ddae-dark.bg-dark-ready{
 .brand-left{
   display:flex;
   align-items:center;
-  gap: 6px;
+  gap: 14px;
   min-width: 0;
   flex: 0 1 auto;
   flex-wrap: nowrap;
@@ -1543,6 +1543,7 @@ body > *{
 #page-statistiche #goStatCancellazioni .home-main-glyph{ color: var(--ico-taupe) !important; }
 
 #page-home .home-main-label{
+  margin-top:8px;
   font-weight: 400;
   letter-spacing: 0.2px;
   font-size: 17px;
@@ -7325,6 +7326,7 @@ body.ddae-dark .statgen-line-chart-wrap{
 }
 
 .stats-page .home-main-label{
+  margin-top:8px;
   font-weight: 400;
   letter-spacing: 0.2px;
   font-size: 17px;
