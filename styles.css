@@ -31021,7 +31021,7 @@ body.ddae-dark #settingsBackupModal #settingsBackupExport{
 }
 
 
-/* dDAE_3.151 — Dark mode reale: Bar, prodotti e popup Dati */
+/* dDAE_3.152 — Dark mode reale: Bar, prodotti e popup Dati */
 body.ddae-dark #page-statistichecopy .bar-grid > .home-main,
 body.ddae-dark .bar-category-page .bar-slot-btn{
   background:transparent !important;
@@ -31099,7 +31099,7 @@ body.ddae-dark #settingsDataModal .settings-data-close{
 }
 
 
-/* dDAE_3.151 — contrasto coerente Home, Statistiche e Bar in modalità chiara/scura */
+/* dDAE_3.152 — contrasto coerente Home, Statistiche e Bar in modalità chiara/scura */
 body:not(.ddae-dark) #page-home .home-main-label,
 body:not(.ddae-dark) #page-home .home-main-label.small,
 body:not(.ddae-dark) #page-statistiche .home-main-label,
@@ -31162,4 +31162,16 @@ body.ddae-dark #page-statistichecopy .stats-divider,
 body.ddae-dark .bar-category-page .stats-divider{
   background:#b8c3d1 !important;
   opacity:.78 !important;
+}
+
+
+/* dDAE_3.152 — uniformità tasto Piscina nella griglia Statistiche in dark mode */
+body.ddae-dark #page-statistiche #goStatPiscinaReport .home-main-glyph{
+  background:#273140 !important;
+  background-color:#273140 !important;
+  background-image:none !important;
+  border:1px solid #526176 !important;
+  border-color:#526176 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
 }
