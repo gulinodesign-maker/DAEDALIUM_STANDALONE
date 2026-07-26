@@ -31019,3 +31019,81 @@ body.ddae-dark #settingsBackupModal #settingsBackupExport{
   color:#79d69a !important;
   -webkit-text-fill-color:#79d69a !important;
 }
+
+
+/* dDAE_3.150 — Dark mode reale: Bar, prodotti e popup Dati */
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main,
+body.ddae-dark .bar-category-page .bar-slot-btn{
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-glyph,
+body.ddae-dark .bar-category-page .bar-slot-btn .bar-slot-glyph{
+  background-color:#273140 !important;
+  border:1px solid #445268 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-label,
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-label.small,
+body.ddae-dark .bar-category-page .bar-slot-btn .cocktail-slot-name,
+body.ddae-dark .bar-category-page .cocktail-slot-name{
+  color:#f8fafc !important;
+  -webkit-text-fill-color:#f8fafc !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+body.ddae-dark .bar-category-page .bar-slot-btn .cocktail-slot-image{
+  border-radius:inherit !important;
+  filter:brightness(.94) contrast(1.04) !important;
+}
+body.ddae-dark #page-statistichecopy .stats-title,
+body.ddae-dark .bar-category-page .stats-title{
+  color:#f8fafc !important;
+  -webkit-text-fill-color:#f8fafc !important;
+}
+body.ddae-dark #page-statistichecopy .stats-divider,
+body.ddae-dark .bar-category-page .stats-divider{
+  background:#aeb9c7 !important;
+  opacity:.72 !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-card{
+  background:#111827 !important;
+  background-color:#111827 !important;
+  background-image:none !important;
+  border:1px solid #334155 !important;
+  box-shadow:none !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn{
+  background:#1f2937 !important;
+  background-color:#1f2937 !important;
+  background-image:none !important;
+  border:1px solid #475569 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label{
+  color:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn:active{
+  background:#293548 !important;
+  background-color:#293548 !important;
+  transform:none !important;
+}
+body.ddae-dark #settingsDataModal .settings-data-close{
+  background:#5b1f29 !important;
+  background-color:#5b1f29 !important;
+  background-image:none !important;
+  border:1px solid #8f3340 !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
