@@ -31175,3 +31175,102 @@ body.ddae-dark #page-statistiche #goStatPiscinaReport .home-main-glyph{
   box-shadow:none !important;
   opacity:1 !important;
 }
+
+/* dDAE_3.153 — contrasto testo e standardizzazione globale dei tasti a griglia */
+:root{
+  --ddae-tile-text-light:#111827;
+  --ddae-tile-text-dark:#f8fafc;
+  --ddae-tile-dark-bg:#273140;
+  --ddae-tile-dark-border:#526176;
+}
+
+/* Modalità chiara: tutte le etichette testuali dei tasti devono essere nere. */
+html:not(.ddae-dark) body .home-main-label,
+html:not(.ddae-dark) body .home-main-label.small,
+html:not(.ddae-dark) body .cocktail-slot-name,
+html:not(.ddae-dark) body .settings-btn-label,
+html:not(.ddae-dark) body .db-option-label,
+html:not(.ddae-dark) body .pay-pill-text,
+html:not(.ddae-dark) body .services-pill-text,
+html:not(.ddae-dark) body .settings-tax-pill-label,
+html:not(.ddae-dark) body .statgen-regime-btn-label,
+html:not(.ddae-dark) body .guest-tax-pill-label,
+body:not(.ddae-dark) .home-main-label,
+body:not(.ddae-dark) .home-main-label.small,
+body:not(.ddae-dark) .cocktail-slot-name,
+body:not(.ddae-dark) .settings-btn-label,
+body:not(.ddae-dark) .db-option-label,
+body:not(.ddae-dark) .pay-pill-text,
+body:not(.ddae-dark) .services-pill-text,
+body:not(.ddae-dark) .settings-tax-pill-label,
+body:not(.ddae-dark) .statgen-regime-btn-label,
+body:not(.ddae-dark) .guest-tax-pill-label{
+  color:var(--ddae-tile-text-light) !important;
+  -webkit-text-fill-color:var(--ddae-tile-text-light) !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+/* Modalità scura: tutte le etichette testuali dei tasti devono essere bianche. */
+html.ddae-dark body .home-main-label,
+html.ddae-dark body .home-main-label.small,
+html.ddae-dark body .cocktail-slot-name,
+html.ddae-dark body .settings-btn-label,
+html.ddae-dark body .db-option-label,
+html.ddae-dark body .pay-pill-text,
+html.ddae-dark body .services-pill-text,
+html.ddae-dark body .settings-tax-pill-label,
+html.ddae-dark body .statgen-regime-btn-label,
+html.ddae-dark body .guest-tax-pill-label,
+body.ddae-dark .home-main-label,
+body.ddae-dark .home-main-label.small,
+body.ddae-dark .cocktail-slot-name,
+body.ddae-dark .settings-btn-label,
+body.ddae-dark .db-option-label,
+body.ddae-dark .pay-pill-text,
+body.ddae-dark .services-pill-text,
+body.ddae-dark .settings-tax-pill-label,
+body.ddae-dark .statgen-regime-btn-label,
+body.ddae-dark .guest-tax-pill-label{
+  color:var(--ddae-tile-text-dark) !important;
+  -webkit-text-fill-color:var(--ddae-tile-text-dark) !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+/* Tutte le griglie Home/Statistiche/Bar usano in dark lo stesso aspetto del tasto Piscina. */
+html.ddae-dark body .home-main,
+body.ddae-dark .home-main,
+html.ddae-dark body .bar-slot-btn,
+body.ddae-dark .bar-slot-btn{
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+
+html.ddae-dark body .home-main > .home-main-glyph,
+body.ddae-dark .home-main > .home-main-glyph,
+html.ddae-dark body .bar-slot-btn > .bar-slot-glyph,
+body.ddae-dark .bar-slot-btn > .bar-slot-glyph{
+  background:var(--ddae-tile-dark-bg) !important;
+  background-color:var(--ddae-tile-dark-bg) !important;
+  background-image:none !important;
+  border:1px solid var(--ddae-tile-dark-border) !important;
+  border-color:var(--ddae-tile-dark-border) !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+
+/* Mantiene uniforme anche lo stato premuto, senza schiarimenti o gradienti. */
+html.ddae-dark body .home-main:active > .home-main-glyph,
+body.ddae-dark .home-main:active > .home-main-glyph,
+html.ddae-dark body .bar-slot-btn:active > .bar-slot-glyph,
+body.ddae-dark .bar-slot-btn:active > .bar-slot-glyph{
+  background:#2d3848 !important;
+  background-color:#2d3848 !important;
+  background-image:none !important;
+  transform:none !important;
+}
