@@ -30899,3 +30899,31 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   line-height:1.12 !important;
   box-sizing:border-box !important;
 }
+
+/* dDAE_3.148 — Bar: distanza reale e uniforme tra riquadro icona e testo */
+#page-statistichecopy .bar-grid{
+  grid-template-rows:repeat(2,160px) !important;
+  grid-auto-rows:160px !important;
+  row-gap:24px !important;
+}
+#page-statistichecopy .bar-grid > .home-main{
+  height:160px !important;
+  min-height:160px !important;
+  max-height:160px !important;
+  grid-template-rows:96px 50px !important;
+  row-gap:14px !important;
+  overflow:visible !important;
+}
+#page-statistichecopy .bar-grid > .home-main .home-main-glyph{
+  margin:0 !important;
+}
+#page-statistichecopy .bar-grid > .home-main .home-main-label,
+#page-statistichecopy .bar-grid > .home-main .home-main-label.small{
+  height:50px !important;
+  min-height:50px !important;
+  max-height:50px !important;
+  margin:0 !important;
+  padding:0 2px !important;
+  align-items:flex-start !important;
+  line-height:1.12 !important;
+}
