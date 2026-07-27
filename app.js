@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.152";
+const BUILD_VERSION = "3.151";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -37818,15 +37818,13 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
-    const isPortrait = !(window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
-    const monthStart = new Date(anchor.getFullYear(), anchor.getMonth() + (isPortrait ? -1 : 0), 1);
-    const monthEndEx = new Date(anchor.getFullYear(), anchor.getMonth() + (isPortrait ? 2 : 1), 1);
+    const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+    const monthEndEx = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 1);
 
-    // In portrait il calendario visualizza anche il mese precedente e successivo.
-    // Il buffer copre inoltre prenotazioni che attraversano i bordi della finestra.
+    // Finestra dati mese: piccolo buffer ai bordi (copre check-in/out adiacenti)
     winFrom = toISO(addDays(monthStart, -3));
     winTo   = toISO(addDays(monthEndEx, 3));
-    rangeKey = `M:${isPortrait ? 'P3' : 'L1'}:${winFrom}|${winTo}`;
+    rangeKey = `M:${winFrom}|${winTo}`;
   } else {
     const start = startOfWeekMonday(anchor);
 
@@ -38199,14 +38197,12 @@ function __fitCalendarioMonthLandscape(){
     try{
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       const ms = new Date(a.getFullYear(), a.getMonth(), 1);
-      const headEls = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)');
-      for (let i = 0; i < headEls.length; i++){
-        const iso = String(headEls[i].dataset.fullDate || '');
-        const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + 'T00:00:00') : new Date(ms.getFullYear(), ms.getMonth(), i+1);
+      const abEls = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner) .cal-day-abbrev');
+      for (let i = 0; i < abEls.length; i++){
+        const d = new Date(ms.getFullYear(), ms.getMonth(), i+1);
         let t = weekdayShortIT(d).toUpperCase();
         if (isLandscape) t = t.slice(0,1);
-        const ab = headEls[i].querySelector('.cal-day-abbrev');
-        if (ab) ab.textContent = t;
+        abEls[i].textContent = t;
       }
     }catch(_){}
 
@@ -38217,9 +38213,10 @@ function __fitCalendarioMonthLandscape(){
       try{ grid.style.removeProperty("grid-template-columns"); }catch(_){}
       try{ wrap.style.removeProperty("--cal-cell-h"); }catch(_){}
       try{ wrap.style.removeProperty("--cal-pill-h"); }catch(_){}
-      // In portrait la griglia può includere mese precedente, corrente e successivo.
+      // Ripristina template dinamico standard (var day width) se possibile
       try{
-        const daysCount = Math.max(1, grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)').length || 1);
+        const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+        const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
         grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
       }catch(_){}
       return;
@@ -39143,15 +39140,8 @@ function renderCalendarioMonth(){
   const frag = document.createDocumentFragment();
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-  const isPortrait = !(window.matchMedia && window.matchMedia("(orientation: landscape)").matches);
-  const visibleMonthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const monthStart = isPortrait
-    ? new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1)
-    : visibleMonthStart;
-  const monthEndEx = isPortrait
-    ? new Date(anchor.getFullYear(), anchor.getMonth() + 2, 1)
-    : new Date(anchor.getFullYear(), anchor.getMonth() + 1, 1);
-  const daysCount = Math.max(1, Math.round((monthEndEx - monthStart) / 86400000));
+  const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
   const days = Array.from({ length: daysCount }, (_, i) => addDays(monthStart, i));
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
@@ -39165,12 +39155,7 @@ function renderCalendarioMonth(){
 
   const occ = buildMonthOccupancy(monthStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
-  let todayCol = -1;
-  try{
-    const selected = __calendarDateFromIso__(__calendarSelectedIso__());
-    const idx = Math.round((selected - monthStart) / 86400000);
-    if (idx >= 0 && idx < daysCount) todayCol = idx + 1;
-  }catch(_){ }
+  const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -39178,8 +39163,6 @@ function renderCalendarioMonth(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
-    dayPill.dataset.fullDate = isoDate(d);
-    dayPill.dataset.dateMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
@@ -39203,7 +39186,7 @@ function renderCalendarioMonth(){
         try{ ev?.stopPropagation?.(); }catch(_){ }
         const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(d);
+        const selected = new Date(anchor.getFullYear(), anchor.getMonth(), d.getDate());
         selected.setHours(0,0,0,0);
         state.calendar.anchor = selected;
         state.calendar.selectedDateISO = isoDate(selected);
@@ -39321,75 +39304,6 @@ function renderCalendarioMonth(){
   try{ addCalendarTodayColumnOutline(grid, todayCol, roomsCount + 1); }catch(_){ }
   try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
   try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
-  try{
-    const wrap = parts.daysWrap || document.getElementById("calDaysWrap");
-    if (wrap && isPortrait){
-      const currentMonthHead = grid.querySelector(`.cal-cell.cal-head[data-date-month="${visibleMonthStart.getFullYear()}-${String(visibleMonthStart.getMonth()+1).padStart(2,'0')}"]`);
-      const restoreLeft = Number(state.calendar && state.calendar._portraitScrollLeft);
-      requestAnimationFrame(() => {
-        try{
-          if (Number.isFinite(restoreLeft) && restoreLeft >= 0) wrap.scrollLeft = restoreLeft;
-          else if (currentMonthHead) wrap.scrollLeft = Math.max(0, currentMonthHead.offsetLeft || 0);
-        }catch(_){ }
-        try{ __calendarBindPortraitMonthScroll__(wrap, grid); }catch(_){ }
-      });
-    } else if (wrap){
-      try{ wrap.onscroll = null; }catch(_){ }
-    }
-  }catch(_){ }
-}
-
-function __calendarBindPortraitMonthScroll__(wrap, grid){
-  if (!wrap || !grid) return;
-  const update = () => {
-    try{
-      if (!state || state.page !== 'calendario') return;
-      if (window.matchMedia && window.matchMedia('(orientation: landscape)').matches) return;
-      state.calendar._portraitScrollLeft = Number(wrap.scrollLeft || 0);
-      const left = Number(wrap.scrollLeft || 0);
-      const right = left + Number(wrap.clientWidth || 0);
-      const center = left + (Number(wrap.clientWidth || 0) / 2);
-      const heads = Array.from(grid.querySelectorAll('.cal-cell.cal-head[data-full-date]'));
-      if (!heads.length) return;
-      let chosen = null;
-      // Quando nel viewport resta un solo mese, quel mese diventa il titolo.
-      const visibleMonths = new Map();
-      for (const h of heads){
-        const hl = Number(h.offsetLeft || 0), hr = hl + Number(h.offsetWidth || 0);
-        if (hr <= left || hl >= right) continue;
-        const key = h.dataset.dateMonth || '';
-        if (key) visibleMonths.set(key, (visibleMonths.get(key) || 0) + Math.max(0, Math.min(hr,right)-Math.max(hl,left)));
-        if (!chosen && center >= hl && center < hr) chosen = h;
-      }
-      let monthKey = '';
-      if (visibleMonths.size === 1) monthKey = visibleMonths.keys().next().value || '';
-      else if (visibleMonths.size > 1){
-        monthKey = Array.from(visibleMonths.entries()).sort((a,b)=>b[1]-a[1])[0][0];
-      }
-      if (!monthKey && chosen) monthKey = chosen.dataset.dateMonth || '';
-      if (/^\d{4}-\d{2}$/.test(monthKey)){
-        const [yy,mm] = monthKey.split('-').map(Number);
-        const current = state.calendar.anchor instanceof Date ? state.calendar.anchor : new Date(state.calendar.anchor || Date.now());
-        if (current.getFullYear() !== yy || current.getMonth() !== (mm-1)){
-          const nextAnchor = new Date(yy, mm-1, 1);
-          nextAnchor.setHours(0,0,0,0);
-          state.calendar.anchor = nextAnchor;
-          try{ __setTopbarCenterLabel__(); }catch(_){ }
-        }
-      }
-    }catch(_){ }
-  };
-  if (wrap.__ddaePortraitMonthScrollHandler){
-    try{ wrap.removeEventListener('scroll', wrap.__ddaePortraitMonthScrollHandler); }catch(_){ }
-  }
-  let raf = 0;
-  const handler = () => {
-    try{ if (raf) cancelAnimationFrame(raf); }catch(_){ }
-    raf = requestAnimationFrame(update);
-  };
-  wrap.__ddaePortraitMonthScrollHandler = handler;
-  wrap.addEventListener('scroll', handler, { passive:true });
-  update();
 }
 
 function buildMonthOccupancy(monthStart, daysCount){
@@ -44076,7 +43990,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.152';
+  var BUILD_TAG='dDAE_3.151';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48786,7 +48700,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.151',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
