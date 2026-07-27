@@ -30928,7 +30928,7 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   line-height:1.12 !important;
 }
 
-/* dDAE_3.150 — Dark mode: pulsanti Bar e popup Dati/Backup ottimizzati, stile flat */
+/* dDAE_3.149 — Dark mode: pulsanti Bar e popup Dati/Backup ottimizzati, stile flat */
 body.ddae-dark #page-statistichecopy .bar-grid > .home-main{
   background:#202733 !important;
   background-image:none !important;
@@ -31018,28 +31018,4 @@ body.ddae-dark #settingsBackupModal #settingsBackupImport{
 body.ddae-dark #settingsBackupModal #settingsBackupExport{
   color:#79d69a !important;
   -webkit-text-fill-color:#79d69a !important;
-}
-
-
-/* dDAE_3.150 — Calendario: lampeggio dell'intera prenotazione con check-out nel giorno selezionato */
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
-  position:relative !important;
-  isolation:isolate !important;
-  overflow:hidden !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid #000 !important;
-  border-radius:inherit !important;
-  background:rgba(255,255,255,.08);
-  pointer-events:none;
-  z-index:8;
-  will-change:opacity, box-shadow;
-  animation:ddaeRoomCheckoutLedPulse .82s ease-in-out infinite !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink > *{
-  position:relative;
-  z-index:2;
 }

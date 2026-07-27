@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.150";
+const BUILD_VERSION = "3.149";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -37835,7 +37835,8 @@ function ensureCalendarFixedRailStructure(){
 function __calendarCheckoutRoomsForSelectedDate__(){
   const rooms = new Set();
   try{
-    const selectedIso = __calendarSelectedIso__();
+    const anchor = (state && state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+    const selectedIso = formatISODateLocal(anchor) || isoDate(anchor);
     if (!selectedIso) return rooms;
     const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
     const maxRooms = (typeof getConfiguredRoomsCount === 'function') ? getConfiguredRoomsCount(6) : 6;
@@ -37869,9 +37870,11 @@ function renderCalendarRoomRail(roomsCount){
   for (let r = 1; r <= roomsCount; r++){
     const pill = document.createElement("div");
     pill.className = `cal-room-rail-pill room-${r}`;
+    if (checkoutRooms && checkoutRooms.has(String(r))) pill.classList.add('is-checkout-blink');
     try{
       const roomVisual = getRoomsUiConfig().rooms?.[String(r)] || 'blue-4';
-      pill.setAttribute("style", __roomsUiBadgeStyle__(roomVisual));
+      const ledExtra = (checkoutRooms && checkoutRooms.has(String(r))) ? __roomsUiBadgeLedStyle__(roomVisual) : '';
+      pill.setAttribute("style", __roomsUiBadgeStyle__(roomVisual) + ledExtra);
     }catch(_){ }
     const roomLabel = (typeof getRoomDisplayLabel === 'function') ? getRoomDisplayLabel(r) : String(r);
     const roomName = (typeof getRoomNameLabel === 'function') ? getRoomNameLabel(r) : `Stanza ${r}`;
@@ -37953,7 +37956,6 @@ function renderCalendarioWeek(){
       bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
-        if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
         try{
           const chrome = document.createElement("div");
           chrome.className = "cal-corner-chrome";
@@ -39131,7 +39133,6 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
-      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
@@ -39235,7 +39236,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -39280,7 +39281,7 @@ function buildWeekOccupancy(weekStart){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -43884,7 +43885,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.150';
+  var BUILD_TAG='dDAE_3.149';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48594,7 +48595,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.150',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.149',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
