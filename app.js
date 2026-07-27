@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.150";
+const BUILD_VERSION = "3.151";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6389,6 +6389,7 @@ const COLORS = {
 const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
 const LS_STAT_FORFETTARIO_STARTUP_5 = "ddae_stat_forfettario_startup_5";
 const __STAT_FISCAL_BTN_VISUAL_KEY__ = "dDAE_stat_fiscal_btn_visual_v1";
+const __GUEST_CHECKIN_BTN_VISUAL_KEY__ = "dDAE_guest_checkin_btn_visual_v1";
 const LS_APP_TEXT_UI = "ddae_app_text_ui_v1";
 const APP_TEXT_SCALE_MAP = Object.freeze({ "1": 1, "2": 1.08, "3": 1.16 });
 let __appTextUiMutationObserver__ = null;
@@ -7243,6 +7244,101 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
+
+function __guestCheckInVisualDefaultState__(stateKey){
+  return String(stateKey || '').toLowerCase() === 'on'
+    ? { bg:'green-5', border:'green-5', fg:'#ffffff', opacity:0.92 }
+    : { bg:'gray-4', border:'gray-4', fg:'#ffffff', opacity:0.92 };
+}
+function __guestCheckInVisualRead__(){
+  const fallback = { on:__guestCheckInVisualDefaultState__('on'), off:__guestCheckInVisualDefaultState__('off') };
+  try{
+    const raw = localStorage.getItem(__GUEST_CHECKIN_BTN_VISUAL_KEY__);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return { on:__tagColorPairFromValue__(parsed?.on || fallback.on, fallback.on.bg), off:__tagColorPairFromValue__(parsed?.off || fallback.off, fallback.off.bg) };
+  }catch(_){ return fallback; }
+}
+function __guestCheckInVisualWrite__(visuals){
+  const current = __guestCheckInVisualRead__();
+  const next = {
+    on:__tagColorPairFromValue__(visuals?.on || current.on, visuals?.on?.bg || current.on.bg),
+    off:__tagColorPairFromValue__(visuals?.off || current.off, visuals?.off?.bg || current.off.bg)
+  };
+  try{ localStorage.setItem(__GUEST_CHECKIN_BTN_VISUAL_KEY__, JSON.stringify(next)); }catch(_){ }
+  return next;
+}
+function __applyGuestCheckInButtonVisual__(forcedState, forcedPair){
+  try{
+    const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
+    if (!btn) return;
+    const stateKey = (forcedState === 'on' || forcedState === 'off') ? forcedState : (btn.classList.contains('is-on') ? 'on' : 'off');
+    const pair = forcedPair || __guestCheckInVisualRead__()[stateKey] || __guestCheckInVisualDefaultState__(stateKey);
+    const bgHex = __graphColorValueToHex__(pair?.bg || __guestCheckInVisualDefaultState__(stateKey).bg, stateKey === 'on' ? '#34c759' : '#94a3b8');
+    const borderHex = __graphColorValueToHex__(pair?.border || pair?.bg || bgHex, bgHex);
+    const textHex = __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false);
+    const opacity = __designBgOpacityNormalize__(pair?.opacity ?? 0.92);
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border-color', borderHex, 'important');
+    btn.style.setProperty('color', textHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', textHex, 'important');
+    const svg = btn.querySelector('svg');
+    if (svg){ svg.style.setProperty('stroke', textHex, 'important'); svg.style.setProperty('color', textHex, 'important'); }
+  }catch(_){ }
+}
+const __guestCheckInVisualEditor__ = { active:'off', drafts:null };
+function __guestCheckInVisualEditorCaptureCurrent__(){
+  try{
+    if (!__guestCheckInVisualEditor__.drafts) return;
+    const payload = __tagColorPopupCurrentPayload__();
+    const colors = payload?.colors || {};
+    const key = __guestCheckInVisualEditor__.active === 'on' ? 'on' : 'off';
+    __guestCheckInVisualEditor__.drafts[key] = { bg:colors.bg || __guestCheckInVisualEditor__.drafts[key]?.bg, border:colors.border || colors.bg || __guestCheckInVisualEditor__.drafts[key]?.border, fg:colors.fg || '', opacity:__designBgOpacityNormalize__(payload?.opacity ?? __guestCheckInVisualEditor__.drafts[key]?.opacity ?? 0.92) };
+  }catch(_){ }
+}
+function __guestCheckInVisualEditorRefreshStateButtons__(){
+  try{ document.querySelectorAll('#tagColorStateBar [data-checkin-visual-state]').forEach((btn)=>{ const active=String(btn.dataset.checkinVisualState||'')===__guestCheckInVisualEditor__.active; btn.classList.toggle('is-active',active); btn.setAttribute('aria-pressed',active?'true':'false'); }); }catch(_){ }
+}
+function __guestCheckInVisualEditorSwitch__(nextState){
+  const next = nextState === 'on' ? 'on' : 'off';
+  if (!__guestCheckInVisualEditor__.drafts || next === __guestCheckInVisualEditor__.active) return;
+  __guestCheckInVisualEditorCaptureCurrent__();
+  __guestCheckInVisualEditor__.active = next;
+  const pair = __tagColorPairFromValue__(__guestCheckInVisualEditor__.drafts[next], __guestCheckInVisualDefaultState__(next).bg);
+  __tagColorPopupState__.colors = { ...pair, border:pair.border || pair.bg };
+  __tagColorPopupState__.opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.92);
+  __tagColorPopupRefreshSelection__();
+  __guestCheckInVisualEditorRefreshStateButtons__();
+  __applyGuestCheckInButtonVisual__(next, pair);
+}
+function __openGuestCheckInButtonColorPicker__(){
+  const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
+  const liveState = btn?.classList.contains('is-on') ? 'on' : 'off';
+  const visuals = __guestCheckInVisualRead__();
+  __guestCheckInVisualEditor__.active = liveState;
+  __guestCheckInVisualEditor__.drafts = { on:{...visuals.on}, off:{...visuals.off} };
+  const initial = __guestCheckInVisualEditor__.drafts[liveState];
+  __tagColorPopupOpen__('guest-checkin', initial, ()=>{
+    try{ __guestCheckInVisualEditorCaptureCurrent__(); __guestCheckInVisualWrite__(__guestCheckInVisualEditor__.drafts); __applyGuestCheckInButtonVisual__(); }catch(_){ }
+  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial?.opacity ?? 0.92), defaultMode:'bg', fallbackBg:initial?.bg || 'green-5', onPreview:(payload)=>{ try{ const colors=payload?.colors||{}; __applyGuestCheckInButtonVisual__(__guestCheckInVisualEditor__.active,{bg:colors.bg,border:colors.border||colors.bg,fg:colors.fg||'',opacity:payload?.opacity}); }catch(_){ } }, onRevert:()=>{ try{ __applyGuestCheckInButtonVisual__(); }catch(_){ } } });
+  __guestCheckInVisualEditorRefreshStateButtons__();
+}
+function __bindGuestCheckInVisualLongPress__(){
+  try{
+    const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
+    if (!btn || btn.__boundCheckInVisualLongPress) return;
+    btn.__boundCheckInVisualLongPress = true;
+    let timer=null, fired=false;
+    const clear=()=>{ if(timer){clearTimeout(timer);timer=null;} };
+    const start=(e)=>{ try{if(e?.type==='pointerdown'&&e.pointerType==='mouse'&&e.button!==0)return;}catch(_){} fired=false;clear();timer=setTimeout(()=>{timer=null;fired=true;btn.__suppressCheckInClickUntil=Date.now()+900;try{__sfxLongPressLow();}catch(_){} __openGuestCheckInButtonColorPicker__();},500); };
+    const stop=()=>clear();
+    ['pointerdown','touchstart','mousedown'].forEach(evt=>btn.addEventListener(evt,start,{passive:true}));
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach(evt=>btn.addEventListener(evt,stop,{passive:true}));
+    btn.addEventListener('click',(e)=>{ if(fired||Date.now()<Number(btn.__suppressCheckInClickUntil||0)){fired=false;e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();} },true);
+    btn.addEventListener('contextmenu',(e)=>e.preventDefault(),true);
+  }catch(_){ }
+}
+
 function __guestCheckInDone__(g){
   try{
     return truthy(g?.checkin_effettuato ?? g?.checkInEffettuato ?? g?.check_in_effettuato ?? g?.checkInDone ?? g?.checkinDone ?? g?.check_in_done ?? g?.checked_in ?? g?.checkedIn ?? g?.arrivato ?? g?.arrived);
@@ -7305,6 +7401,7 @@ function __syncGuestCheckInButton__(){
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     btn.setAttribute('title', !active ? 'Seleziona prima un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
     btn.setAttribute('aria-label', !active ? 'Check-in non attivo: seleziona un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
+    try{ __applyGuestCheckInButtonVisual__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -14115,6 +14212,7 @@ function __tagColorPopupApplyViewportLayout__(){
     const modeBar = document.getElementById('tagColorModeBar');
     const opacityWrap = document.getElementById('tagOpacityWrap');
     const opacityGrid = document.getElementById('tagOpacityGrid');
+    const stateBar = document.getElementById('tagColorStateBar');
     if (!modal || modal.hidden || !card || !body || !grid) return;
     const rootStyle = window.getComputedStyle ? window.getComputedStyle(document.documentElement) : null;
     const safeTop = Math.max(0, Math.round(parseFloat(rootStyle?.getPropertyValue('--safe-top') || '0') || 0));
@@ -14158,11 +14256,12 @@ function __tagColorPopupApplyViewportLayout__(){
     const opacityGridHeight = opacityButtonHeight + (opacityPad * 2);
     const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityGridHeight + 6);
     const reservedMode = (!modeBar || modeBar.hidden) ? 0 : (modeHeight + 8);
+    const reservedState = (!stateBar || stateBar.hidden) ? 0 : 52;
     const gap = viewportHeight <= 700 ? 2 : (viewportHeight <= 840 ? 3 : 4);
     const cols = 6;
     const total = grid.querySelectorAll('.tag-color-option').length || 72;
     const rows = Math.max(1, Math.ceil(total / cols));
-    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - gridPad - gridPadBottom - 4));
+    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - reservedState - gridPad - gridPadBottom - 4));
     const gridInnerWidth = Math.max(240, bodyInnerWidth - (gridPad * 2));
     const cellWidth = Math.floor((gridInnerWidth - (gap * (cols - 1))) / cols);
     const maxHeightFit = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
@@ -14216,6 +14315,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   const opts = (options && typeof options === 'object') ? options : {};
   if (!modal || !grid) return;
   __tagColorPopupState__.target = String(target || '').trim();
+  try{ const sb = document.getElementById('tagColorStateBar'); if (sb) sb.hidden = (__tagColorPopupState__.target !== 'guest-checkin'); }catch(_){ }
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
   __tagColorPopupState__.onPreview = typeof opts.onPreview === 'function' ? opts.onPreview : null;
   __tagColorPopupState__.onRevert = typeof opts.onRevert === 'function' ? opts.onRevert : null;
@@ -14303,6 +14403,8 @@ function __tagColorPopupClose__(){
     try{ revertCb(revertPayload); }catch(_){ }
   }
   __tagColorPopupState__.target = '';
+  try{ const sb = document.getElementById('tagColorStateBar'); if (sb) sb.hidden = true; }catch(_){ }
+  __guestCheckInVisualEditor__.drafts = null;
   __tagColorPopupState__.onSelect = null;
   __tagColorPopupState__.onPreview = null;
   __tagColorPopupState__.onRevert = null;
@@ -15237,6 +15339,8 @@ function setupTagColorPopup(){
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
   const confirmBtn = document.getElementById('tagColorModalConfirm');
+  const stateBar = document.getElementById('tagColorStateBar');
+  if (stateBar && !stateBar.__bound){ stateBar.__bound=true; stateBar.addEventListener('click',(e)=>{ const btn=e.target.closest('[data-checkin-visual-state]'); if(!btn)return; e.preventDefault(); e.stopPropagation(); __guestCheckInVisualEditorSwitch__(String(btn.dataset.checkinVisualState||'off')); }); }
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -29745,6 +29849,7 @@ function updateOspiteHdActions(){
 
   // Check-in: solo in sola lettura
   if (btnCheckIn) btnCheckIn.hidden = (mode !== "view");
+  try{ __bindGuestCheckInVisualLongPress__(); }catch(_){ }
   try{ __syncGuestCheckInButton__(); }catch(_){ }
 
   // Indaco: aggiunge un nuovo gruppo stanze anche in sola lettura; non apre più il calendario.
@@ -31769,6 +31874,7 @@ function setupOspite(){
       if (!btn || !hdActions.contains(btn) || btn.hidden) return;
 
       if (btn.hasAttribute("data-guest-checkin")){
+        if (Date.now() < Number(btn.__suppressCheckInClickUntil || 0)) return;
         const item = __guestActiveBookingForAction__();
         const id = guestIdOf(item) || item?.id || '';
         if (!item || !id){
@@ -43884,7 +43990,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.150';
+  var BUILD_TAG='dDAE_3.151';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48594,7 +48700,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.150',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.151',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

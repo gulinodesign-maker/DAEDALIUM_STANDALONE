@@ -31043,3 +31043,42 @@ body.ddae-dark #settingsBackupModal #settingsBackupExport{
   position:relative;
   z-index:2;
 }
+
+
+/* dDAE_3.151 — selettore stato ON/OFF nel popup colore del check-in */
+.tag-color-statebar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:0 var(--tag-color-grid-pad, 8px) 8px;
+  flex:0 0 auto;
+}
+.tag-color-statebar[hidden]{ display:none !important; }
+.tag-color-state-btn{
+  min-height:42px;
+  border-radius:16px;
+  border:2px solid rgba(14,116,170,.25);
+  background:rgba(255,255,255,.88);
+  color:#17324d;
+  font:800 15px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.06em;
+  box-shadow:0 3px 10px rgba(15,23,42,.08);
+  -webkit-tap-highlight-color:transparent;
+}
+.tag-color-state-btn.is-active,
+.tag-color-state-btn[aria-pressed="true"]{
+  border-color:#0e74aa;
+  background:rgba(14,116,170,.16);
+  box-shadow:0 0 0 3px rgba(14,116,170,.16),0 3px 10px rgba(15,23,42,.10);
+}
+body.dark-mode .tag-color-state-btn,
+html.dark-mode .tag-color-state-btn{
+  background:rgba(30,41,59,.92);
+  color:#f8fafc;
+  border-color:rgba(125,211,252,.32);
+}
+body.dark-mode .tag-color-state-btn.is-active,
+html.dark-mode .tag-color-state-btn.is-active{
+  border-color:#7dd3fc;
+  background:rgba(14,116,170,.42);
+}
