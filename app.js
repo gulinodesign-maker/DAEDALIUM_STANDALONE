@@ -62,7 +62,7 @@ function applyIconPalette(){
         });
       }
     });
-    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barExtraBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
+    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barSnackBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
       const fallbackColor = barIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.154";
+const BUILD_VERSION = "3.152";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -8407,7 +8407,7 @@ let __applyingLanguage__ = false;
 let __languageObserver__ = null;
 let __MONTHS_IT = [];
 const __I18N_PHRASES__ = {
-  "Servizi": { "en":"Servizi", "fr":"Servizi", "de":"Servizi", "es":"Servizi" },
+  "Bar": { "en":"Bar", "fr":"Bar", "de":"Bar", "es":"Bar" },
   "Cocktail": { "en":"Cocktails", "fr":"Cocktails", "de":"Cocktails", "es":"Cócteles" },
   "Vino": { "en":"Wine", "fr":"Vin", "de":"Wein", "es":"Vino" },
   "Vini": { "en":"Wines", "fr":"Vins", "de":"Weine", "es":"Vinos" },
@@ -9767,7 +9767,7 @@ const __I18N_WORD_MAPS__ = {
     "giorno": "Tag",
     "ricevuta": "Beleg",
     "Ricevuta": "Beleg",
-    "Contanti": "Servizi",
+    "Contanti": "Bar",
     "Elettronico": "Elektronisch",
     "Database": "Datenbank",
     "Codice": "Code",
@@ -11673,7 +11673,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barExtraBtn','barCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11721,7 +11721,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   barVinoBtn: 'red-4',
   barBirraBtn: 'yellow-4',
   barAnalcoliciBtn: 'sky-4',
-  barExtraBtn: 'orange-4',
+  barSnackBtn: 'orange-4',
   barCocktailAnalcoliciBtn: 'blue-4',
   homeYearPill: 'sky-4'
 };
@@ -12918,7 +12918,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barExtraBtn','barCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -37804,10 +37804,6 @@ function setupCalendario(){
     const d = firstOfShiftedMonth(state.calendar.anchor, 1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
-
-  // dDAE_3.154 — scorrimento continuo: i mesi adiacenti sono già presenti nella stessa griglia.
-  try{ __bindCalendarContinuousMonthScroll__(); }catch(_){ }
-
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
@@ -38099,11 +38095,6 @@ function renderCalendarioWeek(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
-    dayPill.dataset.date = isoDate(d);
-    if (d.getDate() === 1) {
-      dayPill.classList.add('is-month-start');
-      dayPill.dataset.monthLabel = d.toLocaleDateString(__getCurrentLocale__(), { month:'short', year:'numeric' });
-    }
     if (getCalendarTodayColumnIndexForWeek(anchor) === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
@@ -38183,25 +38174,7 @@ function renderCalendarioWeek(){
     }
   }
   grid.appendChild(frag);
-  try{ addCalendarTodayColumnOutline(grid, todayCol, roomsCount + 1); }catch(_){ }
-  try{
-    const wrap = document.getElementById('calDaysWrap') || document.querySelector('#page-calendario .cal-grid-wrap');
-    const monthKey = __calendarMonthKey__(anchor);
-    requestAnimationFrame(() => {
-      try{
-        if (!wrap) return;
-        const pending = Number(window.__ddaeCalendarPendingScrollLeft);
-        if (Number.isFinite(pending)) {
-          wrap.scrollLeft = pending;
-          delete window.__ddaeCalendarPendingScrollLeft;
-        } else if (grid.dataset.continuousAnchorKey !== monthKey) {
-          wrap.scrollLeft = Math.max(0, prevMonthDays * __calendarDayWidthPx__());
-        }
-        grid.dataset.continuousAnchorKey = monthKey;
-        __bindCalendarContinuousMonthScroll__();
-      }catch(_){ }
-    });
-  }catch(_){ }
+  try{ addCalendarTodayColumnOutline(grid, getCalendarTodayColumnIndexForWeek(anchor), roomsCount + 1); }catch(_){ }
 }
 
 
@@ -39217,66 +39190,6 @@ function bindCalendarCellActions(cell, options){
   cell.addEventListener('click', onClick);
 }
 
-
-// dDAE_3.154 — calendario mensile continuo su tre mesi con ricentraggio invisibile.
-function __calendarMonthKey__(d){
-  const x = d instanceof Date ? d : new Date(d || Date.now());
-  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}`;
-}
-function __calendarDayWidthPx__(){
-  try{
-    const cell = document.querySelector('#calGridMonth .cal-cell.cal-head');
-    const w = Number(cell?.getBoundingClientRect?.().width || 0);
-    if (w > 0) return w;
-    const raw = getComputedStyle(document.documentElement).getPropertyValue('--cal-day-w');
-    const n = parseFloat(raw);
-    if (n > 0) return n;
-  }catch(_){ }
-  return 44;
-}
-function __bindCalendarContinuousMonthScroll__(){
-  const wrap = document.getElementById('calDaysWrap') || document.querySelector('#page-calendario .cal-grid-wrap');
-  if (!wrap || wrap.dataset.continuousMonthBound === '1') return;
-  wrap.dataset.continuousMonthBound = '1';
-  let timer = 0;
-  wrap.addEventListener('scroll', () => {
-    if (window.__ddaeCalendarContinuousRecentering) return;
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      try{
-        if (!state?.calendar || state.page !== 'calendario') return;
-        const grid = document.getElementById('calGridMonth');
-        if (!grid || grid.hidden) return;
-        const dayW = __calendarDayWidthPx__();
-        const anchor = state.calendar.anchor instanceof Date ? state.calendar.anchor : new Date();
-        const prevStart = new Date(anchor.getFullYear(), anchor.getMonth()-1, 1);
-        const currentStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-        const nextStart = new Date(anchor.getFullYear(), anchor.getMonth()+1, 1);
-        const prevDays = new Date(currentStart.getFullYear(), currentStart.getMonth(), 0).getDate();
-        const currentDays = new Date(nextStart.getFullYear(), nextStart.getMonth(), 0).getDate();
-        const left = Number(wrap.scrollLeft || 0);
-        const viewportMid = left + Number(wrap.clientWidth || 0) / 2;
-        const currentStartPx = prevDays * dayW;
-        const nextStartPx = (prevDays + currentDays) * dayW;
-        let delta = 0;
-        if (viewportMid < currentStartPx) delta = -1;
-        else if (viewportMid >= nextStartPx) delta = 1;
-        if (!delta) return;
-        const newAnchor = new Date(anchor.getFullYear(), anchor.getMonth()+delta, 1);
-        const newPrevDays = new Date(newAnchor.getFullYear(), newAnchor.getMonth(), 0).getDate();
-        window.__ddaeCalendarContinuousRecentering = true;
-        window.__ddaeCalendarPendingScrollLeft = delta > 0
-          ? Math.max(0, left - prevDays * dayW)
-          : Math.max(0, left + newPrevDays * dayW);
-        state.calendar.anchor = newAnchor;
-        renderCalendarioMonth();
-        try{ __scheduleCalendarFetch({ force:false, showLoader:false }); }catch(_){ }
-        requestAnimationFrame(() => { window.__ddaeCalendarContinuousRecentering = false; });
-      }catch(_){ window.__ddaeCalendarContinuousRecentering = false; }
-    }, 70);
-  }, { passive:true });
-}
-
 function renderCalendarioMonth(){
   const parts = ensureCalendarFixedRailStructure();
   const grid = parts.gridMonth || document.getElementById("calGridMonth");
@@ -39294,12 +39207,9 @@ function renderCalendarioMonth(){
   const frag = document.createDocumentFragment();
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-  const currentMonthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const monthStart = new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1);
-  const rangeEnd = new Date(anchor.getFullYear(), anchor.getMonth() + 2, 1);
-  const daysCount = Math.round((rangeEnd.getTime() - monthStart.getTime()) / 86400000);
+  const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
   const days = Array.from({ length: daysCount }, (_, i) => addDays(monthStart, i));
-  const prevMonthDays = new Date(anchor.getFullYear(), anchor.getMonth(), 0).getDate();
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
   if (title) {
@@ -39312,8 +39222,7 @@ function renderCalendarioMonth(){
 
   const occ = buildMonthOccupancy(monthStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
-  const selectedIsoForColumn = __calendarSelectedIso__();
-  const todayCol = Math.max(1, days.findIndex(d => isoDate(d) === selectedIsoForColumn) + 1);
+  const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -39344,7 +39253,7 @@ function renderCalendarioMonth(){
         try{ ev?.stopPropagation?.(); }catch(_){ }
         const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const selected = new Date(anchor.getFullYear(), anchor.getMonth(), d.getDate());
         selected.setHours(0,0,0,0);
         state.calendar.anchor = selected;
         state.calendar.selectedDateISO = isoDate(selected);
@@ -44148,7 +44057,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.154';
+  var BUILD_TAG='dDAE_3.152';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48249,11 +48158,11 @@ try{
     barVinoBtn: ['barvini','Vini'],
     barBirraBtn: ['barbirre','Birre'],
     barAnalcoliciBtn: ['baranalcolici','Analcolici'],
-    barExtraBtn: ['barsnack','Extra'],
+    barSnackBtn: ['barsnack','Snack'],
     barCocktailAnalcoliciBtn: ['barcocktailanalcolici','Cocktail analcolici']
   };
   const slotIds = [];
-  ['Cocktail','Vini','Birre','Analcolici','Extra','CocktailAnalcolici'].forEach((name) => {
+  ['Cocktail','Vini','Birre','Analcolici','Snack','CocktailAnalcolici'].forEach((name) => {
     for (let i=1;i<=15;i++) slotIds.push(`bar${name}Slot${String(i).padStart(2,'0')}`);
   });
   try{
@@ -48332,7 +48241,7 @@ try{
     barVinoBtn:'barvini',
     barBirraBtn:'barbirre',
     barAnalcoliciBtn:'baranalcolici',
-    barExtraBtn:'barsnack',
+    barSnackBtn:'barsnack',
     barCocktailAnalcoliciBtn:'barcocktailanalcolici'
   };
   function current(){
@@ -48471,17 +48380,17 @@ try{
     const value=String(slot||'');
     const currentLang=lang();
     const labels={
-      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Extra','Nome extra'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
-      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Extra','Extra name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
-      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Extra','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
-      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Extra','Name des Extras'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
-      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Extra','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
+      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Snack','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
+      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Snack','Snack name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
+      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Snack','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
+      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Snack','Name des Snacks'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
+      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Snack','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
     };
     let type='cocktail';
     if(value.indexOf('barViniSlot')===0)type='wine';
     else if(value.indexOf('barBirreSlot')===0)type='beer';
     else if(value.indexOf('barAnalcoliciSlot')===0)type='soft';
-    else if(value.indexOf('barExtraSlot')===0)type='snack';
+    else if(value.indexOf('barSnackSlot')===0)type='snack';
     else if(value.indexOf('barCocktailAnalcoliciSlot')===0)type='mocktail';
     const pair=(labels[currentLang]||labels.it)[type];
     return {title:pair[0],name:pair[1]};
@@ -48736,7 +48645,7 @@ try{
       try{current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false}));}catch(_){current=[];}
       if(!Array.isArray(current))current=[];
       const items=current.filter(s=>{const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;return !(del===true||String(del)==='1');}).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
-      items.push({servizio:String(ctx.product.name),descrizione:'Servizi'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
+      items.push({servizio:String(ctx.product.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
       await api('servizi',{method:'POST',body:{ospite_id:guestId,servizi:items}});
       try{
         if(!state.guestServicesCacheById)state.guestServicesCacheById={};
@@ -48858,7 +48767,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.154',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
