@@ -31082,3 +31082,23 @@ html.dark-mode .tag-color-state-btn.is-active{
   border-color:#7dd3fc;
   background:rgba(14,116,170,.42);
 }
+
+
+/* dDAE_3.154 — separazione flat dei mesi nel calendario continuo */
+#calGridMonth .cal-head.is-month-start,
+#calGridMonth .cal-cell[data-date$="-01"] {
+  border-left-width: 2px;
+}
+#calGridMonth .cal-head.is-month-start::before {
+  content: attr(data-month-label);
+  position: absolute;
+  left: 3px;
+  top: 2px;
+  max-width: calc(var(--cal-day-w) * 2.8);
+  white-space: nowrap;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 700;
+  pointer-events: none;
+}
+#calGridMonth .cal-head { position: relative; }
