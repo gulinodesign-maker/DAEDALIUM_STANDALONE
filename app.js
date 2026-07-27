@@ -37885,14 +37885,13 @@ async function ensureCalendarData({ force = false, showLoader = false } = {}) {
   let winFrom, winTo, rangeKey;
 
   if (mode === "month"){
-    const isPortraitContinuous = __calendarIsPortrait__();
-    const monthStart = new Date(anchor.getFullYear(), anchor.getMonth() + (isPortraitContinuous ? -2 : 0), 1);
-    const monthEndEx = new Date(anchor.getFullYear(), anchor.getMonth() + (isPortraitContinuous ? 3 : 1), 1);
+    const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+    const monthEndEx = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 1);
 
-    // Portrait: finestra virtualizzata di cinque mesi; Landscape resta sul solo mese corrente.
+    // Finestra dati mese: piccolo buffer ai bordi (copre check-in/out adiacenti)
     winFrom = toISO(addDays(monthStart, -3));
     winTo   = toISO(addDays(monthEndEx, 3));
-    rangeKey = `${isPortraitContinuous ? 'MP' : 'M'}:${winFrom}|${winTo}`;
+    rangeKey = `M:${winFrom}|${winTo}`;
   } else {
     const start = startOfWeekMonday(anchor);
 
@@ -39191,7 +39190,7 @@ function bindCalendarCellActions(cell, options){
   cell.addEventListener('click', onClick);
 }
 
-function __renderCalendarioMonthSingle__(){
+function renderCalendarioMonth(){
   const parts = ensureCalendarFixedRailStructure();
   const grid = parts.gridMonth || document.getElementById("calGridMonth");
   const gridWeek = parts.gridWeek || document.getElementById("calGrid");
@@ -39372,283 +39371,6 @@ function __renderCalendarioMonthSingle__(){
   try{ addCalendarTodayColumnOutline(grid, todayCol, roomsCount + 1); }catch(_){ }
   try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
   try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
-}
-
-
-function __renderCalendarioMonthPortraitContinuous__(){
-  const parts = ensureCalendarFixedRailStructure();
-  const grid = parts.gridMonth || document.getElementById("calGridMonth");
-  const gridWeek = parts.gridWeek || document.getElementById("calGrid");
-  try{ if (gridWeek) gridWeek.classList.remove("is-loading"); }catch(_){ }
-  try{ if (grid) grid.classList.toggle("is-loading", !!(state.calendar && state.calendar.loading)); }catch(_){ }
-  const title = document.getElementById("calWeekTitle");
-  const input = document.getElementById("calDateInput");
-  if (!grid) return;
-
-  try{ if (gridWeek) gridWeek.hidden = true; }catch(_){ }
-  try{ grid.hidden = false; }catch(_){ }
-
-  grid.replaceChildren();
-  const frag = document.createDocumentFragment();
-
-  const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-  const centerMonth = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const windowStart = new Date(centerMonth.getFullYear(), centerMonth.getMonth() - 2, 1);
-  const windowEnd = new Date(centerMonth.getFullYear(), centerMonth.getMonth() + 3, 1);
-  const daysCount = Math.round((windowEnd - windowStart) / 86400000);
-  const days = Array.from({ length: daysCount }, (_, i) => addDays(windowStart, i));
-  const monthStart = windowStart;
-
-  try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
-  if (title) {
-    title.textContent = "";
-    title.hidden = true;
-  }
-  try{
-    grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
-  }catch(_){ }
-
-  const occ = buildMonthOccupancy(monthStart, daysCount);
-  const roomsCount = getConfiguredRoomsCount(6);
-  const selectedIso = __calendarSelectedIso__();
-  const todayCol = Math.max(1, days.findIndex((day) => isoDate(day) === selectedIso) + 1);
-  renderCalendarRoomRail(roomsCount);
-
-  for (let i = 0; i < daysCount; i++) {
-    const d = days[i];
-    const dayPill = document.createElement("div");
-    dayPill.className = "cal-cell cal-head";
-    dayPill.dataset.dayIndex = String(i + 1);
-    dayPill.dataset.date = isoDate(d);
-    if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
-
-    const ab = document.createElement("div");
-    ab.className = "cal-day-abbrev";
-    ab.textContent = weekdayShortIT(d).toUpperCase();
-
-    const num = document.createElement("div");
-    num.className = "cal-day-num";
-    num.textContent = String(d.getDate());
-
-    dayPill.appendChild(ab);
-    dayPill.appendChild(num);
-
-    // dDAE_3.048 — tap sul giorno: seleziona ed evidenzia l'intera colonna stanze.
-    try{
-      dayPill.setAttribute("role", "button");
-      dayPill.setAttribute("tabindex", "0");
-      dayPill.setAttribute("aria-label", `${weekdayShortIT(d)} ${d.getDate()}`);
-      const selectDayColumn = (ev) => {
-        try{ ev?.preventDefault?.(); }catch(_){ }
-        try{ ev?.stopPropagation?.(); }catch(_){ }
-        const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
-        const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(d);
-        selected.setHours(0,0,0,0);
-        state.calendar.anchor = selected;
-        state.calendar.selectedDateISO = isoDate(selected);
-        renderCalendarioMonth();
-        try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
-        requestAnimationFrame(() => {
-          try{ if (daysWrap) daysWrap.scrollLeft = previousScrollLeft; }catch(_){ }
-          try{ refreshCalendarTodayColumnOutline(); }catch(_){ }
-        });
-      };
-      dayPill.addEventListener("click", selectDayColumn);
-      dayPill.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") selectDayColumn(ev);
-      });
-    }catch(_){ }
-
-    frag.appendChild(dayPill);
-  }
-
-  for (let r = 1; r <= roomsCount; r++) {
-    for (let i = 0; i < daysCount; ) {
-      const d = days[i];
-      const dIso = isoDate(d);
-      const info = occ.get(`${dIso}:${r}`);
-
-      if (!info) {
-        const cell = document.createElement("button");
-        cell.type = "button";
-        cell.className = `cal-cell room-${r}`;
-        cell.setAttribute("aria-label", `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
-        cell.dataset.date = dIso;
-        cell.dataset.room = String(r);
-        if (todayCol === (i + 1)) cell.classList.add('is-today-col');
-        bindCalendarCellActions(cell, { room:r, dateIso:dIso, info:null });
-        frag.appendChild(cell);
-        i += 1;
-        continue;
-      }
-
-      let span = 1;
-      while ((i + span) < daysCount) {
-        const nextInfo = occ.get(`${isoDate(days[i + span])}:${r}`);
-        if (!nextInfo) break;
-        if (String(nextInfo.guestId || '') !== String(info.guestId || '')) break;
-        span += 1;
-      }
-
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = `cal-cell room-${r} has-booking`;
-      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
-      cell.dataset.date = dIso;
-      cell.dataset.room = String(r);
-      cell.dataset.spanDays = String(span);
-      cell.style.gridColumn = `${i + 1} / span ${span}`;
-      cell.setAttribute("aria-label", span > 1
-        ? `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, dal ${days[i].getDate()} al ${days[i + span - 1].getDate()}`
-        : `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
-
-      const coversToday = (todayCol >= (i + 1) && todayCol <= (i + span));
-      if (coversToday) {
-        cell.classList.add('is-today-col');
-        try{
-          cell.style.setProperty('--today-span', String(Math.max(1, span)));
-          cell.style.setProperty('--today-offset', String(Math.max(0, todayCol - (i + 1))));
-        }catch(_){ }
-      }
-      if (span === 1) cell.classList.add('booking-seg-single');
-      else cell.classList.add('booking-span-merged');
-
-      try{
-        const chrome = document.createElement("div");
-        chrome.className = "cal-corner-chrome";
-        if (info.channelInitial){
-          const ch = document.createElement("span");
-          ch.className = `cal-channel-tag operatori-tag color-${info.channelColor || "orange"}`;
-          ch.textContent = String(info.channelInitial).slice(0,1).toUpperCase();
-          chrome.appendChild(ch);
-        }
-        const flags = document.createElement("div");
-        flags.className = "cal-flags";
-        if (info.mOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-m"; f.textContent = "M"; flags.appendChild(f); }
-        if (info.gOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-g"; f.textContent = "G"; flags.appendChild(f); }
-        if (info.cOn){ const f = document.createElement("span"); f.className = "cal-flag cal-flag-c"; f.textContent = "C"; flags.appendChild(f); }
-        if (flags.childNodes.length) chrome.appendChild(flags);
-        if (chrome.childNodes.length) cell.appendChild(chrome);
-      }catch(_){ }
-
-      const inner = document.createElement("div");
-      inner.className = "cal-cell-inner";
-
-      const full = document.createElement("div");
-      full.className = `cal-fullname ${span <= 1 ? "is-single-cell" : "is-span-cell"}`;
-      full.textContent = __calendarGuestDisplayName__(info, span);
-      inner.appendChild(full);
-
-      const dots = document.createElement("div");
-      dots.className = "cal-dots";
-      for (const t of (Array.isArray(info.dots) ? info.dots : []).slice(0, 4)) {
-        const s = document.createElement("span");
-        s.className = `bed-dot ${t === "m" ? "bed-dot-m" : t === "s" ? "bed-dot-s" : "bed-dot-c"}`;
-        dots.appendChild(s);
-      }
-      if (dots.childNodes.length) inner.appendChild(dots);
-      cell.appendChild(inner);
-
-      bindCalendarCellActions(cell, { room:r, dateIso:dIso, info });
-
-      frag.appendChild(cell);
-      i += span;
-    }
-  }
-
-  grid.appendChild(frag);
-  try{ addCalendarTodayColumnOutline(grid, todayCol, roomsCount + 1); }catch(_){ }
-  try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
-  try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
-  try{ __bindPortraitContinuousCalendar__(grid, parts.daysWrap, days, centerMonth); }catch(_){ }
-}
-
-
-
-function __calendarIsPortrait__(){
-  try{ return !(window.matchMedia && window.matchMedia("(orientation: landscape)").matches); }
-  catch(_){ return true; }
-}
-
-function __calendarSetTitleMonthOnly__(date){
-  try{
-    const d = new Date(date);
-    d.setDate(1); d.setHours(0,0,0,0);
-    state.calendar.anchor = d;
-    const el = document.getElementById('topbarCenterLabel');
-    if (el) el.textContent = `${monthNameIT(d).toUpperCase()} ${d.getFullYear()}`.trim();
-    else __setTopbarCenterLabel__();
-  }catch(_){ }
-}
-
-function __bindPortraitContinuousCalendar__(grid, wrap, days, centerMonth){
-  if (!grid || !wrap || !Array.isArray(days) || !days.length) return;
-  const token = `${centerMonth.getFullYear()}-${centerMonth.getMonth()}`;
-  grid.dataset.continuousToken = token;
-  const heads = Array.from(grid.querySelectorAll('.cal-cell.cal-head[data-date]'));
-  if (!heads.length) return;
-
-  const updateTitle = () => {
-    if (!__calendarIsPortrait__() || state.page !== 'calendario') return;
-    const left = Number(wrap.scrollLeft || 0);
-    const right = left + Number(wrap.clientWidth || 0);
-    const visible = heads.filter((el) => {
-      const x1 = Number(el.offsetLeft || 0), x2 = x1 + Number(el.offsetWidth || 0);
-      return x2 > left + 1 && x1 < right - 1;
-    });
-    if (!visible.length) return;
-    const current = state.calendar.anchor || centerMonth;
-    const cy = current.getFullYear(), cm = current.getMonth();
-    const stillVisible = visible.some((el) => {
-      const d = new Date(String(el.dataset.date || '') + 'T00:00:00');
-      return d.getFullYear() === cy && d.getMonth() === cm;
-    });
-    if (stillVisible) return;
-    const first = new Date(String(visible[0].dataset.date || '') + 'T00:00:00');
-    if (!isNaN(first)) __calendarSetTitleMonthOnly__(first);
-  };
-
-  let settleTimer = null;
-  const onScroll = () => {
-    updateTitle();
-    if (settleTimer) clearTimeout(settleTimer);
-    settleTimer = setTimeout(() => {
-      if (!__calendarIsPortrait__() || state.page !== 'calendario') return;
-      const left = Number(wrap.scrollLeft || 0);
-      const max = Math.max(0, Number(wrap.scrollWidth || 0) - Number(wrap.clientWidth || 0));
-      const threshold = Math.max(180, Number(wrap.clientWidth || 0) * 0.55);
-      let shift = 0;
-      if (left < threshold) shift = -1;
-      else if ((max - left) < threshold) shift = 1;
-      if (!shift || grid.dataset.continuousToken !== token) return;
-      const oldMonth = new Date(state.calendar.anchor || centerMonth);
-      const next = new Date(oldMonth.getFullYear(), oldMonth.getMonth() + shift, 1);
-      next.setHours(0,0,0,0);
-      state.calendar.anchor = next;
-      state.calendar.ready = false;
-      renderCalendarioMonth();
-      try{ ensureCalendarData({ force:false, showLoader:false }).then(() => { if (state.page === 'calendario') renderCalendarioMonth(); }); }catch(_){ }
-    }, 180);
-  };
-  if (wrap.__ddaeContinuousScrollHandler) wrap.removeEventListener('scroll', wrap.__ddaeContinuousScrollHandler);
-  wrap.__ddaeContinuousScrollHandler = onScroll;
-  wrap.addEventListener('scroll', onScroll, { passive:true });
-
-  requestAnimationFrame(() => {
-    const anchorIso = isoDate(state.calendar.anchor || centerMonth);
-    const target = grid.querySelector(`.cal-cell.cal-head[data-date="${anchorIso}"]`) || heads.find((el) => String(el.dataset.date || '').slice(0,7) === anchorIso.slice(0,7));
-    if (!target) return;
-    const cellW = Number(target.offsetWidth || 0);
-    const x = Math.max(0, Number(target.offsetLeft || 0) - cellW * 2);
-    wrap.scrollLeft = x;
-    updateTitle();
-  });
-}
-
-function renderCalendarioMonth(){
-  if (!__calendarIsPortrait__()) return __renderCalendarioMonthSingle__();
-  return __renderCalendarioMonthPortraitContinuous__();
 }
 
 function buildMonthOccupancy(monthStart, daysCount){
@@ -44335,7 +44057,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.153';
+  var BUILD_TAG='dDAE_3.152';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49045,7 +48767,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.153',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -31082,17 +31082,3 @@ html.dark-mode .tag-color-state-btn.is-active{
   border-color:#7dd3fc;
   background:rgba(14,116,170,.42);
 }
-
-/* dDAE_3.153 — Calendario Portrait continuo: colonne sempre a larghezza fissa. */
-@media (orientation: portrait){
-  #page-calendario.is-month-view #calGridMonth{
-    width: max-content !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    grid-auto-columns: var(--cal-day-w) !important;
-  }
-  #page-calendario.is-month-view #calGridMonth > .cal-cell{
-    min-width: var(--cal-day-w);
-    max-width: var(--cal-day-w);
-  }
-}
