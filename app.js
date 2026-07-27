@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.154";
+const BUILD_VERSION = "3.152";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -37796,79 +37796,14 @@ function setupCalendario(){
   };
   if (prevDayBtn) prevDayBtn.addEventListener("click", () => { shiftSelectedDay(-1); });
   if (nextDayBtn) nextDayBtn.addEventListener("click", () => { shiftSelectedDay(1); });
-  const __calendarPortraitMode__ = () => {
-    try{
-      return !!(window.matchMedia && window.matchMedia("(orientation: portrait)").matches);
-    }catch(_){
-      try{ return window.innerHeight >= window.innerWidth; }catch(__){ return false; }
-    }
-  };
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
-    if (__calendarPortraitMode__()) return;
     const d = firstOfShiftedMonth(state.calendar.anchor, -1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
-    if (__calendarPortraitMode__()) return;
     const d = firstOfShiftedMonth(state.calendar.anchor, 1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
-
-  // Portrait: un mese per ogni nuovo long swipe orizzontale completato.
-  try{
-    const swipeHost = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
-    if (swipeHost && swipeHost.dataset.calendarMonthLongSwipeBound !== "1"){
-      swipeHost.dataset.calendarMonthLongSwipeBound = "1";
-      let gesture = null;
-      const resetGesture = () => { gesture = null; };
-      const thresholdFor = () => {
-        const width = Math.max(1, Number(swipeHost.clientWidth || window.innerWidth || 0));
-        return Math.max(240, Math.min(420, Math.round(width * 0.62)));
-      };
-      swipeHost.addEventListener("touchstart", (ev) => {
-        if (!__calendarPortraitMode__() || !ev.touches || ev.touches.length !== 1){ resetGesture(); return; }
-        const t = ev.touches[0];
-        gesture = { startX:t.clientX, startY:t.clientY, lastX:t.clientX, lastY:t.clientY, armed:false, cancelled:false };
-      }, { passive:true, capture:true });
-      swipeHost.addEventListener("touchmove", (ev) => {
-        if (!gesture || gesture.cancelled || !__calendarPortraitMode__() || !ev.touches || ev.touches.length !== 1){
-          if (gesture) gesture.cancelled = true;
-          return;
-        }
-        const t = ev.touches[0];
-        gesture.lastX = t.clientX;
-        gesture.lastY = t.clientY;
-        const dx = gesture.lastX - gesture.startX;
-        const dy = gesture.lastY - gesture.startY;
-        const ax = Math.abs(dx);
-        const ay = Math.abs(dy);
-        if (ay > 110 || (ay > 28 && ax < ay * 1.8)){
-          gesture.cancelled = true;
-          return;
-        }
-        if (ax >= thresholdFor() && ax > ay * 1.8){
-          gesture.armed = true;
-          try{ ev.preventDefault(); }catch(_){ }
-        }
-      }, { passive:false, capture:true });
-      swipeHost.addEventListener("touchend", (ev) => {
-        const completed = gesture;
-        resetGesture();
-        if (!completed || completed.cancelled || !completed.armed || !__calendarPortraitMode__()) return;
-        const changed = ev.changedTouches && ev.changedTouches[0];
-        const endX = changed ? changed.clientX : completed.lastX;
-        const endY = changed ? changed.clientY : completed.lastY;
-        const dx = endX - completed.startX;
-        const dy = endY - completed.startY;
-        if (Math.abs(dx) < thresholdFor() || Math.abs(dx) <= Math.abs(dy) * 1.8) return;
-        try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
-        const delta = dx < 0 ? 1 : -1;
-        const d = firstOfShiftedMonth(state.calendar.anchor, delta);
-        shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
-      }, { passive:false, capture:true });
-      swipeHost.addEventListener("touchcancel", resetGesture, { passive:true, capture:true });
-    }
-  }catch(_){ }
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
@@ -38159,9 +38094,7 @@ function renderCalendarioWeek(){
     const d = days[i];
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
-    const belongsToAnchorMonth = d.getFullYear() === anchor.getFullYear() && d.getMonth() === anchor.getMonth();
-    if (belongsToAnchorMonth) dayPill.dataset.dayIndex = String(d.getDate());
-    else dayPill.dataset.adjacentMonth = d < monthStart ? "previous" : "next";
+    dayPill.dataset.dayIndex = String(i + 1);
     if (getCalendarTodayColumnIndexForWeek(anchor) === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
@@ -39275,13 +39208,8 @@ function renderCalendarioMonth(){
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
   const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const monthDaysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
-  // Mantiene visibili due giorni del mese precedente e due del successivo,
-  // senza cambiare la struttura delle celle o la logica degli eventi.
-  const adjacentDays = 2;
-  const displayStart = addDays(monthStart, -adjacentDays);
-  const daysCount = monthDaysCount + (adjacentDays * 2);
-  const days = Array.from({ length: daysCount }, (_, i) => addDays(displayStart, i));
+  const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
+  const days = Array.from({ length: daysCount }, (_, i) => addDays(monthStart, i));
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
   if (title) {
@@ -39292,9 +39220,9 @@ function renderCalendarioMonth(){
     grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
   }catch(_){ }
 
-  const occ = buildMonthOccupancy(displayStart, daysCount);
+  const occ = buildMonthOccupancy(monthStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
-  const todayCol = adjacentDays + __calendarSelectedColumnIndex(anchor);
+  const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -39325,7 +39253,7 @@ function renderCalendarioMonth(){
         try{ ev?.stopPropagation?.(); }catch(_){ }
         const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(d);
+        const selected = new Date(anchor.getFullYear(), anchor.getMonth(), d.getDate());
         selected.setHours(0,0,0,0);
         state.calendar.anchor = selected;
         state.calendar.selectedDateISO = isoDate(selected);
@@ -44129,7 +44057,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.154';
+  var BUILD_TAG='dDAE_3.152';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48839,7 +48767,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.154',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
