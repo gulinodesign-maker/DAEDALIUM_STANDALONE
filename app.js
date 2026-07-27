@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.151";
+const BUILD_VERSION = "3.152";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -14090,7 +14090,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorDotColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false, stateEditor:null };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -14309,13 +14309,66 @@ function __tagColorPopupEmitPreview__(){
   }catch(_){ }
 }
 
+
+function __tagColorPopupConfigureStateBar__(){
+  try{
+    const bar = document.getElementById('tagColorStateBar');
+    if (!bar) return;
+    const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
+    const isGuest = __tagColorPopupState__.target === 'guest-checkin';
+    bar.hidden = !(editor || isGuest);
+    const buttons = Array.from(bar.querySelectorAll('[data-checkin-visual-state]'));
+    if (isGuest && !editor){ buttons.forEach((btn)=>{ const state=String(btn.dataset.checkinVisualState||'off'); btn.textContent=state==='on'?'ON':'OFF'; }); }
+    if (editor){
+      const labels = editor.labels || { off:'DISATTIVO', on:'ATTIVO' };
+      buttons.forEach((btn) => {
+        const state = String(btn.dataset.checkinVisualState || 'off');
+        btn.textContent = String(labels[state] || (state === 'on' ? 'ATTIVO' : 'DISATTIVO'));
+        const active = state === String(editor.activeState || 'off');
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+  }catch(_){ }
+}
+
+function __tagColorPopupSwitchGenericState__(nextState){
+  try{
+    const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
+    if (!editor) return false;
+    const next = String(nextState || 'off') === 'on' ? 'on' : 'off';
+    const current = String(editor.activeState || 'off') === 'on' ? 'on' : 'off';
+    editor.drafts[current] = __tagColorPopupCurrentPayload__();
+    editor.activeState = next;
+    const source = editor.drafts[next] || editor.originals[next] || {};
+    const sourceValue = (source && source.colors && typeof source.colors === 'object') ? { ...source.colors, opacity:source.opacity } : source;
+    const visual = __tagColorPairFromValue__(sourceValue, editor.fallbackBg || 'blue-4');
+    __tagColorPopupState__.colors = {
+      ...visual,
+      border: __normalizeOptionalOperatoreColor__(source?.colors?.border || source?.border || visual?.border || visual?.bg || editor.fallbackBg || 'blue-4') || visual?.bg || editor.fallbackBg || 'blue-4'
+    };
+    __tagColorPopupState__.opacity = __designBgOpacityNormalize__(source?.opacity ?? visual?.opacity ?? 0.80);
+    __tagColorPopupState__.initial = {
+      bg: __normalizeOperatoreColor__(__tagColorPopupState__.colors.bg || editor.fallbackBg || 'blue-4'),
+      border: __normalizeOperatoreColor__(__tagColorPopupState__.colors.border || __tagColorPopupState__.colors.bg || editor.fallbackBg || 'blue-4'),
+      fg: __normalizeOptionalOperatoreColor__(__tagColorPopupState__.colors.fg || ''),
+      opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80)
+    };
+    __tagColorPopupRefreshSelection__();
+    __tagColorPopupConfigureStateBar__();
+    if (typeof editor.onStatePreview === 'function') editor.onStatePreview(next, __tagColorPopupCurrentPayload__());
+    return true;
+  }catch(_){ return false; }
+}
+
 function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   const modal = document.getElementById('tagColorModal');
   const grid = document.getElementById('tagColorGrid');
   const opts = (options && typeof options === 'object') ? options : {};
   if (!modal || !grid) return;
   __tagColorPopupState__.target = String(target || '').trim();
-  try{ const sb = document.getElementById('tagColorStateBar'); if (sb) sb.hidden = (__tagColorPopupState__.target !== 'guest-checkin'); }catch(_){ }
+  __tagColorPopupState__.stateEditor = (opts.stateEditor && typeof opts.stateEditor === 'object') ? opts.stateEditor : null;
+  try{ __tagColorPopupConfigureStateBar__(); }catch(_){ }
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
   __tagColorPopupState__.onPreview = typeof opts.onPreview === 'function' ? opts.onPreview : null;
   __tagColorPopupState__.onRevert = typeof opts.onRevert === 'function' ? opts.onRevert : null;
@@ -14346,6 +14399,7 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
   __tagColorPopupRefreshSelection__();
+  try{ __tagColorPopupConfigureStateBar__(); }catch(_){ }
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = 0;
@@ -14363,11 +14417,17 @@ async function __tagColorPopupConfirm__(){
   const cb = __tagColorPopupState__.onSelect;
   const applyCategoryCfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? { ...__tagColorPopupState__.applyCategory } : null;
   const payload = __tagColorPopupCurrentPayload__();
+  const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
+  if (editor){
+    const current = String(editor.activeState || 'off') === 'on' ? 'on' : 'off';
+    editor.drafts[current] = payload;
+  }
   const changedBeforeClose = __tagColorPopupChangedFields__(payload);
   __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
   try{
-    if (typeof cb === 'function') await cb(payload);
+    if (editor && typeof editor.onConfirm === 'function') await editor.onConfirm(editor.drafts, editor.activeState);
+    else if (typeof cb === 'function') await cb(payload);
   }catch(_){ }
   try{ await __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg, changedBeforeClose); }catch(_){ }
   try{ toast('Colore aggiornato'); }catch(_){ }
@@ -14378,6 +14438,7 @@ function __tagColorPopupClose__(){
   if (!modal) return;
   const shouldRevert = !__tagColorPopupState__.confirmed && __tagColorPopupState__.previewDirty;
   const revertCb = __tagColorPopupState__.onRevert;
+  const stateEditor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
   const revertPayload = {
     mode: 'bg',
     spec: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
@@ -14399,10 +14460,13 @@ function __tagColorPopupClose__(){
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
     __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
-  if (shouldRevert && typeof revertCb === 'function') {
+  if (shouldRevert && stateEditor && typeof stateEditor.onRevert === 'function') {
+    try{ stateEditor.onRevert(stateEditor.originals || {}); }catch(_){ }
+  } else if (shouldRevert && typeof revertCb === 'function') {
     try{ revertCb(revertPayload); }catch(_){ }
   }
   __tagColorPopupState__.target = '';
+  __tagColorPopupState__.stateEditor = null;
   try{ const sb = document.getElementById('tagColorStateBar'); if (sb) sb.hidden = true; }catch(_){ }
   __guestCheckInVisualEditor__.drafts = null;
   __tagColorPopupState__.onSelect = null;
@@ -15340,7 +15404,7 @@ function setupTagColorPopup(){
   const closeBtn = document.getElementById('tagColorModalClose');
   const confirmBtn = document.getElementById('tagColorModalConfirm');
   const stateBar = document.getElementById('tagColorStateBar');
-  if (stateBar && !stateBar.__bound){ stateBar.__bound=true; stateBar.addEventListener('click',(e)=>{ const btn=e.target.closest('[data-checkin-visual-state]'); if(!btn)return; e.preventDefault(); e.stopPropagation(); __guestCheckInVisualEditorSwitch__(String(btn.dataset.checkinVisualState||'off')); }); }
+  if (stateBar && !stateBar.__bound){ stateBar.__bound=true; stateBar.addEventListener('click',(e)=>{ const btn=e.target.closest('[data-checkin-visual-state]'); if(!btn)return; e.preventDefault(); e.stopPropagation(); const next=String(btn.dataset.checkinVisualState||'off'); if (__tagColorPopupSwitchGenericState__(next)) return; __guestCheckInVisualEditorSwitch__(next); }); }
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -27956,51 +28020,52 @@ async function __openRoomSettingsTextButtonColorPicker__(key){
     const el = document.getElementById(safeKey === 'bold' ? 'roomSettingsTextBoldBtn' : `roomSettingsTextSizeBtn${safeKey}`);
     if (!el) return;
     const label = __roomSettingsTextButtonLocalizedLabel__(safeKey);
-    const choice = await __confirmTwoActions__(
-      __roomSettingsTextButtonEditStatePrompt__(label),
-      __roomSettingsTextButtonStateLabel__('active'),
-      __roomSettingsTextButtonStateLabel__('distractive')
-    );
-    if (choice !== 'yes' && choice !== 'no') return;
-    const stateKey = choice === 'yes' ? 'active' : 'distractive';
-    const initial = __roomSettingsTextButtonVisualForState__(safeKey, stateKey);
-    const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, stateKey);
-    const applyVisual = (payload) => {
+    const originals = {
+      on: __roomSettingsTextButtonVisualForState__(safeKey, 'active'),
+      off: __roomSettingsTextButtonVisualForState__(safeKey, 'distractive')
+    };
+    const activeState = __roomSettingsTextButtonCurrentState__(el) === 'active' ? 'on' : 'off';
+    const drafts = { on:{...originals.on}, off:{...originals.off} };
+    const payloadToVisual = (payload, fallback) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      const next = {
-        bg: colors.bg || initial.bg || fallback.bg || 'blue-4',
-        border: colors.border || initial.border || colors.bg || initial.bg || fallback.border || fallback.bg || 'blue-4',
-        fg: colors.fg || initial.fg || fallback.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? fallback.opacity ?? 0.75),
+      return {
+        bg: colors.bg || fallback.bg || 'blue-4',
+        border: colors.border || fallback.border || colors.bg || fallback.bg || 'blue-4',
+        fg: colors.fg || fallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback.opacity ?? 0.75),
         bold: false
       };
+    };
+    const applyState = (state, payload) => {
+      const stateKey = state === 'on' ? 'active' : 'distractive';
+      const next = payloadToVisual(payload, originals[state]);
+      drafts[state] = next;
       __roomSettingsTextButtonVisualSet__(safeKey, stateKey, next);
       try{ renderRoomSettingsTextControls(); }catch(_){ }
       try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    const revertVisual = () => {
-      __roomSettingsTextButtonVisualSet__(safeKey, stateKey, initial);
-      try{ renderRoomSettingsTextControls(); }catch(_){ }
-      try{ renderRoomSettingsPage(); }catch(_){ }
-    };
-    __tagColorPopupOpen__('room-text-button', initial, (payload) => {
-      try{
-        applyVisual(payload);
-        try{ toast(__roomSettingsTextButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
-      }catch(_){ }
-    }, {
-      supportsBg:true,
-      supportsBorder:true,
-      supportsFg:true,
-      supportsOpacity:true,
-      opacity:(initial.opacity ?? 0.75),
-      defaultMode:'bg',
-      fallbackBg:(initial.bg || fallback.bg || 'blue-4'),
-      onPreview:applyVisual,
-      onRevert:revertVisual,
-      applyCategory:{
-        message: __roomSettingsTextButtonCategoryPrompt__(),
-        apply: async(payload, changed) => { await __applyRoomSettingsTextButtonChangesToCategory__(stateKey, payload, changed); }
+    __tagColorPopupOpen__('room-text-button', drafts[activeState], null, {
+      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true,
+      opacity:(drafts[activeState].opacity ?? 0.75), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || 'blue-4'),
+      onPreview:(payload) => {
+        const editor = __tagColorPopupState__.stateEditor;
+        const state = editor && editor.activeState === 'on' ? 'on' : 'off';
+        applyState(state, payload);
+      },
+      stateEditor:{
+        activeState, drafts, originals, labels:{off:'DISATTIVO',on:'ATTIVO'}, fallbackBg:'blue-4',
+        onStatePreview:(state, payload) => applyState(state, payload),
+        onConfirm: async(all) => {
+          applyState('on', all.on || drafts.on);
+          applyState('off', all.off || drafts.off);
+          try{ toast(`${label}: colori dei due stati aggiornati`); }catch(_){ }
+        },
+        onRevert:() => {
+          __roomSettingsTextButtonVisualSet__(safeKey, 'active', originals.on);
+          __roomSettingsTextButtonVisualSet__(safeKey, 'distractive', originals.off);
+          try{ renderRoomSettingsTextControls(); }catch(_){ }
+          try{ renderRoomSettingsPage(); }catch(_){ }
+        }
       }
     });
   }catch(_){ }
@@ -28012,50 +28077,52 @@ async function __openRoomSettingsThemeButtonColorPicker__(slot){
     const el = document.getElementById(`roomSettingsThemeBtn${key}`);
     if (!el) return;
     const label = __roomSettingsThemeButtonLocalizedLabel__(key);
-    const choice = await __confirmTwoActions__(
-      __roomSettingsThemeButtonEditStatePrompt__(label),
-      __roomSettingsThemeButtonStateLabel__('active'),
-      __roomSettingsThemeButtonStateLabel__('distractive')
-    );
-    if (choice !== 'yes' && choice !== 'no') return;
-    const stateKey = choice === 'yes' ? 'active' : 'distractive';
     const saved = __roomSettingsThemeSlotGet__(key);
     const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.75 };
-    const initial = __roomSettingsThemeButtonVisualGet__(key, stateKey, visualFallback);
-    const applyVisual = (payload) => {
+    const originals = {
+      on: __roomSettingsThemeButtonVisualGet__(key, 'active', visualFallback),
+      off: __roomSettingsThemeButtonVisualGet__(key, 'distractive', visualFallback)
+    };
+    const activeState = __roomSettingsThemeButtonCurrentState__(el) === 'active' ? 'on' : 'off';
+    const drafts = { on:{...originals.on}, off:{...originals.off} };
+    const payloadToVisual = (payload, fallback) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      const next = {
-        bg: colors.bg || initial.bg || visualFallback.bg || 'blue-4',
-        border: colors.border || initial.border || colors.bg || initial.bg || visualFallback.border || visualFallback.bg || 'blue-4',
-        fg: colors.fg || initial.fg || visualFallback.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? visualFallback.opacity ?? 0.75),
+      return {
+        bg: colors.bg || fallback.bg || visualFallback.bg || 'blue-4',
+        border: colors.border || fallback.border || colors.bg || fallback.bg || visualFallback.border || visualFallback.bg || 'blue-4',
+        fg: colors.fg || fallback.fg || visualFallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback.opacity ?? visualFallback.opacity ?? 0.75),
         bold: false
       };
+    };
+    const applyState = (state, payload) => {
+      const stateKey = state === 'on' ? 'active' : 'distractive';
+      const next = payloadToVisual(payload, originals[state]);
+      drafts[state] = next;
       __roomSettingsThemeButtonVisualSet__(key, next, stateKey);
       try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    const revertVisual = () => {
-      __roomSettingsThemeButtonVisualSet__(key, initial, stateKey);
-      try{ renderRoomSettingsPage(); }catch(_){ }
-    };
-    __tagColorPopupOpen__('room-theme-button', initial, (payload) => {
-      try{
-        applyVisual(payload);
-        try{ toast(__roomSettingsThemeButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
-      }catch(_){ }
-    }, {
-      supportsBg:true,
-      supportsBorder:true,
-      supportsFg:true,
-      supportsOpacity:true,
-      opacity:initial.opacity ?? 0.75,
-      defaultMode:'bg',
-      fallbackBg:(initial.bg || visualFallback.bg || 'blue-4'),
-      onPreview:applyVisual,
-      onRevert:revertVisual,
-      applyCategory:{
-        message: __roomSettingsThemeButtonCategoryPrompt__(),
-        apply: async(payload, changed) => { await __applyRoomSettingsThemeButtonChangesToCategory__(stateKey, payload, changed); }
+    __tagColorPopupOpen__('room-theme-button', drafts[activeState], null, {
+      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true,
+      opacity:(drafts[activeState].opacity ?? 0.75), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || visualFallback.bg || 'blue-4'),
+      onPreview:(payload) => {
+        const editor = __tagColorPopupState__.stateEditor;
+        const state = editor && editor.activeState === 'on' ? 'on' : 'off';
+        applyState(state, payload);
+      },
+      stateEditor:{
+        activeState, drafts, originals, labels:{off:'DISATTIVO',on:'ATTIVO'}, fallbackBg:(visualFallback.bg || 'blue-4'),
+        onStatePreview:(state, payload) => applyState(state, payload),
+        onConfirm: async(all) => {
+          applyState('on', all.on || drafts.on);
+          applyState('off', all.off || drafts.off);
+          try{ toast(`Tasto tema ${label}: colori dei due stati aggiornati`); }catch(_){ }
+        },
+        onRevert:() => {
+          __roomSettingsThemeButtonVisualSet__(key, originals.on, 'active');
+          __roomSettingsThemeButtonVisualSet__(key, originals.off, 'distractive');
+          try{ renderRoomSettingsPage(); }catch(_){ }
+        }
       }
     });
   }catch(_){ }
@@ -43990,7 +44057,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.151';
+  var BUILD_TAG='dDAE_3.152';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48700,7 +48767,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.151',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
