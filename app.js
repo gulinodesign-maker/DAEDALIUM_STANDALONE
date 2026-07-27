@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.153";
+const BUILD_VERSION = "3.154";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -37798,11 +37798,17 @@ function setupCalendario(){
   if (prevDayBtn) prevDayBtn.addEventListener("click", () => { shiftSelectedDay(-1); });
   if (nextDayBtn) nextDayBtn.addEventListener("click", () => { shiftSelectedDay(1); });
   if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
-    const d = firstOfShiftedMonth(state.calendar.anchor, -1);
+    const base = (__calendarIsPortraitMonthView__() && state.calendar.portraitTitleMonth)
+      ? state.calendar.portraitTitleMonth
+      : state.calendar.anchor;
+    const d = firstOfShiftedMonth(base, -1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
   if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
-    const d = firstOfShiftedMonth(state.calendar.anchor, 1);
+    const base = (__calendarIsPortraitMonthView__() && state.calendar.portraitTitleMonth)
+      ? state.calendar.portraitTitleMonth
+      : state.calendar.anchor;
+    const d = firstOfShiftedMonth(base, 1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
   // Applica stato UI all'avvio
@@ -39246,10 +39252,9 @@ function __calendarPortraitUpdateTitleFromScroll__(wrap, grid){
       const firstIso = String(visible[0].dataset.date || '');
       const next = firstIso ? new Date(firstIso + 'T00:00:00') : null;
       if (next && !isNaN(next)){
+        // Il titolo segue lo scroll, ma non modifica l'ancora durante lo swipe:
+        // evita render/fetch concorrenti e salti su iOS.
         state.calendar.portraitTitleMonth = new Date(next.getFullYear(), next.getMonth(), 1);
-        const oldAnchor = new Date(state.calendar.anchor || next);
-        const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
-        state.calendar.anchor = new Date(next.getFullYear(), next.getMonth(), Math.min(Math.max(1, oldAnchor.getDate() || 1), lastDay));
       }
     } else {
       state.calendar.portraitTitleMonth = current;
@@ -39263,36 +39268,45 @@ function __calendarPortraitBindContinuousScroll__(wrap, grid){
     if (!wrap || !grid) return;
     if (wrap.__ddaePortraitScrollHandler) wrap.removeEventListener('scroll', wrap.__ddaePortraitScrollHandler);
     let raf = 0;
-    let edgeTimer = 0;
+    let settleTimer = 0;
     const handler = () => {
       if (!__calendarIsPortraitMonthView__()) return;
       if (raf) cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        __calendarPortraitUpdateTitleFromScroll__(wrap, grid);
-        if (edgeTimer) clearTimeout(edgeTimer);
-        edgeTimer = setTimeout(() => {
-          try{
-            const max = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
-            if (max <= 0 || wrap.__ddaePortraitRecentering) return;
-            const monthWidth = Number(grid.querySelector('.cal-cell.cal-head')?.offsetWidth || 0) * 31;
-            const nearLeft = wrap.scrollLeft < Math.max(120, monthWidth * 0.55);
-            const nearRight = (max - wrap.scrollLeft) < Math.max(120, monthWidth * 0.55);
-            if (!nearLeft && !nearRight) return;
-            const heads = Array.from(grid.querySelectorAll('.cal-cell.cal-head[data-date]'));
-            const marker = heads.find((head) => (head.offsetLeft + head.offsetWidth) > wrap.scrollLeft + 1) || heads[0];
-            if (!marker) return;
-            const markerIso = String(marker.dataset.date || '');
-            const markerViewportX = marker.offsetLeft - wrap.scrollLeft;
-            const shift = nearLeft ? -2 : 2;
-            const a = new Date(state.calendar.anchor || Date.now());
-            state.calendar.anchor = new Date(a.getFullYear(), a.getMonth() + shift, Math.min(a.getDate(), 28));
-            wrap.__ddaePortraitRecentering = true;
-            renderCalendarioMonth({ preserveIso: markerIso, preserveViewportX: markerViewportX, continuousRecenter:true });
-            setTimeout(() => { try{ wrap.__ddaePortraitRecentering = false; }catch(_){ } }, 80);
-            try{ ensureCalendarData({ force:false, showLoader:false }); }catch(_){ }
-          }catch(_){ }
-        }, 90);
+        try{ __calendarPortraitUpdateTitleFromScroll__(wrap, grid); }catch(_){ }
       });
+
+      // Ricentra soltanto dopo che lo swipe si è realmente fermato.
+      // Durante il movimento non viene mai ricostruita la griglia.
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        try{
+          if (!__calendarIsPortraitMonthView__() || wrap.__ddaePortraitRecentering) return;
+          const max = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+          if (max <= 0) return;
+          const dayWidth = Number(grid.querySelector('.cal-cell.cal-head')?.offsetWidth || 0);
+          if (!dayWidth) return;
+          const guard = Math.max(160, dayWidth * 18);
+          const nearLeft = wrap.scrollLeft < guard;
+          const nearRight = (max - wrap.scrollLeft) < guard;
+          if (!nearLeft && !nearRight) return;
+
+          const heads = Array.from(grid.querySelectorAll('.cal-cell.cal-head[data-date]'));
+          const marker = heads.find((head) => (head.offsetLeft + head.offsetWidth) > wrap.scrollLeft + 1) || heads[0];
+          if (!marker) return;
+          const markerIso = String(marker.dataset.date || '');
+          const markerViewportX = marker.offsetLeft - wrap.scrollLeft;
+          const markerDate = markerIso ? new Date(markerIso + 'T00:00:00') : null;
+          if (!markerDate || isNaN(markerDate)) return;
+
+          const shift = nearLeft ? -2 : 2;
+          state.calendar.anchor = new Date(markerDate.getFullYear(), markerDate.getMonth() + shift, Math.min(markerDate.getDate(), 28));
+          wrap.__ddaePortraitRecentering = true;
+          renderCalendarioMonth({ preserveIso: markerIso, preserveViewportX: markerViewportX, continuousRecenter:true });
+          setTimeout(() => { try{ wrap.__ddaePortraitRecentering = false; }catch(_){ } }, 180);
+          try{ ensureCalendarData({ force:false, showLoader:false }); }catch(_){ }
+        }catch(_){ }
+      }, 420);
     };
     wrap.__ddaePortraitScrollHandler = handler;
     wrap.addEventListener('scroll', handler, { passive:true });
@@ -44216,7 +44230,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.153';
+  var BUILD_TAG='dDAE_3.154';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48926,7 +48940,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.153',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.154',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
