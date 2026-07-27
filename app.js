@@ -62,7 +62,7 @@ function applyIconPalette(){
         });
       }
     });
-    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barSnackBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
+    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barExtraBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
       const fallbackColor = barIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
@@ -8407,7 +8407,7 @@ let __applyingLanguage__ = false;
 let __languageObserver__ = null;
 let __MONTHS_IT = [];
 const __I18N_PHRASES__ = {
-  "Bar": { "en":"Bar", "fr":"Bar", "de":"Bar", "es":"Bar" },
+  "Servizi": { "en":"Servizi", "fr":"Servizi", "de":"Servizi", "es":"Servizi" },
   "Cocktail": { "en":"Cocktails", "fr":"Cocktails", "de":"Cocktails", "es":"Cócteles" },
   "Vino": { "en":"Wine", "fr":"Vin", "de":"Wein", "es":"Vino" },
   "Vini": { "en":"Wines", "fr":"Vins", "de":"Weine", "es":"Vinos" },
@@ -9767,7 +9767,7 @@ const __I18N_WORD_MAPS__ = {
     "giorno": "Tag",
     "ricevuta": "Beleg",
     "Ricevuta": "Beleg",
-    "Contanti": "Bar",
+    "Contanti": "Servizi",
     "Elettronico": "Elektronisch",
     "Database": "Datenbank",
     "Codice": "Code",
@@ -11673,7 +11673,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barExtraBtn','barCocktailAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11721,7 +11721,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   barVinoBtn: 'red-4',
   barBirraBtn: 'yellow-4',
   barAnalcoliciBtn: 'sky-4',
-  barSnackBtn: 'orange-4',
+  barExtraBtn: 'orange-4',
   barCocktailAnalcoliciBtn: 'blue-4',
   homeYearPill: 'sky-4'
 };
@@ -12918,7 +12918,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barExtraBtn','barCocktailAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -48249,11 +48249,11 @@ try{
     barVinoBtn: ['barvini','Vini'],
     barBirraBtn: ['barbirre','Birre'],
     barAnalcoliciBtn: ['baranalcolici','Analcolici'],
-    barSnackBtn: ['barsnack','Snack'],
+    barExtraBtn: ['barsnack','Extra'],
     barCocktailAnalcoliciBtn: ['barcocktailanalcolici','Cocktail analcolici']
   };
   const slotIds = [];
-  ['Cocktail','Vini','Birre','Analcolici','Snack','CocktailAnalcolici'].forEach((name) => {
+  ['Cocktail','Vini','Birre','Analcolici','Extra','CocktailAnalcolici'].forEach((name) => {
     for (let i=1;i<=15;i++) slotIds.push(`bar${name}Slot${String(i).padStart(2,'0')}`);
   });
   try{
@@ -48332,7 +48332,7 @@ try{
     barVinoBtn:'barvini',
     barBirraBtn:'barbirre',
     barAnalcoliciBtn:'baranalcolici',
-    barSnackBtn:'barsnack',
+    barExtraBtn:'barsnack',
     barCocktailAnalcoliciBtn:'barcocktailanalcolici'
   };
   function current(){
@@ -48471,17 +48471,17 @@ try{
     const value=String(slot||'');
     const currentLang=lang();
     const labels={
-      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Snack','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
-      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Snack','Snack name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
-      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Snack','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
-      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Snack','Name des Snacks'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
-      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Snack','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
+      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Extra','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
+      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Extra','Extra name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
+      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Extra','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
+      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Extra','Name des Extras'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
+      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Extra','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
     };
     let type='cocktail';
     if(value.indexOf('barViniSlot')===0)type='wine';
     else if(value.indexOf('barBirreSlot')===0)type='beer';
     else if(value.indexOf('barAnalcoliciSlot')===0)type='soft';
-    else if(value.indexOf('barSnackSlot')===0)type='snack';
+    else if(value.indexOf('barExtraSlot')===0)type='snack';
     else if(value.indexOf('barCocktailAnalcoliciSlot')===0)type='mocktail';
     const pair=(labels[currentLang]||labels.it)[type];
     return {title:pair[0],name:pair[1]};
@@ -48736,7 +48736,7 @@ try{
       try{current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false}));}catch(_){current=[];}
       if(!Array.isArray(current))current=[];
       const items=current.filter(s=>{const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;return !(del===true||String(del)==='1');}).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
-      items.push({servizio:String(ctx.product.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
+      items.push({servizio:String(ctx.product.name),descrizione:'Servizi'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
       await api('servizi',{method:'POST',body:{ospite_id:guestId,servizi:items}});
       try{
         if(!state.guestServicesCacheById)state.guestServicesCacheById={};
