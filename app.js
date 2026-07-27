@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCent
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.152";
+const BUILD_VERSION = "3.153";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -37804,6 +37804,67 @@ function setupCalendario(){
     const d = firstOfShiftedMonth(state.calendar.anchor, 1);
     shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
   });
+
+  // dDAE_3.153 — lo swipe orizzontale oltre i bordi continua nel mese adiacente.
+  try{
+    const monthScroller = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
+    if (monthScroller && monthScroller.dataset.monthEdgeSwipeBound !== "1"){
+      monthScroller.dataset.monthEdgeSwipeBound = "1";
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      let swipeStartScroll = 0;
+      let swipeTracking = false;
+      let swipeLockedUntil = 0;
+
+      monthScroller.addEventListener("touchstart", (ev) => {
+        try{
+          if (!ev.touches || ev.touches.length !== 1) return;
+          const t = ev.touches[0];
+          swipeStartX = Number(t.clientX || 0);
+          swipeStartY = Number(t.clientY || 0);
+          swipeStartScroll = Number(monthScroller.scrollLeft || 0);
+          swipeTracking = true;
+        }catch(_){ swipeTracking = false; }
+      }, { passive:true });
+
+      monthScroller.addEventListener("touchend", (ev) => {
+        try{
+          if (!swipeTracking || Date.now() < swipeLockedUntil) return;
+          swipeTracking = false;
+          const t = ev.changedTouches && ev.changedTouches[0];
+          if (!t) return;
+          const dx = Number(t.clientX || 0) - swipeStartX;
+          const dy = Number(t.clientY || 0) - swipeStartY;
+          if (Math.abs(dx) < 55 || Math.abs(dx) <= Math.abs(dy) * 1.15) return;
+
+          const maxScroll = Math.max(0, Number(monthScroller.scrollWidth || 0) - Number(monthScroller.clientWidth || 0));
+          const currentScroll = Number(monthScroller.scrollLeft || 0);
+          const edgeTolerance = 3;
+          const startedAtLeft = swipeStartScroll <= edgeTolerance;
+          const endedAtLeft = currentScroll <= edgeTolerance;
+          const startedAtRight = swipeStartScroll >= maxScroll - edgeTolerance;
+          const endedAtRight = currentScroll >= maxScroll - edgeTolerance;
+
+          if (dx < 0 && (startedAtRight || endedAtRight)){
+            swipeLockedUntil = Date.now() + 550;
+            const d = firstOfShiftedMonth(state.calendar.anchor, 1);
+            shiftAnchorAndRender(d, { scrollDayLeft:1, selectedDate: isoDate(d) });
+          } else if (dx > 0 && (startedAtLeft || endedAtLeft)){
+            swipeLockedUntil = Date.now() + 550;
+            const d = firstOfShiftedMonth(state.calendar.anchor, -1);
+            const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+            shiftAnchorAndRender(d, { scrollDayLeft:lastDay, selectedDate: isoDate(d) });
+            requestAnimationFrame(() => {
+              try{ monthScroller.scrollLeft = Math.max(0, monthScroller.scrollWidth - monthScroller.clientWidth); }catch(_){ }
+            });
+          }
+        }catch(_){ swipeTracking = false; }
+      }, { passive:true });
+
+      monthScroller.addEventListener("touchcancel", () => { swipeTracking = false; }, { passive:true });
+    }
+  }catch(_){ }
+
   // Applica stato UI all'avvio
   applyCalendarViewUI();
 
@@ -44057,7 +44118,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.152';
+  var BUILD_TAG='dDAE_3.153';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48767,7 +48828,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.153',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
