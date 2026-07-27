@@ -48471,7 +48471,7 @@ try{
     const value=String(slot||'');
     const currentLang=lang();
     const labels={
-      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Extra','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
+      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Extra','Nome extra'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
       en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Extra','Extra name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
       fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Extra','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
       de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Extra','Name des Extras'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
