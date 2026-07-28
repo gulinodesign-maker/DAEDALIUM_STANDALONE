@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.148" rel="stylesheet"/>
-<link href="./manifest.json?v=3.148" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.148" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.148" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.148" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.148" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.148" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.148" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.152" rel="stylesheet"/>
+<link href="./manifest.json?v=3.152" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.152" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.152" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.152" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.152" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.152" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.152" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
-<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.148";
+window.APP_VERSION = "3.152";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.148";
+  const LOCAL_BUILD = "dDAE_3.152";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -86,8 +86,8 @@ window.APP_VERSION = "3.148";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.148")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.148")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.152")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.152")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -153,9 +153,9 @@ window.APP_VERSION = "3.148";
 </script>
 </head>
 <body>
-<header class="topbar">
+<header class="topservizi">
 <div class="brand">
-<div class="brand-left" id="topbarBrandLeft">
+<div class="brand-left" id="topserviziBrandLeft">
 <button aria-label="Sync Firebase" class="icon-btn icon-btn-whiteblue home-sync-top-btn" data-single-action-key="goDbSync" id="goDbSync" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M21 12a9 9 0 0 0-15.3-6.3"></path>
@@ -165,10 +165,10 @@ window.APP_VERSION = "3.148";
 </svg>
 </button>
 </div>
-<div class="topbar-center" id="topbarCenterWrap">
-<div aria-label="Anno corrente" class="topbar-year" id="topbarYear">2026</div>
+<div class="topservizi-center" id="topserviziCenterWrap">
+<div aria-label="Anno corrente" class="topservizi-year" id="topserviziYear">2026</div>
 </div>
-<div class="brand-right" id="topbarBrandRight">
+<div class="brand-right" id="topserviziBrandRight">
 <button aria-label="Indietro" class="icon-btn icon-btn-whiteorange" hidden="" id="backBtnTop" type="button"><span aria-hidden="true" class="backchev"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path><path d="M9 12h12"></path></svg></span></button><div hidden="" id="pulizieTopTools"></div>
 <div hidden="" id="speseTopTools"></div>
 <div hidden="" id="prodottiTopTools"></div>
@@ -283,7 +283,7 @@ window.APP_VERSION = "3.148";
 <div hidden="" id="lavanderiaTopTools"></div>
 <button aria-label="Ospiti" class="icon-btn icon-btn-whitegreen" hidden="" id="guestBackTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg></button>
 <button aria-label="Carica backup" class="icon-btn icon-btn-whiteblue" hidden="" id="authImportBackupTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3v11"></path><path d="M8 10l4 4 4-4"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg></button>
-<button aria-label="Torna a Bar" class="icon-btn icon-btn-whiteorange" hidden="" id="barBackTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path><path d="M9 12h12"></path></svg></button>
+<button aria-label="Torna a Servizi" class="icon-btn icon-btn-whiteorange" hidden="" id="serviziBackTop" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path><path d="M9 12h12"></path></svg></button>
 <button aria-label="Home" class="icon-btn icon-btn-whiteorange" id="hamburgerBtn"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 10v11h14V10"></path><path d="M9 21v-6h6v6"></path></svg></button>
 </div>
 </div>
@@ -307,7 +307,7 @@ window.APP_VERSION = "3.148";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.148"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.152"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -475,14 +475,14 @@ window.APP_VERSION = "3.148";
 </svg></div>
 <div class="home-main-label">Lavanderia</div>
 </button>
-<button aria-label="Bar" class="home-main" id="goOrePuliziaHome" type="button">
+<button aria-label="Servizi" class="home-main" id="goOrePuliziaHome" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M5 3h14"></path>
 <path d="M7 3l5 7 5-7"></path>
 <path d="M12 10v8"></path>
 <path d="M8 21h8"></path>
 </svg></div>
-<div class="home-main-label">Bar</div>
+<div class="home-main-label">Servizi</div>
 </button>
 <button aria-label="Statistiche" class="home-main" id="goStatistiche" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
@@ -515,7 +515,7 @@ window.APP_VERSION = "3.148";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.148</div></div></section>
+<div class="build" id="buildText">dDAE_3.152</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -658,36 +658,36 @@ window.APP_VERSION = "3.148";
 </section>
 <!-- BAR -->
 <section class="page" hidden="" id="page-statistichecopy">
-<div class="stats-page bar-page">
-<div class="stats-title">Bar</div>
+<div class="stats-page servizi-page">
+<div class="stats-title">Servizi</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Categorie bar" class="home-grid bar-grid" role="navigation">
-<button aria-label="Cocktail" class="home-main" id="barCocktailBtn" type="button">
+<div aria-label="Categorie servizi" class="home-grid servizi-grid" role="navigation">
+<button aria-label="Cocktail" class="home-main" id="serviziCocktailBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 3h16"></path><path d="M6 3l6 8 6-8"></path><path d="M12 11v7"></path><path d="M8 21h8"></path><path d="M16 6h3"></path>
 </svg></div><div class="home-main-label">Cocktail</div>
 </button>
-<button aria-label="Vini" class="home-main" id="barVinoBtn" type="button">
+<button aria-label="Vini" class="home-main" id="serviziVinoBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 3h10v5a5 5 0 0 1-10 0V3Z"></path><path d="M12 13v6"></path><path d="M8 21h8"></path><path d="M7 7h10"></path>
 </svg></div><div class="home-main-label">Vini</div>
 </button>
-<button aria-label="Birre" class="home-main" id="barBirraBtn" type="button">
+<button aria-label="Birre" class="home-main" id="serviziBirraBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M6 5h10v16H6Z"></path><path d="M16 8h2a3 3 0 0 1 0 6h-2"></path><path d="M8 3h6"></path><path d="M9 8v9"></path><path d="M13 8v9"></path>
 </svg></div><div class="home-main-label">Birre</div>
 </button>
-<button aria-label="Analcolici" class="home-main" id="barAnalcoliciBtn" type="button">
+<button aria-label="Analcolici" class="home-main" id="serviziAnalcoliciBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M7 4h10l-1 17H8L7 4Z"></path><path d="M8 9h8"></path><path d="M13 4l3-3"></path><path d="M10 13h4"></path>
 </svg></div><div class="home-main-label small">Analcolici</div>
 </button>
-<button aria-label="Snack" class="home-main" id="barSnackBtn" type="button">
+<button aria-label="Extra" class="home-main" id="serviziExtraBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M5 7h14l-1 14H6L5 7Z"></path><path d="M8 7V5a4 4 0 0 1 8 0v2"></path><path d="M9 12h6"></path>
-</svg></div><div class="home-main-label">Snack</div>
+</svg></div><div class="home-main-label">Extra</div>
 </button>
-<button aria-label="Cocktail analcolici" class="home-main" id="barCocktailAnalcoliciBtn" type="button">
+<button aria-label="Cocktail analcolici" class="home-main" id="serviziCocktailAnalcoliciBtn" type="button">
 <div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M4 3h16"></path><path d="M6 3l6 8 6-8"></path><path d="M12 11v7"></path><path d="M8 21h8"></path><path d="M16 6h3"></path>
 </svg></div><div class="home-main-label small">Cocktail analcolici</div>
@@ -696,146 +696,146 @@ window.APP_VERSION = "3.148";
 </div>
 </section>
 <!-- BAR: COCKTAIL -->
-<section class="page bar-category-page" hidden="" id="page-barcocktail">
-<div class="stats-page bar-page">
+<section class="page servizi-category-page" hidden="" id="page-servizicocktail">
+<div class="stats-page servizi-page">
 <div class="stats-title">Cocktail</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Cocktail" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barCocktailSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barCocktailSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barCocktailSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barCocktailSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barCocktailSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barCocktailSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barCocktailSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barCocktailSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barCocktailSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barCocktailSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barCocktailSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barCocktailSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barCocktailSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barCocktailSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barCocktailSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Cocktail" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziCocktailSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziCocktailSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziCocktailSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziCocktailSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziCocktailSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziCocktailSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziCocktailSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziCocktailSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziCocktailSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziCocktailSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziCocktailSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziCocktailSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziCocktailSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziCocktailSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziCocktailSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
 <!-- BAR: VINI -->
-<section class="page bar-category-page" hidden="" id="page-barvini">
-<div class="stats-page bar-page">
+<section class="page servizi-category-page" hidden="" id="page-servizivini">
+<div class="stats-page servizi-page">
 <div class="stats-title">Vini</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Vini" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barViniSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barViniSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barViniSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barViniSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barViniSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barViniSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barViniSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barViniSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barViniSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barViniSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barViniSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barViniSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barViniSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barViniSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barViniSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Vini" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziViniSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziViniSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziViniSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziViniSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziViniSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziViniSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziViniSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziViniSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziViniSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziViniSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziViniSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziViniSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziViniSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziViniSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziViniSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
 <!-- BAR: BIRRE -->
-<section class="page bar-category-page" hidden="" id="page-barbirre">
-<div class="stats-page bar-page">
+<section class="page servizi-category-page" hidden="" id="page-servizibirre">
+<div class="stats-page servizi-page">
 <div class="stats-title">Birre</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Birre" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barBirreSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barBirreSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barBirreSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barBirreSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barBirreSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barBirreSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barBirreSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barBirreSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barBirreSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barBirreSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barBirreSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barBirreSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barBirreSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barBirreSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barBirreSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Birre" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziBirreSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziBirreSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziBirreSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziBirreSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziBirreSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziBirreSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziBirreSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziBirreSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziBirreSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziBirreSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziBirreSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziBirreSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziBirreSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziBirreSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziBirreSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
 <!-- BAR: ANALCOLICI -->
-<section class="page bar-category-page" hidden="" id="page-baranalcolici">
-<div class="stats-page bar-page">
+<section class="page servizi-category-page" hidden="" id="page-servizianalcolici">
+<div class="stats-page servizi-page">
 <div class="stats-title">Analcolici</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Analcolici" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barAnalcoliciSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barAnalcoliciSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barAnalcoliciSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barAnalcoliciSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barAnalcoliciSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barAnalcoliciSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barAnalcoliciSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barAnalcoliciSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barAnalcoliciSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barAnalcoliciSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barAnalcoliciSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barAnalcoliciSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barAnalcoliciSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barAnalcoliciSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barAnalcoliciSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Analcolici" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziAnalcoliciSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
 <!-- BAR: SNACK -->
-<section class="page bar-category-page" hidden="" id="page-barsnack">
-<div class="stats-page bar-page">
-<div class="stats-title">Snack</div>
+<section class="page servizi-category-page" hidden="" id="page-serviziextra">
+<div class="stats-page servizi-page">
+<div class="stats-title">Extra</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Snack" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barSnackSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barSnackSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barSnackSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barSnackSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barSnackSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barSnackSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barSnackSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barSnackSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barSnackSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barSnackSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barSnackSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barSnackSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barSnackSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barSnackSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barSnackSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Extra" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziExtraSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziExtraSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziExtraSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziExtraSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziExtraSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziExtraSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziExtraSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziExtraSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziExtraSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziExtraSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziExtraSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziExtraSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziExtraSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziExtraSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziExtraSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
 <!-- BAR: COCKTAIL ANALCOLICI -->
-<section class="page bar-category-page" hidden="" id="page-barcocktailanalcolici">
-<div class="stats-page bar-page">
+<section class="page servizi-category-page" hidden="" id="page-servizicocktailanalcolici">
+<div class="stats-page servizi-page">
 <div class="stats-title">Cocktail analcolici</div>
 <div aria-hidden="true" class="stats-divider"></div>
-<div aria-label="Slot Cocktail analcolici" class="bar-slots-grid" role="grid">
-<button aria-label="Slot 1" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot01" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 2" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot02" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 3" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot03" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 4" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot04" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 5" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot05" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 6" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot06" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 7" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot07" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 8" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot08" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 9" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot09" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 10" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot10" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 11" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot11" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 12" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot12" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 13" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot13" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 14" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot14" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
-<button aria-label="Slot 15" class="home-main bar-slot-btn" id="barCocktailAnalcoliciSlot15" type="button"><span aria-hidden="true" class="home-main-glyph bar-slot-glyph"></span></button>
+<div aria-label="Slot Cocktail analcolici" class="servizi-slots-grid" role="grid">
+<button aria-label="Slot 1" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot01" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 2" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot02" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 3" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot03" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 4" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot04" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 5" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot05" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 6" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot06" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 7" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot07" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 8" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot08" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 9" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot09" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 10" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot10" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 11" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot11" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 12" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot12" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 13" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot13" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 14" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot14" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
+<button aria-label="Slot 15" class="home-main servizi-slot-btn" id="serviziCocktailAnalcoliciSlot15" type="button"><span aria-hidden="true" class="home-main-glyph servizi-slot-glyph"></span></button>
 </div>
 </div>
 </section>
@@ -1871,7 +1871,7 @@ window.APP_VERSION = "3.148";
 </section>
 <section class="page" id="page-pulizie" style="display:none;">
 <div class="hd app-section-head app-section-head--cleaning">
-<div class="app-section-head-row clean-topbar">
+<div class="app-section-head-row clean-topservizi">
 <h2 class="page-title">Pulizie</h2>
 <div aria-label="Navigazione giorno" class="clean-nav" role="group">
 <button aria-label="Giorno precedente" class="btn ghost" id="cleanPrev" type="button">←</button>
@@ -2080,7 +2080,7 @@ window.APP_VERSION = "3.148";
 </section>
 <div aria-hidden="true" class="modal" hidden="" id="laundryDetailModal">
 <div aria-labelledby="laundryDetailTitle" aria-modal="true" class="modal-card laundry-detail-card" role="dialog">
-<div class="laundry-detail-toolbar">
+<div class="laundry-detail-toolservizi">
 <button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue laundry-detail-tool" id="laundryDetailClose" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
 </button>
@@ -2122,7 +2122,7 @@ window.APP_VERSION = "3.148";
 <button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="laundryDateRangeModalClose" type="button">✕</button>
 </div>
 <div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
+<div class="guest-date-range-monthservizi">
 <button aria-label="Mese precedente" class="guest-date-range-nav" id="laundryDateRangePrev" type="button">‹</button>
 <div class="guest-date-range-monthtitle" id="laundryDateRangeMonthTitle"> </div>
 <button aria-label="Mese successivo" class="guest-date-range-nav" id="laundryDateRangeNext" type="button">›</button>
@@ -2143,7 +2143,7 @@ window.APP_VERSION = "3.148";
 <button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="speseDateRangeModalClose" type="button">✕</button>
 </div>
 <div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
+<div class="guest-date-range-monthservizi">
 <button aria-label="Mese precedente" class="guest-date-range-nav" id="speseDateRangePrev" type="button">‹</button>
 <div class="guest-date-range-monthtitle" id="speseDateRangeMonthTitle"> </div>
 <button aria-label="Mese successivo" class="guest-date-range-nav" id="speseDateRangeNext" type="button">›</button>
@@ -2166,7 +2166,7 @@ window.APP_VERSION = "3.148";
 <button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="guestDateRangeModalClose" type="button">✕</button>
 </div>
 <div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
+<div class="guest-date-range-monthservizi">
 <button aria-label="Mese precedente" class="guest-date-range-nav" id="guestDateRangePrev" type="button">‹</button>
 <div class="guest-date-range-monthtitle" id="guestDateRangeMonthTitle"> </div>
 <button aria-label="Mese successivo" class="guest-date-range-nav" id="guestDateRangeNext" type="button">›</button>
@@ -2454,7 +2454,7 @@ window.APP_VERSION = "3.148";
 </div>
 </div>
 <div class="tag-color-modal-body">
-<div aria-label="Modalità colore" class="tag-color-modebar" hidden="" id="tagColorModeBar" role="tablist">
+<div aria-label="Modalità colore" class="tag-color-modeservizi" hidden="" id="tagColorModeServizi" role="tablist">
 <button aria-label="Sfondo" class="tag-color-mode-btn is-active" data-mode="bg" id="tagColorModeBg" title="Sfondo" type="button"><span aria-hidden="true" class="tag-color-mode-ico">◼</span></button>
 <button aria-label="Bordo" class="tag-color-mode-btn" data-mode="border" id="tagColorModeBorder" title="Bordo" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-border">▣</span></button>
 <button aria-label="Icona/Testo" class="tag-color-mode-btn" data-mode="fg" id="tagColorModeFg" title="Icona/Testo" type="button"><span aria-hidden="true" class="tag-color-mode-ico tag-color-mode-ico-fg">A</span></button>
@@ -2548,6 +2548,10 @@ window.APP_VERSION = "3.148";
 <button class="tag-color-option" data-spec="gray-4" type="button"></button>
 <button class="tag-color-option" data-spec="gray-5" type="button"></button>
 <button class="tag-color-option" data-spec="gray-6" type="button"></button>
+</div>
+<div aria-label="Stato check-in da personalizzare" class="tag-color-stateservizi" hidden id="tagColorStateServizi" role="tablist">
+<button aria-pressed="false" class="tag-color-state-btn" data-checkin-visual-state="off" type="button">OFF</button>
+<button aria-pressed="false" class="tag-color-state-btn" data-checkin-visual-state="on" type="button">ON</button>
 </div>
 </div>
 </div>
@@ -2826,7 +2830,7 @@ window.APP_VERSION = "3.148";
 <div class="operatori-editor-title guest-date-range-modal-range-title" id="licenseDateRangeModalTitle"> </div>
 </div>
 <div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthbar">
+<div class="guest-date-range-monthservizi">
 <button aria-label="Mese precedente" class="guest-date-range-nav" data-single-action-key="licenseDateRangePrev" id="licenseDateRangePrev" type="button">‹</button>
 <div class="guest-date-range-monthtitle" id="licenseDateRangeMonthTitle"> </div>
 <button aria-label="Mese successivo" class="guest-date-range-nav" data-single-action-key="licenseDateRangeNext" id="licenseDateRangeNext" type="button">›</button>
@@ -2995,7 +2999,7 @@ window.APP_VERSION = "3.148";
 </div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="guestReportModal">
 <div aria-label="Report ospite" aria-modal="true" class="modal-card guest-report-card" role="dialog">
-<div class="guest-report-toolbar">
+<div class="guest-report-toolservizi">
 <button aria-label="Chiudi" class="icon-btn icon-btn-whiteblue guest-report-tool" id="guestReportClose" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
 </button>
@@ -3006,11 +3010,11 @@ window.APP_VERSION = "3.148";
 <div class="guest-report-preview" id="guestReportPreview"></div>
 </div>
 </div>
-<div aria-hidden="true" class="modal modal-center cocktail-editor-modal" hidden="" id="barSlotModal">
-<div aria-labelledby="barSlotModalTitle" aria-modal="true" class="modal-card cocktail-editor-card" role="dialog">
+<div aria-hidden="true" class="modal modal-center cocktail-editor-modal" hidden="" id="serviziSlotModal">
+<div aria-labelledby="serviziSlotModalTitle" aria-modal="true" class="modal-card cocktail-editor-card" role="dialog">
 <div class="cocktail-editor-top">
-<div class="db-menu-title" id="barSlotModalTitle">Cocktail</div>
-<button aria-label="Chiudi" class="cocktail-close-btn" id="barSlotModalCancel" type="button">×</button>
+<div class="db-menu-title" id="serviziSlotModalTitle">Cocktail</div>
+<button aria-label="Chiudi" class="cocktail-close-btn" id="serviziSlotModalCancel" type="button">×</button>
 </div>
 <label class="cocktail-field"><span id="cocktailNameLabel">Nome cocktail</span><input autocomplete="off" id="cocktailNameInput" type="text"/></label>
 <label class="cocktail-field cocktail-price-field"><span id="cocktailPriceLabel">Prezzo</span><input autocomplete="off" id="cocktailPriceInput" inputmode="decimal" placeholder="0,00" type="text"/></label>
@@ -3052,7 +3056,7 @@ window.APP_VERSION = "3.148";
 </div>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.148"></script>
-<script defer="" src="./app.js?v=3.148"></script>
+<script defer="" src="./config.js?v=3.152"></script>
+<script defer="" src="./app.js?v=3.152"></script>
 </body>
 </html>
