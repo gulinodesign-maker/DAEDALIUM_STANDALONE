@@ -107,8 +107,8 @@ body.ddae-dark.bg-dark-ready{
   background-image: var(--ddae-bg-dark) !important;
 }
 
-/* Topservizi */
-.topservizi{
+/* Topbar */
+.topbar{
   position: fixed;
   top: 0;
   left: 0;
@@ -122,8 +122,8 @@ body.ddae-dark.bg-dark-ready{
   overflow: hidden;
 }
 
-/* dDAE_1.020 — Linea sotto la topservizi (sfumata colori app) */
-.topservizi::after{
+/* dDAE_1.020 — Linea sotto la topbar (sfumata colori app) */
+.topbar::after{
   content:"";
   position: absolute;
   left: 0;
@@ -142,10 +142,10 @@ body.ddae-dark.bg-dark-ready{
   padding: 10px 14px;
   flex-wrap: nowrap;
   min-width: 0;
-  --topservizi-side-gap: 14px;
-  --topservizi-left-reserve: 74px;
-  --topservizi-right-reserve: 74px;
-  --topservizi-center-width: calc(100% - 176px);
+  --topbar-side-gap: 14px;
+  --topbar-left-reserve: 74px;
+  --topbar-right-reserve: 74px;
+  --topbar-center-width: calc(100% - 176px);
 }
 .brand-left{
   display:flex;
@@ -158,7 +158,7 @@ body.ddae-dark.bg-dark-ready{
   position: relative;
   z-index: 2;
 }
-.topservizi-center{
+.topbar-center{
   position: absolute;
   left: 50%;
   top: 50%;
@@ -171,12 +171,12 @@ body.ddae-dark.bg-dark-ready{
   min-width: 0;
   pointer-events: none;
   z-index: 1;
-  width: var(--topservizi-center-width);
-  max-width: var(--topservizi-center-width);
+  width: var(--topbar-center-width);
+  max-width: var(--topbar-center-width);
 }
 
-/* dDAE_2.680 — Titolo topservizi sempre centrato nella servizira */
-.topservizi-year{
+/* dDAE_2.680 — Titolo topbar sempre centrato nella barra */
+.topbar-year{
   position: static;
   flex: 0 1 auto;
   min-width: 0;
@@ -215,39 +215,39 @@ body.ddae-dark.bg-dark-ready{
 .brand-right > *{
   min-width: 0;
 }
-.topservizi .logo,
-.topservizi .top-led-grid,
-.topservizi .topservizi-center,
-.topservizi-year,
-.topservizi .icon-btn,
-.topservizi [id$="TopTools"]{
+.topbar .logo,
+.topbar .top-led-grid,
+.topbar .topbar-center,
+.topbar-year,
+.topbar .icon-btn,
+.topbar [id$="TopTools"]{
   align-self: center;
 }
-.topservizi [id$="TopTools"]{
+.topbar [id$="TopTools"]{
   display:flex;
   align-items:center;
   gap:6px;
   flex-wrap:nowrap;
 }
-.topservizi [id$="TopTools"][hidden]{
+.topbar [id$="TopTools"][hidden]{
   display:none !important;
 }
-.topservizi .icon-btn{
+.topbar .icon-btn{
   flex: 0 0 auto;
 }
-.topservizi-center,
-.topservizi-year{
+.topbar-center,
+.topbar-year{
   text-align:center;
 }
-.topservizi .brand-left,
-.topservizi .brand-right,
-.topservizi .topservizi-center{
+.topbar .brand-left,
+.topbar .brand-right,
+.topbar .topbar-center{
   max-height: 46px;
 }
 .prodotti-title-row,
 .hd-actions,
 .guest-hd-actions,
-.clean-topservizi,
+.clean-topbar,
 .app-section-head-row,
 .stats-head-actions,
 .prodotti-grid-tabs,
@@ -261,27 +261,27 @@ body.ddae-dark.bg-dark-ready{
 }
 
 
-/* dDAE_2.134 — Topservizi buttons: white (80%) + azure icons (palette) */
-.topservizi .icon-btn{
+/* dDAE_2.134 — Topbar buttons: white (80%) + azure icons (palette) */
+.topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.10) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-.topservizi .icon-btn .ui-ico,
-.topservizi .icon-btn .ui-ico *{
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .ui-ico *{
   stroke: var(--ico-color, var(--ico-sky)) !important;
   fill: none !important;
 }
-.topservizi .hamburger{
+.topbar .hamburger{
   border-top-color: var(--ico-sky) !important;
 }
-.topservizi .hamburger::before,
-.topservizi .hamburger::after{
+.topbar .hamburger::before,
+.topbar .hamburger::after{
   background: var(--ico-sky) !important;
 }
 
-/* Topservizi: LED indicatori prodotti */
+/* Topbar: LED indicatori prodotti */
 .top-leds{
   display: grid;
   grid-template-columns: repeat(2, 10px);
@@ -301,7 +301,7 @@ body.ddae-dark.bg-dark-ready{
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* dDAE_2.724 — LED dedicati centrati sotto il titolo topservizi: alert + lista spesa + prodotti */
+/* dDAE_2.724 — LED dedicati centrati sotto il titolo topbar: alert + lista spesa + prodotti */
 .top-led-grid{
   display: grid;
   grid-template-columns: repeat(8, 15px);
@@ -589,7 +589,7 @@ div[id$="TopTools"][hidden]{ display:none !important; }
 .icon-btn.icon-btn-whitegreen .ui-ico{ stroke: #ffffff; }
 .icon-btn.icon-btn-whitegreen:active{ transform: scale(0.98); }
 
-/* Icone SVG nei pulsanti in topservizi */
+/* Icone SVG nei pulsanti in topbar */
 .icon-btn .ui-ico{
   width: 22px;
   height: 22px;
@@ -603,15 +603,15 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   stroke: #ffffff;
 }
 
-/* dDAE_1.020 — Fix contrast: se un tasto topservizi appare chiaro su iOS, forza icona scura */
+/* dDAE_1.020 — Fix contrast: se un tasto topbar appare chiaro su iOS, forza icona scura */
 .icon-btn.is-light .ui-ico,
 .icon-btn.is-light .ui-ico *{
   stroke: var(--ico-blue-night) !important;
   fill: none !important;
 }
 
-/* dDAE_2.088 — Topservizi: tasti sempre bianchi (80%) con icona azzurra */
-.topservizi .icon-btn{
+/* dDAE_2.088 — Topbar: tasti sempre bianchi (80%) con icona azzurra */
+.topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   border: 1px solid rgba(15,23,42,0.14) !important;
   box-shadow: 0 10px 26px rgba(15,23,42,0.10) !important;
@@ -620,8 +620,8 @@ div[id$="TopTools"][hidden]{ display:none !important; }
   -webkit-appearance: none !important;
   appearance: none !important;
 }
-.topservizi .icon-btn .ui-ico,
-.topservizi .icon-btn .ui-ico *{
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .ui-ico *{
   stroke: var(--ico-sky) !important;
   fill: none !important;
 }
@@ -1686,8 +1686,8 @@ body > *{
   max-width: 100%;
   box-sizing: border-box;
 }
-.rooms::-webkit-scrollservizi{ display:none; }
-.rooms{ scrollservizi-width: none; }
+.rooms::-webkit-scrollbar{ display:none; }
+.rooms{ scrollbar-width: none; }
 .rooms .room-dot{ flex: 0 0 auto; }
 
 .room-dot{
@@ -2475,11 +2475,11 @@ body.ddae-dark .guest-nationality-option.is-selected{
   --shadow: 0 14px 34px rgba(15,23,42,0.14);
 }
 
-/* Topservizi: stronger premium accent */
-.topservizi{
+/* Topbar: stronger premium accent */
+.topbar{
   border-bottom-color: rgba(15,23,42,0.14);
 }
-.topservizi::after{
+.topbar::after{
   content:"";
   position:absolute;
   left:0; right:0; bottom:-1px;
@@ -2488,7 +2488,7 @@ body.ddae-dark .guest-nationality-option.is-selected{
   opacity: 1;
   pointer-events:none;
 }
-.topservizi h1{
+.topbar h1{
   color: rgba(11,15,22,0.98);
 }
 
@@ -3479,7 +3479,7 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 
 
 /* ===== CALENDARIO ===== */
-/* dDAE_2.436 — I comandi cerchiati (Calendario/Pulizie/Piscina) entrano nella categoria grafica dei tasti top servizi */
+/* dDAE_2.436 — I comandi cerchiati (Calendario/Pulizie/Piscina) entrano nella categoria grafica dei tasti top bar */
 .cal-nav-btn,
 .clean-nav .btn,
 .piscina-action-btn{
@@ -3646,7 +3646,7 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
   filter: saturate(1.12) brightness(1.08);
 }
 #page-calendario .cal-cell.has-booking.is-today-col::before,
-#page-calendario.is-month-view .calendar-event-servizi.is-today-col::before{
+#page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
   opacity: 1;
   filter: saturate(1.12) brightness(1.08);
 }
@@ -3657,7 +3657,7 @@ body.perf-lite #page-ospiti .guest-led.is-checkin-due-blink,
 body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   box-shadow: inset 0 0 0 999px rgba(255,255,255,0.12);
 }
-#page-calendario .calendar-event-servizi .cal-fullname{
+#page-calendario .calendar-event-bar .cal-fullname{
   color: rgba(15,23,42,0.96);
   font-weight: 700;
   font-size: clamp(10px, 1.15vw, 14px);
@@ -3674,21 +3674,21 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   max-width: 100%;
   text-align: center;
 }
-#page-calendario .calendar-event-servizi .cal-fullname.is-compact{
+#page-calendario .calendar-event-bar .cal-fullname.is-compact{
   white-space: nowrap;
   word-break: normal;
   overflow-wrap: normal;
   display: block;
   max-width: 100%;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-cell-inner{
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   align-items: center;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-fullname + .cal-dots{
+#page-calendario.is-month-view .calendar-event-bar .cal-fullname + .cal-dots{
   margin-top: 2px;
 }
 
-/* === Calendario (mese): servizira prenotazione accorpata (span) === */
+/* === Calendario (mese): barra prenotazione accorpata (span) === */
 /* dDAE_1.020: Vista mese - iniziali visibili senza cambiare il colore di sfondo delle celle */
 #page-calendario.is-month-view .cal-cell.has-booking::before{
   opacity: .55; /* uguale alle celle vuote */
@@ -3734,7 +3734,7 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 #page-calendario.is-month-view .cal-cell.has-booking.booking-seg-end .cal-flags{
   display: none;
 }
-#page-calendario.is-month-view .calendar-event-servizi{
+#page-calendario.is-month-view .calendar-event-bar{
   position: relative;
   display: flex;
   width: 100%;
@@ -3749,22 +3749,22 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   border-radius: 13px;
 }
 
-#page-calendario.is-month-view .calendar-event-servizi::before{
+#page-calendario.is-month-view .calendar-event-bar::before{
   background: var(--room-bg, rgba(255,255,255,.08));
   opacity: .55;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-initials{
+#page-calendario.is-month-view .calendar-event-bar .cal-initials{
   color: rgba(15,23,42,0.86);
   text-shadow: none;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-cell-inner{
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 4px 3px;
   gap: 3px;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-dots{
+#page-calendario.is-month-view .calendar-event-bar .cal-dots{
   margin: 0 auto;
 }
 #page-calendario.is-month-view .cal-cell.has-booking-span-bg .cal-cell-inner,
@@ -3774,14 +3774,14 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
 #page-calendario.is-month-view .cal-cell.has-booking-span-bg{
   pointer-events: none;
 }
-#page-calendario.is-month-view .calendar-event-servizi .cal-flags{
+#page-calendario.is-month-view .calendar-event-bar .cal-flags{
   position: absolute;
   top: 4px;
   right: 4px;
   z-index: 2;
 }
 
-#page-calendario .calendar-event-servizi{
+#page-calendario .calendar-event-bar{
   background: rgba(255,255,255,0.44);
   border-color: rgba(15,23,42,0.22);
   border-radius: 16px;
@@ -3789,36 +3789,36 @@ body.ddae-dark #page-calendario .cal-cell.cal-head.is-today-col{
   overflow: hidden;
   z-index: 2;
 }
-#page-calendario .calendar-event-servizi::before{
+#page-calendario .calendar-event-bar::before{
   opacity: .94;
 }
-#page-calendario .calendar-event-servizi .cal-cell-inner{
+#page-calendario .calendar-event-bar .cal-cell-inner{
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   padding: 8px 10px;
   gap: 10px;
 }
-#page-calendario .calendar-event-servizi .cal-initials{
+#page-calendario .calendar-event-bar .cal-initials{
   color: rgba(255,255,255,0.98);
 }
-#page-calendario .calendar-event-servizi .cal-flags{
+#page-calendario .calendar-event-bar .cal-flags{
   pointer-events: auto;
 }
-#page-calendario .calendar-event-servizi .cal-flag{
+#page-calendario .calendar-event-bar .cal-flag{
   cursor: pointer;
   pointer-events: auto;
 }
 
 @media (orientation: landscape){
-  #page-calendario .calendar-event-servizi .cal-fullname{
+  #page-calendario .calendar-event-bar .cal-fullname{
     font-size: clamp(9px, 0.95vw, 12px);
     font-weight: 600;
     line-height: 1.05;
   }
 }
 
-/* Le servizire prenotazione ereditano --room-bg dalla riga/cella della stanza (stesso identico colore delle celle) */
+/* Le barre prenotazione ereditano --room-bg dalla riga/cella della stanza (stesso identico colore delle celle) */
 #page-calendario .cal-initials{
   text-shadow: none;
   color: rgba(15,23,42,0.86);
@@ -4994,7 +4994,7 @@ body.perf-lite *{
   backdrop-filter: none !important;
 }
 
-body.perf-lite .topservizi,
+body.perf-lite .topbar,
 body.perf-lite .card,
 body.perf-lite .btn,
 body.perf-lite .icon-btn,
@@ -5159,7 +5159,7 @@ body.perf-lite *::after{
 
 
 /* Pulizie: calendario giornaliero (solo grafica) */
-.clean-topservizi{
+.clean-topbar{
   display:grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 6px;
@@ -5168,7 +5168,7 @@ body.perf-lite *::after{
 }
 
 
-/* dDAE_1.020 — Pulizie: raggruppa contenuto sotto topservizi e spostalo giù di 30px */
+/* dDAE_1.020 — Pulizie: raggruppa contenuto sotto topbar e spostalo giù di 30px */
 #page-pulizie .clean-mainGroup{
   margin-top: 30px;
 }
@@ -5635,7 +5635,7 @@ grid-template-rows: 34px repeat(7, 54px);
   opacity:.85;
 }
 
-/* Il bottone "Genera report" ora è in topservizi (resta nel DOM ma non si mostra qui) */
+/* Il bottone "Genera report" ora è in topbar (resta nel DOM ma non si mostra qui) */
 #page-lavanderia .laundry-range-btn{ display:none !important; }
 .laundry-range-field{
   position: relative;
@@ -5809,7 +5809,7 @@ grid-template-rows: 34px repeat(7, 54px);
 
 @media print {
   body{ background:#fff !important; }
-  .toast, .loading-overlay, #launcher, #periodChip, .hamburger, .home-page, .hd-actions, .clean-topservizi, .laundry-history-wrap, .laundry-reportChip{ display:none !important; }
+  .toast, .loading-overlay, #launcher, #periodChip, .hamburger, .home-page, .hd-actions, .clean-topbar, .laundry-history-wrap, .laundry-reportChip{ display:none !important; }
   .page{ display:none !important; }
   #page-lavanderia{ display:block !important; }
   #page-lavanderia .card{ box-shadow:none !important; border: 0 !important; background:#fff !important; }
@@ -6383,7 +6383,7 @@ body[data-page="pulizie"]{
 
 
 /* =========================
-   Topservizi tools (Pulizie) — white buttons with colored icons (iOS-safe)
+   Topbar tools (Pulizie) — white buttons with colored icons (iOS-safe)
    Build: dDAE_1.020
 ========================= */
 #pulizieTopTools{
@@ -6414,7 +6414,7 @@ body[data-page="pulizie"]{
 .ui-ico.ink-orange{ stroke: var(--ico-orange) !important; }
 
 /* Pulizie: nav giorno sempre centrata */
-#page-pulizie .clean-topservizi{ width:100%; }
+#page-pulizie .clean-topbar{ width:100%; }
 #page-pulizie .clean-nav{ justify-content:center; }
 
 
@@ -6665,7 +6665,7 @@ body[data-page="orepulizia"] main.wrap{ display:none !important; }
   background: transparent !important;
 }
 
-/* Topservizi – variante bottone bianco con icona nera */
+/* Topbar – variante bottone bianco con icona nera */
 .icon-btn-whiteblack{
   background: rgba(255,255,255,0.96);
   border: 1px solid rgba(0,0,0,0.10);
@@ -7655,7 +7655,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
   -webkit-text-fill-color: var(--cardtext, var(--mcol,#ff3b30));
 }
 
-.month-servizi{
+.month-bar{
   height:12px;
   border-radius:999px;
   background: rgba(15,23,42,0.10);
@@ -7704,7 +7704,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
 #calGrid.is-loading{opacity:.6;transition:opacity .12s ease;}
 
 
-/* dDAE_1.020 — HOME: sposta pill+icone più in basso (evita overlap topservizi) */
+/* dDAE_1.020 — HOME: sposta pill+icone più in basso (evita overlap topbar) */
 #page-home .year-pill{ margin-top: 10px; }
 #page-home .home-page{ padding-top: 6px; }
 
@@ -7957,7 +7957,7 @@ color: var(--cardtext, var(--mcol,#ff3b30));
   background: rgba(15,23,42,0.14);
 }
 
-.prodotti-topservizi{
+.prodotti-topbar{
   display:flex;
   gap: 10px;
   align-items:center;
@@ -9129,7 +9129,7 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 }
 
 
-/* ===== Statistiche: Cancellazioni (stacked percent servizi) ===== */
+/* ===== Statistiche: Cancellazioni (stacked percent bar) ===== */
 .canc-chart{
   margin-top: 14px;
   border: 1px solid var(--border);
@@ -9138,20 +9138,20 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
   box-shadow: 0 10px 22px rgba(15,23,42,0.12);
   padding: 14px 16px;
 }
-.stacked-servizi{
+.stacked-bar{
   height: 18px;
   border-radius: 999px;
   background: rgba(15,23,42,0.10);
   overflow: hidden;
   display: flex;
 }
-.stacked-servizi .seg{
+.stacked-bar .seg{
   height: 100%;
 }
-.stacked-servizi .seg-ok{
+.stacked-bar .seg-ok{
   background: rgba(43,124,180,0.85);
 }
-.stacked-servizi .seg-canc{
+.stacked-bar .seg-canc{
   background: rgba(255,59,48,0.85);
 }
 .canc-legend{
@@ -9414,8 +9414,8 @@ body.ddae-dark .clean-grid .cell.corner.clean-reset-corner .ui-ico{
 }
 
 
-/* HOME: SYNC Firebase servizi (tasto unico) */
-#page-home .home-sync-servizi{
+/* HOME: SYNC Firebase bar (tasto unico) */
+#page-home .home-sync-bar{
   width: min(460px, 94vw);
   margin: 60px auto 0 auto; /* +50px rispetto a prima */
   padding: 14px; /* allinea con padding della griglia home */
@@ -9471,10 +9471,10 @@ html, body{
   will-change: transform;
 }
 
-#homeSyncServizi.sync-footer{
+#homeSyncBar.sync-footer{
   display: flex;
 }
-#homeSyncServizi .sync-footer-line{
+#homeSyncBar .sync-footer-line{
   display: block;
 }
 
@@ -9977,13 +9977,13 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 .tag-color-modal-body{
   padding-top:2px;
 }
-.tag-color-modeservizi{
+.tag-color-modebar{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
   gap:10px;
   padding:2px 0 12px 0;
 }
-.tag-color-modeservizi[hidden]{ display:none !important; }
+.tag-color-modebar[hidden]{ display:none !important; }
 .tag-color-mode-btn{
   appearance:none;
   -webkit-appearance:none;
@@ -10326,14 +10326,14 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 
 
-/* dDAE_2.112 — top servizi flat bianca/azzurra, impostazioni come riferimento grafico, sync nascosto in impostazioni/statistiche */
-.topservizi .icon-btn{
+/* dDAE_2.112 — top bar flat bianca/azzurra, impostazioni come riferimento grafico, sync nascosto in impostazioni/statistiche */
+.topbar .icon-btn{
   background: rgba(255,255,255,0.80) !important;
   color: var(--ico-sky) !important;
   border-color: rgba(15,23,42,0.12) !important;
 }
-.topservizi .icon-btn .ui-ico,
-.topservizi .icon-btn .backchev{
+.topbar .icon-btn .ui-ico,
+.topbar .icon-btn .backchev{
   color: var(--ico-sky) !important;
   stroke: currentColor;
 }
@@ -10443,19 +10443,19 @@ body.ddae-dark .stat-graph-modal-legend .legrow.is-color-editable::after{color:r
 }
 
 /* dDAE_2.951 — Calendario: stesso tasto Sync fisso con linea nera superiore */
-body[data-page="calendario"] #homeSyncServizi{
+body[data-page="calendario"] #homeSyncBar{
   display: flex !important;
 }
 body[data-page="calendario"] #page-calendario .content.calendar-page{
   padding-bottom: calc(var(--sync-footer-space) + var(--safe-bottom) + 22px) !important;
 }
 
-body[data-page="impostazioni"] #homeSyncServizi,
-body[data-page="operatori"] #homeSyncServizi,
-body[data-page="ospite"] #homeSyncServizi,
-body[data-page="tassa"] #homeSyncServizi,
-body[data-page="orepulizia"] #homeSyncServizi,
-body[data-page^="stat"] #homeSyncServizi{
+body[data-page="impostazioni"] #homeSyncBar,
+body[data-page="operatori"] #homeSyncBar,
+body[data-page="ospite"] #homeSyncBar,
+body[data-page="tassa"] #homeSyncBar,
+body[data-page="orepulizia"] #homeSyncBar,
+body[data-page^="stat"] #homeSyncBar{
   display:none !important;
 }
 @media (max-width: 390px){
@@ -10662,7 +10662,7 @@ body[data-page^="stat"] #homeSyncServizi{
   margin: 0 5px;
 }
 #page-calendario .app-section-head-row,
-#page-pulizie .clean-topservizi{
+#page-pulizie .clean-topbar{
   display:grid;
   grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
   align-items:center;
@@ -10672,7 +10672,7 @@ body[data-page^="stat"] #homeSyncServizi{
   margin:0;
 }
 #page-calendario .app-section-head-row > h2,
-#page-pulizie .clean-topservizi > h2{
+#page-pulizie .clean-topbar > h2{
   justify-self:start;
   text-align:left;
 }
@@ -10731,7 +10731,7 @@ body[data-page^="stat"] #homeSyncServizi{
 #page-lavanderia .card > .hd > .page-title,
 #page-ospiti .guest-cards-card > .hd > .page-title,
 #page-calendario .app-section-head-row > .page-title,
-#page-pulizie .clean-topservizi > .page-title,
+#page-pulizie .clean-topbar > .page-title,
 #page-prodotti .prodotti-title,
 #page-impostazioni .settings-title{
   margin: 0 !important;
@@ -10781,7 +10781,7 @@ body[data-page^="stat"] #homeSyncServizi{
 }
 
 #page-calendario .app-section-head-row > .page-title,
-#page-pulizie .clean-topservizi > .page-title{
+#page-pulizie .clean-topbar > .page-title{
   align-self: center;
 }
 
@@ -11255,7 +11255,7 @@ body[data-role="operatore"] #page-home .home-main{
   flex-direction: column !important;
   overflow: hidden !important;
 }
-.laundry-detail-toolservizi{
+.laundry-detail-toolbar{
   display:flex;
   align-items:center;
   justify-content:flex-end;
@@ -11334,7 +11334,7 @@ body[data-role="operatore"] #page-home .home-main{
   padding: 16px 16px 18px !important;
   overflow: visible !important;
 }
-#laundryDetailModal .laundry-detail-toolservizi{
+#laundryDetailModal .laundry-detail-toolbar{
   margin-bottom: 6px !important;
 }
 #laundryDetailModal .laundry-detail-head{
@@ -11682,7 +11682,7 @@ body[data-role="operatore"] #page-home .home-grid{
   gap: 12px !important;
 }
 
-/* dDAE_2.185 — Report lavanderia sopra la top servizi */
+/* dDAE_2.185 — Report lavanderia sopra la top bar */
 #laundryDetailModal,
 #laundryPricesModal{
   z-index: 6500 !important;
@@ -12174,7 +12174,7 @@ body[data-role="operatore"] #page-home .home-grid{
   border:2px solid currentColor;
   border-radius:6px;
 }
-.room-settings-square-preview-topservizi::before{
+.room-settings-square-preview-topbar::before{
   left:0;
   top:0;
   width:34px;
@@ -12182,7 +12182,7 @@ body[data-role="operatore"] #page-home .home-grid{
   border-radius:999px;
   background:currentColor;
 }
-.room-settings-square-preview-topservizi::after{
+.room-settings-square-preview-topbar::after{
   left:2px;
   top:11px;
   width:11px;
@@ -12192,7 +12192,7 @@ body[data-role="operatore"] #page-home .home-grid{
   transform:rotate(45deg);
   border-radius:2px;
 }
-.room-settings-square-preview-topservizi span::before{
+.room-settings-square-preview-topbar span::before{
   right:2px;
   top:10px;
   width:11px;
@@ -12222,7 +12222,7 @@ body[data-role="operatore"] #page-home .home-grid{
   .room-settings-square-preview{ width:30px; height:22px; }
   .room-settings-square-caption{ font-size:9px; }
   .room-settings-square-preview-grid::before{ box-shadow: 11px 0 0 currentColor, 22px 0 0 currentColor, 0 11px 0 currentColor, 11px 11px 0 currentColor, 22px 11px 0 currentColor; }
-  .room-settings-square-preview-topservizi::before{ width:30px; }
+  .room-settings-square-preview-topbar::before{ width:30px; }
   .room-settings-square-preview-pill::before{ width:26px; }
 }
 .room-settings-color-dot{
@@ -12918,10 +12918,10 @@ body[data-role="operatore"] #page-home .home-main-label{
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
   scroll-snap-type:y mandatory;
-  scrollservizi-width:none;
+  scrollbar-width:none;
   touch-action:pan-y;
 }
-.settings-year-wheel::-webkit-scrollservizi{
+.settings-year-wheel::-webkit-scrollbar{
   display:none;
 }
 .settings-year-wheel-spacer,
@@ -13027,10 +13027,10 @@ body.ddae-dark .auth-card-wrap{
   background: transparent !important;
   background-image: none !important;
 }
-body.ddae-dark .topservizi{
+body.ddae-dark .topbar{
   background: rgba(15,23,42,0.92) !important;
 }
-body.ddae-dark .topservizi-year,
+body.ddae-dark .topbar-year,
 body.ddae-dark .settings-title,
 body.ddae-dark .settings-account-name,
 body.ddae-dark .page-title,
@@ -13069,7 +13069,7 @@ body.ddae-dark .operatori-editor-card,
 body.ddae-dark .calendar-page,
 body.ddae-dark .sheet,
 body.ddae-dark .menu-sheet,
-body.ddae-dark .tabservizi,
+body.ddae-dark .tabbar,
 body.ddae-dark .home-card,
 body.ddae-dark .guest-card,
 body.ddae-dark .tax-summary,
@@ -13137,7 +13137,7 @@ body.ddae-dark .chip,
 body.ddae-dark .badge,
 body.ddae-dark .seg-btn,
 body.ddae-dark .toast,
-body.ddae-dark .calendar-toolservizi,
+body.ddae-dark .calendar-toolbar,
 body.ddae-dark .calendar-grid,
 body.ddae-dark .calendar-cell,
 body.ddae-dark .list-row,
@@ -13191,10 +13191,10 @@ body.ddae-dark .btn.warning .ui-ico{
   color: #ffffff !important;
   stroke: #ffffff !important;
 }
-body.ddae-dark .topservizi .icon-btn,
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .prodotti-header-btn,
 body.ddae-dark .laundry-detail-tool,
@@ -13206,14 +13206,14 @@ body.ddae-dark #piscinaNextMonth{
   box-shadow: none !important;
   color: #8fcae8 !important;
 }
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue .ui-ico,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .prodotti-header-btn .ui-ico,
@@ -13230,10 +13230,10 @@ body.ddae-dark #piscinaNextMonth .ui-ico *{
   color: #8fcae8 !important;
   fill: none !important;
 }
-body.ddae-dark .topservizi .icon-btn:active,
+body.ddae-dark .topbar .icon-btn:active,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue:active,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .prodotti-header-btn:active,
 body.ddae-dark .laundry-detail-tool:active,
@@ -13277,13 +13277,13 @@ body.ddae-dark #piscinaNextMonth:active{
 
 
 /* dDAE_2.256 - Dark mode contrast pass */
-body.ddae-dark .topservizi .icon-btn{
+body.ddae-dark .topbar .icon-btn{
   background: rgba(15,23,42,0.92) !important;
   border: 1px solid rgba(148,163,184,0.22) !important;
   box-shadow: none !important;
 }
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *{
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *{
   stroke: #58b7f4 !important;
   color: #58b7f4 !important;
   fill: none !important;
@@ -13510,7 +13510,7 @@ body.ddae-dark .prodotti-title,
 body.ddae-dark .section-title,
 body.ddae-dark .app-section-head h2,
 body.ddae-dark #page-calendario .app-section-head-row > .page-title,
-body.ddae-dark #page-pulizie .clean-topservizi > .page-title,
+body.ddae-dark #page-pulizie .clean-topbar > .page-title,
 body.ddae-dark #page-tassa .card > .hd > .page-title,
 body.ddae-dark #page-inserisci .card > .hd > .page-title,
 body.ddae-dark #page-operatori .card > .hd > .page-title,
@@ -13555,14 +13555,14 @@ body.ddae-dark #page-lavanderia .card > .hd,
 body.ddae-dark #page-ospiti .guest-cards-card > .hd,
 body.ddae-dark #page-calendario .app-section-head,
 body.ddae-dark #page-pulizie .hd.app-section-head,
-body.ddae-dark #page-pulizie .clean-topservizi{
+body.ddae-dark #page-pulizie .clean-topbar{
   border-color: rgba(255,255,255,0.92) !important;
 }
 
 body.ddae-dark #page-calendario .app-section-head,
 body.ddae-dark #page-calendario .app-section-head-row,
 body.ddae-dark #page-pulizie .hd.app-section-head,
-body.ddae-dark #page-pulizie .clean-topservizi{
+body.ddae-dark #page-pulizie .clean-topbar{
   background: transparent !important;
 }
 
@@ -13900,9 +13900,9 @@ body.ddae-dark #page-orepulizia .opcal-hours{
 
 
 /* dDAE_2.266 — Calendario dark mode: nomi ospiti e icone navigazione bianchi */
-body.ddae-dark #page-calendario .calendar-event-servizi .cal-fullname,
-body.ddae-dark #page-calendario.is-month-view .calendar-event-servizi .cal-fullname,
-body.ddae-dark #page-calendario .calendar-event-servizi .cal-fullname.is-compact{
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario.is-month-view .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname.is-compact{
   color: #ffffff !important;
 }
 body.ddae-dark #page-calendario .cal-nav-btn,
@@ -13933,7 +13933,7 @@ body.ddae-dark #page-statmensili .month-row{
 body.ddae-dark #page-statmensili .month-row::after{
   border-color: rgba(148,163,184,0.28) !important;
 }
-body.ddae-dark #page-statmensili .month-servizi{
+body.ddae-dark #page-statmensili .month-bar{
   background: rgba(148,163,184,0.24) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
 }
@@ -14577,13 +14577,13 @@ body.ddae-dark #page-calendario .cal-cell.has-booking .cal-fullname,
 body.ddae-dark #page-calendario .cal-cell.has-booking [class*="fullname"],
 body.ddae-dark #page-calendario .cal-cell.has-booking [class*="guest-name"],
 body.ddae-dark #page-calendario .cal-cell.has-booking [class*="guestName"],
-body.ddae-dark #page-calendario .calendar-event-servizi,
-body.ddae-dark #page-calendario .calendar-event-servizi .cal-cell-inner,
-body.ddae-dark #page-calendario .calendar-event-servizi .cal-initials,
-body.ddae-dark #page-calendario .calendar-event-servizi .cal-fullname,
-body.ddae-dark #page-calendario .calendar-event-servizi [class*="fullname"],
-body.ddae-dark #page-calendario .calendar-event-servizi [class*="guest-name"],
-body.ddae-dark #page-calendario .calendar-event-servizi [class*="guestName"]{
+body.ddae-dark #page-calendario .calendar-event-bar,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-cell-inner,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-initials,
+body.ddae-dark #page-calendario .calendar-event-bar .cal-fullname,
+body.ddae-dark #page-calendario .calendar-event-bar [class*="fullname"],
+body.ddae-dark #page-calendario .calendar-event-bar [class*="guest-name"],
+body.ddae-dark #page-calendario .calendar-event-bar [class*="guestName"]{
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
   opacity: 1 !important;
@@ -16044,7 +16044,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #page-pulizie .clean-grid .cell.slot.color-sky{ --laundry-save-color:#5bbcff !important; }
 #page-pulizie .clean-grid .cell.head.laundry-head.color-sky{ --laundry-head-bg:#5bbcff !important; }
 
-/* dDAE_2.334 — Tag palette popup above the top servizi */
+/* dDAE_2.334 — Tag palette popup above the top bar */
 #tagColorModal{
   z-index: 13050 !important;
 }
@@ -16089,7 +16089,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
 #tagColorModal .tag-color-modal-card{
   touch-action:manipulation;
 }
-#tagColorModal .tag-color-modeservizi{
+#tagColorModal .tag-color-modebar{
   gap:clamp(6px, 1.6vw, 10px);
   margin-bottom:6px;
 }
@@ -16111,7 +16111,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   }
 }
 @media (max-height:760px){
-  #tagColorModal .tag-color-modeservizi{
+  #tagColorModal .tag-color-modebar{
     gap:4px;
     margin-bottom:4px;
   }
@@ -16195,7 +16195,7 @@ body.ddae-dark #laundryDetailModal .laundry-detail-totalRow{
 .stat-graph-modal-body{padding:16px;gap:12px;}
 .stat-graph-modal-detail{font-size:12px;line-height:1.4;color:rgba(15,23,42,0.68);text-align:center;}
 .stat-graph-modal-canvas{padding:4px 0 2px;}
-.stat-graph-modal-canvas.is-servizis canvas{width:min(360px,80vw) !important;height:180px !important;}
+.stat-graph-modal-canvas.is-bars canvas{width:min(360px,80vw) !important;height:180px !important;}
 .stat-graph-modal-legend{max-height:min(34dvh,280px);overflow:auto;padding-right:2px;}
 .stats-graph-legend .legrow, .stat-graph-modal-legend .legrow{padding:10px 11px;border-radius:16px;background:rgba(255,255,255,0.92);border:1px solid rgba(15,23,42,0.05);}
 .stats-graph-legend .legname, .stat-graph-modal-legend .legname{font-size:12px;font-weight:800;color:rgba(15,23,42,0.84);}
@@ -16416,7 +16416,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 }
 
 /* dDAE_2.390 — Popup opacità design */
-.tag-color-modeservizi{
+.tag-color-modebar{
   grid-template-columns:repeat(var(--tag-color-mode-count, 4), minmax(0, 1fr));
   justify-content:space-between;
 }
@@ -16459,7 +16459,7 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill::after{
 
 
 /* dDAE_2.390 — Popup colore: celle più alte del 40% e tre tasti uniformi */
-#tagColorModal .tag-color-modeservizi{
+#tagColorModal .tag-color-modebar{
   display:grid !important;
   grid-template-columns:repeat(var(--tag-color-mode-count, 4), minmax(0, 1fr)) !important;
   justify-content:space-between !important;
@@ -16525,7 +16525,7 @@ body.ddae-dark .room-settings-section-card{
   margin-top:max(8px, env(safe-area-inset-top));
 }
 #tagColorModal .tag-color-modal-hd,
-#tagColorModal .tag-color-modeservizi{
+#tagColorModal .tag-color-modebar{
   flex:0 0 auto;
 }
 @media (max-height:860px){
@@ -16559,7 +16559,7 @@ body.ddae-dark .room-settings-section-card{
   #tagColorModal .tag-color-modal-actions{
     gap:6px;
   }
-  #tagColorModal .tag-color-modeservizi{
+  #tagColorModal .tag-color-modebar{
     padding:0 0 8px 0;
     gap:6px;
   }
@@ -16703,11 +16703,11 @@ body.ddae-dark #tagColorModal .tag-opacity-option.is-selected{
 }
 
 
-/* dDAE_2.409 — Dark mode: topservizi/title buttons white+azure, settings grid keeps colors, pills optimized */
-body.ddae-dark .topservizi .icon-btn,
+/* dDAE_2.409 — Dark mode: topbar/title buttons white+azure, settings grid keeps colors, pills optimized */
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue,
 body.ddae-dark .prodotti-header-btn,
 body.ddae-dark .laundry-detail-tool,
@@ -16722,14 +16722,14 @@ body.ddae-dark #piscinaNextMonth{
   -webkit-appearance: none !important;
   appearance: none !important;
 }
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue .ui-ico *,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue .ui-ico,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue .ui-ico *,
 body.ddae-dark .prodotti-header-btn .ui-ico,
@@ -16746,10 +16746,10 @@ body.ddae-dark #piscinaNextMonth .ui-ico *{
   color: #8fcae8 !important;
   fill: none !important;
 }
-body.ddae-dark .topservizi .icon-btn:active,
+body.ddae-dark .topbar .icon-btn:active,
 body.ddae-dark .hd-actions .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .guest-hd-actions .icon-btn.icon-btn-whiteblue:active,
-body.ddae-dark .clean-topservizi .icon-btn.icon-btn-whiteblue:active,
+body.ddae-dark .clean-topbar .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .app-section-head-row .icon-btn.icon-btn-whiteblue:active,
 body.ddae-dark .prodotti-header-btn:active,
 body.ddae-dark .laundry-detail-tool:active,
@@ -16882,11 +16882,11 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
   fill: none !important;
 }
 
-/* dDAE_2.413 — Dark mode canonical overrides (topservizi/header + anno/login pills + settings 3x3) */
-body.ddae-dark .topservizi .icon-btn,
+/* dDAE_2.413 — Dark mode canonical overrides (topbar/header + anno/login pills + settings 3x3) */
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn,
 body.ddae-dark .guest-hd-actions .icon-btn,
-body.ddae-dark .clean-topservizi .icon-btn,
+body.ddae-dark .clean-topbar .icon-btn,
 body.ddae-dark .app-section-head-row .icon-btn,
 body.ddae-dark .prodotti-header-btn,
 body.ddae-dark .laundry-detail-tool,
@@ -16902,14 +16902,14 @@ body.ddae-dark #piscinaNextMonth{
   -webkit-appearance: none !important;
   appearance: none !important;
 }
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
 body.ddae-dark .hd-actions .icon-btn .ui-ico,
 body.ddae-dark .hd-actions .icon-btn .ui-ico *,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico *,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico *,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico *,
 body.ddae-dark .prodotti-header-btn .ui-ico,
@@ -16927,10 +16927,10 @@ body.ddae-dark #piscinaNextMonth .ui-ico *{
   fill: none !important;
   -webkit-text-fill-color: #58b7f4 !important;
 }
-body.ddae-dark .topservizi .icon-btn:active,
+body.ddae-dark .topbar .icon-btn:active,
 body.ddae-dark .hd-actions .icon-btn:active,
 body.ddae-dark .guest-hd-actions .icon-btn:active,
-body.ddae-dark .clean-topservizi .icon-btn:active,
+body.ddae-dark .clean-topbar .icon-btn:active,
 body.ddae-dark .app-section-head-row .icon-btn:active,
 body.ddae-dark .prodotti-header-btn:active,
 body.ddae-dark .laundry-detail-tool:active,
@@ -17030,7 +17030,7 @@ body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .se
 }
 
 
-/* dDAE_2.413 — Dark mode cleanup definitivo: topservizi/title buttons dark, anno/logout dark, no pill doppia in impostazioni */
+/* dDAE_2.413 — Dark mode cleanup definitivo: topbar/title buttons dark, anno/logout dark, no pill doppia in impostazioni */
 body.ddae-dark #page-impostazioni .settings-account-name{
   display: none !important;
 }
@@ -17072,10 +17072,10 @@ body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label{
   -webkit-text-fill-color: #58b7f4 !important;
 }
 
-body.ddae-dark .topservizi .icon-btn,
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn,
 body.ddae-dark .guest-hd-actions .icon-btn,
-body.ddae-dark .clean-topservizi .icon-btn,
+body.ddae-dark .clean-topbar .icon-btn,
 body.ddae-dark .app-section-head-row .icon-btn,
 body.ddae-dark .prodotti-header-btn,
 body.ddae-dark .laundry-detail-tool,
@@ -17090,14 +17090,14 @@ body.ddae-dark #piscinaNextMonth{
   appearance: none !important;
 }
 
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
 body.ddae-dark .hd-actions .icon-btn .ui-ico,
 body.ddae-dark .hd-actions .icon-btn .ui-ico *,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico *,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico *,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico *,
 body.ddae-dark .prodotti-header-btn .ui-ico,
@@ -17116,10 +17116,10 @@ body.ddae-dark #piscinaNextMonth .ui-ico *{
   -webkit-text-fill-color: #58b7f4 !important;
 }
 
-body.ddae-dark .topservizi .icon-btn:active,
+body.ddae-dark .topbar .icon-btn:active,
 body.ddae-dark .hd-actions .icon-btn:active,
 body.ddae-dark .guest-hd-actions .icon-btn:active,
-body.ddae-dark .clean-topservizi .icon-btn:active,
+body.ddae-dark .clean-topbar .icon-btn:active,
 body.ddae-dark .app-section-head-row .icon-btn:active,
 body.ddae-dark .prodotti-header-btn:active,
 body.ddae-dark .laundry-detail-tool:active,
@@ -17130,7 +17130,7 @@ body.ddae-dark #piscinaNextMonth:active{
   background-color: rgba(12,24,48,0.98) !important;
 }
 
-/* dDAE_2.414 — Dark mode hard override: topservizi/title buttons + settings year/logout isolated from Design themes */
+/* dDAE_2.414 — Dark mode hard override: topbar/title buttons + settings year/logout isolated from Design themes */
 body.ddae-dark #page-impostazioni .settings-account-name,
 body.ddae-dark #page-opsettings .settings-account-name{
   display: none !important;
@@ -17140,10 +17140,10 @@ body.ddae-dark #page-impostazioni .settings-year-pill,
 body.ddae-dark #page-opsettings .settings-year-pill,
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill,
-body.ddae-dark .topservizi .icon-btn,
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn,
 body.ddae-dark .guest-hd-actions .icon-btn,
-body.ddae-dark .clean-topservizi .icon-btn,
+body.ddae-dark .clean-topbar .icon-btn,
 body.ddae-dark .app-section-head-row .icon-btn{
   background: rgba(8,18,38,0.96) !important;
   background-color: rgba(8,18,38,0.96) !important;
@@ -17161,10 +17161,10 @@ body.ddae-dark #page-opsettings .settings-year-pill{
 
 body.ddae-dark #page-impostazioni .settings-btn-logout-pill,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill,
-body.ddae-dark .topservizi .icon-btn,
+body.ddae-dark .topbar .icon-btn,
 body.ddae-dark .hd-actions .icon-btn,
 body.ddae-dark .guest-hd-actions .icon-btn,
-body.ddae-dark .clean-topservizi .icon-btn,
+body.ddae-dark .clean-topbar .icon-btn,
 body.ddae-dark .app-section-head-row .icon-btn{
   color: #58b7f4 !important;
   -webkit-text-fill-color: #58b7f4 !important;
@@ -17176,20 +17176,20 @@ body.ddae-dark #page-impostazioni .settings-btn-logout-pill .settings-btn-label,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill .ui-ico *,
 body.ddae-dark #page-opsettings .settings-btn-logout-pill .settings-btn-label,
-body.ddae-dark .topservizi .icon-btn .ui-ico,
-body.ddae-dark .topservizi .icon-btn .ui-ico *,
+body.ddae-dark .topbar .icon-btn .ui-ico,
+body.ddae-dark .topbar .icon-btn .ui-ico *,
 body.ddae-dark .hd-actions .icon-btn .ui-ico,
 body.ddae-dark .hd-actions .icon-btn .ui-ico *,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico,
 body.ddae-dark .guest-hd-actions .icon-btn .ui-ico *,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico,
-body.ddae-dark .clean-topservizi .icon-btn .ui-ico *,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico,
+body.ddae-dark .clean-topbar .icon-btn .ui-ico *,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico,
 body.ddae-dark .app-section-head-row .icon-btn .ui-ico *,
-body.ddae-dark .topservizi .icon-btn .backchev,
+body.ddae-dark .topbar .icon-btn .backchev,
 body.ddae-dark .hd-actions .icon-btn .backchev,
 body.ddae-dark .guest-hd-actions .icon-btn .backchev,
-body.ddae-dark .clean-topservizi .icon-btn .backchev,
+body.ddae-dark .clean-topbar .icon-btn .backchev,
 body.ddae-dark .app-section-head-row .icon-btn .backchev{
   color: #58b7f4 !important;
   stroke: #58b7f4 !important;
@@ -17239,7 +17239,7 @@ body.ddae-dark #page-statprenotazioni .stat-graph-modal-legend .legrow{
 /* dDAE_2.451 — iPhone: blocco totale scroll verticale nelle pagine statiche richieste */
 :root{
   --app-viewport-height: 100dvh;
-  --app-topservizi-offset: calc(64px + var(--safe-top));
+  --app-topbar-offset: calc(64px + var(--safe-top));
   --app-fixed-bottom-offset: 0px;
 }
 html.page-lock-vertical,
@@ -17252,18 +17252,18 @@ body.page-lock-vertical{
 }
 body.page-lock-vertical{
   min-height: 0 !important;
-  padding-top: var(--app-topservizi-offset) !important;
+  padding-top: var(--app-topbar-offset) !important;
 }
 body.page-lock-vertical main.wrap{
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
-  max-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   overflow: hidden !important;
   padding-bottom: 0 !important;
   box-sizing: border-box !important;
 }
 body.page-lock-vertical.page-lock-sync-footer main.wrap{
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset) - var(--app-fixed-bottom-offset)) !important;
-  max-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset) - var(--app-fixed-bottom-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
 }
 body.page-lock-vertical #page-home,
 body.page-lock-vertical #page-tassa,
@@ -17324,11 +17324,11 @@ body.page-lock-vertical #page-orepulizia{
   padding-top: 0 !important;
 }
 body.page-lock-vertical #page-orepulizia .opcal-wrap{
-  height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   padding-bottom: calc(var(--safe-bottom) + 18px) !important;
 }
 body.page-lock-vertical.page-lock-sync-footer #page-orepulizia .opcal-wrap{
-  height: calc(var(--app-viewport-height) - var(--app-topservizi-offset) - var(--app-fixed-bottom-offset)) !important;
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset) - var(--app-fixed-bottom-offset)) !important;
 }
 body.page-lock-vertical #page-home .home-grid,
 body.page-lock-vertical #page-statistiche .home-grid,
@@ -17520,7 +17520,7 @@ body.page-lock-vertical[data-page="pulizie"] #page-pulizie .clean-ops{
   min-height: 0 !important;
   padding-right: 0 !important;
 }
-#tagColorModal .tag-color-modeservizi{
+#tagColorModal .tag-color-modebar{
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   gap: clamp(6px, 1.6vw, 10px) !important;
@@ -19883,7 +19883,7 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 .guest-bookingnum-led.is-missing{ background:#facc15; }
 .guest-bookingnum-led.is-ready{ background:#22c55e; }
 .guest-report-card{ width:min(92vw,760px); max-height:min(86vh,980px); border-radius:34px; padding:18px 18px 22px; overflow:auto; }
-.guest-report-toolservizi{ display:flex; justify-content:flex-end; gap:12px; margin-bottom:10px; flex-wrap:nowrap; }
+.guest-report-toolbar{ display:flex; justify-content:flex-end; gap:12px; margin-bottom:10px; flex-wrap:nowrap; }
 .guest-report-tool{ width:56px; height:56px; border-radius:18px; flex:0 0 auto; }
 .guest-report-preview{ display:flex; justify-content:center; }
 .guest-report-preview img{ width:100%; height:auto; display:block; border-radius:28px; box-shadow:0 12px 30px rgba(15,23,42,0.12); }
@@ -19899,7 +19899,7 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 .spesa-category-field label, .spesa-category-field .floating-label, .spesa-category-field::before, .spesa-category-field::after{ display:none !important; content:none !important; }
 .spesa-category-field select[hidden]{ display:none !important; }
 .spesa-category-row{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); align-items:stretch; gap:6px; margin-top:0; width:100%; max-width:100%; overflow:visible; padding:0; box-sizing:border-box; -webkit-overflow-scrolling:touch; }
-.spesa-category-row::-webkit-scrollservizi{ display:none; }
+.spesa-category-row::-webkit-scrollbar{ display:none; }
 .spesa-category-btn{ min-width:0; width:100%; min-height:58px; flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:7px 2px; border-radius:14px; white-space:nowrap; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; overflow:hidden; }
 .spesa-category-btn .ui-ico{ width:18px; height:18px; stroke-width:2; }
 .spesa-category-btn span{ font-size:9px; line-height:1; font-weight:700; display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
@@ -19992,7 +19992,7 @@ body.ddae-dark .spesa-category-btn{box-shadow:none !important;}
   color:var(--ddae-range-modal-subtle, rgba(15,23,42,0.72));
   margin-bottom:12px;
 }
-.guest-date-range-monthservizi{
+.guest-date-range-monthbar{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -20187,7 +20187,7 @@ body.ddae-dark #page-lavanderia .laundry-date-range-field .laundry-date-range-tr
   text-align:center;
   font-weight:900;
 }
-.guest-date-range-monthservizi{ margin-top:4px; }
+.guest-date-range-monthbar{ margin-top:4px; }
 
 
 #page-spese .spese-date-range-field{
@@ -20473,7 +20473,7 @@ body.ddae-dark #licenseDateRangeField .license-date-range-trigger .guest-date-ra
 
 
 /* dDAE_2.641 — popup colore bold inline + no overlap in Design text section */
-#tagColorModal .tag-color-modeservizi{
+#tagColorModal .tag-color-modebar{
   display:grid !important;
   grid-template-columns:repeat(var(--tag-color-mode-count, 5), minmax(0, 1fr)) !important;
   grid-auto-flow:column !important;
@@ -20540,24 +20540,24 @@ html body, html body *:not(svg):not(path):not(rect):not(circle):not(line):not(po
 .guest-report-preview img{ width:100%; max-width:760px; height:auto; display:block; border-radius:30px; box-shadow:0 10px 24px rgba(15,23,42,0.10); background:#f8fbfd; }
 @media (max-width: 820px){
   .guest-report-card{ width:min(97vw,820px); padding:14px 14px 18px; border-radius:32px; }
-  .guest-report-toolservizi{ gap:10px; margin-bottom:12px; }
+  .guest-report-toolbar{ gap:10px; margin-bottom:12px; }
   .guest-report-tool{ width:58px; height:58px; border-radius:18px; }
   .guest-report-preview img{ width:100%; max-width:none; border-radius:26px; }
 }
 @media (max-width: 480px){
   .guest-report-card{ width:min(98vw,760px); max-height:min(90vh,1100px); padding:12px 12px 16px; border-radius:30px; }
-  .guest-report-toolservizi{ justify-content:center; gap:10px; }
+  .guest-report-toolbar{ justify-content:center; gap:10px; }
   .guest-report-tool{ width:60px; height:60px; border-radius:18px; }
   .guest-report-preview img{ width:100%; border-radius:24px; box-shadow:0 8px 18px rgba(15,23,42,0.10); }
 }
 
 /* dDAE_2.668 — report ospite mobile: preview più ampia e leggibile */
 .guest-report-card{ width:min(96vw,880px); max-height:min(92vh,1120px); padding:14px 14px 18px; }
-.guest-report-toolservizi{ gap:10px; margin-bottom:12px; }
+.guest-report-toolbar{ gap:10px; margin-bottom:12px; }
 .guest-report-preview img{ border-radius:30px; }
 @media (max-width: 600px){
   .guest-report-card{ width:min(98vw,760px); max-height:94vh; border-radius:30px; padding:10px 10px 14px; }
-  .guest-report-toolservizi{ justify-content:center; gap:8px; margin-bottom:10px; }
+  .guest-report-toolbar{ justify-content:center; gap:8px; margin-bottom:10px; }
   .guest-report-tool{ width:54px; height:54px; border-radius:18px; }
   .guest-report-preview img{ border-radius:24px; }
 }
@@ -20912,12 +20912,12 @@ body.ddae-dark #page-spese .spese-list-separator{
     padding-bottom: 12px !important;
   }
 }
-/* dDAE_2.698 — Dark Mode in topservizi accanto al titolo */
-.topservizi-center{
+/* dDAE_2.698 — Dark Mode in topbar accanto al titolo */
+.topbar-center{
   gap: 6px;
   pointer-events: none;
 }
-.topservizi-center .topservizi-dark-btn{
+.topbar-center .topbar-dark-btn{
   width: 32px;
   height: 32px;
   min-width: 32px;
@@ -20928,19 +20928,19 @@ body.ddae-dark #page-spese .spese-list-separator{
   pointer-events: auto;
   flex: 0 0 auto;
 }
-.topservizi-center .topservizi-dark-btn .ui-ico{
+.topbar-center .topbar-dark-btn .ui-ico{
   width: 18px;
   height: 18px;
 }
 @media (max-width: 380px){
-  .topservizi-center .topservizi-dark-btn{ width: 28px; height: 28px; min-width: 28px; }
-  .topservizi-center{ gap: 4px; }
+  .topbar-center .topbar-dark-btn{ width: 28px; height: 28px; min-width: 28px; }
+  .topbar-center{ gap: 4px; }
 }
 
 
 /* dDAE_2.698 — Dark mode solo in Impostazioni + operatore con toggle a slide e griglia 1x3 */
 #topDarkModeBtn,
-.topservizi-dark-btn{
+.topbar-dark-btn{
   display:none !important;
 }
 #page-opsettings .settings-title-row.settings-title-row-operator{
@@ -21281,9 +21281,9 @@ body.page-lock-vertical #page-prodotti .prodotti-list .prod-item-block{
 
 /* dDAE_2.730 — Lista spesa: header/tab fissi, SOLO le card scrollano davvero su iOS */
 body.page-lock-vertical[data-page="prodotti"] main.wrap{
-  height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
-  max-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   overflow: hidden !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -22021,8 +22021,8 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
 }
 
 /* dDAE_2.793 — Calendario: punti tipologia letto in basso, orizzontali e centrati nella cella */
-#page-calendario .calendar-event-servizi .cal-dots,
-#page-calendario.is-month-view .calendar-event-servizi .cal-dots{
+#page-calendario .calendar-event-bar .cal-dots,
+#page-calendario.is-month-view .calendar-event-bar .cal-dots{
   left: 50%;
   right: auto;
   top: auto;
@@ -22037,8 +22037,8 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   height: 8px;
   margin: 0;
 }
-#page-calendario .calendar-event-servizi .cal-cell-inner,
-#page-calendario.is-month-view .calendar-event-servizi .cal-cell-inner{
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   position: relative;
   padding-bottom: 24px;
 }
@@ -22052,8 +22052,8 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   z-index:4;
 }
 #page-calendario .cal-flags,
-#page-calendario .calendar-event-servizi .cal-flags,
-#page-calendario.is-month-view .calendar-event-servizi .cal-flags{
+#page-calendario .calendar-event-bar .cal-flags,
+#page-calendario.is-month-view .calendar-event-bar .cal-flags{
   position:absolute !important;
   left:4px !important;
   right:auto !important;
@@ -22068,8 +22068,8 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   z-index:5 !important;
 }
 #page-calendario .cal-channel-tag,
-#page-calendario .calendar-event-servizi .cal-channel-tag,
-#page-calendario.is-month-view .calendar-event-servizi .cal-channel-tag{
+#page-calendario .calendar-event-bar .cal-channel-tag,
+#page-calendario.is-month-view .calendar-event-bar .cal-channel-tag{
   position:absolute !important;
   top:4px !important;
   right:4px !important;
@@ -22078,8 +22078,8 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   z-index:6 !important;
 }
 #page-calendario .cal-cell.has-booking .cal-cell-inner,
-#page-calendario .calendar-event-servizi .cal-cell-inner,
-#page-calendario.is-month-view .calendar-event-servizi .cal-cell-inner{
+#page-calendario .calendar-event-bar .cal-cell-inner,
+#page-calendario.is-month-view .calendar-event-bar .cal-cell-inner{
   padding-top:24px !important;
 }
 
@@ -23161,7 +23161,7 @@ body.confirm-yesno-open #laundryCatalogEditorModal:not([hidden]){
 }
 body.confirm-yesno-open #app,
 body.confirm-yesno-open .app-shell,
-body.confirm-yesno-open .topservizi,
+body.confirm-yesno-open .topbar,
 body.confirm-yesno-open main,
 body.confirm-yesno-open header{
   pointer-events:none !important;
@@ -23204,7 +23204,7 @@ body:not(.confirm-yesno-open) #confirmYesNoModal[aria-hidden="true"]{
 }
 body:not(.confirm-yesno-open) #app,
 body:not(.confirm-yesno-open) .app-shell,
-body:not(.confirm-yesno-open) .topservizi,
+body:not(.confirm-yesno-open) .topbar,
 body:not(.confirm-yesno-open) main,
 body:not(.confirm-yesno-open) header{
   pointer-events:auto;
@@ -23291,7 +23291,7 @@ body.confirm-yesno-open #confirmYesNoModal *{
 #ddae870ConfirmNo{ background:rgba(220,68,55,0.90) !important; color:#fff !important; }
 body.ddae870-confirm-open #app,
 body.ddae870-confirm-open .app-shell,
-body.ddae870-confirm-open .topservizi,
+body.ddae870-confirm-open .topbar,
 body.ddae870-confirm-open main,
 body.ddae870-confirm-open header{
   pointer-events:none !important;
@@ -23384,7 +23384,7 @@ body.ddae870-confirm-open #ddae870ConfirmOverlay *{
 #ddae2877ConfirmOverlay #ddae2877ConfirmNo{ background:#c5221f !important; }
 body.ddae2877-confirm-open #app,
 body.ddae2877-confirm-open .app-shell,
-body.ddae2877-confirm-open .topservizi,
+body.ddae2877-confirm-open .topbar,
 body.ddae2877-confirm-open main,
 body.ddae2877-confirm-open header{
   pointer-events:none !important;
@@ -23848,7 +23848,7 @@ body.ddae2879-confirm-open #ddae2879ConfirmOverlay *{
   line-height:1.05 !important;
   font-weight:900 !important;
 }
-.guest-date-range-monthservizi{
+.guest-date-range-monthbar{
   position:relative !important;
   display:grid !important;
   grid-template-columns:54px minmax(0,1fr) 54px !important;
@@ -24409,7 +24409,7 @@ body.ddae-dark #page-inserisci .spesa-category-btn.is-muted .ui-ico{
   #page-inserisci .spesa-category-btn{ min-height:56px !important; height:56px !important; }
 }
 
-/* dDAE_2.903 - Statistiche Spese: nessuno switch duplicato nella topservizi */
+/* dDAE_2.903 - Statistiche Spese: nessuno switch duplicato nella topbar */
 #statSpeseTopTools .budget-toggle,
 #statSpeseBudgetToggle{
   display:none !important;
@@ -26253,12 +26253,12 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 /* dDAE_2.936 — Calendario: evidenziazione giorno selezionato anche sulle celle con prenotazione */
 #page-calendario .cal-cell.has-booking.is-today-col::before,
 #page-calendario.is-month-view .cal-cell.has-booking.is-today-col::before,
-#page-calendario .calendar-event-servizi.is-today-col::before,
-#page-calendario.is-month-view .calendar-event-servizi.is-today-col::before{
+#page-calendario .calendar-event-bar.is-today-col::before,
+#page-calendario.is-month-view .calendar-event-bar.is-today-col::before{
   opacity: .78;
 }
 #page-calendario .cal-cell.has-booking.is-today-col::after,
-#page-calendario .calendar-event-servizi.is-today-col::after{
+#page-calendario .calendar-event-bar.is-today-col::after{
   content: "";
   position: absolute;
   top: 0;
@@ -26277,8 +26277,8 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
 }
 #page-calendario .cal-cell.has-booking.is-today-col .cal-cell-inner,
 #page-calendario .cal-cell.has-booking.is-today-col .cal-corner-chrome,
-#page-calendario .calendar-event-servizi.is-today-col .cal-cell-inner,
-#page-calendario .calendar-event-servizi.is-today-col .cal-corner-chrome{
+#page-calendario .calendar-event-bar.is-today-col .cal-cell-inner,
+#page-calendario .calendar-event-bar.is-today-col .cal-corner-chrome{
   position: relative;
   z-index: 3;
 }
@@ -26292,7 +26292,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   z-index: 70 !important;
 }
 #page-calendario .cal-cell.has-booking.is-today-col .cal-corner-chrome,
-#page-calendario .calendar-event-servizi.is-today-col .cal-corner-chrome{
+#page-calendario .calendar-event-bar.is-today-col .cal-corner-chrome{
   z-index: 60 !important;
 }
 #page-calendario .cal-today-column-outline{
@@ -26562,7 +26562,7 @@ body.ddae-dark #page-statamministratore .statgen-compare-year-value{
   line-height:1 !important;
   text-align:right !important;
 }
-#page-statmensili .month-row.is-expanded .month-servizi{
+#page-statmensili .month-row.is-expanded .month-bar{
   height:16px !important;
   margin-bottom:16px !important;
 }
@@ -26742,7 +26742,7 @@ body.ddae-dark #page-statmensili .month-expanded-metric span{
   overflow:visible !important;
   text-overflow:clip !important;
 }
-#page-statmensili .month-row.is-expanded .month-servizi{
+#page-statmensili .month-row.is-expanded .month-bar{
   width:100% !important;
   max-width:none !important;
   align-self:stretch !important;
@@ -26914,7 +26914,7 @@ body.ddae-dark #page-statmensili .month-expanded-colhead{
 #page-statmensili .month-row.is-expanded .month-val{
   font-size:clamp(23px, 5.9vw, 35px) !important;
 }
-#page-statmensili .month-row.is-expanded .month-servizi{
+#page-statmensili .month-row.is-expanded .month-bar{
   height:14px !important;
   margin-bottom:12px !important;
 }
@@ -27007,7 +27007,7 @@ body.ddae-dark #page-statmensili .month-expanded-colhead{
 }
 @media (max-height:740px){
   #page-statmensili .month-row.is-expanded .month-head{ margin-bottom:8px !important; }
-  #page-statmensili .month-row.is-expanded .month-servizi{ height:12px !important; margin-bottom:9px !important; }
+  #page-statmensili .month-row.is-expanded .month-bar{ height:12px !important; margin-bottom:9px !important; }
   #page-statmensili .month-expanded-panel{ gap:6px !important; }
   #page-statmensili .month-expanded-trend{ padding:8px 10px !important; border-radius:16px !important; }
   #page-statmensili .month-expanded-trend-arrow{ width:40px !important; height:40px !important; flex-basis:40px !important; font-size:27px !important; border-radius:14px !important; }
@@ -27318,7 +27318,7 @@ body.ddae-dark .laundry-weekday-btn{ background:rgba(8,18,38,.72); color:#f8fbff
 body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24); color:#f2d7a8; border-color:rgba(215,196,163,.7); }
 
 
-/* dDAE_2.969 — Design categoria Alert: colori LED topservizi editabili */
+/* dDAE_2.969 — Design categoria Alert: colori LED topbar editabili */
 #roomSettingsAlertDots{
   --room-settings-cols: 7;
 }
@@ -27401,7 +27401,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
 }
 
 
-/* dDAE_2.969 — LED alert topservizi luminosi + propagazione colori Alert in scheda ospite */
+/* dDAE_2.969 — LED alert topbar luminosi + propagazione colori Alert in scheda ospite */
 :root{
   --ddae-alert-led-highlight: inset 0 1px 2px rgba(255,255,255,.72), inset 0 -2px 3px rgba(0,0,0,.20);
   --ddae-alert-off-shadow: inset 0 1px 2px rgba(255,255,255,.45), inset 0 -2px 3px rgba(15,23,42,.10);
@@ -28186,21 +28186,21 @@ html body.page-lock-vertical[data-page="impostazioni"] main.wrap{
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
-  max-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
+  max-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   padding-bottom: calc(var(--safe-bottom) + 84px) !important;
 }
 body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni,
 html body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni{
   height: auto !important;
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   max-height: none !important;
   overflow: visible !important;
 }
 body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni .settings-page-reference,
 html body.page-lock-vertical[data-page="impostazioni"] #page-impostazioni .settings-page-reference{
   height: auto !important;
-  min-height: calc(var(--app-viewport-height) - var(--app-topservizi-offset)) !important;
+  min-height: calc(var(--app-viewport-height) - var(--app-topbar-offset)) !important;
   max-height: none !important;
   overflow: visible !important;
   padding-bottom: calc(var(--safe-bottom) + 120px) !important;
@@ -28237,7 +28237,7 @@ html:has(body[data-page="opsettings"]){
 body[data-page="impostazioni"] main.wrap,
 body[data-page="opsettings"] main.wrap{
   height:auto !important;
-  min-height:calc(100dvh - var(--app-topservizi-offset, 64px)) !important;
+  min-height:calc(100dvh - var(--app-topbar-offset, 64px)) !important;
   max-height:none !important;
   overflow:visible !important;
   padding-bottom:calc(var(--safe-bottom) + 140px) !important;
@@ -28245,7 +28245,7 @@ body[data-page="opsettings"] main.wrap{
 body[data-page="impostazioni"] #page-impostazioni,
 body[data-page="opsettings"] #page-opsettings{
   height:auto !important;
-  min-height:calc(100dvh - var(--app-topservizi-offset, 64px)) !important;
+  min-height:calc(100dvh - var(--app-topbar-offset, 64px)) !important;
   max-height:none !important;
   overflow:visible !important;
   display:block;
@@ -28539,7 +28539,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   box-shadow:var(--ddae-alert-cashreceipt-shadow, 0 0 16px rgba(34,197,94,.46)) !important;
 }
 
-/* dDAE_3.019 — Card popup alert topservizi cliccabili */
+/* dDAE_3.019 — Card popup alert topbar cliccabili */
 .guest-alert-card{ cursor:pointer; -webkit-tap-highlight-color: transparent; }
 .guest-alert-card .guest-alert-dismiss{ cursor:pointer; }
 
@@ -28662,7 +28662,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
   color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
   -webkit-text-fill-color:var(--cardtext, var(--mcol,#2B7CB4)) !important;
 }
-#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-servizi{
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-bar{
   width:100% !important;
   height:14px !important;
   margin-bottom:12px !important;
@@ -28705,7 +28705,7 @@ body.calendar-insert-dragging #page-calendario .cal-cell.is-insert-range{
 #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-left,
 #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-head,
 #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-val,
-#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-servizi,
+#page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-bar,
 #page-statmensili .month-stack:not(.has-expanded-month) .month-general-card .month-expanded-panel{
   display:none !important;
 }
@@ -29182,7 +29182,7 @@ body[data-page="ospite"] #page-ospite .guest-form-card.is-view{
 }
 
 
-/* dDAE_3.046 — Account operatore: LED topservizi sempre su una sola riga */
+/* dDAE_3.046 — Account operatore: LED topbar sempre su una sola riga */
 body[data-role="operatore"] .top-led-grid,
 .top-led-grid.is-operator-leds{
   display: grid !important;
@@ -29219,7 +29219,7 @@ body[data-role="operatore"] #prodLedPulizia,
 body[data-role="operatore"] #laundryReportLed,
 .top-led-grid.is-operator-leds #laundryReportLed{ grid-column: 3 !important; }
 
-/* dDAE_3.048 — LED alert topservizi: dimensione +20%, distanza +30% */
+/* dDAE_3.048 — LED alert topbar: dimensione +20%, distanza +30% */
 #topLedGrid{
   grid-template-columns:repeat(9, 18px) !important;
   grid-auto-columns:18px !important;
@@ -29244,7 +29244,7 @@ body[data-role="operatore"] #topLedGrid,
   gap:11.7px !important;
 }
 
-/* dDAE_3.049 — Topservizi: tutti i LED ridotti del 20% */
+/* dDAE_3.049 — Topbar: tutti i LED ridotti del 20% */
 #topLedGrid{
   grid-template-columns:repeat(9, 14.4px) !important;
   grid-auto-columns:14.4px !important;
@@ -29287,7 +29287,7 @@ body[data-role="operatore"] #topLedGrid,
 }
 
 
-/* dDAE_3.062 — LED topservizi contanti senza ricevuta: stesso bagliore degli altri alert */
+/* dDAE_3.062 — LED topbar contanti senza ricevuta: stesso bagliore degli altri alert */
 #dbLedCashReceipt.top-led.top-led-alert.is-cashreceipt:not(.is-off){
   background:var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,.96)) !important;
   border-color:var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1)) !important;
@@ -29315,12 +29315,12 @@ body[data-role="operatore"] #topLedGrid,
   touch-action:manipulation !important;
 }
 
-/* dDAE_3.076 — LED alert spostati dalla top servizi al layer basso sempre visibile */
+/* dDAE_3.076 — LED alert spostati dalla top bar al layer basso sempre visibile */
 body{
   padding-bottom: calc(var(--ddae-bottom-led-safe-space, 78px) + env(safe-area-inset-bottom, 0px)) !important;
 }
-.topservizi #topLedGrid,
-.topservizi .top-led-grid{
+.topbar #topLedGrid,
+.topbar .top-led-grid{
   display:none !important;
 }
 .bottom-led-layer{
@@ -29460,12 +29460,12 @@ body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
 body{
   padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important;
 }
-.topservizi #topLedGrid,
-.topservizi .top-led-grid{
+.topbar #topLedGrid,
+.topbar .top-led-grid{
   display:none !important;
 }
 .sync-footer,
-#homeSyncServizi.sync-footer{
+#homeSyncBar.sync-footer{
   bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
   z-index: 700 !important;
 }
@@ -29645,7 +29645,7 @@ body.ddae-dark .ddae-bottom-fixed-surface{
   border-top-color: rgba(255,255,255,0.12) !important;
 }
 .sync-footer,
-#homeSyncServizi.sync-footer{
+#homeSyncBar.sync-footer{
   bottom: calc(46px + env(safe-area-inset-bottom, 0px)) !important;
   z-index: 700 !important;
 }
@@ -29676,7 +29676,7 @@ body[data-page="lavanderia"] #page-lavanderia .content{
   padding-bottom: calc(var(--ddae-bottom-fixed-surface-height) + 18px) !important;
 }
 
-/* dDAE_3.076 — SYNC nella topservizi al posto del logo; servizira bassa solo sotto i LED alert */
+/* dDAE_3.076 — SYNC nella topbar al posto del logo; barra bassa solo sotto i LED alert */
 :root{
   --sync-footer-space: 0px;
   --ddae-bottom-led-safe-space: 58px;
@@ -29686,8 +29686,8 @@ body[data-page="lavanderia"] #page-lavanderia .content{
   overflow: visible !important;
   flex: 0 0 auto !important;
 }
-.topservizi .home-sync-top-btn,
-#topserviziBrandLeft #goDbSync.home-sync-top-btn{
+.topbar .home-sync-top-btn,
+#topbarBrandLeft #goDbSync.home-sync-top-btn{
   width: 44px !important;
   min-width: 44px !important;
   max-width: 44px !important;
@@ -29704,14 +29704,14 @@ body[data-page="lavanderia"] #page-lavanderia .content{
   touch-action: manipulation !important;
   -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
 }
-.topservizi .home-sync-top-btn .ui-ico,
-#topserviziBrandLeft #goDbSync.home-sync-top-btn .ui-ico{
+.topbar .home-sync-top-btn .ui-ico,
+#topbarBrandLeft #goDbSync.home-sync-top-btn .ui-ico{
   width: 24px !important;
   height: 24px !important;
   stroke-width: 2.3 !important;
 }
 .sync-footer,
-#homeSyncServizi.sync-footer,
+#homeSyncBar.sync-footer,
 .ddae-bottom-fixed-surface,
 #ddaeBottomFixedSurface{
   display: none !important;
@@ -30367,8 +30367,8 @@ body.ddae-dark .room-kind-badge{
 }
 
 
-/* dDAE_3.101 — pagina Servizi 2x2 e dark mode */
-#page-statistichecopy .servizi-grid{
+/* dDAE_3.101 — pagina Bar 2x2 e dark mode */
+#page-statistichecopy .bar-grid{
   display:grid !important;
   grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
   grid-template-rows:repeat(2, minmax(0, 1fr)) !important;
@@ -30377,21 +30377,21 @@ body.ddae-dark .room-kind-badge{
   margin:0 auto !important;
   align-content:start !important;
 }
-#page-statistichecopy .servizi-grid > .home-main{
+#page-statistichecopy .bar-grid > .home-main{
   width:100% !important;
   min-width:0 !important;
 }
-#page-statistichecopy .servizi-grid > .home-main{
+#page-statistichecopy .bar-grid > .home-main{
   opacity:1 !important;
   cursor:default !important;
   -webkit-tap-highlight-color:transparent;
 }
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main .home-main-label,
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-label,
 body.ddae-dark #page-statistiche #goStatPiscinaReport .home-main-label{
   color:#e5edf8 !important;
   -webkit-text-fill-color:#e5edf8 !important;
 }
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main .home-main-glyph,
+body.ddae-dark #page-statistichecopy .bar-grid > .home-main .home-main-glyph,
 body.ddae-dark #page-statistiche #goStatPiscinaReport .home-main-glyph{
   box-shadow:none !important;
   backdrop-filter:none !important;
@@ -30403,19 +30403,19 @@ body.ddae-dark #page-statistichecopy .stats-title{
 }
 
 
-/* dDAE_3.105 — Griglie Servizi 3 colonne x 5 righe */
-.servizi-category-page .servizi-page{min-height:100%;}
-.servizi-slots-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:12px;width:100%;max-width:560px;margin:0 auto;padding:0 14px 18px;box-sizing:border-box;}
-.servizi-slots-grid .servizi-slot-btn{width:100%;min-width:0;height:82px;min-height:82px;margin:0;display:flex;align-items:center;justify-content:center;position:relative;}
-.servizi-slot-empty{display:block;width:1px;height:1px;opacity:0;pointer-events:none;}
-@media (max-width:430px){.servizi-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.servizi-slots-grid .servizi-slot-btn{height:76px;min-height:76px;}}
+/* dDAE_3.105 — Griglie Bar 3 colonne x 5 righe */
+.bar-category-page .bar-page{min-height:100%;}
+.bar-slots-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:12px;width:100%;max-width:560px;margin:0 auto;padding:0 14px 18px;box-sizing:border-box;}
+.bar-slots-grid .bar-slot-btn{width:100%;min-width:0;height:82px;min-height:82px;margin:0;display:flex;align-items:center;justify-content:center;position:relative;}
+.bar-slot-empty{display:block;width:1px;height:1px;opacity:0;pointer-events:none;}
+@media (max-width:430px){.bar-slots-grid{gap:10px;padding-left:12px;padding-right:12px}.bar-slots-grid .bar-slot-btn{height:76px;min-height:76px;}}
 
 
-/* dDAE_3.111 — Slot Servizi visibili e stabili */
-.servizi-category-page:not([hidden]){display:block !important;}
-.servizi-category-page .servizi-page{display:block !important; min-height:calc(100dvh - 150px);}
-.servizi-category-page .servizi-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
-.servizi-category-page .servizi-slots-grid .servizi-slot-btn{
+/* dDAE_3.111 — Slot Bar visibili e stabili */
+.bar-category-page:not([hidden]){display:block !important;}
+.bar-category-page .bar-page{display:block !important; min-height:calc(100dvh - 150px);}
+.bar-category-page .bar-slots-grid{display:grid !important;visibility:visible !important;opacity:1 !important;}
+.bar-category-page .bar-slots-grid .bar-slot-btn{
   display:flex !important;
   visibility:visible !important;
   opacity:1;
@@ -30424,36 +30424,36 @@ body.ddae-dark #page-statistichecopy .stats-title{
   border-radius:22px;
   box-shadow:none;
 }
-body.ddae-dark .servizi-category-page .servizi-slots-grid .servizi-slot-btn{
+body.ddae-dark .bar-category-page .bar-slots-grid .bar-slot-btn{
   background:rgba(15,23,42,.82);
   border-color:rgba(148,163,184,.34);
 }
 
 
-/* dDAE_3.111 — correzione definitiva pagine Servizi: slot 3x5 e ritorno Servizi */
-body[data-page="servizicocktail"] #serviziBackTop,
-body[data-page="servizivini"] #serviziBackTop,
-body[data-page="servizibirre"] #serviziBackTop,
-body[data-page="servizianalcolici"] #serviziBackTop{
+/* dDAE_3.111 — correzione definitiva pagine Bar: slot 3x5 e ritorno Bar */
+body[data-page="barcocktail"] #barBackTop,
+body[data-page="barvini"] #barBackTop,
+body[data-page="barbirre"] #barBackTop,
+body[data-page="baranalcolici"] #barBackTop{
   display:inline-flex !important;
   visibility:visible !important;
   opacity:1 !important;
 }
-body[data-page="servizicocktail"] #page-servizicocktail,
-body[data-page="servizivini"] #page-servizivini,
-body[data-page="servizibirre"] #page-servizibirre,
-body[data-page="servizianalcolici"] #page-servizianalcolici{
+body[data-page="barcocktail"] #page-barcocktail,
+body[data-page="barvini"] #page-barvini,
+body[data-page="barbirre"] #page-barbirre,
+body[data-page="baranalcolici"] #page-baranalcolici{
   display:block !important;
   visibility:visible !important;
   opacity:1 !important;
 }
-.servizi-category-page .stats-title{
+.bar-category-page .stats-title{
   display:block !important;
   visibility:visible !important;
   opacity:1 !important;
   min-height:24px;
 }
-.servizi-category-page .servizi-slots-grid{
+.bar-category-page .bar-slots-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:repeat(5,76px) !important;
@@ -30463,7 +30463,7 @@ body[data-page="servizianalcolici"] #page-servizianalcolici{
   padding:0 12px 18px !important;
   box-sizing:border-box !important;
 }
-.servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
   display:flex !important;
   width:100% !important;
   height:76px !important;
@@ -30477,26 +30477,26 @@ body[data-page="servizianalcolici"] #page-servizianalcolici{
   background:#ffffff !important;
   box-shadow:none !important;
 }
-body.ddae-dark .servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+body.ddae-dark .bar-category-page .bar-slots-grid > .bar-slot-btn{
   background:#172033 !important;
   border-color:rgba(203,213,225,.48) !important;
 }
 @media (min-width:431px){
-  .servizi-category-page .servizi-slots-grid{
+  .bar-category-page .bar-slots-grid{
     grid-template-rows:repeat(5,82px) !important;
     gap:12px !important;
     padding-left:14px !important;
     padding-right:14px !important;
   }
-  .servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+  .bar-category-page .bar-slots-grid > .bar-slot-btn{
     height:82px !important;
     min-height:82px !important;
   }
 }
 
 
-/* dDAE_3.111 — slot Servizi 3x5 come i tasti Home */
-.servizi-category-page .servizi-slots-grid{
+/* dDAE_3.111 — slot Bar 3x5 come i tasti Home */
+.bar-category-page .bar-slots-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-auto-rows:auto !important;
@@ -30507,7 +30507,7 @@ body.ddae-dark .servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
   box-sizing:border-box !important;
   align-items:start !important;
 }
-.servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
   appearance:none !important;
   -webkit-appearance:none !important;
   display:flex !important;
@@ -30529,7 +30529,7 @@ body.ddae-dark .servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
 }
-.servizi-category-page .servizi-slot-glyph{
+.bar-category-page .bar-slot-glyph{
   display:flex !important;
   width:clamp(83px,23.4vw,112px) !important;
   height:clamp(83px,23.4vw,112px) !important;
@@ -30546,19 +30546,19 @@ body.ddae-dark .servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
   opacity:1 !important;
   pointer-events:none !important;
 }
-body.ddae-dark .servizi-category-page .servizi-slot-glyph{
+body.ddae-dark .bar-category-page .bar-slot-glyph{
   border-color:rgba(148,163,184,.34) !important;
   background:var(--glass) !important;
 }
-.servizi-slot-modal-card{width:min(360px,calc(100vw - 32px));text-align:center;}
-.servizi-slot-modal-placeholder{height:18px;}
+.bar-slot-modal-card{width:min(360px,calc(100vw - 32px));text-align:center;}
+.bar-slot-modal-placeholder{height:18px;}
 @media (max-width:360px){
-  .servizi-category-page .servizi-slots-grid{gap:9px !important;padding-left:8px !important;padding-right:8px !important;}
-  .servizi-category-page .servizi-slot-glyph{width:82px !important;height:82px !important;min-width:82px !important;min-height:82px !important;}
+  .bar-category-page .bar-slots-grid{gap:9px !important;padding-left:8px !important;padding-right:8px !important;}
+  .bar-category-page .bar-slot-glyph{width:82px !important;height:82px !important;min-width:82px !important;min-height:82px !important;}
 }
 
-/* dDAE_3.111 — griglia Servizi 3x5 senza sovrapposizioni */
-.servizi-category-page .servizi-slots-grid{
+/* dDAE_3.111 — griglia Bar 3x5 senza sovrapposizioni */
+.bar-category-page .bar-slots-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:none !important;
@@ -30568,7 +30568,7 @@ body.ddae-dark .servizi-category-page .servizi-slot-glyph{
   align-items:start !important;
   justify-items:stretch !important;
 }
-.servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
   position:relative !important;
   width:100% !important;
   height:auto !important;
@@ -30576,7 +30576,7 @@ body.ddae-dark .servizi-category-page .servizi-slot-glyph{
   aspect-ratio:1 / 1 !important;
   overflow:visible !important;
 }
-.servizi-category-page .servizi-slot-glyph{
+.bar-category-page .bar-slot-glyph{
   position:static !important;
   inset:auto !important;
   transform:none !important;
@@ -30590,11 +30590,11 @@ body.ddae-dark .servizi-category-page .servizi-slot-glyph{
   box-sizing:border-box !important;
 }
 @media (max-width:360px){
-  .servizi-category-page .servizi-slots-grid{
+  .bar-category-page .bar-slots-grid{
     column-gap:9px !important;
     row-gap:13px !important;
   }
-  .servizi-category-page .servizi-slot-glyph{
+  .bar-category-page .bar-slot-glyph{
     width:100% !important;
     height:100% !important;
     min-width:0 !important;
@@ -30629,7 +30629,7 @@ body.ddae-dark .servizi-category-page .servizi-slot-glyph{
 .cocktail-image-preview{width:100%;aspect-ratio:16/9;margin-top:12px;border-radius:18px;background-size:cover;background-position:center;border:1px solid rgba(148,163,184,.4);}
 .cocktail-save-btn{width:100%;min-width:0;min-height:56px;margin:0;border:0;border-radius:16px;background:#1677b8;color:#fff;font-size:16px;font-weight:800;box-shadow:none;}
 .cocktail-slot-name{display:block;max-width:100%;margin-top:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700;color:var(--ink);}
-.servizi-category-page .cocktail-slot-filled .servizi-slot-glyph{border-color:rgba(22,119,184,.48)!important;}
+.bar-category-page .cocktail-slot-filled .bar-slot-glyph{border-color:rgba(22,119,184,.48)!important;}
 .cocktail-view-card{padding-top:66px;}
 .cocktail-view-close{position:absolute;top:14px;right:14px;}
 .cocktail-view-card h2{text-align:center;margin:0 0 16px;font-size:28px;text-transform:uppercase;}
@@ -30648,14 +30648,14 @@ body.ddae-dark .cocktail-close-btn,body.ddae-dark .cocktail-import-btn,body.ddae
 
 
 /* dDAE_3.126 — popup Cocktail sopra ogni layer e campo prezzo */
-#serviziSlotModal.cocktail-editor-modal,
+#barSlotModal.cocktail-editor-modal,
 #cocktailViewModal.cocktail-view-modal{
   position:fixed !important;
   inset:0 !important;
   z-index:2147483647 !important;
   isolation:isolate !important;
 }
-#serviziSlotModal .cocktail-editor-card,
+#barSlotModal .cocktail-editor-card,
 #cocktailViewModal .cocktail-view-card{
   position:relative !important;
   z-index:1 !important;
@@ -30670,10 +30670,10 @@ body.ddae-dark .cocktail-view-price{color:#7dd3fc;}
 
 
 /* dDAE_3.126 — slot Cocktail a dimensione fissa, spazio nome riservato e immagine visibile */
-.servizi-category-page .servizi-slots-grid{
+.bar-category-page .bar-slots-grid{
   row-gap:18px !important;
 }
-.servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
   display:grid !important;
   grid-template-rows:auto 22px !important;
   align-content:start !important;
@@ -30682,7 +30682,7 @@ body.ddae-dark .cocktail-view-price{color:#7dd3fc;}
   min-height:0 !important;
   overflow:visible !important;
 }
-.servizi-category-page .servizi-slot-glyph{
+.bar-category-page .bar-slot-glyph{
   width:100% !important;
   height:auto !important;
   aspect-ratio:1 / 1 !important;
@@ -30693,7 +30693,7 @@ body.ddae-dark .cocktail-view-price{color:#7dd3fc;}
   box-sizing:border-box !important;
   overflow:hidden !important;
 }
-.servizi-category-page .cocktail-slot-name{
+.bar-category-page .cocktail-slot-name{
   display:flex !important;
   align-items:flex-start !important;
   justify-content:center !important;
@@ -30711,15 +30711,15 @@ body.ddae-dark .cocktail-view-price{color:#7dd3fc;}
 
 
 /* dDAE_3.126 — persistenza immagine slot e testo nero */
-.servizi-category-page .servizi-slots-grid{row-gap:22px !important;}
-.servizi-category-page .cocktail-slot-name{color:#000 !important;}
-body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;}
-.servizi-category-page .servizi-slot-glyph{background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
+.bar-category-page .bar-slots-grid{row-gap:22px !important;}
+.bar-category-page .cocktail-slot-name{color:#000 !important;}
+body.ddae-dark .bar-category-page .cocktail-slot-name{color:#000 !important;}
+.bar-category-page .bar-slot-glyph{background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
 
 
 /* dDAE_3.126 — immagine cocktail renderizzata come elemento reale nello slot */
-.servizi-category-page .servizi-slot-glyph{position:relative !important;}
-.servizi-category-page .servizi-slot-glyph .cocktail-slot-image{
+.bar-category-page .bar-slot-glyph{position:relative !important;}
+.bar-category-page .bar-slot-glyph .cocktail-slot-image{
   position:absolute !important;
   inset:0 !important;
   width:100% !important;
@@ -30731,9 +30731,9 @@ body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;
   pointer-events:none !important;
   z-index:2 !important;
 }
-.servizi-category-page .servizi-slot-glyph .cocktail-slot-image[hidden]{display:none !important;}
-.servizi-category-page .servizi-slot-glyph.has-cocktail-image::before,
-.servizi-category-page .servizi-slot-glyph.has-cocktail-image::after{display:none !important;content:none !important;}
+.bar-category-page .bar-slot-glyph .cocktail-slot-image[hidden]{display:none !important;}
+.bar-category-page .bar-slot-glyph.has-cocktail-image::before,
+.bar-category-page .bar-slot-glyph.has-cocktail-image::after{display:none !important;content:none !important;}
 
 /* dDAE_3.126 — addebito cocktail alla stanza */
 .cocktail-charge-btn,
@@ -30752,7 +30752,7 @@ body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;
 
 
 /* dDAE_3.126 — popup addebito sopra la scheda Cocktail */
-#serviziSlotModal.cocktail-editor-modal,
+#barSlotModal.cocktail-editor-modal,
 #cocktailViewModal.cocktail-view-modal{
   z-index:2147483600 !important;
 }
@@ -30771,10 +30771,10 @@ body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;
 
 
 /* dDAE_3.126 — correzione stabile popup cocktail: chiusura, icone e quantità */
-#serviziSlotModal .cocktail-editor,
+#barSlotModal .cocktail-editor,
 #cocktailViewModal .cocktail-view-card,
 #cocktailChargeModal .cocktail-charge-card{position:relative !important;}
-#serviziSlotModal .cocktail-close-btn,
+#barSlotModal .cocktail-close-btn,
 #cocktailViewModal .cocktail-close-btn,
 #cocktailChargeModal .cocktail-close-btn{
   position:absolute !important; top:16px !important; right:16px !important;
@@ -30810,25 +30810,25 @@ body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;
 .cocktail-charge-picker-option.is-previous-day{color:#d70015;}
 .cocktail-charge-picker-option.is-selected{background:#dff2ff;}
 
-/* dDAE_3.139 — Servizi: sei categorie in griglia 3x2 */
-#page-statistichecopy .servizi-grid{
+/* dDAE_3.139 — Bar: sei categorie in griglia 3x2 */
+#page-statistichecopy .bar-grid{
   display:grid !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:repeat(2,auto) !important;
   align-items:stretch !important;
 }
-#page-statistichecopy .servizi-grid > .home-main{
+#page-statistichecopy .bar-grid > .home-main{
   width:100% !important;
   min-width:0 !important;
   margin:0 !important;
 }
 
 
-/* dDAE_3.139 — nomi prodotti Servizi su più righe e scheda senza pulsante X */
-.servizi-category-page .servizi-slots-grid > .servizi-slot-btn{
+/* dDAE_3.139 — nomi prodotti Bar su più righe e scheda senza pulsante X */
+.bar-category-page .bar-slots-grid > .bar-slot-btn{
   grid-template-rows:auto auto !important;
 }
-.servizi-category-page .cocktail-slot-name{
+.bar-category-page .cocktail-slot-name{
   display:block !important;
   width:100% !important;
   height:auto !important;
@@ -30845,19 +30845,19 @@ body.ddae-dark .servizi-category-page .cocktail-slot-name{color:#000 !important;
 }
 .cocktail-view-card{padding-top:22px !important;}
 
-/* dDAE_3.141 — Addebito Servizi rapido: quantità multi-tap + selezione stanza da calendario */
+/* dDAE_3.141 — Addebito Bar rapido: quantità multi-tap + selezione stanza da calendario */
 #cocktailChargeModal .cocktail-charge-card.cocktail-charge-compact{width:min(88vw,430px);padding:18px;border-radius:28px;overflow:hidden;}
 .cocktail-charge-two-buttons{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center;}
 .cocktail-charge-action{min-width:0;height:112px;border:2px solid rgba(15,23,42,.18);border-radius:24px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;box-shadow:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .cocktail-charge-qty-action output{font:900 48px/1 system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;color:inherit;}
 .cocktail-charge-room-action .ui-ico{width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.calendar-servizi-charge-action{width:100%;height:72px;margin-top:18px;border:4px solid #2f7d16;border-radius:10px;background:#8bd33d;color:#174c0b;display:flex;align-items:center;justify-content:center;box-shadow:none;}
-.calendar-servizi-charge-action svg{width:42px;height:42px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;}
-.calendar-servizi-charge-action:disabled{opacity:.5;}
+.calendar-bar-charge-action{width:100%;height:72px;margin-top:18px;border:4px solid #2f7d16;border-radius:10px;background:#8bd33d;color:#174c0b;display:flex;align-items:center;justify-content:center;box-shadow:none;}
+.calendar-bar-charge-action svg{width:42px;height:42px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;}
+.calendar-bar-charge-action:disabled{opacity:.5;}
 body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-color:#475569;}
 
-/* dDAE_3.146 — Servizi: griglia rigida 3x2, celle e testi perfettamente allineati */
-#page-statistichecopy .servizi-grid{
+/* dDAE_3.146 — Bar: griglia rigida 3x2, celle e testi perfettamente allineati */
+#page-statistichecopy .bar-grid{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:repeat(2,138px) !important;
   grid-auto-rows:138px !important;
@@ -30866,7 +30866,7 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   row-gap:18px !important;
   column-gap:16px !important;
 }
-#page-statistichecopy .servizi-grid > .home-main{
+#page-statistichecopy .bar-grid > .home-main{
   height:138px !important;
   min-height:138px !important;
   max-height:138px !important;
@@ -30879,13 +30879,13 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   padding:0 !important;
   box-sizing:border-box !important;
 }
-#page-statistichecopy .servizi-grid > .home-main .home-main-glyph{
+#page-statistichecopy .bar-grid > .home-main .home-main-glyph{
   align-self:start !important;
   justify-self:center !important;
   margin:0 !important;
 }
-#page-statistichecopy .servizi-grid > .home-main .home-main-label,
-#page-statistichecopy .servizi-grid > .home-main .home-main-label.small{
+#page-statistichecopy .bar-grid > .home-main .home-main-label,
+#page-statistichecopy .bar-grid > .home-main .home-main-label.small{
   width:100% !important;
   height:42px !important;
   min-height:42px !important;
@@ -30900,13 +30900,13 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   box-sizing:border-box !important;
 }
 
-/* dDAE_3.148 — Servizi: distanza reale e uniforme tra riquadro icona e testo */
-#page-statistichecopy .servizi-grid{
+/* dDAE_3.148 — Bar: distanza reale e uniforme tra riquadro icona e testo */
+#page-statistichecopy .bar-grid{
   grid-template-rows:repeat(2,160px) !important;
   grid-auto-rows:160px !important;
   row-gap:24px !important;
 }
-#page-statistichecopy .servizi-grid > .home-main{
+#page-statistichecopy .bar-grid > .home-main{
   height:160px !important;
   min-height:160px !important;
   max-height:160px !important;
@@ -30914,11 +30914,11 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   row-gap:14px !important;
   overflow:visible !important;
 }
-#page-statistichecopy .servizi-grid > .home-main .home-main-glyph{
+#page-statistichecopy .bar-grid > .home-main .home-main-glyph{
   margin:0 !important;
 }
-#page-statistichecopy .servizi-grid > .home-main .home-main-label,
-#page-statistichecopy .servizi-grid > .home-main .home-main-label.small{
+#page-statistichecopy .bar-grid > .home-main .home-main-label,
+#page-statistichecopy .bar-grid > .home-main .home-main-label.small{
   height:50px !important;
   min-height:50px !important;
   max-height:50px !important;
@@ -30926,159 +30926,4 @@ body.ddae-dark .cocktail-charge-action{background:#111827;color:#f8fafc;border-c
   padding:0 2px !important;
   align-items:flex-start !important;
   line-height:1.12 !important;
-}
-
-/* dDAE_3.150 — Dark mode: pulsanti Servizi e popup Dati/Backup ottimizzati, stile flat */
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main{
-  background:#202733 !important;
-  background-image:none !important;
-  border:1px solid #3b4758 !important;
-  color:#eef4fb !important;
-  box-shadow:none !important;
-  opacity:1 !important;
-}
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main .home-main-glyph{
-  background:#2b3442 !important;
-  background-image:none !important;
-  border:1px solid #465469 !important;
-  box-shadow:none !important;
-  opacity:1 !important;
-}
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main .home-main-label,
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main .home-main-label.small{
-  color:#f1f5f9 !important;
-  -webkit-text-fill-color:#f1f5f9 !important;
-  text-shadow:none !important;
-}
-body.ddae-dark #page-statistichecopy .servizi-grid > .home-main:active{
-  background:#26303d !important;
-  transform:none !important;
-}
-
-body.ddae-dark #settingsDataModal .settings-data-card,
-body.ddae-dark #settingsBackupModal .modal-card,
-body.ddae-dark #dbMenuModal .db-menu-card{
-  background:#171d27 !important;
-  background-image:none !important;
-  border:1px solid #364255 !important;
-  color:#f1f5f9 !important;
-  box-shadow:none !important;
-}
-body.ddae-dark #settingsDataModal .settings-data-title,
-body.ddae-dark #settingsBackupModal .operatori-editor-title,
-body.ddae-dark #dbMenuModal .db-menu-title{
-  color:#f8fafc !important;
-  -webkit-text-fill-color:#f8fafc !important;
-}
-body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn,
-body.ddae-dark #settingsBackupModal .settings-backup-actions .btn,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-tile,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-option{
-  background:#252e3b !important;
-  background-image:none !important;
-  border:1px solid #45536a !important;
-  color:#eaf2fb !important;
-  -webkit-text-fill-color:#eaf2fb !important;
-  box-shadow:none !important;
-  opacity:1 !important;
-}
-body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn .settings-btn-label,
-body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn .ui-ico,
-body.ddae-dark #settingsBackupModal .settings-backup-actions .btn,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-tile span,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-tile .ui-ico,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-option .db-option-label{
-  color:#eaf2fb !important;
-  -webkit-text-fill-color:#eaf2fb !important;
-  stroke:currentColor !important;
-}
-body.ddae-dark #settingsDataModal .settings-data-actions .settings-btn:active,
-body.ddae-dark #settingsBackupModal .settings-backup-actions .btn:active,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-tile:active,
-body.ddae-dark #dbMenuModal .db-menu-grid .db-option:active{
-  background:#2e3948 !important;
-  transform:none !important;
-}
-body.ddae-dark #settingsDataModal .settings-data-close{
-  background:#8f2530 !important;
-  background-image:none !important;
-  border:1px solid #b4404b !important;
-  color:#fff !important;
-  -webkit-text-fill-color:#fff !important;
-  box-shadow:none !important;
-}
-body.ddae-dark #settingsBackupModal .settings-backup-note{
-  color:#cbd5e1 !important;
-  -webkit-text-fill-color:#cbd5e1 !important;
-}
-body.ddae-dark #settingsBackupModal #settingsBackupImport{
-  color:#ef9aa2 !important;
-  -webkit-text-fill-color:#ef9aa2 !important;
-}
-body.ddae-dark #settingsBackupModal #settingsBackupExport{
-  color:#79d69a !important;
-  -webkit-text-fill-color:#79d69a !important;
-}
-
-
-/* dDAE_3.150 — Calendario: lampeggio dell'intera prenotazione con check-out nel giorno selezionato */
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
-  position:relative !important;
-  isolation:isolate !important;
-  overflow:hidden !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid #000 !important;
-  border-radius:inherit !important;
-  background:rgba(255,255,255,.08);
-  pointer-events:none;
-  z-index:8;
-  will-change:opacity, box-shadow;
-  animation:ddaeRoomCheckoutLedPulse .82s ease-in-out infinite !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink > *{
-  position:relative;
-  z-index:2;
-}
-
-
-/* dDAE_3.152 — selettore stato ON/OFF nel popup colore del check-in */
-.tag-color-stateservizi{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  padding:0 var(--tag-color-grid-pad, 8px) 8px;
-  flex:0 0 auto;
-}
-.tag-color-stateservizi[hidden]{ display:none !important; }
-.tag-color-state-btn{
-  min-height:42px;
-  border-radius:16px;
-  border:2px solid rgba(14,116,170,.25);
-  background:rgba(255,255,255,.88);
-  color:#17324d;
-  font:800 15px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  letter-spacing:.06em;
-  box-shadow:0 3px 10px rgba(15,23,42,.08);
-  -webkit-tap-highlight-color:transparent;
-}
-.tag-color-state-btn.is-active,
-.tag-color-state-btn[aria-pressed="true"]{
-  border-color:#0e74aa;
-  background:rgba(14,116,170,.16);
-  box-shadow:0 0 0 3px rgba(14,116,170,.16),0 3px 10px rgba(15,23,42,.10);
-}
-body.dark-mode .tag-color-state-btn,
-html.dark-mode .tag-color-state-btn{
-  background:rgba(30,41,59,.92);
-  color:#f8fafc;
-  border-color:rgba(125,211,252,.32);
-}
-body.dark-mode .tag-color-state-btn.is-active,
-html.dark-mode .tag-color-state-btn.is-active{
-  border-color:#7dd3fc;
-  background:rgba(14,116,170,.42);
 }
