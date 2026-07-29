@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.156";
+const BUILD_VERSION = "3.157";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38126,7 +38126,7 @@ function renderCalendarioWeek(){
       bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
-        if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
+        if (isRoomSlotLocale(r) && dIso === todayISO()) cell.classList.add("is-checkout-booking-blink");
         try{
           const chrome = document.createElement("div");
           chrome.className = "cal-corner-chrome";
@@ -39360,7 +39360,7 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
-      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
+      if (isRoomSlotLocale(r) && dIso === todayISO()) cell.classList.add("is-checkout-booking-blink");
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
@@ -44113,7 +44113,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.156';
+  var BUILD_TAG='dDAE_3.157';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48844,7 +48844,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.156',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.157',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -31021,7 +31021,7 @@ body.ddae-dark #settingsBackupModal #settingsBackupExport{
 }
 
 
-/* dDAE_3.150 — Calendario: lampeggio dell'intera prenotazione con check-out nel giorno selezionato */
+/* dDAE_3.157 — Calendario: bordo nero lampeggiante solo sul locale occupato nel giorno corrente */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   position:relative !important;
   isolation:isolate !important;
