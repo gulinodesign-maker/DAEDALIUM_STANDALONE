@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.154";
+const BUILD_VERSION = "3.155";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -44070,7 +44070,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.154';
+  var BUILD_TAG='dDAE_3.155';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48683,6 +48683,27 @@ try{
           state.guestViewItem.importo_servizi=total;
           state.guestViewItem.servizi_preview=preview;
         }
+        // Aggiorna anche l'oggetto ospite usato direttamente dal payload della cella.
+        // In alcune viste calendario non appartiene alle collezioni di state: senza
+        // questo aggiornamento lo zoom continuava a mostrare la sola prenotazione.
+        if(guest&&typeof guest==='object'){
+          guest.servizi_totale=total;
+          guest.serviziTotal=total;
+          guest.importo_servizi=total;
+          guest.servizi_preview=preview;
+          try{
+            const fin=(typeof _guestStayFinancials==='function')?_guestStayFinancials(guest):null;
+            const remaining=Number(fin&&fin.remaining);
+            if(isFinite(remaining)){
+              guest.rimanenza_da_pagare=remaining;
+              guest.rimanenzaDaPagare=remaining;
+              guest.remaining_to_pay=remaining;
+              guest.remainingToPay=remaining;
+              guest.guestRemaining=remaining;
+              guest.remaining=remaining;
+            }
+          }catch(_){ }
+        }
       }catch(_){}
       const back=String(ctx.returnPage||'servizicocktail');
       window.__ddaeServiziChargeContext=null;
@@ -48780,7 +48801,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.154',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.155',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
