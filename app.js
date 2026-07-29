@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.156";
+const BUILD_VERSION = "3.157";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11671,7 +11671,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn'
 ];
@@ -11694,6 +11694,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsChannelBtn: 'orange-4',
   settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
+  settingsHotelLocationBtn: 'green-5',
     settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
@@ -12917,7 +12918,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn'
 ];
 
@@ -12999,7 +13000,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -21825,11 +21826,11 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -21893,6 +21894,7 @@ function __defaultSingleActionButtonVisual__(btn){
     guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
+    guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
@@ -22279,7 +22281,7 @@ function __bindSingleActionButtonColorHold__(btn){
 
 function __ensureGuestContactActionButtonVisualDefaults__(){
   try{
-    const ids = ['guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail'];
+    const ids = ['guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestHotelLocationWhatsApp','guestEmailActionMail'];
     const map = __loadSingleActionButtonVisualMap__();
     let changed = false;
     ids.forEach((id) => {
@@ -42073,6 +42075,17 @@ function triggerGuestContactAction(action){
       openGuestEmailAction();
       return;
     }
+    if (safeAction === 'hotel-location'){
+      const raw = __guestPhoneRawForContactAction__();
+      const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
+      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
+      if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
+      if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
+      const text = 'Posizione hotel: ' + link;
+      const url = 'https://wa.me/' + encodeURIComponent(wa) + '?text=' + encodeURIComponent(text);
+      try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
+      return;
+    }
     triggerGuestPhoneAction(safeAction);
   }catch(_){ }
 }
@@ -44113,7 +44126,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.156';
+  var BUILD_TAG='dDAE_3.157';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48844,7 +48857,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.156',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.157',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49068,4 +49081,63 @@ try{
   ['pointerup','pointercancel'].forEach(n=>window.addEventListener(n,end,{capture:true,passive:false}));
   window.addEventListener('click',click,{capture:true,passive:false});
   window.addEventListener('contextmenu',context,{capture:true,passive:false});
+})();
+
+
+/* dDAE_3.157 — Posizione hotel configurabile e invio WhatsApp ospite */
+(function __setupHotelLocationFeature__(){
+  const STORAGE_KEY = 'dDAE_hotel_location_link_v1';
+  function byId(id){ return document.getElementById(id); }
+  function closeModal(){
+    const modal = byId('hotelLocationModal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    try{ document.body.classList.remove('modal-open'); }catch(_){ }
+  }
+  function openModal(){
+    const modal = byId('hotelLocationModal');
+    const input = byId('hotelLocationLinkInput');
+    if (!modal || !input) return;
+    try{ input.value = String(localStorage.getItem(STORAGE_KEY) || ''); }catch(_){ input.value = ''; }
+    try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden','false');
+    try{ document.body.classList.add('modal-open'); }catch(_){ }
+    setTimeout(()=>{ try{ input.focus(); }catch(_){ } }, 80);
+  }
+  function save(){
+    const input = byId('hotelLocationLinkInput');
+    let value = String(input?.value || '').trim();
+    if (value && !/^https?:\/\//i.test(value)) value = 'https://' + value;
+    if (value){
+      try{ new URL(value); }catch(_){ try{ toast('Link posizione non valido', 'orange'); }catch(__){ } return; }
+    }
+    try{ localStorage.setItem(STORAGE_KEY, value); }catch(_){ }
+    closeModal();
+    try{ toast(value ? 'Posizione hotel salvata' : 'Posizione hotel rimossa', 'green'); }catch(_){ }
+  }
+  function bind(el, fn){
+    if (!el || el.dataset.hotelLocationBound === '1') return;
+    el.dataset.hotelLocationBound = '1';
+    if (typeof bindFastTap === 'function') bindFastTap(el, fn); else el.addEventListener('click', fn);
+  }
+  function init(){
+    bind(byId('settingsHotelLocationBtn'), openModal);
+    bind(byId('hotelLocationCloseBtn'), closeModal);
+    bind(byId('hotelLocationCancelBtn'), closeModal);
+    bind(byId('hotelLocationSaveBtn'), save);
+    const modal = byId('hotelLocationModal');
+    if (modal && modal.dataset.hotelBackdropBound !== '1'){
+      modal.dataset.hotelBackdropBound = '1';
+      modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
+    }
+    try{ __applySingleActionButtonVisual__(byId('hotelLocationCancelBtn')); }catch(_){ }
+    try{ __applySingleActionButtonVisual__(byId('hotelLocationSaveBtn')); }catch(_){ }
+    try{ __bindSingleActionButtonColorHold__(byId('hotelLocationCancelBtn')); }catch(_){ }
+    try{ __bindSingleActionButtonColorHold__(byId('hotelLocationSaveBtn')); }catch(_){ }
+    try{ setupLauncherIconLongPressPalette(); }catch(_){ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else setTimeout(init,0);
+  window.addEventListener('pageshow', init);
 })();

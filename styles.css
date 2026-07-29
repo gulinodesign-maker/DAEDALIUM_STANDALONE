@@ -31082,3 +31082,58 @@ html.dark-mode .tag-color-state-btn.is-active{
   border-color:#7dd3fc;
   background:rgba(14,116,170,.42);
 }
+
+
+/* dDAE_3.157 — quinto tasto contatti e popup posizione hotel */
+#guestContactActionDock{
+  gap:12px !important;
+}
+#guestContactActionDock .guest-contact-action-btn{
+  flex:0 0 58px !important;
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  min-height:58px !important;
+  max-width:58px !important;
+  max-height:58px !important;
+}
+#guestContactActionDock .guest-location-action-btn .ui-ico{
+  width:29px !important;
+  height:29px !important;
+}
+.hotel-location-card{
+  width:min(620px, calc(100vw - 32px)) !important;
+  max-width:calc(100vw - 32px) !important;
+}
+.hotel-location-field{
+  margin-top:8px !important;
+}
+.hotel-location-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  align-items:center !important;
+  gap:12px !important;
+  margin-top:18px !important;
+}
+.hotel-location-actions .btn{
+  width:100% !important;
+  min-height:52px !important;
+}
+#settingsDataModal .settings-btn-hotel-location{
+  color:#20a85a;
+}
+@media (max-width:360px){
+  #guestContactActionDock{
+    width:calc(100vw - 20px) !important;
+    gap:8px !important;
+  }
+  #guestContactActionDock .guest-contact-action-btn{
+    flex-basis:54px !important;
+    width:54px !important;
+    height:54px !important;
+    min-width:54px !important;
+    min-height:54px !important;
+    max-width:54px !important;
+    max-height:54px !important;
+  }
+}
