@@ -31045,7 +31045,7 @@ body.ddae-dark #settingsBackupModal #settingsBackupExport{
 }
 
 
-/* dDAE_3.152 — selettore stato ON/OFF nel popup colore del check-in */
+/* dDAE_3.154 — selettore stato ON/OFF nel popup colore del check-in */
 .tag-color-stateservizi{
   display:grid;
   grid-template-columns:1fr 1fr;

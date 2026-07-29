@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.152";
+const BUILD_VERSION = "3.154";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38665,6 +38665,15 @@ function __currentOperatorCanViewGuestBalance__(){
   }catch(_){ return false; }
 }
 function __calendarGuestRemainingBalanceValue__(guest){
+  const cachedServicesTotal = (g)=>{
+    try{
+      const id = (typeof guestIdOf === 'function') ? guestIdOf(g) : String(g?.id || g?.ID || '').trim();
+      if (!id) return null;
+      const cache = state?.guestServicesCacheById?.[String(id)];
+      const total = Number(cache?.total);
+      return isFinite(total) ? Math.max(0, Math.round(total * 100) / 100) : null;
+    }catch(_){ return null; }
+  };
   const n = (x)=>{
     if (typeof x === 'number' && isFinite(x)) return x;
     const v = Number(String(x ?? '0').replace(',', '.'));
@@ -38675,14 +38684,18 @@ function __calendarGuestRemainingBalanceValue__(guest){
     try{
       if (typeof _guestStayFinancials === 'function'){
         const fin = _guestStayFinancials(g);
-        const val = Number(fin && fin.remaining);
+        const cachedServices = cachedServicesTotal(g);
+        const val = cachedServices === null
+          ? Number(fin && fin.remaining)
+          : (Number(fin?.total || 0) + cachedServices - Number(fin?.discount || 0) - Number(fin?.dep || 0) - Number(fin?.saldo || 0));
         if (isFinite(val)) return Math.max(0, Math.round(val * 100) / 100);
       }
     }catch(_){ }
     const explicit = g?.rimanenza_da_pagare ?? g?.rimanenzaDaPagare ?? g?.remaining_to_pay ?? g?.remainingToPay ?? g?.guestRemaining ?? g?.remaining;
     if (explicit !== undefined && explicit !== null && String(explicit).trim() !== '') return Math.max(0, Math.round(n(explicit) * 100) / 100);
     const total = n(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? g?.total ?? g?.totale ?? g?.importo ?? g?.prezzo);
-    const services = n(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? g?.servizi ?? g?.services);
+    const cachedServices = cachedServicesTotal(g);
+    const services = cachedServices === null ? n(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? g?.servizi ?? g?.services) : cachedServices;
     const discount = n(g?.sconto ?? g?.discount ?? g?.sconto_importo ?? g?.scontoImporto);
     const dep = n(g?.acconto_importo ?? g?.accontoImporto ?? g?.acconto_pagato ?? g?.accontoPagato ?? g?.deposit ?? g?.deposito ?? g?.acconto);
     const saldo = n(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo);
@@ -44057,7 +44070,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.152';
+  var BUILD_TAG='dDAE_3.154';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48767,7 +48780,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.152',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.154',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
