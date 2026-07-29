@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.155";
+const BUILD_VERSION = "3.156";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38581,6 +38581,47 @@ function ensureCalendarCellZoomLayer(){
   return layer;
 }
 
+
+async function __calendarRefreshGuestServicesBalance__(payload, stage, zoomKey){
+  try{
+    const guest = payload && payload.guest;
+    const guestId = String(guest && ((typeof guestIdOf === 'function' ? guestIdOf(guest) : guest.id) || '') || '').trim();
+    if (!guestId || !stage) return;
+    const response = await api('servizi', { method:'GET', params:{ ospite_id:guestId }, showLoader:false });
+    const rows = (typeof normalizeServiziResponse === 'function') ? normalizeServiziResponse(response) : [];
+    if (!Array.isArray(rows)) return;
+    const items = rows.filter((row)=>{
+      const deleted = row?.isDeleted ?? row?.is_deleted ?? row?.deleted;
+      return !(deleted === true || String(deleted) === '1');
+    });
+    const total = (typeof serviziComputeTotal === 'function')
+      ? serviziComputeTotal(items)
+      : items.reduce((sum,row)=>sum + (Number(row?.importo ?? row?.amount) || 0) * (Number(row?.qty) || 1), 0);
+    const roundedTotal = Math.max(0, Math.round((Number(total) || 0) * 100) / 100);
+    if (!state.guestServicesCacheById) state.guestServicesCacheById = {};
+    state.guestServicesCacheById[guestId] = { items:items.slice(), total:roundedTotal, loadedAt:Date.now() };
+    const collections = [state.guests, state.guestRows, state.ospitiRows, state.ospiti, state.calendar && state.calendar.guests];
+    const apply = (row)=>{
+      if (!row || typeof row !== 'object') return;
+      row.servizi_totale = roundedTotal;
+      row.serviziTotal = roundedTotal;
+      row.importo_servizi = roundedTotal;
+    };
+    apply(guest);
+    collections.forEach((list)=>{
+      if (!Array.isArray(list)) return;
+      list.forEach((row)=>{
+        const rowId = String((typeof guestIdOf === 'function' ? guestIdOf(row) : row?.id) || '').trim();
+        if (rowId === guestId) apply(row);
+      });
+    });
+    const layer = document.getElementById('calendarCellZoomLayer');
+    if (!layer || layer.hidden || String(layer.dataset.zoomKey || '') !== String(zoomKey || '')) return;
+    const value = stage.querySelector('.cal-cell-balance strong');
+    if (value) value.textContent = __calendarGuestRemainingBalanceText__(guest);
+  }catch(_){ }
+}
+
 function openCalendarCellZoom(cell, payload){
   const layer = ensureCalendarCellZoomLayer();
   const stage = document.getElementById('calendarCellZoomStage');
@@ -38600,6 +38641,8 @@ function openCalendarCellZoom(cell, payload){
     if (cell) cell.classList.add('is-zoom-source');
   }catch(_){ }
   stage.innerHTML = buildCalendarCellZoomMarkup(payload);
+  const activeZoomKey = String(layer.dataset.zoomKey || '');
+  try{ __calendarRefreshGuestServicesBalance__(payload, stage, activeZoomKey); }catch(_){ }
   try{
     const zoomCard = stage.querySelector('.calendar-cell-zoom');
     if (zoomCard){
@@ -44070,7 +44113,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.155';
+  var BUILD_TAG='dDAE_3.156';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48801,7 +48844,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.155',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.156',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
