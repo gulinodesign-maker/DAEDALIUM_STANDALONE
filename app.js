@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.157";
+const BUILD_VERSION = "3.158";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -1423,6 +1423,13 @@ async function __localApiImpostazioni__(method, body){
         ? body.operatori_catalogo
         : JSON.stringify(body.operatori_catalogo ?? []);
       upsert({ key:"operatori_catalogo", value: raw, createdAt: now });
+    }
+
+    if (body && body.stanze_catalogo !== undefined){
+      const raw = typeof body.stanze_catalogo === "string"
+        ? body.stanze_catalogo
+        : JSON.stringify(body.stanze_catalogo ?? []);
+      upsert({ key:"stanze_catalogo", value: raw, createdAt: now });
     }
 
     if (body && body.channel_catalogo !== undefined){
@@ -15191,6 +15198,35 @@ function __roomCatalogParseRaw__(raw){
     return __roomCatalogParseRaw__(parsed);
   }catch(_){ return []; }
 }
+let __roomCatalogRecoveryScheduled__ = false;
+function __scheduleRoomCatalogRecoveryToSettings__(catalog){
+  try{
+    if (__roomCatalogRecoveryScheduled__) return;
+    const clean = __roomCatalogNormalizeList__(catalog);
+    if (!clean.length) return;
+    __roomCatalogRecoveryScheduled__ = true;
+    setTimeout(async () => {
+      try{
+        const rows0 = await __tblGet__('impostazioni', []);
+        const rows = Array.isArray(rows0) ? rows0.slice() : [];
+        const keyOf = (row) => String(row?.key || row?.Key || '').trim().toLowerCase();
+        const hasCatalog = rows.some((row) => keyOf(row) === 'stanze_catalogo' && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
+        if (hasCatalog) return;
+        const now = __nowIso__();
+        const upsert = (key, value) => {
+          const idx = rows.findIndex((row) => keyOf(row) === key);
+          const prev = idx >= 0 ? rows[idx] : {};
+          const next = { ...prev, key, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
+          if (idx >= 0) rows[idx] = next; else rows.push(next);
+        };
+        upsert('stanze_catalogo', JSON.stringify(clean));
+        upsert('numero_stanze', String(clean.length));
+        await __tblSet__('impostazioni', rows);
+      }catch(_){ }
+      finally{ __roomCatalogRecoveryScheduled__ = false; }
+    }, 0);
+  }catch(_){ __roomCatalogRecoveryScheduled__ = false; }
+}
 function getRoomCatalogFromSettings(){
   try{
     const cached = state?.settings?.roomCatalogGlobal;
@@ -15210,6 +15246,7 @@ function getRoomCatalogFromSettings(){
     const localClean = __roomCatalogParseRaw__(localStorage.getItem(__ROOM_CATALOG_STORAGE_KEY__) || '');
     if (localClean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = localClean; }catch(_){ }
+      try{ __scheduleRoomCatalogRecoveryToSettings__(localClean); }catch(_){ }
       return localClean;
     }
   }catch(_){ }
@@ -44126,7 +44163,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.157';
+  var BUILD_TAG='dDAE_3.158';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48857,7 +48894,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.157',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.158',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49141,3 +49178,5 @@ try{
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow', init);
 })();
+
+/* dDAE_3.158 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
