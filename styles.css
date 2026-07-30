@@ -31226,3 +31226,14 @@ html.dark-mode .tag-color-state-btn.is-active{
     animation:ddaeCalendarCheckoutBorderBlink .82s linear infinite !important;
   }
 }
+
+
+/* dDAE_3.166 — Calendario: smussatura coerente del bordo alert checkout */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
+  border-radius:13px !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  border-radius:13px !important;
+  clip-path:inset(0 round 13px);
+  -webkit-clip-path:inset(0 round 13px);
+}
