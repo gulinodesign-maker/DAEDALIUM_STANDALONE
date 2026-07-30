@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.165";
+const BUILD_VERSION = "3.163";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38107,34 +38107,6 @@ function applyCalRoomFreeze(mode){
   try{ parts.wrap.dataset.calMode = String(mode || "week"); }catch(_){ }
 }
 
-
-/* dDAE_3.165 — Calendario: colore bordo checkout dalla rimanenza reale della card */
-function __calendarCheckoutBalanceClass__(info){
-  try{
-    const guestId = String(info?.guestId || '').trim();
-    if (guestId){
-      const sources = [state?.calendar?.guests, state?.guestRows, state?.guests, state?.ospitiRows, state?.ospiti];
-      let found = false;
-      let realRemaining = 0;
-      for (const src of sources){
-        if (!Array.isArray(src)) continue;
-        for (const row of src){
-          try{
-            const rowId = String(row?.id ?? row?.ID ?? row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? (typeof guestIdOf === 'function' ? guestIdOf(row) : '') ?? '').trim();
-            if (rowId !== guestId) continue;
-            found = true;
-            const value = Number(__calendarGuestRemainingBalanceValue__(row));
-            if (isFinite(value)) realRemaining = Math.max(realRemaining, value);
-          }catch(_){ }
-        }
-      }
-      if (found) return realRemaining <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
-    }
-    const direct = Number(info?.remainingToPay);
-    return isFinite(direct) && direct <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
-  }catch(_){ return 'is-checkout-balance-due'; }
-}
-
 function renderCalendarioWeek(){
   const parts = ensureCalendarFixedRailStructure();
   const grid = parts.gridWeek || document.getElementById("calGrid");
@@ -38197,7 +38169,7 @@ function renderCalendarioWeek(){
       bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
-        if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) { cell.classList.add("is-checkout-booking-blink", __calendarCheckoutBalanceClass__(info)); }
+        __calendarApplyCheckoutPaymentBorder__(cell, info);
         try{
           const chrome = document.createElement("div");
           chrome.className = "cal-corner-chrome";
@@ -38522,6 +38494,22 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
     try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
   }catch(_){ }
+}
+
+function __calendarApplyCheckoutPaymentBorder__(cell, info){
+  try{
+    if (!cell || !info || !info.checkoutIso || info.checkoutIso !== __calendarSelectedIso__()) return;
+    cell.classList.add("is-checkout-booking-blink");
+    const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(info.guestId) : null;
+    const remaining = (typeof __calendarGuestRemainingBalanceValue__ === 'function')
+      ? Number(__calendarGuestRemainingBalanceValue__(guest || {}))
+      : Number(__guestRemainingForLed__(guest || {}));
+    const isPaid = isFinite(remaining) && Math.abs(remaining) < 0.005;
+    cell.classList.add(isPaid ? "is-checkout-paid" : "is-checkout-unpaid");
+    cell.setAttribute("data-checkout-remaining", isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : "");
+  }catch(_){
+    try{ cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid"); }catch(__){ }
+  }
 }
 
 function __calendarGuestDisplayName__(info, span){
@@ -39445,7 +39433,7 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
-      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) { cell.classList.add("is-checkout-booking-blink", __calendarCheckoutBalanceClass__(info)); }
+      __calendarApplyCheckoutPaymentBorder__(cell, info);
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
@@ -39550,7 +39538,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, remainingToPay: __calendarGuestRemainingBalanceValue__(g), mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -39595,7 +39583,7 @@ function buildWeekOccupancy(weekStart){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, remainingToPay: __calendarGuestRemainingBalanceValue__(g), mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -44210,7 +44198,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.165';
+  var BUILD_TAG='dDAE_3.163';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48941,7 +48929,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.165',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.163',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49226,4 +49214,4 @@ try{
   window.addEventListener('pageshow', init);
 })();
 
-/* dDAE_3.165 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
+/* dDAE_3.163 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */

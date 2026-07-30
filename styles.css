@@ -31196,48 +31196,33 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.165 — Checkout: solo bordo lampeggiante, verde se saldato e rosso se da pagare */
-@keyframes ddaeCheckoutBorderBlinkOnly{
-  0%, 44%{ opacity:1; }
-  45%, 100%{ opacity:0; }
+/* dDAE_3.163 — Checkout calendario: solo bordo lampeggiante, verde se pagato e rosso se da pagare */
+@keyframes ddaeCalendarCheckoutBorderBlink{
+  0%, 100%{ opacity:.22; }
+  50%{ opacity:1; }
 }
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  background:transparent !important;
-  box-shadow:none !important;
-  filter:none !important;
-  text-shadow:none !important;
-  will-change:opacity !important;
-  animation:ddaeCheckoutBorderBlinkOnly .82s steps(1,end) infinite !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{
-  border-color:#1f9d45 !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{
-  border-color:#d72626 !important;
-}
-
-/* dDAE_3.165 — Checkout: spigoli smussati anche sul bordo lampeggiante */
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  border-radius:13px !important;
-  -webkit-border-radius:13px !important;
-  clip-path:inset(0 round 13px) !important;
-  -webkit-clip-path:inset(0 round 13px) !important;
-}
-
-
-/* dDAE_3.165 — bordo checkout arrotondato, senza alone */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
   inset:0 !important;
-  box-sizing:border-box !important;
   border-width:3px !important;
   border-style:solid !important;
+  border-color:var(--ddae-checkout-border, #d62828) !important;
   border-radius:inherit !important;
-  -webkit-border-radius:inherit !important;
   background:transparent !important;
+  background-image:none !important;
   box-shadow:none !important;
   filter:none !important;
-  clip-path:none !important;
-  -webkit-clip-path:none !important;
+  -webkit-filter:none !important;
+  will-change:opacity !important;
+  animation:ddaeCalendarCheckoutBorderBlink .82s linear infinite !important;
 }
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{border-color:#1f9d45 !important;}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{border-color:#d72626 !important;}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-paid{
+  --ddae-checkout-border:#16a34a;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-unpaid{
+  --ddae-checkout-border:#dc2626;
+}
+@media (prefers-reduced-motion: reduce){
+  #page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+    animation:ddaeCalendarCheckoutBorderBlink .82s linear infinite !important;
+  }
+}
