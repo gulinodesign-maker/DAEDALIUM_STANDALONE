@@ -31139,3 +31139,31 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 /* dDAE_3.158 — fix persistenza Stanze & Locali */
+
+/* dDAE_3.159 — Calendario: badge Channel sempre visibile sopra il bordo checkout */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
+  overflow: visible !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink .cal-corner-chrome{
+  position: absolute !important;
+  inset: 3px !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 120 !important;
+  pointer-events: none !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink .cal-channel-tag{
+  position: absolute !important;
+  top: 1px !important;
+  right: 1px !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: 130 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  z-index: 110 !important;
+}
