@@ -38500,15 +38500,53 @@ function __calendarApplyCheckoutPaymentBorder__(cell, info){
   try{
     if (!cell || !info || !info.checkoutIso || info.checkoutIso !== __calendarSelectedIso__()) return;
     cell.classList.add("is-checkout-booking-blink");
-    const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(info.guestId) : null;
-    const remaining = (typeof __calendarGuestRemainingBalanceValue__ === 'function')
-      ? Number(__calendarGuestRemainingBalanceValue__(guest || {}))
-      : Number(__guestRemainingForLed__(guest || {}));
-    const isPaid = isFinite(remaining) && Math.abs(remaining) < 0.005;
-    cell.classList.add(isPaid ? "is-checkout-paid" : "is-checkout-unpaid");
+    cell.classList.remove("is-checkout-paid", "is-checkout-unpaid");
+
+    const guestId = String(info.guestId || '').trim();
+    const guest = guestId && typeof findCalendarGuestById === 'function' ? findCalendarGuestById(guestId) : null;
+
+    // Stato iniziale prudenziale: rosso. Il verde viene applicato solo quando
+    // la rimanenza zero è già disponibile da una fonte economica completa.
+    let paidCertain = false;
+    let remaining = NaN;
+    if (guest){
+      const explicitKeys = ['rimanenza_da_pagare','rimanenzaDaPagare','remaining_to_pay','remainingToPay','guestRemaining','remaining'];
+      for (const key of explicitKeys){
+        const raw = guest?.[key];
+        if (raw !== undefined && raw !== null && String(raw).trim() !== ''){
+          const value = Number(String(raw).replace(',', '.'));
+          if (isFinite(value)){
+            remaining = Math.max(0, Math.round(value * 100) / 100);
+            paidCertain = remaining <= 0.005;
+            break;
+          }
+        }
+      }
+
+      if (!isFinite(remaining)){
+        const cache = state?.guestServicesCacheById?.[guestId];
+        const hasServicesCache = !!(cache && isFinite(Number(cache.total)));
+        const serviceKeys = ['servizi_totale','serviziTotal','importo_servizi','importoServizi','servizi','services'];
+        const hasServiceField = serviceKeys.some((key)=>guest?.[key] !== undefined && guest?.[key] !== null && String(guest?.[key]).trim() !== '');
+        const totalKeys = ['importo_prenotazione','importo_prenota','importoPrenotazione','importoPrenota','total','totale','importo','prezzo'];
+        const hasTotalField = totalKeys.some((key)=>guest?.[key] !== undefined && guest?.[key] !== null && String(guest?.[key]).trim() !== '');
+
+        if (hasTotalField && (hasServicesCache || hasServiceField)){
+          remaining = (typeof __calendarGuestRemainingBalanceValue__ === 'function')
+            ? Number(__calendarGuestRemainingBalanceValue__(guest))
+            : Number(__guestRemainingForLed__(guest));
+          paidCertain = isFinite(remaining) && remaining <= 0.005;
+        }
+      }
+    }
+
+    cell.classList.add(paidCertain ? "is-checkout-paid" : "is-checkout-unpaid");
     cell.setAttribute("data-checkout-remaining", isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : "");
   }catch(_){
-    try{ cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid"); }catch(__){ }
+    try{
+      cell.classList.remove("is-checkout-paid");
+      cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid");
+    }catch(__){ }
   }
 }
 
