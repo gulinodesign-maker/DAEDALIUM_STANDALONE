@@ -31238,16 +31238,20 @@ html.dark-mode .tag-color-state-btn.is-active{
   -webkit-clip-path:inset(0 round 13px);
 }
 
-/* dDAE_3.167 — Calendario: bordo alert contenuto nel box e smussato su tutti gli angoli */
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  box-sizing:border-box !important;
-  top:0 !important;
-  right:0 !important;
-  bottom:0 !important;
-  left:0 !important;
-  width:100% !important;
-  height:100% !important;
+
+/* dDAE_3.167 — Calendario iOS: angoli smussati reali sul bordo alert checkout */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   border-radius:13px !important;
-  clip-path:none !important;
-  -webkit-clip-path:none !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  inset:1px !important;
+  box-sizing:border-box !important;
+  border-radius:12px !important;
+  clip-path:inset(0 round 12px) !important;
+  -webkit-clip-path:inset(0 round 12px) !important;
+  -webkit-mask-image:-webkit-radial-gradient(white, black) !important;
+  transform:translateZ(0) !important;
+  -webkit-transform:translateZ(0) !important;
+  backface-visibility:hidden !important;
+  -webkit-backface-visibility:hidden !important;
 }
