@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.169";
+const BUILD_VERSION = "3.170";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -44273,7 +44273,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.169';
+  var BUILD_TAG='dDAE_3.170';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48552,11 +48552,11 @@ try{
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
-    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
-    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',deleteCocktail:'Delete cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted',emptyDelete:'No cocktail to delete',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail'},
-    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',deleteCocktail:'Supprimer le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé',emptyDelete:'Aucun cocktail à supprimer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail'},
-    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',deleteCocktail:'Cocktail löschen',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht',emptyDelete:'Kein Cocktail zum Löschen',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügservizi',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden'},
-    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',deleteCocktail:'Eliminar cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado',emptyDelete:'No hay ningún cóctel para eliminar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel'}
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Servizio addebitato alla stanza',chargeError:'Impossibile addebitare il servizio'},
+    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',deleteCocktail:'Delete cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted',emptyDelete:'No cocktail to delete',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Service charged to room',chargeError:'Unable to charge service'},
+    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',deleteCocktail:'Supprimer le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé',emptyDelete:'Aucun cocktail à supprimer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Service débité sur la chambre',chargeError:'Impossible de débiter le service'},
+    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',deleteCocktail:'Cocktail löschen',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht',emptyDelete:'Kein Cocktail zum Löschen',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügservizi',charged:'Service auf Zimmer gebucht',chargeError:'Service konnte nicht gebucht werden'},
+    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',deleteCocktail:'Eliminar cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado',emptyDelete:'No hay ningún cóctel para eliminar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Servicio cargado a la habitación',chargeError:'No se pudo cargar el servicio'}
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
@@ -49004,7 +49004,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.169',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.170',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49292,7 +49292,7 @@ try{
 /* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
 
 
-/* dDAE_3.169 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
+/* dDAE_3.170 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
 (function __setupElectricChargingService3169__(){
   'use strict';
   const $=id=>document.getElementById(id);
