@@ -38499,55 +38499,91 @@ function scrollCalendarMonthToDayLeft(dayIndex){
 function __calendarApplyCheckoutPaymentBorder__(cell, info){
   try{
     if (!cell || !info || !info.checkoutIso || info.checkoutIso !== __calendarSelectedIso__()) return;
-    cell.classList.add("is-checkout-booking-blink");
-    cell.classList.remove("is-checkout-paid", "is-checkout-unpaid");
+    cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid");
+    cell.classList.remove("is-checkout-paid");
 
     const guestId = String(info.guestId || '').trim();
-    const guest = guestId && typeof findCalendarGuestById === 'function' ? findCalendarGuestById(guestId) : null;
+    if (!guestId) return;
+    try{ cell.dataset.checkoutGuestId = guestId; }catch(_){ }
 
-    // Stato iniziale prudenziale: rosso. Il verde viene applicato solo quando
-    // la rimanenza zero è già disponibile da una fonte economica completa.
-    let paidCertain = false;
-    let remaining = NaN;
-    if (guest){
-      const explicitKeys = ['rimanenza_da_pagare','rimanenzaDaPagare','remaining_to_pay','remainingToPay','guestRemaining','remaining'];
-      for (const key of explicitKeys){
-        const raw = guest?.[key];
-        if (raw !== undefined && raw !== null && String(raw).trim() !== ''){
-          const value = Number(String(raw).replace(',', '.'));
-          if (isFinite(value)){
-            remaining = Math.max(0, Math.round(value * 100) / 100);
-            paidCertain = remaining <= 0.005;
-            break;
-          }
-        }
-      }
+    const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(guestId) : null;
+    const cache = state?.guestServicesCacheById?.[guestId];
 
-      if (!isFinite(remaining)){
-        const cache = state?.guestServicesCacheById?.[guestId];
-        const hasServicesCache = !!(cache && isFinite(Number(cache.total)));
-        const serviceKeys = ['servizi_totale','serviziTotal','importo_servizi','importoServizi','servizi','services'];
-        const hasServiceField = serviceKeys.some((key)=>guest?.[key] !== undefined && guest?.[key] !== null && String(guest?.[key]).trim() !== '');
-        const totalKeys = ['importo_prenotazione','importo_prenota','importoPrenotazione','importoPrenota','total','totale','importo','prezzo'];
-        const hasTotalField = totalKeys.some((key)=>guest?.[key] !== undefined && guest?.[key] !== null && String(guest?.[key]).trim() !== '');
-
-        if (hasTotalField && (hasServicesCache || hasServiceField)){
-          remaining = (typeof __calendarGuestRemainingBalanceValue__ === 'function')
-            ? Number(__calendarGuestRemainingBalanceValue__(guest))
-            : Number(__guestRemainingForLed__(guest));
-          paidCertain = isFinite(remaining) && remaining <= 0.005;
-        }
-      }
+    // Mai mostrare verde usando dati provvisori o copie ospite non aggiornate.
+    // Il verde è ammesso solo dopo che il totale servizi è stato verificato.
+    if (guest && cache && isFinite(Number(cache.total))){
+      const remaining = Number(__calendarGuestRemainingBalanceValue__(guest));
+      const paid = isFinite(remaining) && remaining <= 0.005;
+      cell.classList.toggle("is-checkout-paid", paid);
+      cell.classList.toggle("is-checkout-unpaid", !paid);
+      cell.setAttribute("data-checkout-remaining", isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : "");
+      return;
     }
 
-    cell.classList.add(paidCertain ? "is-checkout-paid" : "is-checkout-unpaid");
-    cell.setAttribute("data-checkout-remaining", isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : "");
+    cell.setAttribute("data-checkout-remaining", "");
+    __calendarResolveCheckoutPaymentBorder__(guestId);
   }catch(_){
     try{
       cell.classList.remove("is-checkout-paid");
       cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid");
     }catch(__){ }
   }
+}
+
+const __calendarCheckoutBalanceRequests__ = new Map();
+async function __calendarResolveCheckoutPaymentBorder__(guestId){
+  const id = String(guestId || '').trim();
+  if (!id) return;
+  if (__calendarCheckoutBalanceRequests__.has(id)) return __calendarCheckoutBalanceRequests__.get(id);
+
+  const request = (async()=>{
+    try{
+      const response = await api('servizi', { method:'GET', params:{ ospite_id:id }, showLoader:false });
+      const rows = (typeof normalizeServiziResponse === 'function') ? normalizeServiziResponse(response) : [];
+      const items = (Array.isArray(rows) ? rows : []).filter((row)=>{
+        const deleted = row?.isDeleted ?? row?.is_deleted ?? row?.deleted;
+        return !(deleted === true || String(deleted) === '1');
+      });
+      const total = (typeof serviziComputeTotal === 'function')
+        ? serviziComputeTotal(items)
+        : items.reduce((sum,row)=>sum + (Number(row?.importo ?? row?.amount) || 0) * (Number(row?.qty) || 1), 0);
+      const roundedTotal = Math.max(0, Math.round((Number(total) || 0) * 100) / 100);
+
+      if (!state.guestServicesCacheById) state.guestServicesCacheById = {};
+      state.guestServicesCacheById[id] = { items:items.slice(), total:roundedTotal, loadedAt:Date.now() };
+
+      const collections = [state.guests, state.guestRows, state.ospitiRows, state.ospiti, state.calendar && state.calendar.guests];
+      const apply = (row)=>{
+        if (!row || typeof row !== 'object') return;
+        row.servizi_totale = roundedTotal;
+        row.serviziTotal = roundedTotal;
+        row.importo_servizi = roundedTotal;
+      };
+      collections.forEach((list)=>{
+        if (!Array.isArray(list)) return;
+        list.forEach((row)=>{
+          const rowId = String((typeof guestIdOf === 'function' ? guestIdOf(row) : row?.id) || '').trim();
+          if (rowId === id) apply(row);
+        });
+      });
+
+      const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(id) : null;
+      const remaining = guest ? Number(__calendarGuestRemainingBalanceValue__(guest)) : NaN;
+      const paid = isFinite(remaining) && remaining <= 0.005;
+      document.querySelectorAll(`#page-calendario .cal-cell[data-checkout-guest-id="${CSS.escape(id)}"]`).forEach((cell)=>{
+        cell.classList.add('is-checkout-booking-blink');
+        cell.classList.toggle('is-checkout-paid', paid);
+        cell.classList.toggle('is-checkout-unpaid', !paid);
+        cell.setAttribute('data-checkout-remaining', isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : '');
+      });
+    }catch(_){
+      // In caso di errore di rete resta rosso: mai un falso verde.
+    }finally{
+      __calendarCheckoutBalanceRequests__.delete(id);
+    }
+  })();
+  __calendarCheckoutBalanceRequests__.set(id, request);
+  return request;
 }
 
 function __calendarGuestDisplayName__(info, span){
