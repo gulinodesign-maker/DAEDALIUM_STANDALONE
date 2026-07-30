@@ -31228,7 +31228,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.167 — Calendario: smussatura coerente del bordo alert checkout */
+/* dDAE_3.168 — Calendario: smussatura coerente del bordo alert checkout */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   border-radius:13px !important;
 }
@@ -31239,7 +31239,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.167 — Calendario iOS: angoli smussati reali sul bordo alert checkout */
+/* dDAE_3.168 — Calendario iOS: angoli smussati reali sul bordo alert checkout */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   border-radius:13px !important;
 }
@@ -31254,4 +31254,12 @@ html.dark-mode .tag-color-state-btn.is-active{
   -webkit-transform:translateZ(0) !important;
   backface-visibility:hidden !important;
   -webkit-backface-visibility:hidden !important;
+}
+
+
+/* dDAE_3.168 — Calendario: la superficie della cella sotto l’alert conserva gli angoli smussati */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::before{
+  border-radius:inherit !important;
+  clip-path:inset(0 round 13px) !important;
+  -webkit-clip-path:inset(0 round 13px) !important;
 }
