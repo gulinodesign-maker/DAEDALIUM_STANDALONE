@@ -31140,7 +31140,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 
 /* dDAE_3.158 — fix persistenza Stanze & Locali */
 
-/* dDAE_3.159 — Calendario: badge Channel sempre visibile sopra il bordo checkout */
+/* dDAE_3.160 — Calendario: badge Channel sempre visibile sopra il bordo checkout */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   overflow: visible !important;
 }
@@ -31168,7 +31168,12 @@ html.dark-mode .tag-color-state-btn.is-active{
   z-index: 110 !important;
 }
 
-/* dDAE_3.160 — Calendario mensile: 3 giorni adiacenti prima e dopo il mese */
-#calGridMonth .cal-head.is-adjacent-month {
-  opacity: 0.68;
+
+/* dDAE_3.160 — Calendario mensile: 3 giorni precedenti e 3 successivi */
+#page-calendario #calGridMonth .cal-cell.is-adjacent-month {
+  opacity: .72;
+}
+#page-calendario #calGridMonth .cal-head.is-adjacent-month .cal-day-abbrev,
+#page-calendario #calGridMonth .cal-head.is-adjacent-month .cal-day-num {
+  opacity: .82;
 }

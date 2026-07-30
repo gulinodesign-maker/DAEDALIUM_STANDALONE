@@ -37588,9 +37588,13 @@ function __calendarSelectedIso__(){
 function __calendarSelectedColumnIndex(anchor){
   try{
     const selected = __calendarDateFromIso__(__calendarSelectedIso__());
-    const a = (anchor instanceof Date) ? anchor : new Date(anchor || Date.now());
-    if (selected.getFullYear() !== a.getFullYear() || selected.getMonth() !== a.getMonth()) return -1;
-    return selected.getDate();
+    const a = (anchor instanceof Date) ? new Date(anchor) : new Date(anchor || Date.now());
+    a.setHours(0,0,0,0);
+    const monthStart = new Date(a.getFullYear(), a.getMonth(), 1);
+    const displayStart = addDays(monthStart, -3);
+    const diff = Math.round((selected.getTime() - displayStart.getTime()) / 86400000);
+    const displayCount = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate() + 6;
+    return (diff >= 0 && diff < displayCount) ? (diff + 1) : -1;
   }catch(_){ return -1; }
 }
 
@@ -38469,7 +38473,9 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     const wrap = document.getElementById('calDaysWrap') || document.querySelector('#page-calendario .cal-grid-wrap');
     const grid = document.getElementById('calGridMonth');
     if (!wrap || !grid || !dayIndex || dayIndex < 1) return;
-    const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${dayIndex}"]`);
+    // La vista mensile include sempre 3 giorni precedenti: il giorno 1 del mese è la colonna 4.
+    const displayIndex = Number(dayIndex) + 3;
+    const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${displayIndex}"]`);
     if (!head) return;
     const headLeft = head.offsetLeft || 0;
     const cellWidth = head.offsetWidth || 0;
@@ -39304,9 +39310,9 @@ function renderCalendarioMonth(){
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
   const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
   const monthDaysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
-  const calendarStart = addDays(monthStart, -3);
+  const displayStart = addDays(monthStart, -3);
   const daysCount = monthDaysCount + 6;
-  const days = Array.from({ length: daysCount }, (_, i) => addDays(calendarStart, i));
+  const days = Array.from({ length: daysCount }, (_, i) => addDays(displayStart, i));
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
   if (title) {
@@ -39317,10 +39323,9 @@ function renderCalendarioMonth(){
     grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
   }catch(_){ }
 
-  const occ = buildMonthOccupancy(calendarStart, daysCount);
+  const occ = buildMonthOccupancy(displayStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
-  const selectedIso = __calendarSelectedIso__();
-  const todayCol = days.findIndex((day) => isoDate(day) === selectedIso) + 1;
+  const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -39328,6 +39333,7 @@ function renderCalendarioMonth(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
+    dayPill.dataset.date = isoDate(d);
     if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) dayPill.classList.add('is-adjacent-month');
     if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
 
@@ -39385,6 +39391,7 @@ function renderCalendarioMonth(){
         cell.setAttribute("aria-label", `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
         cell.dataset.date = dIso;
         cell.dataset.room = String(r);
+        if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) cell.classList.add('is-adjacent-month');
         if (todayCol === (i + 1)) cell.classList.add('is-today-col');
         bindCalendarCellActions(cell, { room:r, dateIso:dIso, info:null });
         frag.appendChild(cell);
@@ -39407,6 +39414,7 @@ function renderCalendarioMonth(){
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
+      if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) cell.classList.add('is-adjacent-month');
       cell.style.gridColumn = `${i + 1} / span ${span}`;
       cell.setAttribute("aria-label", span > 1
         ? `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, dal ${days[i].getDate()} al ${days[i + span - 1].getDate()}`
@@ -39472,10 +39480,10 @@ function renderCalendarioMonth(){
   try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
 }
 
-function buildMonthOccupancy(windowStart, daysCount){
+function buildMonthOccupancy(monthStart, daysCount){
   const map = new Map();
   const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
-  const windowEndEx = addDays(windowStart, daysCount);
+  const monthEndEx = addDays(monthStart, daysCount);
 
   for (const g of guests){
     const guestId = String(g.id ?? g.ID ?? g.ospite_id ?? g.ospiteId ?? g.guest_id ?? g.guestId ?? "").trim();
@@ -39500,7 +39508,7 @@ function buildMonthOccupancy(windowStart, daysCount){
     const cOn = truthy(g.col_c ?? g.colC ?? g.c ?? g.C ?? g.flag_c ?? g.flagC ?? g.colc ?? g.c_flag);
 
     for (let d = new Date(ci); d < co; d = addDays(d, 1)) {
-      if (d < windowStart || d >= windowEndEx) continue;
+      if (d < monthStart || d >= monthEndEx) continue;
       const dIso = isoDate(d);
       const isLast = !__guestUsesOnlyLocaleRooms__(g) && dIso === lastIso;
 
