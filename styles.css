@@ -31225,22 +31225,19 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.165 — Checkout: bordo arrotondato reale e colore da rimanenza della prenotazione */
+/* dDAE_3.165 — bordo checkout arrotondato, senza alone */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
-  inset:1px !important;
+  inset:0 !important;
+  box-sizing:border-box !important;
   border-width:3px !important;
   border-style:solid !important;
-  border-radius:12px !important;
-  -webkit-border-radius:12px !important;
-  clip-path:none !important;
-  -webkit-clip-path:none !important;
-  background:none !important;
+  border-radius:inherit !important;
+  -webkit-border-radius:inherit !important;
+  background:transparent !important;
   box-shadow:none !important;
   filter:none !important;
+  clip-path:none !important;
+  -webkit-clip-path:none !important;
 }
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{
-  border-color:#1f9d45 !important;
-}
-#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{
-  border-color:#d72626 !important;
-}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{border-color:#1f9d45 !important;}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{border-color:#d72626 !important;}

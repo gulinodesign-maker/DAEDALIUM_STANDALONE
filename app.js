@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.164";
+const BUILD_VERSION = "3.165";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38108,26 +38108,30 @@ function applyCalRoomFreeze(mode){
 }
 
 
-/* dDAE_3.165 — Calendario: colore bordo checkout dalla rimanenza reale della prenotazione */
+/* dDAE_3.165 — Calendario: colore bordo checkout dalla rimanenza reale della card */
 function __calendarCheckoutBalanceClass__(info){
   try{
-    const direct = Number(info?.remainingToPay);
-    if (isFinite(direct)) return direct <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
-
     const guestId = String(info?.guestId || '').trim();
-    if (!guestId) return 'is-checkout-balance-due';
-    const sources = [state?.calendar?.guests, state?.guestRows, state?.guests, state?.ospitiRows, state?.ospiti];
-    let guest = null;
-    for (const src of sources){
-      if (!Array.isArray(src)) continue;
-      guest = src.find((row)=>{
-        try{ return String(typeof guestIdOf === 'function' ? guestIdOf(row) : (row?.id ?? row?.ID ?? row?.ospite_id ?? row?.ospiteId ?? '')).trim() === guestId; }catch(_){ return false; }
-      });
-      if (guest) break;
+    if (guestId){
+      const sources = [state?.calendar?.guests, state?.guestRows, state?.guests, state?.ospitiRows, state?.ospiti];
+      let found = false;
+      let realRemaining = 0;
+      for (const src of sources){
+        if (!Array.isArray(src)) continue;
+        for (const row of src){
+          try{
+            const rowId = String(row?.id ?? row?.ID ?? row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? (typeof guestIdOf === 'function' ? guestIdOf(row) : '') ?? '').trim();
+            if (rowId !== guestId) continue;
+            found = true;
+            const value = Number(__calendarGuestRemainingBalanceValue__(row));
+            if (isFinite(value)) realRemaining = Math.max(realRemaining, value);
+          }catch(_){ }
+        }
+      }
+      if (found) return realRemaining <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
     }
-    if (!guest) return 'is-checkout-balance-due';
-    const remaining = Number(__calendarGuestRemainingBalanceValue__(guest));
-    return isFinite(remaining) && remaining <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
+    const direct = Number(info?.remainingToPay);
+    return isFinite(direct) && direct <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
   }catch(_){ return 'is-checkout-balance-due'; }
 }
 
