@@ -31194,3 +31194,24 @@ html.dark-mode .tag-color-state-btn.is-active{
     overflow-x: auto !important;
   }
 }
+
+
+/* dDAE_3.163 — Checkout: solo bordo lampeggiante, verde se saldato e rosso se da pagare */
+@keyframes ddaeCheckoutBorderBlinkOnly{
+  0%, 44%{ opacity:1; }
+  45%, 100%{ opacity:0; }
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  background:transparent !important;
+  box-shadow:none !important;
+  filter:none !important;
+  text-shadow:none !important;
+  will-change:opacity !important;
+  animation:ddaeCheckoutBorderBlinkOnly .82s steps(1,end) infinite !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{
+  border-color:#1f9d45 !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{
+  border-color:#d72626 !important;
+}

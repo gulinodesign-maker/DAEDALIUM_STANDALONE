@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.162";
+const BUILD_VERSION = "3.163";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38107,6 +38107,26 @@ function applyCalRoomFreeze(mode){
   try{ parts.wrap.dataset.calMode = String(mode || "week"); }catch(_){ }
 }
 
+
+/* dDAE_3.163 — Calendario: colore bordo checkout dalla rimanenza reale della card */
+function __calendarCheckoutBalanceClass__(info){
+  try{
+    const guestId = String(info?.guestId || '').trim();
+    if (!guestId) return 'is-checkout-balance-due';
+    const sources = [state?.calendar?.guests, state?.guestRows, state?.guests, state?.ospitiRows, state?.ospiti];
+    let guest = null;
+    for (const src of sources){
+      if (!Array.isArray(src)) continue;
+      guest = src.find((row)=>{
+        try{ return String(typeof guestIdOf === 'function' ? guestIdOf(row) : (row?.id ?? row?.ID ?? row?.ospite_id ?? row?.ospiteId ?? '')).trim() === guestId; }catch(_){ return false; }
+      });
+      if (guest) break;
+    }
+    const remaining = Number(__calendarGuestRemainingBalanceValue__(guest || { id:guestId }));
+    return isFinite(remaining) && remaining <= 0.005 ? 'is-checkout-balance-zero' : 'is-checkout-balance-due';
+  }catch(_){ return 'is-checkout-balance-due'; }
+}
+
 function renderCalendarioWeek(){
   const parts = ensureCalendarFixedRailStructure();
   const grid = parts.gridWeek || document.getElementById("calGrid");
@@ -38169,7 +38189,7 @@ function renderCalendarioWeek(){
       bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
-        if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
+        if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) { cell.classList.add("is-checkout-booking-blink", __calendarCheckoutBalanceClass__(info)); }
         try{
           const chrome = document.createElement("div");
           chrome.className = "cal-corner-chrome";
@@ -39417,7 +39437,7 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
-      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) cell.classList.add("is-checkout-booking-blink");
+      if (info.checkoutIso && info.checkoutIso === __calendarSelectedIso__()) { cell.classList.add("is-checkout-booking-blink", __calendarCheckoutBalanceClass__(info)); }
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
@@ -44182,7 +44202,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.162';
+  var BUILD_TAG='dDAE_3.163';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48913,7 +48933,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.162',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.163',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49198,4 +49218,4 @@ try{
   window.addEventListener('pageshow', init);
 })();
 
-/* dDAE_3.162 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
+/* dDAE_3.163 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
