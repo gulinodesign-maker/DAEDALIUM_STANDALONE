@@ -31140,7 +31140,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 
 /* dDAE_3.158 — fix persistenza Stanze & Locali */
 
-/* dDAE_3.160 — Calendario: badge Channel sempre visibile sopra il bordo checkout */
+/* dDAE_3.161 — Calendario: badge Channel sempre visibile sopra il bordo checkout */
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink{
   overflow: visible !important;
 }
@@ -31169,11 +31169,28 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.160 — Calendario mensile: 3 giorni precedenti e 3 successivi */
+/* dDAE_3.161 — Calendario mensile: 3 giorni precedenti e 3 successivi */
 #page-calendario #calGridMonth .cal-cell.is-adjacent-month {
   opacity: .72;
 }
 #page-calendario #calGridMonth .cal-head.is-adjacent-month .cal-day-abbrev,
 #page-calendario #calGridMonth .cal-head.is-adjacent-month .cal-day-num {
   opacity: .82;
+}
+
+
+/* dDAE_3.161 — Calendario mensile: colonne adiacenti a larghezza normale e scorrimento */
+#page-calendario.is-month-view .cal-days-wrap{
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+#page-calendario.is-month-view #calGridMonth{
+  width: max-content !important;
+  min-width: 100% !important;
+  grid-auto-columns: var(--cal-day-w) !important;
+}
+@media (orientation: landscape){
+  #page-calendario.is-month-view .cal-days-wrap{
+    overflow-x: auto !important;
+  }
 }
