@@ -31196,7 +31196,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 }
 
 
-/* dDAE_3.163 — Checkout: solo bordo lampeggiante, verde se saldato e rosso se da pagare */
+/* dDAE_3.165 — Checkout: solo bordo lampeggiante, verde se saldato e rosso se da pagare */
 @keyframes ddaeCheckoutBorderBlinkOnly{
   0%, 44%{ opacity:1; }
   45%, 100%{ opacity:0; }
@@ -31208,6 +31208,35 @@ html.dark-mode .tag-color-state-btn.is-active{
   text-shadow:none !important;
   will-change:opacity !important;
   animation:ddaeCheckoutBorderBlinkOnly .82s steps(1,end) infinite !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{
+  border-color:#1f9d45 !important;
+}
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-due::after{
+  border-color:#d72626 !important;
+}
+
+/* dDAE_3.165 — Checkout: spigoli smussati anche sul bordo lampeggiante */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  border-radius:13px !important;
+  -webkit-border-radius:13px !important;
+  clip-path:inset(0 round 13px) !important;
+  -webkit-clip-path:inset(0 round 13px) !important;
+}
+
+
+/* dDAE_3.165 — Checkout: bordo arrotondato reale e colore da rimanenza della prenotazione */
+#page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
+  inset:1px !important;
+  border-width:3px !important;
+  border-style:solid !important;
+  border-radius:12px !important;
+  -webkit-border-radius:12px !important;
+  clip-path:none !important;
+  -webkit-clip-path:none !important;
+  background:none !important;
+  box-shadow:none !important;
+  filter:none !important;
 }
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink.is-checkout-balance-zero::after{
   border-color:#1f9d45 !important;
