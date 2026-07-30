@@ -31167,3 +31167,8 @@ html.dark-mode .tag-color-state-btn.is-active{
 #page-calendario .cal-cell.has-booking.is-checkout-booking-blink::after{
   z-index: 110 !important;
 }
+
+/* dDAE_3.160 — Calendario mensile: 3 giorni adiacenti prima e dopo il mese */
+#calGridMonth .cal-head.is-adjacent-month {
+  opacity: 0.68;
+}

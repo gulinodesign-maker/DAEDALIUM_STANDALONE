@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.159";
+const BUILD_VERSION = "3.160";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -39303,8 +39303,10 @@ function renderCalendarioMonth(){
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
   const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
-  const days = Array.from({ length: daysCount }, (_, i) => addDays(monthStart, i));
+  const monthDaysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
+  const calendarStart = addDays(monthStart, -3);
+  const daysCount = monthDaysCount + 6;
+  const days = Array.from({ length: daysCount }, (_, i) => addDays(calendarStart, i));
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
   if (title) {
@@ -39315,9 +39317,10 @@ function renderCalendarioMonth(){
     grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
   }catch(_){ }
 
-  const occ = buildMonthOccupancy(monthStart, daysCount);
+  const occ = buildMonthOccupancy(calendarStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
-  const todayCol = __calendarSelectedColumnIndex(anchor);
+  const selectedIso = __calendarSelectedIso__();
+  const todayCol = days.findIndex((day) => isoDate(day) === selectedIso) + 1;
   renderCalendarRoomRail(roomsCount);
 
   for (let i = 0; i < daysCount; i++) {
@@ -39325,6 +39328,7 @@ function renderCalendarioMonth(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
+    if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) dayPill.classList.add('is-adjacent-month');
     if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
@@ -39348,7 +39352,7 @@ function renderCalendarioMonth(){
         try{ ev?.stopPropagation?.(); }catch(_){ }
         const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(anchor.getFullYear(), anchor.getMonth(), d.getDate());
+        const selected = new Date(d);
         selected.setHours(0,0,0,0);
         state.calendar.anchor = selected;
         state.calendar.selectedDateISO = isoDate(selected);
@@ -39468,10 +39472,10 @@ function renderCalendarioMonth(){
   try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
 }
 
-function buildMonthOccupancy(monthStart, daysCount){
+function buildMonthOccupancy(windowStart, daysCount){
   const map = new Map();
   const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
-  const monthEndEx = addDays(monthStart, daysCount);
+  const windowEndEx = addDays(windowStart, daysCount);
 
   for (const g of guests){
     const guestId = String(g.id ?? g.ID ?? g.ospite_id ?? g.ospiteId ?? g.guest_id ?? g.guestId ?? "").trim();
@@ -39496,7 +39500,7 @@ function buildMonthOccupancy(monthStart, daysCount){
     const cOn = truthy(g.col_c ?? g.colC ?? g.c ?? g.C ?? g.flag_c ?? g.flagC ?? g.colc ?? g.c_flag);
 
     for (let d = new Date(ci); d < co; d = addDays(d, 1)) {
-      if (d < monthStart || d >= monthEndEx) continue;
+      if (d < windowStart || d >= windowEndEx) continue;
       const dIso = isoDate(d);
       const isLast = !__guestUsesOnlyLocaleRooms__(g) && dIso === lastIso;
 
@@ -44163,7 +44167,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.159';
+  var BUILD_TAG='dDAE_3.160';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48894,7 +48898,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.159',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.160',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49179,4 +49183,4 @@ try{
   window.addEventListener('pageshow', init);
 })();
 
-/* dDAE_3.159 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
+/* dDAE_3.160 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
