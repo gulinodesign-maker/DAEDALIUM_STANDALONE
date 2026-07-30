@@ -62,7 +62,7 @@ function applyIconPalette(){
         });
       }
     });
-    const serviziIconColors = { serviziCocktailBtn:'#F29C50', serviziVinoBtn:'#C85A67', serviziBirraBtn:'#E7B93F', serviziAnalcoliciBtn:'#67BDEB', serviziExtraBtn:'#F29C50', serviziCocktailAnalcoliciBtn:'#67BDEB' };
+    const serviziIconColors = { serviziCocktailBtn:'#F29C50', serviziVinoBtn:'#C85A67', serviziBirraBtn:'#E7B93F', serviziAnalcoliciBtn:'#67BDEB', serviziExtraBtn:'#F29C50', serviziCocktailAnalcoliciBtn:'#67BDEB', serviziRicaricaElettricaBtn:'#34C759' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
       const fallbackColor = serviziIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.168";
+const BUILD_VERSION = "3.169";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11680,7 +11680,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11731,6 +11731,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   serviziAnalcoliciBtn: 'sky-4',
   serviziExtraBtn: 'orange-4',
   serviziCocktailAnalcoliciBtn: 'blue-4',
+  serviziRicaricaElettricaBtn: 'green-4',
   homeYearPill: 'sky-4'
 };
 
@@ -12926,7 +12927,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -44272,7 +44273,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.168';
+  var BUILD_TAG='dDAE_3.169';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49003,7 +49004,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.168',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.169',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49289,3 +49290,59 @@ try{
 })();
 
 /* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
+
+
+/* dDAE_3.169 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
+(function __setupElectricChargingService3169__(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  function parseDecimal(v){
+    let s=String(v??'').trim().replace(/\s/g,'').replace(/€/g,'');
+    if(s.includes(',')&&s.includes('.')) s=s.lastIndexOf(',')>s.lastIndexOf('.')?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');
+    else s=s.replace(',','.');
+    const n=Number.parseFloat(s); return Number.isFinite(n)&&n>=0?n:0;
+  }
+  function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' €';}
+  function values(){
+    const kwh=parseDecimal($('electricKwhInput')?.value);
+    const rate=parseDecimal($('electricRateInput')?.value);
+    return {kwh,rate,total:Math.round(kwh*rate*100)/100};
+  }
+  function sync(){const v=values();const out=$('electricChargeTotal');if(out)out.textContent='Totale: '+fmt(v.total);}
+  function close(){const m=$('electricChargeModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}try{document.body.classList.remove('modal-open');}catch(_){}}
+  function open(){
+    const m=$('electricChargeModal');if(!m)return;
+    const k=$('electricKwhInput'),r=$('electricRateInput');if(k)k.value='';if(r)r.value='';sync();
+    m.hidden=false;m.setAttribute('aria-hidden','false');try{document.body.classList.add('modal-open');}catch(_){}
+    setTimeout(()=>{try{k&&k.focus();}catch(_){}},80);
+  }
+  function chooseRoom(){
+    const v=values();
+    if(!(v.kwh>0)){try{toast('Inserisci i kW consumati');}catch(_){ }return;}
+    if(!(v.rate>0)){try{toast('Inserisci il costo per kW');}catch(_){ }return;}
+    if(!(v.total>0)){try{toast('Importo non valido');}catch(_){ }return;}
+    window.__ddaeServiziChargeContext={
+      product:{name:'Ricarica elettrica · '+String(v.kwh).replace('.',',')+' kW × '+fmt(v.rate)+'/kW',price:v.total},
+      quantity:1,
+      returnPage:'statistichecopy'
+    };
+    close();
+    try{showPage('calendario');}catch(_){ }
+  }
+  function bind(){
+    const btn=$('serviziRicaricaElettricaBtn');
+    if(btn&&!btn.dataset.electricChargeBound){btn.dataset.electricChargeBound='1';if(typeof bindFastTap==='function')bindFastTap(btn,open);else btn.addEventListener('click',open);}
+    const x=$('electricChargeClose');if(x&&!x.dataset.bound){x.dataset.bound='1';x.addEventListener('click',close);}
+    const room=$('electricChargeRoomBtn');if(room&&!room.dataset.bound){room.dataset.bound='1';room.addEventListener('click',chooseRoom);}
+    ['electricKwhInput','electricRateInput'].forEach(id=>{const el=$(id);if(el&&!el.dataset.bound){el.dataset.bound='1';el.addEventListener('input',sync);}});
+    const m=$('electricChargeModal');if(m&&!m.dataset.bound){m.dataset.bound='1';m.addEventListener('click',e=>{if(e.target===m)close();});}
+    try{__launcherIconApplyToButton__(btn);}catch(_){ }
+  }
+  try{
+    if(Array.isArray(__LAUNCHER_ICON_TARGET_IDS__)&&!__LAUNCHER_ICON_TARGET_IDS__.includes('serviziRicaricaElettricaBtn'))__LAUNCHER_ICON_TARGET_IDS__.push('serviziRicaricaElettricaBtn');
+    if(Array.isArray(__LAUNCHER_GRID_THEME_TARGET_IDS__)&&!__LAUNCHER_GRID_THEME_TARGET_IDS__.includes('serviziRicaricaElettricaBtn'))__LAUNCHER_GRID_THEME_TARGET_IDS__.push('serviziRicaricaElettricaBtn');
+    if(__LAUNCHER_ICON_DEFAULT_SPECS__&&!__LAUNCHER_ICON_DEFAULT_SPECS__.serviziRicaricaElettricaBtn)__LAUNCHER_ICON_DEFAULT_SPECS__.serviziRicaricaElettricaBtn='green-4';
+  }catch(_){ }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else setTimeout(bind,0);
+  window.addEventListener('pageshow',bind);
+})();
