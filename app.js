@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.161";
+const BUILD_VERSION = "3.162";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -38305,11 +38305,14 @@ function __fitCalendarioMonthLandscape(){
 
     // Aggiorna abbreviazioni giorni (solo iniziale in landscape)
     try{
-      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-      const ms = new Date(a.getFullYear(), a.getMonth(), 1);
       const abEls = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner) .cal-day-abbrev');
       for (let i = 0; i < abEls.length; i++){
-        const d = new Date(ms.getFullYear(), ms.getMonth(), i+1);
+        const head = abEls[i].closest('.cal-cell.cal-head');
+        const rawIso = String(head?.dataset?.date || '').trim();
+        const d = /^\d{4}-\d{2}-\d{2}$/.test(rawIso)
+          ? new Date(rawIso + 'T00:00:00')
+          : null;
+        if (!d || Number.isNaN(d.getTime())) continue;
         let t = weekdayShortIT(d).toUpperCase();
         if (isLandscape) t = t.slice(0,1);
         abEls[i].textContent = t;
@@ -38325,15 +38328,17 @@ function __fitCalendarioMonthLandscape(){
       try{ wrap.style.removeProperty("--cal-pill-h"); }catch(_){}
       // Ripristina template dinamico standard (var day width) se possibile
       try{
+        const renderedDaysCount = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)').length;
         const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-        const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
+        const daysCount = renderedDaysCount || (new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate() + 6);
         grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
       }catch(_){}
       return;
     }
 
     const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-    const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
+    const renderedDaysCount = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)').length;
+    const daysCount = renderedDaysCount || (new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate() + 6);
 
     // Misure reali (px)
     let wrapW = wrap.clientWidth || 0;
@@ -44177,7 +44182,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.161';
+  var BUILD_TAG='dDAE_3.162';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48908,7 +48913,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.161',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.162',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49193,4 +49198,4 @@ try{
   window.addEventListener('pageshow', init);
 })();
 
-/* dDAE_3.161 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
+/* dDAE_3.162 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
