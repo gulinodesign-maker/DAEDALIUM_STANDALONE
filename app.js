@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.170";
+const BUILD_VERSION = "3.171";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -562,7 +562,18 @@ function __bookingYearsFromRealDates__(row){
     const ci = __normIsoDate__(first(['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal']));
     const co = __normIsoDate__(first(['check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al']));
     const start = /^\d{4}-\d{2}-\d{2}$/.test(ci) ? ci : (/^\d{4}-\d{2}-\d{2}$/.test(co) ? co : '');
-    if (!start) return out;
+    if (!start){
+      // Backup legacy: quando le date reali non sono disponibili, conserva
+      // comunque l'appartenenza annuale dichiarata dal record. Le date reali
+      // restano sempre prioritarie quando presenti.
+      ['anno','year','booking_year','anno_prenotazione','esercizio'].forEach((field)=>{
+        try{
+          const y = String(row && row[field] != null ? row[field] : '').trim();
+          if (/^\d{4}$/.test(y)) out.add(y);
+        }catch(_){ }
+      });
+      return out;
+    }
     let endInclusive = start;
     if (/^\d{4}-\d{2}-\d{2}$/.test(co) && co > start){
       const d = new Date(`${co}T00:00:00Z`);
@@ -5408,7 +5419,17 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
     const suffix = `:${yy}:tbl:ospiti`;
     let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').endsWith(suffix));
-    if (!guestKeys.length) return null;
+    // Le prenotazioni sono tabelle indipendenti dall'anno: in backup legacy
+    // possono trovarsi sotto una chiave diversa. Recupera quindi anche l'unione
+    // globale e filtrala per anno prima di rinunciare alla lettura.
+    if (!guestKeys.length){
+      try{
+        const mergedGuests = await __readYearIndependentTable__('ospiti', []);
+        const filtered = __guestFilterPreventiviRows__(__tableRowsForYear__(Array.isArray(mergedGuests) ? mergedGuests : [], 'ospiti', yy), false);
+        if (filtered.length) return { guests: filtered, spese: [], report: buildReportFromSpese([]), servizi: [], stanzeRows: [] };
+      }catch(_){ }
+      return null;
+    }
 
     const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
     guestKeys.sort((a, b) => {
@@ -44273,7 +44294,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.170';
+  var BUILD_TAG='dDAE_3.171';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -47160,7 +47181,20 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       if (!ds || typeof ds !== 'object') continue;
       for (const t of Object.keys(ds)){
         if (!allowed.has(t) || t === 'utenti') continue;
-        await __kvSet__(`ctx:${targetUid}:${y}:tbl:${t}`, ds[t]);
+        const key = `ctx:${targetUid}:${y}:tbl:${t}`;
+        const incoming = ds[t];
+        // Non lasciare che una sezione annuale vuota cancelli dati validi già
+        // recuperati dal dataset principale o da un'altra copia del backup.
+        if (Array.isArray(incoming)){
+          const existing = await __kvGet__(key);
+          if (!incoming.length && Array.isArray(existing) && existing.length) continue;
+          if (__isYearIndependentLocalTable__(t)){
+            const merged = __mergeYearIndependentRows__(t, [Array.isArray(existing) ? existing : [], incoming]);
+            await __kvSet__(key, __dedupeRowsForBackupYear__(__tableRowsForYear__(merged, t, y)));
+            continue;
+          }
+        }
+        await __kvSet__(key, incoming);
       }
     }
     try{ await __kvSet__(`backup:multiYear:lastRestore:${targetUid}`, { at: (typeof __nowIso__ === 'function' ? __nowIso__() : new Date().toISOString()), years: yearKeys }); }catch(_){ }
@@ -49004,7 +49038,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.170',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.171',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49292,7 +49326,7 @@ try{
 /* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
 
 
-/* dDAE_3.170 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
+/* dDAE_3.171 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
 (function __setupElectricChargingService3169__(){
   'use strict';
   const $=id=>document.getElementById(id);
@@ -49346,3 +49380,5 @@ try{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else setTimeout(bind,0);
   window.addEventListener('pageshow',bind);
 })();
+
+/* dDAE_3.171 — Ripristino multi-anno robusto: fallback anno legacy, merge non distruttivo e lettura prenotazioni da tutte le chiavi account */
