@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.170";
+const BUILD_VERSION = "3.171";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -18980,6 +18980,28 @@ if (guestScrollTodayBtn){
       if (e.key !== "Enter" && e.key !== " ") return;
       try{ e.preventDefault(); }catch(_){ }
       openShoppingPage();
+    });
+  }
+
+  // dDAE_3.171 — Il LED arancione dei prodotti di pulizia apre la lista corretta.
+  const cleaningProductsLed = $("#prodLedPulizia");
+  if (cleaningProductsLed && !cleaningProductsLed.__cleaningProductsPageBound){
+    cleaningProductsLed.__cleaningProductsPageBound = true;
+    const openCleaningProductsPage = () => {
+      try{
+        state.prodottiUI = state.prodottiUI || { list:"colazione" };
+        state.prodottiUI.list = "pulizia";
+      }catch(_){ }
+      try{ hideLauncher(); }catch(_){ }
+      showPage("prodotti");
+    };
+    bindFastTap(cleaningProductsLed, openCleaningProductsPage);
+    cleaningProductsLed.setAttribute("role", "button");
+    cleaningProductsLed.setAttribute("tabindex", "0");
+    cleaningProductsLed.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      try{ e.preventDefault(); }catch(_){ }
+      openCleaningProductsPage();
     });
   }
 
@@ -44273,7 +44295,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.170';
+  var BUILD_TAG='dDAE_3.171';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49004,7 +49026,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.170',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.171',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49292,7 +49314,7 @@ try{
 /* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
 
 
-/* dDAE_3.170 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
+/* dDAE_3.171 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
 (function __setupElectricChargingService3169__(){
   'use strict';
   const $=id=>document.getElementById(id);
