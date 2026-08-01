@@ -62,10 +62,10 @@ function applyIconPalette(){
         });
       }
     });
-    const serviziIconColors = { serviziCocktailBtn:'#F29C50', serviziVinoBtn:'#C85A67', serviziBirraBtn:'#E7B93F', serviziAnalcoliciBtn:'#67BDEB', serviziExtraBtn:'#F29C50', serviziCocktailAnalcoliciBtn:'#67BDEB', serviziRicaricaElettricaBtn:'#34C759' };
+    const barIconColors = { barCocktailBtn:'#F29C50', barVinoBtn:'#C85A67', barBirraBtn:'#E7B93F', barAnalcoliciBtn:'#67BDEB', barSnackBtn:'#F29C50', barCocktailAnalcoliciBtn:'#67BDEB' };
     document.querySelectorAll('#page-statistiche .home-main, #page-statistichecopy .home-main').forEach((btn) => {
       const themeId = String(btn.id || '').replace(/^copy_/, '');
-      const fallbackColor = serviziIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
+      const fallbackColor = barIconColors[themeId] || statsIconColors[themeId] || "#4D9CC5";
       const c = (typeof __launcherIconResolveHex__ === 'function')
         ? __launcherIconResolveHex__(themeId, fallbackColor)
         : fallbackColor;
@@ -88,18 +88,18 @@ function applyIconPalette(){
 
 // dDAE_1.020 — iOS BFCache: rebind tappable Home icons
 try{
-  window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } try{ __syncTopserviziCenterLayout__(); }catch(_){ } }, { passive:true });
+  window.addEventListener("pageshow", () => { try{ bindHomeStrongTap(); }catch(_){ } try{ __syncTopbarCenterLayout__(); }catch(_){ } }, { passive:true });
 }catch(_){ }
-try{ window.addEventListener('resize', () => { try{ __syncTopserviziCenterLayout__(); }catch(_){ } }, { passive:true }); }catch(_){ }
-try{ window.addEventListener('orientationchange', () => { try{ __syncTopserviziCenterLayout__(); }catch(_){ } }, { passive:true }); }catch(_){ }
-try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopserviziCenterLayout__(); }catch(_){ } }, { once:true }); }catch(_){ }
+try{ window.addEventListener('resize', () => { try{ __syncTopbarCenterLayout__(); }catch(_){ } }, { passive:true }); }catch(_){ }
+try{ window.addEventListener('orientationchange', () => { try{ __syncTopbarCenterLayout__(); }catch(_){ } }, { passive:true }); }catch(_){ }
+try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopbarCenterLayout__(); }catch(_){ } }, { once:true }); }catch(_){ }
 /* global API_BASE_URL, API_KEY */
 
 /**
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.171";
+const BUILD_VERSION = "3.148";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -562,18 +562,7 @@ function __bookingYearsFromRealDates__(row){
     const ci = __normIsoDate__(first(['check_in','checkIn','checkin','check_in_date','data_check_in','dataCheckIn','arrivo','data_arrivo','dataArrivo','arrival','arrivalDate','startDate','start_date','from','dal']));
     const co = __normIsoDate__(first(['check_out','checkOut','checkout','check_out_date','data_check_out','dataCheckOut','partenza','data_partenza','dataPartenza','departure','departureDate','endDate','end_date','to','al']));
     const start = /^\d{4}-\d{2}-\d{2}$/.test(ci) ? ci : (/^\d{4}-\d{2}-\d{2}$/.test(co) ? co : '');
-    if (!start){
-      // Backup legacy: quando le date reali non sono disponibili, conserva
-      // comunque l'appartenenza annuale dichiarata dal record. Le date reali
-      // restano sempre prioritarie quando presenti.
-      ['anno','year','booking_year','anno_prenotazione','esercizio'].forEach((field)=>{
-        try{
-          const y = String(row && row[field] != null ? row[field] : '').trim();
-          if (/^\d{4}$/.test(y)) out.add(y);
-        }catch(_){ }
-      });
-      return out;
-    }
+    if (!start) return out;
     let endInclusive = start;
     if (/^\d{4}-\d{2}-\d{2}$/.test(co) && co > start){
       const d = new Date(`${co}T00:00:00Z`);
@@ -1434,13 +1423,6 @@ async function __localApiImpostazioni__(method, body){
         ? body.operatori_catalogo
         : JSON.stringify(body.operatori_catalogo ?? []);
       upsert({ key:"operatori_catalogo", value: raw, createdAt: now });
-    }
-
-    if (body && body.stanze_catalogo !== undefined){
-      const raw = typeof body.stanze_catalogo === "string"
-        ? body.stanze_catalogo
-        : JSON.stringify(body.stanze_catalogo ?? []);
-      upsert({ key:"stanze_catalogo", value: raw, createdAt: now });
     }
 
     if (body && body.channel_catalogo !== undefined){
@@ -4813,16 +4795,16 @@ function isOperatoreSession(sess){
 
 function __fitHomeSyncBtn__(){
   try{
-    const servizi = document.getElementById("homeSyncServizi");
+    const bar = document.getElementById("homeSyncBar");
     const btn = document.getElementById("goDbSync");
-    if (!servizi || !btn) return;
+    if (!bar || !btn) return;
 
     // Layout vincolato: linea sopra + tasto SYNC sotto (stack verticale).
     // Resetta eventuali override inline che potevano mettere gli elementi "affiancati".
     try{
-      servizi.style.display = "";
-      servizi.style.alignItems = "";
-      servizi.style.justifyContent = "";
+      bar.style.display = "";
+      bar.style.alignItems = "";
+      bar.style.justifyContent = "";
     }catch(_){}
 
     try{
@@ -4859,9 +4841,9 @@ function applyRoleMode(){
     const row = document.getElementById("operatorDbRow");
     if (row) row.hidden = true;
 
-    const servizi = document.getElementById("homeSyncServizi");
-    if (servizi){
-      try{ servizi.hidden = false; servizi.style.display = ""; }catch(_){ }
+    const bar = document.getElementById("homeSyncBar");
+    if (bar){
+      try{ bar.hidden = false; bar.style.display = ""; }catch(_){ }
     }
   }catch(_){ }
 // HOME operatore: mostra solo Pulizie / Lavanderia / Calendario / Spesa in griglia 2x2
@@ -5419,17 +5401,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
     const suffix = `:${yy}:tbl:ospiti`;
     let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').endsWith(suffix));
-    // Le prenotazioni sono tabelle indipendenti dall'anno: in backup legacy
-    // possono trovarsi sotto una chiave diversa. Recupera quindi anche l'unione
-    // globale e filtrala per anno prima di rinunciare alla lettura.
-    if (!guestKeys.length){
-      try{
-        const mergedGuests = await __readYearIndependentTable__('ospiti', []);
-        const filtered = __guestFilterPreventiviRows__(__tableRowsForYear__(Array.isArray(mergedGuests) ? mergedGuests : [], 'ospiti', yy), false);
-        if (filtered.length) return { guests: filtered, spese: [], report: buildReportFromSpese([]), servizi: [], stanzeRows: [] };
-      }catch(_){ }
-      return null;
-    }
+    if (!guestKeys.length) return null;
 
     const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
     guestKeys.sort((a, b) => {
@@ -5718,7 +5690,7 @@ async function __wipeBrowserDb__(){
   }catch(_){}
 }
 
-function formatPulizieTopserviziDateIT(d){
+function formatPulizieTopbarDateIT(d){
   try{
     const dt = (d instanceof Date) ? d : new Date(d);
     if (isNaN(dt)) return "";
@@ -5728,13 +5700,13 @@ function formatPulizieTopserviziDateIT(d){
   }catch(_){ return ""; }
 }
 
-function __syncTopserviziCenterLayout__(){
+function __syncTopbarCenterLayout__(){
   try{
-    const brand = document.querySelector('.topservizi .brand');
+    const brand = document.querySelector('.topbar .brand');
     if (!brand) return;
-    const left = document.getElementById('topserviziBrandLeft') || brand.querySelector('.brand-left');
-    const right = document.getElementById('topserviziBrandRight') || brand.querySelector('.brand-right');
-    const sideGapRaw = getComputedStyle(brand).getPropertyValue('--topservizi-side-gap');
+    const left = document.getElementById('topbarBrandLeft') || brand.querySelector('.brand-left');
+    const right = document.getElementById('topbarBrandRight') || brand.querySelector('.brand-right');
+    const sideGapRaw = getComputedStyle(brand).getPropertyValue('--topbar-side-gap');
     const sideGap = parseFloat(sideGapRaw || '14') || 14;
     const leftW = left ? Math.ceil(left.getBoundingClientRect().width) : 0;
     const rightW = right ? Math.ceil(right.getBoundingClientRect().width) : 0;
@@ -5743,15 +5715,15 @@ function __syncTopserviziCenterLayout__(){
     const full = Math.max(0, Math.ceil(brand.getBoundingClientRect().width) || 0);
     const sideReserve = Math.max(reserveLeft, reserveRight);
     const centerWidth = Math.max(64, full - ((sideReserve * 2) + (sideGap * 2)));
-    brand.style.setProperty('--topservizi-left-reserve', reserveLeft + 'px');
-    brand.style.setProperty('--topservizi-right-reserve', reserveRight + 'px');
-    brand.style.setProperty('--topservizi-center-width', centerWidth + 'px');
+    brand.style.setProperty('--topbar-left-reserve', reserveLeft + 'px');
+    brand.style.setProperty('--topbar-right-reserve', reserveRight + 'px');
+    brand.style.setProperty('--topbar-center-width', centerWidth + 'px');
   }catch(_){ }
 }
 
-function __setTopserviziCenterLabel__(){
+function __setTopbarCenterLabel__(){
   try{
-    const el = document.getElementById("topserviziYear");
+    const el = document.getElementById("topbarYear");
     if (!el) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
@@ -5761,12 +5733,12 @@ function __setTopserviziCenterLabel__(){
       el.textContent = `${month} ${year}`.trim();
     } else if (state && state.page === "pulizie"){
       const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
-      el.textContent = formatPulizieTopserviziDateIT(startOfLocalDay(base)) || "Daedalium";
+      el.textContent = formatPulizieTopbarDateIT(startOfLocalDay(base)) || "Daedalium";
     } else {
       el.textContent = "Daedalium";
     }
   }catch(_){ }
-  try{ __syncTopserviziCenterLayout__(); }catch(_){ }
+  try{ __syncTopbarCenterLayout__(); }catch(_){ }
 }
 
 function updateYearPill(){
@@ -5784,8 +5756,8 @@ function updateYearPill(){
     }
   });
 
-  // Topservizi: anno (default) o mese (solo Calendario)
-  try{ __setTopserviziCenterLabel__(); }catch(_){ }
+  // Topbar: anno (default) o mese (solo Calendario)
+  try{ __setTopbarCenterLabel__(); }catch(_){ }
 
   try{ updateSettingsTabs(); }catch(_){ }
 }
@@ -6417,7 +6389,6 @@ const COLORS = {
 const LS_STAT_FISCAL_MODE = "ddae_stat_fiscal_mode";
 const LS_STAT_FORFETTARIO_STARTUP_5 = "ddae_stat_forfettario_startup_5";
 const __STAT_FISCAL_BTN_VISUAL_KEY__ = "dDAE_stat_fiscal_btn_visual_v1";
-const __GUEST_CHECKIN_BTN_VISUAL_KEY__ = "dDAE_guest_checkin_btn_visual_v1";
 const LS_APP_TEXT_UI = "ddae_app_text_ui_v1";
 const APP_TEXT_SCALE_MAP = Object.freeze({ "1": 1, "2": 1.08, "3": 1.16 });
 let __appTextUiMutationObserver__ = null;
@@ -7028,7 +6999,7 @@ const loadingState = {
 };
 
 
-// ===== Alert LED ospiti (topservizi) =====
+// ===== Alert LED ospiti (topbar) =====
 const __guestAlertState = { timer: null, lastTick: 0 };
 
 function _guestAlertDismissKey(side){
@@ -7272,101 +7243,6 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-
-function __guestCheckInVisualDefaultState__(stateKey){
-  return String(stateKey || '').toLowerCase() === 'on'
-    ? { bg:'green-5', border:'green-5', fg:'#ffffff', opacity:0.92 }
-    : { bg:'gray-4', border:'gray-4', fg:'#ffffff', opacity:0.92 };
-}
-function __guestCheckInVisualRead__(){
-  const fallback = { on:__guestCheckInVisualDefaultState__('on'), off:__guestCheckInVisualDefaultState__('off') };
-  try{
-    const raw = localStorage.getItem(__GUEST_CHECKIN_BTN_VISUAL_KEY__);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return { on:__tagColorPairFromValue__(parsed?.on || fallback.on, fallback.on.bg), off:__tagColorPairFromValue__(parsed?.off || fallback.off, fallback.off.bg) };
-  }catch(_){ return fallback; }
-}
-function __guestCheckInVisualWrite__(visuals){
-  const current = __guestCheckInVisualRead__();
-  const next = {
-    on:__tagColorPairFromValue__(visuals?.on || current.on, visuals?.on?.bg || current.on.bg),
-    off:__tagColorPairFromValue__(visuals?.off || current.off, visuals?.off?.bg || current.off.bg)
-  };
-  try{ localStorage.setItem(__GUEST_CHECKIN_BTN_VISUAL_KEY__, JSON.stringify(next)); }catch(_){ }
-  return next;
-}
-function __applyGuestCheckInButtonVisual__(forcedState, forcedPair){
-  try{
-    const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
-    if (!btn) return;
-    const stateKey = (forcedState === 'on' || forcedState === 'off') ? forcedState : (btn.classList.contains('is-on') ? 'on' : 'off');
-    const pair = forcedPair || __guestCheckInVisualRead__()[stateKey] || __guestCheckInVisualDefaultState__(stateKey);
-    const bgHex = __graphColorValueToHex__(pair?.bg || __guestCheckInVisualDefaultState__(stateKey).bg, stateKey === 'on' ? '#34c759' : '#94a3b8');
-    const borderHex = __graphColorValueToHex__(pair?.border || pair?.bg || bgHex, bgHex);
-    const textHex = __tagColorTextHex__(pair?.bg || bgHex, pair?.fg || '', false);
-    const opacity = __designBgOpacityNormalize__(pair?.opacity ?? 0.92);
-    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
-    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
-    btn.style.setProperty('border-color', borderHex, 'important');
-    btn.style.setProperty('color', textHex, 'important');
-    btn.style.setProperty('-webkit-text-fill-color', textHex, 'important');
-    const svg = btn.querySelector('svg');
-    if (svg){ svg.style.setProperty('stroke', textHex, 'important'); svg.style.setProperty('color', textHex, 'important'); }
-  }catch(_){ }
-}
-const __guestCheckInVisualEditor__ = { active:'off', drafts:null };
-function __guestCheckInVisualEditorCaptureCurrent__(){
-  try{
-    if (!__guestCheckInVisualEditor__.drafts) return;
-    const payload = __tagColorPopupCurrentPayload__();
-    const colors = payload?.colors || {};
-    const key = __guestCheckInVisualEditor__.active === 'on' ? 'on' : 'off';
-    __guestCheckInVisualEditor__.drafts[key] = { bg:colors.bg || __guestCheckInVisualEditor__.drafts[key]?.bg, border:colors.border || colors.bg || __guestCheckInVisualEditor__.drafts[key]?.border, fg:colors.fg || '', opacity:__designBgOpacityNormalize__(payload?.opacity ?? __guestCheckInVisualEditor__.drafts[key]?.opacity ?? 0.92) };
-  }catch(_){ }
-}
-function __guestCheckInVisualEditorRefreshStateButtons__(){
-  try{ document.querySelectorAll('#tagColorStateServizi [data-checkin-visual-state]').forEach((btn)=>{ const active=String(btn.dataset.checkinVisualState||'')===__guestCheckInVisualEditor__.active; btn.classList.toggle('is-active',active); btn.setAttribute('aria-pressed',active?'true':'false'); }); }catch(_){ }
-}
-function __guestCheckInVisualEditorSwitch__(nextState){
-  const next = nextState === 'on' ? 'on' : 'off';
-  if (!__guestCheckInVisualEditor__.drafts || next === __guestCheckInVisualEditor__.active) return;
-  __guestCheckInVisualEditorCaptureCurrent__();
-  __guestCheckInVisualEditor__.active = next;
-  const pair = __tagColorPairFromValue__(__guestCheckInVisualEditor__.drafts[next], __guestCheckInVisualDefaultState__(next).bg);
-  __tagColorPopupState__.colors = { ...pair, border:pair.border || pair.bg };
-  __tagColorPopupState__.opacity = __designBgOpacityNormalize__(pair.opacity ?? 0.92);
-  __tagColorPopupRefreshSelection__();
-  __guestCheckInVisualEditorRefreshStateButtons__();
-  __applyGuestCheckInButtonVisual__(next, pair);
-}
-function __openGuestCheckInButtonColorPicker__(){
-  const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
-  const liveState = btn?.classList.contains('is-on') ? 'on' : 'off';
-  const visuals = __guestCheckInVisualRead__();
-  __guestCheckInVisualEditor__.active = liveState;
-  __guestCheckInVisualEditor__.drafts = { on:{...visuals.on}, off:{...visuals.off} };
-  const initial = __guestCheckInVisualEditor__.drafts[liveState];
-  __tagColorPopupOpen__('guest-checkin', initial, ()=>{
-    try{ __guestCheckInVisualEditorCaptureCurrent__(); __guestCheckInVisualWrite__(__guestCheckInVisualEditor__.drafts); __applyGuestCheckInButtonVisual__(); }catch(_){ }
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial?.opacity ?? 0.92), defaultMode:'bg', fallbackBg:initial?.bg || 'green-5', onPreview:(payload)=>{ try{ const colors=payload?.colors||{}; __applyGuestCheckInButtonVisual__(__guestCheckInVisualEditor__.active,{bg:colors.bg,border:colors.border||colors.bg,fg:colors.fg||'',opacity:payload?.opacity}); }catch(_){ } }, onRevert:()=>{ try{ __applyGuestCheckInButtonVisual__(); }catch(_){ } } });
-  __guestCheckInVisualEditorRefreshStateButtons__();
-}
-function __bindGuestCheckInVisualLongPress__(){
-  try{
-    const btn = document.querySelector('#ospiteHdActions [data-guest-checkin]');
-    if (!btn || btn.__boundCheckInVisualLongPress) return;
-    btn.__boundCheckInVisualLongPress = true;
-    let timer=null, fired=false;
-    const clear=()=>{ if(timer){clearTimeout(timer);timer=null;} };
-    const start=(e)=>{ try{if(e?.type==='pointerdown'&&e.pointerType==='mouse'&&e.button!==0)return;}catch(_){} fired=false;clear();timer=setTimeout(()=>{timer=null;fired=true;btn.__suppressCheckInClickUntil=Date.now()+900;try{__sfxLongPressLow();}catch(_){} __openGuestCheckInButtonColorPicker__();},500); };
-    const stop=()=>clear();
-    ['pointerdown','touchstart','mousedown'].forEach(evt=>btn.addEventListener(evt,start,{passive:true}));
-    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach(evt=>btn.addEventListener(evt,stop,{passive:true}));
-    btn.addEventListener('click',(e)=>{ if(fired||Date.now()<Number(btn.__suppressCheckInClickUntil||0)){fired=false;e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();} },true);
-    btn.addEventListener('contextmenu',(e)=>e.preventDefault(),true);
-  }catch(_){ }
-}
-
 function __guestCheckInDone__(g){
   try{
     return truthy(g?.checkin_effettuato ?? g?.checkInEffettuato ?? g?.check_in_effettuato ?? g?.checkInDone ?? g?.checkinDone ?? g?.check_in_done ?? g?.checked_in ?? g?.checkedIn ?? g?.arrivato ?? g?.arrived);
@@ -7429,7 +7305,6 @@ function __syncGuestCheckInButton__(){
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     btn.setAttribute('title', !active ? 'Seleziona prima un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
     btn.setAttribute('aria-label', !active ? 'Check-in non attivo: seleziona un gruppo stanze' : (on ? 'Check-in effettuato' : 'Check-in non effettuato'));
-    try{ __applyGuestCheckInButtonVisual__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -7930,7 +7805,7 @@ function __syncLedBegin(method){}
 function __syncLedEnd(method){}
 
 function showLoading(){
-  // Loader overlay disabilitato: usiamo LED sync in topservizi
+  // Loader overlay disabilitato: usiamo LED sync in topbar
   try{ const ov = document.getElementById("loadingOverlay"); if (ov) ov.hidden = true; }catch(_){}
   loadingState.isVisible = false;
 }
@@ -8222,12 +8097,12 @@ function __dateRangeCalendarEnsureHeader__(modalId, startIso, endIso, leftLabel,
     const body = modal.querySelector('.guest-date-range-modal-body');
     if (!body) return;
     let wrap = body.querySelector('.guest-date-range-top-fields');
-    const monthservizi = body.querySelector('.guest-date-range-monthservizi');
+    const monthbar = body.querySelector('.guest-date-range-monthbar');
     if (!wrap){
       wrap = document.createElement('div');
       wrap.className = 'guest-date-range-top-fields';
       wrap.innerHTML = '<button type="button" class="guest-date-range-top-field is-start"><span class="guest-date-range-top-label"></span><span class="guest-date-range-top-value"></span></button><button type="button" class="guest-date-range-top-field is-end"><span class="guest-date-range-top-label"></span><span class="guest-date-range-top-value"></span></button>';
-      if (monthservizi) body.insertBefore(wrap, monthservizi); else body.insertBefore(wrap, body.firstChild);
+      if (monthbar) body.insertBefore(wrap, monthbar); else body.insertBefore(wrap, body.firstChild);
       try{ __bindDateRangeCalendarHold__(wrap); }catch(_){ }
     }
     const labels = wrap.querySelectorAll('.guest-date-range-top-label');
@@ -8435,7 +8310,7 @@ let __applyingLanguage__ = false;
 let __languageObserver__ = null;
 let __MONTHS_IT = [];
 const __I18N_PHRASES__ = {
-  "Servizi": { "en":"Servizi", "fr":"Servizi", "de":"Servizi", "es":"Servizi" },
+  "Bar": { "en":"Bar", "fr":"Bar", "de":"Bar", "es":"Bar" },
   "Cocktail": { "en":"Cocktails", "fr":"Cocktails", "de":"Cocktails", "es":"Cócteles" },
   "Vino": { "en":"Wine", "fr":"Vin", "de":"Wein", "es":"Vino" },
   "Vini": { "en":"Wines", "fr":"Vins", "de":"Weine", "es":"Vinos" },
@@ -9795,7 +9670,7 @@ const __I18N_WORD_MAPS__ = {
     "giorno": "Tag",
     "ricevuta": "Beleg",
     "Ricevuta": "Beleg",
-    "Contanti": "Servizi",
+    "Contanti": "Bar",
     "Elettronico": "Elektronisch",
     "Database": "Datenbank",
     "Codice": "Code",
@@ -11699,9 +11574,9 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -11722,7 +11597,6 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsChannelBtn: 'orange-4',
   settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
-  settingsHotelLocationBtn: 'green-5',
     settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
@@ -11746,13 +11620,12 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatPiscinaReport: 'beige-5',
   goStatCancellazioni: 'sky-4',
   goStatAmministratore: 'violet-4',
-  serviziCocktailBtn: 'orange-4',
-  serviziVinoBtn: 'red-4',
-  serviziBirraBtn: 'yellow-4',
-  serviziAnalcoliciBtn: 'sky-4',
-  serviziExtraBtn: 'orange-4',
-  serviziCocktailAnalcoliciBtn: 'blue-4',
-  serviziRicaricaElettricaBtn: 'green-4',
+  barCocktailBtn: 'orange-4',
+  barVinoBtn: 'red-4',
+  barBirraBtn: 'yellow-4',
+  barAnalcoliciBtn: 'sky-4',
+  barSnackBtn: 'orange-4',
+  barCocktailAnalcoliciBtn: 'blue-4',
   homeYearPill: 'sky-4'
 };
 
@@ -11817,11 +11690,11 @@ const __HEADER_ACTION_COLOR_STORAGE_KEY__ = 'dDAE_header_action_colors_v1';
 function __headerActionTargetButtons__(){
   try{
     return Array.from(document.querySelectorAll(
-      '.topservizi .icon-btn[id], ' +
+      '.topbar .icon-btn[id], ' +
       '.hd-actions .icon-btn[id], ' +
       '.guest-hd-actions .icon-btn[id], ' +
       '.guest-hd-actions .tl-btn[id], ' +
-      '.clean-topservizi .icon-btn[id], ' +
+      '.clean-topbar .icon-btn[id], ' +
       '.clean-nav .btn[id], ' +
       '.app-section-head-row .cal-nav-btn[id], ' +
       '.stats-head-actions .piscina-action-btn[id], ' +
@@ -11918,7 +11791,7 @@ function __isDarkModeRuntime__(){
 function __isProtectedHeaderActionButton__(btn){
   try{
     if (!btn || !btn.id) return false;
-    return !!(btn.closest('.topservizi') || btn.closest('.hd-actions') || btn.closest('.guest-hd-actions') || btn.closest('.clean-topservizi') || btn.closest('.app-section-head-row'));
+    return !!(btn.closest('.topbar') || btn.closest('.hd-actions') || btn.closest('.guest-hd-actions') || btn.closest('.clean-topbar') || btn.closest('.app-section-head-row'));
   }catch(_){ return false; }
 }
 
@@ -12037,7 +11910,7 @@ function __applyProtectedDarkButtonStyle__(btn, options = {}, visual = null){
     try{
       const headerWeight = visual && visual.bold ? '700' : '400';
       btn.style.setProperty('font-weight', headerWeight, 'important');
-      btn.querySelectorAll('.label, .btn-label, .home-sync-text, .topservizi-title, span').forEach((node) => {
+      btn.querySelectorAll('.label, .btn-label, .home-sync-text, .topbar-title, span').forEach((node) => {
         try{ node.style.setProperty('font-weight', headerWeight, 'important'); }catch(_){ }
       });
     }catch(_){ }
@@ -12081,7 +11954,7 @@ function __headerActionApplyToButton__(btn, previewVisual){
     try{
       const headerWeight = visual && visual.bold ? '700' : '400';
       btn.style.setProperty('font-weight', headerWeight, 'important');
-      btn.querySelectorAll('.label, .btn-label, .home-sync-text, .topservizi-title, span').forEach((node) => {
+      btn.querySelectorAll('.label, .btn-label, .home-sync-text, .topbar-title, span').forEach((node) => {
         try{ node.style.setProperty('font-weight', headerWeight, 'important'); }catch(_){ }
       });
     }catch(_){ }
@@ -12317,8 +12190,8 @@ function __openHeaderActionThemePicker__(){
       __headerActionThemeOverwriteTargets__(nextVisual);
       __headerActionApplyAll__();
       try{ renderRoomSettingsPage(); }catch(_){ }
-      try{ toast('Design tasti top servizi aggiornato'); }catch(_){ }
-    }catch(e){ try{ toast(e?.message || 'Errore design tasti top servizi'); }catch(_){ } }
+      try{ toast('Design tasti top bar aggiornato'); }catch(_){ }
+    }catch(e){ try{ toast(e?.message || 'Errore design tasti top bar'); }catch(_){ } }
   }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(current.bg || 'white'), onPreview:(payload) => { __previewHeaderActionTheme__(payload); }, onRevert:() => { __headerActionApplyAll__(); } });
 }
 
@@ -12765,7 +12638,7 @@ function __bindHeaderActionLongPress__(btn){
         if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), onPreview:(payload) => { __previewHeaderActionVisual__(btn.id, payload); }, onRevert:() => { __headerActionApplyToButton__(btn); }, applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top servizi?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), onPreview:(payload) => { __previewHeaderActionVisual__(btn.id, payload); }, onRevert:() => { __headerActionApplyToButton__(btn); }, applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
     };
     btn.addEventListener('touchstart', (e) => {
       touchAt = Date.now();
@@ -12947,8 +12820,8 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','barCocktailBtn','barVinoBtn','barBirraBtn','barAnalcoliciBtn','barSnackBtn','barCocktailAnalcoliciBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -13029,7 +12902,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -13060,7 +12933,7 @@ function __launcherIconApplyToButton__(btn){
     if (!btn || !btn.id) return;
     const visual = __launcherIconVisualFor__(btn.id);
     const hex = __operatoreColorHex__(visual.fg || 'blue-4');
-    const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy,[id^="page-servizi"]') || btn.closest('#page-impostazioni') || btn.closest('#settingsDataModal'));
+    const allowGridTheme = !!(btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy,[id^="page-bar"]') || btn.closest('#page-impostazioni') || btn.closest('#settingsDataModal'));
     const resolvedBgSpec = visual.bg || (allowGridTheme ? __launcherGridThemeResolveLayer__('bg', '') : '');
     const resolvedBorderSpec = visual.border || (allowGridTheme ? __launcherGridThemeResolveLayer__('border', resolvedBgSpec || '') : '');
     const bgHex = resolvedBgSpec ? __operatoreColorHex__(resolvedBgSpec) : '';
@@ -13115,7 +12988,7 @@ function __launcherIconApplyToButton__(btn){
       __applyVisualTextWeight__(btn, visual);
       return;
     }
-    if (btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy,[id^="page-servizi"]')){
+    if (btn.closest('#page-home') || btn.closest('#page-statistiche') || btn.closest('#page-statistichecopy,[id^="page-bar"]')){
       const resolvedOpacity = __designBgOpacityNormalize__(visual.opacity ?? __designBgOpacityRead__());
       const resolvedBg = bgHex ? hexToRgba(bgHex, resolvedOpacity) : '';
       const resolvedBorder = borderHex ? hexToRgba(borderHex, 1) : (bgHex ? hexToRgba(bgHex, 1) : '');
@@ -13255,7 +13128,7 @@ function __launcherIconSaveColor__(id, spec, mode = 'fg'){
 
 function __ddae841IsOperationalNoColorPopupButton__(btn){
   try{
-    if (btn && btn.matches && btn.matches('.servizi-category-page .servizi-slot-btn')) return true;
+    if (btn && btn.matches && btn.matches('.bar-category-page .bar-slot-btn')) return true;
     const id = String((btn && btn.id) || '').trim();
     const blocked = new Set([
       'btnAddOperatoreCard','btnAddChannelCard','btnAddRoomCatalogCard','btnAddLaundryComponentCard'
@@ -13297,7 +13170,7 @@ function __bindLauncherIconLongPress__(btn){
     const getReturnPage = () => {
       try{
         if (btn.closest('#page-impostazioni')) return 'impostazioni';
-        if (btn.closest('#page-statistichecopy,[id^="page-servizi"]')) return 'statistichecopy';
+        if (btn.closest('#page-statistichecopy,[id^="page-bar"]')) return 'statistichecopy';
         if (btn.closest('#page-statistiche')) return 'statistiche';
       }catch(_){ }
       return 'home';
@@ -14120,7 +13993,7 @@ function __operatoriSetSelectedTextColor__(color){
   __setTagPreviewButtonStyle__('operatoriEditorDotColor', __operatoriPageUi.color || 'blue-2', __operatoriPageUi.textColor || '');
 }
 
-const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false, stateEditor:null };
+const __tagColorPopupState__ = { target: "", onSelect: null, mode:'fg', supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:0.80, colors:{ bg:'blue-4', border:'blue-4', fg:'' }, initial:{ bg:'blue-4', border:'blue-4', fg:'', opacity:0.80 }, applyCategory:null, onPreview:null, onRevert:null, previewDirty:false };
 let __tagColorPopupReadyAt__ = 0;
 let __tagColorPopupSuppressUntil__ = 0;
 let __tagColorPopupLastDualMode__ = 'bg';
@@ -14186,17 +14059,17 @@ function __tagColorPopupSelectedSpec__(){
 }
 
 function __tagColorPopupRefreshModeButtons__(){
-  const servizi = document.getElementById('tagColorModeServizi');
-  if (!servizi) return;
+  const bar = document.getElementById('tagColorModeBar');
+  if (!bar) return;
   const isEnabled = (mode) => {
     if (mode === 'bg') return !!__tagColorPopupState__.supportsBg;
     if (mode === 'border') return !!__tagColorPopupState__.supportsBorder;
     if (mode === 'opacity') return !!__tagColorPopupState__.supportsOpacity;
     return !!__tagColorPopupState__.supportsFg;
   };
-  const buttons = Array.from(servizi.querySelectorAll('.tag-color-mode-btn'));
-  servizi.hidden = false;
-  try{ servizi.style.setProperty('--tag-color-mode-count', String(Math.max(1, buttons.length || 4))); }catch(_){ }
+  const buttons = Array.from(bar.querySelectorAll('.tag-color-mode-btn'));
+  bar.hidden = false;
+  try{ bar.style.setProperty('--tag-color-mode-count', String(Math.max(1, buttons.length || 4))); }catch(_){ }
   buttons.forEach((btn) => {
     const mode = String(btn.dataset.mode || '').trim().toLowerCase();
     const enabled = isEnabled(mode);
@@ -14239,10 +14112,9 @@ function __tagColorPopupApplyViewportLayout__(){
     const body = modal?.querySelector?.('.tag-color-modal-body');
     const header = modal?.querySelector?.('.tag-color-modal-hd');
     const grid = document.getElementById('tagColorGrid');
-    const modeServizi = document.getElementById('tagColorModeServizi');
+    const modeBar = document.getElementById('tagColorModeBar');
     const opacityWrap = document.getElementById('tagOpacityWrap');
     const opacityGrid = document.getElementById('tagOpacityGrid');
-    const stateServizi = document.getElementById('tagColorStateServizi');
     if (!modal || modal.hidden || !card || !body || !grid) return;
     const rootStyle = window.getComputedStyle ? window.getComputedStyle(document.documentElement) : null;
     const safeTop = Math.max(0, Math.round(parseFloat(rootStyle?.getPropertyValue('--safe-top') || '0') || 0));
@@ -14285,13 +14157,12 @@ function __tagColorPopupApplyViewportLayout__(){
     const opacityButtonHeight = Math.max(40, Math.min(56, Math.round(availableBodyHeight * 0.13)));
     const opacityGridHeight = opacityButtonHeight + (opacityPad * 2);
     const reservedOpacity = (!opacityWrap || opacityWrap.hidden) ? 0 : (opacityGridHeight + 6);
-    const reservedMode = (!modeServizi || modeServizi.hidden) ? 0 : (modeHeight + 8);
-    const reservedState = (!stateServizi || stateServizi.hidden) ? 0 : 52;
+    const reservedMode = (!modeBar || modeBar.hidden) ? 0 : (modeHeight + 8);
     const gap = viewportHeight <= 700 ? 2 : (viewportHeight <= 840 ? 3 : 4);
     const cols = 6;
     const total = grid.querySelectorAll('.tag-color-option').length || 72;
     const rows = Math.max(1, Math.ceil(total / cols));
-    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - reservedState - gridPad - gridPadBottom - 4));
+    const availableHeight = Math.max(170, Math.floor(availableBodyHeight - reservedMode - reservedOpacity - gridPad - gridPadBottom - 4));
     const gridInnerWidth = Math.max(240, bodyInnerWidth - (gridPad * 2));
     const cellWidth = Math.floor((gridInnerWidth - (gap * (cols - 1))) / cols);
     const maxHeightFit = Math.floor((availableHeight - (gap * (rows - 1))) / rows);
@@ -14339,66 +14210,12 @@ function __tagColorPopupEmitPreview__(){
   }catch(_){ }
 }
 
-
-function __tagColorPopupConfigureStateServizi__(){
-  try{
-    const servizi = document.getElementById('tagColorStateServizi');
-    if (!servizi) return;
-    const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
-    const isGuest = __tagColorPopupState__.target === 'guest-checkin';
-    servizi.hidden = !(editor || isGuest);
-    const buttons = Array.from(servizi.querySelectorAll('[data-checkin-visual-state]'));
-    if (isGuest && !editor){ buttons.forEach((btn)=>{ const state=String(btn.dataset.checkinVisualState||'off'); btn.textContent=state==='on'?'ON':'OFF'; }); }
-    if (editor){
-      const labels = editor.labels || { off:'DISATTIVO', on:'ATTIVO' };
-      buttons.forEach((btn) => {
-        const state = String(btn.dataset.checkinVisualState || 'off');
-        btn.textContent = String(labels[state] || (state === 'on' ? 'ATTIVO' : 'DISATTIVO'));
-        const active = state === String(editor.activeState || 'off');
-        btn.classList.toggle('is-active', active);
-        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
-    }
-  }catch(_){ }
-}
-
-function __tagColorPopupSwitchGenericState__(nextState){
-  try{
-    const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
-    if (!editor) return false;
-    const next = String(nextState || 'off') === 'on' ? 'on' : 'off';
-    const current = String(editor.activeState || 'off') === 'on' ? 'on' : 'off';
-    editor.drafts[current] = __tagColorPopupCurrentPayload__();
-    editor.activeState = next;
-    const source = editor.drafts[next] || editor.originals[next] || {};
-    const sourceValue = (source && source.colors && typeof source.colors === 'object') ? { ...source.colors, opacity:source.opacity } : source;
-    const visual = __tagColorPairFromValue__(sourceValue, editor.fallbackBg || 'blue-4');
-    __tagColorPopupState__.colors = {
-      ...visual,
-      border: __normalizeOptionalOperatoreColor__(source?.colors?.border || source?.border || visual?.border || visual?.bg || editor.fallbackBg || 'blue-4') || visual?.bg || editor.fallbackBg || 'blue-4'
-    };
-    __tagColorPopupState__.opacity = __designBgOpacityNormalize__(source?.opacity ?? visual?.opacity ?? 0.80);
-    __tagColorPopupState__.initial = {
-      bg: __normalizeOperatoreColor__(__tagColorPopupState__.colors.bg || editor.fallbackBg || 'blue-4'),
-      border: __normalizeOperatoreColor__(__tagColorPopupState__.colors.border || __tagColorPopupState__.colors.bg || editor.fallbackBg || 'blue-4'),
-      fg: __normalizeOptionalOperatoreColor__(__tagColorPopupState__.colors.fg || ''),
-      opacity: __designBgOpacityNormalize__(__tagColorPopupState__.opacity ?? 0.80)
-    };
-    __tagColorPopupRefreshSelection__();
-    __tagColorPopupConfigureStateServizi__();
-    if (typeof editor.onStatePreview === 'function') editor.onStatePreview(next, __tagColorPopupCurrentPayload__());
-    return true;
-  }catch(_){ return false; }
-}
-
 function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   const modal = document.getElementById('tagColorModal');
   const grid = document.getElementById('tagColorGrid');
   const opts = (options && typeof options === 'object') ? options : {};
   if (!modal || !grid) return;
   __tagColorPopupState__.target = String(target || '').trim();
-  __tagColorPopupState__.stateEditor = (opts.stateEditor && typeof opts.stateEditor === 'object') ? opts.stateEditor : null;
-  try{ __tagColorPopupConfigureStateServizi__(); }catch(_){ }
   __tagColorPopupState__.onSelect = typeof onSelect === 'function' ? onSelect : null;
   __tagColorPopupState__.onPreview = typeof opts.onPreview === 'function' ? opts.onPreview : null;
   __tagColorPopupState__.onRevert = typeof opts.onRevert === 'function' ? opts.onRevert : null;
@@ -14429,7 +14246,6 @@ function __tagColorPopupOpen__(target, currentColor, onSelect, options){
   __tagColorPopupState__.mode = enabledModes.includes(requestedMode) ? requestedMode : (enabledModes[0] || 'fg');
   __tagColorPopupState__.confirmed = false;
   __tagColorPopupRefreshSelection__();
-  try{ __tagColorPopupConfigureStateServizi__(); }catch(_){ }
   requestAnimationFrame(() => { try{ __tagColorPopupApplyViewportLayout__(); }catch(_){ } });
   __tagColorPopupReadyAt__ = 0;
   __tagColorPopupSuppressUntil__ = 0;
@@ -14447,17 +14263,11 @@ async function __tagColorPopupConfirm__(){
   const cb = __tagColorPopupState__.onSelect;
   const applyCategoryCfg = (__tagColorPopupState__ && __tagColorPopupState__.applyCategory && typeof __tagColorPopupState__.applyCategory === 'object') ? { ...__tagColorPopupState__.applyCategory } : null;
   const payload = __tagColorPopupCurrentPayload__();
-  const editor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
-  if (editor){
-    const current = String(editor.activeState || 'off') === 'on' ? 'on' : 'off';
-    editor.drafts[current] = payload;
-  }
   const changedBeforeClose = __tagColorPopupChangedFields__(payload);
   __tagColorPopupState__.confirmed = true;
   __tagColorPopupClose__();
   try{
-    if (editor && typeof editor.onConfirm === 'function') await editor.onConfirm(editor.drafts, editor.activeState);
-    else if (typeof cb === 'function') await cb(payload);
+    if (typeof cb === 'function') await cb(payload);
   }catch(_){ }
   try{ await __tagColorPopupApplyCategoryIfNeeded__(payload, applyCategoryCfg, changedBeforeClose); }catch(_){ }
   try{ toast('Colore aggiornato'); }catch(_){ }
@@ -14468,7 +14278,6 @@ function __tagColorPopupClose__(){
   if (!modal) return;
   const shouldRevert = !__tagColorPopupState__.confirmed && __tagColorPopupState__.previewDirty;
   const revertCb = __tagColorPopupState__.onRevert;
-  const stateEditor = (__tagColorPopupState__.stateEditor && typeof __tagColorPopupState__.stateEditor === 'object') ? __tagColorPopupState__.stateEditor : null;
   const revertPayload = {
     mode: 'bg',
     spec: __normalizeOperatoreColor__(__tagColorPopupState__.initial?.bg || 'blue-4'),
@@ -14490,15 +14299,10 @@ function __tagColorPopupClose__(){
   if (__tagColorPopupState__.supportsBg && __tagColorPopupState__.supportsFg) {
     __tagColorPopupLastDualMode__ = __tagColorPopupState__.mode === 'bg' ? 'bg' : 'fg';
   }
-  if (shouldRevert && stateEditor && typeof stateEditor.onRevert === 'function') {
-    try{ stateEditor.onRevert(stateEditor.originals || {}); }catch(_){ }
-  } else if (shouldRevert && typeof revertCb === 'function') {
+  if (shouldRevert && typeof revertCb === 'function') {
     try{ revertCb(revertPayload); }catch(_){ }
   }
   __tagColorPopupState__.target = '';
-  __tagColorPopupState__.stateEditor = null;
-  try{ const sb = document.getElementById('tagColorStateServizi'); if (sb) sb.hidden = true; }catch(_){ }
-  __guestCheckInVisualEditor__.drafts = null;
   __tagColorPopupState__.onSelect = null;
   __tagColorPopupState__.onPreview = null;
   __tagColorPopupState__.onRevert = null;
@@ -15220,35 +15024,6 @@ function __roomCatalogParseRaw__(raw){
     return __roomCatalogParseRaw__(parsed);
   }catch(_){ return []; }
 }
-let __roomCatalogRecoveryScheduled__ = false;
-function __scheduleRoomCatalogRecoveryToSettings__(catalog){
-  try{
-    if (__roomCatalogRecoveryScheduled__) return;
-    const clean = __roomCatalogNormalizeList__(catalog);
-    if (!clean.length) return;
-    __roomCatalogRecoveryScheduled__ = true;
-    setTimeout(async () => {
-      try{
-        const rows0 = await __tblGet__('impostazioni', []);
-        const rows = Array.isArray(rows0) ? rows0.slice() : [];
-        const keyOf = (row) => String(row?.key || row?.Key || '').trim().toLowerCase();
-        const hasCatalog = rows.some((row) => keyOf(row) === 'stanze_catalogo' && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
-        if (hasCatalog) return;
-        const now = __nowIso__();
-        const upsert = (key, value) => {
-          const idx = rows.findIndex((row) => keyOf(row) === key);
-          const prev = idx >= 0 ? rows[idx] : {};
-          const next = { ...prev, key, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
-          if (idx >= 0) rows[idx] = next; else rows.push(next);
-        };
-        upsert('stanze_catalogo', JSON.stringify(clean));
-        upsert('numero_stanze', String(clean.length));
-        await __tblSet__('impostazioni', rows);
-      }catch(_){ }
-      finally{ __roomCatalogRecoveryScheduled__ = false; }
-    }, 0);
-  }catch(_){ __roomCatalogRecoveryScheduled__ = false; }
-}
 function getRoomCatalogFromSettings(){
   try{
     const cached = state?.settings?.roomCatalogGlobal;
@@ -15268,7 +15043,6 @@ function getRoomCatalogFromSettings(){
     const localClean = __roomCatalogParseRaw__(localStorage.getItem(__ROOM_CATALOG_STORAGE_KEY__) || '');
     if (localClean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = localClean; }catch(_){ }
-      try{ __scheduleRoomCatalogRecoveryToSettings__(localClean); }catch(_){ }
       return localClean;
     }
   }catch(_){ }
@@ -15463,8 +15237,6 @@ function setupTagColorPopup(){
   modal.dataset.bound = '1';
   const closeBtn = document.getElementById('tagColorModalClose');
   const confirmBtn = document.getElementById('tagColorModalConfirm');
-  const stateServizi = document.getElementById('tagColorStateServizi');
-  if (stateServizi && !stateServizi.__bound){ stateServizi.__bound=true; stateServizi.addEventListener('click',(e)=>{ const btn=e.target.closest('[data-checkin-visual-state]'); if(!btn)return; e.preventDefault(); e.stopPropagation(); const next=String(btn.dataset.checkinVisualState||'off'); if (__tagColorPopupSwitchGenericState__(next)) return; __guestCheckInVisualEditorSwitch__(next); }); }
   const card = modal.querySelector?.('.tag-color-modal-card');
   try{
     if (!window.__tagColorPopupResizeBound__){
@@ -15502,7 +15274,7 @@ function setupTagColorPopup(){
         __tagColorPopupEmitPreview__();
       });
     });
-    document.querySelectorAll('#tagColorModeServizi .tag-color-mode-btn').forEach((btn) => {
+    document.querySelectorAll('#tagColorModeBar .tag-color-mode-btn').forEach((btn) => {
       bindFastTap(btn, () => {
         const rawMode = String(btn.dataset.mode || '').trim().toLowerCase();
         const mode = rawMode === 'bg' ? 'bg' : (rawMode === 'border' ? 'border' : (rawMode === 'opacity' ? 'opacity' : (rawMode === 'bold' ? 'bold' : 'fg')));
@@ -15907,7 +15679,7 @@ async function __saveSettingsAccountModal__(){
     try{ saveSession(refreshed); }catch(_){ }
     try{ state.session = refreshed; }catch(_){ }
     try{ updateSettingsAccountName(); updateSettingsTabs(); }catch(_){ }
-    try{ __setTopserviziCenterLabel__(); }catch(_){ }
+    try{ __setTopbarCenterLabel__(); }catch(_){ }
     __closeSettingsAccountModal__();
     try{ toast('Account aggiornato', 'green'); }catch(_){ }
   }catch(e){
@@ -17733,7 +17505,7 @@ function bindFastTap(el, fn){
     try{ e.stopPropagation(); }catch(_){ }
     try{ e.stopImmediatePropagation(); }catch(_){ }
 
-    // Il popup riaperto tramite Servizi è una copia inattiva: nessuno dei cinque tasti esegue azioni.
+    // Il popup riaperto tramite Bar è una copia inattiva: nessuno dei cinque tasti esegue azioni.
     if (modal && modal.dataset.dataMode === 'inactive') return false;
 
     const now = Date.now();
@@ -18006,7 +17778,7 @@ function setSpeseView(view, { render=false } = {}){
 /* NAV pages (5 pagine interne: home + 4 funzioni) */
 
 
-// dDAE_1.020 — Fix contrast icone topservizi: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
+// dDAE_1.020 — Fix contrast icone topbar: se un tasto appare bianco su iOS, l'icona bianca diventa invisibile.
 // Applichiamo una classe .is-light ai pulsanti con background chiaro, così CSS forza icone scure.
 function __parseRGBA__(s){
   try{
@@ -18027,9 +17799,9 @@ function __parseRGBA__(s){
   }catch(_){ return null; }
 }
 
-function ensureTopserviziIconContrast(){
+function ensureTopbarIconContrast(){
   try{
-    const btns = document.querySelectorAll('.topservizi .icon-btn');
+    const btns = document.querySelectorAll('.topbar .icon-btn');
     btns.forEach((btn)=>{
       if (!btn || btn.hidden) return;
       const cs = getComputedStyle(btn);
@@ -18064,12 +17836,12 @@ function __updateVerticalLockViewportVars__(){
     const vw = Math.max(1, Math.round((vv && vv.width) || window.innerWidth || document.documentElement.clientWidth || 0));
     root.style.setProperty('--app-viewport-height', `${vh}px`);
     root.style.setProperty('--app-viewport-width', `${vw}px`);
-    const topservizi = document.querySelector('.topservizi');
-    const topserviziH = Math.max(64, Math.round((topservizi && topservizi.getBoundingClientRect && topservizi.getBoundingClientRect().height) || 64));
-    root.style.setProperty('--app-topservizi-offset', `${topserviziH}px`);
-    const syncServizi = document.getElementById('homeSyncServizi');
-    const syncVisible = !!(body && body.dataset && body.dataset.page === 'home' && syncServizi && !syncServizi.hidden);
-    const syncH = syncVisible ? Math.max(0, Math.ceil((syncServizi.getBoundingClientRect && syncServizi.getBoundingClientRect().height) || 0) + 12) : 0;
+    const topbar = document.querySelector('.topbar');
+    const topbarH = Math.max(64, Math.round((topbar && topbar.getBoundingClientRect && topbar.getBoundingClientRect().height) || 64));
+    root.style.setProperty('--app-topbar-offset', `${topbarH}px`);
+    const syncBar = document.getElementById('homeSyncBar');
+    const syncVisible = !!(body && body.dataset && body.dataset.page === 'home' && syncBar && !syncBar.hidden);
+    const syncH = syncVisible ? Math.max(0, Math.ceil((syncBar.getBoundingClientRect && syncBar.getBoundingClientRect().height) || 0) + 12) : 0;
     root.style.setProperty('--app-fixed-bottom-offset', `${syncH}px`);
   }catch(_){ }
 }
@@ -18294,7 +18066,7 @@ function showPage(page){
   // Gate ruolo: operatore vede solo Pulizie / Lavanderia / Calendario
   try{
     if (state.session && isOperatoreSession(state.session)){
-      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statistichecopy","servizicocktail","servizivini","servizibirre","servizianalcolici","statpiscina","laundrycatalog","opsettings"]);
+      const allowed = new Set(["home","pulizie","lavanderia","calendario","auth","prodotti","colazione","statistiche","statistichecopy","barcocktail","barvini","barbirre","baranalcolici","statpiscina","laundrycatalog","opsettings"]);
       if (!allowed.has(page)) page = "pulizie";
     }
   }catch(_){ }
@@ -18304,8 +18076,8 @@ function showPage(page){
   const navId = ++state.navId;
 
   const prevPage = state.page;
-  if (prevPage === "calendario" && page !== "calendario" && window.__ddaeServiziChargeContext) {
-    window.__ddaeServiziChargeContext = null;
+  if (prevPage === "calendario" && page !== "calendario" && window.__ddaeBarChargeContext) {
+    window.__ddaeBarChargeContext = null;
   }
   if (prevPage === "ospiti" && page === "ospite") {
     try{ __captureGuestListScrollState__(); }catch(_){ }
@@ -18322,13 +18094,13 @@ state.page = page;
 
   // Sync footer: visibile anche in Calendario; resta nascosto nelle pagine operative dedicate.
   try{
-    const sb = document.getElementById("homeSyncServizi");
+    const sb = document.getElementById("homeSyncBar");
     const hideSync = (page === "impostazioni") || (page === "opsettings") || (page === "operatori") || (page === "channel") || (page === "roomcatalog") || (page === "laundrycatalog") || (page === "roomsettings") || (page === "tassa") || (page === "orepulizia") || (page === "ospite") || String(page || "").startsWith("stat");
     if (sb) sb.hidden = !!hideSync;
   }catch(_){ }
 
 
-  try{ __setTopserviziCenterLabel__(); }catch(_){}
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try { __rememberPage(page); } catch (_) {}
   document.querySelectorAll(".page").forEach(s => s.hidden = true);
@@ -18392,7 +18164,7 @@ state.page = page;
 
   try{ setTimeout(() => { try{ __applyAppLanguageToDom__(); }catch(_){ } try{ __updateGuestDateRangeTrigger__(); }catch(_){ } }, 0); }catch(_){ }
 
-  // Topservizi: in HOME il tasto "Home" non serve → mostra Impostazioni
+  // Topbar: in HOME il tasto "Home" non serve → mostra Impostazioni
   try{
     const hb2 = document.getElementById("hamburgerBtn");
     const hs2 = document.getElementById("homeSettingsTop");
@@ -18451,7 +18223,7 @@ state.page = page;
     guestBackTop.hidden = (page !== "ospite");
   }
 
-  // HOME operatore: top servizi con solo il tasto Impostazioni
+  // HOME operatore: top bar con solo il tasto Impostazioni
   try{
     const opLogout = document.getElementById("opLogoutTop");
     if (opLogout) opLogout.hidden = true;
@@ -18559,10 +18331,10 @@ state.page = page;
     statPiscinaTopTools.hidden = (page !== "statpiscina");
   }
 
-  try{ __syncTopserviziCenterLayout__(); }catch(_){ }
+  try{ __syncTopbarCenterLayout__(); }catch(_){ }
   try{ __updateGuestArrivoTodayButtonVisibility__(); }catch(_){ }
 
-  try{ ensureTopserviziIconContrast(); }catch(_){ }
+  try{ ensureTopbarIconContrast(); }catch(_){ }
 
 // render on demand
   if (page === "prodotti") {
@@ -18811,7 +18583,7 @@ function setupHeader(){
     });
     roomsReadOnly.addEventListener("keydown", (e) => {
       try{
-        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spaceservizi') return;
+        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
         const block = e.target && e.target.closest ? e.target.closest('.guest-booking-block[data-booking-id]') : null;
         if (!block || !roomsReadOnly.contains(block)) return;
         e.preventDefault();
@@ -18916,7 +18688,7 @@ if (btnNewGuestOspiti){
 }
 
 
-// OSPITI: topservizi — nuovo ospite + calendario
+// OSPITI: topbar — nuovo ospite + calendario
 const btnNewGuestTop = $("#btnNewGuestTop");
 if (btnNewGuestTop){
   btnNewGuestTop.addEventListener("click", () => { enterGuestCreateMode(); showPage("ospite"); });
@@ -18930,7 +18702,7 @@ if (guestScrollTodayBtn){
 
   
 
-  // OSPITE: topservizi — torna alla lista ospiti (guest list)
+  // OSPITE: topbar — torna alla lista ospiti (guest list)
   const guestBackTop = $("#guestBackTop");
   if (guestBackTop){
     const goGuestBack = () => {
@@ -19121,10 +18893,10 @@ if (guestScrollTodayBtn){
   if (s7b){ bindFastTap(s7b, () => { hideLauncher(); showPage("statpiscina"); }); }
   const s8 = $("#goStatCancellazioni");
   if (s8){ bindFastTap(s8, () => { hideLauncher(); showPage("statcancellazioni"); }); }
-// STATGEN: topservizi tools
+// STATGEN: topbar tools
   const btnBackStats = $("#btnBackStatistiche");
   if (btnBackStats){ bindFastTap(btnBackStats, () => { closeStatPieModal(); showPage("statistiche"); }); }
-  // STATMENSILI: topservizi tools
+  // STATMENSILI: topbar tools
   const btnBackStatsMensili = $("#btnBackStatisticheMensili");
   if (btnBackStatsMensili){
     bindFastTap(btnBackStatsMensili, () => {
@@ -19174,7 +18946,7 @@ if (guestScrollTodayBtn){
     });
   }
 
-  // STATISTICHE: Spese generali topservizi tools
+  // STATISTICHE: Spese generali topbar tools
   const btnBackStatsSpese = $("#btnBackStatisticheSpese");
   if (btnBackStatsSpese){ bindFastTap(btnBackStatsSpese, () => { closeStatSpesePieModal(); showPage("statistiche"); }); }
   const btnBackStatsPren = $("#btnBackStatistichePrenotazioni");
@@ -19186,7 +18958,7 @@ if (guestScrollTodayBtn){
   const btnBackStatsAmm = $("#btnBackStatisticheAmministratore");
   if (btnBackStatsAmm){ bindFastTap(btnBackStatsAmm, () => { showPage("statistiche"); }); }
 
-  // STATPISCINA: topservizi tools
+  // STATPISCINA: topbar tools
   const btnBackStatsPiscina = $("#btnBackStatistichePiscina");
   if (btnBackStatsPiscina){ bindFastTap(btnBackStatsPiscina, () => { showPage("statistiche"); }); }
   const btnPiscinaBackfillTop = $("#btnPiscinaBackfillTop");
@@ -20844,7 +20616,7 @@ function drawPie(canvasId, slices, opts){
 }
 
 
-function drawMonthlyPctServizis(canvasId, pctValues, colors, opts){
+function drawMonthlyPctBars(canvasId, pctValues, colors, opts){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   opts = opts || {};
@@ -20890,16 +20662,16 @@ function drawMonthlyPctServizis(canvasId, pctValues, colors, opts){
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  const serviziGap = 6;
-  const serviziW = Math.max(6, Math.floor((chartW - serviziGap*11) / 12));
+  const barGap = 6;
+  const barW = Math.max(6, Math.floor((chartW - barGap*11) / 12));
 
   for (let i=0;i<12;i++){
-    const x = padL + i*(serviziW + serviziGap);
+    const x = padL + i*(barW + barGap);
     const h = (v12[i] / 100) * chartH;
     const y = padT + (chartH - h);
 
     ctx.fillStyle = cols[i] || "#2b7cb4";
-    roundRect(ctx, x, y, serviziW, h, Math.min(10, serviziW/2));
+    roundRect(ctx, x, y, barW, h, Math.min(10, barW/2));
     ctx.fill();
 
     // month label (1 letter)
@@ -20908,7 +20680,7 @@ function drawMonthlyPctServizis(canvasId, pctValues, colors, opts){
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
     const label = (opts.labels && opts.labels[i]) ? String(opts.labels[i]) : String((__MONTHS_IT[i]||"").slice(0,1)).toUpperCase();
-    ctx.fillText(label, x + serviziW/2, padT + chartH + 18);
+    ctx.fillText(label, x + barW/2, padT + chartH + 18);
   }
 
   // 100% label
@@ -21885,11 +21657,11 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -21953,7 +21725,6 @@ function __defaultSingleActionButtonVisual__(btn){
     guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
-    guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
@@ -22340,7 +22111,7 @@ function __bindSingleActionButtonColorHold__(btn){
 
 function __ensureGuestContactActionButtonVisualDefaults__(){
   try{
-    const ids = ['guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestHotelLocationWhatsApp','guestEmailActionMail'];
+    const ids = ['guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestEmailActionMail'];
     const map = __loadSingleActionButtonVisualMap__();
     let changed = false;
     ids.forEach((id) => {
@@ -22824,7 +22595,7 @@ function __bindStatGraphPopup__(canvasId, payload){
   target.onclick = open;
   target.onkeydown = (e)=>{
     const k = e && (e.key || e.code);
-    if (k === "Enter" || k === " " || k === "Spaceservizi"){
+    if (k === "Enter" || k === " " || k === "Spacebar"){
       try{ e.preventDefault(); }catch(_){ }
       open();
     }
@@ -22851,7 +22622,7 @@ function __openStatGraphPopup__(payload){
   if (detailEl) detailEl.textContent = String(workingPayload.detail || "");
   if (legendEl) __renderLegendRows__("statGraphModalLegend", workingPayload.slices, workingPayload.valueFormatter, { mode: workingPayload.legendMode || "share", enableColorEdit: true, payload: workingPayload });
   if (canvasWrap){
-    try{ canvasWrap.classList.remove("is-servizis"); }catch(_){ }
+    try{ canvasWrap.classList.remove("is-bars"); }catch(_){ }
   }
   drawPie("statGraphModalCanvas", workingPayload.slices, {
     centerTitle: workingPayload.centerTitle != null ? workingPayload.centerTitle : "Totale",
@@ -25424,7 +25195,7 @@ function renderStatMensili(){
           <div class="month-name">${escapeHtml(monthName)}</div>
           <div class="month-val">${euro(val)}</div>
         </div>
-        <div class="month-servizi">
+        <div class="month-bar">
           <div class="month-fill" style="width:0%"></div>
         </div>
         ${expandedHtml}
@@ -25581,7 +25352,7 @@ function openStatMensiliPieModal(){
   drawPie("statMensiliPieCanvas", slices);
 
   const occPcts = (s.occPctByMonth && Array.isArray(s.occPctByMonth)) ? s.occPctByMonth : new Array(12).fill(0);
-  drawMonthlyPctServizis("statMensiliOccCanvas", occPcts, colors, { labels: (__MONTHS_IT || []).map(m=>String(m||"").slice(0,1)) });
+  drawMonthlyPctBars("statMensiliOccCanvas", occPcts, colors, { labels: (__MONTHS_IT || []).map(m=>String(m||"").slice(0,1)) });
 
   const leg = document.getElementById("statMensiliPieLegend");
   if (leg){
@@ -28081,52 +27852,51 @@ async function __openRoomSettingsTextButtonColorPicker__(key){
     const el = document.getElementById(safeKey === 'bold' ? 'roomSettingsTextBoldBtn' : `roomSettingsTextSizeBtn${safeKey}`);
     if (!el) return;
     const label = __roomSettingsTextButtonLocalizedLabel__(safeKey);
-    const originals = {
-      on: __roomSettingsTextButtonVisualForState__(safeKey, 'active'),
-      off: __roomSettingsTextButtonVisualForState__(safeKey, 'distractive')
-    };
-    const activeState = __roomSettingsTextButtonCurrentState__(el) === 'active' ? 'on' : 'off';
-    const drafts = { on:{...originals.on}, off:{...originals.off} };
-    const payloadToVisual = (payload, fallback) => {
+    const choice = await __confirmTwoActions__(
+      __roomSettingsTextButtonEditStatePrompt__(label),
+      __roomSettingsTextButtonStateLabel__('active'),
+      __roomSettingsTextButtonStateLabel__('distractive')
+    );
+    if (choice !== 'yes' && choice !== 'no') return;
+    const stateKey = choice === 'yes' ? 'active' : 'distractive';
+    const initial = __roomSettingsTextButtonVisualForState__(safeKey, stateKey);
+    const fallback = __roomSettingsTextButtonDefaultVisual__(safeKey, stateKey);
+    const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      return {
-        bg: colors.bg || fallback.bg || 'blue-4',
-        border: colors.border || fallback.border || colors.bg || fallback.bg || 'blue-4',
-        fg: colors.fg || fallback.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback.opacity ?? 0.75),
+      const next = {
+        bg: colors.bg || initial.bg || fallback.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || fallback.border || fallback.bg || 'blue-4',
+        fg: colors.fg || initial.fg || fallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? fallback.opacity ?? 0.75),
         bold: false
       };
-    };
-    const applyState = (state, payload) => {
-      const stateKey = state === 'on' ? 'active' : 'distractive';
-      const next = payloadToVisual(payload, originals[state]);
-      drafts[state] = next;
       __roomSettingsTextButtonVisualSet__(safeKey, stateKey, next);
       try{ renderRoomSettingsTextControls(); }catch(_){ }
       try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    __tagColorPopupOpen__('room-text-button', drafts[activeState], null, {
-      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true,
-      opacity:(drafts[activeState].opacity ?? 0.75), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || 'blue-4'),
-      onPreview:(payload) => {
-        const editor = __tagColorPopupState__.stateEditor;
-        const state = editor && editor.activeState === 'on' ? 'on' : 'off';
-        applyState(state, payload);
-      },
-      stateEditor:{
-        activeState, drafts, originals, labels:{off:'DISATTIVO',on:'ATTIVO'}, fallbackBg:'blue-4',
-        onStatePreview:(state, payload) => applyState(state, payload),
-        onConfirm: async(all) => {
-          applyState('on', all.on || drafts.on);
-          applyState('off', all.off || drafts.off);
-          try{ toast(`${label}: colori dei due stati aggiornati`); }catch(_){ }
-        },
-        onRevert:() => {
-          __roomSettingsTextButtonVisualSet__(safeKey, 'active', originals.on);
-          __roomSettingsTextButtonVisualSet__(safeKey, 'distractive', originals.off);
-          try{ renderRoomSettingsTextControls(); }catch(_){ }
-          try{ renderRoomSettingsPage(); }catch(_){ }
-        }
+    const revertVisual = () => {
+      __roomSettingsTextButtonVisualSet__(safeKey, stateKey, initial);
+      try{ renderRoomSettingsTextControls(); }catch(_){ }
+      try{ renderRoomSettingsPage(); }catch(_){ }
+    };
+    __tagColorPopupOpen__('room-text-button', initial, (payload) => {
+      try{
+        applyVisual(payload);
+        try{ toast(__roomSettingsTextButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:(initial.opacity ?? 0.75),
+      defaultMode:'bg',
+      fallbackBg:(initial.bg || fallback.bg || 'blue-4'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message: __roomSettingsTextButtonCategoryPrompt__(),
+        apply: async(payload, changed) => { await __applyRoomSettingsTextButtonChangesToCategory__(stateKey, payload, changed); }
       }
     });
   }catch(_){ }
@@ -28138,52 +27908,50 @@ async function __openRoomSettingsThemeButtonColorPicker__(slot){
     const el = document.getElementById(`roomSettingsThemeBtn${key}`);
     if (!el) return;
     const label = __roomSettingsThemeButtonLocalizedLabel__(key);
+    const choice = await __confirmTwoActions__(
+      __roomSettingsThemeButtonEditStatePrompt__(label),
+      __roomSettingsThemeButtonStateLabel__('active'),
+      __roomSettingsThemeButtonStateLabel__('distractive')
+    );
+    if (choice !== 'yes' && choice !== 'no') return;
+    const stateKey = choice === 'yes' ? 'active' : 'distractive';
     const saved = __roomSettingsThemeSlotGet__(key);
     const visualFallback = saved?.launcherGridTheme || { bg:'blue-4', border:'blue-4', fg:'', opacity:0.75 };
-    const originals = {
-      on: __roomSettingsThemeButtonVisualGet__(key, 'active', visualFallback),
-      off: __roomSettingsThemeButtonVisualGet__(key, 'distractive', visualFallback)
-    };
-    const activeState = __roomSettingsThemeButtonCurrentState__(el) === 'active' ? 'on' : 'off';
-    const drafts = { on:{...originals.on}, off:{...originals.off} };
-    const payloadToVisual = (payload, fallback) => {
+    const initial = __roomSettingsThemeButtonVisualGet__(key, stateKey, visualFallback);
+    const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-      return {
-        bg: colors.bg || fallback.bg || visualFallback.bg || 'blue-4',
-        border: colors.border || fallback.border || colors.bg || fallback.bg || visualFallback.border || visualFallback.bg || 'blue-4',
-        fg: colors.fg || fallback.fg || visualFallback.fg || '',
-        opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback.opacity ?? visualFallback.opacity ?? 0.75),
+      const next = {
+        bg: colors.bg || initial.bg || visualFallback.bg || 'blue-4',
+        border: colors.border || initial.border || colors.bg || initial.bg || visualFallback.border || visualFallback.bg || 'blue-4',
+        fg: colors.fg || initial.fg || visualFallback.fg || '',
+        opacity: __designBgOpacityNormalize__(payload?.opacity ?? initial.opacity ?? visualFallback.opacity ?? 0.75),
         bold: false
       };
-    };
-    const applyState = (state, payload) => {
-      const stateKey = state === 'on' ? 'active' : 'distractive';
-      const next = payloadToVisual(payload, originals[state]);
-      drafts[state] = next;
       __roomSettingsThemeButtonVisualSet__(key, next, stateKey);
       try{ renderRoomSettingsPage(); }catch(_){ }
     };
-    __tagColorPopupOpen__('room-theme-button', drafts[activeState], null, {
-      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true,
-      opacity:(drafts[activeState].opacity ?? 0.75), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || visualFallback.bg || 'blue-4'),
-      onPreview:(payload) => {
-        const editor = __tagColorPopupState__.stateEditor;
-        const state = editor && editor.activeState === 'on' ? 'on' : 'off';
-        applyState(state, payload);
-      },
-      stateEditor:{
-        activeState, drafts, originals, labels:{off:'DISATTIVO',on:'ATTIVO'}, fallbackBg:(visualFallback.bg || 'blue-4'),
-        onStatePreview:(state, payload) => applyState(state, payload),
-        onConfirm: async(all) => {
-          applyState('on', all.on || drafts.on);
-          applyState('off', all.off || drafts.off);
-          try{ toast(`Tasto tema ${label}: colori dei due stati aggiornati`); }catch(_){ }
-        },
-        onRevert:() => {
-          __roomSettingsThemeButtonVisualSet__(key, originals.on, 'active');
-          __roomSettingsThemeButtonVisualSet__(key, originals.off, 'distractive');
-          try{ renderRoomSettingsPage(); }catch(_){ }
-        }
+    const revertVisual = () => {
+      __roomSettingsThemeButtonVisualSet__(key, initial, stateKey);
+      try{ renderRoomSettingsPage(); }catch(_){ }
+    };
+    __tagColorPopupOpen__('room-theme-button', initial, (payload) => {
+      try{
+        applyVisual(payload);
+        try{ toast(__roomSettingsThemeButtonStateUpdatedMessage__(label, stateKey)); }catch(_){ }
+      }catch(_){ }
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      opacity:initial.opacity ?? 0.75,
+      defaultMode:'bg',
+      fallbackBg:(initial.bg || visualFallback.bg || 'blue-4'),
+      onPreview:applyVisual,
+      onRevert:revertVisual,
+      applyCategory:{
+        message: __roomSettingsThemeButtonCategoryPrompt__(),
+        apply: async(payload, changed) => { await __applyRoomSettingsThemeButtonChangesToCategory__(stateKey, payload, changed); }
       }
     });
   }catch(_){ }
@@ -29016,11 +28784,11 @@ function renderRoomSettingsPage(){
     }
     const opacityBtn = document.getElementById('roomSettingsLauncherExtraBtn2');
     if (opacityBtn){
-      opacityBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-topservizi"><span></span></span><span class="room-settings-square-caption">Servizira</span>'; 
+      opacityBtn.innerHTML = '<span aria-hidden="true" class="room-settings-square-preview room-settings-square-preview-topbar"><span></span></span><span class="room-settings-square-caption">Barra</span>'; 
       opacityBtn.setAttribute('style', __headerActionThemeButtonStyle__());
       opacityBtn.classList.remove('room-settings-square-btn-placeholder');
-      opacityBtn.setAttribute('aria-label', __designTranslate__('Design tasti top servizi e titoli pagina', { en:'Top servizi and page title button design', fr:'Design des boutons de la servizire supérieure et des titres de page', de:'Design der Topservizi- und Seitentitel-Schaltflächen', es:'Diseño de botones de la servizira superior y títulos de página' }));
-      opacityBtn.title = __designTranslate__('Design tasti top servizi e titoli pagina', { en:'Top servizi and page title button design', fr:'Design des boutons de la servizire supérieure et des titres de page', de:'Design der Topservizi- und Seitentitel-Schaltflächen', es:'Diseño de botones de la servizira superior y títulos de página' });
+      opacityBtn.setAttribute('aria-label', __designTranslate__('Design tasti top bar e titoli pagina', { en:'Top bar and page title button design', fr:'Design des boutons de la barre supérieure et des titres de page', de:'Design der Topbar- und Seitentitel-Schaltflächen', es:'Diseño de botones de la barra superior y títulos de página' }));
+      opacityBtn.title = __designTranslate__('Design tasti top bar e titoli pagina', { en:'Top bar and page title button design', fr:'Design des boutons de la barre supérieure et des titres de page', de:'Design der Topbar- und Seitentitel-Schaltflächen', es:'Diseño de botones de la barra superior y títulos de página' });
     }
     const pillBtn = document.getElementById('roomSettingsLauncherExtraBtn3');
     if (pillBtn){
@@ -29977,7 +29745,6 @@ function updateOspiteHdActions(){
 
   // Check-in: solo in sola lettura
   if (btnCheckIn) btnCheckIn.hidden = (mode !== "view");
-  try{ __bindGuestCheckInVisualLongPress__(); }catch(_){ }
   try{ __syncGuestCheckInButton__(); }catch(_){ }
 
   // Indaco: aggiunge un nuovo gruppo stanze anche in sola lettura; non apre più il calendario.
@@ -30556,7 +30323,7 @@ function syncGuestPhoneWhatsAppLink(isView){
       });
       phoneEl.addEventListener('keydown', function(ev){
         const key = ev && (ev.key || ev.code || '');
-        if (key === 'Enter' || key === ' ' || key === 'Spaceservizi'){
+        if (key === 'Enter' || key === ' ' || key === 'Spacebar'){
           try{ ev.preventDefault(); }catch(_){ }
           try{ openGuestPhoneWhatsApp(); }catch(_){ }
         }
@@ -31941,7 +31708,7 @@ function __bindGuestNameCopyInView__(){
   });
   el.addEventListener('keydown', (ev) => {
     const key = ev && (ev.key || ev.code || '');
-    if (key === 'Enter' || key === ' ' || key === 'Spaceservizi') run(ev);
+    if (key === 'Enter' || key === ' ' || key === 'Spacebar') run(ev);
   });
 }
 
@@ -32002,7 +31769,6 @@ function setupOspite(){
       if (!btn || !hdActions.contains(btn) || btn.hidden) return;
 
       if (btn.hasAttribute("data-guest-checkin")){
-        if (Date.now() < Number(btn.__suppressCheckInClickUntil || 0)) return;
         const item = __guestActiveBookingForAction__();
         const id = guestIdOf(item) || item?.id || '';
         if (!item || !id){
@@ -34152,7 +33918,7 @@ function updateProdottiHomeBlink(){
   );
   if (btn) btn.classList.toggle("colazione-attn", !!any);
 
-  // Topservizi LED: acceso quando esiste almeno un prodotto "salvato" (pallino rosso)
+  // Topbar LED: acceso quando esiste almeno un prodotto "salvato" (pallino rosso)
   // nella relativa lista.
   try{
     const ledC = document.getElementById("prodLedColazione");
@@ -35895,13 +35661,13 @@ async function __piscinaReportCanvas__(viewMonth){
   }catch(_){ }
 
   const colors = ['#2B7CB4','#4D9CC5','#6FB7D6','#96BFC7','#BFBEA9','#D6B286','#CF9458','#C9772B'];
-  const serviziX = pad + 96;
-  const serviziY = pad + 18;
-  const serviziW = contentW - 96;
-  const segW = serviziW / colors.length;
+  const barX = pad + 96;
+  const barY = pad + 18;
+  const barW = contentW - 96;
+  const segW = barW / colors.length;
   colors.forEach((c, i) => {
     ctx.fillStyle = c;
-    ctx.fillRect(serviziX + segW * i, serviziY, segW + 1, 10);
+    ctx.fillRect(barX + segW * i, barY, segW + 1, 10);
   });
 
   ctx.fillStyle = '#2B7CB4';
@@ -36201,7 +35967,7 @@ function __bindPiscinaResetMonthColorHold__(btn){
         if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
         __headerActionApplyAll__();
         try{ renderRoomSettingsPage(); }catch(_){ }
-      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top servizi?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
+      }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityRead__(), defaultMode:'bg', fallbackBg:(__headerActionVisualFor__(btn.id).bg || 'white'), applyCategory:{ message:'Applicare le modifiche a tutti i tasti della top bar?', confirmYesLabel:'Sì', confirmNoLabel:'No', apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); } } });
     };
     const start = (e)=>{
       try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
@@ -37413,7 +37179,7 @@ if (cleanResetAll){
     const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
     const day = startOfLocalDay(base);
     if (lab) lab.textContent = formatFullDateIT(day);
-    try{ if (state && state.page === "pulizie") __setTopserviziCenterLabel__(); }catch(_){ }
+    try{ if (state && state.page === "pulizie") __setTopbarCenterLabel__(); }catch(_){ }
   };
 
   const shiftClean = (deltaDays) => {
@@ -37517,7 +37283,7 @@ if (btnLaundryGenerate){
     });
   }
 
-  // Topservizi (Lavanderia): Genera report accanto al tasto Home
+  // Topbar (Lavanderia): Genera report accanto al tasto Home
   if (btnLaundryGenerateTop){
     bindFastTap(btnLaundryGenerateTop, async () => {
       try{
@@ -37610,13 +37376,9 @@ function __calendarSelectedIso__(){
 function __calendarSelectedColumnIndex(anchor){
   try{
     const selected = __calendarDateFromIso__(__calendarSelectedIso__());
-    const a = (anchor instanceof Date) ? new Date(anchor) : new Date(anchor || Date.now());
-    a.setHours(0,0,0,0);
-    const monthStart = new Date(a.getFullYear(), a.getMonth(), 1);
-    const displayStart = addDays(monthStart, -3);
-    const diff = Math.round((selected.getTime() - displayStart.getTime()) / 86400000);
-    const displayCount = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate() + 6;
-    return (diff >= 0 && diff < displayCount) ? (diff + 1) : -1;
+    const a = (anchor instanceof Date) ? anchor : new Date(anchor || Date.now());
+    if (selected.getFullYear() !== a.getFullYear() || selected.getMonth() !== a.getMonth()) return -1;
+    return selected.getDate();
   }catch(_){ return -1; }
 }
 
@@ -38016,7 +37778,7 @@ function renderCalendario(){
   const mode = "month";
   try{ ensureCalendarCellModalBound(); }catch(_){ }
 
-  try{ __setTopserviziCenterLabel__(); }catch(_){}
+  try{ __setTopbarCenterLabel__(); }catch(_){}
 
   try{
     const sec = document.getElementById("page-calendario");
@@ -38073,7 +37835,8 @@ function ensureCalendarFixedRailStructure(){
 function __calendarCheckoutRoomsForSelectedDate__(){
   const rooms = new Set();
   try{
-    const selectedIso = __calendarSelectedIso__();
+    const anchor = (state && state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+    const selectedIso = formatISODateLocal(anchor) || isoDate(anchor);
     if (!selectedIso) return rooms;
     const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
     const maxRooms = (typeof getConfiguredRoomsCount === 'function') ? getConfiguredRoomsCount(6) : 6;
@@ -38107,9 +37870,11 @@ function renderCalendarRoomRail(roomsCount){
   for (let r = 1; r <= roomsCount; r++){
     const pill = document.createElement("div");
     pill.className = `cal-room-rail-pill room-${r}`;
+    if (checkoutRooms && checkoutRooms.has(String(r))) pill.classList.add('is-checkout-blink');
     try{
       const roomVisual = getRoomsUiConfig().rooms?.[String(r)] || 'blue-4';
-      pill.setAttribute("style", __roomsUiBadgeStyle__(roomVisual));
+      const ledExtra = (checkoutRooms && checkoutRooms.has(String(r))) ? __roomsUiBadgeLedStyle__(roomVisual) : '';
+      pill.setAttribute("style", __roomsUiBadgeStyle__(roomVisual) + ledExtra);
     }catch(_){ }
     const roomLabel = (typeof getRoomDisplayLabel === 'function') ? getRoomDisplayLabel(r) : String(r);
     const roomName = (typeof getRoomNameLabel === 'function') ? getRoomNameLabel(r) : `Stanza ${r}`;
@@ -38191,7 +37956,6 @@ function renderCalendarioWeek(){
       bindCalendarCellActions(cell, { room:r, dateIso:dIso, info: info || null });
       if (info) {
         cell.classList.add("has-booking");
-        __calendarApplyCheckoutPaymentBorder__(cell, info);
         try{
           const chrome = document.createElement("div");
           chrome.className = "cal-corner-chrome";
@@ -38327,14 +38091,11 @@ function __fitCalendarioMonthLandscape(){
 
     // Aggiorna abbreviazioni giorni (solo iniziale in landscape)
     try{
+      const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
+      const ms = new Date(a.getFullYear(), a.getMonth(), 1);
       const abEls = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner) .cal-day-abbrev');
       for (let i = 0; i < abEls.length; i++){
-        const head = abEls[i].closest('.cal-cell.cal-head');
-        const rawIso = String(head?.dataset?.date || '').trim();
-        const d = /^\d{4}-\d{2}-\d{2}$/.test(rawIso)
-          ? new Date(rawIso + 'T00:00:00')
-          : null;
-        if (!d || Number.isNaN(d.getTime())) continue;
+        const d = new Date(ms.getFullYear(), ms.getMonth(), i+1);
         let t = weekdayShortIT(d).toUpperCase();
         if (isLandscape) t = t.slice(0,1);
         abEls[i].textContent = t;
@@ -38350,17 +38111,15 @@ function __fitCalendarioMonthLandscape(){
       try{ wrap.style.removeProperty("--cal-pill-h"); }catch(_){}
       // Ripristina template dinamico standard (var day width) se possibile
       try{
-        const renderedDaysCount = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)').length;
         const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-        const daysCount = renderedDaysCount || (new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate() + 6);
+        const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
         grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
       }catch(_){}
       return;
     }
 
     const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
-    const renderedDaysCount = grid.querySelectorAll('.cal-cell.cal-head:not(.cal-corner)').length;
-    const daysCount = renderedDaysCount || (new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate() + 6);
+    const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
 
     // Misure reali (px)
     let wrapW = wrap.clientWidth || 0;
@@ -38500,9 +38259,7 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     const wrap = document.getElementById('calDaysWrap') || document.querySelector('#page-calendario .cal-grid-wrap');
     const grid = document.getElementById('calGridMonth');
     if (!wrap || !grid || !dayIndex || dayIndex < 1) return;
-    // La vista mensile include sempre 3 giorni precedenti: il giorno 1 del mese è la colonna 4.
-    const displayIndex = Number(dayIndex) + 3;
-    const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${displayIndex}"]`);
+    const head = grid.querySelector(`.cal-cell.cal-head[data-day-index="${dayIndex}"]`);
     if (!head) return;
     const headLeft = head.offsetLeft || 0;
     const cellWidth = head.offsetWidth || 0;
@@ -38516,96 +38273,6 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
     try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
   }catch(_){ }
-}
-
-function __calendarApplyCheckoutPaymentBorder__(cell, info){
-  try{
-    if (!cell || !info || !info.checkoutIso || info.checkoutIso !== __calendarSelectedIso__()) return;
-    cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid");
-    cell.classList.remove("is-checkout-paid");
-
-    const guestId = String(info.guestId || '').trim();
-    if (!guestId) return;
-    try{ cell.dataset.checkoutGuestId = guestId; }catch(_){ }
-
-    const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(guestId) : null;
-    const cache = state?.guestServicesCacheById?.[guestId];
-
-    // Mai mostrare verde usando dati provvisori o copie ospite non aggiornate.
-    // Il verde è ammesso solo dopo che il totale servizi è stato verificato.
-    if (guest && cache && isFinite(Number(cache.total))){
-      const remaining = Number(__calendarGuestRemainingBalanceValue__(guest));
-      const paid = isFinite(remaining) && remaining <= 0.005;
-      cell.classList.toggle("is-checkout-paid", paid);
-      cell.classList.toggle("is-checkout-unpaid", !paid);
-      cell.setAttribute("data-checkout-remaining", isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : "");
-      return;
-    }
-
-    cell.setAttribute("data-checkout-remaining", "");
-    __calendarResolveCheckoutPaymentBorder__(guestId);
-  }catch(_){
-    try{
-      cell.classList.remove("is-checkout-paid");
-      cell.classList.add("is-checkout-booking-blink", "is-checkout-unpaid");
-    }catch(__){ }
-  }
-}
-
-const __calendarCheckoutBalanceRequests__ = new Map();
-async function __calendarResolveCheckoutPaymentBorder__(guestId){
-  const id = String(guestId || '').trim();
-  if (!id) return;
-  if (__calendarCheckoutBalanceRequests__.has(id)) return __calendarCheckoutBalanceRequests__.get(id);
-
-  const request = (async()=>{
-    try{
-      const response = await api('servizi', { method:'GET', params:{ ospite_id:id }, showLoader:false });
-      const rows = (typeof normalizeServiziResponse === 'function') ? normalizeServiziResponse(response) : [];
-      const items = (Array.isArray(rows) ? rows : []).filter((row)=>{
-        const deleted = row?.isDeleted ?? row?.is_deleted ?? row?.deleted;
-        return !(deleted === true || String(deleted) === '1');
-      });
-      const total = (typeof serviziComputeTotal === 'function')
-        ? serviziComputeTotal(items)
-        : items.reduce((sum,row)=>sum + (Number(row?.importo ?? row?.amount) || 0) * (Number(row?.qty) || 1), 0);
-      const roundedTotal = Math.max(0, Math.round((Number(total) || 0) * 100) / 100);
-
-      if (!state.guestServicesCacheById) state.guestServicesCacheById = {};
-      state.guestServicesCacheById[id] = { items:items.slice(), total:roundedTotal, loadedAt:Date.now() };
-
-      const collections = [state.guests, state.guestRows, state.ospitiRows, state.ospiti, state.calendar && state.calendar.guests];
-      const apply = (row)=>{
-        if (!row || typeof row !== 'object') return;
-        row.servizi_totale = roundedTotal;
-        row.serviziTotal = roundedTotal;
-        row.importo_servizi = roundedTotal;
-      };
-      collections.forEach((list)=>{
-        if (!Array.isArray(list)) return;
-        list.forEach((row)=>{
-          const rowId = String((typeof guestIdOf === 'function' ? guestIdOf(row) : row?.id) || '').trim();
-          if (rowId === id) apply(row);
-        });
-      });
-
-      const guest = (typeof findCalendarGuestById === 'function') ? findCalendarGuestById(id) : null;
-      const remaining = guest ? Number(__calendarGuestRemainingBalanceValue__(guest)) : NaN;
-      const paid = isFinite(remaining) && remaining <= 0.005;
-      document.querySelectorAll(`#page-calendario .cal-cell[data-checkout-guest-id="${CSS.escape(id)}"]`).forEach((cell)=>{
-        cell.classList.add('is-checkout-booking-blink');
-        cell.classList.toggle('is-checkout-paid', paid);
-        cell.classList.toggle('is-checkout-unpaid', !paid);
-        cell.setAttribute('data-checkout-remaining', isFinite(remaining) ? String(Math.max(0, Math.round(remaining * 100) / 100)) : '');
-      });
-    }catch(_){
-      // In caso di errore di rete resta rosso: mai un falso verde.
-    }finally{
-      __calendarCheckoutBalanceRequests__.delete(id);
-    }
-  })();
-  __calendarCheckoutBalanceRequests__.set(id, request);
-  return request;
 }
 
 function __calendarGuestDisplayName__(info, span){
@@ -38701,7 +38368,7 @@ function buildCalendarCellZoomMarkup(payload){
   const saldoLine = (!data.isEmpty && __currentOperatorCanViewGuestBalance__())
     ? `<div class="cal-cell-balance"><span>Rimanenza da pagare</span><strong>${escapeHtml(__calendarGuestRemainingBalanceText__(data.guest))}</strong></div>`
     : '';
-  const serviziChargeAction = (!data.isEmpty && window.__ddaeServiziChargeContext) ? `<button type="button" class="calendar-servizi-charge-action" aria-label="Aggiungi prodotto ai servizi"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"></path></svg></button>` : '';
+  const barChargeAction = (!data.isEmpty && window.__ddaeBarChargeContext) ? `<button type="button" class="calendar-bar-charge-action" aria-label="Aggiungi prodotto ai servizi"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"></path></svg></button>` : '';
   return `
     <div class="calendar-cell-zoom room-${escapeHtml(data.room || '')} ${data.isEmpty ? 'is-empty' : 'has-booking'}">
       <div class="cal-corner-chrome">${channel}${flags ? `<div class="cal-flags">${flags}</div>` : ''}</div>
@@ -38711,7 +38378,7 @@ function buildCalendarCellZoomMarkup(payload){
         ${bedsLine}
         ${saldoLine}
         <div class="cal-dots">${dots.join('')}</div>
-        ${serviziChargeAction}
+        ${barChargeAction}
       </div>
     </div>`;
 }
@@ -38743,47 +38410,6 @@ function ensureCalendarCellZoomLayer(){
   return layer;
 }
 
-
-async function __calendarRefreshGuestServicesBalance__(payload, stage, zoomKey){
-  try{
-    const guest = payload && payload.guest;
-    const guestId = String(guest && ((typeof guestIdOf === 'function' ? guestIdOf(guest) : guest.id) || '') || '').trim();
-    if (!guestId || !stage) return;
-    const response = await api('servizi', { method:'GET', params:{ ospite_id:guestId }, showLoader:false });
-    const rows = (typeof normalizeServiziResponse === 'function') ? normalizeServiziResponse(response) : [];
-    if (!Array.isArray(rows)) return;
-    const items = rows.filter((row)=>{
-      const deleted = row?.isDeleted ?? row?.is_deleted ?? row?.deleted;
-      return !(deleted === true || String(deleted) === '1');
-    });
-    const total = (typeof serviziComputeTotal === 'function')
-      ? serviziComputeTotal(items)
-      : items.reduce((sum,row)=>sum + (Number(row?.importo ?? row?.amount) || 0) * (Number(row?.qty) || 1), 0);
-    const roundedTotal = Math.max(0, Math.round((Number(total) || 0) * 100) / 100);
-    if (!state.guestServicesCacheById) state.guestServicesCacheById = {};
-    state.guestServicesCacheById[guestId] = { items:items.slice(), total:roundedTotal, loadedAt:Date.now() };
-    const collections = [state.guests, state.guestRows, state.ospitiRows, state.ospiti, state.calendar && state.calendar.guests];
-    const apply = (row)=>{
-      if (!row || typeof row !== 'object') return;
-      row.servizi_totale = roundedTotal;
-      row.serviziTotal = roundedTotal;
-      row.importo_servizi = roundedTotal;
-    };
-    apply(guest);
-    collections.forEach((list)=>{
-      if (!Array.isArray(list)) return;
-      list.forEach((row)=>{
-        const rowId = String((typeof guestIdOf === 'function' ? guestIdOf(row) : row?.id) || '').trim();
-        if (rowId === guestId) apply(row);
-      });
-    });
-    const layer = document.getElementById('calendarCellZoomLayer');
-    if (!layer || layer.hidden || String(layer.dataset.zoomKey || '') !== String(zoomKey || '')) return;
-    const value = stage.querySelector('.cal-cell-balance strong');
-    if (value) value.textContent = __calendarGuestRemainingBalanceText__(guest);
-  }catch(_){ }
-}
-
 function openCalendarCellZoom(cell, payload){
   const layer = ensureCalendarCellZoomLayer();
   const stage = document.getElementById('calendarCellZoomStage');
@@ -38803,22 +38429,20 @@ function openCalendarCellZoom(cell, payload){
     if (cell) cell.classList.add('is-zoom-source');
   }catch(_){ }
   stage.innerHTML = buildCalendarCellZoomMarkup(payload);
-  const activeZoomKey = String(layer.dataset.zoomKey || '');
-  try{ __calendarRefreshGuestServicesBalance__(payload, stage, activeZoomKey); }catch(_){ }
   try{
     const zoomCard = stage.querySelector('.calendar-cell-zoom');
     if (zoomCard){
       const room = String(payload?.room || '').trim();
       if (room) zoomCard.classList.add(`room-${room}`);
-      const serviziChargeBtn = zoomCard.querySelector('.calendar-servizi-charge-action');
-      if (serviziChargeBtn) {
-        serviziChargeBtn.addEventListener('click', async (ev) => {
+      const barChargeBtn = zoomCard.querySelector('.calendar-bar-charge-action');
+      if (barChargeBtn) {
+        barChargeBtn.addEventListener('click', async (ev) => {
           try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
-          if (serviziChargeBtn.disabled) return;
-          serviziChargeBtn.disabled = true;
+          if (barChargeBtn.disabled) return;
+          barChargeBtn.disabled = true;
           try{
-            if (typeof window.__ddaeConfirmServiziChargeForPayload === 'function') await window.__ddaeConfirmServiziChargeForPayload(payload);
-          }catch(_){ serviziChargeBtn.disabled = false; }
+            if (typeof window.__ddaeConfirmBarChargeForPayload === 'function') await window.__ddaeConfirmBarChargeForPayload(payload);
+          }catch(_){ barChargeBtn.disabled = false; }
         });
       }
       // dDAE_2.755 — Secondo tap sulla cella zoomata = chiusura zoom.
@@ -38870,15 +38494,6 @@ function __currentOperatorCanViewGuestBalance__(){
   }catch(_){ return false; }
 }
 function __calendarGuestRemainingBalanceValue__(guest){
-  const cachedServicesTotal = (g)=>{
-    try{
-      const id = (typeof guestIdOf === 'function') ? guestIdOf(g) : String(g?.id || g?.ID || '').trim();
-      if (!id) return null;
-      const cache = state?.guestServicesCacheById?.[String(id)];
-      const total = Number(cache?.total);
-      return isFinite(total) ? Math.max(0, Math.round(total * 100) / 100) : null;
-    }catch(_){ return null; }
-  };
   const n = (x)=>{
     if (typeof x === 'number' && isFinite(x)) return x;
     const v = Number(String(x ?? '0').replace(',', '.'));
@@ -38889,18 +38504,14 @@ function __calendarGuestRemainingBalanceValue__(guest){
     try{
       if (typeof _guestStayFinancials === 'function'){
         const fin = _guestStayFinancials(g);
-        const cachedServices = cachedServicesTotal(g);
-        const val = cachedServices === null
-          ? Number(fin && fin.remaining)
-          : (Number(fin?.total || 0) + cachedServices - Number(fin?.discount || 0) - Number(fin?.dep || 0) - Number(fin?.saldo || 0));
+        const val = Number(fin && fin.remaining);
         if (isFinite(val)) return Math.max(0, Math.round(val * 100) / 100);
       }
     }catch(_){ }
     const explicit = g?.rimanenza_da_pagare ?? g?.rimanenzaDaPagare ?? g?.remaining_to_pay ?? g?.remainingToPay ?? g?.guestRemaining ?? g?.remaining;
     if (explicit !== undefined && explicit !== null && String(explicit).trim() !== '') return Math.max(0, Math.round(n(explicit) * 100) / 100);
     const total = n(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? g?.total ?? g?.totale ?? g?.importo ?? g?.prezzo);
-    const cachedServices = cachedServicesTotal(g);
-    const services = cachedServices === null ? n(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? g?.servizi ?? g?.services) : cachedServices;
+    const services = n(g?.servizi_totale ?? g?.serviziTotal ?? g?.importo_servizi ?? g?.servizi ?? g?.services);
     const discount = n(g?.sconto ?? g?.discount ?? g?.sconto_importo ?? g?.scontoImporto);
     const dep = n(g?.acconto_importo ?? g?.accontoImporto ?? g?.acconto_pagato ?? g?.accontoPagato ?? g?.deposit ?? g?.deposito ?? g?.acconto);
     const saldo = n(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo);
@@ -39426,10 +39037,8 @@ function renderCalendarioMonth(){
 
   const anchor = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
   const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const monthDaysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
-  const displayStart = addDays(monthStart, -3);
-  const daysCount = monthDaysCount + 6;
-  const days = Array.from({ length: daysCount }, (_, i) => addDays(displayStart, i));
+  const daysCount = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0).getDate();
+  const days = Array.from({ length: daysCount }, (_, i) => addDays(monthStart, i));
 
   try{ if (input) input.value = formatISODateLocal(anchor) || todayISO(); }catch(_){ }
   if (title) {
@@ -39437,12 +39046,10 @@ function renderCalendarioMonth(){
     title.hidden = true;
   }
   try{
-    // La regola CSS storica usa !important su 7 colonne: forziamo il numero reale
-    // di giorni visualizzati affinché ogni giorno mantenga una colonna normale.
-    grid.style.setProperty('grid-template-columns', `repeat(${daysCount}, var(--cal-day-w))`, 'important');
+    grid.style.gridTemplateColumns = `repeat(${daysCount}, var(--cal-day-w))`;
   }catch(_){ }
 
-  const occ = buildMonthOccupancy(displayStart, daysCount);
+  const occ = buildMonthOccupancy(monthStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
   const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
@@ -39452,8 +39059,6 @@ function renderCalendarioMonth(){
     const dayPill = document.createElement("div");
     dayPill.className = "cal-cell cal-head";
     dayPill.dataset.dayIndex = String(i + 1);
-    dayPill.dataset.date = isoDate(d);
-    if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) dayPill.classList.add('is-adjacent-month');
     if (todayCol === (i + 1)) dayPill.classList.add('is-today-col');
 
     const ab = document.createElement("div");
@@ -39477,7 +39082,7 @@ function renderCalendarioMonth(){
         try{ ev?.stopPropagation?.(); }catch(_){ }
         const daysWrap = document.getElementById("calDaysWrap") || document.querySelector("#page-calendario .cal-grid-wrap");
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
-        const selected = new Date(d);
+        const selected = new Date(anchor.getFullYear(), anchor.getMonth(), d.getDate());
         selected.setHours(0,0,0,0);
         state.calendar.anchor = selected;
         state.calendar.selectedDateISO = isoDate(selected);
@@ -39510,7 +39115,6 @@ function renderCalendarioMonth(){
         cell.setAttribute("aria-label", `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, ${weekdayShortIT(d)} ${d.getDate()}`);
         cell.dataset.date = dIso;
         cell.dataset.room = String(r);
-        if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) cell.classList.add('is-adjacent-month');
         if (todayCol === (i + 1)) cell.classList.add('is-today-col');
         bindCalendarCellActions(cell, { room:r, dateIso:dIso, info:null });
         frag.appendChild(cell);
@@ -39529,11 +39133,9 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
-      __calendarApplyCheckoutPaymentBorder__(cell, info);
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
       cell.dataset.spanDays = String(span);
-      if (d.getMonth() !== anchor.getMonth() || d.getFullYear() !== anchor.getFullYear()) cell.classList.add('is-adjacent-month');
       cell.style.gridColumn = `${i + 1} / span ${span}`;
       cell.setAttribute("aria-label", span > 1
         ? `${(typeof getRoomNameLabel === 'function' ? getRoomNameLabel(r) : 'Stanza ' + r)}, dal ${days[i].getDate()} al ${days[i + span - 1].getDate()}`
@@ -39634,7 +39236,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -39679,7 +39281,7 @@ function buildWeekOccupancy(weekStart){
       for (const r of roomsArr) {
         const dots = dotsForGuestRoom(guestId, r);
         const badge = getGuestChannelBadgeData(g);
-        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
+        map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
   }
@@ -41976,7 +41578,7 @@ async function initOrePuliziaPage(){
 
     if (back) back.addEventListener("click", ()=>showPage("pulizie"));
 
-    // Topservizi: tasto arancione "torna a Pulizie"
+    // Topbar: tasto arancione "torna a Pulizie"
     const topBack = document.getElementById("backBtnTop");
     if (topBack && !s._topBackBound){
       s._topBackBound = true;
@@ -42241,17 +41843,6 @@ function triggerGuestContactAction(action){
     const safeAction = String(action || '').trim().toLowerCase();
     if (safeAction === 'email' || safeAction === 'mail'){
       openGuestEmailAction();
-      return;
-    }
-    if (safeAction === 'hotel-location'){
-      const raw = __guestPhoneRawForContactAction__();
-      const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
-      if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
-      if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
-      const text = 'Posizione hotel: ' + link;
-      const url = 'https://wa.me/' + encodeURIComponent(wa) + '?text=' + encodeURIComponent(text);
-      try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
       return;
     }
     triggerGuestPhoneAction(safeAction);
@@ -42584,7 +42175,7 @@ function syncGuestEmailActionLink(isView){
       const close = target.closest && target.closest('#tagColorModalClose');
       const ok = target.closest && target.closest('#tagColorModalConfirm');
       const opt = target.closest && target.closest('#tagColorGrid .tag-color-option');
-      const mode = target.closest && target.closest('#tagColorModeServizi .tag-color-mode-btn');
+      const mode = target.closest && target.closest('#tagColorModeBar .tag-color-mode-btn');
       const op = target.closest && target.closest('#tagOpacityGrid .tag-opacity-option');
       const actionable = close || ok || opt || mode || op;
       if (!actionable) return;
@@ -42765,7 +42356,7 @@ function syncGuestEmailActionLink(isView){
       normalizeLayer();
       var close=closestOrHit(ev, '#tagColorModalClose');
       var ok=closestOrHit(ev, '#tagColorModalConfirm');
-      var mode=closestOrHit(ev, '#tagColorModeServizi .tag-color-mode-btn');
+      var mode=closestOrHit(ev, '#tagColorModeBar .tag-color-mode-btn');
       var op=closestOrHit(ev, '#tagOpacityGrid .tag-opacity-option');
       var opt=closestOrHit(ev, '#tagColorGrid .tag-color-option');
       var action=close||ok||mode||op||opt;
@@ -44294,7 +43885,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.171';
+  var BUILD_TAG='dDAE_3.148';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -45612,7 +45203,7 @@ function syncGuestEmailActionLink(isView){
   try{ window.addEventListener('resize', schedule, { passive:true }); }catch(_){ }
   try{ window.addEventListener('orientationchange', schedule, { passive:true }); }catch(_){ }
   try{ document.addEventListener('visibilitychange', function(){ if (!document.hidden) schedule(); }, { passive:true }); }catch(_){ }
-  try{ document.addEventListener('click', function(e){ if (e && e.target && e.target.closest && e.target.closest('[data-page], .home-main, .topservizi, button')) setTimeout(schedule, 80); }, true); }catch(_){ }
+  try{ document.addEventListener('click', function(e){ if (e && e.target && e.target.closest && e.target.closest('[data-page], .home-main, .topbar, button')) setTimeout(schedule, 80); }, true); }catch(_){ }
   try{
     new MutationObserver(function(){ schedule(); }).observe(document.body, { attributes:true, attributeFilter:['data-page'], childList:true, subtree:false });
   }catch(_){ }
@@ -46144,7 +45735,7 @@ try{
         row.innerHTML = isExpanded ? `
           <div class="month-left">
             <div class="month-head"><div class="month-name">${escapeHtml(monthName)}</div><div class="month-val">${euro(val)}</div></div>
-            <div class="month-servizi"><div class="month-fill" style="width:0%"></div></div>
+            <div class="month-bar"><div class="month-fill" style="width:0%"></div></div>
             ${expandedHtml}
           </div>` : `<div class="month-button-label month-name">${escapeHtml(monthName)}</div>`;
         wrap.appendChild(row);
@@ -46246,7 +45837,7 @@ try{
         general.innerHTML = isGeneralExpanded ? `
           <div class="month-left">
             <div class="month-head"><div class="month-name">${escapeHtml(__statMensiliI18n__('Generale'))}</div><div class="month-val">${euro(annualVal)}</div></div>
-            <div class="month-servizi"><div class="month-fill" style="width:0%"></div></div>
+            <div class="month-bar"><div class="month-fill" style="width:0%"></div></div>
             ${generalExpandedHtml}
           </div>` : `<div class="month-button-label month-name">${escapeHtml(__statMensiliI18n__('Generale'))}</div>`;
         wrap.appendChild(general);
@@ -46285,7 +45876,7 @@ try{
 }catch(_){ }
 
 
-/* dDAE_2.990 — Lavanderia: giorno/cadenza report con LED beige in top servizi */
+/* dDAE_2.990 — Lavanderia: giorno/cadenza report con LED beige in top bar */
 (function(){
   var KEY='ddae_laundry_report_schedule_v1';
   function todayStart(d){ var x=d?new Date(d):new Date(); return new Date(x.getFullYear(), x.getMonth(), x.getDate()); }
@@ -46396,7 +45987,7 @@ try{
 })();
 
 
-/* dDAE_2.990 — Categoria Design "Alert" per LED topservizi */
+/* dDAE_2.990 — Categoria Design "Alert" per LED topbar */
 (function(){
   'use strict';
   var KEY = 'dDAE_alert_led_visual_v1';
@@ -47181,20 +46772,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       if (!ds || typeof ds !== 'object') continue;
       for (const t of Object.keys(ds)){
         if (!allowed.has(t) || t === 'utenti') continue;
-        const key = `ctx:${targetUid}:${y}:tbl:${t}`;
-        const incoming = ds[t];
-        // Non lasciare che una sezione annuale vuota cancelli dati validi già
-        // recuperati dal dataset principale o da un'altra copia del backup.
-        if (Array.isArray(incoming)){
-          const existing = await __kvGet__(key);
-          if (!incoming.length && Array.isArray(existing) && existing.length) continue;
-          if (__isYearIndependentLocalTable__(t)){
-            const merged = __mergeYearIndependentRows__(t, [Array.isArray(existing) ? existing : [], incoming]);
-            await __kvSet__(key, __dedupeRowsForBackupYear__(__tableRowsForYear__(merged, t, y)));
-            continue;
-          }
-        }
-        await __kvSet__(key, incoming);
+        await __kvSet__(`ctx:${targetUid}:${y}:tbl:${t}`, ds[t]);
       }
     }
     try{ await __kvSet__(`backup:multiYear:lastRestore:${targetUid}`, { at: (typeof __nowIso__ === 'function' ? __nowIso__() : new Date().toISOString()), years: yearKeys }); }catch(_){ }
@@ -47969,7 +47547,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 /* dDAE_3.022 — Statistiche mensili: spese mese calcolate su speseAll annuali, escluso fuori budget */
 
 
-/* dDAE_3.022 — Alert fattura separato in topservizi e design */
+/* dDAE_3.022 — Alert fattura separato in topbar e design */
 try{ if (typeof __alertLedVisualsApply__ === 'function') __alertLedVisualsApply__(); }catch(_){ }
 
 
@@ -47979,7 +47557,7 @@ try{
   if (typeof refreshTopGuestAlerts === 'function') setTimeout(function(){ try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ } }, 250);
 }catch(_){ }
 
-/* dDAE_3.022 — Card popup alert topservizi aprono la scheda del relativo ospite */
+/* dDAE_3.022 — Card popup alert topbar aprono la scheda del relativo ospite */
 
 /* dDAE_3.022 — Audio: suono grave globale su ogni long press */
 
@@ -48401,19 +47979,19 @@ try{
 /* dDAE_3.078 — Popup stato tasti categoria: ATTIVO / DISATTIVO invece di SÌ / NO */
 
 
-/* dDAE_3.105 — Servizi: pagine categoria con 15 slot 3x5; rimosso Servizi da Impostazioni > Dati */
-(function __setupServiziCategoryPages__(){
+/* dDAE_3.105 — Bar: pagine categoria con 15 slot 3x5; rimosso Bar da Impostazioni > Dati */
+(function __setupBarCategoryPages__(){
   const routes = {
-    serviziCocktailBtn: ['servizicocktail','Cocktail'],
-    serviziVinoBtn: ['servizivini','Vini'],
-    serviziBirraBtn: ['servizibirre','Birre'],
-    serviziAnalcoliciBtn: ['servizianalcolici','Analcolici'],
-    serviziExtraBtn: ['serviziextra','Extra'],
-    serviziCocktailAnalcoliciBtn: ['servizicocktailanalcolici','Cocktail analcolici']
+    barCocktailBtn: ['barcocktail','Cocktail'],
+    barVinoBtn: ['barvini','Vini'],
+    barBirraBtn: ['barbirre','Birre'],
+    barAnalcoliciBtn: ['baranalcolici','Analcolici'],
+    barSnackBtn: ['barsnack','Snack'],
+    barCocktailAnalcoliciBtn: ['barcocktailanalcolici','Cocktail analcolici']
   };
   const slotIds = [];
-  ['Cocktail','Vini','Birre','Analcolici','Extra','CocktailAnalcolici'].forEach((name) => {
-    for (let i=1;i<=15;i++) slotIds.push(`servizi${name}Slot${String(i).padStart(2,'0')}`);
+  ['Cocktail','Vini','Birre','Analcolici','Snack','CocktailAnalcolici'].forEach((name) => {
+    for (let i=1;i<=15;i++) slotIds.push(`bar${name}Slot${String(i).padStart(2,'0')}`);
   });
   try{
     if (Array.isArray(__LAUNCHER_ICON_TARGET_IDS__)) slotIds.forEach(id => { if (!__LAUNCHER_ICON_TARGET_IDS__.includes(id)) __LAUNCHER_ICON_TARGET_IDS__.push(id); });
@@ -48422,8 +48000,8 @@ try{
   }catch(_){ }
   const bind = () => {
     Object.entries(routes).forEach(([id, spec]) => {
-      const btn=document.getElementById(id); if(!btn || btn.dataset.serviziRouteBound==='1') return;
-      btn.dataset.serviziRouteBound='1';
+      const btn=document.getElementById(id); if(!btn || btn.dataset.barRouteBound==='1') return;
+      btn.dataset.barRouteBound='1';
       bindFastTap(btn, () => { try{ showPage(spec[0]); hideLauncher(); }catch(_){ } });
     });
     slotIds.forEach(id => {
@@ -48443,18 +48021,18 @@ try{
 })();
 
 
-/* dDAE_3.130 — Correzione visibilità slot Servizi e ritorno dedicato a Servizi */
-(function __fixServiziCategoryPages3106__(){
-  const categoryPages = new Set(['servizicocktail','servizivini','servizibirre','servizianalcolici','serviziextra','servizicocktailanalcolici']);
-  function syncServiziBack(){
+/* dDAE_3.130 — Correzione visibilità slot Bar e ritorno dedicato a Bar */
+(function __fixBarCategoryPages3106__(){
+  const categoryPages = new Set(['barcocktail','barvini','barbirre','baranalcolici','barsnack','barcocktailanalcolici']);
+  function syncBarBack(){
     try{
-      const btn=document.getElementById('serviziBackTop');
+      const btn=document.getElementById('barBackTop');
       if(!btn) return;
       const page=String((window.state&&window.state.page)||document.body.dataset.page||'');
       btn.hidden=!categoryPages.has(page);
-      btn.setAttribute('aria-label', (typeof __translateText__==='function') ? __translateText__('Torna a Servizi') : 'Torna a Servizi');
-      if(!btn.dataset.serviziBackBound){
-        btn.dataset.serviziBackBound='1';
+      btn.setAttribute('aria-label', (typeof __translateText__==='function') ? __translateText__('Torna a Bar') : 'Torna a Bar');
+      if(!btn.dataset.barBackBound){
+        btn.dataset.barBackBound='1';
         bindFastTap(btn, function(){ try{ showPage('statistichecopy'); hideLauncher(); }catch(_){ } });
       }
       try{ if(typeof __bindHeaderActionLongPress__==='function') __bindHeaderActionLongPress__(btn); }catch(_){ }
@@ -48463,36 +48041,36 @@ try{
   }
   function ensureSlots(){
     try{
-      document.querySelectorAll('.servizi-category-page').forEach(function(page){
-        const grid=page.querySelector('.servizi-slots-grid');
+      document.querySelectorAll('.bar-category-page').forEach(function(page){
+        const grid=page.querySelector('.bar-slots-grid');
         if(!grid) return;
         grid.hidden=false;
         grid.style.removeProperty('display');
-        grid.querySelectorAll('.servizi-slot-btn').forEach(function(btn){
+        grid.querySelectorAll('.bar-slot-btn').forEach(function(btn){
           btn.hidden=false;
           btn.removeAttribute('aria-hidden');
         });
       });
     }catch(_){ }
   }
-  document.addEventListener('DOMContentLoaded',function(){ ensureSlots(); syncServiziBack(); });
-  window.addEventListener('ddae:language-change',syncServiziBack);
-  try{ new MutationObserver(function(){ syncServiziBack(); }).observe(document.body,{attributes:true,attributeFilter:['data-page']}); }catch(_){ }
-  setTimeout(function(){ ensureSlots(); syncServiziBack(); },0);
+  document.addEventListener('DOMContentLoaded',function(){ ensureSlots(); syncBarBack(); });
+  window.addEventListener('ddae:language-change',syncBarBack);
+  try{ new MutationObserver(function(){ syncBarBack(); }).observe(document.body,{attributes:true,attributeFilter:['data-page']}); }catch(_){ }
+  setTimeout(function(){ ensureSlots(); syncBarBack(); },0);
 })();
 
 
-/* dDAE_3.130 — navigazione Servizi robusta e slot sempre renderizzati */
-(function __serviziPagesFinalFix3107__(){
+/* dDAE_3.130 — navigazione Bar robusta e slot sempre renderizzati */
+(function __barPagesFinalFix3107__(){
   'use strict';
-  var pages=['servizicocktail','servizivini','servizibirre','servizianalcolici','serviziextra','servizicocktailanalcolici'];
+  var pages=['barcocktail','barvini','barbirre','baranalcolici','barsnack','barcocktailanalcolici'];
   var routeMap={
-    serviziCocktailBtn:'servizicocktail',
-    serviziVinoBtn:'servizivini',
-    serviziBirraBtn:'servizibirre',
-    serviziAnalcoliciBtn:'servizianalcolici',
-    serviziExtraBtn:'serviziextra',
-    serviziCocktailAnalcoliciBtn:'servizicocktailanalcolici'
+    barCocktailBtn:'barcocktail',
+    barVinoBtn:'barvini',
+    barBirraBtn:'barbirre',
+    barAnalcoliciBtn:'baranalcolici',
+    barSnackBtn:'barsnack',
+    barCocktailAnalcoliciBtn:'barcocktailanalcolici'
   };
   function current(){
     try{return String((window.state&&window.state.page)||document.body.getAttribute('data-page')||'');}catch(_){return '';}
@@ -48512,11 +48090,11 @@ try{
       pages.forEach(function(p){
         var page=document.getElementById('page-'+p);
         if(!page)return;
-        var grid=page.querySelector('.servizi-slots-grid');
+        var grid=page.querySelector('.bar-slots-grid');
         if(!grid)return;
         grid.hidden=false;
         grid.style.setProperty('display','grid','important');
-        var buttons=grid.querySelectorAll('.servizi-slot-btn');
+        var buttons=grid.querySelectorAll('.bar-slot-btn');
         buttons.forEach(function(btn){
           btn.hidden=false;
           btn.removeAttribute('aria-hidden');
@@ -48529,7 +48107,7 @@ try{
   }
   function syncBack(){
     try{
-      var b=document.getElementById('serviziBackTop');
+      var b=document.getElementById('barBackTop');
       if(!b)return;
       var active=isCategory(current());
       b.hidden=!active;
@@ -48540,8 +48118,8 @@ try{
         b.style.removeProperty('display');
         b.style.removeProperty('visibility');
       }
-      if(!b.dataset.finalServiziBackBound){
-        b.dataset.finalServiziBackBound='1';
+      if(!b.dataset.finalBarBackBound){
+        b.dataset.finalBarBackBound='1';
         b.addEventListener('click',function(ev){
           try{ev.preventDefault();ev.stopPropagation();}catch(_){ }
           try{showPage('statistichecopy');}catch(_){ensurePage('statistichecopy');}
@@ -48553,8 +48131,8 @@ try{
   function bindRoutes(){
     Object.keys(routeMap).forEach(function(id){
       var btn=document.getElementById(id);
-      if(!btn||btn.dataset.finalServiziRouteBound)return;
-      btn.dataset.finalServiziRouteBound='1';
+      if(!btn||btn.dataset.finalBarRouteBound)return;
+      btn.dataset.finalBarRouteBound='1';
       btn.addEventListener('click',function(ev){
         try{ev.preventDefault();ev.stopPropagation();}catch(_){ }
         var p=routeMap[id];
@@ -48575,7 +48153,7 @@ try{
 /* dDAE_3.130 — Editor e scheda Cocktail per i 15 slot */
 (function __cocktailSlotsEditor3110__(){
   'use strict';
-  const STORE_KEY='dDAE_servizi_cocktails_v1';
+  const STORE_KEY='dDAE_bar_cocktails_v1';
   const HOLD_MS=650;
   let activeSlot='';
   let activeViewSlot='';
@@ -48586,27 +48164,27 @@ try{
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
   const words={
-    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Servizio addebitato alla stanza',chargeError:'Impossibile addebitare il servizio'},
-    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',deleteCocktail:'Delete cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted',emptyDelete:'No cocktail to delete',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Service charged to room',chargeError:'Unable to charge service'},
-    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',deleteCocktail:'Supprimer le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé',emptyDelete:'Aucun cocktail à supprimer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Service débité sur la chambre',chargeError:'Impossible de débiter le service'},
-    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',deleteCocktail:'Cocktail löschen',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht',emptyDelete:'Kein Cocktail zum Löschen',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügservizi',charged:'Service auf Zimmer gebucht',chargeError:'Service konnte nicht gebucht werden'},
-    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',deleteCocktail:'Eliminar cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado',emptyDelete:'No hay ningún cóctel para eliminar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Servicio cargado a la habitación',chargeError:'No se pudo cargar el servicio'}
+    it:{cocktail:'Cocktail',close:'Chiudi',import:'Importa',name:'Nome cocktail',price:'Prezzo',ingredients:'Ingredienti e dosi',ingredient:'Ingrediente',dose:'Dose',procedure:'Preparazione',step:'Passaggio',image:'Scegli immagine',save:'Salva',deleteCocktail:'Elimina cocktail',deleteConfirm:'Eliminare definitivamente questo cocktail?',deleted:'Cocktail eliminato',emptyDelete:'Nessun cocktail da eliminare',required:'Inserisci almeno il nome del cocktail',charge:'Addebita alla stanza',chargeTitle:'Addebita alla stanza',roomGuest:'Stanza / ospite',confirmCharge:'Conferma addebito',quantity:'Quantità',decreaseQuantity:'Diminuisci quantità',increaseQuantity:'Aumenta quantità',noRooms:'Nessuna stanza disponibile',charged:'Cocktail addebitato alla stanza',chargeError:'Impossibile addebitare il cocktail'},
+    en:{cocktail:'Cocktail',close:'Close',import:'Import',name:'Cocktail name',price:'Price',ingredients:'Ingredients and measures',ingredient:'Ingredient',dose:'Measure',procedure:'Preparation',step:'Step',image:'Choose image',save:'Save',deleteCocktail:'Delete cocktail',deleteConfirm:'Permanently delete this cocktail?',deleted:'Cocktail deleted',emptyDelete:'No cocktail to delete',required:'Enter at least the cocktail name',charge:'Charge to room',chargeTitle:'Charge to room',roomGuest:'Room / guest',confirmCharge:'Confirm charge',quantity:'Quantity',decreaseQuantity:'Decrease quantity',increaseQuantity:'Increase quantity',noRooms:'No room available',charged:'Cocktail charged to room',chargeError:'Unable to charge cocktail'},
+    fr:{cocktail:'Cocktail',close:'Fermer',import:'Importer',name:'Nom du cocktail',price:'Prix',ingredients:'Ingrédients et doses',ingredient:'Ingrédient',dose:'Dose',procedure:'Préparation',step:'Étape',image:'Choisir image',save:'Enregistrer',deleteCocktail:'Supprimer le cocktail',deleteConfirm:'Supprimer définitivement ce cocktail ?',deleted:'Cocktail supprimé',emptyDelete:'Aucun cocktail à supprimer',required:'Saisissez au moins le nom du cocktail',charge:'Débiter la chambre',chargeTitle:'Débiter la chambre',roomGuest:'Chambre / client',confirmCharge:'Confirmer le débit',quantity:'Quantité',decreaseQuantity:'Diminuer la quantité',increaseQuantity:'Augmenter la quantité',noRooms:'Aucune chambre disponible',charged:'Cocktail débité sur la chambre',chargeError:'Impossible de débiter le cocktail'},
+    de:{cocktail:'Cocktail',close:'Schließen',import:'Importieren',name:'Cocktailname',price:'Preis',ingredients:'Zutaten und Mengen',ingredient:'Zutat',dose:'Menge',procedure:'Zubereitung',step:'Schritt',image:'Bild auswählen',save:'Speichern',deleteCocktail:'Cocktail löschen',deleteConfirm:'Diesen Cocktail endgültig löschen?',deleted:'Cocktail gelöscht',emptyDelete:'Kein Cocktail zum Löschen',required:'Mindestens den Cocktailnamen eingeben',charge:'Auf Zimmer buchen',chargeTitle:'Auf Zimmer buchen',roomGuest:'Zimmer / Gast',confirmCharge:'Buchung bestätigen',quantity:'Menge',decreaseQuantity:'Menge verringern',increaseQuantity:'Menge erhöhen',noRooms:'Kein Zimmer verfügbar',charged:'Cocktail auf Zimmer gebucht',chargeError:'Cocktail konnte nicht gebucht werden'},
+    es:{cocktail:'Cóctel',close:'Cerrar',import:'Importar',name:'Nombre del cóctel',price:'Precio',ingredients:'Ingredientes y cantidades',ingredient:'Ingrediente',dose:'Cantidad',procedure:'Preparación',step:'Paso',image:'Elegir imagen',save:'Guardar',deleteCocktail:'Eliminar cóctel',deleteConfirm:'¿Eliminar definitivamente este cóctel?',deleted:'Cóctel eliminado',emptyDelete:'No hay ningún cóctel para eliminar',required:'Introduce al menos el nombre del cóctel',charge:'Cargar a la habitación',chargeTitle:'Cargar a la habitación',roomGuest:'Habitación / huésped',confirmCharge:'Confirmar cargo',quantity:'Cantidad',decreaseQuantity:'Disminuir cantidad',increaseQuantity:'Aumentar cantidad',noRooms:'No hay habitaciones disponibles',charged:'Cóctel cargado a la habitación',chargeError:'No se pudo cargar el cóctel'}
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
   function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Immagine troppo grande');}catch(__){}return false;}}
   function ensureCocktailAnalcoliciClone(){
     try{
-      const marker='dDAE_servizi_cocktail_analcolici_seeded_v1';
+      const marker='dDAE_bar_cocktail_analcolici_seeded_v1';
       if(localStorage.getItem(marker)==='1')return;
       const all=read();
       let hasTarget=false;
-      for(let i=1;i<=15;i++){const id='serviziCocktailAnalcoliciSlot'+String(i).padStart(2,'0');if(all[id]&&typeof all[id]==='object'&&Object.keys(all[id]).length){hasTarget=true;break;}}
+      for(let i=1;i<=15;i++){const id='barCocktailAnalcoliciSlot'+String(i).padStart(2,'0');if(all[id]&&typeof all[id]==='object'&&Object.keys(all[id]).length){hasTarget=true;break;}}
       if(!hasTarget){
         for(let i=1;i<=15;i++){
           const n=String(i).padStart(2,'0');
-          const source=all['serviziCocktailSlot'+n];
-          if(source&&typeof source==='object')all['serviziCocktailAnalcoliciSlot'+n]=JSON.parse(JSON.stringify(source));
+          const source=all['barCocktailSlot'+n];
+          if(source&&typeof source==='object')all['barCocktailAnalcoliciSlot'+n]=JSON.parse(JSON.stringify(source));
         }
         write(all);
       }
@@ -48630,25 +48208,25 @@ try{
     const value=String(slot||'');
     const currentLang=lang();
     const labels={
-      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],extra:['Extra','Nome extra'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
-      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],extra:['Extra','Extra name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
-      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],extra:['Extra','Nom du extra'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
-      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],extra:['Extra','Name des Extras'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
-      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],extra:['Extra','Nombre del extra'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
+      it:{cocktail:['Cocktail','Nome cocktail'],wine:['Vino','Nome vino'],beer:['Birra','Nome birra'],soft:['Analcolico','Nome analcolico'],snack:['Snack','Nome snack'],mocktail:['Cocktail analcolico','Nome cocktail analcolico']},
+      en:{cocktail:['Cocktail','Cocktail name'],wine:['Wine','Wine name'],beer:['Beer','Beer name'],soft:['Soft drink','Soft drink name'],snack:['Snack','Snack name'],mocktail:['Non-alcoholic cocktail','Non-alcoholic cocktail name']},
+      fr:{cocktail:['Cocktail','Nom du cocktail'],wine:['Vin','Nom du vin'],beer:['Bière','Nom de la bière'],soft:['Boisson sans alcool','Nom de la boisson sans alcool'],snack:['Snack','Nom du snack'],mocktail:['Cocktail sans alcool','Nom du cocktail sans alcool']},
+      de:{cocktail:['Cocktail','Cocktailname'],wine:['Wein','Weinname'],beer:['Bier','Biername'],soft:['Alkoholfreies Getränk','Name des alkoholfreien Getränks'],snack:['Snack','Name des Snacks'],mocktail:['Alkoholfreier Cocktail','Name des alkoholfreien Cocktails']},
+      es:{cocktail:['Cóctel','Nombre del cóctel'],wine:['Vino','Nombre del vino'],beer:['Cerveza','Nombre de la cerveza'],soft:['Bebida sin alcohol','Nombre de la bebida sin alcohol'],snack:['Snack','Nombre del snack'],mocktail:['Cóctel sin alcohol','Nombre del cóctel sin alcohol']}
     };
     let type='cocktail';
-    if(value.indexOf('serviziViniSlot')===0)type='wine';
-    else if(value.indexOf('serviziBirreSlot')===0)type='beer';
-    else if(value.indexOf('serviziAnalcoliciSlot')===0)type='soft';
-    else if(value.indexOf('serviziExtraSlot')===0)type='extra';
-    else if(value.indexOf('serviziCocktailAnalcoliciSlot')===0)type='mocktail';
+    if(value.indexOf('barViniSlot')===0)type='wine';
+    else if(value.indexOf('barBirreSlot')===0)type='beer';
+    else if(value.indexOf('barAnalcoliciSlot')===0)type='soft';
+    else if(value.indexOf('barSnackSlot')===0)type='snack';
+    else if(value.indexOf('barCocktailAnalcoliciSlot')===0)type='mocktail';
     const pair=(labels[currentLang]||labels.it)[type];
     return {title:pair[0],name:pair[1]};
   }
   function syncText(){
     const productText=slotProductText(activeSlot);
-    if($('serviziSlotModalTitle'))$('serviziSlotModalTitle').textContent=productText.title;
-    if($('serviziSlotModalCancel'))$('serviziSlotModalCancel').setAttribute('aria-label',t('close'));
+    if($('barSlotModalTitle'))$('barSlotModalTitle').textContent=productText.title;
+    if($('barSlotModalCancel'))$('barSlotModalCancel').setAttribute('aria-label',t('close'));
     if($('cocktailImportBtn')){$('cocktailImportBtn').setAttribute('aria-label',t('import'));$('cocktailImportBtn').title=t('import');}
     if($('cocktailNameLabel'))$('cocktailNameLabel').textContent=productText.name;
     if($('cocktailPriceLabel'))$('cocktailPriceLabel').textContent=t('price');
@@ -48667,8 +48245,8 @@ try{
     if($('cocktailQuantityMinus'))$('cocktailQuantityMinus').setAttribute('aria-label',t('decreaseQuantity'));
     if($('cocktailQuantityPlus'))$('cocktailQuantityPlus').setAttribute('aria-label',t('increaseQuantity'));
   }
-  function closeEditor(){const m=$('serviziSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
-  function isCocktailSlot(slot){const value=String(slot||'');return value.indexOf('serviziCocktailSlot')===0||value.indexOf('serviziCocktailAnalcoliciSlot')===0;}
+  function closeEditor(){const m=$('barSlotModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
+  function isCocktailSlot(slot){const value=String(slot||'');return value.indexOf('barCocktailSlot')===0||value.indexOf('barCocktailAnalcoliciSlot')===0;}
   function setRecipeFieldsVisible(visible){
     const ingredientsSection=$('cocktailIngredientsList')?.closest('.cocktail-builder-section');
     const procedureSection=$('cocktailStepsList')?.closest('.cocktail-builder-section');
@@ -48694,7 +48272,7 @@ try{
     $('cocktailIngredientsList').innerHTML=''; if(showRecipe)(data.ingredients&&data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
     $('cocktailStepsList').innerHTML=''; if(showRecipe)(data.steps&&data.steps.length?data.steps:['']).forEach(addStep);
     const p=$('cocktailImagePreview'); p.hidden=!imageData; p.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';
-    $('cocktailImageInput').value=''; const deleteBtn=$('cocktailDeleteBtn'); if(deleteBtn)deleteBtn.disabled=!(data&&data.name); const m=$('serviziSlotModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
+    $('cocktailImageInput').value=''; const deleteBtn=$('cocktailDeleteBtn'); if(deleteBtn)deleteBtn.disabled=!(data&&data.name); const m=$('barSlotModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
   }
   function closeView(){const m=$('cocktailViewModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
   function openView(slot){
@@ -48872,8 +48450,8 @@ try{
   function openChargeCalendar(){
     if(!activeViewData||!activeViewData.name)return;
     if(chargeQuantity<1){try{toast('Imposta la quantità');}catch(_){}return;}
-    const returnPage=String((window.state&&window.state.page)||document.body.dataset.page||'servizicocktail');
-    window.__ddaeServiziChargeContext={
+    const returnPage=String((window.state&&window.state.page)||document.body.dataset.page||'barcocktail');
+    window.__ddaeBarChargeContext={
       product:{name:String(activeViewData.name),price:parsePrice(activeViewData.price)},
       quantity:chargeQuantity,
       returnPage:returnPage
@@ -48882,8 +48460,8 @@ try{
     closeView();
     try{showPage('calendario');}catch(_){}
   }
-  window.__ddaeConfirmServiziChargeForPayload=async function(payload){
-    const ctx=window.__ddaeServiziChargeContext;
+  window.__ddaeConfirmBarChargeForPayload=async function(payload){
+    const ctx=window.__ddaeBarChargeContext;
     const guest=payload&&payload.guest;
     const guestId=String(guest&&((typeof guestIdOf==='function'?guestIdOf(guest):guest.id)||'')||'').trim();
     if(!ctx||!guestId||!ctx.product)return;
@@ -48895,7 +48473,7 @@ try{
       try{current=normalizeServiziResponse(await api('servizi',{method:'GET',params:{ospite_id:guestId},showLoader:false}));}catch(_){current=[];}
       if(!Array.isArray(current))current=[];
       const items=current.filter(s=>{const del=s?.isDeleted ?? s?.is_deleted ?? s?.deleted;return !(del===true||String(del)==='1');}).map(s=>({servizio:String(s.servizio ?? s.name ?? '').trim(),descrizione:String(s.descrizione ?? s.desc ?? '').trim(),importo:parseFloat(s.importo ?? s.amount ?? 0)||0,qty:parseFloat(s.qty ?? 1)||1}));
-      items.push({servizio:String(ctx.product.name),descrizione:'Servizi'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
+      items.push({servizio:String(ctx.product.name),descrizione:'Bar'+(room?' · Stanza '+room:'')+' · '+qty+' × '+amount.toFixed(2).replace('.',',')+' € · '+new Date().toLocaleString(),importo:amount,qty:qty});
       await api('servizi',{method:'POST',body:{ospite_id:guestId,servizi:items}});
       try{
         if(!state.guestServicesCacheById)state.guestServicesCacheById={};
@@ -48920,33 +48498,12 @@ try{
           state.guestViewItem.importo_servizi=total;
           state.guestViewItem.servizi_preview=preview;
         }
-        // Aggiorna anche l'oggetto ospite usato direttamente dal payload della cella.
-        // In alcune viste calendario non appartiene alle collezioni di state: senza
-        // questo aggiornamento lo zoom continuava a mostrare la sola prenotazione.
-        if(guest&&typeof guest==='object'){
-          guest.servizi_totale=total;
-          guest.serviziTotal=total;
-          guest.importo_servizi=total;
-          guest.servizi_preview=preview;
-          try{
-            const fin=(typeof _guestStayFinancials==='function')?_guestStayFinancials(guest):null;
-            const remaining=Number(fin&&fin.remaining);
-            if(isFinite(remaining)){
-              guest.rimanenza_da_pagare=remaining;
-              guest.rimanenzaDaPagare=remaining;
-              guest.remaining_to_pay=remaining;
-              guest.remainingToPay=remaining;
-              guest.guestRemaining=remaining;
-              guest.remaining=remaining;
-            }
-          }catch(_){ }
-        }
       }catch(_){}
-      const back=String(ctx.returnPage||'servizicocktail');
-      window.__ddaeServiziChargeContext=null;
+      const back=String(ctx.returnPage||'barcocktail');
+      window.__ddaeBarChargeContext=null;
       try{closeCalendarCellZoom();}catch(_){}
       try{closeCalendarCellModal();}catch(_){}
-      try{showPage(back);}catch(_){try{showPage('servizicocktail');}catch(__){}}
+      try{showPage(back);}catch(_){try{showPage('barcocktail');}catch(__){}}
       try{toast(t('charged'));}catch(_){alert(t('charged'));}
     }catch(e){try{toast(t('chargeError'));}catch(_){alert(t('chargeError'));}throw e;}
   };
@@ -49038,7 +48595,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.171',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.148',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49072,8 +48629,8 @@ try{
     try{toast(t('deleted'));}catch(_){ }
   }
   function render(){
-    const all=read(); document.querySelectorAll('.servizi-category-page .servizi-slot-btn').forEach(btn=>{
-      const d=all[btn.id]; const glyph=btn.querySelector('.servizi-slot-glyph');
+    const all=read(); document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(btn=>{
+      const d=all[btn.id]; const glyph=btn.querySelector('.bar-slot-glyph');
       btn.classList.toggle('cocktail-slot-filled',!!(d&&d.name)); btn.setAttribute('aria-label',d&&d.name?d.name:(btn.dataset.emptyLabel||btn.getAttribute('aria-label')||'Slot'));
       if(glyph){
         const hasImage=!!(d&&d.image);
@@ -49115,11 +48672,11 @@ try{
     btn.addEventListener('contextmenu',ev=>ev.preventDefault());
     btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopImmediatePropagation();if(longFired){longFired=false;return;}openView(btn.id);},true);
   }
-  window.__ddaeOpenServiziSlotEditor__=openEditor;
-  window.__ddaeOpenServiziSlotView__=openView;
+  window.__ddaeOpenBarSlotEditor__=openEditor;
+  window.__ddaeOpenBarSlotView__=openView;
   function init(){
-    document.querySelectorAll('.servizi-category-page .servizi-slot-btn').forEach(bindSlot);
-    $('serviziSlotModalCancel')?.addEventListener('click',closeEditor);
+    document.querySelectorAll('.bar-category-page .bar-slot-btn').forEach(bindSlot);
+    $('barSlotModalCancel')?.addEventListener('click',closeEditor);
     $('cocktailAddIngredientBtn')?.addEventListener('click',()=>addIngredient({}));
     $('cocktailAddStepBtn')?.addEventListener('click',()=>addStep(''));
     $('cocktailDeleteBtn')?.addEventListener('click',deleteCocktail);
@@ -49187,7 +48744,7 @@ try{
       },{capture:true,passive:false});
     }
     $('cocktailViewClose')?.addEventListener('click',closeView);
-    $('serviziSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('serviziSlotModal'))closeEditor();});
+    $('barSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('barSlotModal'))closeEditor();});
     $('cocktailViewModal')?.addEventListener('click',ev=>{if(ev.target===$('cocktailViewModal'))closeView();});
     const cocktailViewCard=$('cocktailViewModal')?.querySelector('.cocktail-view-card');
     cocktailViewCard?.addEventListener('click',ev=>{
@@ -49214,14 +48771,14 @@ try{
 })();
 
 
-/* dDAE_3.130 — Gli slot Servizi usano esclusivamente l'editor dedicato, mai il popup colore */
-(function __serviziSlotDedicatedLongPressCapture3112__(){
+/* dDAE_3.130 — Gli slot Bar usano esclusivamente l'editor dedicato, mai il popup colore */
+(function __barSlotDedicatedLongPressCapture3112__(){
   'use strict';
   const HOLD_MS=560;
   let active=null, timer=0, longFired=false, startX=0, startY=0, suppressClickUntil=0;
   function slotFromEvent(ev){
     try{
-      const btn=ev.target&&ev.target.closest&&ev.target.closest('.servizi-category-page .servizi-slot-btn');
+      const btn=ev.target&&ev.target.closest&&ev.target.closest('.bar-category-page .bar-slot-btn');
       return btn||null;
     }catch(_){return null;}
   }
@@ -49238,7 +48795,7 @@ try{
     timer=setTimeout(function(){
       timer=0; longFired=true; suppressClickUntil=Date.now()+900;
       try{navigator.vibrate&&navigator.vibrate(20);}catch(_){ }
-      try{window.__ddaeOpenServiziSlotEditor__&&window.__ddaeOpenServiziSlotEditor__(btn.id);}catch(_){ }
+      try{window.__ddaeOpenBarSlotEditor__&&window.__ddaeOpenBarSlotEditor__(btn.id);}catch(_){ }
     },HOLD_MS);
   }
   function move(ev){
@@ -49254,7 +48811,7 @@ try{
     const btn=slotFromEvent(ev); if(!btn)return;
     stop(ev);
     if(longFired||Date.now()<suppressClickUntil){longFired=false;return;}
-    try{window.__ddaeOpenServiziSlotView__&&window.__ddaeOpenServiziSlotView__(btn.id);}catch(_){ }
+    try{window.__ddaeOpenBarSlotView__&&window.__ddaeOpenBarSlotView__(btn.id);}catch(_){ }
   }
   function context(ev){const btn=slotFromEvent(ev);if(!btn)return;stop(ev);}
   window.addEventListener('pointerdown',begin,{capture:true,passive:false});
@@ -49263,122 +48820,3 @@ try{
   window.addEventListener('click',click,{capture:true,passive:false});
   window.addEventListener('contextmenu',context,{capture:true,passive:false});
 })();
-
-
-/* dDAE_3.157 — Posizione hotel configurabile e invio WhatsApp ospite */
-(function __setupHotelLocationFeature__(){
-  const STORAGE_KEY = 'dDAE_hotel_location_link_v1';
-  function byId(id){ return document.getElementById(id); }
-  function closeModal(){
-    const modal = byId('hotelLocationModal');
-    if (!modal) return;
-    modal.hidden = true;
-    modal.setAttribute('aria-hidden','true');
-    try{ document.body.classList.remove('modal-open'); }catch(_){ }
-  }
-  function openModal(){
-    const modal = byId('hotelLocationModal');
-    const input = byId('hotelLocationLinkInput');
-    if (!modal || !input) return;
-    try{ input.value = String(localStorage.getItem(STORAGE_KEY) || ''); }catch(_){ input.value = ''; }
-    try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
-    modal.hidden = false;
-    modal.setAttribute('aria-hidden','false');
-    try{ document.body.classList.add('modal-open'); }catch(_){ }
-    setTimeout(()=>{ try{ input.focus(); }catch(_){ } }, 80);
-  }
-  function save(){
-    const input = byId('hotelLocationLinkInput');
-    let value = String(input?.value || '').trim();
-    if (value && !/^https?:\/\//i.test(value)) value = 'https://' + value;
-    if (value){
-      try{ new URL(value); }catch(_){ try{ toast('Link posizione non valido', 'orange'); }catch(__){ } return; }
-    }
-    try{ localStorage.setItem(STORAGE_KEY, value); }catch(_){ }
-    closeModal();
-    try{ toast(value ? 'Posizione hotel salvata' : 'Posizione hotel rimossa', 'green'); }catch(_){ }
-  }
-  function bind(el, fn){
-    if (!el || el.dataset.hotelLocationBound === '1') return;
-    el.dataset.hotelLocationBound = '1';
-    if (typeof bindFastTap === 'function') bindFastTap(el, fn); else el.addEventListener('click', fn);
-  }
-  function init(){
-    bind(byId('settingsHotelLocationBtn'), openModal);
-    bind(byId('hotelLocationCloseBtn'), closeModal);
-    bind(byId('hotelLocationCancelBtn'), closeModal);
-    bind(byId('hotelLocationSaveBtn'), save);
-    const modal = byId('hotelLocationModal');
-    if (modal && modal.dataset.hotelBackdropBound !== '1'){
-      modal.dataset.hotelBackdropBound = '1';
-      modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
-    }
-    try{ __applySingleActionButtonVisual__(byId('hotelLocationCancelBtn')); }catch(_){ }
-    try{ __applySingleActionButtonVisual__(byId('hotelLocationSaveBtn')); }catch(_){ }
-    try{ __bindSingleActionButtonColorHold__(byId('hotelLocationCancelBtn')); }catch(_){ }
-    try{ __bindSingleActionButtonColorHold__(byId('hotelLocationSaveBtn')); }catch(_){ }
-    try{ setupLauncherIconLongPressPalette(); }catch(_){ }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else setTimeout(init,0);
-  window.addEventListener('pageshow', init);
-})();
-
-/* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
-
-
-/* dDAE_3.171 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
-(function __setupElectricChargingService3169__(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  function parseDecimal(v){
-    let s=String(v??'').trim().replace(/\s/g,'').replace(/€/g,'');
-    if(s.includes(',')&&s.includes('.')) s=s.lastIndexOf(',')>s.lastIndexOf('.')?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');
-    else s=s.replace(',','.');
-    const n=Number.parseFloat(s); return Number.isFinite(n)&&n>=0?n:0;
-  }
-  function fmt(n){return (Number(n)||0).toFixed(2).replace('.',',')+' €';}
-  function values(){
-    const kwh=parseDecimal($('electricKwhInput')?.value);
-    const rate=parseDecimal($('electricRateInput')?.value);
-    return {kwh,rate,total:Math.round(kwh*rate*100)/100};
-  }
-  function sync(){const v=values();const out=$('electricChargeTotal');if(out)out.textContent='Totale: '+fmt(v.total);}
-  function close(){const m=$('electricChargeModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}try{document.body.classList.remove('modal-open');}catch(_){}}
-  function open(){
-    const m=$('electricChargeModal');if(!m)return;
-    const k=$('electricKwhInput'),r=$('electricRateInput');if(k)k.value='';if(r)r.value='';sync();
-    m.hidden=false;m.setAttribute('aria-hidden','false');try{document.body.classList.add('modal-open');}catch(_){}
-    setTimeout(()=>{try{k&&k.focus();}catch(_){}},80);
-  }
-  function chooseRoom(){
-    const v=values();
-    if(!(v.kwh>0)){try{toast('Inserisci i kW consumati');}catch(_){ }return;}
-    if(!(v.rate>0)){try{toast('Inserisci il costo per kW');}catch(_){ }return;}
-    if(!(v.total>0)){try{toast('Importo non valido');}catch(_){ }return;}
-    window.__ddaeServiziChargeContext={
-      product:{name:'Ricarica elettrica · '+String(v.kwh).replace('.',',')+' kW × '+fmt(v.rate)+'/kW',price:v.total},
-      quantity:1,
-      returnPage:'statistichecopy'
-    };
-    close();
-    try{showPage('calendario');}catch(_){ }
-  }
-  function bind(){
-    const btn=$('serviziRicaricaElettricaBtn');
-    if(btn&&!btn.dataset.electricChargeBound){btn.dataset.electricChargeBound='1';if(typeof bindFastTap==='function')bindFastTap(btn,open);else btn.addEventListener('click',open);}
-    const x=$('electricChargeClose');if(x&&!x.dataset.bound){x.dataset.bound='1';x.addEventListener('click',close);}
-    const room=$('electricChargeRoomBtn');if(room&&!room.dataset.bound){room.dataset.bound='1';room.addEventListener('click',chooseRoom);}
-    ['electricKwhInput','electricRateInput'].forEach(id=>{const el=$(id);if(el&&!el.dataset.bound){el.dataset.bound='1';el.addEventListener('input',sync);}});
-    const m=$('electricChargeModal');if(m&&!m.dataset.bound){m.dataset.bound='1';m.addEventListener('click',e=>{if(e.target===m)close();});}
-    try{__launcherIconApplyToButton__(btn);}catch(_){ }
-  }
-  try{
-    if(Array.isArray(__LAUNCHER_ICON_TARGET_IDS__)&&!__LAUNCHER_ICON_TARGET_IDS__.includes('serviziRicaricaElettricaBtn'))__LAUNCHER_ICON_TARGET_IDS__.push('serviziRicaricaElettricaBtn');
-    if(Array.isArray(__LAUNCHER_GRID_THEME_TARGET_IDS__)&&!__LAUNCHER_GRID_THEME_TARGET_IDS__.includes('serviziRicaricaElettricaBtn'))__LAUNCHER_GRID_THEME_TARGET_IDS__.push('serviziRicaricaElettricaBtn');
-    if(__LAUNCHER_ICON_DEFAULT_SPECS__&&!__LAUNCHER_ICON_DEFAULT_SPECS__.serviziRicaricaElettricaBtn)__LAUNCHER_ICON_DEFAULT_SPECS__.serviziRicaricaElettricaBtn='green-4';
-  }catch(_){ }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else setTimeout(bind,0);
-  window.addEventListener('pageshow',bind);
-})();
-
-/* dDAE_3.171 — Ripristino multi-anno robusto: fallback anno legacy, merge non distruttivo e lettura prenotazioni da tutte le chiavi account */
