@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.176";
+const BUILD_VERSION = "3.175";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -28956,6 +28956,9 @@ async function __importThemeFile__(){
       return;
     }
     const normalized = __roomSettingsThemePayloadNormalize__(themePayload);
+    // Chiude subito il popup dopo la validazione del file: l'applicazione del tema
+    // prosegue senza lasciare la finestra Import/Export visibile.
+    try{ __closeThemeTransferModal__(); }catch(_){ }
     await saveRoomsUiConfigToSettings(normalized.roomsUi, { showToast:false });
     try{ __launcherGridThemeWrite__(normalized.launcherGridTheme); }catch(_){ }
     try{ __launcherIconColorMapWrite__(normalized.launcherIconColors || {}); }catch(_){ }
@@ -28978,57 +28981,19 @@ async function __importThemeFile__(){
     try{ __pillApplyAll__(); }catch(_){ }
     try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
     try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
-    // Chiude il popup PRIMA del render finale: il render della pagina Design può
-    // ricostruire i controlli, ma non deve lasciare visibile il popup Import/Export.
-    try{ __closeThemeTransferModal__(); }catch(_){ }
     try{ renderRoomSettingsPage(); }catch(_){ }
-
-    const __finalizeThemeImportUi__ = () => {
-      try{
-        const modal = document.getElementById('themeTransferModal');
-        if (modal){
-          modal.hidden = true;
-          modal.setAttribute('hidden', '');
-          modal.setAttribute('aria-hidden', 'true');
-          modal.classList.remove('show', 'is-open', 'open', 'active', 'visible');
-          modal.style.removeProperty('display');
-          modal.style.removeProperty('visibility');
-          modal.style.removeProperty('opacity');
-          modal.style.removeProperty('pointer-events');
-        }
-        document.body.classList.remove('modal-open');
-      }catch(_){ }
-
-      // Fumetto indipendente dal sistema toast, così resta visibile anche su iPad/iOS
-      // dopo il rientro dal selettore File.
-      try{
-        const old = document.getElementById('themeImportSuccessBubble');
-        if (old) old.remove();
-        const bubble = document.createElement('div');
-        bubble.id = 'themeImportSuccessBubble';
-        bubble.setAttribute('role', 'status');
-        bubble.setAttribute('aria-live', 'polite');
-        bubble.textContent = 'Tema caricato correttamente';
-        Object.assign(bubble.style, {
-          position:'fixed', left:'50%', bottom:'calc(28px + env(safe-area-inset-bottom, 0px))',
-          transform:'translateX(-50%)', zIndex:'2147483647', maxWidth:'calc(100vw - 32px)',
-          padding:'12px 18px', borderRadius:'16px', background:'#ffffff', color:'#176b3a',
-          border:'1px solid #86c99d', boxShadow:'0 8px 24px rgba(0,0,0,.18)',
-          font:'700 15px/1.25 -apple-system,BlinkMacSystemFont,system-ui,sans-serif',
-          textAlign:'center', pointerEvents:'none', opacity:'1'
-        });
-        document.body.appendChild(bubble);
-        setTimeout(()=>{ try{ bubble.style.opacity='0'; bubble.style.transition='opacity .2s ease'; }catch(_){ } }, 2200);
-        setTimeout(()=>{ try{ bubble.remove(); }catch(_){ } }, 2500);
-      }catch(_){
-        try{ toast('Tema caricato correttamente', 'green'); }catch(__){ }
-      }
-    };
-
+    // Il render non deve riaprire o lasciare visibile il popup di trasferimento.
     try{
-      requestAnimationFrame(()=>requestAnimationFrame(__finalizeThemeImportUi__));
-      setTimeout(__finalizeThemeImportUi__, 180);
-    }catch(_){ __finalizeThemeImportUi__(); }
+      __closeThemeTransferModal__();
+      const modal = document.getElementById('themeTransferModal');
+      if (modal){
+        modal.classList.remove('is-open');
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      if (!document.querySelector('.modal.is-open:not([hidden])')) document.body.classList.remove('modal-open');
+    }catch(_){ }
+    try{ requestAnimationFrame(()=>{ try{ toast('Tema caricato correttamente', 'green'); }catch(__){ } }); }catch(_){ try{ toast('Tema caricato correttamente', 'green'); }catch(__){ } }
   }catch(_){
     try{ toast('Errore import tema', 'orange'); }catch(__){ }
   }
