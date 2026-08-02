@@ -31274,7 +31274,7 @@ html.dark-mode .tag-color-state-btn.is-active{
 .electric-charge-room-btn .ui-ico{width:32px;height:32px}
 @media (prefers-color-scheme:dark){.electric-charge-card{background:var(--surface,#15171c);border-color:rgba(255,255,255,.22)}.electric-charge-total{border-color:rgba(255,255,255,.22)}}
 
-/* dDAE_3.176 — Servizi: layout responsive iPad, centrato e senza sovrapposizioni */
+/* dDAE_3.177 — Servizi: layout responsive iPad, centrato e senza sovrapposizioni */
 @media (min-width:700px){
   #page-statistichecopy .stats-page.servizi-page{
     width:100% !important;
@@ -31307,7 +31307,7 @@ html.dark-mode .tag-color-state-btn.is-active{
   #page-statistichecopy .servizi-grid > .home-main:nth-child(7){grid-column:6 / span 2 !important;}
 }
 
-/* dDAE_3.176 — Servizi iPad: griglia regolare, riquadro icona e testo sempre separato sotto */
+/* dDAE_3.177 — Servizi iPad: griglia regolare, riquadro icona e testo sempre separato sotto */
 @media (min-width:700px){
   #page-statistichecopy .servizi-grid{
     display:grid !important;
