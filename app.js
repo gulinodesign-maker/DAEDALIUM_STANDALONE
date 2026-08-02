@@ -3935,37 +3935,53 @@ function __mergeUsers__(existing, incoming){
 
 function __pickDbImportFile__(){
   return new Promise((resolve) => {
-    let input = null;
-    let settled = false;
-    const finish = (file) => {
-      if (settled) return;
-      settled = true;
-      try{ window.removeEventListener('focus', onFocus, true); }catch(_){ }
-      try{ if (input && input.parentNode) input.parentNode.removeChild(input); }catch(_){ }
-      resolve(file || null);
-    };
-    const onFocus = () => {
-      setTimeout(() => {
-        try{ if (!settled && input && input.files && input.files[0]) finish(input.files[0]); }catch(_){ }
-      }, 250);
-    };
     try{
-      input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/json,.json';
-      input.style.position = 'fixed';
-      input.style.left = '-9999px';
-      input.style.top = '0';
-      input.style.width = '1px';
-      input.style.height = '1px';
-      input.style.opacity = '0.01';
-      input.style.zIndex = '2147483647';
-      input.addEventListener('change', () => finish(input.files && input.files[0] ? input.files[0] : null), { once:true });
-      input.addEventListener('cancel', () => finish(null), { once:true });
-      document.body.appendChild(input);
-      window.addEventListener('focus', onFocus, true);
-      input.click();
-    }catch(_){ finish(null); }
+      let input = document.getElementById("dbFileInput");
+      let created = false;
+      if (!input){
+        input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json,.json";
+        input.id = "dbFileInput";
+        input.style.position = "fixed";
+        input.style.left = "0";
+        input.style.top = "0";
+        input.style.width = "1px";
+        input.style.height = "1px";
+        input.style.opacity = "0";
+        input.style.pointerEvents = "none";
+        input.style.zIndex = "-1";
+        document.body.appendChild(input);
+        created = true
+      }
+      try{ input.setAttribute("accept", "application/json,.json"); }catch(_){ }
+      try{ input.setAttribute("data-ddae-modal-allow-through", "1"); }catch(_){ }
+      try{ input.style.display = "block"; }catch(_){ }
+      try{ input.style.position = "fixed"; input.style.left = "0"; input.style.top = "0"; input.style.width = "1px"; input.style.height = "1px"; input.style.opacity = "0"; input.style.pointerEvents = "none"; input.style.zIndex = "-1"; }catch(_){ }
+      try{ input.value = ""; }catch(_){ }
+      let settled = false;
+      const finish = (file) => {
+        if (settled) return;
+        settled = true;
+        try{ input.onchange = null; }catch(_){ }
+        try{ input.oncancel = null; }catch(_){ }
+        if (created){ try{ document.body.removeChild(input); }catch(_){ } }
+        resolve(file || null);
+      };
+      input.onchange = () => finish((input.files && input.files[0]) ? input.files[0] : null);
+      try{ input.oncancel = () => finish(null); }catch(_){ }
+      const openPicker = () => {
+        try{
+          if (typeof input.showPicker === "function") input.showPicker();
+          else input.click();
+        }catch(_){
+          try{ input.click(); }catch(__){ finish(null); }
+        }
+      };
+      openPicker();
+      setTimeout(() => { if (!settled) openPicker(); }, 120);
+      setTimeout(() => { if (!settled && (!input.files || !input.files.length)) finish(null); }, 120000);
+    }catch(_){ resolve(null); }
   });
 }
 
@@ -18968,7 +18984,7 @@ if (guestScrollTodayBtn){
     });
   }
 
-  // dDAE_3.177 — Il LED arancione dei prodotti di pulizia apre la lista corretta.
+  // dDAE_3.175 — Il LED arancione dei prodotti di pulizia apre la lista corretta.
   const cleaningProductsLed = $("#prodLedPulizia");
   if (cleaningProductsLed && !cleaningProductsLed.__cleaningProductsPageBound){
     cleaningProductsLed.__cleaningProductsPageBound = true;
@@ -22179,6 +22195,7 @@ function __forceSettingsEditorActionButtonBold__(btn){
 function __applySingleActionButtonVisual__(btn, forcedStateKey, forcedVisual){
   try{
     if (!btn || !btn.id) return;
+    if (btn.id === 'themeTransferFileInput') return;
     const selected = String(forcedStateKey || '').trim().toLowerCase() === 'on'
       ? true
       : (String(forcedStateKey || '').trim().toLowerCase() === 'off'
@@ -28848,6 +28865,11 @@ function __closeThemeTransferModal__(){
 }
 
 function __openThemeTransferModal__(){
+  try{
+    const input = document.getElementById('themeTransferFileInput');
+    if (input) input.value = '';
+    window.__ddaeThemeTransferPickerPending = false;
+  }catch(_){ }
   try{ __modalShowById__('themeTransferModal'); }catch(_){ }
 }
 
@@ -28918,12 +28940,56 @@ async function __exportThemeFile__(){
   }
 }
 
-async function __importThemeFile__(){
+function __themeTransferReadFileText__(file){
   try{
-    const file = await __pickDbImportFile__();
-    if (!file) return;
+    if (file && typeof file.text === 'function') return file.text();
+  }catch(_){ }
+  return new Promise((resolve, reject) => {
+    try{
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(reader.error || new Error('read error'));
+      reader.readAsText(file);
+    }catch(err){ reject(err); }
+  });
+}
+
+function __themeTransferPickerFinish__(input){
+  try{ window.__ddaeThemeTransferPickerPending = false; }catch(_){ }
+  try{ if (input) input.value = ''; }catch(_){ }
+}
+
+async function __importThemeFile__(fileOrEvent){
+  const dedicatedInput = document.getElementById('themeTransferFileInput');
+  try{
+    let file = null;
+    try{
+      if (typeof File !== 'undefined' && fileOrEvent instanceof File) file = fileOrEvent;
+      else if (fileOrEvent && fileOrEvent.target && fileOrEvent.target.files && fileOrEvent.target.files[0]) file = fileOrEvent.target.files[0];
+      else if (fileOrEvent && fileOrEvent.files && fileOrEvent.files[0]) file = fileOrEvent.files[0];
+    }catch(_){ }
+
+    // Fallback per eventuali richiami programmatici: il percorso normale su iOS è
+    // il tap nativo sull'input trasparente sovrapposto al tasto Importa.
+    if (!file){
+      if (dedicatedInput){
+        try{ dedicatedInput.value = ''; }catch(_){ }
+        try{ dedicatedInput.click(); }catch(_){ }
+        return;
+      }
+      file = await __pickDbImportFile__();
+    }
+    if (!file){
+      try{ __closeThemeTransferModal__(); }catch(_){ }
+      return;
+    }
+
+    // Il popup viene chiuso prima della lettura: su iOS non può restare bloccato
+    // sopra l'app mentre il file viene validato e applicato.
     try{ __closeThemeTransferModal__(); }catch(_){ }
-    const text = await file.text();
+    try{ window.__ddaeThemeTransferPickerPending = false; }catch(_){ }
+
+    const text = await __themeTransferReadFileText__(file);
     let data = null;
     try{ data = JSON.parse(text); }catch(_){ data = null; }
     if (!data || typeof data !== 'object'){
@@ -28942,14 +29008,7 @@ async function __importThemeFile__(){
       return;
     }
     const normalized = __roomSettingsThemePayloadNormalize__(themePayload);
-
-    try{
-      const raw = JSON.stringify(__sanitizeRoomsUiConfig__(normalized.roomsUi));
-      state.settings = state.settings || {};
-      state.settings.byKey = state.settings.byKey || {};
-      state.settings.byKey.stanze_ui = { key:'stanze_ui', value:raw, val:raw, Value:raw };
-      __applyRoomsUiConfig__();
-    }catch(_){ }
+    await saveRoomsUiConfigToSettings(normalized.roomsUi, { showToast:false });
     try{ __launcherGridThemeWrite__(normalized.launcherGridTheme); }catch(_){ }
     try{ __launcherIconColorMapWrite__(normalized.launcherIconColors || {}); }catch(_){ }
     try{ __statisticsCardThemeWrite__(normalized.statisticsCardTheme || normalized.launcherGridTheme); }catch(_){ }
@@ -28972,13 +29031,22 @@ async function __importThemeFile__(){
     try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
     try{ __refreshRoomSettingsThemeStatsUi__(); }catch(_){ }
     try{ renderRoomSettingsPage(); }catch(_){ }
-    try{ __closeThemeTransferModal__(); }catch(_){ }
-    try{ toast('Tema caricato correttamente', 'green'); }catch(_){ }
-
-    Promise.resolve(saveRoomsUiConfigToSettings(normalized.roomsUi, { showToast:false })).catch(()=>{});
+    try{
+      __closeThemeTransferModal__();
+      const modal = document.getElementById('themeTransferModal');
+      if (modal){
+        modal.classList.remove('is-open');
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      if (!document.querySelector('.modal.is-open:not([hidden])')) document.body.classList.remove('modal-open');
+    }catch(_){ }
+    try{ requestAnimationFrame(()=>{ try{ toast('Tema caricato correttamente', 'green'); }catch(__){ } }); }catch(_){ try{ toast('Tema caricato correttamente', 'green'); }catch(__){ } }
   }catch(_){
     try{ __closeThemeTransferModal__(); }catch(__){ }
     try{ toast('Errore import tema', 'orange'); }catch(__){ }
+  }finally{
+    __themeTransferPickerFinish__(dedicatedInput);
   }
 }
 
@@ -28989,19 +29057,44 @@ function __setupThemeTransferModal__(){
       if (el && !el.__boundThemeTransferAction){ el.__boundThemeTransferAction = true; bindFastTap(el, fn); }
     });
 
-    // iOS/iPadOS richiede che l'apertura del selettore file avvenga direttamente
-    // dentro un evento click nativo. bindFastTap usa anche pointer/touch e può far
-    // perdere l'attivazione utente necessaria a input[type=file].
-    const importBtn = document.getElementById('themeTransferImport');
-    if (importBtn && !importBtn.__boundThemeTransferNativeImport){
-      importBtn.__boundThemeTransferNativeImport = true;
-      importBtn.addEventListener('click', (e)=>{
-        try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
-        try{ window.__ddaeSettingsPopupSuppressUntil = Date.now() + 1100; }catch(_){ }
-        try{ __sfxTap(); }catch(_){ }
-        __importThemeFile__();
-      }, { passive:false });
+    const input = document.getElementById('themeTransferFileInput');
+    if (input && !input.__boundThemeTransferNativeImport){
+      input.__boundThemeTransferNativeImport = true;
+      try{ input.setAttribute('data-ddae-modal-allow-through', '1'); }catch(_){ }
+      try{ input.setAttribute('data-ddae-theme-file', '1'); }catch(_){ }
+      try{ input.setAttribute('data-single-action-key', 'themeTransferImport'); }catch(_){ }
+
+      // Tap breve: il browser apre direttamente File tramite il controllo nativo.
+      // Il popup si chiude subito dopo l'attivazione, senza interferire con il default iOS.
+      input.addEventListener('click', ()=>{
+        try{ window.__ddaeThemeTransferPickerPending = true; }catch(_){ }
+        setTimeout(()=>{
+          try{
+            if (window.__ddaeThemeTransferPickerPending) __closeThemeTransferModal__();
+          }catch(_){ }
+        }, 240);
+      }, { passive:true });
+
+      input.addEventListener('change', (event)=>{
+        let file = null;
+        try{ file = event && event.target && event.target.files && event.target.files[0] ? event.target.files[0] : null; }catch(_){ }
+        try{ window.__ddaeThemeTransferPickerPending = false; }catch(_){ }
+        try{ __closeThemeTransferModal__(); }catch(_){ }
+        if (file) __importThemeFile__(file);
+        else __themeTransferPickerFinish__(input);
+      });
+
+      try{
+        input.addEventListener('cancel', ()=>{
+          __themeTransferPickerFinish__(input);
+          try{ __closeThemeTransferModal__(); }catch(_){ }
+        });
+      }catch(_){ }
+
+      // Mantiene anche sul controllo nativo il long press del popup colore.
+      try{ __bindSingleActionButtonColorHold__(input); }catch(_){ }
     }
+
     const modal = document.getElementById('themeTransferModal');
     if (modal && !modal.__boundThemeTransferModal){
       modal.__boundThemeTransferModal = true;
@@ -47564,7 +47657,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       // Il selettore backup principale (__dbImport__) gestisce già lettura, parsing e messaggi.
       // Evita una seconda FileReader concorrente: su Safari iOS, con backup grandi,
       // può fallire dopo un import riuscito e mostrare erroneamente "Backup non valido".
-      if(input.id==='dbFileInput') return;
+      if(input.id==='dbFileInput'||input.id==='themeTransferFileInput'||input.dataset.ddaeThemeFile==='1') return;
       if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||input.getAttribute('data-ddae-cocktail-image')==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       var mark=String(input.id||input.name||input.className||input.accept||input.getAttribute('aria-label')||'').toLowerCase();
       var topRight = false;
@@ -47590,7 +47683,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
           var inputs=document.querySelectorAll('input[type="file"]');
           Array.prototype.forEach.call(inputs,function(inp){
             try{
-              if(inp.id==='dbFileInput') return;
+              if(inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
               if(inp.files && inp.files[0]) handleFile(inp.files[0]);
             }catch(_){}
           });
@@ -48081,6 +48174,15 @@ try{
       return Array.isArray(path) && path.indexOf(modal) >= 0;
     }catch(_){ return false; }
   }
+  function technicalTarget(target){
+    try{
+      if (!target) return false;
+      const el = target.nodeType === 1 ? target : (target.parentElement || null);
+      if (!el) return false;
+      if (el.matches && el.matches('input[type="file"], #dbFileInput')) return true;
+      return !!(el.closest && el.closest('input[type="file"], #dbFileInput, [data-ddae-modal-allow-through="1"]'));
+    }catch(_){ return false; }
+  }
   function syncBody(){
     try{ document.body.classList.toggle('ddae-settings-modal-open', openModals().length > 0); }catch(_){ }
   }
@@ -48089,6 +48191,7 @@ try{
       const target = ev && ev.target;
       const modal = topModal();
       const now = Date.now();
+      if (technicalTarget(target)) return;
       if (modal){
         syncBody();
         if (!inModal(modal, target)) { block(ev); return; }
@@ -48119,6 +48222,9 @@ try{
   try{ setInterval(setup, 700); }catch(_){ }
 })();
 
+
+/* dDAE_3.177 — iOS/PWA: import tema autorizzato attraverso gli scudi modali */
+/* dDAE_3.177 — iOS/PWA: selettore tema nativo dedicato, chiusura popup e import affidabile */
 
 /* dDAE_3.040 — Campi numerici: lo zero iniziale sparisce al focus per inserimento immediato */
 (function __ddae3037ClearZeroOnNumericFocus__(){
@@ -49384,7 +49490,7 @@ try{
 /* dDAE_3.168 — persistenza catalogo Stanze & Locali in IndexedDB e recupero automatico */
 
 
-/* dDAE_3.177 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
+/* dDAE_3.175 — Servizi: ricarica elettrica a consumo con addebito alla stanza */
 (function __setupElectricChargingService3169__(){
   'use strict';
   const $=id=>document.getElementById(id);

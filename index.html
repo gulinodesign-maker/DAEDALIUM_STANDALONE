@@ -1275,7 +1275,7 @@ window.APP_VERSION = "3.177";
 </button>
 </div>
 <div class="settings-db-actions" hidden=""></div>
-<input accept="application/json,.json" id="dbFileInput" style="display:none" type="file"/>
+<input accept="application/json,.json" data-ddae-modal-allow-through="1" id="dbFileInput" style="display:none" type="file"/>
 </div></section>
 <section class="page" hidden="" id="page-opsettings">
 <div class="settings-page settings-page-reference settings-page-operator-dedicated">
@@ -2881,7 +2881,7 @@ window.APP_VERSION = "3.177";
 <div class="db-menu-title" style="width:100%;text-align:center;">TEMA</div>
 </div>
 <div class="settings-license-actions theme-transfer-actions">
-<button aria-label="Importa tema" class="auth-btn auth-btn-azure theme-transfer-btn" data-single-action-key="themeTransferImport" id="themeTransferImport" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg></span></button>
+<div class="theme-transfer-import-slot"><button aria-hidden="true" aria-label="Importa tema" class="auth-btn auth-btn-azure theme-transfer-btn" data-single-action-key="themeTransferImport" id="themeTransferImport" tabindex="-1" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg></span></button><input accept="application/json,.json" aria-label="Importa tema" class="theme-transfer-native-file-input" data-ddae-modal-allow-through="1" data-ddae-theme-file="1" data-single-action-key="themeTransferImport" id="themeTransferFileInput" type="file"/></div>
 <button aria-label="Esporta tema" class="auth-btn auth-btn-green theme-transfer-btn" data-single-action-key="themeTransferExport" id="themeTransferExport" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M12 20V8"></path><path d="m7 13 5-5 5 5"></path><path d="M5 4h14"></path></svg></span></button>
 <button aria-label="Annulla" class="auth-btn auth-btn-gray theme-transfer-btn" data-single-action-key="themeTransferCancel" id="themeTransferCancel" type="button"><span aria-hidden="true" class="theme-transfer-btn-icon"><svg class="ui-ico" viewbox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></span></button>
 </div>
