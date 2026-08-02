@@ -31273,3 +31273,36 @@ html.dark-mode .tag-color-state-btn.is-active{
 .electric-charge-room-btn{width:100%;min-height:68px;border-radius:18px;box-shadow:none}
 .electric-charge-room-btn .ui-ico{width:32px;height:32px}
 @media (prefers-color-scheme:dark){.electric-charge-card{background:var(--surface,#15171c);border-color:rgba(255,255,255,.22)}.electric-charge-total{border-color:rgba(255,255,255,.22)}}
+
+/* dDAE_3.172 — Servizi: layout responsive iPad, centrato e senza sovrapposizioni */
+@media (min-width:700px){
+  #page-statistichecopy .stats-page.servizi-page{
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+  #page-statistichecopy .servizi-grid{
+    display:grid !important;
+    grid-template-columns:repeat(8,minmax(0,1fr)) !important;
+    grid-template-rows:repeat(2,160px) !important;
+    grid-auto-rows:160px !important;
+    width:min(780px,calc(100vw - 72px)) !important;
+    max-width:none !important;
+    margin:28px auto 0 !important;
+    padding:0 !important;
+    column-gap:12px !important;
+    row-gap:28px !important;
+    justify-content:center !important;
+    align-content:start !important;
+  }
+  #page-statistichecopy .servizi-grid > .home-main{
+    grid-column:span 2 !important;
+    width:100% !important;
+    height:160px !important;
+    min-height:160px !important;
+    max-height:160px !important;
+    margin:0 !important;
+  }
+  #page-statistichecopy .servizi-grid > .home-main:nth-child(5){grid-column:2 / span 2 !important;}
+  #page-statistichecopy .servizi-grid > .home-main:nth-child(6){grid-column:4 / span 2 !important;}
+  #page-statistichecopy .servizi-grid > .home-main:nth-child(7){grid-column:6 / span 2 !important;}
+}
