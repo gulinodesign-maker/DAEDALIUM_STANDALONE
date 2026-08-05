@@ -19885,11 +19885,6 @@ body.ddae-dark #page-ospiti .guest-name-tab{
 .guest-report-card{ width:min(92vw,760px); max-height:min(86vh,980px); border-radius:34px; padding:18px 18px 22px; overflow:auto; }
 .guest-report-toolservizi{ display:flex; justify-content:flex-end; gap:12px; margin-bottom:10px; flex-wrap:nowrap; }
 .guest-report-tool{ width:56px; height:56px; border-radius:18px; flex:0 0 auto; }
-.guest-report-whatsapp{ box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
-.guest-report-whatsapp .ui-ico-wa{ width:29px; height:29px; stroke-linecap:round; stroke-linejoin:round; }
-.guest-report-whatsapp .ui-ico-wa .wa-bubble,
-.guest-report-whatsapp .ui-ico-wa .wa-tail{ stroke-width:1.95; }
-.guest-report-whatsapp .ui-ico-wa .wa-phone{ stroke-width:2.2; }
 .guest-report-preview{ display:flex; justify-content:center; }
 .guest-report-preview img{ width:100%; height:auto; display:block; border-radius:28px; box-shadow:0 12px 30px rgba(15,23,42,0.12); }
 .guest-report-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:16px; flex-wrap:nowrap; }
