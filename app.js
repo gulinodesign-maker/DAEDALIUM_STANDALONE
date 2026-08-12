@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.194";
+const BUILD_VERSION = "3.196";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -3758,6 +3758,7 @@ function __restoreBackupLocalStorage__(payload){
       }catch(_){ }
     });
     try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
+    try{ __applyGuestScoreButtonVisual__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -6310,7 +6311,7 @@ function setRegFlags(containerId, psOn, istatOn){
   setRegFlag(containerId, "istat", istatOn);
 }
 
-// dDAE_3.194 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
+// dDAE_3.196 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
 function __guestScoreNormalize__(value){
   if (value === undefined || value === null || String(value).trim() === "") return 0;
   const n = parseInt(value, 10);
@@ -6344,14 +6345,176 @@ function __syncGuestScoreButton__(){
     const val = btn.querySelector('.guest-score-value');
     if (val) val.textContent = score > 0 ? String(score) : '';
     const editable = String(state.guestMode || '').toLowerCase() === 'edit';
-    btn.disabled = !editable;
+    // In lettura il tasto resta semanticamente non modificabile ma deve ricevere il long press del popup design.
+    btn.disabled = false;
+    btn.classList.toggle('is-readonly', !editable);
     btn.setAttribute('aria-disabled', editable ? 'false' : 'true');
+    try{ __applyGuestScoreButtonVisual__(); }catch(_){ }
   }catch(_){ }
 }
 
 function setGuestScore(value){
   state.guestScore = __guestScoreNormalize__(value);
   __syncGuestScoreButton__();
+}
+
+// dDAE_3.196 — Design tasto Punteggio: due stati (vuoto/attivo), popup colore da long press in lettura.
+const __GUEST_SCORE_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_score_button_visual_v1';
+
+function __guestScoreButtonVisualDefault__(stateKey){
+  const active = String(stateKey || '').toLowerCase() === 'active';
+  if (active){
+    try{
+      const raw = JSON.parse(localStorage.getItem('dDAE_alert_led_visual_v1') || '{}');
+      const score = raw && raw.score && typeof raw.score === 'object' ? raw.score : null;
+      if (score){
+        return {
+          bg: score.bg || 'orange-5',
+          border: score.border || score.bg || 'orange-5',
+          fg: score.fg || 'white',
+          opacity: __designBgOpacityNormalize__(score.opacity ?? 0.96),
+          bold: true
+        };
+      }
+    }catch(_){ }
+    return { bg:'orange-5', border:'orange-5', fg:'white', opacity:0.96, bold:true };
+  }
+  return { bg:'white', border:'gray-3', fg:'gray-6', opacity:1, bold:true };
+}
+
+function __guestScoreButtonVisualNormalize__(input, stateKey){
+  const fallback = __guestScoreButtonVisualDefault__(stateKey);
+  const src = (input && typeof input === 'object') ? input : {};
+  let bg = String(src.bg || src.background || fallback.bg || 'white').trim();
+  let border = String(src.border || src.borderColor || bg || fallback.border || fallback.bg || 'gray-3').trim();
+  let fg = String(src.fg || src.color || fallback.fg || '').trim();
+  try{ bg = __normalizeOperatoreColor__(bg || fallback.bg); }catch(_){ }
+  try{ border = __normalizeOperatoreColor__(border || bg || fallback.border); }catch(_){ }
+  try{ fg = __normalizeOptionalOperatoreColor__(fg || fallback.fg || ''); }catch(_){ }
+  return {
+    bg: bg || fallback.bg || 'white',
+    border: border || bg || fallback.border || fallback.bg || 'gray-3',
+    fg: fg || fallback.fg || '',
+    opacity: __designBgOpacityNormalize__(src.opacity ?? fallback.opacity ?? 1),
+    bold: src.bold === undefined ? true : !!src.bold
+  };
+}
+
+function __guestScoreButtonVisualRead__(){
+  try{
+    const raw = localStorage.getItem(__GUEST_SCORE_BUTTON_VISUAL_STORAGE_KEY__);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return {
+      inactive: __guestScoreButtonVisualNormalize__(parsed.inactive || parsed.off || {}, 'inactive'),
+      active: __guestScoreButtonVisualNormalize__(parsed.active || parsed.on || {}, 'active')
+    };
+  }catch(_){ return null; }
+}
+
+function __guestScoreButtonVisualWrite__(visuals){
+  try{
+    const src = (visuals && typeof visuals === 'object') ? visuals : {};
+    const clean = {
+      inactive: __guestScoreButtonVisualNormalize__(src.inactive || src.off || {}, 'inactive'),
+      active: __guestScoreButtonVisualNormalize__(src.active || src.on || {}, 'active')
+    };
+    localStorage.setItem(__GUEST_SCORE_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(clean));
+    return clean;
+  }catch(_){ return null; }
+}
+
+function __guestScoreButtonClearInlineVisual__(btn){
+  try{
+    ['background','background-color','border','border-color','color','-webkit-text-fill-color','box-shadow','opacity','font-weight'].forEach((prop)=>btn.style.removeProperty(prop));
+  }catch(_){ }
+}
+
+function __applyGuestScoreButtonVisual__(forcedState, forcedVisual){
+  try{
+    const btn = document.querySelector('#regTags .pay-score');
+    if (!btn) return;
+    const saved = __guestScoreButtonVisualRead__();
+    if (!saved && !forcedVisual){
+      __guestScoreButtonClearInlineVisual__(btn);
+      return;
+    }
+    const stateKey = String(forcedState || (__guestScoreNormalize__(state.guestScore) > 0 ? 'active' : 'inactive')).toLowerCase() === 'active' ? 'active' : 'inactive';
+    const visual = __guestScoreButtonVisualNormalize__(forcedVisual || saved?.[stateKey] || {}, stateKey);
+    const bgHex = __operatoreColorHex__(visual.bg || (stateKey === 'active' ? 'orange-5' : 'white'));
+    const borderHex = __operatoreColorHex__(visual.border || visual.bg || (stateKey === 'active' ? 'orange-5' : 'gray-3'));
+    const fgHex = __tagColorTextHex__(visual.bg || '', visual.fg || '', false) || __operatoreColorHex__(visual.fg || (stateKey === 'active' ? 'white' : 'gray-6'));
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 1);
+    btn.style.setProperty('background', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('background-color', hexToRgba(bgHex, opacity), 'important');
+    btn.style.setProperty('border', '1.5px solid ' + hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('border-color', hexToRgba(borderHex, 1), 'important');
+    btn.style.setProperty('color', fgHex, 'important');
+    btn.style.setProperty('-webkit-text-fill-color', fgHex, 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('opacity', '1', 'important');
+    btn.style.setProperty('font-weight', visual.bold === false ? '700' : '900', 'important');
+  }catch(_){ }
+}
+
+async function __openGuestScoreButtonColorPicker__(){
+  try{
+    const btn = document.querySelector('#regTags .pay-score');
+    if (!btn || typeof __tagColorPopupOpen__ !== 'function') return;
+    const saved = __guestScoreButtonVisualRead__();
+    const originals = {
+      off: __guestScoreButtonVisualNormalize__(saved?.inactive || {}, 'inactive'),
+      on: __guestScoreButtonVisualNormalize__(saved?.active || {}, 'active')
+    };
+    const activeState = __guestScoreNormalize__(state.guestScore) > 0 ? 'on' : 'off';
+    const drafts = { off:{...originals.off}, on:{...originals.on} };
+    const payloadToVisual = (payload, fallback, stateName) => {
+      const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+      return __guestScoreButtonVisualNormalize__({
+        bg: colors.bg || payload?.spec || fallback.bg,
+        border: colors.border || colors.bg || fallback.border || fallback.bg,
+        fg: colors.fg || fallback.fg || '',
+        opacity: payload?.opacity ?? fallback.opacity,
+        bold: true
+      }, stateName === 'on' ? 'active' : 'inactive');
+    };
+    const applyState = (stateName, payload) => {
+      const stateKey = stateName === 'on' ? 'active' : 'inactive';
+      const next = payloadToVisual(payload, drafts[stateName] || originals[stateName], stateName);
+      drafts[stateName] = next;
+      const current = __guestScoreButtonVisualRead__() || { inactive:{...originals.off}, active:{...originals.on} };
+      current[stateKey] = next;
+      __guestScoreButtonVisualWrite__(current);
+      __applyGuestScoreButtonVisual__();
+    };
+    __tagColorPopupOpen__('guest-score-button', drafts[activeState], null, {
+      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false,
+      opacity:(drafts[activeState].opacity ?? 1), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || (activeState === 'on' ? 'orange-5' : 'white')),
+      onPreview:(payload) => {
+        const editor = (typeof __tagColorPopupState__ !== 'undefined') ? __tagColorPopupState__.stateEditor : null;
+        const stateName = editor && editor.activeState === 'on' ? 'on' : 'off';
+        applyState(stateName, payload);
+      },
+      stateEditor:{
+        activeState, drafts, originals, labels:{off:'VUOTO',on:'ATTIVO'}, fallbackBg:(drafts[activeState].bg || 'white'),
+        onStatePreview:(stateName, payload) => applyState(stateName, payload),
+        onConfirm: async(all) => {
+          const finalMap = {
+            inactive: payloadToVisual(all?.off || drafts.off, drafts.off || originals.off, 'off'),
+            active: payloadToVisual(all?.on || drafts.on, drafts.on || originals.on, 'on')
+          };
+          __guestScoreButtonVisualWrite__(finalMap);
+          __applyGuestScoreButtonVisual__();
+          try{ toast('Punteggio: colori dei due stati aggiornati'); }catch(_){ }
+        },
+        onRevert:() => {
+          __guestScoreButtonVisualWrite__({ inactive:originals.off, active:originals.on });
+          __applyGuestScoreButtonVisual__();
+        }
+      }
+    });
+  }catch(_){ }
 }
 
 function truthy(v){
@@ -28495,6 +28658,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __PILL_THEME_STORAGE_KEY__,
     __PILL_COLOR_STORAGE_KEY__,
     __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__,
+    'dDAE_guest_score_button_visual_v1',
     __ROOM_SETTINGS_TEXT_BUTTON_VISUAL_STORAGE_KEY__,
     (typeof __ROOM_CATALOG_STORAGE_KEY__ !== 'undefined' ? __ROOM_CATALOG_STORAGE_KEY__ : 'dDAE_room_catalog_v1'),
     LS_APP_TEXT_UI,
@@ -28570,6 +28734,7 @@ function __roomSettingsThemeStatsStorageApply__(payload){
     Object.keys(next).forEach((key) => {
       try{ localStorage.setItem(key, String(next[key] ?? '')); }catch(_){ }
     });
+    try{ __applyGuestScoreButtonVisual__(); }catch(_){ }
   }catch(_){ }
 }
 
@@ -33258,7 +33423,7 @@ function setupOspite(){
 
   bindRegPill("regTags");
 
-  // dDAE_3.194 — Punteggio: tap sequenziale 1..10, long press torna vuoto. Solo in modalità modifica.
+  // dDAE_3.196 — Punteggio: tap 1..10 e reset long press in modifica; long press design in lettura.
   (function bindGuestScoreButton(){
     const btn = document.querySelector('#regTags .pay-score');
     if (!btn || btn.__ddaeScoreBound) return;
@@ -33266,18 +33431,27 @@ function setupOspite(){
     let pressTimer = null;
     let longFired = false;
     let suppressUntil = 0;
-    const editable = () => String(state.guestMode || '').toLowerCase() === 'edit';
+    const mode = () => String(state.guestMode || '').toLowerCase();
+    const editable = () => mode() === 'edit';
+    const readable = () => mode() === 'view';
     const clearPress = () => { try{ clearTimeout(pressTimer); }catch(_){ } pressTimer = null; };
     const startPress = (e) => {
-      if (!editable()) return;
+      if (!editable() && !readable()) return;
+      try{ if (e?.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
       longFired = false;
       clearPress();
       pressTimer = setTimeout(() => {
-        if (!editable()) return;
         longFired = true;
-        suppressUntil = Date.now() + 900;
-        setGuestScore(0);
-        try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
+        suppressUntil = Date.now() + 1000;
+        if (editable()){
+          setGuestScore(0);
+          try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
+          return;
+        }
+        if (readable()){
+          try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
+          try{ __openGuestScoreButtonColorPicker__(); }catch(_){ }
+        }
       }, 620);
     };
     const endPress = () => { clearPress(); };
@@ -33299,7 +33473,7 @@ function setupOspite(){
       const current = __guestScoreNormalize__(state.guestScore);
       setGuestScore(current >= 10 ? 1 : current + 1);
     });
-    btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); }catch(_){ } });
+    btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
     __syncGuestScoreButton__();
   })();
 
@@ -44777,7 +44951,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.194';
+  var BUILD_TAG='dDAE_3.196';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49548,7 +49722,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.194',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.196',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -32718,7 +32718,7 @@ body.ddae-dark .auth-account-option-dot{
   border-color:#667080;
 }
 
-/* dDAE_3.194 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
+/* dDAE_3.196 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
 #page-ospite #guestEconomicGrid #regTags{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:var(--guest-econ-cell-h) !important;
@@ -32790,7 +32790,7 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-score:not(.select
   color:rgba(255,255,255,0.82) !important;
 }
 
-/* dDAE_3.194 — Registrazioni: tre tasti reali Polizia / ISTAT / Punteggio; punteggio sempre dentro il terzo tasto. */
+/* dDAE_3.196 — Registrazioni: tre tasti reali Polizia / ISTAT / Punteggio; punteggio sempre dentro il terzo tasto. */
 #page-ospite .guest-form-card #guestEconomicGrid #discountRow > .subfield.paywrap{
   border:0 !important;
   background:transparent !important;
@@ -32888,3 +32888,25 @@ body.ddae-dark #page-ospite .guest-form-card #guestEconomicGrid #discountRow #re
   color:rgba(255,255,255,0.82) !important;
 }
 
+
+/* dDAE_3.196 — Registrazioni: ripristino stato attivo Polizia / ISTAT sopra le regole geometriche dei tasti */
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-ps.selected{
+  background:var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, #111827)) !important;
+  border-color:var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, #111827)) !important;
+  color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #ffffff)) !important;
+  -webkit-text-fill-color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #ffffff)) !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-istat.selected{
+  background:var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, #32ade6)) !important;
+  border-color:var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, #32ade6)) !important;
+  color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #ffffff)) !important;
+  -webkit-text-fill-color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #ffffff)) !important;
+  box-shadow:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-ps.selected::before{
+  background-color:var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #ffffff)) !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-istat.selected::before{
+  background-color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #ffffff)) !important;
+}
