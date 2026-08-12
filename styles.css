@@ -32038,3 +32038,30 @@ body.ddae-dark #page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoTy
 body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType > .pay-dot::before{
   background-color:rgba(255,255,255,0.76) !important;
 }
+
+
+/* dDAE_3.184 — Note/Servizi: singola etichetta centrata nella cella 2x7 */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestNotesToggle,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestNotesToggle,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #servicesPillView,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #servicesPillView{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 12px !important;
+  gap:0 !important;
+  text-align:center !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestNotesToggle .guest-notes-toggle-label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestNotesToggle .guest-notes-toggle-label,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #servicesPillView .services-pill-text,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #servicesPillView .services-pill-text{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  line-height:1.2 !important;
+}
