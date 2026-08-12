@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.201" rel="stylesheet"/>
-<link href="./manifest.json?v=3.201" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.201" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.201" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.201" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.201" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.201" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.201" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.202" rel="stylesheet"/>
+<link href="./manifest.json?v=3.202" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.202" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.202" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.202" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.202" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.202" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.202" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.201";
+window.APP_VERSION = "3.202";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.201";
+  const LOCAL_BUILD = "dDAE_3.202";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.201";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.201")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.201")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.202")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.202")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -308,7 +308,7 @@ window.APP_VERSION = "3.201";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.201"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.202"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -524,7 +524,7 @@ window.APP_VERSION = "3.201";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.201</div></div></section>
+<div class="build" id="buildText">dDAE_3.202</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -1824,14 +1824,13 @@ window.APP_VERSION = "3.201";
 <div aria-label="Preventivi" class="field gf-tile gf-preventivi"><button aria-label="Mostra solo preventivi" aria-pressed="false" class="gf-chip-btn gf-preventivi-btn" id="guestPreventivi" title="Preventivi" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5"></path><path d="M9 13h6"></path><path d="M9 17h4"></path></svg><span class="sr-only">Preventivi</span></button></div>
 <div aria-label="Locali" class="field gf-tile gf-locali"><button aria-label="Mostra solo eventi e prenotazioni sui locali" aria-pressed="false" class="gf-chip-btn gf-locali-btn" id="guestLocali" title="Locali" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M4 20h16"></path><path d="M6 20V9l6-5 6 5v11"></path><path d="M9 20v-6h6v6"></path></svg><span class="sr-only">Locali</span></button></div>
 <div aria-label="Ordina ospiti per arrivo" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-in" class="gf-chip-btn gf-sort-btn" data-sort-by="arrivo" id="guestSortByArrivo" title="Check-in" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"></path><path d="M13 8l4 4-4 4"></path><path d="M7 12h10"></path></svg><span class="sr-only">Check-in</span></button></div>
-<div aria-label="Ordina ospiti per check-out" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per check-out" class="gf-chip-btn gf-sort-btn" data-sort-by="checkout" id="guestSortByCheckout" title="Check-out" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"></path><path d="M11 8l-4 4 4 4"></path><path d="M7 12h10"></path></svg><span class="sr-only">Check-out</span></button></div>
+<div aria-label="Ospiti con voto" class="field gf-tile gf-score-only"><button aria-label="Mostra solo ospiti con voto" aria-pressed="false" class="gf-chip-btn gf-score-only-btn" id="guestScoreOnly" title="Con voto" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M12 3.8l2.45 4.96 5.47.79-3.96 3.86.94 5.45L12 16.28 7.10 18.86l.94-5.45-3.96-3.86 5.47-.79z"></path></svg><span class="sr-only">Con voto</span></button></div>
 <div aria-label="Ordina ospiti per inserimento" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per inserimento" class="gf-chip-btn gf-sort-btn" data-sort-by="inserimento" id="guestSortByInserimento" title="Inserimento" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path><path d="M4 4h16v16H4z"></path></svg><span class="sr-only">Inserimento</span></button></div>
 <div aria-label="Ordina ospiti per nome" class="field gf-tile gf-sort-btn-wrap"><button aria-label="Ordina ospiti per nome" class="gf-chip-btn gf-sort-btn" data-sort-by="nome" id="guestSortByNome" title="Nome" type="button"><svg aria-hidden="true" class="gf-filter-ico" viewbox="0 0 24 24"><path d="M4 18l4-12 4 12"></path><path d="M6 13h4"></path><path d="M15 7h5l-5 10h5"></path></svg><span class="sr-only">Nome</span></button></div>
 </div>
 <div class="guest-filter-row guest-filter-row-dir" hidden="">
 <select aria-label="Ordina ospiti per" hidden="" id="guestSortBy" tabindex="-1">
 <option value="arrivo">Check-in</option>
-<option value="checkout">Check-out</option>
 <option value="inserimento">Inserimento</option>
 <option value="nome">Nome</option>
 </select>
@@ -3116,7 +3115,7 @@ window.APP_VERSION = "3.201";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.201"></script>
-<script defer="" src="./app.js?v=3.201"></script>
+<script defer="" src="./config.js?v=3.202"></script>
+<script defer="" src="./app.js?v=3.202"></script>
 </body>
 </html>

@@ -100,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.201";
+const BUILD_VERSION = "3.202";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -307,16 +307,31 @@ function __ensureGuestArrivalFilterVisualStates__(){
         changed = true;
       }
     });
-    if (changed || !map.guestScrollTodayBtn){
-      map.guestScrollTodayBtn = scrollToday;
-      __saveGuestFilterButtonVisualMap__(map);
+    map.guestScrollTodayBtn = scrollToday;
+
+    // dDAE_3.202 — il nuovo filtro Con voto sostituisce definitivamente Check-out.
+    // Conserva, se disponibile, il vecchio design del tasto nella nuova chiave.
+    if (!map.guestScoreOnly || typeof map.guestScoreOnly !== 'object'){
+      map.guestScoreOnly = (map.guestSortByCheckout && typeof map.guestSortByCheckout === 'object')
+        ? map.guestSortByCheckout
+        : {
+            active: __guestFilterButtonDefaultVisual__('guestScoreOnly', 'active'),
+            distractive: __guestFilterButtonDefaultVisual__('guestScoreOnly', 'distractive')
+          };
+      changed = true;
     }
+    if (Object.prototype.hasOwnProperty.call(map, 'guestSortByCheckout')){
+      try{ delete map.guestSortByCheckout; }catch(_){ }
+      changed = true;
+    }
+    if (changed) __saveGuestFilterButtonVisualMap__(map);
   }catch(_){ }
 }
 
 function __seedBackupGraphicDefaults__(){
   try{
     try{ state.guestShowPreventiviOnly = (localStorage.getItem("dDAE_guestShowPreventiviOnly") === "1"); }catch(_){ state.guestShowPreventiviOnly = false; }
+    try{ state.guestShowScoreOnly = (localStorage.getItem("dDAE_guestShowScoreOnly") === "1"); }catch(_){ state.guestShowScoreOnly = false; }
 
   try{ __ensureGuestArrivalFilterVisualStates__(); }catch(_){ }
     if (typeof localStorage === 'undefined') return;
@@ -19817,13 +19832,15 @@ function setupGuestListControls(){
   const todayBtn = $("#guestToday");
   const preventiviBtn = $("#guestPreventivi");
   const localiBtn = $("#guestLocali");
+  const scoreOnlyBtn = $("#guestScoreOnly");
   const sortButtons = Array.from(document.querySelectorAll(".gf-sort-btn[data-sort-by]"));
   if (!sortSel) return;
 
   const savedBy = localStorage.getItem("dDAE_guestSortBy");
   const savedDir = localStorage.getItem("dDAE_guestSortDir");
-  state.guestSortBy = savedBy || state.guestSortBy || "arrivo";
+  state.guestSortBy = (savedBy === "checkout") ? "arrivo" : (savedBy || state.guestSortBy || "arrivo");
   state.guestSortDir = savedDir || state.guestSortDir || "asc";
+  try{ if (savedBy === "checkout") localStorage.setItem("dDAE_guestSortBy", "arrivo"); }catch(_){ }
 
   const syncSortSelect = () => {
     try { sortSel.value = state.guestSortBy; } catch(_) {}
@@ -19863,6 +19880,7 @@ function setupGuestListControls(){
 
   try{ state.guestShowPreventiviOnly = (localStorage.getItem("dDAE_guestShowPreventiviOnly") === "1"); }catch(_){ state.guestShowPreventiviOnly = false; }
   try{ state.guestShowLocaliOnly = (localStorage.getItem("dDAE_guestShowLocaliOnly") === "1"); }catch(_){ state.guestShowLocaliOnly = false; }
+  try{ state.guestShowScoreOnly = (localStorage.getItem("dDAE_guestShowScoreOnly") === "1"); }catch(_){ state.guestShowScoreOnly = false; }
 
   try{ __ensureGuestArrivalFilterVisualStates__(); }catch(_){ }
 
@@ -19914,11 +19932,25 @@ function setupGuestListControls(){
     try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
   };
 
+  const paintScoreOnly = () => {
+    if (!scoreOnlyBtn) return;
+    const on = !!state.guestShowScoreOnly;
+    scoreOnlyBtn.classList.toggle("is-active", on);
+    scoreOnlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    scoreOnlyBtn.dataset.filterState = on ? "active" : "distractive";
+    scoreOnlyBtn.setAttribute("aria-label", on ? "Mostra tutte le card ospite" : "Mostra solo ospiti con voto");
+    scoreOnlyBtn.setAttribute("title", "Con voto");
+    scoreOnlyBtn.innerHTML = '<svg aria-hidden="true" class="gf-filter-ico" viewBox="0 0 24 24"><path d="M12 3.8l2.45 4.96 5.47.79-3.96 3.86.94 5.45L12 16.28 7.10 18.86l.94-5.45-3.96-3.86 5.47-.79z"></path></svg><span class="sr-only">Con voto</span>';
+    try { __translateTree__(scoreOnlyBtn); } catch(_) {}
+    try{ __applyGuestFilterButtonVisuals__(); }catch(_){ }
+  };
+
   syncSortSelect();
   paintSortButtons();
   paintToday();
   paintPreventivi();
   paintLocali();
+  paintScoreOnly();
 
   if (todayBtn){
     todayBtn.addEventListener("click", () => {
@@ -19945,6 +19977,15 @@ function setupGuestListControls(){
       state.guestShowLocaliOnly = !state.guestShowLocaliOnly;
       try{ localStorage.setItem("dDAE_guestShowLocaliOnly", state.guestShowLocaliOnly ? "1" : "0"); }catch(_){ }
       paintLocali();
+      renderGuestCards();
+    });
+  }
+
+  if (scoreOnlyBtn){
+    scoreOnlyBtn.addEventListener("click", () => {
+      state.guestShowScoreOnly = !state.guestShowScoreOnly;
+      try{ localStorage.setItem("dDAE_guestShowScoreOnly", state.guestShowScoreOnly ? "1" : "0"); }catch(_){ }
+      paintScoreOnly();
       renderGuestCards();
     });
   }
@@ -20188,7 +20229,7 @@ function __guestFilterButtonCategoryPrompt__(){
 }
 
 function __guestFilterButtonTargetIds__(){
-  return ['guestPreventivi','guestLocali','guestSortByArrivo','guestSortByCheckout','guestSortByInserimento','guestSortByNome'];
+  return ['guestPreventivi','guestLocali','guestScoreOnly','guestSortByArrivo','guestSortByInserimento','guestSortByNome'];
 }
 
 function __guestAuxButtonTargetIds__(){
@@ -20213,6 +20254,7 @@ function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
   const isToday = id === 'guestToday';
   const isPreventivi = id === 'guestPreventivi';
   const isLocali = id === 'guestLocali';
+  const isScoreOnly = id === 'guestScoreOnly';
   const isAuxTodayScroll = id === 'guestScrollTodayBtn';
   if (isAuxTodayScroll){
     const mode = rawMode === 'distractive' ? 'distractive' : 'active';
@@ -20229,6 +20271,10 @@ function __guestFilterButtonDefaultVisual__(btnOrId, stateKey){
   }
   if (isLocali){
     if (rawMode === 'active') return __launcherVisualNormalize__({ bg:'violet-5', border:'violet-6', fg:'white', opacity:0.90 }, 'violet-5');
+    return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
+  }
+  if (isScoreOnly){
+    if (rawMode === 'active') return __launcherVisualNormalize__({ bg:'orange-5', border:'orange-5', fg:'white', opacity:0.90 }, 'orange-5');
     return __launcherVisualNormalize__({ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 }, 'sky-4');
   }
   const mode = rawMode === 'active' ? 'active' : 'distractive';
@@ -20285,6 +20331,7 @@ function __guestFilterButtonCurrentState__(btn){
     if (btn && btn.id === 'guestToday') return String(state.guestArrivalFilter || btn?.dataset?.filterState || 'today');
     if (btn && btn.id === 'guestPreventivi') return state.guestShowPreventiviOnly ? 'active' : 'distractive';
     if (btn && btn.id === 'guestLocali') return state.guestShowLocaliOnly ? 'active' : 'distractive';
+    if (btn && btn.id === 'guestScoreOnly') return state.guestShowScoreOnly ? 'active' : 'distractive';
     if (btn && btn.id === 'guestScrollTodayBtn') return (btn.hidden || btn.getAttribute('aria-hidden') === 'true') ? 'distractive' : 'active';
     return btn && btn.classList && btn.classList.contains('is-active') ? 'active' : 'distractive';
   }catch(_){ return (btn && btn.id === 'guestToday') ? 'today' : ((btn && btn.id === 'guestScrollTodayBtn') ? 'active' : 'distractive'); }
@@ -34077,7 +34124,7 @@ function groupGuestsByName(items){
 
 function sortGuestGroups(groups){
   const by = state.guestSortBy || "arrivo";
-  const forceChronologicalAsc = (by === "arrivo" || by === "checkout");
+  const forceChronologicalAsc = (by === "arrivo");
   const dir = forceChronologicalAsc ? 1 : ((state.guestSortDir === "desc") ? -1 : 1);
   const nameKey = (s) => normalizeGuestNameKey(s);
 
@@ -34820,7 +34867,7 @@ function renderGuestCards(){
   // stabile il numero del pallino prenotazione quando si passa da Tutti a Oggi.
   const allItemsForGuestListNumbering = (items || []).slice();
 
-  // Filtro data guest list: usa check-in oppure check-out in base al tab attivo.
+  // Filtro data guest list: il filtro Check-out è stato rimosso; la finestra usa sempre il check-in/soggiorno.
   const arrivalFilter = __ddae2862NormalizeFilterMode__(state.guestArrivalFilter || 'today', 'guest');
   if (arrivalFilter !== 'all' && !state.guestShowPreventiviOnly){
     const today = todayISO();
@@ -34828,20 +34875,18 @@ function renderGuestCards(){
     const soon7Limit = addDaysISO(today, 7);
     const prev3Start = addDaysISO(today, -3);
     const prev7Start = addDaysISO(today, -7);
-    const useCheckoutDate = String(state.guestSortBy || '').trim() === 'checkout';
     items = (items || []).filter(g => {
       const inRaw = (g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? g?.arrival ?? g?.guestCheckIn ?? "");
       const outRaw = (g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? g?.dataPartenza ?? g?.partenza ?? g?.departure ?? g?.guestCheckOut ?? "");
       const effectiveOutRaw = __guestEffectiveCheckOutRaw__(g);
-      const v = useCheckoutDate ? outRaw : inRaw;
-      const iso = __parseDateFlexibleToISO(v);
-      const d = iso ? iso.slice(0,10) : String(v || '').trim().slice(0,10);
+      const iso = __parseDateFlexibleToISO(inRaw);
+      const d = iso ? iso.slice(0,10) : String(inRaw || '').trim().slice(0,10);
       if (!d) return false;
       if (arrivalFilter === '3days') return d >= today && d <= soon3Limit;
       if (arrivalFilter === '7days') return d >= today && d <= soon7Limit;
       if (arrivalFilter === '-3days') return d >= prev3Start && d <= today;
       if (arrivalFilter === '-7days') return d >= prev7Start && d <= today;
-      if (arrivalFilter === 'today' && !useCheckoutDate){
+      if (arrivalFilter === 'today'){
         const inIso = __parseDateFlexibleToISO(inRaw);
         const outIso = __parseDateFlexibleToISO(effectiveOutRaw);
         const checkIn = inIso ? inIso.slice(0,10) : String(inRaw || '').trim().slice(0,10);
@@ -34852,6 +34897,20 @@ function renderGuestCards(){
     });
   }
 
+  // dDAE_3.202 — filtro "Con voto": una card resta visibile se almeno una
+  // prenotazione dello stesso ospite, nella vista corrente, ha un voto assegnato.
+  // Manteniamo tutte le righe del gruppo per non perdere dati quando si apre la scheda.
+  try{
+    if (state.guestShowScoreOnly){
+      const ratedKeys = new Set(
+        (items || [])
+          .filter((row) => __guestScoreAssignedFromRecord__(row))
+          .map((row) => String(__guestCardKeyOf__(row) || '').trim())
+          .filter(Boolean)
+      );
+      items = (items || []).filter((row) => ratedKeys.has(String(__guestCardKeyOf__(row) || '').trim()));
+    }
+  }catch(_){ }
 
   if (!items.length){
     wrap.replaceChildren();
@@ -34860,6 +34919,12 @@ function renderGuestCards(){
     empty.style.fontSize = "14px";
     empty.style.padding = "8px";
     const arrivalFilter = __ddae2862NormalizeFilterMode__(state.guestArrivalFilter || 'today', 'guest');
+    if (state.guestShowScoreOnly){
+      empty.textContent = 'Nessun ospite con voto nel periodo.';
+      frag.appendChild(empty);
+      wrap.appendChild(frag);
+      return;
+    }
     if (state.guestShowPreventiviOnly){
       empty.textContent = state.guestShowLocaliOnly ? 'Nessun preventivo associato ai locali nel periodo.' : 'Nessun preventivo nel periodo.';
       frag.appendChild(empty);
@@ -45287,7 +45352,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.201';
+  var BUILD_TAG='dDAE_3.202';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50059,7 +50124,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.201',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.202',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
