@@ -32149,7 +32149,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 
 
-/* dDAE_3.186 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
+/* dDAE_3.187 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2),
 #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
   position:relative !important;
@@ -32217,6 +32217,78 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestEconomicChannelDot > span,
 #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestEconomicChannelDot > span{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  line-height:1 !important;
+}
+
+
+/* dDAE_3.187 — Scheda ospite: nessun testo CHANNEL; pallino Channel centrato in ogni stato */
+#page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+}
+#page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2) > label,
+#page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2)::before,
+#page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2)::after{
+  display:none !important;
+  content:none !important;
+}
+#page-ospite #guestEconomicGrid #guestChannel{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:4 !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:inherit !important;
+  opacity:0 !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:none !important;
+  text-indent:-9999px !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  appearance:auto !important;
+  -webkit-appearance:menulist !important;
+}
+#page-ospite #guestEconomicGrid #guestEconomicChannelDot{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:3 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:32px !important;
+  height:32px !important;
+  min-width:32px !important;
+  min-height:32px !important;
+  max-width:32px !important;
+  max-height:32px !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:translate(-50%,-50%) !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  box-sizing:border-box !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  text-align:center !important;
+}
+#page-ospite #guestEconomicGrid #guestEconomicChannelDot[hidden]{
+  display:none !important;
+}
+#page-ospite #guestEconomicGrid #guestEconomicChannelDot > span{
   display:block !important;
   width:100% !important;
   text-align:center !important;
