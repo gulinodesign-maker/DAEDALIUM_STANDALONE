@@ -31419,3 +31419,192 @@ html.dark-mode .tag-color-state-btn.is-active{
     height:56px !important;
   }
 }
+
+
+/* dDAE_3.181 — Scheda ospite: campi destri identici ai sinistri, etichette interne e allineamento orizzontale */
+#page-ospite .guest-form-card.is-edit .field.two-col.payment-row,
+#page-ospite .guest-form-card.is-edit #guestChannelRow,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .field.two-col.payment-row,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:12px !important;
+  align-items:stretch !important;
+  width:100% !important;
+}
+#page-ospite .guest-form-card.is-edit .field.two-col.payment-row > .subfield,
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .field.two-col.payment-row > .subfield,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  justify-self:stretch !important;
+  align-self:stretch !important;
+  box-sizing:border-box !important;
+}
+#page-ospite .guest-form-card.is-edit .subfield.paywrap.guest-right-field,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .subfield.paywrap.guest-right-field{
+  position:relative !important;
+  display:flex !important;
+  align-items:stretch !important;
+  justify-content:stretch !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field > .pay-pill,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field > .pay-pill,
+#page-ospite .guest-form-card.is-edit #guestChannel,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:56px !important;
+  min-height:56px !important;
+  max-height:56px !important;
+  border-radius:14px !important;
+  box-sizing:border-box !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field > .pay-pill,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field > .pay-pill{
+  padding:20px 12px 5px !important;
+  align-items:center !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-control-label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-control-label{
+  position:absolute !important;
+  z-index:2 !important;
+  top:6px !important;
+  left:12px !important;
+  right:12px !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  pointer-events:none !important;
+  font-size:11px !important;
+  line-height:1.1 !important;
+  font-weight:500 !important;
+  color:rgba(15,23,42,0.72) !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-notes #guestNotesToggle,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-notes #guestNotesToggle,
+#page-ospite .guest-form-card.is-edit .guest-right-field-services #servicesPillView,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-services #servicesPillView{
+  position:relative !important;
+  justify-content:flex-start !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-notes .guest-notes-toggle-label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-notes .guest-notes-toggle-label,
+#page-ospite .guest-form-card.is-edit .guest-right-field-services .services-pill-text,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-services .services-pill-text{
+  position:absolute !important;
+  top:6px !important;
+  left:12px !important;
+  right:12px !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left !important;
+  font-size:11px !important;
+  line-height:1.1 !important;
+  font-weight:500 !important;
+  color:rgba(15,23,42,0.72) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-notes #guestNotesToggleDot,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-notes #guestNotesToggleDot{
+  margin-left:auto !important;
+  margin-right:4px !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-tax #guestTaxTotal,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-tax #guestTaxTotal{
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-end !important;
+  gap:0 !important;
+  padding:20px 12px 5px !important;
+  text-align:left !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-tax #guestTaxTotal .guest-tax-pill-label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-tax #guestTaxTotal .guest-tax-pill-label{
+  position:absolute !important;
+  top:6px !important;
+  left:12px !important;
+  right:12px !important;
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left !important;
+  font-size:11px !important;
+  line-height:1.1 !important;
+  font-weight:500 !important;
+  color:rgba(15,23,42,0.72) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#page-ospite .guest-form-card.is-edit .guest-right-field-tax #guestTaxTotal #guestTaxTotalVal,
+#page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-tax #guestTaxTotal #guestTaxTotalVal{
+  width:100% !important;
+  text-align:left !important;
+  line-height:1.2 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2),
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2){
+  position:relative !important;
+  display:block !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2) label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2) label{
+  display:block !important;
+  position:absolute !important;
+  z-index:2 !important;
+  top:6px !important;
+  left:12px !important;
+  right:30px !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+  font-size:11px !important;
+  line-height:1.1 !important;
+  font-weight:500 !important;
+  color:rgba(15,23,42,0.72) !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-edit #guestChannel,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannel{
+  padding:20px 30px 5px 12px !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  font-size:16px !important;
+  font-weight:400 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2)::after,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2)::after{
+  display:block !important;
+  right:12px !important;
+  top:50% !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-edit .guest-right-control-label,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-control-label,
+body.ddae-dark #page-ospite .guest-form-card.is-edit .guest-right-field-notes .guest-notes-toggle-label,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-notes .guest-notes-toggle-label,
+body.ddae-dark #page-ospite .guest-form-card.is-edit .guest-right-field-services .services-pill-text,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-services .services-pill-text,
+body.ddae-dark #page-ospite .guest-form-card.is-edit .guest-right-field-tax #guestTaxTotal .guest-tax-pill-label,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open .guest-right-field-tax #guestTaxTotal .guest-tax-pill-label,
+body.ddae-dark #page-ospite .guest-form-card.is-edit #guestChannelRow > .subfield:nth-child(2) label,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #guestChannelRow > .subfield:nth-child(2) label{
+  color:rgba(255,255,255,0.72) !important;
+}
