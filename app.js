@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.193";
+const BUILD_VERSION = "3.194";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6310,11 +6310,12 @@ function setRegFlags(containerId, psOn, istatOn){
   setRegFlag(containerId, "istat", istatOn);
 }
 
-// dDAE_3.193 — Punteggio ospite 0..10, persistito sulla prenotazione.
+// dDAE_3.194 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
 function __guestScoreNormalize__(value){
-  const n = parseInt(value ?? 0, 10);
-  if (!Number.isFinite(n)) return 0;
-  return Math.max(0, Math.min(10, n));
+  if (value === undefined || value === null || String(value).trim() === "") return 0;
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n) || n < 1) return 0;
+  return Math.min(10, n);
 }
 
 function __guestScoreFromRecord__(guest){
@@ -6335,13 +6336,13 @@ function __syncGuestScoreButton__(){
     if (!btn) return;
     const score = __guestScoreNormalize__(state.guestScore);
     state.guestScore = score;
-    btn.dataset.score = String(score);
+    btn.dataset.score = score > 0 ? String(score) : '';
     btn.classList.toggle('selected', score > 0);
     btn.setAttribute('aria-pressed', score > 0 ? 'true' : 'false');
-    btn.setAttribute('aria-label', score > 0 ? `Punteggio ${score} su 10` : 'Punteggio 0 su 10');
+    btn.setAttribute('aria-label', score > 0 ? `Punteggio ${score} su 10` : 'Punteggio non assegnato');
     btn.title = score > 0 ? `Punteggio ${score}/10` : 'Punteggio: non assegnato';
     const val = btn.querySelector('.guest-score-value');
-    if (val) val.textContent = String(score);
+    if (val) val.textContent = score > 0 ? String(score) : '';
     const editable = String(state.guestMode || '').toLowerCase() === 'edit';
     btn.disabled = !editable;
     btn.setAttribute('aria-disabled', editable ? 'false' : 'true');
@@ -33257,7 +33258,7 @@ function setupOspite(){
 
   bindRegPill("regTags");
 
-  // dDAE_3.193 — Punteggio: tap sequenziale 1..10, long press azzera. Solo in modalità modifica.
+  // dDAE_3.194 — Punteggio: tap sequenziale 1..10, long press torna vuoto. Solo in modalità modifica.
   (function bindGuestScoreButton(){
     const btn = document.querySelector('#regTags .pay-score');
     if (!btn || btn.__ddaeScoreBound) return;
@@ -44776,7 +44777,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.193';
+  var BUILD_TAG='dDAE_3.194';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49547,7 +49548,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.193',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.194',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -49924,6 +49925,12 @@ try{
     try{
       const dot = document.getElementById('guestEconomicChannelDot');
       if (!dot) return;
+      if (String(state?.guestMode || '').toLowerCase() === 'create'){
+        dot.hidden = true;
+        dot.setAttribute('hidden','');
+        dot.removeAttribute('style');
+        return;
+      }
       const data = channelVisualData();
       if (!data){
         dot.hidden = true;

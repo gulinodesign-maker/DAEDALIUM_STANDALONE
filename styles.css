@@ -32718,7 +32718,7 @@ body.ddae-dark .auth-account-option-dot{
   border-color:#667080;
 }
 
-/* dDAE_3.193 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
+/* dDAE_3.194 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
 #page-ospite #guestEconomicGrid #regTags{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:var(--guest-econ-cell-h) !important;
@@ -32789,3 +32789,102 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-score:not(.select
   border-color:rgba(255,255,255,0.24) !important;
   color:rgba(255,255,255,0.82) !important;
 }
+
+/* dDAE_3.194 — Registrazioni: tre tasti reali Polizia / ISTAT / Punteggio; punteggio sempre dentro il terzo tasto. */
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow > .subfield.paywrap{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:var(--guest-econ-cell-h) !important;
+  width:100% !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  padding:0 !important;
+  margin:0 !important;
+  gap:6px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  align-items:stretch !important;
+  justify-items:stretch !important;
+  overflow:visible !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > .guest-grid-control-label{
+  display:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-ps,
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-istat,
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  width:100% !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-width:0 !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-width:56px !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border:1.5px solid rgba(15,23,42,0.20) !important;
+  border-radius:14px !important;
+  background:#ffffff !important;
+  color:rgba(15,23,42,0.76) !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  transform:none !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+  touch-action:manipulation !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-ps{ grid-column:1 !important; grid-row:1 !important; }
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-istat{ grid-column:2 !important; grid-row:1 !important; }
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score{ grid-column:3 !important; grid-row:1 !important; }
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score::before{
+  content:none !important;
+  display:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score .guest-score-value{
+  position:static !important;
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  font-size:21px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:-0.02em !important;
+  color:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score.selected{
+  background:var(--ddae-reg-score-bg, #f59e0b) !important;
+  border-color:var(--ddae-reg-score-border, #f59e0b) !important;
+  color:var(--ddae-reg-score-fg, #ffffff) !important;
+}
+#page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score:disabled{
+  opacity:1 !important;
+  cursor:default !important;
+}
+body.ddae-dark #page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-score:not(.selected){
+  background:#1f2937 !important;
+  border-color:rgba(255,255,255,0.24) !important;
+  color:rgba(255,255,255,0.82) !important;
+}
+
