@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.191";
+const BUILD_VERSION = "3.192";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -16117,6 +16117,7 @@ function setupImpostazioni() {
     try{ __resetInMemoryData__(); }catch(_){ }
     try{ invalidateApiCache(); }catch(_){ }
     try{ showPage("auth"); }catch(_){ }
+    try{ if (__authUiApi__ && typeof __authUiApi__.showMenu === "function") __authUiApi__.showMenu(); }catch(_){ }
   });
 
 
@@ -16433,6 +16434,7 @@ const cfg = document.getElementById("settingsConfigBtn");
     try{ __resetInMemoryData__(); }catch(_){ }
     try{ invalidateApiCache(); }catch(_){ }
     try{ showPage("auth"); }catch(_){ }
+    try{ if (__authUiApi__ && typeof __authUiApi__.showMenu === "function") __authUiApi__.showMenu(); }catch(_){ }
   });
 
 
@@ -16632,6 +16634,12 @@ function setupAuth(){
   const btnUpdate = document.getElementById("btnMenuUpdate");
   const btnLoginAdmin = document.getElementById("btnMenuLoginAdmin");
   const btnLoginOperator = document.getElementById("btnMenuLoginOperator");
+  const accountPickerModal = document.getElementById("authAccountPickerModal");
+  const accountPickerTitle = document.getElementById("authAccountPickerTitle");
+  const accountPickerSubtitle = document.getElementById("authAccountPickerSubtitle");
+  const accountPickerList = document.getElementById("authAccountPickerList");
+  const accountPickerHint = document.getElementById("authAccountPickerHint");
+  const accountPickerCancel = document.getElementById("authAccountPickerCancel");
 
   const btnBack = document.getElementById("btnAuthBack");
   const btnSubmit = document.getElementById("btnAuthSubmit");
@@ -16668,6 +16676,8 @@ function setupAuth(){
   const setActivationHint = (msg)=>{ try{ if (activationHint) activationHint.textContent = msg || ""; }catch(_ ){} };
 
   let mode = "menu";
+  let selectedLoginUser = null;
+  let selectedLoginRole = "";
 
   const getCreateRole = ()=>{
     try{ if (createRoleOperator && createRoleOperator.checked) return "operatore"; }catch(_ ){}
@@ -16690,7 +16700,7 @@ function setupAuth(){
 
   const clearFields = ()=>{
     try{
-      if (u) u.value = "";
+      if (u){ u.value = ""; u.readOnly = true; u.setAttribute("aria-readonly","true"); }
       if (p) p.value = "";
       if (p2) p2.value = "";
       if (np1) np1.value = "";
@@ -16708,6 +16718,9 @@ function setupAuth(){
 
   const showMenu = ()=>{
     mode = "menu";
+    selectedLoginUser = null;
+    selectedLoginRole = "";
+    try{ if (accountPickerModal){ accountPickerModal.hidden = true; accountPickerModal.classList.remove("is-open"); accountPickerModal.setAttribute("aria-hidden","true"); } }catch(_ ){}
     try{ if (menu) menu.hidden = false; }catch(_ ){}
     try{ if (form) form.hidden = true; }catch(_ ){}
     hideActivation();
@@ -16760,8 +16773,123 @@ function setupAuth(){
 
     if (m === "login_admin" || m === "login_operator"){
       try{ if (btnSubmit) btnSubmit.textContent = "accedi"; }catch(_ ){}
-      try{ u && u.focus(); }catch(_ ){}
+      try{
+        if (u){
+          u.readOnly = true;
+          u.setAttribute("aria-readonly","true");
+          u.value = String(selectedLoginUser?.username || selectedLoginUser?.user || "").trim();
+        }
+        refreshFloatingLabels();
+      }catch(_ ){}
+      try{ setTimeout(()=>{ try{ p && p.focus(); }catch(__){} }, 20); }catch(_ ){}
       return;
+    }
+  };
+
+  const closeAccountPicker = ()=>{
+    try{
+      if (!accountPickerModal) return;
+      accountPickerModal.classList.remove("is-open");
+      accountPickerModal.hidden = true;
+      accountPickerModal.setAttribute("aria-hidden","true");
+      if (!document.querySelector('.modal.is-open:not([hidden])')) document.body.classList.remove('modal-open');
+    }catch(_ ){}
+  };
+
+  const normalizeLoginRole = (row)=>{
+    try{
+      const role = String(row?.ruolo || row?.role || "").trim().toLowerCase();
+      if (role.startsWith("op") || role.includes("oper")) return "operatore";
+      if (String(row?.isOperatore || "").trim() === "1" || row?.isOperatore === true) return "operatore";
+    }catch(_ ){}
+    return "admin";
+  };
+
+  const accountDisplayParts = (row, role)=>{
+    const username = String(row?.username || row?.user || "").trim();
+    const accountName = String(row?.accountName || row?.account_name || row?.nomeAccount || row?.nome_account || row?.name || row?.nome || "").trim();
+    if (role === "operatore") {
+      const parts = username.split("__");
+      const shortName = String(parts.length > 1 ? parts.slice(1).join("__") : username).trim();
+      const owner = String(parts.length > 1 ? parts[0] : "").trim();
+      return { name: shortName || accountName || username, meta: owner ? `Struttura: ${owner}` : (accountName && accountName !== shortName ? accountName : username) };
+    }
+    return { name: accountName || username, meta: (accountName && accountName !== username) ? username : "" };
+  };
+
+  const openAccountPicker = async (role)=>{
+    selectedLoginUser = null;
+    selectedLoginRole = role === "operatore" ? "operatore" : "admin";
+    try{
+      const rows0 = await __tblGet__("utenti", []);
+      const rows = Array.isArray(rows0) ? rows0 : [];
+      const seen = new Set();
+      const accounts = [];
+      for (const row of rows){
+        const username = String(row?.username || row?.user || "").trim();
+        if (!username) continue;
+        if (normalizeLoginRole(row) !== selectedLoginRole) continue;
+        const key = username;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        accounts.push(row);
+      }
+      accounts.sort((a,b)=>{
+        const aa = accountDisplayParts(a, selectedLoginRole).name.toLocaleLowerCase();
+        const bb = accountDisplayParts(b, selectedLoginRole).name.toLocaleLowerCase();
+        return aa.localeCompare(bb, "it");
+      });
+
+      if (accountPickerTitle) accountPickerTitle.textContent = selectedLoginRole === "operatore" ? "Seleziona operatore" : "Seleziona amministratore";
+      if (accountPickerSubtitle) accountPickerSubtitle.textContent = "Scegli un account esistente";
+      if (accountPickerHint) accountPickerHint.textContent = accounts.length ? "" : "Nessun account disponibile. Puoi ripristinare un backup dal tasto in alto.";
+      if (accountPickerList){
+        accountPickerList.innerHTML = "";
+        accounts.forEach((row, index)=>{
+          const parts = accountDisplayParts(row, selectedLoginRole);
+          const label = document.createElement("label");
+          label.className = "auth-account-option";
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = "authExistingAccount";
+          radio.value = String(index);
+          const dot = document.createElement("span");
+          dot.className = "auth-account-option-dot";
+          dot.setAttribute("aria-hidden","true");
+          const copy = document.createElement("span");
+          copy.className = "auth-account-option-copy";
+          const name = document.createElement("span");
+          name.className = "auth-account-option-name";
+          name.textContent = parts.name || String(row?.username || "");
+          const meta = document.createElement("span");
+          meta.className = "auth-account-option-meta";
+          meta.textContent = parts.meta || (selectedLoginRole === "operatore" ? "Operatore" : "Amministratore");
+          copy.appendChild(name);
+          copy.appendChild(meta);
+          label.appendChild(radio);
+          label.appendChild(dot);
+          label.appendChild(copy);
+          radio.addEventListener("change", ()=>{
+            if (!radio.checked) return;
+            selectedLoginUser = row;
+            closeAccountPicker();
+            setMode(selectedLoginRole === "operatore" ? "login_operator" : "login_admin");
+          });
+          accountPickerList.appendChild(label);
+        });
+      }
+
+      if (accountPickerModal){
+        accountPickerModal.hidden = false;
+        accountPickerModal.classList.add("is-open");
+        accountPickerModal.setAttribute("aria-hidden","false");
+        document.body.classList.add('modal-open');
+      }
+    }catch(e){
+      if (accountPickerHint) accountPickerHint.textContent = String(e?.message || "Errore lettura account");
+      try{
+        if (accountPickerModal){ accountPickerModal.hidden = false; accountPickerModal.classList.add("is-open"); accountPickerModal.setAttribute("aria-hidden","false"); document.body.classList.add('modal-open'); }
+      }catch(_ ){}
     }
   };
 
@@ -16817,10 +16945,15 @@ function setupAuth(){
     finishLicensedLogin
   };
 
-  if (btnCreate) bindFastTap(btnCreate, ()=>setMode("create"));
-  if (btnUpdate) bindFastTap(btnUpdate, ()=>setMode("update"));
-  if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>setMode("login_admin"));
-  if (btnLoginOperator) bindFastTap(btnLoginOperator, ()=>setMode("login_operator"));
+  // dDAE_3.192: nella pagina login non si creano e non si modificano account.
+  // Le modifiche restano disponibili esclusivamente da Impostazioni > Account.
+  if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>{ openAccountPicker("admin"); });
+  if (btnLoginOperator) bindFastTap(btnLoginOperator, ()=>{ openAccountPicker("operatore"); });
+  if (accountPickerCancel) bindFastTap(accountPickerCancel, closeAccountPicker);
+  if (accountPickerModal && !accountPickerModal.__authPickerBackdropBound){
+    accountPickerModal.__authPickerBackdropBound = true;
+    accountPickerModal.addEventListener("click", (e)=>{ if (e.target === accountPickerModal) closeAccountPicker(); });
+  }
   if (btnBack) bindFastTap(btnBack, showMenu);
   if (btnActivationBack) bindFastTap(btnActivationBack, showMenu);
 
@@ -16879,9 +17012,13 @@ function setupAuth(){
 
   if (btnSubmit) bindFastTap(btnSubmit, async ()=>{
     try{
-      const username = String(u ? u.value : "").trim();
+      const isLoginMode = (mode === "login_admin" || mode === "login_operator");
+      const username = isLoginMode
+        ? String(selectedLoginUser?.username || selectedLoginUser?.user || "").trim()
+        : String(u ? u.value : "").trim();
       const password = String(p ? p.value : "");
-      if (!username || !password){ setHint("Inserisci user e password"); return; }
+      if (isLoginMode && !selectedLoginUser){ setHint("Seleziona prima un account"); showMenu(); return; }
+      if (!username || !password){ setHint(isLoginMode ? "Inserisci la password" : "Inserisci user e password"); return; }
 
       if (mode === "create"){
         const confirm = String(p2 ? p2.value : "");
@@ -18891,6 +19028,7 @@ function setupHeader(){
     try{ __resetInMemoryData__(); }catch(_){ }
     try{ invalidateApiCache(); }catch(_){ }
     try{ showPage("auth"); }catch(_){ }
+    try{ if (__authUiApi__ && typeof __authUiApi__.showMenu === "function") __authUiApi__.showMenu(); }catch(_){ }
   });
 
   // Back (ore pulizia + calendario + operatori)
@@ -21954,6 +22092,7 @@ function __bindGuestListCardColorHold__(card){
 }
 
 const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
+  'btnMenuLoginAdmin','btnMenuLoginOperator','authAccountPickerCancel',
   'confirmYesNoYes','confirmYesNoNo',
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
@@ -22007,6 +22146,9 @@ function __refreshSingleActionButtonSharedKey__(btnOrId){
 function __defaultSingleActionButtonVisual__(btn){
   const id = __singleActionButtonSharedKey__(btn);
   const defaults = {
+    btnMenuLoginAdmin:{ bg:'orange-4', border:'orange-4', fg:'gray-6', opacity:0.80 },
+    btnMenuLoginOperator:{ bg:'green-4', border:'green-4', fg:'gray-6', opacity:0.80 },
+    authAccountPickerCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     cocktailDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
     operatoriEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
     channelEditorDelete:{ bg:'red-4', border:'red-4', fg:'white', opacity:0.80 },
@@ -44534,7 +44676,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.191';
+  var BUILD_TAG='dDAE_3.192';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49298,7 +49440,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.191',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.192',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

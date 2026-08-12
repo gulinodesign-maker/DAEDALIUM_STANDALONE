@@ -32581,3 +32581,139 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-istat:not(.select
   visibility:hidden !important;
   pointer-events:none !important;
 }
+
+
+/* dDAE_3.192 — Login: solo ruolo + popup account esistenti */
+#page-auth .auth-grid-2{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+#page-auth #authUsername[readonly]{
+  opacity:1;
+  cursor:default;
+  -webkit-text-fill-color:currentColor;
+}
+.auth-account-picker-modal{
+  z-index:10060;
+}
+.auth-account-picker-card{
+  width:min(420px,calc(100vw - 32px));
+  max-height:min(72dvh,620px);
+  overflow:auto;
+  padding:18px 16px 16px;
+  border-radius:22px;
+  background:#fff;
+  border:1px solid rgba(15,23,42,.12);
+}
+.auth-account-picker-title{
+  text-align:center;
+  font-size:22px;
+  line-height:1.15;
+  font-weight:900;
+  color:#1f2937;
+}
+.auth-account-picker-subtitle{
+  min-height:18px;
+  margin-top:6px;
+  text-align:center;
+  font-size:13px;
+  line-height:1.3;
+  font-weight:800;
+  color:#60738a;
+}
+.auth-account-picker-list{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+.auth-account-option{
+  position:relative;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  min-height:66px;
+  padding:10px 14px;
+  border:1px solid rgba(15,23,42,.13);
+  border-radius:16px;
+  background:#f5f7fa;
+  color:#1f2937;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.auth-account-option input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.auth-account-option-dot{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  border:2px solid #aab3bf;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.auth-account-option input:checked + .auth-account-option-dot{
+  border-color:#2d9cdb;
+}
+.auth-account-option input:checked + .auth-account-option-dot::after{
+  content:"";
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#2d9cdb;
+}
+.auth-account-option-copy{
+  min-width:0;
+}
+.auth-account-option-name{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:17px;
+  line-height:1.15;
+  font-weight:900;
+}
+.auth-account-option-meta{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:700;
+  color:#6b7280;
+}
+.auth-account-picker-hint{
+  margin-top:12px;
+}
+.auth-account-picker-cancel{
+  width:100%;
+  min-height:54px;
+  margin-top:12px;
+}
+body.ddae-dark .auth-account-picker-card{
+  background:#171c25;
+  border-color:rgba(255,255,255,.14);
+}
+body.ddae-dark .auth-account-picker-title,
+body.ddae-dark .auth-account-option{
+  color:#edf3f8;
+}
+body.ddae-dark .auth-account-picker-subtitle,
+body.ddae-dark .auth-account-option-meta{
+  color:#aeb9c6;
+}
+body.ddae-dark .auth-account-option{
+  background:#222936;
+  border-color:rgba(255,255,255,.14);
+}
+body.ddae-dark .auth-account-option-dot{
+  background:#171c25;
+  border-color:#667080;
+}
