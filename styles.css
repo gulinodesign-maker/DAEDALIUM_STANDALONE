@@ -33044,3 +33044,31 @@ body.ddae-dark .guest-score-picker-option.selected{
   background:var(--ddae-reg-score-bg, #f59e0b);
   color:var(--ddae-reg-score-fg, #ffffff);
 }
+
+
+/* dDAE_3.203 — Ospiti: stella voto nel gruppo destro, accanto a notti e Channel. */
+#page-ospiti .guest-name-line.has-score .guest-name-tab.guest-name-text{
+  max-width:100% !important;
+}
+#page-ospiti .guest-meta-dots .guest-score-star.guest-score-star-meta{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 26px !important;
+  width:26px !important;
+  height:26px !important;
+  min-width:26px !important;
+  min-height:26px !important;
+  margin:0 !important;
+  padding:0 !important;
+  font-size:23px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  pointer-events:none !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
