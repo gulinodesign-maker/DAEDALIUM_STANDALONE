@@ -32065,3 +32065,85 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
   text-align:center !important;
   line-height:1.2 !important;
 }
+
+
+/* dDAE_3.185 — Registrazioni: Polizia/ISTAT iconografici e allineati ai LED pagamento */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:1fr !important;
+  align-items:end !important;
+  justify-items:center !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:100% !important;
+  padding:6px 10px 7px 10px !important;
+  gap:0 !important;
+  overflow:visible !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .guest-grid-control-label,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .guest-grid-control-label{
+  display:none !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps{
+  grid-column:1 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-gap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-gap{
+  grid-column:2 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat{
+  grid-column:3 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat{
+  position:relative !important;
+  align-self:end !important;
+  justify-self:center !important;
+  overflow:visible !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:-23px !important;
+  width:17px !important;
+  height:17px !important;
+  transform:translateX(-50%) !important;
+  background-color:rgba(15,23,42,0.74) !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:contain !important;
+  pointer-events:none !important;
+  z-index:2 !important;
+}
+/* Polizia di Stato: scudo */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps::before{
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20 5.5v5.8c0 4.8-3.1 8.7-8 10.7-4.9-2-8-5.9-8-10.7V5.5l8-3Z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='m12 7 1.35 2.73 3.02.44-2.18 2.13.51 3.01L12 13.89 9.3 15.31l.51-3.01-2.18-2.13 3.02-.44L12 7Z' fill='black'/%3E%3C/svg%3E") center/contain no-repeat !important;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20 5.5v5.8c0 4.8-3.1 8.7-8 10.7-4.9-2-8-5.9-8-10.7V5.5l8-3Z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='m12 7 1.35 2.73 3.02.44-2.18 2.13.51 3.01L12 13.89 9.3 15.31l.51-3.01-2.18-2.13 3.02-.44L12 7Z' fill='black'/%3E%3C/svg%3E") center/contain no-repeat !important;
+}
+/* ISTAT: grafico statistico */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat::before{
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20V10h4v10H4Zm6 0V4h4v16h-4Zm6 0v-7h4v7h-4Z' fill='black'/%3E%3Cpath d='M3 21h18' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat !important;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20V10h4v10H4Zm6 0V4h4v16h-4Zm6 0v-7h4v7h-4Z' fill='black'/%3E%3Cpath d='M3 21h18' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat !important;
+}
+body.ddae-dark #page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps::before,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps::before,
+body.ddae-dark #page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat::before,
+body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat::before{
+  background-color:rgba(255,255,255,0.76) !important;
+}
