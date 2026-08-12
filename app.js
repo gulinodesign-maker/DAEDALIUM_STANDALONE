@@ -100,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.197";
+const BUILD_VERSION = "3.198";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6344,7 +6344,7 @@ function __syncGuestScoreButton__(){
     btn.setAttribute('aria-label', score > 0 ? `Punteggio ${score} su 10` : 'Punteggio non assegnato');
     btn.title = score > 0 ? `Punteggio ${score}/10` : 'Punteggio: non assegnato';
     const val = btn.querySelector('.guest-score-value');
-    if (val) val.textContent = score > 0 ? String(score) : '';
+    if (val) val.textContent = score > 0 ? String(score) : '★';
     const editable = String(state.guestMode || '').toLowerCase() === 'edit';
     // In lettura il tasto resta semanticamente non modificabile ma deve ricevere il long press del popup design.
     btn.disabled = false;
@@ -45139,7 +45139,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.197';
+  var BUILD_TAG='dDAE_3.198';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49911,7 +49911,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.197',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.198',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
