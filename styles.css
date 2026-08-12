@@ -32149,7 +32149,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 
 
-/* dDAE_3.188 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
+/* dDAE_3.189 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2),
 #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
   position:relative !important;
@@ -32224,7 +32224,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 
 
-/* dDAE_3.188 — Scheda ospite: nessun testo CHANNEL; pallino Channel centrato in ogni stato */
+/* dDAE_3.189 — Scheda ospite: nessun testo CHANNEL; pallino Channel centrato in ogni stato */
 #page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
   position:relative !important;
   display:flex !important;
@@ -32295,7 +32295,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
   line-height:1 !important;
 }
 
-/* dDAE_3.188 — Scheda ospite: LED pagamento/registrazioni trasformati in tasti iconografici */
+/* dDAE_3.189 — Scheda ospite: LED pagamento/registrazioni trasformati in tasti iconografici */
 #page-ospite #guestEconomicGrid #depositType,
 #page-ospite #guestEconomicGrid #saldoType,
 #page-ospite #guestEconomicGrid #regTags{
@@ -32417,7 +32417,7 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-istat:not(.select
   color:rgba(255,255,255,0.82) !important;
 }
 
-/* dDAE_3.188 — enforcement iOS: geometria pulsanti iconografici prevalente sulle regole storiche */
+/* dDAE_3.189 — enforcement iOS: geometria pulsanti iconografici prevalente sulle regole storiche */
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType,
 #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType,
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType,
