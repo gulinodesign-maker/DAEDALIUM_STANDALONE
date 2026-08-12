@@ -32910,3 +32910,9 @@ body.ddae-dark #page-ospite .guest-form-card #guestEconomicGrid #discountRow #re
 #page-ospite .guest-form-card #guestEconomicGrid #discountRow #regTags > button.pay-istat.selected::before{
   background-color:var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #ffffff)) !important;
 }
+
+
+/* dDAE_3.197 — Statistiche: tile Punteggio, stesso componente della griglia statistiche. */
+#page-statistiche #goStatPunteggio .home-main-glyph{ color:var(--ico-color, #f29c50) !important; }
+#page-statistiche #goStatPunteggio,
+#page-statistiche #goStatPunteggio .home-main-glyph{ background-image:none !important; }

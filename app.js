@@ -41,6 +41,7 @@ function applyIconPalette(){
       goStatSpese: "#F29C50",
       goStatRicevute: "#F6B67A",
       goStatChannel: "#C7B198",
+      goStatPunteggio: "#F29C50",
       goStatPulizie: "#D9CCC0",
       goStatPiscina: "#D9CCC0",
       goStatPiscinaReport: "#C7B198",
@@ -99,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.196";
+const BUILD_VERSION = "3.197";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6311,7 +6312,7 @@ function setRegFlags(containerId, psOn, istatOn){
   setRegFlag(containerId, "istat", istatOn);
 }
 
-// dDAE_3.196 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
+// dDAE_3.197 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
 function __guestScoreNormalize__(value){
   if (value === undefined || value === null || String(value).trim() === "") return 0;
   const n = parseInt(value, 10);
@@ -6358,7 +6359,7 @@ function setGuestScore(value){
   __syncGuestScoreButton__();
 }
 
-// dDAE_3.196 — Design tasto Punteggio: due stati (vuoto/attivo), popup colore da long press in lettura.
+// dDAE_3.197 — Design tasto Punteggio: due stati (vuoto/attivo), popup colore da long press in lettura.
 const __GUEST_SCORE_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_score_button_visual_v1';
 
 function __guestScoreButtonVisualDefault__(stateKey){
@@ -11967,7 +11968,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -12007,6 +12008,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatSpese: 'orange-4',
   goStatRicevute: 'orange-3',
   goStatChannel: 'beige-5',
+  goStatPunteggio: 'orange-4',
   goStatPulizie: 'gray-4',
   goStatPiscina: 'beige-4',
   goStatPiscinaReport: 'beige-5',
@@ -13096,6 +13098,7 @@ function __statisticsCardThemeTargetKeys__(){
     statmensili: statMensiliKeys,
     statprenotazioni: statRicevuteKeys,
     statchannel: statChannelKeys,
+    statpunteggio: [],
     statpulizie: []
   };
 }
@@ -13214,7 +13217,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -13474,7 +13477,8 @@ function __applyStatisticsCardTheme__(){
       ['#page-statspese .stat-row', 'statspese'],
       ['#page-statmensili .month-row', 'statmensili'],
       ['#page-statprenotazioni .stat-row', 'statprenotazioni'],
-      ['#page-statchannel .stat-row', 'statchannel'],
+      ['#page-statchannel .stat-row:not([data-stat-scope="score"])', 'statchannel'],
+      ['#page-statchannel .stat-row[data-stat-scope="score"]', 'statpunteggio'],
       ['#page-statpulizie .stat-row', 'statpulizie'],
       ['#page-statamministratore .stat-row', 'statamministratore']
     ];
@@ -18338,7 +18342,9 @@ const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.cl
     const s4 = e.target.closest && e.target.closest("#goStatRicevute");
     if (s4){ hideLauncher(); showPage("statprenotazioni"); return; }
     const s4b = e.target.closest && e.target.closest("#goStatChannel");
-    if (s4b){ hideLauncher(); showPage("statchannel"); return; }
+    if (s4b){ try{ state.statChannelViewMode = 'pms'; }catch(_){ } hideLauncher(); showPage("statchannel"); return; }
+    const s4score = e.target.closest && e.target.closest("#goStatPunteggio");
+    if (s4score){ try{ state.statChannelViewMode = 'score'; }catch(_){ } hideLauncher(); showPage("statchannel"); return; }
     const s4c = e.target.closest && e.target.closest("#goStatPulizie");
     if (s4c){ hideLauncher(); showPage("statpulizie"); return; }
 
@@ -19532,7 +19538,9 @@ if (guestScrollTodayBtn){
   const s4 = $("#goStatRicevute");
   if (s4){ bindFastTap(s4, () => { hideLauncher(); showPage("statprenotazioni"); }); }
   const s4b = $("#goStatChannel");
-  if (s4b){ bindFastTap(s4b, () => { hideLauncher(); showPage("statchannel"); }); }
+  if (s4b){ bindFastTap(s4b, () => { try{ state.statChannelViewMode = 'pms'; }catch(_){ } hideLauncher(); showPage("statchannel"); }); }
+  const s4score = $("#goStatPunteggio");
+  if (s4score){ bindFastTap(s4score, () => { try{ state.statChannelViewMode = 'score'; }catch(_){ } hideLauncher(); showPage("statchannel"); }); }
   const s4c = $("#goStatPulizie");
   if (s4c){ bindFastTap(s4c, () => { hideLauncher(); showPage("statpulizie"); }); }
 
@@ -21537,6 +21545,7 @@ function __refreshStatCardsPage__(pageKey){
     if (pageKey === 'statmensili') return renderStatMensili();
     if (pageKey === 'statprenotazioni') return renderStatRicevute();
     if (pageKey === 'statchannel') return renderStatChannel();
+    if (pageKey === 'statpunteggio') return renderStatPunteggio();
     if (pageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
     if (pageKey === 'statcancellazioni') return renderStatCancellazioni();
     if (pageKey === 'statazienda') return renderStatAzienda();
@@ -21568,7 +21577,10 @@ function __statCardCategoryTargetKeys__(pageKey, fallbackKey){
   try{
     document.querySelectorAll(`[data-stat-card-key]`).forEach((node) => {
       try{
-        const owner = node.closest ? node.closest(`[id="page-${safePageKey}"]`) : null;
+        let owner = node.closest ? node.closest(`[id="page-${safePageKey}"]`) : null;
+        if (!owner && safePageKey === 'statpunteggio' && node?.dataset?.statScope === 'score'){
+          owner = node.closest ? node.closest('#page-statchannel') : null;
+        }
         if (owner) pushKey(node.dataset.statCardKey || '');
       }catch(_){ }
     });
@@ -21584,6 +21596,7 @@ function __statCardCategoryLabel__(pageKey){
   if (safePageKey === 'statmensili') return 'Mensili';
   if (safePageKey === 'statprenotazioni') return 'Ricevuta';
   if (safePageKey === 'statchannel') return 'PMS';
+  if (safePageKey === 'statpunteggio') return 'Punteggio';
   if (safePageKey === 'statpulizie') return 'Ore pulizia';
   if (safePageKey === 'statcancellazioni') return 'Cancellazioni';
   if (safePageKey === 'statazienda') return 'Azienda';
@@ -23733,6 +23746,7 @@ function __refreshSpecificStatChart__(pageKey){
     if (safePageKey === 'statcancellazioni') return renderStatCancellazioni();
     if (safePageKey === 'statprenotazioni') return renderStatRicevute();
     if (safePageKey === 'statchannel') return renderStatChannel();
+    if (safePageKey === 'statpunteggio') return renderStatPunteggio();
     if (safePageKey === 'statpulizie') return renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
     if (safePageKey === 'statamministratore') return renderStatAmministratore();
   }catch(_){ }
@@ -23763,9 +23777,15 @@ function __bindStatChartCardToggle__(el, pageKey, cardKey){
 }
 
 function __bindStatChartWrapReset__(pageKey){
-  const wrap = document.querySelector(`#page-${String(pageKey || '').trim().toLowerCase()} .statgen-line-chart-wrap`);
-  if (!wrap || wrap.dataset.statChartResetBound === '1') return;
-  wrap.dataset.statChartResetBound = '1';
+  const safePageKey = String(pageKey || '').trim().toLowerCase();
+  const domPageKey = safePageKey === 'statpunteggio' ? 'statchannel' : safePageKey;
+  const wrap = document.querySelector(`#page-${domPageKey} .statgen-line-chart-wrap`);
+  if (!wrap) return;
+  try{
+    if (!wrap.__ddaeStatChartResetPages) wrap.__ddaeStatChartResetPages = new Set();
+    if (wrap.__ddaeStatChartResetPages.has(safePageKey)) return;
+    wrap.__ddaeStatChartResetPages.add(safePageKey);
+  }catch(_){ }
   let lastTouchAt = 0;
   const runReset = (e) => {
     if (!__getStatChartFilter__(pageKey)) return;
@@ -24079,7 +24099,172 @@ function __statChannelMonthlySeries__(){
   return __statChannelSeriesBundle__();
 }
 
+
+// dDAE_3.197 — Statistiche Punteggio: media voti per CHANNEL, andamento mensile e confronto anni.
+function __statScoreModeActive__(){
+  try{ return String(state?.statChannelViewMode || 'pms').toLowerCase() === 'score'; }catch(_){ return false; }
+}
+
+function __statScoreChannelNormalizeName__(value){
+  try{
+    return String(value || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase();
+  }catch(_){ return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
+}
+
+function __statScoreSeriesForGuests__(sourceGuests){
+  const guests = Array.isArray(sourceGuests) ? sourceGuests : [];
+  const catalog = getChannelCatalogFromSettings();
+  const catalogById = new Map();
+  const catalogByName = new Map();
+  catalog.forEach((item)=>{
+    const id = String(item?.id || '').trim();
+    const nameKey = __statScoreChannelNormalizeName__(item?.nome || '');
+    if (id) catalogById.set(id, item);
+    if (nameKey && !catalogByName.has(nameKey)) catalogByName.set(nameKey, item);
+  });
+  const buckets = new Map();
+  const ensureBucket = (key, cfg={}) => {
+    const safeKey = String(key || '').trim();
+    if (!safeKey) return null;
+    if (!buckets.has(safeKey)){
+      buckets.set(safeKey, {
+        key:safeKey,
+        label:String(cfg.label || 'PMS').trim() || 'PMS',
+        monthlySum:new Array(12).fill(0), monthlyCount:new Array(12).fill(0),
+        totalSum:0, totalCount:0,
+        fallback:{ bg:cfg.bg || 'blue-4', border:cfg.border || cfg.bg || 'blue-4', fg:cfg.fg || '' }
+      });
+    }
+    return buckets.get(safeKey);
+  };
+  catalog.forEach((item)=>{
+    const id = String(item?.id || '').trim();
+    if (!id) return;
+    ensureBucket(`channel:${id}`, {
+      label:item?.nome || 'PMS', bg:item?.colore || 'blue-4', border:item?.colore || 'blue-4',
+      fg:item?.coloreGrafico || item?.coloreTesto || item?.colore || ''
+    });
+  });
+  guests.forEach((guest)=>{
+    const score = (typeof __guestScoreFromRecord__ === 'function') ? __guestScoreFromRecord__(guest) : Number(guest?.punteggio || guest?.score || 0);
+    if (!Number.isFinite(Number(score)) || Number(score) < 1 || Number(score) > 10) return;
+    const iso = __statGuestMonthIso__(guest);
+    const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
+    if (monthIdx < 0 || monthIdx > 11) return;
+    const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+    const rawLabel = String(guest?.channel_nome ?? guest?.channelNome ?? guest?.channel_name ?? guest?.channelName ?? guest?.pms ?? guest?.fonte ?? '').trim();
+    const item = (channelId && catalogById.get(channelId)) || catalogByName.get(__statScoreChannelNormalizeName__(rawLabel)) || null;
+    const label = String(item?.nome || rawLabel || 'PMS').trim() || 'PMS';
+    const canonicalId = String(item?.id || channelId || '').trim();
+    const key = canonicalId ? `channel:${canonicalId}` : `channel-name:${__statScoreChannelNormalizeName__(label) || 'pms'}`;
+    const bucket = ensureBucket(key, {
+      label,
+      bg:item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
+      border:item?.colore || guest?.channel_colore || guest?.channelColor || 'blue-4',
+      fg:item?.coloreGrafico || item?.coloreTesto || guest?.channel_colore_testo || guest?.channelColorText || item?.colore || guest?.channel_colore || guest?.channelColor || ''
+    });
+    if (!bucket) return;
+    bucket.monthlySum[monthIdx] += Number(score);
+    bucket.monthlyCount[monthIdx] += 1;
+    bucket.totalSum += Number(score);
+    bucket.totalCount += 1;
+  });
+  const order = new Map();
+  catalog.forEach((item,idx)=>{ const id=String(item?.id||'').trim(); if(id) order.set(`channel:${id}`,idx); });
+  return Array.from(buckets.values()).map((b)=>({
+    key:b.key,
+    label:b.label,
+    values:b.monthlySum.map((sum,idx)=> b.monthlyCount[idx] ? Math.round((sum/b.monthlyCount[idx])*100)/100 : 0),
+    value:b.totalCount ? Math.round((b.totalSum/b.totalCount)*100)/100 : null,
+    count:b.totalCount,
+    fallback:b.fallback
+  })).sort((a,b)=>{
+    const ao=order.has(a.key)?order.get(a.key):Number.MAX_SAFE_INTEGER;
+    const bo=order.has(b.key)?order.get(b.key):Number.MAX_SAFE_INTEGER;
+    if(ao!==bo) return ao-bo;
+    return String(a.label||'').localeCompare(String(b.label||''),'it',{sensitivity:'base'});
+  });
+}
+
+function __statScoreFormat__(value){
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return '—';
+  try{ return n.toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:2}) + ' / 10'; }catch(_){ return n.toFixed(1) + ' / 10'; }
+}
+
+function __statScoreChartFormat__(value){
+  const n=Number(value||0);
+  if (!Number.isFinite(n)) return '0';
+  try{ return n.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:1}); }catch(_){ return String(Math.round(n*10)/10); }
+}
+
+function drawStatPunteggioLineChart(canvasId){
+  const currentRows = __statScoreSeriesForGuests__(Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
+  const selected = __getStatChartFilter__('statpunteggio');
+  let seriesList = currentRows.filter((row)=>!selected || String(row.key)===String(selected)).map((row)=>({
+    key:row.key, label:row.label, values:row.values,
+    color:__statChartLineColorFromStatCard__('statpunteggio', row.key, row.fallback?.fg || row.fallback?.bg || '#2b7cb4')
+  }));
+  if (!seriesList.length && selected){
+    try{ __clearStatChartFilter__('statpunteggio'); }catch(_){ }
+    seriesList = currentRows.map((row)=>({ key:row.key,label:row.label,values:row.values,color:__statChartLineColorFromStatCard__('statpunteggio',row.key,row.fallback?.fg||row.fallback?.bg||'#2b7cb4') }));
+  }
+  if (__ensureStatGenCompareEnabled__()){
+    try{
+      const compareYear = __ensureStatGenCompareYear__();
+      const hasSnapshot = String(state.statGenCompareSnapshotYear || '') === String(compareYear) && state.statGenCompareSnapshot;
+      if (!hasSnapshot && !state.statGenCompareLoading && typeof __loadStatGenCompareGuests__ === 'function'){
+        try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ }
+      }
+      const compareGuests = hasSnapshot
+        ? (Array.isArray(state.statGenCompareSnapshot?.guests) ? state.statGenCompareSnapshot.guests : [])
+        : (Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : []);
+      const compareRows = __statScoreSeriesForGuests__(compareGuests);
+      const currentByKey = new Map(seriesList.map((item)=>[String(item.key||''),item]));
+      compareRows.forEach((row)=>{
+        const key=String(row.key||'');
+        if (!key || (selected && key!==String(selected))) return;
+        if (!(row.values||[]).some((v)=>Number(v||0)>0)) return;
+        const base=currentByKey.get(key) || row;
+        seriesList.push({
+          key:key+'-compare-year', label:String(base.label||row.label||'PMS')+' '+String(compareYear), values:row.values,
+          color:base.color || __statChartLineColorFromStatCard__('statpunteggio',key,row.fallback?.fg||row.fallback?.bg||'#9aa3af'),
+          dash:[6,4], pointFill:'#ffffff', lineWidth:1.8, radius:2.5, pointLineWidth:1.4
+        });
+      });
+    }catch(_){ }
+  }
+  __drawSharedMonthlyLineChart__(canvasId, (seriesList[0]?.values || new Array(12).fill(0)), {
+    seriesList, yMax:10,
+    bubbleFormatter:(value)=>__statScoreChartFormat__(value),
+    yTickFormatter:(value)=>__statScoreChartFormat__(value)
+  });
+}
+
+function renderStatPunteggio(){
+  try{ state.statChannelViewMode='score'; }catch(_){ }
+  const page=document.getElementById('page-statchannel');
+  const title=page?.querySelector('.stats-title');
+  if(title) title.textContent='Punteggio';
+  const rows=__statScoreSeriesForGuests__(Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
+  const stack=document.getElementById('statPmsRows');
+  if(stack){
+    stack.innerHTML=rows.map((row)=>`<button class="stat-row" data-stat-scope="score" data-stat-card-key="${String(row.key||'').replace(/"/g,'&quot;')}" type="button"><span class="stat-name">${escapeHtml(row.label||'PMS')}</span><span class="stat-val">${__statScoreFormat__(row.value)}</span></button>`).join('');
+    stack.querySelectorAll('.stat-row').forEach((card)=>{
+      const row=rows.find((item)=>String(item.key)===String(card.dataset.statCardKey||''));
+      if(!row) return;
+      __applyStatCardTextColor__(card,'statpunteggio',row.key,row.fallback||'#2b7cb4');
+      __bindStatCardColorLongPress__(card,'statpunteggio',row.key,row.fallback||'#2b7cb4');
+      __bindStatChartCardToggle__(card,'statpunteggio',row.key);
+      __setStatCardSelectionState__(card,'statpunteggio',row.key);
+    });
+  }
+  __bindStatChartWrapReset__('statpunteggio');
+  try{ drawStatPunteggioLineChart('statChannelCanvas'); }catch(_){ }
+}
+
 function drawStatChannelLineChart(canvasId){
+  if (__statScoreModeActive__()) return drawStatPunteggioLineChart(canvasId);
   const seriesList = __statChannelMonthlySeries__().map((item) => ({
     key: item.key,
     label: item.label,
@@ -24095,6 +24280,9 @@ function drawStatChannelLineChart(canvasId){
 }
 
 function renderStatChannel(){
+  if (__statScoreModeActive__()) return renderStatPunteggio();
+  try{ state.statChannelViewMode = 'pms'; }catch(_){ }
+  try{ const title = document.querySelector('#page-statchannel .stats-title'); if (title) title.textContent = 'PMS'; }catch(_){ }
   const rows = __statChannelMonthlySeries__();
   const stack = document.getElementById('statPmsRows');
   if (stack){
@@ -33423,7 +33611,7 @@ function setupOspite(){
 
   bindRegPill("regTags");
 
-  // dDAE_3.196 — Punteggio: tap 1..10 e reset long press in modifica; long press design in lettura.
+  // dDAE_3.197 — Punteggio: tap 1..10 e reset long press in modifica; long press design in lettura.
   (function bindGuestScoreButton(){
     const btn = document.querySelector('#regTags .pay-score');
     if (!btn || btn.__ddaeScoreBound) return;
@@ -44951,7 +45139,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.196';
+  var BUILD_TAG='dDAE_3.197';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46026,6 +46214,7 @@ function syncGuestEmailActionLink(isView){
     finally{ state.statsGuests = backup.statsGuests; state.guests = backup.guests; }
   }
   window.drawStatChannelLineChart = function(canvasId){
+    if (typeof __statScoreModeActive__ === 'function' && __statScoreModeActive__()) return drawStatPunteggioLineChart(canvasId);
     const make = (rows)=> statChannelSeriesForGuests(rows).map((item)=>({ key:item.key, label:item.label, values:item.values, color:__statChartLineColorFromRenderedCard__('statchannel', item.key, item.fallback || '#2b7cb4') }));
     let seriesList = make(Array.isArray(state.statsGuests) ? state.statsGuests : state.guests).filter((item)=>__statChartSeriesIsVisible__('statchannel', item.key));
     if (!seriesList.length){ try{ __clearStatChartFilter__('statchannel'); }catch(_){ } seriesList = make(Array.isArray(state.statsGuests) ? state.statsGuests : state.guests); }
@@ -49722,7 +49911,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.196',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.197',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
