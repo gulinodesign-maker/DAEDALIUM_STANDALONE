@@ -100,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.200";
+const BUILD_VERSION = "3.201";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6538,6 +6538,20 @@ function __guestScoreButtonVisualRead__(){
       active: __guestScoreButtonVisualNormalize__(parsed.active || parsed.on || {}, 'active')
     };
   }catch(_){ return null; }
+}
+
+// dDAE_3.201 — Stella voto nella lista ospiti: colore identico al fondo del tasto Punteggio attivo.
+function __guestScoreListStarStyle__(){
+  try{
+    const saved = __guestScoreButtonVisualRead__();
+    const visual = __guestScoreButtonVisualNormalize__(saved?.active || saved?.on || {}, 'active');
+    const bgHex = __operatoreColorHex__(visual.bg || 'orange-5');
+    const opacity = __designBgOpacityNormalize__(visual.opacity ?? 1);
+    const color = hexToRgba(bgHex, opacity);
+    return `color:${color};-webkit-text-fill-color:${color};`;
+  }catch(_){
+    return 'color:#f59e0b;-webkit-text-fill-color:#f59e0b;';
+  }
 }
 
 function __guestScoreButtonVisualWrite__(visuals){
@@ -35020,6 +35034,7 @@ function renderGuestCards(){
         return scoreRows.some((row) => __guestScoreAssignedFromRecord__(row));
       }catch(_){ return false; }
     })();
+    const guestScoreStarStyle = hasGuestScore ? __guestScoreListStarStyle__() : '';
 
     card.tabIndex = 0;
     card.setAttribute("role", "button");
@@ -35037,7 +35052,10 @@ function renderGuestCards(){
           ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
-            <span class="guest-name-tab guest-name-text${hasGuestScore ? ' has-score' : ''}">${nome}</span>
+            <div class="guest-name-line${hasGuestScore ? ' has-score' : ''}">
+              <span class="guest-name-tab guest-name-text">${nome}</span>
+              ${hasGuestScore ? `<span class="guest-score-star" style="${escapeHtml(guestScoreStarStyle)}" aria-label="Punteggio presente" title="Punteggio presente" aria-hidden="true">★</span>` : ``}
+            </div>
             <span class="guest-arrivo guest-arrivo-under" aria-label="${escapeHtml(__translateExactText__('Arrivo') || 'Arrivo')}">${arrivoText}</span>
             ${roomsLabel ? `<span class="guest-contact guest-room-label" aria-label="${escapeHtml(__guestCardRoomsOccupiedAria__())}">${roomsLabel}</span>` : ``}
           </div>
@@ -45269,7 +45287,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.200';
+  var BUILD_TAG='dDAE_3.201';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50041,7 +50059,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.200',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.201',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -32918,23 +32918,48 @@ body.ddae-dark #page-ospite .guest-form-card #guestEconomicGrid #discountRow #re
 #page-statistiche #goStatPunteggio .home-main-glyph{ background-image:none !important; }
 
 
-/* dDAE_3.199 — Ospiti: indicatore punteggio accanto al nome */
+/* dDAE_3.199 — Ospiti: indicatore punteggio accanto al nome (sostituito dalla geometria 3.201). */
 #page-ospiti .guest-name-tab.guest-name-text.has-score{
-  position:relative;
-  padding-right:32px;
+  position:static;
+  padding-right:10px;
 }
-#page-ospiti .guest-name-tab.guest-name-text.has-score::after{
-  content:"★";
-  position:absolute;
-  right:9px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:0.78em;
+#page-ospiti .guest-name-tab.guest-name-text.has-score::after{ content:none !important; }
+
+/* dDAE_3.201 — Ospiti: stellina voto separata, sempre alla destra del nome e mai sovrapposta. */
+#page-ospiti .guest-name-line{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+#page-ospiti .guest-name-line .guest-name-tab.guest-name-text{
+  flex:0 1 auto;
+  min-width:0;
+  max-width:100%;
+}
+#page-ospiti .guest-name-line.has-score .guest-name-tab.guest-name-text{
+  max-width:calc(100% - 26px);
+}
+#page-ospiti .guest-score-star{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 20px;
+  width:20px;
+  height:28px;
+  margin:0;
+  padding:0;
+  font-size:20px;
   line-height:1;
-  font-weight:800;
-  color:currentColor;
-  -webkit-text-fill-color:currentColor;
+  font-weight:900;
+  text-align:center;
   pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
 /* dDAE_3.200 — Selettore punteggio 0..10 + Cancella */
