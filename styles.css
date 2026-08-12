@@ -32490,3 +32490,94 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-istat:not(.select
   visibility:hidden !important;
   pointer-events:none !important;
 }
+
+/* dDAE_3.191 — Scheda ospite: tasti iconografici a tutta altezza, senza tab contenitore */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #discountRow > .subfield.paywrap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #discountRow > .subfield.paywrap{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  overflow:visible !important;
+}
+
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags{
+  width:100% !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:var(--guest-econ-cell-h) !important;
+  column-gap:6px !important;
+  align-items:stretch !important;
+  justify-items:stretch !important;
+}
+
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType > .pay-dot,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType > .pay-dot,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType > .pay-dot,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType > .pay-dot,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat{
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:56px !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  flex:1 1 auto !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border-radius:14px !important;
+  box-sizing:border-box !important;
+}
+
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType > .pay-dot::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType > .pay-dot::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType > .pay-dot::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType > .pay-dot::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat::before{
+  width:25px !important;
+  height:25px !important;
+}
+
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-gap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-gap{
+  grid-column:2 !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:56px !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  margin:0 auto !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
