@@ -100,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.199";
+const BUILD_VERSION = "3.200";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6100,7 +6100,8 @@ function __captureUiState(){
       depositReceipt: !!state.guestDepositReceipt,
       saldoReceipt: !!state.guestSaldoReceipt,
       invoiceRequested: !!state.guestInvoiceRequested,
-      score: __guestScoreNormalize__(state.guestScore),
+      score: __guestScoreIsAssignedState__() ? __guestScoreNormalize__(state.guestScore) : null,
+      scoreAssigned: __guestScoreIsAssignedState__(),
       marriage: !!state.guestMarriage,
       group: !!state.guestGroup,
       colc: !!state.guestColC,
@@ -6157,7 +6158,12 @@ function __applyUiState(restore){
       state.guestDepositReceipt = !!restore.guest.depositReceipt;
       state.guestSaldoReceipt = !!restore.guest.saldoReceipt;
       state.guestInvoiceRequested = !!restore.guest.invoiceRequested;
-      state.guestScore = __guestScoreNormalize__(restore.guest.score);
+      {
+        const restoredScore = __guestScoreNormalize__(restore.guest.score);
+        const restoredAssigned = restore.guest.scoreAssigned === true || (restore.guest.scoreAssigned === undefined && restoredScore !== null && restoredScore > 0);
+        state.guestScore = restoredAssigned ? restoredScore : null;
+        state.guestScoreAssigned = restoredAssigned;
+      }
       state.guestMarriage = !!restore.guest.marriage;
       state.guestGroup = !!(restore.guest.group);
       state.guestColC = !!(restore.guest.colc);
@@ -6312,24 +6318,64 @@ function setRegFlags(containerId, psOn, istatOn){
   setRegFlag(containerId, "istat", istatOn);
 }
 
-// dDAE_3.197 — Punteggio ospite 1..10; 0 resta solo sentinella interna "non assegnato".
+// dDAE_3.200 — Punteggio ospite 0..10; lo stato vuoto è distinto dal voto 0.
 function __guestScoreNormalize__(value){
-  if (value === undefined || value === null || String(value).trim() === "") return 0;
+  if (value === undefined || value === null || String(value).trim() === "") return null;
   const n = parseInt(value, 10);
-  if (!Number.isFinite(n) || n < 1) return 0;
-  return Math.min(10, n);
+  if (!Number.isFinite(n) || n < 0 || n > 10) return null;
+  return n;
+}
+
+function __guestScoreFlagValue__(guest){
+  try{
+    if (!guest || typeof guest !== 'object') return null;
+    const keys = ['punteggio_assegnato','punteggioAssegnato','score_assigned','scoreAssigned','guest_score_assigned','guestScoreAssigned'];
+    for (const key of keys){
+      if (!Object.prototype.hasOwnProperty.call(guest, key)) continue;
+      const raw = guest[key];
+      if (raw === undefined || raw === null || String(raw).trim() === '') continue;
+      const v = String(raw).trim().toLowerCase();
+      return ['1','true','yes','si','sì','on'].includes(v);
+    }
+  }catch(_){ }
+  return null;
+}
+
+function __guestScoreInfoFromRecord__(guest){
+  try{
+    if (!guest || typeof guest !== 'object') return { assigned:false, value:null };
+    const explicit = __guestScoreFlagValue__(guest);
+    if (explicit === false) return { assigned:false, value:null };
+    const candidates = [guest.punteggio, guest.score, guest.guest_score, guest.guestScore, guest.valutazione, guest.rating];
+    for (const raw of candidates){
+      if (raw === undefined || raw === null || String(raw).trim() === '') continue;
+      const value = __guestScoreNormalize__(raw);
+      if (value === null) continue;
+      // Compatibilità: nelle build precedenti lo 0 veniva salvato come sentinella "vuoto".
+      // Lo 0 è un voto reale solo quando il nuovo flag esplicito lo dichiara assegnato.
+      if (value === 0 && explicit !== true) return { assigned:false, value:null };
+      return { assigned:true, value };
+    }
+  }catch(_){ }
+  return { assigned:false, value:null };
 }
 
 function __guestScoreFromRecord__(guest){
+  return __guestScoreInfoFromRecord__(guest).value;
+}
+
+function __guestScoreAssignedFromRecord__(guest){
+  return !!__guestScoreInfoFromRecord__(guest).assigned;
+}
+
+function __guestScoreIsAssignedState__(){
   try{
-    if (!guest || typeof guest !== "object") return 0;
-    const candidates = [guest.punteggio, guest.score, guest.guest_score, guest.guestScore, guest.valutazione, guest.rating];
-    for (const raw of candidates){
-      if (raw === undefined || raw === null || String(raw).trim() === "") continue;
-      return __guestScoreNormalize__(raw);
-    }
-  }catch(_){ }
-  return 0;
+    const score = __guestScoreNormalize__(state.guestScore);
+    if (state.guestScoreAssigned === true) return score !== null;
+    if (state.guestScoreAssigned === false) return false;
+    // fallback per eventuali restore di stato prodotti da build precedenti
+    return score !== null && score > 0;
+  }catch(_){ return false; }
 }
 
 function __syncGuestScoreButton__(){
@@ -6337,14 +6383,16 @@ function __syncGuestScoreButton__(){
     const btn = document.querySelector('#regTags .pay-score');
     if (!btn) return;
     const score = __guestScoreNormalize__(state.guestScore);
-    state.guestScore = score;
-    btn.dataset.score = score > 0 ? String(score) : '';
-    btn.classList.toggle('selected', score > 0);
-    btn.setAttribute('aria-pressed', score > 0 ? 'true' : 'false');
-    btn.setAttribute('aria-label', score > 0 ? `Punteggio ${score} su 10` : 'Punteggio non assegnato');
-    btn.title = score > 0 ? `Punteggio ${score}/10` : 'Punteggio: non assegnato';
+    const assigned = __guestScoreIsAssignedState__() && score !== null;
+    state.guestScore = assigned ? score : null;
+    state.guestScoreAssigned = assigned;
+    btn.dataset.score = assigned ? String(score) : '';
+    btn.classList.toggle('selected', assigned);
+    btn.setAttribute('aria-pressed', assigned ? 'true' : 'false');
+    btn.setAttribute('aria-label', assigned ? `Punteggio ${score} su 10` : 'Punteggio non assegnato');
+    btn.title = assigned ? `Punteggio ${score}/10` : 'Punteggio: non assegnato';
     const val = btn.querySelector('.guest-score-value');
-    if (val) val.textContent = score > 0 ? String(score) : '★';
+    if (val) val.textContent = assigned ? String(score) : '★';
     const editable = String(state.guestMode || '').toLowerCase() === 'edit';
     // In lettura il tasto resta semanticamente non modificabile ma deve ricevere il long press del popup design.
     btn.disabled = false;
@@ -6354,9 +6402,87 @@ function __syncGuestScoreButton__(){
   }catch(_){ }
 }
 
-function setGuestScore(value){
-  state.guestScore = __guestScoreNormalize__(value);
+function setGuestScore(value, assigned = true){
+  const score = __guestScoreNormalize__(value);
+  const isAssigned = assigned !== false && score !== null;
+  state.guestScore = isAssigned ? score : null;
+  state.guestScoreAssigned = isAssigned;
   __syncGuestScoreButton__();
+}
+
+function __ensureGuestScorePickerModal__(){
+  let modal = document.getElementById('guestScorePickerModal');
+  if (modal) return modal;
+  try{
+    modal = document.createElement('div');
+    modal.id = 'guestScorePickerModal';
+    modal.className = 'modal guest-score-picker-modal';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML = `<div class="guest-score-picker-card" role="dialog" aria-modal="true" aria-labelledby="guestScorePickerTitle"><div class="guest-score-picker-title" id="guestScorePickerTitle">Punteggio</div><div class="guest-score-picker-grid" role="listbox" aria-label="Seleziona punteggio">${Array.from({length:11},(_,i)=>`<div class="guest-score-picker-option" role="option" tabindex="0" data-score-choice="${i}" aria-label="Punteggio ${i} su 10">${i}</div>`).join('')}<div class="guest-score-picker-option guest-score-picker-clear" role="option" tabindex="0" data-score-clear="1" aria-label="Cancella punteggio">Cancella</div></div></div>`;
+    document.body.appendChild(modal);
+    const activate = (node) => {
+      if (!node) return;
+      if (node.dataset.scoreClear === '1') setGuestScore(null, false);
+      else if (node.dataset.scoreChoice !== undefined) setGuestScore(Number(node.dataset.scoreChoice), true);
+      __closeGuestScorePicker__();
+    };
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal){ __closeGuestScorePicker__(); return; }
+      const opt = e.target.closest?.('.guest-score-picker-option');
+      if (opt) activate(opt);
+    });
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape'){ e.preventDefault(); __closeGuestScorePicker__(); return; }
+      if (e.key === 'Enter' || e.key === ' '){
+        const opt = e.target.closest?.('.guest-score-picker-option');
+        if (opt){ e.preventDefault(); activate(opt); }
+      }
+    });
+  }catch(_){ return null; }
+  return modal;
+}
+
+function __refreshGuestScorePicker__(){
+  try{
+    const modal = document.getElementById('guestScorePickerModal');
+    if (!modal) return;
+    const assigned = __guestScoreIsAssignedState__();
+    const score = __guestScoreNormalize__(state.guestScore);
+    modal.querySelectorAll('.guest-score-picker-option[data-score-choice]').forEach((opt) => {
+      const on = assigned && Number(opt.dataset.scoreChoice) === Number(score);
+      opt.classList.toggle('selected', on);
+      opt.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }catch(_){ }
+}
+
+function __openGuestScorePicker__(){
+  try{
+    if (String(state.guestMode || '').toLowerCase() !== 'edit') return;
+    const modal = __ensureGuestScorePickerModal__();
+    if (!modal) return;
+    __refreshGuestScorePicker__();
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('guest-score-picker-open');
+    requestAnimationFrame(() => {
+      try{
+        const selected = modal.querySelector('.guest-score-picker-option.selected') || modal.querySelector('.guest-score-picker-option');
+        selected?.focus?.({preventScroll:true});
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+
+function __closeGuestScorePicker__(){
+  try{
+    const modal = document.getElementById('guestScorePickerModal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('guest-score-picker-open');
+  }catch(_){ }
 }
 
 // dDAE_3.197 — Design tasto Punteggio: due stati (vuoto/attivo), popup colore da long press in lettura.
@@ -6441,7 +6567,7 @@ function __applyGuestScoreButtonVisual__(forcedState, forcedVisual){
       __guestScoreButtonClearInlineVisual__(btn);
       return;
     }
-    const stateKey = String(forcedState || (__guestScoreNormalize__(state.guestScore) > 0 ? 'active' : 'inactive')).toLowerCase() === 'active' ? 'active' : 'inactive';
+    const stateKey = String(forcedState || (__guestScoreIsAssignedState__() ? 'active' : 'inactive')).toLowerCase() === 'active' ? 'active' : 'inactive';
     const visual = __guestScoreButtonVisualNormalize__(forcedVisual || saved?.[stateKey] || {}, stateKey);
     const bgHex = __operatoreColorHex__(visual.bg || (stateKey === 'active' ? 'orange-5' : 'white'));
     const borderHex = __operatoreColorHex__(visual.border || visual.bg || (stateKey === 'active' ? 'orange-5' : 'gray-3'));
@@ -6468,7 +6594,7 @@ async function __openGuestScoreButtonColorPicker__(){
       off: __guestScoreButtonVisualNormalize__(saved?.inactive || {}, 'inactive'),
       on: __guestScoreButtonVisualNormalize__(saved?.active || {}, 'active')
     };
-    const activeState = __guestScoreNormalize__(state.guestScore) > 0 ? 'on' : 'off';
+    const activeState = __guestScoreIsAssignedState__() ? 'on' : 'off';
     const drafts = { off:{...originals.off}, on:{...originals.on} };
     const payloadToVisual = (payload, fallback, stateName) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
@@ -6580,7 +6706,8 @@ guestMarriage: false,
   guestInvoiceRequested: false,
   guestPSRegistered: false,
   guestISTATRegistered: false,
-  guestScore: 0,
+  guestScore: null,
+  guestScoreAssigned: false,
   guestCheckInDone: false,
   guestArrivalFilter: "today",
   guestListScrollState: null,
@@ -24146,8 +24273,9 @@ function __statScoreSeriesForGuests__(sourceGuests){
     });
   });
   guests.forEach((guest)=>{
-    const score = (typeof __guestScoreFromRecord__ === 'function') ? __guestScoreFromRecord__(guest) : Number(guest?.punteggio || guest?.score || 0);
-    if (!Number.isFinite(Number(score)) || Number(score) < 1 || Number(score) > 10) return;
+    const assigned = (typeof __guestScoreAssignedFromRecord__ === 'function') ? __guestScoreAssignedFromRecord__(guest) : false;
+    const score = (typeof __guestScoreFromRecord__ === 'function') ? __guestScoreFromRecord__(guest) : null;
+    if (!assigned || score === null || !Number.isFinite(Number(score)) || Number(score) < 0 || Number(score) > 10) return;
     const iso = __statGuestMonthIso__(guest);
     const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
     if (monthIdx < 0 || monthIdx > 11) return;
@@ -24177,6 +24305,7 @@ function __statScoreSeriesForGuests__(sourceGuests){
     values:b.monthlySum.map((sum,idx)=> b.monthlyCount[idx] ? Math.round((sum/b.monthlyCount[idx])*100)/100 : 0),
     value:b.totalCount ? Math.round((b.totalSum/b.totalCount)*100)/100 : null,
     count:b.totalCount,
+    monthlyCount:b.monthlyCount.slice(),
     fallback:b.fallback
   })).sort((a,b)=>{
     const ao=order.has(a.key)?order.get(a.key):Number.MAX_SAFE_INTEGER;
@@ -24187,8 +24316,9 @@ function __statScoreSeriesForGuests__(sourceGuests){
 }
 
 function __statScoreFormat__(value){
+  if (value === null || value === undefined || String(value).trim() === '') return '—';
   const n = Number(value);
-  if (!Number.isFinite(n) || n <= 0) return '—';
+  if (!Number.isFinite(n) || n < 0) return '—';
   try{ return n.toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:2}) + ' / 10'; }catch(_){ return n.toFixed(1) + ' / 10'; }
 }
 
@@ -24224,7 +24354,7 @@ function drawStatPunteggioLineChart(canvasId){
       compareRows.forEach((row)=>{
         const key=String(row.key||'');
         if (!key || (selected && key!==String(selected))) return;
-        if (!(row.values||[]).some((v)=>Number(v||0)>0)) return;
+        if (!(row.monthlyCount||[]).some((v)=>Number(v||0)>0)) return;
         const base=currentByKey.get(key) || row;
         seriesList.push({
           key:key+'-compare-year', label:String(base.label||row.label||'PMS')+' '+String(compareYear), values:row.values,
@@ -27835,10 +27965,11 @@ function enterGuestCreateMode(){
   // Registrazioni (PS/ISTAT): default OFF
   state.guestPSRegistered = false;
   state.guestISTATRegistered = false;
-  state.guestScore = 0;
+  state.guestScore = null;
+  state.guestScoreAssigned = false;
   state.guestCheckInDone = false;
   setRegFlags("regTags", state.guestPSRegistered, state.guestISTATRegistered);
-  setGuestScore(0);
+  setGuestScore(null, false);
   try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
   try{ __syncGuestCheckInButton__(); }catch(_){ }
   // refresh rooms UI if present
@@ -28001,10 +28132,10 @@ refreshFloatingLabels();
   const istatReg = __guestRegistrationIsDone__(ospite, 'istat');
   state.guestPSRegistered = psReg;
   state.guestISTATRegistered = istatReg;
-  state.guestScore = __guestScoreFromRecord__(ospite);
+  { const scoreInfo = __guestScoreInfoFromRecord__(ospite); state.guestScore = scoreInfo.value; state.guestScoreAssigned = scoreInfo.assigned; }
   state.guestCheckInDone = __guestCheckInDone__(ospite);
   setRegFlags("regTags", psReg, istatReg);
-  setGuestScore(state.guestScore);
+  setGuestScore(state.guestScore, state.guestScoreAssigned);
   try{ __syncGuestCheckInButton__(); }catch(_){ }
   // stanze: in lettura possono arrivare in vari formati (legacy, JSON, date-convertite da Sheets)
   try {
@@ -30378,9 +30509,9 @@ function __populateGuestGroupInfoFromBooking__(ospite){
 
     state.guestPSRegistered = __guestRegistrationIsDone__(ospite, 'ps');
     state.guestISTATRegistered = __guestRegistrationIsDone__(ospite, 'istat');
-    state.guestScore = __guestScoreFromRecord__(ospite);
+    { const scoreInfo = __guestScoreInfoFromRecord__(ospite); state.guestScore = scoreInfo.value; state.guestScoreAssigned = scoreInfo.assigned; }
     try{ setRegFlags('regTags', state.guestPSRegistered, state.guestISTATRegistered); }catch(_){ }
-    try{ setGuestScore(state.guestScore); }catch(_){ }
+    try{ setGuestScore(state.guestScore, state.guestScoreAssigned); }catch(_){ }
     state.guestCheckInDone = __guestCheckInDone__(ospite);
     try{ updateGuestRemaining(); }catch(_){ }
     try{ updateGuestNotesIndicator(); }catch(_){ }
@@ -32456,7 +32587,8 @@ if (!name) return toast("Inserisci il nome");
     c: (state.guestColC ? "1" : ""),
     ps_registrato: (!localeOnly && state.guestPSRegistered) ? "1" : "",
     istat_registrato: (!localeOnly && state.guestISTATRegistered) ? "1" : "",
-    punteggio: __guestScoreNormalize__(state.guestScore),
+    punteggio: __guestScoreIsAssignedState__() ? __guestScoreNormalize__(state.guestScore) : "",
+    punteggio_assegnato: __guestScoreIsAssignedState__() ? "1" : "",
     checkin_effettuato: state.guestCheckInDone ? "1" : "",
     check_in_effettuato: state.guestCheckInDone ? "1" : "",
     checkInEffettuato: state.guestCheckInDone ? "1" : "",
@@ -33611,7 +33743,7 @@ function setupOspite(){
 
   bindRegPill("regTags");
 
-  // dDAE_3.197 — Punteggio: tap 1..10 e reset long press in modifica; long press design in lettura.
+  // dDAE_3.200 — Punteggio: tap in modifica apre il selettore 0..10 + Cancella; long press design in lettura.
   (function bindGuestScoreButton(){
     const btn = document.querySelector('#regTags .pay-score');
     if (!btn || btn.__ddaeScoreBound) return;
@@ -33624,22 +33756,15 @@ function setupOspite(){
     const readable = () => mode() === 'view';
     const clearPress = () => { try{ clearTimeout(pressTimer); }catch(_){ } pressTimer = null; };
     const startPress = (e) => {
-      if (!editable() && !readable()) return;
+      if (!readable()) return;
       try{ if (e?.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
       longFired = false;
       clearPress();
       pressTimer = setTimeout(() => {
         longFired = true;
         suppressUntil = Date.now() + 1000;
-        if (editable()){
-          setGuestScore(0);
-          try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
-          return;
-        }
-        if (readable()){
-          try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
-          try{ __openGuestScoreButtonColorPicker__(); }catch(_){ }
-        }
+        try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
+        try{ __openGuestScoreButtonColorPicker__(); }catch(_){ }
       }, 620);
     };
     const endPress = () => { clearPress(); };
@@ -33658,8 +33783,7 @@ function setupOspite(){
       try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
       if (!editable()) return;
       if (longFired || Date.now() < suppressUntil){ longFired = false; return; }
-      const current = __guestScoreNormalize__(state.guestScore);
-      setGuestScore(current >= 10 ? 1 : current + 1);
+      __openGuestScorePicker__();
     });
     btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } });
     __syncGuestScoreButton__();
@@ -34884,20 +35008,18 @@ function renderGuestCards(){
 
     const marriageOn = !!(first?.matrimonio);
     const hasNotes = !!(first?._hasNotesAny) || guestHasNotes(first);
-    const hasScore = (() => {
-      try{
-        const bookings = Array.isArray(first?._groupBookings) && first._groupBookings.length ? first._groupBookings : [first];
-        return bookings.some((guest) => __guestScoreFromRecord__(guest) > 0);
-      }catch(_){
-        return __guestScoreFromRecord__(first) > 0;
-      }
-    })();
     const stayNights = calcStayNights(first);
 
     const arrivoText = __guestCardStayRangeLabel__(first) || formatArrivalDayIT(first.check_in || first.checkIn || "") || "—";
 
     const roomsLabel = escapeHtml(__guestCardRoomsLabel__(first));
     const channelBadge = getGuestChannelBadgeData(first);
+    const hasGuestScore = (() => {
+      try{
+        const scoreRows = Array.isArray(first?._groupBookings) && first._groupBookings.length ? first._groupBookings : [first];
+        return scoreRows.some((row) => __guestScoreAssignedFromRecord__(row));
+      }catch(_){ return false; }
+    })();
 
     card.tabIndex = 0;
     card.setAttribute("role", "button");
@@ -34915,7 +35037,7 @@ function renderGuestCards(){
           ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
-            <span class="guest-name-tab guest-name-text"><span class="guest-name-label">${nome}</span>${hasScore ? `<span class="guest-score-star" aria-label="Punteggio presente" title="Punteggio presente">★</span>` : ``}</span>
+            <span class="guest-name-tab guest-name-text${hasGuestScore ? ' has-score' : ''}">${nome}</span>
             <span class="guest-arrivo guest-arrivo-under" aria-label="${escapeHtml(__translateExactText__('Arrivo') || 'Arrivo')}">${arrivoText}</span>
             ${roomsLabel ? `<span class="guest-contact guest-room-label" aria-label="${escapeHtml(__guestCardRoomsOccupiedAria__())}">${roomsLabel}</span>` : ``}
           </div>
@@ -45147,7 +45269,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.199';
+  var BUILD_TAG='dDAE_3.200';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49919,7 +50041,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.199',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.200',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
