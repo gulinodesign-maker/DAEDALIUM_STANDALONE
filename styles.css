@@ -32718,7 +32718,7 @@ body.ddae-dark .auth-account-option-dot{
   border-color:#667080;
 }
 
-/* dDAE_3.195 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
+/* dDAE_3.194 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
 #page-ospite #guestEconomicGrid #regTags{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-template-rows:var(--guest-econ-cell-h) !important;
@@ -32790,7 +32790,7 @@ body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-score:not(.select
   color:rgba(255,255,255,0.82) !important;
 }
 
-/* dDAE_3.195 — Registrazioni: tre tasti reali Polizia / ISTAT / Punteggio; punteggio sempre dentro il terzo tasto. */
+/* dDAE_3.194 — Registrazioni: tre tasti reali Polizia / ISTAT / Punteggio; punteggio sempre dentro il terzo tasto. */
 #page-ospite .guest-form-card #guestEconomicGrid #discountRow > .subfield.paywrap{
   border:0 !important;
   background:transparent !important;
