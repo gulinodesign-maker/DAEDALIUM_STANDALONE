@@ -32149,7 +32149,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 
 
-/* dDAE_3.187 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
+/* dDAE_3.188 — Scheda ospite: Channel senza testo, pallino Channel centrato nella cella 2x7 */
 #page-ospite .guest-form-card.is-edit #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2),
 #page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
   position:relative !important;
@@ -32224,7 +32224,7 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
 }
 
 
-/* dDAE_3.187 — Scheda ospite: nessun testo CHANNEL; pallino Channel centrato in ogni stato */
+/* dDAE_3.188 — Scheda ospite: nessun testo CHANNEL; pallino Channel centrato in ogni stato */
 #page-ospite #guestEconomicGrid #guestChannelRow > .subfield:nth-child(2){
   position:relative !important;
   display:flex !important;
@@ -32293,4 +32293,200 @@ body.ddae-dark #page-ospite .guest-form-card.is-view.guest-group-info-open #gues
   width:100% !important;
   text-align:center !important;
   line-height:1 !important;
+}
+
+/* dDAE_3.188 — Scheda ospite: LED pagamento/registrazioni trasformati in tasti iconografici */
+#page-ospite #guestEconomicGrid #depositType,
+#page-ospite #guestEconomicGrid #saldoType,
+#page-ospite #guestEconomicGrid #regTags{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:1fr !important;
+  align-items:center !important;
+  justify-items:center !important;
+  padding:8px 10px !important;
+  gap:0 !important;
+}
+
+#page-ospite #guestEconomicGrid #depositType > .pay-dot,
+#page-ospite #guestEconomicGrid #saldoType > .pay-dot,
+#page-ospite #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite #guestEconomicGrid #regTags > .pay-istat{
+  position:relative !important;
+  align-self:center !important;
+  justify-self:center !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  max-width:40px !important;
+  max-height:40px !important;
+  flex:0 0 40px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1.5px solid rgba(15,23,42,0.20) !important;
+  border-radius:12px !important;
+  background:#ffffff !important;
+  color:rgba(15,23,42,0.76) !important;
+  box-shadow:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+#page-ospite #guestEconomicGrid #depositType > .pay-dot::before,
+#page-ospite #guestEconomicGrid #saldoType > .pay-dot::before,
+#page-ospite #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite #guestEconomicGrid #regTags > .pay-istat::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:22px !important;
+  height:22px !important;
+  transform:translate(-50%,-50%) !important;
+  margin:0 !important;
+  background-color:currentColor !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:contain !important;
+  pointer-events:none !important;
+  z-index:2 !important;
+}
+
+/* stati attivi: il tasto si colora, l'icona resta ben leggibile */
+#page-ospite #guestEconomicGrid #depositType > .pay-cash.selected,
+#page-ospite #guestEconomicGrid #saldoType > .pay-cash.selected{
+  background:#34c759 !important;
+  border-color:#34c759 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+#page-ospite #guestEconomicGrid #depositType > .pay-elec.selected,
+#page-ospite #guestEconomicGrid #saldoType > .pay-elec.selected{
+  background:#32ade6 !important;
+  border-color:#32ade6 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+#page-ospite #guestEconomicGrid #depositType > .pay-receipt.selected,
+#page-ospite #guestEconomicGrid #saldoType > .pay-receipt.selected{
+  background:#ff3b30 !important;
+  border-color:#ff3b30 !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-ps.selected{
+  background:var(--ddae-reg-ps-bg, #111827) !important;
+  border-color:var(--ddae-reg-ps-border, #111827) !important;
+  color:var(--ddae-reg-ps-fg, #ffffff) !important;
+  box-shadow:none !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-istat.selected{
+  background:var(--ddae-reg-istat-bg, #32ade6) !important;
+  border-color:var(--ddae-reg-istat-border, #32ade6) !important;
+  color:var(--ddae-reg-istat-fg, #ffffff) !important;
+  box-shadow:none !important;
+}
+
+/* Registrazioni usa le stesse colonne verticali dei tasti pagamento: Polizia=1, ISTAT=3 */
+#page-ospite #guestEconomicGrid #regTags > .pay-ps{ grid-column:1 !important; }
+#page-ospite #guestEconomicGrid #regTags > .pay-gap{
+  grid-column:2 !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  max-width:40px !important;
+  max-height:40px !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-istat{ grid-column:3 !important; }
+
+body.ddae-dark #page-ospite #guestEconomicGrid #depositType > .pay-dot:not(.selected),
+body.ddae-dark #page-ospite #guestEconomicGrid #saldoType > .pay-dot:not(.selected),
+body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-ps:not(.selected),
+body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-istat:not(.selected){
+  background:#1f2937 !important;
+  border-color:rgba(255,255,255,0.24) !important;
+  color:rgba(255,255,255,0.82) !important;
+}
+
+/* dDAE_3.188 — enforcement iOS: geometria pulsanti iconografici prevalente sulle regole storiche */
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:1fr !important;
+  align-items:center !important;
+  justify-items:center !important;
+  padding:8px 10px !important;
+  gap:0 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType > .pay-dot,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType > .pay-dot,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType > .pay-dot,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType > .pay-dot,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat{
+  position:relative !important;
+  align-self:center !important;
+  justify-self:center !important;
+  flex:0 0 40px !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  max-width:40px !important;
+  max-height:40px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  transform:none !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #depositType > .pay-dot::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #depositType > .pay-dot::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #saldoType > .pay-dot::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #saldoType > .pay-dot::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-ps::before,
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-istat::before,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-istat::before{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:22px !important;
+  height:22px !important;
+  transform:translate(-50%,-50%) !important;
+  background-color:currentColor !important;
+  margin:0 !important;
+}
+#page-ospite .guest-form-card.is-edit #guestEconomicGrid #regTags > .pay-gap,
+#page-ospite .guest-form-card.is-view.guest-group-info-open #guestEconomicGrid #regTags > .pay-gap{
+  grid-column:2 !important;
+  flex:0 0 40px !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  max-width:40px !important;
+  max-height:40px !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
 }
