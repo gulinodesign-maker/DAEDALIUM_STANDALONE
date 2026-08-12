@@ -99,7 +99,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.192";
+const BUILD_VERSION = "3.193";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6098,6 +6098,7 @@ function __captureUiState(){
       depositReceipt: !!state.guestDepositReceipt,
       saldoReceipt: !!state.guestSaldoReceipt,
       invoiceRequested: !!state.guestInvoiceRequested,
+      score: __guestScoreNormalize__(state.guestScore),
       marriage: !!state.guestMarriage,
       group: !!state.guestGroup,
       colc: !!state.guestColC,
@@ -6154,6 +6155,7 @@ function __applyUiState(restore){
       state.guestDepositReceipt = !!restore.guest.depositReceipt;
       state.guestSaldoReceipt = !!restore.guest.saldoReceipt;
       state.guestInvoiceRequested = !!restore.guest.invoiceRequested;
+      state.guestScore = __guestScoreNormalize__(restore.guest.score);
       state.guestMarriage = !!restore.guest.marriage;
       state.guestGroup = !!(restore.guest.group);
       state.guestColC = !!(restore.guest.colc);
@@ -6198,6 +6200,7 @@ function __applyUiState(restore){
       try { setPayReceipt("depositType", state.guestDepositReceipt); } catch (_) {}
       try { setPayReceipt("saldoType", state.guestSaldoReceipt); } catch (_) {}
       try { __syncGuestInvoiceButton__(); } catch (_) {}
+      try { __syncGuestScoreButton__(); } catch (_) {}
       try { setMarriage(state.guestMarriage);
     setGroup(state.guestGroup);
     setColC(state.guestColC); } catch (_) {}
@@ -6307,6 +6310,49 @@ function setRegFlags(containerId, psOn, istatOn){
   setRegFlag(containerId, "istat", istatOn);
 }
 
+// dDAE_3.193 — Punteggio ospite 0..10, persistito sulla prenotazione.
+function __guestScoreNormalize__(value){
+  const n = parseInt(value ?? 0, 10);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(10, n));
+}
+
+function __guestScoreFromRecord__(guest){
+  try{
+    if (!guest || typeof guest !== "object") return 0;
+    const candidates = [guest.punteggio, guest.score, guest.guest_score, guest.guestScore, guest.valutazione, guest.rating];
+    for (const raw of candidates){
+      if (raw === undefined || raw === null || String(raw).trim() === "") continue;
+      return __guestScoreNormalize__(raw);
+    }
+  }catch(_){ }
+  return 0;
+}
+
+function __syncGuestScoreButton__(){
+  try{
+    const btn = document.querySelector('#regTags .pay-score');
+    if (!btn) return;
+    const score = __guestScoreNormalize__(state.guestScore);
+    state.guestScore = score;
+    btn.dataset.score = String(score);
+    btn.classList.toggle('selected', score > 0);
+    btn.setAttribute('aria-pressed', score > 0 ? 'true' : 'false');
+    btn.setAttribute('aria-label', score > 0 ? `Punteggio ${score} su 10` : 'Punteggio 0 su 10');
+    btn.title = score > 0 ? `Punteggio ${score}/10` : 'Punteggio: non assegnato';
+    const val = btn.querySelector('.guest-score-value');
+    if (val) val.textContent = String(score);
+    const editable = String(state.guestMode || '').toLowerCase() === 'edit';
+    btn.disabled = !editable;
+    btn.setAttribute('aria-disabled', editable ? 'false' : 'true');
+  }catch(_){ }
+}
+
+function setGuestScore(value){
+  state.guestScore = __guestScoreNormalize__(value);
+  __syncGuestScoreButton__();
+}
+
 function truthy(v){
   if (v === true) return true;
   if (v === false || v === undefined || v === null) return false;
@@ -6369,6 +6415,7 @@ guestMarriage: false,
   guestInvoiceRequested: false,
   guestPSRegistered: false,
   guestISTATRegistered: false,
+  guestScore: 0,
   guestCheckInDone: false,
   guestArrivalFilter: "today",
   guestListScrollState: null,
@@ -27436,8 +27483,10 @@ function enterGuestCreateMode(){
   // Registrazioni (PS/ISTAT): default OFF
   state.guestPSRegistered = false;
   state.guestISTATRegistered = false;
+  state.guestScore = 0;
   state.guestCheckInDone = false;
   setRegFlags("regTags", state.guestPSRegistered, state.guestISTATRegistered);
+  setGuestScore(0);
   try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
   try{ __syncGuestCheckInButton__(); }catch(_){ }
   // refresh rooms UI if present
@@ -27600,8 +27649,10 @@ refreshFloatingLabels();
   const istatReg = __guestRegistrationIsDone__(ospite, 'istat');
   state.guestPSRegistered = psReg;
   state.guestISTATRegistered = istatReg;
+  state.guestScore = __guestScoreFromRecord__(ospite);
   state.guestCheckInDone = __guestCheckInDone__(ospite);
   setRegFlags("regTags", psReg, istatReg);
+  setGuestScore(state.guestScore);
   try{ __syncGuestCheckInButton__(); }catch(_){ }
   // stanze: in lettura possono arrivare in vari formati (legacy, JSON, date-convertite da Sheets)
   try {
@@ -29973,7 +30024,9 @@ function __populateGuestGroupInfoFromBooking__(ospite){
 
     state.guestPSRegistered = __guestRegistrationIsDone__(ospite, 'ps');
     state.guestISTATRegistered = __guestRegistrationIsDone__(ospite, 'istat');
+    state.guestScore = __guestScoreFromRecord__(ospite);
     try{ setRegFlags('regTags', state.guestPSRegistered, state.guestISTATRegistered); }catch(_){ }
+    try{ setGuestScore(state.guestScore); }catch(_){ }
     state.guestCheckInDone = __guestCheckInDone__(ospite);
     try{ updateGuestRemaining(); }catch(_){ }
     try{ updateGuestNotesIndicator(); }catch(_){ }
@@ -30406,6 +30459,7 @@ function updateGuestFormModeClass(){
     card.classList.toggle("is-edit", !isView && mode === "edit");
     try{ __syncGuestNationalityPlacement__(); }catch(_){}
     try{ __syncGuestResidenceCityVisibility__(); }catch(_){}
+    try{ __syncGuestScoreButton__(); }catch(_){}
   }catch(_){}
 }
 
@@ -32048,6 +32102,7 @@ if (!name) return toast("Inserisci il nome");
     c: (state.guestColC ? "1" : ""),
     ps_registrato: (!localeOnly && state.guestPSRegistered) ? "1" : "",
     istat_registrato: (!localeOnly && state.guestISTATRegistered) ? "1" : "",
+    punteggio: __guestScoreNormalize__(state.guestScore),
     checkin_effettuato: state.guestCheckInDone ? "1" : "",
     check_in_effettuato: state.guestCheckInDone ? "1" : "",
     checkInEffettuato: state.guestCheckInDone ? "1" : "",
@@ -33201,6 +33256,51 @@ function setupOspite(){
   }
 
   bindRegPill("regTags");
+
+  // dDAE_3.193 — Punteggio: tap sequenziale 1..10, long press azzera. Solo in modalità modifica.
+  (function bindGuestScoreButton(){
+    const btn = document.querySelector('#regTags .pay-score');
+    if (!btn || btn.__ddaeScoreBound) return;
+    btn.__ddaeScoreBound = true;
+    let pressTimer = null;
+    let longFired = false;
+    let suppressUntil = 0;
+    const editable = () => String(state.guestMode || '').toLowerCase() === 'edit';
+    const clearPress = () => { try{ clearTimeout(pressTimer); }catch(_){ } pressTimer = null; };
+    const startPress = (e) => {
+      if (!editable()) return;
+      longFired = false;
+      clearPress();
+      pressTimer = setTimeout(() => {
+        if (!editable()) return;
+        longFired = true;
+        suppressUntil = Date.now() + 900;
+        setGuestScore(0);
+        try{ navigator.vibrate && navigator.vibrate(18); }catch(_){ }
+      }, 620);
+    };
+    const endPress = () => { clearPress(); };
+    try{
+      if (window.PointerEvent){
+        btn.addEventListener('pointerdown', startPress, { passive:true });
+        ['pointerup','pointercancel','pointerleave'].forEach((ev) => btn.addEventListener(ev, endPress, { passive:true }));
+      } else {
+        btn.addEventListener('touchstart', startPress, { passive:true });
+        ['touchend','touchcancel'].forEach((ev) => btn.addEventListener(ev, endPress, { passive:true }));
+        btn.addEventListener('mousedown', startPress, { passive:true });
+        ['mouseup','mouseleave'].forEach((ev) => btn.addEventListener(ev, endPress, { passive:true }));
+      }
+    }catch(_){ }
+    btn.addEventListener('click', (e) => {
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){ }
+      if (!editable()) return;
+      if (longFired || Date.now() < suppressUntil){ longFired = false; return; }
+      const current = __guestScoreNormalize__(state.guestScore);
+      setGuestScore(current >= 10 ? 1 : current + 1);
+    });
+    btn.addEventListener('contextmenu', (e) => { try{ e.preventDefault(); }catch(_){ } });
+    __syncGuestScoreButton__();
+  })();
 
   const guestChannelSel = document.getElementById("guestChannel");
   if (guestChannelSel && !guestChannelSel.__boundChannel){
@@ -44676,7 +44776,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.192';
+  var BUILD_TAG='dDAE_3.193';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46785,6 +46885,7 @@ try{
   var ALERTS = {
     ps:      { label:'P', title:'Alert schedine PS', bg:'gray-6',  border:'gray-6',  fg:'white', opacity:0.92 },
     istat:   { label:'I', title:'Alert ISTAT',       bg:'sky-5',   border:'sky-5',   fg:'white', opacity:0.92 },
+    score:   { label:'★', title:'Punteggio ospite',   bg:'orange-5',border:'orange-5',fg:'white', opacity:0.96 },
     payment: { label:'€', title:'Alert pagamenti',   bg:'yellow-4',border:'yellow-5',fg:'gray-6', opacity:0.96 },
     receipt: { label:'R', title:'Alert ricevute',    bg:'red-5',   border:'red-6',   fg:'white', opacity:0.96 },
     cashreceipt: { label:'CR', title:'Alert contanti senza ricevuta', bg:'green-5', border:'green-6', fg:'white', opacity:0.96 },
@@ -46863,6 +46964,11 @@ try{
         setRootVar(root, '--ddae-reg-istat-bg', bgCss);
         setRootVar(root, '--ddae-reg-istat-border', borderCss);
         setRootVar(root, '--ddae-reg-istat-fg', fgHex);
+      }
+      if (k === 'score'){
+        setRootVar(root, '--ddae-reg-score-bg', bgCss);
+        setRootVar(root, '--ddae-reg-score-border', borderCss);
+        setRootVar(root, '--ddae-reg-score-fg', fgHex);
       }
     });
     renderDots();
@@ -47044,6 +47150,7 @@ try{
       var alertKey = String(btn && btn.getAttribute && btn.getAttribute('data-alert-led') || '');
       if(alertKey === 'ps') return 'Polizia';
       if(alertKey === 'istat') return 'ISTAT';
+      if(alertKey === 'score') return 'Punteggio';
       if(alertKey === 'payment') return 'Pagamenti';
       if(alertKey === 'receipt') return 'Ricevute';
       if(alertKey === 'cashreceipt') return 'Contanti senza ricevuta';
@@ -49440,7 +49547,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.192',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.193',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

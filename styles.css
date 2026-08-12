@@ -32717,3 +32717,75 @@ body.ddae-dark .auth-account-option-dot{
   background:#171c25;
   border-color:#667080;
 }
+
+/* dDAE_3.193 — Scheda ospite: Polizia / ISTAT / Punteggio in sequenza 1-2-3 */
+#page-ospite #guestEconomicGrid #regTags{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:var(--guest-econ-cell-h) !important;
+  column-gap:6px !important;
+  align-items:stretch !important;
+  justify-items:stretch !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-ps,
+#page-ospite #guestEconomicGrid #regTags > .pay-istat,
+#page-ospite #guestEconomicGrid #regTags > .pay-score{
+  position:relative !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:56px !important;
+  height:var(--guest-econ-cell-h) !important;
+  min-height:var(--guest-econ-cell-h) !important;
+  max-height:var(--guest-econ-cell-h) !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border:1.5px solid rgba(15,23,42,0.20) !important;
+  border-radius:14px !important;
+  background:#ffffff !important;
+  color:rgba(15,23,42,0.76) !important;
+  box-shadow:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+  touch-action:manipulation !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-ps{ grid-column:1 !important; }
+#page-ospite #guestEconomicGrid #regTags > .pay-istat{ grid-column:2 !important; }
+#page-ospite #guestEconomicGrid #regTags > .pay-score{ grid-column:3 !important; }
+
+#page-ospite #guestEconomicGrid #regTags > .pay-score .guest-score-value{
+  display:block !important;
+  position:relative !important;
+  z-index:3 !important;
+  min-width:2ch !important;
+  text-align:center !important;
+  font-size:19px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:-0.02em !important;
+  color:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  pointer-events:none !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-score.selected{
+  background:var(--ddae-reg-score-bg, #f59e0b) !important;
+  border-color:var(--ddae-reg-score-border, #f59e0b) !important;
+  color:var(--ddae-reg-score-fg, #ffffff) !important;
+}
+#page-ospite #guestEconomicGrid #regTags > .pay-score:disabled{
+  opacity:1 !important;
+  cursor:default !important;
+}
+body.ddae-dark #page-ospite #guestEconomicGrid #regTags > .pay-score:not(.selected){
+  background:#1f2937 !important;
+  border-color:rgba(255,255,255,0.24) !important;
+  color:rgba(255,255,255,0.82) !important;
+}
