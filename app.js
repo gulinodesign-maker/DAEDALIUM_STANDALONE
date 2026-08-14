@@ -100,7 +100,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.204";
+const BUILD_VERSION = "3.205";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -35073,6 +35073,8 @@ function renderGuestCards(){
     const nome = escapeHtml(first.nome || String(first?.name ?? first?.guest ?? "").trim() || "Ospite");
 
     const insNo = (Number(first._displayInsNo) && Number(first._displayInsNo) > 0 && Number(first._displayInsNo) < 1e18) ? Number(first._displayInsNo) : null;
+    const insNoDigits = insNo ? String(Math.trunc(Math.abs(insNo))).length : 0;
+    const insNoDigitsClass = insNoDigits >= 4 ? ' is-digits-4plus' : (insNoDigits === 3 ? ' is-digits-3' : '');
 
     const nationalityOption = __readGuestNationalityFromRecord__(first);
     const nationalityFlag = escapeHtml(String(first?.country_flag ?? nationalityOption?.flag ?? '🏳️').trim() || '🏳️');
@@ -35114,7 +35116,7 @@ function renderGuestCards(){
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
         <div class="guest-main">
-          ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
+          ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}${insNoDigitsClass}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
           <div class="guest-nameblock">
             <div class="guest-name-line">
@@ -45352,7 +45354,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.204';
+  var BUILD_TAG='dDAE_3.205';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50124,7 +50126,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.204',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.205',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

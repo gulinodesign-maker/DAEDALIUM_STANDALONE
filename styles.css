@@ -4457,6 +4457,21 @@ border-color: rgba(255,255,255,.16);
 
 #page-ospiti .guest-main .guest-insno{
   margin-right: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+#page-ospiti .guest-insno.is-digits-3{
+  font-size: 17px;
+  letter-spacing: -0.4px;
+}
+
+#page-ospiti .guest-insno.is-digits-4plus{
+  font-size: 14px;
+  letter-spacing: -0.7px;
 }
 
 #page-ospiti .guest-insno.is-missing{
