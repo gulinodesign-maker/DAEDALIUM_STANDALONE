@@ -19687,6 +19687,7 @@ body[data-page="impostazioni"] main.wrap{
 }
 
 body.ddae-dark #page-statprenotazioni .stat-row,
+body.ddae-dark #page-statoccupazione .stat-row,
 body.ddae-dark #page-statchannel .stat-row,
 body.ddae-dark #page-statpulizie .stat-row{
   background: rgba(12,23,46,0.96) !important;
@@ -19695,9 +19696,11 @@ body.ddae-dark #page-statpulizie .stat-row{
   box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
 }
 body.ddae-dark #page-statprenotazioni .stat-row::before,
+body.ddae-dark #page-statoccupazione .stat-row::before,
 body.ddae-dark #page-statchannel .stat-row::before,
 body.ddae-dark #page-statpulizie .stat-row::before,
 body.ddae-dark #page-statprenotazioni .stat-row::after,
+body.ddae-dark #page-statoccupazione .stat-row::after,
 body.ddae-dark #page-statchannel .stat-row::after,
 body.ddae-dark #page-statpulizie .stat-row::after{
   background: transparent !important;
@@ -19707,6 +19710,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
 
 @media (orientation: landscape){
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen,
   body[data-page="statchannel"] #page-statchannel .stats-gen,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen{
     position: relative;
@@ -19715,12 +19719,14 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen > :not(.statgen-line-chart-wrap),
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen > :not(.statgen-line-chart-wrap),
   body[data-page="statchannel"] #page-statchannel .stats-gen > :not(.statgen-line-chart-wrap),
   body[data-page="statpulizie"] #page-statpulizie .stats-gen > :not(.statgen-line-chart-wrap){
     display: none !important;
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap{
     width: 100% !important;
@@ -19731,6 +19737,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-pie-chart-canvas,
   body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
     min-height: 100%;
@@ -19742,6 +19749,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
 
 /* dDAE_2.570a — Nuove pagine statistiche grafico lineare come Generali/Mensili/Spese */
 #page-statprenotazioni .stat-row,
+#page-statoccupazione .stat-row,
 #page-statchannel .stat-row,
 #page-statpulizie .stat-row{
   border: 0 !important;
@@ -19757,6 +19765,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   gap: 12px !important;
 }
 #page-statprenotazioni .stat-row::before,
+#page-statoccupazione .stat-row::before,
 #page-statchannel .stat-row::before,
 #page-statpulizie .stat-row::before{
   content: "" !important;
@@ -19766,6 +19775,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   opacity: 0 !important;
 }
 #page-statprenotazioni .stat-row::after,
+#page-statoccupazione .stat-row::after,
 #page-statchannel .stat-row::after,
 #page-statpulizie .stat-row::after{
   content: "";
@@ -19776,12 +19786,14 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   pointer-events: none;
 }
 #page-statprenotazioni .stat-row > *,
+#page-statoccupazione .stat-row > *,
 #page-statchannel .stat-row > *,
 #page-statpulizie .stat-row > *{
   position: relative;
   z-index: 1;
 }
 #page-statprenotazioni .stat-name,
+#page-statoccupazione .stat-name,
 #page-statchannel .stat-name,
 #page-statpulizie .stat-name{
   flex: 1 1 auto !important;
@@ -19792,6 +19804,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
 }
 #page-statprenotazioni .stat-val,
+#page-statoccupazione .stat-val,
 #page-statchannel .stat-val,
 #page-statpulizie .stat-val{
   flex: 0 0 auto !important;
@@ -19802,6 +19815,7 @@ body.ddae-dark #page-statpulizie .stat-row::after{
   -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
 }
 body.ddae-dark #page-statprenotazioni .stat-row,
+body.ddae-dark #page-statoccupazione .stat-row,
 body.ddae-dark #page-statchannel .stat-row,
 body.ddae-dark #page-statpulizie .stat-row{
   background: rgba(12,23,46,0.96) !important;
@@ -19809,14 +19823,17 @@ body.ddae-dark #page-statpulizie .stat-row{
   box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
 }
 body.ddae-dark #page-statprenotazioni .stat-row::after,
+body.ddae-dark #page-statoccupazione .stat-row::after,
 body.ddae-dark #page-statchannel .stat-row::after,
 body.ddae-dark #page-statpulizie .stat-row::after{
   border-color: rgba(148,163,184,0.28) !important;
 }
 body.ddae-dark #page-statprenotazioni .stat-name,
+body.ddae-dark #page-statoccupazione .stat-name,
 body.ddae-dark #page-statchannel .stat-name,
 body.ddae-dark #page-statpulizie .stat-name,
 body.ddae-dark #page-statprenotazioni .stat-val,
+body.ddae-dark #page-statoccupazione .stat-val,
 body.ddae-dark #page-statchannel .stat-val,
 body.ddae-dark #page-statpulizie .stat-val{
   color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
@@ -19825,7 +19842,9 @@ body.ddae-dark #page-statpulizie .stat-val{
 #page-statprenotazioni .stat-row:nth-child(1),
 #page-statpulizie .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
 #page-statprenotazioni .stat-row:nth-child(2){ --mcol: var(--p2) !important; }
+#page-statoccupazione .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
 #page-statchannel .stat-row:nth-child(1){ --mcol: var(--p1) !important; }
+#page-statoccupazione .stat-row:nth-child(2){ --mcol: var(--p8) !important; }
 #page-statchannel .stat-row:nth-child(2){ --mcol: var(--p8) !important; }
 #page-statpulizie .stat-row:nth-child(2){ --mcol: var(--p2) !important; }
 #page-statpulizie .stat-row:nth-child(3){ --mcol: var(--p3) !important; }
@@ -19835,12 +19854,14 @@ body.ddae-dark #page-statpulizie .stat-val{
 #page-statpulizie .stat-row:nth-child(7){ --mcol: var(--p7) !important; }
 #page-statpulizie .stat-row:nth-child(8){ --mcol: var(--p8) !important; }
 #page-statprenotazioni .stat-ico-wrap,
+#page-statoccupazione .stat-ico-wrap,
 #page-statchannel .stat-ico-wrap,
 #page-statpulizie .stat-ico-wrap{
   display: none !important;
 }
 @media (orientation: landscape){
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart{
     height: 100% !important;
@@ -19850,12 +19871,14 @@ body.ddae-dark #page-statpulizie .stat-val{
 
 /* dDAE_2.570 — filtro card grafici statistiche */
 #page-statprenotazioni .stat-row.is-selected,
+#page-statoccupazione .stat-row.is-selected,
 #page-statchannel .stat-row.is-selected,
 #page-statpulizie .stat-row.is-selected{
   transform: scale(0.985) !important;
   box-shadow: inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))), 0 10px 22px rgba(15,23,42,0.12) !important;
 }
 body.ddae-dark #page-statprenotazioni .stat-row.is-selected,
+body.ddae-dark #page-statoccupazione .stat-row.is-selected,
 body.ddae-dark #page-statchannel .stat-row.is-selected,
 body.ddae-dark #page-statpulizie .stat-row.is-selected{
   box-shadow: inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #6FB7D6))), 0 10px 24px rgba(0,0,0,0.28) !important;
@@ -19882,6 +19905,7 @@ body.ddae-dark #page-statpulizie .stat-row.is-selected{
   width: 20px;
   height: 20px;
 }
+#page-statoccupazione .stats-stack,
 #page-statchannel .stats-stack{
   padding-bottom: 18px;
 }
@@ -20728,6 +20752,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statmensili"] #page-statmensili .stats-gen,
   body[data-page="statspese"] #page-statspese .stats-gen,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen,
   body[data-page="statchannel"] #page-statchannel .stats-gen,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
@@ -20740,6 +20765,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statmensili"] #page-statmensili .stats-title,
   body[data-page="statspese"] #page-statspese .stats-title,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-title,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-title,
   body[data-page="statchannel"] #page-statchannel .stats-title,
   body[data-page="statpulizie"] #page-statpulizie .stats-title,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-title{
@@ -20754,6 +20780,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statmensili"] #page-statmensili .stats-divider,
   body[data-page="statspese"] #page-statspese .stats-divider,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-divider{
@@ -20800,6 +20827,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
@@ -20816,6 +20844,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
   body[data-page="statspese"] #page-statspese .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart{
@@ -20827,6 +20856,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statgen"] #page-statgen .stats-stack,
   body[data-page="statspese"] #page-statspese .stats-stack,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-stack,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-stack,
   body[data-page="statchannel"] #page-statchannel .stats-stack,
   body[data-page="statpulizie"] #page-statpulizie .stats-stack{
     display: flex !important;
@@ -20850,6 +20880,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statgen"] #page-statgen .stat-row,
   body[data-page="statspese"] #page-statspese .stat-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stat-row,
   body[data-page="statchannel"] #page-statchannel .stat-row,
   body[data-page="statpulizie"] #page-statpulizie .stat-row{
     min-height: 46px !important;
@@ -20860,6 +20891,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statgen"] #page-statgen .stat-row::after,
   body[data-page="statspese"] #page-statspese .stat-row::after,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stat-row::after,
+  body[data-page="statoccupazione"] #page-statoccupazione .stat-row::after,
   body[data-page="statchannel"] #page-statchannel .stat-row::after,
   body[data-page="statpulizie"] #page-statpulizie .stat-row::after{
     border-radius: 16px !important;
@@ -20867,6 +20899,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statgen"] #page-statgen .stat-name,
   body[data-page="statspese"] #page-statspese .stat-name,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stat-name,
+  body[data-page="statoccupazione"] #page-statoccupazione .stat-name,
   body[data-page="statchannel"] #page-statchannel .stat-name,
   body[data-page="statpulizie"] #page-statpulizie .stat-name{
     font-size: 16px !important;
@@ -20875,6 +20908,7 @@ body.ddae-dark #page-spese .spese-list-separator{
   body[data-page="statgen"] #page-statgen .stat-val,
   body[data-page="statspese"] #page-statspese .stat-val,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stat-val,
+  body[data-page="statoccupazione"] #page-statoccupazione .stat-val,
   body[data-page="statchannel"] #page-statchannel .stat-val,
   body[data-page="statpulizie"] #page-statpulizie .stat-val{
     font-size: 17px !important;
@@ -22257,6 +22291,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   body[data-page="statmensili"] #page-statmensili .content,
   body[data-page="statspese"] #page-statspese .content,
   body[data-page="statprenotazioni"] #page-statprenotazioni .content,
+  body[data-page="statoccupazione"] #page-statoccupazione .content,
   body[data-page="statchannel"] #page-statchannel .content,
   body[data-page="statpulizie"] #page-statpulizie .content,
   body[data-page="statcancellazioni"] #page-statcancellazioni .content{
@@ -22270,6 +22305,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   body[data-page="statmensili"] #page-statmensili .stats-gen,
   body[data-page="statspese"] #page-statspese .stats-gen,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen,
   body[data-page="statchannel"] #page-statchannel .stats-gen,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen{
@@ -22287,6 +22323,7 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap{
@@ -22304,10 +22341,12 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart,
   body[data-page="statspese"] #page-statspese .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart-canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-pie-chart-canvas,
   body[data-page="statchannel"] #page-statchannel .stats-pie-chart-canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart-canvas{
     width: 100% !important;
@@ -22320,10 +22359,12 @@ body.ddae-dark #page-calendario .cal-today-column-outline::after{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart canvas,
   body[data-page="statspese"] #page-statspese .statgen-line-chart canvas,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart canvas,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart canvas,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart canvas,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart canvas,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-pie-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-pie-chart,
   body[data-page="statchannel"] #page-statchannel .stats-pie-chart,
   body[data-page="statpulizie"] #page-statpulizie .stats-pie-chart{
     width: 100% !important;
@@ -24491,6 +24532,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-gen.stats-layered,
 #page-statspese .stats-gen.stats-layered,
 #page-statprenotazioni .stats-gen.stats-layered,
+#page-statoccupazione .stats-gen.stats-layered,
 #page-statchannel .stats-gen.stats-layered,
 #page-statpulizie .stats-gen.stats-layered,
 #page-statcancellazioni .stats-gen.stats-layered,
@@ -24508,6 +24550,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer,
 #page-statspese .stats-fixed-layer,
 #page-statprenotazioni .stats-fixed-layer,
+#page-statoccupazione .stats-fixed-layer,
 #page-statchannel .stats-fixed-layer,
 #page-statpulizie .stats-fixed-layer,
 #page-statcancellazioni .stats-fixed-layer,
@@ -24528,6 +24571,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-scroll-layer,
 #page-statspese .stats-scroll-layer,
 #page-statprenotazioni .stats-scroll-layer,
+#page-statoccupazione .stats-scroll-layer,
 #page-statchannel .stats-scroll-layer,
 #page-statpulizie .stats-scroll-layer,
 #page-statcancellazioni .stats-scroll-layer,
@@ -24551,6 +24595,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .stats-head-row,
 #page-statspese .stats-fixed-layer .stats-head-row,
 #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+#page-statoccupazione .stats-fixed-layer .stats-head-row,
 #page-statchannel .stats-fixed-layer .stats-head-row,
 #page-statpulizie .stats-fixed-layer .stats-head-row,
 #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -24567,6 +24612,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .stats-title,
 #page-statspese .stats-fixed-layer .stats-title,
 #page-statprenotazioni .stats-fixed-layer .stats-title,
+#page-statoccupazione .stats-fixed-layer .stats-title,
 #page-statchannel .stats-fixed-layer .stats-title,
 #page-statpulizie .stats-fixed-layer .stats-title,
 #page-statcancellazioni .stats-fixed-layer .stats-title,
@@ -24583,6 +24629,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-compare-actions,
 #page-statspese .stats-compare-actions,
 #page-statprenotazioni .stats-compare-actions,
+#page-statoccupazione .stats-compare-actions,
 #page-statchannel .stats-compare-actions,
 #page-statpulizie .stats-compare-actions,
 #page-statcancellazioni .stats-compare-actions,
@@ -24600,6 +24647,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-compare-btn,
 #page-statspese .stats-compare-btn,
 #page-statprenotazioni .stats-compare-btn,
+#page-statoccupazione .stats-compare-btn,
 #page-statchannel .stats-compare-btn,
 #page-statpulizie .stats-compare-btn,
 #page-statcancellazioni .stats-compare-btn,
@@ -24630,6 +24678,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .stats-divider,
 #page-statspese .stats-fixed-layer .stats-divider,
 #page-statprenotazioni .stats-fixed-layer .stats-divider,
+#page-statoccupazione .stats-fixed-layer .stats-divider,
 #page-statchannel .stats-fixed-layer .stats-divider,
 #page-statpulizie .stats-fixed-layer .stats-divider,
 #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -24641,6 +24690,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -24657,6 +24707,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .statgen-line-chart,
 #page-statspese .stats-fixed-layer .statgen-line-chart,
 #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+#page-statoccupazione .stats-fixed-layer .statgen-line-chart,
 #page-statchannel .stats-fixed-layer .statgen-line-chart,
 #page-statpulizie .stats-fixed-layer .statgen-line-chart,
 #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
@@ -24671,6 +24722,7 @@ body[data-page="spese"] .wrap{
   #page-statmensili .stats-compare-btn,
   #page-statspese .stats-compare-btn,
   #page-statprenotazioni .stats-compare-btn,
+  #page-statoccupazione .stats-compare-btn,
   #page-statchannel .stats-compare-btn,
   #page-statpulizie .stats-compare-btn,
   #page-statcancellazioni .stats-compare-btn,
@@ -24691,6 +24743,7 @@ body[data-page="spese"] .wrap{
   #page-statmensili .stats-gen.stats-layered,
   #page-statspese .stats-gen.stats-layered,
   #page-statprenotazioni .stats-gen.stats-layered,
+  #page-statoccupazione .stats-gen.stats-layered,
   #page-statchannel .stats-gen.stats-layered,
   #page-statpulizie .stats-gen.stats-layered,
   #page-statcancellazioni .stats-gen.stats-layered,
@@ -24703,6 +24756,7 @@ body[data-page="spese"] .wrap{
   #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -24716,6 +24770,7 @@ body[data-page="spese"] .wrap{
   #page-statmensili .stats-fixed-layer .statgen-line-chart,
   #page-statspese .stats-fixed-layer .statgen-line-chart,
   #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
   #page-statchannel .stats-fixed-layer .statgen-line-chart,
   #page-statpulizie .stats-fixed-layer .statgen-line-chart,
   #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
@@ -24732,6 +24787,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -24749,6 +24805,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -24766,6 +24823,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -24779,6 +24837,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -24797,11 +24856,13 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
   body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-pie-chart-canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-pie-chart-canvas,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-pie-chart-canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-pie-chart-canvas{
     display: flex !important;
@@ -24816,11 +24877,13 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer canvas,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer canvas,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer canvas,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer canvas,
   body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer canvas,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-pie-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-pie-chart,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-pie-chart,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-pie-chart{
     display: block !important;
@@ -24840,6 +24903,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
@@ -24860,6 +24924,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -24884,6 +24949,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -24906,6 +24972,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-title,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-title,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-title,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-title,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-title,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-title,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-title,
@@ -24918,6 +24985,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -24929,6 +24997,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -24953,11 +25022,13 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
   body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer canvas,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas{
     flex: 1 1 auto !important;
@@ -24975,6 +25046,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -24994,6 +25066,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-compare-btn,
   body[data-page="statspese"] #page-statspese .stats-compare-btn,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-compare-btn,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-compare-btn,
   body[data-page="statchannel"] #page-statchannel .stats-compare-btn,
   body[data-page="statpulizie"] #page-statpulizie .stats-compare-btn,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-compare-btn,
@@ -25020,6 +25093,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-gen.stats-layered,
 #page-statspese .stats-gen.stats-layered,
 #page-statprenotazioni .stats-gen.stats-layered,
+#page-statoccupazione .stats-gen.stats-layered,
 #page-statchannel .stats-gen.stats-layered,
 #page-statpulizie .stats-gen.stats-layered,
 #page-statcancellazioni .stats-gen.stats-layered,
@@ -25039,6 +25113,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
 #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
 #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+#page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
 #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
 #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
 #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25069,6 +25144,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
 #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
 #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+#page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
 #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
 #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
 #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25095,6 +25171,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .stats-head-row,
 #page-statspese .stats-fixed-layer .stats-head-row,
 #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+#page-statoccupazione .stats-fixed-layer .stats-head-row,
 #page-statchannel .stats-fixed-layer .stats-head-row,
 #page-statpulizie .stats-fixed-layer .stats-head-row,
 #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -25113,6 +25190,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .stats-divider,
 #page-statspese .stats-fixed-layer .stats-divider,
 #page-statprenotazioni .stats-fixed-layer .stats-divider,
+#page-statoccupazione .stats-fixed-layer .stats-divider,
 #page-statchannel .stats-fixed-layer .stats-divider,
 #page-statpulizie .stats-fixed-layer .stats-divider,
 #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -25126,6 +25204,7 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
 #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -25149,11 +25228,13 @@ body[data-page="spese"] .wrap{
 #page-statmensili .stats-fixed-layer .statgen-line-chart,
 #page-statspese .stats-fixed-layer .statgen-line-chart,
 #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+#page-statoccupazione .stats-fixed-layer .statgen-line-chart,
 #page-statchannel .stats-fixed-layer .statgen-line-chart,
 #page-statpulizie .stats-fixed-layer .statgen-line-chart,
 #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
 #page-statamministratore .stats-fixed-layer .statgen-line-chart,
 #page-statprenotazioni .stats-fixed-layer canvas,
+#page-statoccupazione .stats-fixed-layer canvas,
 #page-statchannel .stats-fixed-layer canvas,
 #page-statpulizie .stats-fixed-layer canvas{
   flex: 1 1 auto !important;
@@ -25172,6 +25253,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
@@ -25190,6 +25272,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25217,6 +25300,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25240,6 +25324,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -25261,6 +25346,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -25272,6 +25358,7 @@ body[data-page="spese"] .wrap{
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -25292,6 +25379,7 @@ body[data-page="spese"] .wrap{
 
 /* dDAE_2.908 — Statistiche: layer grafico fisso forzato per cancellazioni/ricevute/PMS/pulizie */
 body[data-page="statprenotazioni"] #page-statprenotazioni,
+body[data-page="statoccupazione"] #page-statoccupazione,
 body[data-page="statchannel"] #page-statchannel,
 body[data-page="statpulizie"] #page-statpulizie,
 body[data-page="statcancellazioni"] #page-statcancellazioni,
@@ -25305,6 +25393,7 @@ body[data-page="statamministratore"] #page-statamministratore{
 }
 
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
@@ -25325,6 +25414,7 @@ body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-l
 }
 
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25350,6 +25440,7 @@ body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-l
 }
 
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25375,6 +25466,7 @@ body[data-page="statamministratore"] #page-statamministratore .stats-gen.stats-l
 }
 
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -25397,6 +25489,7 @@ body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer
 }
 
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
@@ -25405,6 +25498,7 @@ body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line
 body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
 body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer canvas,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer canvas{
@@ -25418,6 +25512,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
 
 @media (orientation: landscape){
   body[data-page="statprenotazioni"] #page-statprenotazioni,
+  body[data-page="statoccupazione"] #page-statoccupazione,
   body[data-page="statchannel"] #page-statchannel,
   body[data-page="statpulizie"] #page-statpulizie,
   body[data-page="statcancellazioni"] #page-statcancellazioni,
@@ -25431,6 +25526,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25451,6 +25547,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -25467,6 +25564,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -25478,6 +25576,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -25495,6 +25594,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   }
 
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25542,6 +25642,7 @@ body[data-page="statgen"] #page-statgen,
 body[data-page="statmensili"] #page-statmensili,
 body[data-page="statspese"] #page-statspese,
 body[data-page="statprenotazioni"] #page-statprenotazioni,
+body[data-page="statoccupazione"] #page-statoccupazione,
 body[data-page="statchannel"] #page-statchannel,
 body[data-page="statpulizie"] #page-statpulizie,
 body[data-page="statcancellazioni"] #page-statcancellazioni,
@@ -25557,6 +25658,7 @@ body[data-page="statgen"] #page-statgen .stats-gen.stats-layered,
 body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
 body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
@@ -25578,6 +25680,7 @@ body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-fixed-
 body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25611,6 +25714,7 @@ body[data-page="statgen"] #page-statgen .stats-gen.stats-layered > .stats-scroll
 body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25643,6 +25747,7 @@ body[data-page="statgen"] #page-statgen .stats-fixed-layer .stats-head-row,
 body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
 body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -25663,6 +25768,7 @@ body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart-w
 body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -25685,11 +25791,13 @@ body[data-page="statgen"] #page-statgen .stats-fixed-layer .statgen-line-chart,
 body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
 body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
 body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
 body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer canvas,
 body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
 body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas,
 body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer canvas{
@@ -25720,6 +25828,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili,
   body[data-page="statspese"] #page-statspese,
   body[data-page="statprenotazioni"] #page-statprenotazioni,
+  body[data-page="statoccupazione"] #page-statoccupazione,
   body[data-page="statchannel"] #page-statchannel,
   body[data-page="statpulizie"] #page-statpulizie,
   body[data-page="statcancellazioni"] #page-statcancellazioni,
@@ -25732,6 +25841,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -25749,6 +25859,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -25764,6 +25875,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -25780,6 +25892,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -25791,6 +25904,7 @@ body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer c
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -27626,6 +27740,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili,
   body[data-page="statspese"] #page-statspese,
   body[data-page="statprenotazioni"] #page-statprenotazioni,
+  body[data-page="statoccupazione"] #page-statoccupazione,
   body[data-page="statchannel"] #page-statchannel,
   body[data-page="statpulizie"] #page-statpulizie,
   body[data-page="statcancellazioni"] #page-statcancellazioni,
@@ -27643,6 +27758,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered,
@@ -27666,6 +27782,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-fixed-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-fixed-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-fixed-layer,
@@ -27700,6 +27817,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statspese"] #page-statspese .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-gen.stats-layered > .stats-scroll-layer,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statchannel"] #page-statchannel .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statpulizie"] #page-statpulizie .stats-gen.stats-layered > .stats-scroll-layer,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-gen.stats-layered > .stats-scroll-layer,
@@ -27735,6 +27853,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-head-row,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-head-row,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-head-row,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-head-row,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-head-row,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-head-row,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-head-row,
@@ -27756,6 +27875,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .stats-divider,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .stats-divider,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .stats-divider,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .stats-divider,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .stats-divider,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .stats-divider,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .stats-divider,
@@ -27770,6 +27890,7 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart-wrap,
@@ -27794,11 +27915,13 @@ body.ddae-dark .laundry-weekday-btn.is-active{ background:rgba(215,196,163,.24);
   body[data-page="statmensili"] #page-statmensili .stats-fixed-layer .statgen-line-chart,
   body[data-page="statspese"] #page-statspese .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer .statgen-line-chart,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer .statgen-line-chart,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer .statgen-line-chart,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer .statgen-line-chart,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer .statgen-line-chart,
   body[data-page="statamministratore"] #page-statamministratore .stats-fixed-layer .statgen-line-chart,
   body[data-page="statprenotazioni"] #page-statprenotazioni .stats-fixed-layer canvas,
+  body[data-page="statoccupazione"] #page-statoccupazione .stats-fixed-layer canvas,
   body[data-page="statchannel"] #page-statchannel .stats-fixed-layer canvas,
   body[data-page="statpulizie"] #page-statpulizie .stats-fixed-layer canvas,
   body[data-page="statcancellazioni"] #page-statcancellazioni .stats-fixed-layer canvas{
@@ -30217,6 +30340,7 @@ body.ddae-dark .room-kind-badge{
   body[data-page="statmensili"] #page-statmensili .statgen-line-chart-wrap,
   body[data-page="statspese"] #page-statspese .statgen-line-chart-wrap,
   body[data-page="statprenotazioni"] #page-statprenotazioni .statgen-line-chart-wrap,
+  body[data-page="statoccupazione"] #page-statoccupazione .statgen-line-chart-wrap,
   body[data-page="statchannel"] #page-statchannel .statgen-line-chart-wrap,
   body[data-page="statpulizie"] #page-statpulizie .statgen-line-chart-wrap,
   body[data-page="statcancellazioni"] #page-statcancellazioni .statgen-line-chart-wrap,
@@ -30225,6 +30349,7 @@ body.ddae-dark .room-kind-badge{
   #page-statmensili .statgen-line-chart-wrap,
   #page-statspese .statgen-line-chart-wrap,
   #page-statprenotazioni .statgen-line-chart-wrap,
+  #page-statoccupazione .statgen-line-chart-wrap,
   #page-statchannel .statgen-line-chart-wrap,
   #page-statpulizie .statgen-line-chart-wrap,
   #page-statcancellazioni .statgen-line-chart-wrap,
@@ -30239,6 +30364,7 @@ body.ddae-dark .room-kind-badge{
   #page-statmensili canvas.statgen-line-chart,
   #page-statspese canvas.statgen-line-chart,
   #page-statprenotazioni canvas.statgen-line-chart,
+  #page-statoccupazione canvas.statgen-line-chart,
   #page-statchannel canvas.statgen-line-chart,
   #page-statpulizie canvas.statgen-line-chart,
   #page-statcancellazioni canvas.statgen-line-chart,
@@ -30252,9 +30378,11 @@ body.ddae-dark .room-kind-badge{
 
   /* Anche i contenitori dei grafici circolari delle sottocategorie ricevono il +90% verticale. */
   #page-statprenotazioni .stats-pie-chart-wrap,
+  #page-statoccupazione .stats-pie-chart-wrap,
   #page-statchannel .stats-pie-chart-wrap,
   #page-statpulizie .stats-pie-chart-wrap,
   #page-statprenotazioni .stats-pie-chart-canvas,
+  #page-statoccupazione .stats-pie-chart-canvas,
   #page-statchannel .stats-pie-chart-canvas,
   #page-statpulizie .stats-pie-chart-canvas{
     min-height:448px !important;
@@ -33089,47 +33217,13 @@ body.ddae-dark .guest-score-picker-option.selected{
 }
 
 
-/* dDAE_3.206 — Statistiche: occupazione per singola stanza */
-#page-statoccupazione .stat-room-occupancy-legend{
-  width:calc(100% - 20px);
-  margin:10px 10px 0;
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:8px;
-  align-items:stretch;
+
+
+/* dDAE_3.207 — Occupazione stanze allineata alla pagina CHANNEL */
+#page-statoccupazione .stats-stack{
+  width:100%;
 }
-#page-statoccupazione .stat-room-occupancy-legend-item{
-  min-width:0;
-  min-height:38px;
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:7px 10px;
-  border:1px solid var(--border,rgba(15,23,42,.18));
-  border-radius:12px;
-  background:var(--card,#ffffff);
-  box-shadow:none;
-}
-#page-statoccupazione .stat-room-occupancy-legend-line{
-  width:24px;
-  height:0;
-  flex:0 0 24px;
-  border-top:3px solid var(--room-line,#2B7CB4);
-}
-#page-statoccupazione .stat-room-occupancy-legend-label{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  color:var(--text,#0f172a);
-  font-size:13px;
-  font-weight:700;
-}
-body.ddae-dark #page-statoccupazione .stat-room-occupancy-legend-item{
-  background:var(--card,#0f172a);
-}
-@media (min-width:700px){
-  #page-statoccupazione .stat-room-occupancy-legend{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
+#page-statoccupazione .stat-row{
+  background-image:none !important;
+  box-shadow:none !important;
 }

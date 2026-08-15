@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.206";
+const BUILD_VERSION = "3.207";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5588,7 +5588,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
       stanzeRows: Array.isArray(state.stanzeRows) ? state.stanzeRows.slice() : []
     };
     state.statGenCompareLoading = false;
-    try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
+    try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     return state.statGenCompareGuests;
   }
 
@@ -5605,7 +5605,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
         servizi: Array.isArray(directSnapshot.servizi) ? directSnapshot.servizi.slice() : [],
         stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : []
       };
-      try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
+      try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     }
   }catch(_){ }
 
@@ -5622,7 +5622,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
         servizi: Array.isArray(state.statGenCompareSnapshot?.servizi) ? state.statGenCompareSnapshot.servizi.slice() : [],
         stanzeRows: Array.isArray(state.statGenCompareSnapshot?.stanzeRows) ? state.statGenCompareSnapshot.stanzeRows.slice() : (Array.isArray(state.stanzeRows) ? state.stanzeRows.slice() : [])
       };
-      try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
+      try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     }
   }catch(_){ }
 
@@ -5643,7 +5643,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
   }finally{
     state.statGenCompareLoading = false;
   }
-  try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
+  try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
   return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
 }
 
@@ -21706,7 +21706,7 @@ function __applyStatCardTextColor__(el, pageKey, cardKey, fallback){
     const borderHex = __graphColorValueToHex__(pair.border || pair.bg || fallback || '#2B7CB4', pair.bg || fallback || '#2B7CB4');
     const safePageKey = String(pageKey || '').trim().toLowerCase();
     const isDark = !!(__isDarkModeRuntime__ && __isDarkModeRuntime__());
-    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'].includes(safePageKey);
+    const useForcedDarkSurface = isDark && ['statgen','statspese','statmensili','statoccupazione','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'].includes(safePageKey);
     const fgHex = useForcedDarkSurface
       ? __graphColorValueToHex__(pair.fg || bgHex || fallback || '#2B7CB4', bgHex || fallback || '#2B7CB4')
       : __tagColorTextHex__(pair.bg || bgHex, pair.fg || '', false);
@@ -21757,6 +21757,7 @@ function __refreshStatCardsPage__(pageKey){
     if (pageKey === 'statgen') return renderStatGen();
     if (pageKey === 'statspese') return renderStatSpese();
     if (pageKey === 'statmensili') return renderStatMensili();
+    if (pageKey === 'statoccupazione') return renderStatOccupazione();
     if (pageKey === 'statprenotazioni') return renderStatRicevute();
     if (pageKey === 'statchannel') return renderStatChannel();
     if (pageKey === 'statpunteggio') return renderStatPunteggio();
@@ -21808,6 +21809,7 @@ function __statCardCategoryLabel__(pageKey){
   if (safePageKey === 'statgen') return 'Generali';
   if (safePageKey === 'statspese') return 'Spese';
   if (safePageKey === 'statmensili') return 'Mensili';
+  if (safePageKey === 'statoccupazione') return 'Occupazione';
   if (safePageKey === 'statprenotazioni') return 'Ricevuta';
   if (safePageKey === 'statchannel') return 'PMS';
   if (safePageKey === 'statpunteggio') return 'Punteggio';
@@ -23956,6 +23958,7 @@ function __refreshSpecificStatChart__(pageKey){
   try{
     if (safePageKey === 'statgen') return renderStatGen();
     if (safePageKey === 'statmensili') return renderStatMensili();
+    if (safePageKey === 'statoccupazione') return renderStatOccupazione();
     if (safePageKey === 'statspese') return renderStatSpese();
     if (safePageKey === 'statcancellazioni') return renderStatCancellazioni();
     if (safePageKey === 'statprenotazioni') return renderStatRicevute();
@@ -25706,8 +25709,25 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
   });
 }
 
-function __statOccupazioneRoomSeries__(){
-  const year = Number(state?.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+function __statOccupazioneRoomCardFallback__(slot, item){
+  let statsTheme = { bg:'gray-1', border:'gray-3', fg:'', opacity:0.75, bold:false };
+  try{ statsTheme = __statisticsCardThemeVisual__(); }catch(_){ }
+  let roomSpec = 'blue-4';
+  try{
+    const roomVisual = __roomCatalogVisualFromRoomsUi__(slot, item);
+    roomSpec = roomVisual?.bg || item?.colore || 'blue-4';
+  }catch(_){ roomSpec = item?.colore || 'blue-4'; }
+  return {
+    bg: statsTheme?.bg || 'gray-1',
+    border: statsTheme?.border || statsTheme?.bg || 'gray-3',
+    fg: roomSpec || statsTheme?.fg || 'blue-4',
+    opacity: __designBgOpacityNormalize__(statsTheme?.opacity ?? 0.75),
+    bold: !!statsTheme?.bold
+  };
+}
+
+function __statOccupazioneRoomSeriesForData__(sourceGuests, sourceStanzeRows, sourceYear){
+  const year = Number(sourceYear || state?.exerciseYear || loadExerciseYear() || new Date().getFullYear());
   const safeYear = Number.isFinite(year) ? year : new Date().getFullYear();
   const catalog = (() => {
     try{
@@ -25724,7 +25744,7 @@ function __statOccupazioneRoomSeries__(){
 
   const roomSlotsByGuestId = new Map();
   try{
-    (Array.isArray(state?.stanzeRows) ? state.stanzeRows : []).forEach((row) => {
+    (Array.isArray(sourceStanzeRows) ? sourceStanzeRows : []).forEach((row) => {
       const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
       const slot = parseInt(String(row?.stanza_num ?? row?.stanzaNum ?? row?.room_number ?? row?.roomNumber ?? row?.stanza ?? row?.room ?? '').trim(), 10);
       if (!gid || !validSlots.has(slot)) return;
@@ -25733,7 +25753,7 @@ function __statOccupazioneRoomSeries__(){
     });
   }catch(_){ }
 
-  const guests = Array.isArray(state?.statsGuests) ? state.statsGuests : (Array.isArray(state?.guests) ? state.guests : []);
+  const guests = Array.isArray(sourceGuests) ? sourceGuests : [];
   const maxSlot = Math.max(...Array.from(validSlots));
   const dayMs = 86400000;
 
@@ -25769,25 +25789,43 @@ function __statOccupazioneRoomSeries__(){
   return catalog.map((item) => {
     const slot = Number(item.slot);
     const monthlySets = occupiedNights.get(slot) || new Array(12).fill(null).map(() => new Set());
+    let occupiedYear = 0;
+    let availableYear = 0;
     const values = monthlySets.map((set, monthIndex) => {
       const days = new Date(Date.UTC(safeYear, monthIndex + 1, 0)).getUTCDate();
       const occupied = set instanceof Set ? set.size : 0;
+      occupiedYear += occupied;
+      availableYear += Math.max(0, Number(days || 0));
       if (!(days > 0)) return 0;
       return Math.round(Math.max(0, Math.min(100, (occupied / days) * 100)) * 10) / 10;
     });
-    let color = '#2B7CB4';
-    try{
-      const visual = __roomCatalogVisualFromRoomsUi__(slot, item);
-      color = __graphColorValueToHex__(visual?.bg || item?.colore || '#2B7CB4', '#2B7CB4');
-    }catch(_){ }
+    const value = availableYear > 0 ? Math.round(Math.max(0, Math.min(100, (occupiedYear / availableYear) * 100)) * 10) / 10 : 0;
     const numberLabel = String(item?.numero || slot || '').trim();
     const nameLabel = String(item?.nome || `Stanza ${numberLabel}`).trim();
-    return { key:`room-${slot}`, label:nameLabel, slot, numberLabel, values, color };
+    const fallback = __statOccupazioneRoomCardFallback__(slot, item);
+    const fallbackLine = __graphColorValueToHex__(fallback?.fg || 'blue-4', '#2B7CB4');
+    return { key:`room-${slot}`, label:nameLabel, slot, numberLabel, values, value, fallback, fallbackLine };
   });
 }
 
+function __statOccupazioneRoomSeries__(){
+  const guests = Array.isArray(state?.statsGuests) ? state.statsGuests : (Array.isArray(state?.guests) ? state.guests : []);
+  const stanzeRows = Array.isArray(state?.stanzeRows) ? state.stanzeRows : [];
+  return __statOccupazioneRoomSeriesForData__(guests, stanzeRows, state?.exerciseYear || loadExerciseYear());
+}
+
 function drawStatOccupazioneLineChart(canvasId){
-  const seriesList = __statOccupazioneRoomSeries__();
+  const rows = __statOccupazioneRoomSeries__();
+  let seriesList = rows.map((item) => ({
+    key:item.key,
+    label:item.label,
+    values:item.values,
+    color:__statChartLineColorFromRenderedCard__('statoccupazione', item.key, item.fallbackLine || '#2B7CB4')
+  })).filter((item) => __statChartSeriesIsVisible__('statoccupazione', item.key));
+  if (!seriesList.length && rows.length){
+    try{ __clearStatChartFilter__('statoccupazione'); }catch(_){ }
+    seriesList = rows.map((item) => ({ key:item.key, label:item.label, values:item.values, color:__statChartLineColorFromRenderedCard__('statoccupazione', item.key, item.fallbackLine || '#2B7CB4') }));
+  }
   __drawSharedMonthlyLineChart__(canvasId || 'statOccupazioneLineChart', seriesList[0]?.values || new Array(12).fill(0), {
     mode:'percent',
     seriesList,
@@ -25800,29 +25838,32 @@ function drawStatOccupazioneLineChart(canvasId){
 }
 
 function renderStatOccupazione(){
-  const legend = document.getElementById('statOccupazioneLegend');
-  const seriesList = drawStatOccupazioneLineChart('statOccupazioneLineChart');
-  if (!legend) return;
-  legend.innerHTML = '';
-  seriesList.forEach((series) => {
-    const item = document.createElement('div');
-    item.className = 'stat-room-occupancy-legend-item';
-    item.setAttribute('role', 'listitem');
-    const line = document.createElement('span');
-    line.className = 'stat-room-occupancy-legend-line';
-    line.style.setProperty('--room-line', String(series?.color || '#2B7CB4'));
-    const label = document.createElement('span');
-    label.className = 'stat-room-occupancy-legend-label';
-    label.textContent = String(series?.label || `Stanza ${series?.numberLabel || ''}`).trim();
-    item.append(line, label);
-    legend.appendChild(item);
-  });
-  legend.setAttribute('role', 'list');
+  try{ const title = document.querySelector('#page-statoccupazione .stats-title'); if (title) title.textContent = 'Occupazione stanze'; }catch(_){ }
+  const rows = __statOccupazioneRoomSeries__();
+  const stack = document.getElementById('statOccupazioneRows');
+  if (stack){
+    stack.innerHTML = rows.map((row) => `
+      <button class="stat-row" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
+        <span class="stat-name">${escapeHtml(row.label || `Stanza ${row.numberLabel || ''}`)}</span>
+        <span class="stat-val">${(Math.round((Number(row.value || 0) || 0) * 10) / 10).toLocaleString('it-IT', { minimumFractionDigits:1, maximumFractionDigits:1 })}%</span>
+      </button>
+    `).join('');
+    stack.querySelectorAll('.stat-row').forEach((card) => {
+      const row = rows.find((item) => String(item.key) === String(card.dataset.statCardKey || ''));
+      if (!row) return;
+      __applyStatCardTextColor__(card, 'statoccupazione', row.key, row.fallback || '#2B7CB4');
+      __bindStatCardColorLongPress__(card, 'statoccupazione', row.key, row.fallback || '#2B7CB4');
+      __bindStatChartCardToggle__(card, 'statoccupazione', row.key);
+      __setStatCardSelectionState__(card, 'statoccupazione', row.key);
+    });
+  }
+  __bindStatChartWrapReset__('statoccupazione');
   try{
     const chartWrap = document.querySelector('#page-statoccupazione .statgen-line-chart-wrap');
     __applyStatGenRegChartWrapVisual__(chartWrap);
     __bindStatSharedLineChartLongPress__(chartWrap);
   }catch(_){ }
+  try{ drawStatOccupazioneLineChart('statOccupazioneLineChart'); }catch(_){ }
 }
 
 function __statCancellazioniMonthlyCounts__(){
@@ -45506,7 +45547,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.206';
+  var BUILD_TAG='dDAE_3.207';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46228,24 +46269,25 @@ function syncGuestEmailActionLink(isView){
 /* dDAE_2.913 — Statistiche: confronto anni standardizzato su tutti i grafici + layer grafico fisso */
 (function(){
   const STAT_COMPARE_TOGGLE_IDS = [
-    'statGenCompareToggleBtn','statAmmCompareToggleBtn','statMensiliCompareToggleBtn',
+    'statGenCompareToggleBtn','statAmmCompareToggleBtn','statMensiliCompareToggleBtn','statOccupazioneCompareToggleBtn',
     'statSpeseCompareToggleBtn','statRicevuteCompareToggleBtn','statChannelCompareToggleBtn',
     'statPulizieCompareToggleBtn','statCancellazioniCompareToggleBtn'
   ];
   const STAT_COMPARE_YEAR_IDS = [
-    'statGenCompareYearBtn','statAmmCompareYearBtn','statMensiliCompareYearBtn',
+    'statGenCompareYearBtn','statAmmCompareYearBtn','statMensiliCompareYearBtn','statOccupazioneCompareYearBtn',
     'statSpeseCompareYearBtn','statRicevuteCompareYearBtn','statChannelCompareYearBtn',
     'statPulizieCompareYearBtn','statCancellazioniCompareYearBtn'
   ];
   const STAT_COMPARE_LABELS = {
     statGenCompareToggleBtn:'generali', statAmmCompareToggleBtn:'ricavi', statMensiliCompareToggleBtn:'mensili',
-    statSpeseCompareToggleBtn:'spese', statRicevuteCompareToggleBtn:'ricevute', statChannelCompareToggleBtn:'PMS',
+    statOccupazioneCompareToggleBtn:'occupazione', statSpeseCompareToggleBtn:'spese', statRicevuteCompareToggleBtn:'ricevute', statChannelCompareToggleBtn:'PMS',
     statPulizieCompareToggleBtn:'pulizie', statCancellazioniCompareToggleBtn:'cancellazioni'
   };
   const STAT_GRAPH_PAGES = [
     { page:'statgen', title:'Generali', toggle:'statGenCompareToggleBtn', year:'statGenCompareYearBtn', toggleLabel:'statGenCompareToggleBtnLabel', yearLabel:'statGenCompareYearBtnLabel' },
     { page:'statamministratore', title:'Ricavi', toggle:'statAmmCompareToggleBtn', year:'statAmmCompareYearBtn', toggleLabel:'statAmmCompareToggleBtnLabel', yearLabel:'statAmmCompareYearBtnLabel' },
     { page:'statmensili', title:'Mensili', toggle:'statMensiliCompareToggleBtn', year:'statMensiliCompareYearBtn', toggleLabel:'statMensiliCompareToggleBtnLabel', yearLabel:'statMensiliCompareYearBtnLabel' },
+    { page:'statoccupazione', title:'Occupazione stanze', toggle:'statOccupazioneCompareToggleBtn', year:'statOccupazioneCompareYearBtn', toggleLabel:'statOccupazioneCompareToggleBtnLabel', yearLabel:'statOccupazioneCompareYearBtnLabel' },
     { page:'statspese', title:'Spese generali', toggle:'statSpeseCompareToggleBtn', year:'statSpeseCompareYearBtn', toggleLabel:'statSpeseCompareToggleBtnLabel', yearLabel:'statSpeseCompareYearBtnLabel' },
     { page:'statprenotazioni', title:'Ricevuta', toggle:'statRicevuteCompareToggleBtn', year:'statRicevuteCompareYearBtn', toggleLabel:'statRicevuteCompareToggleBtnLabel', yearLabel:'statRicevuteCompareYearBtnLabel' },
     { page:'statchannel', title:'PMS', toggle:'statChannelCompareToggleBtn', year:'statChannelCompareYearBtn', toggleLabel:'statChannelCompareToggleBtnLabel', yearLabel:'statChannelCompareYearBtnLabel' },
@@ -46400,6 +46442,7 @@ function syncGuestEmailActionLink(isView){
   function redrawAllStatCompareCharts(){
     try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
     try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
+    try{ drawStatOccupazioneLineChart('statOccupazioneLineChart'); }catch(_){ }
     try{ drawStatSpesePercentLineChart('statSpeseLineChart'); }catch(_){ }
     try{ drawStatRicevuteLineChart('statRicevuteCanvas'); }catch(_){ }
     try{ drawStatChannelLineChart('statChannelCanvas'); }catch(_){ }
@@ -46590,6 +46633,37 @@ function syncGuestEmailActionLink(isView){
   };
   try{ drawStatChannelLineChart = window.drawStatChannelLineChart; }catch(_){ }
 
+  function statOccupazioneSeriesForSnapshot(guests, stanzeRows, year){
+    const rows = __statOccupazioneRoomSeriesForData__(Array.isArray(guests) ? guests : [], Array.isArray(stanzeRows) ? stanzeRows : [], year);
+    return rows.map((item)=>({
+      key:item.key,
+      label:item.label,
+      values:item.values,
+      color:__statChartLineColorFromRenderedCard__('statoccupazione', item.key, item.fallbackLine || '#2B7CB4')
+    }));
+  }
+  window.drawStatOccupazioneLineChart = function(canvasId){
+    const currentYear = state.exerciseYear || loadExerciseYear();
+    const currentGuests = Array.isArray(state.statsGuests) ? state.statsGuests : state.guests;
+    const currentRows = Array.isArray(state.stanzeRows) ? state.stanzeRows : [];
+    let seriesList = statOccupazioneSeriesForSnapshot(currentGuests, currentRows, currentYear).filter((item)=>__statChartSeriesIsVisible__('statoccupazione', item.key));
+    if (!seriesList.length){
+      try{ __clearStatChartFilter__('statoccupazione'); }catch(_){ }
+      seriesList = statOccupazioneSeriesForSnapshot(currentGuests, currentRows, currentYear);
+    }
+    addCompareSeriesToList(seriesList, 'statoccupazione', (snap)=>statOccupazioneSeriesForSnapshot(snap.guests, snap.stanzeRows, __ensureStatGenCompareYear__()));
+    __drawSharedMonthlyLineChart__(canvasId || 'statOccupazioneLineChart', (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
+      mode:'percent',
+      seriesList,
+      yMax:100,
+      bubbleFormatter:(value)=>`${Math.round((Number(value || 0) || 0) * 10) / 10}%`,
+      yTickFormatter:(value)=>`${Math.round(Number(value || 0) || 0)}%`,
+      pointAriaLabel:'Occupazione stanza'
+    });
+    return seriesList;
+  };
+  try{ drawStatOccupazioneLineChart = window.drawStatOccupazioneLineChart; }catch(_){ }
+
   function statPulizieSeriesForRows(rows, year){
     const backup = { exerciseYear:state.exerciseYear };
     try{ if (year) state.exerciseYear = String(year); return __statPulizieMonthlySeriesByOperator__(Array.isArray(rows) ? rows : []); }
@@ -46719,7 +46793,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.913 — Statistiche: misura layer grafico fisso e mantiene lo scroll card sotto il grafico */
 (function(){
-  const STAT_LAYER_PAGES = ['statgen','statmensili','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
+  const STAT_LAYER_PAGES = ['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
   let timer = 0;
   function pageContainer(page){
     try{ return document.querySelector('#page-' + page + ' .stats-gen.stats-layered'); }catch(_){ return null; }
@@ -46762,7 +46836,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.913 — Statistiche: riparazione layer fisso anche su cancellazioni/ricevute/PMS/pulizie */
 (function(){
-  const PAGES = ['statgen','statmensili','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
+  const PAGES = ['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
   let timer = 0;
   function pageEl(page){ try{ return document.getElementById('page-' + page); }catch(_){ return null; } }
   function directChildren(el){ try{ return Array.from(el.children || []); }catch(_){ return []; } }
@@ -46837,7 +46911,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.913 — Statistiche: refresh finale del layer fisso viewport e misura altezza */
 (function(){
-  const PAGES = ['statgen','statmensili','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
+  const PAGES = ['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore'];
   let timer = 0;
   function pageEl(page){ try{ return document.getElementById('page-' + page); }catch(_){ return null; } }
   function children(el){ try{ return Array.from(el.children || []); }catch(_){ return []; } }
@@ -46866,7 +46940,7 @@ function syncGuestEmailActionLink(isView){
     head.classList.add('stats-compare-head-row');
     return head;
   }
-  const TITLES = { statgen:'Generali', statmensili:'Mensili', statspese:'Spese generali', statprenotazioni:'Ricevuta', statchannel:'PMS', statpulizie:'Ore pulizia operatori', statcancellazioni:'Cancellazioni', statamministratore:'Ricavi' };
+  const TITLES = { statgen:'Generali', statmensili:'Mensili', statoccupazione:'Occupazione stanze', statspese:'Spese generali', statprenotazioni:'Ricevuta', statchannel:'PMS', statpulizie:'Ore pulizia operatori', statcancellazioni:'Cancellazioni', statamministratore:'Ricavi' };
   function unwrap(container){
     const fixed = container.querySelector(':scope > .stats-fixed-layer');
     const scroll = container.querySelector(':scope > .stats-scroll-layer');
@@ -50278,7 +50352,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.206',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.207',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
