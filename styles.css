@@ -33087,3 +33087,49 @@ body.ddae-dark .guest-score-picker-option.selected{
   user-select:none !important;
   -webkit-user-select:none !important;
 }
+
+
+/* dDAE_3.206 — Statistiche: occupazione per singola stanza */
+#page-statoccupazione .stat-room-occupancy-legend{
+  width:calc(100% - 20px);
+  margin:10px 10px 0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  align-items:stretch;
+}
+#page-statoccupazione .stat-room-occupancy-legend-item{
+  min-width:0;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:7px 10px;
+  border:1px solid var(--border,rgba(15,23,42,.18));
+  border-radius:12px;
+  background:var(--card,#ffffff);
+  box-shadow:none;
+}
+#page-statoccupazione .stat-room-occupancy-legend-line{
+  width:24px;
+  height:0;
+  flex:0 0 24px;
+  border-top:3px solid var(--room-line,#2B7CB4);
+}
+#page-statoccupazione .stat-room-occupancy-legend-label{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text,#0f172a);
+  font-size:13px;
+  font-weight:700;
+}
+body.ddae-dark #page-statoccupazione .stat-room-occupancy-legend-item{
+  background:var(--card,#0f172a);
+}
+@media (min-width:700px){
+  #page-statoccupazione .stat-room-occupancy-legend{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
