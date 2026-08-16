@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.207";
+const BUILD_VERSION = "3.208";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5782,7 +5782,7 @@ function __setTopserviziCenterLabel__(){
       const year = (!isNaN(d)) ? String(d.getFullYear()) : String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
       el.textContent = `${month} ${year}`.trim();
     } else if (state && state.page === "pulizie"){
-      const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
       el.textContent = formatPulizieTopserviziDateIT(startOfLocalDay(base)) || "Daedalium";
     } else {
       el.textContent = "Daedalium";
@@ -37859,7 +37859,7 @@ try{
 
   async function saveLaundryNow(){
     try{
-      if (!ensureCanEditPulizieDay()) return;
+      if (!ensureCanEditLaundryDay()) return;
       if (__savingLaundry){ __pendingLaundry = true; return; }
 
       // Salva SOLO le stanze effettivamente toccate (evita righe/report inutili)
@@ -38074,18 +38074,22 @@ try{
   };
 
   const getCleanDate = () => {
-    try{
-      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
-      if (__isOp) return toISODateLocal(new Date());
-    }catch(_){ }
     const d = state.cleanDay ? new Date(state.cleanDay) : new Date();
     return toISODateLocal(d);
   };
 
 
-  // --- Guard: OPERATORE può modificare SOLO il giorno corrente ---
-  const ONLY_TODAY_MSG = "è possibile memorizzare solo i dati del giorno corrente";
+  // --- Guard Operatore: ore solo oggi; biancheria oggi o giorno precedente ---
+  const ONLY_TODAY_MSG = "è possibile memorizzare le ore solo per il giorno corrente";
+  const LAUNDRY_DAY_MSG = "è possibile memorizzare la biancheria solo per oggi o per il giorno precedente";
   let __onlyTodayToastAt = 0;
+  let __laundryDayToastAt = 0;
+
+  const __cleanYesterdayISO = () => {
+    const d = startOfLocalDay(new Date());
+    d.setDate(d.getDate() - 1);
+    return toISODateLocal(d);
+  };
 
   const isCleanDayToday = () => {
     try { return getCleanDate() === toISODateLocal(new Date()); }
@@ -38100,12 +38104,31 @@ try{
     } catch (_) { return true; }
   };
 
+  const canEditLaundryDay = () => {
+    try {
+      const isOp = !!(state && state.session && isOperatoreSession(state.session));
+      if (!isOp) return true;
+      const selected = getCleanDate();
+      return selected === toISODateLocal(new Date()) || selected === __cleanYesterdayISO();
+    } catch (_) { return true; }
+  };
+
   const ensureCanEditPulizieDay = () => {
     if (canEditPulizieDay()) return true;
     const now = Date.now();
     if (now - __onlyTodayToastAt > 800) {
       __onlyTodayToastAt = now;
       try { toast(ONLY_TODAY_MSG, "orange"); } catch (_) { try { toast(ONLY_TODAY_MSG); } catch (__){ } }
+    }
+    return false;
+  };
+
+  const ensureCanEditLaundryDay = () => {
+    if (canEditLaundryDay()) return true;
+    const now = Date.now();
+    if (now - __laundryDayToastAt > 800) {
+      __laundryDayToastAt = now;
+      try { toast(LAUNDRY_DAY_MSG, "orange"); } catch (_) { try { toast(LAUNDRY_DAY_MSG); } catch (__){ } }
     }
     return false;
   };
@@ -38428,7 +38451,7 @@ try{
     // Quando cambi giorno: griglia subito vuota, poi (se ci sono) applica dati salvati.
     if (clearFirst) clearAllSlots();
     try{
-      const day = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+      const day = state.cleanDay ? new Date(state.cleanDay) : new Date();
       const data = toISODateLocal(day);
       const res = await api("pulizie", { method:"GET", params:{ data }, showLoader:false });
 
@@ -38490,7 +38513,7 @@ const buildPuliziePayload = (roomsList = null) => {
   };
 
   const startPress = (slot) => {
-    if (!ensureCanEditPulizieDay()) return;
+    if (!ensureCanEditLaundryDay()) return;
     clearPress();
     pressTarget = slot;
     pressTimer = setTimeout(() => {
@@ -38504,7 +38527,7 @@ const buildPuliziePayload = (roomsList = null) => {
   };
 
   const tapSlot = (slot) => {
-    if (!ensureCanEditPulizieDay()) return;
+    if (!ensureCanEditLaundryDay()) return;
     try{ __sfxTap(); }catch(_){ }
     slot.classList.remove("is-saved");
     writeCell(slot, readCell(slot) + 1);
@@ -38600,6 +38623,7 @@ if (cleanSaveHours){
 if (cleanResetLaundry){
   bindFastTap(cleanResetLaundry, async () => {
     try{
+      if (!ensureCanEditLaundryDay()) return;
       // azzera tutte le celle biancheria (griglia pulizie)
       // IMPORTANTE: marca tutte le stanze/celle come "dirty" così il salvataggio parte davvero
       // e lo script può cancellare i record quando tutto è a zero.
@@ -38661,48 +38685,86 @@ if (cleanResetAll){
     };
   }catch(_){ }
 
+  const __syncCleanNavLimits = () => {
+    try{
+      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
+      const nav = document.querySelector("#page-pulizie .clean-nav");
+      if (nav) nav.style.display = "";
+      if (!__isOp){
+        if (cleanPrev) cleanPrev.disabled = false;
+        if (cleanNext) cleanNext.disabled = false;
+        if (cleanToday) cleanToday.disabled = false;
+        return;
+      }
+      const selected = getCleanDate();
+      const today = toISODateLocal(new Date());
+      const yesterday = __cleanYesterdayISO();
+      if (cleanPrev) cleanPrev.disabled = (selected === yesterday);
+      if (cleanNext) cleanNext.disabled = (selected === today);
+      if (cleanToday) cleanToday.disabled = (selected === today);
+    }catch(_){ }
+  };
+
   const updateCleanLabel = () => {
     const lab = document.getElementById("cleanDateLabel");
-    const base = (state && state.session && isOperatoreSession(state.session)) ? new Date() : (state.cleanDay ? new Date(state.cleanDay) : new Date());
+    const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
     const day = startOfLocalDay(base);
     if (lab) lab.textContent = formatFullDateIT(day);
+    try{ __syncCleanNavLimits(); }catch(_){ }
     try{ if (state && state.page === "pulizie") __setTopserviziCenterLabel__(); }catch(_){ }
   };
 
-  const shiftClean = (deltaDays) => {
+  const __flushPendingPulizieBeforeDayChange = async () => {
     try{
-      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
-      if (__isOp){
-        state.cleanDay = startOfLocalDay(new Date()).toISOString();
-        updateCleanLabel();
-        try{ loadPulizieForDay(); }catch(_){ }
-        try{ loadOperatoriForDay(); }catch(_){ }
-        return;
-      }
+      const hadLaundryTimer = !!__laundrySaveT;
+      const hadHoursTimer = !!__hoursSaveT;
+      if (__laundrySaveT){ clearTimeout(__laundrySaveT); __laundrySaveT = null; }
+      if (__hoursSaveT){ clearTimeout(__hoursSaveT); __hoursSaveT = null; }
+      if (hadLaundryTimer || (__dirtyLaundryCells && __dirtyLaundryCells.size)) await saveLaundryNow();
+      if (hadHoursTimer) await saveHoursNow();
     }catch(_){ }
+  };
+
+  const shiftClean = async (deltaDays) => {
     const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
     const d = startOfLocalDay(base);
     d.setDate(d.getDate() + deltaDays);
+
+    try{
+      const __isOp = !!(state && state.session && isOperatoreSession(state.session));
+      if (__isOp){
+        const target = toISODateLocal(d);
+        const today = toISODateLocal(new Date());
+        const yesterday = __cleanYesterdayISO();
+        if (target !== today && target !== yesterday){
+          updateCleanLabel();
+          return;
+        }
+      }
+    }catch(_){ }
+
+    await __flushPendingPulizieBeforeDayChange();
     state.cleanDay = d.toISOString();
     updateCleanLabel();
-    try{ loadPulizieForDay(); }catch(_){ }
-    try{ loadOperatoriForDay(); }catch(_){ }
+    try{ await loadPulizieForDay(); }catch(_){ }
+    try{ await loadOperatoriForDay(); }catch(_){ }
   };
 
-  if (cleanPrev) cleanPrev.addEventListener("click", () => shiftClean(-1));
-  if (cleanNext) cleanNext.addEventListener("click", () => shiftClean(1));
-  if (cleanToday) cleanToday.addEventListener("click", () => {
+  if (cleanPrev) cleanPrev.addEventListener("click", () => { try{ shiftClean(-1); }catch(_){ } });
+  if (cleanNext) cleanNext.addEventListener("click", () => { try{ shiftClean(1); }catch(_){ } });
+  if (cleanToday) cleanToday.addEventListener("click", async () => {
+    try{ await __flushPendingPulizieBeforeDayChange(); }catch(_){ }
     state.cleanDay = startOfLocalDay(new Date()).toISOString();
     updateCleanLabel();
-    try{ loadPulizieForDay(); }catch(_){ }
-    try{ loadOperatoriForDay(); }catch(_){ }
+    try{ await loadPulizieForDay(); }catch(_){ }
+    try{ await loadOperatoriForDay(); }catch(_){ }
   });
 
   // inizializza label se apri direttamente la pagina
   try{
     const __isOp = !!(state && state.session && isOperatoreSession(state.session));
     const nav = document.querySelector("#page-pulizie .clean-nav");
-    if (nav) nav.style.display = __isOp ? "none" : "";
+    if (nav) nav.style.display = "";
     if (__isOp){
       state.cleanDay = startOfLocalDay(new Date()).toISOString();
     } else {
@@ -45547,7 +45609,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.207';
+  var BUILD_TAG='dDAE_3.208';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50352,7 +50414,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.207',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.208',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
