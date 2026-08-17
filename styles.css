@@ -7289,7 +7289,7 @@ body[data-page="inserisci"] #page-inserisci .card .hd{
 }
 
 body.ddae-dark .statgen-line-chart-wrap{
-  background:var(--statgen-chart-bg, transparent) !important;
+  background:#000000 !important;
 }
 
 .statgen-line-chart-wrap.is-pressing{

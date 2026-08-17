@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.208";
+const BUILD_VERSION = "3.209";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -16243,6 +16243,8 @@ function __applyDarkMode__(enabled){
   try{ __pillApplyAll__(); }catch(_){ }
   try{ __dateRangeCalendarApplyTheme__(); }catch(_){ }
   try{ __applyGuestListCardAll__(); }catch(_){ }
+  try{ __applyStatSharedLineChartWrapVisualToAll__(); }catch(_){ }
+  try{ __refreshStatSharedLineCharts__(); }catch(_){ }
 }
 
 function __setDarkMode__(enabled){
@@ -25071,16 +25073,19 @@ function __applyStatSharedLineChartChangesToCategory__(payload, changed, sourceP
 
 function __statSharedLineChartResolvedSurface__(visual, isDark){
   try{
-    const bgHex = __graphColorValueToHex__(visual?.bg || (isDark ? '#0f172a' : '#ffffff'), isDark ? '#0f172a' : '#ffffff');
+    const bgHex = __graphColorValueToHex__(visual?.bg || '#ffffff', '#ffffff');
     const opacity = __designBgOpacityNormalize__(visual?.opacity ?? 0);
     if (!isDark) return { bg: hexToRgba(bgHex, opacity), border: 'transparent', bgHex, opacity };
-    const lum = __colorLuminance__(bgHex);
-    const useForcedDarkSurface = opacity < 0.18 || lum > 0.58;
-    const resolvedBg = useForcedDarkSurface ? 'rgba(12,23,46,0.96)' : hexToRgba(bgHex, Math.max(0.20, opacity));
-    const resolvedBorder = useForcedDarkSurface ? 'rgba(148,163,184,0.22)' : hexToRgba(__graphColorValueToHex__(visual?.border || bgHex, bgHex), 0.38);
-    return { bg: resolvedBg, border: resolvedBorder, bgHex, opacity, useForcedDarkSurface };
+    const borderHex = __graphColorValueToHex__(visual?.border || visual?.fg || '#94a3b8', '#94a3b8');
+    return {
+      bg: '#000000',
+      border: hexToRgba(borderHex, 0.30),
+      bgHex: '#000000',
+      opacity: 1,
+      useForcedDarkSurface: true
+    };
   }catch(_){
-    return { bg: isDark ? 'rgba(12,23,46,0.96)' : 'transparent', border: isDark ? 'rgba(148,163,184,0.22)' : 'transparent', bgHex: isDark ? '#0f172a' : '#ffffff', opacity: 0, useForcedDarkSurface: !!isDark };
+    return { bg: isDark ? '#000000' : 'transparent', border: isDark ? 'rgba(148,163,184,0.22)' : 'transparent', bgHex: isDark ? '#000000' : '#ffffff', opacity: isDark ? 1 : 0, useForcedDarkSurface: !!isDark };
   }
 }
 
@@ -25440,6 +25445,31 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     return { x, y, value, idx };
   });
 
+  const drawSeriesFill = (seriesPoints, cfg = {}) => {
+    if (!Array.isArray(seriesPoints) || seriesPoints.length < 2) return;
+    const colorHex = __graphColorValueToHex__(cfg.color || lineColor, defaultLineColor);
+    const isCompareSeries = Array.isArray(cfg.dash) && cfg.dash.length > 0;
+    const peakY = Math.max(pad.top, Math.min(...seriesPoints.map((pt) => Number(pt?.y || baseY))));
+    const gradient = ctx.createLinearGradient(0, peakY, 0, baseY);
+    const topAlpha = isCompareSeries ? (isDark ? 0.16 : 0.13) : (isDark ? 0.32 : 0.26);
+    const midAlpha = isCompareSeries ? (isDark ? 0.07 : 0.055) : (isDark ? 0.13 : 0.10);
+    gradient.addColorStop(0, hexToRgba(colorHex, topAlpha));
+    gradient.addColorStop(0.55, hexToRgba(colorHex, midAlpha));
+    gradient.addColorStop(1, hexToRgba(colorHex, 0));
+    ctx.save();
+    ctx.beginPath();
+    seriesPoints.forEach((pt, idx)=>{
+      if (idx === 0) ctx.moveTo(pt.x, pt.y);
+      else ctx.lineTo(pt.x, pt.y);
+    });
+    ctx.lineTo(seriesPoints[seriesPoints.length - 1].x, baseY);
+    ctx.lineTo(seriesPoints[0].x, baseY);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    ctx.restore();
+  };
+
   const drawSeries = (seriesPoints, cfg = {}) => {
     if (!Array.isArray(seriesPoints) || !seriesPoints.length) return;
     ctx.save();
@@ -25466,6 +25496,12 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   };
 
   const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || []) }));
+  renderedSeries.forEach((item) => {
+    drawSeriesFill(item.points, {
+      color: item.color || lineColor,
+      dash: item.dash || []
+    });
+  });
   renderedSeries.forEach((item) => {
     drawSeries(item.points, {
       color: item.color || lineColor,
@@ -45609,7 +45645,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.208';
+  var BUILD_TAG='dDAE_3.209';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50414,7 +50450,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.208',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.209',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
