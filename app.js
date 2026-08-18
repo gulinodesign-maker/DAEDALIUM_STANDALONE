@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.214";
+const BUILD_VERSION = "3.215";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -23842,7 +23842,7 @@ function __computeStatGenFromData__(data){
   return { fiscalMode, fatturatoTotale: fatturato, speseTotali: speseTot, senzaRicevuta, conRicevuta, ivaDaVersare, guadagnoTotale: guadagno, giacenzaCassa: giacenza };
 }
 
-function __statGenSeriesListFromData__(data){
+function __statGenSeriesListFromData__(data, sourceYear){
   const statGen = __computeStatGenFromData__(data || {});
   const revenueData = __statGenRegistrationsByMonth__(Array.isArray(data?.guests) ? data.guests : []);
   const spese = __statSpeseMonthlyBreakdownForRows__(Array.isArray(data?.spese) ? data.spese : []);
@@ -23853,15 +23853,25 @@ function __statGenSeriesListFromData__(data){
     const saldoRec = _isRicevutaFlag(guest, 'saldo');
     return { primary: (depRec ? dep : 0) + (saldoRec ? saldo : 0), secondary: (depRec ? 0 : dep) + (saldoRec ? 0 : saldo) };
   });
-  const revenueCum = __statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0));
-  const speseCum = __statMonthlyCumulative__(spese.totale || new Array(12).fill(0));
-  const withRecCum = __statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0));
-  const withoutRecCum = __statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0));
+  const revenueRaw = revenueData.monthlyRevenue || new Array(12).fill(0);
+  const speseRaw = spese.totale || new Array(12).fill(0);
+  const withRecRaw = ricevute.primary || new Array(12).fill(0);
+  const withoutRecRaw = ricevute.secondary || new Array(12).fill(0);
+  const revenueCum = __statMonthlyCumulative__(revenueRaw);
+  const speseCum = __statMonthlyCumulative__(speseRaw);
+  const withRecCum = __statMonthlyCumulative__(withRecRaw);
+  const withoutRecCum = __statMonthlyCumulative__(withoutRecRaw);
   const ivaTotal = Number(statGen?.ivaDaVersare || 0) || 0;
   const revenueTotal = Math.max(1, Number(statGen?.fatturatoTotale || 0) || 0);
   const ivaCum = revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100);
   const gainCum = revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100);
   const cashCum = gainCum.slice();
+  const yy = Number(sourceYear || revenueData.sourceYear || 0);
+  const revenueEnd = __statLastActiveMonthIndex__(revenueRaw, yy);
+  const speseEnd = __statLastActiveMonthIndex__(speseRaw, yy);
+  const withRecEnd = __statLastActiveMonthIndex__(withRecRaw, yy);
+  const withoutRecEnd = __statLastActiveMonthIndex__(withoutRecRaw, yy);
+  const gainEnd = Math.max(revenueEnd, speseEnd);
   return {
     'fatturato-totale': revenueCum,
     'spese-totali': speseCum,
@@ -23869,7 +23879,16 @@ function __statGenSeriesListFromData__(data){
     'con-ricevuta': withRecCum,
     'iva-da-versare': ivaCum,
     'guadagno-totale': gainCum,
-    'giacenza-in-cassa': cashCum
+    'giacenza-in-cassa': cashCum,
+    __endIndexByKey: {
+      'fatturato-totale': revenueEnd,
+      'spese-totali': speseEnd,
+      'senza-ricevuta': withoutRecEnd,
+      'con-ricevuta': withRecEnd,
+      'iva-da-versare': revenueEnd,
+      'guadagno-totale': gainEnd,
+      'giacenza-in-cassa': gainEnd
+    }
   };
 }
 
@@ -24056,6 +24075,30 @@ function __statMonthlyCumulative__(values){
   });
 }
 
+// dDAE_3.215 — una serie mensile deve terminare nell'ultimo mese con dati reali.
+// Serve soprattutto per i grafici cumulativi: i mesi successivi non devono
+// prolungare artificialmente l'ultimo totale disponibile.
+function __statLastActiveMonthIndex__(values, year){
+  const list = Array.isArray(values) ? values.slice(0, 12) : [];
+  let end = -1;
+  for (let i = Math.min(11, list.length - 1); i >= 0; i -= 1){
+    const value = Number(list[i] || 0) || 0;
+    if (Math.abs(value) > 0.0001){ end = i; break; }
+  }
+  let yy = Number(year);
+  if (!Number.isFinite(yy)){
+    try{ yy = Number(state && state.exerciseYear); }catch(_){ yy = Number.NaN; }
+  }
+  if (!Number.isFinite(yy)){
+    try{ yy = Number((typeof loadExerciseYear === 'function') ? loadExerciseYear() : ''); }catch(_){ yy = Number.NaN; }
+  }
+  try{
+    const now = new Date();
+    if (Number.isFinite(yy) && yy === Number(now.getFullYear())) end = Math.min(end, Number(now.getMonth()));
+  }catch(_){ }
+  return Math.max(-1, Math.min(11, end));
+}
+
 function __statMaskMonthlyValuesByCard__(values, cardKey){
   const selected = String(cardKey || '').trim();
   if (!selected) return (Array.isArray(values) ? values : []).slice();
@@ -24121,23 +24164,33 @@ function __statGenSeriesList__(){
   const revenueData = __statGenRegistrationsByMonth__();
   const spese = __statSpeseMonthlyBreakdown__();
   const ricevute = __statRicevuteMonthlySeries__();
-  const revenueCum = __statZeroFutureMonths__(__statMonthlyCumulative__(revenueData.monthlyRevenue || new Array(12).fill(0)));
-  const speseCum = __statZeroFutureMonths__(__statMonthlyCumulative__(spese.totale || new Array(12).fill(0)));
-  const withRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(ricevute.primary || new Array(12).fill(0)));
-  const withoutRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(ricevute.secondary || new Array(12).fill(0)));
+  const revenueRaw = revenueData.monthlyRevenue || new Array(12).fill(0);
+  const speseRaw = spese.totale || new Array(12).fill(0);
+  const withRecRaw = ricevute.primary || new Array(12).fill(0);
+  const withoutRecRaw = ricevute.secondary || new Array(12).fill(0);
+  const revenueCum = __statZeroFutureMonths__(__statMonthlyCumulative__(revenueRaw));
+  const speseCum = __statZeroFutureMonths__(__statMonthlyCumulative__(speseRaw));
+  const withRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(withRecRaw));
+  const withoutRecCum = __statZeroFutureMonths__(__statMonthlyCumulative__(withoutRecRaw));
   const ivaTotal = Number(statGen?.ivaDaVersare || 0) || 0;
   const revenueTotal = Math.max(1, Number(statGen?.fatturatoTotale || 0) || 0);
   const ivaCum = __statZeroFutureMonths__(revenueCum.map((value) => Math.round(((value / revenueTotal) * ivaTotal) * 100) / 100));
   const gainCum = __statZeroFutureMonths__(revenueCum.map((value, idx) => Math.round(((value - (Number(speseCum[idx] || 0) || 0)) * 100)) / 100));
   const cashCum = gainCum.slice();
+  const selectedYear = Number(state?.exerciseYear || ((typeof loadExerciseYear === 'function') ? loadExerciseYear() : ''));
+  const revenueEnd = __statLastActiveMonthIndex__(revenueRaw, selectedYear);
+  const speseEnd = __statLastActiveMonthIndex__(speseRaw, selectedYear);
+  const withRecEnd = __statLastActiveMonthIndex__(withRecRaw, selectedYear);
+  const withoutRecEnd = __statLastActiveMonthIndex__(withoutRecRaw, selectedYear);
+  const gainEnd = Math.max(revenueEnd, speseEnd);
   const defs = [
-    { key:'fatturato-totale', label:'Fatturato totale', values: revenueCum, fallback:'#2b7cb4' },
-    { key:'spese-totali', label:'Spese totali', values: speseCum, fallback:'#e05a4f' },
-    { key:'senza-ricevuta', label:'Senza ricevuta', values: withoutRecCum, fallback:'#9aa3af' },
-    { key:'con-ricevuta', label:'Con ricevuta', values: withRecCum, fallback:'#6aa0b3' },
-    { key:'iva-da-versare', label:__translateText__('IVA da versare'), values: ivaCum, fallback:'#d39b3b' },
-    { key:'guadagno-totale', label:'Guadagno totale', values: gainCum, fallback:'#c9772b' },
-    { key:'giacenza-in-cassa', label:'Giacenza in cassa', values: cashCum, fallback:'#2b7cb4' }
+    { key:'fatturato-totale', label:'Fatturato totale', values: revenueCum, endIndex:revenueEnd, fallback:'#2b7cb4' },
+    { key:'spese-totali', label:'Spese totali', values: speseCum, endIndex:speseEnd, fallback:'#e05a4f' },
+    { key:'senza-ricevuta', label:'Senza ricevuta', values: withoutRecCum, endIndex:withoutRecEnd, fallback:'#9aa3af' },
+    { key:'con-ricevuta', label:'Con ricevuta', values: withRecCum, endIndex:withRecEnd, fallback:'#6aa0b3' },
+    { key:'iva-da-versare', label:__translateText__('IVA da versare'), values: ivaCum, endIndex:revenueEnd, fallback:'#d39b3b' },
+    { key:'guadagno-totale', label:'Guadagno totale', values: gainCum, endIndex:gainEnd, fallback:'#c9772b' },
+    { key:'giacenza-in-cassa', label:'Giacenza in cassa', values: cashCum, endIndex:gainEnd, fallback:'#2b7cb4' }
   ];
   return defs.map((item) => ({
     ...item,
@@ -25364,6 +25417,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: String(item?.key || `series-${idx+1}`),
         label: String(item?.label || item?.key || `Serie ${idx+1}`),
         values: new Array(12).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
+        endIndex: Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11,
         color: String(item?.color || lineColor),
         dash: Array.isArray(item?.dash) ? item.dash : [],
         pointFill: String(item?.pointFill || pointFill),
@@ -25376,6 +25430,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: 'primary',
         label: 'Serie principale',
         values: vals,
+        endIndex: 11,
         color: lineColor,
         dash: [],
         pointFill,
@@ -25387,6 +25442,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: 'compare',
         label: 'Confronto',
         values: compareVals,
+        endIndex: 11,
         color: compareLineColor,
         dash: [5, 4],
         pointFill: comparePointFill,
@@ -25396,9 +25452,11 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         visible: true
       }] : []);
 
-  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
+  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), endIndex:11, color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
   const maxValue = activeSeries.reduce((best, item) => {
-    return Math.max(best, ...(item.values || []).map((value) => Number(value || 0) || 0));
+    const last = Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11;
+    const visibleValues = last >= 0 ? (item.values || []).slice(0, last + 1) : [];
+    return Math.max(best, ...visibleValues.map((value) => Number(value || 0) || 0));
   }, 0);
   const yMax = Math.max(1, Number(opts.yMax || 0) || __statLineChartNiceMax__(maxValue));
   const yTickFormatter = (typeof opts.yTickFormatter === 'function') ? opts.yTickFormatter : ((value)=> String(Math.round(Number(value || 0) || 0)));
@@ -25439,11 +25497,15 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.lineTo(pad.left + chartW, baseY);
   ctx.stroke();
 
-  const makePoints = (series) => series.map((value, idx)=>{
-    const x = pad.left + (chartW / 11) * idx;
-    const y = baseY - ((value / yMax) * chartH);
-    return { x, y, value, idx };
-  });
+  const makePoints = (series, endIndex = 11) => {
+    const last = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(endIndex)))) : 11;
+    if (last < 0) return [];
+    return (Array.isArray(series) ? series : []).slice(0, last + 1).map((value, idx)=>{
+      const x = pad.left + (chartW / 11) * idx;
+      const y = baseY - ((value / yMax) * chartH);
+      return { x, y, value, idx };
+    });
+  };
 
   // dDAE_3.210: curva cubica monotona (PCHIP-like).
   // Passa sempre dai valori reali mensili ma ammorbidisce i segmenti senza creare
@@ -25548,7 +25610,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.restore();
   };
 
-  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || []) }));
+  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex) }));
   renderedSeries.forEach((item) => {
     drawSeriesFill(item.points, {
       color: item.color || lineColor,
@@ -25571,10 +25633,10 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
-  const labelPoints = renderedSeries[0]?.points || makePoints(new Array(12).fill(0));
-  labelPoints.forEach((pt, idx)=>{
-    ctx.fillText(labels[idx] || String(idx + 1), pt.x, height - 5);
-  });
+  for (let idx = 0; idx < 12; idx += 1){
+    const x = pad.left + (chartW / 11) * idx;
+    ctx.fillText(labels[idx] || String(idx + 1), x, height - 5);
+  }
 
   let peak = null;
   renderedSeries.forEach((item) => {
@@ -25626,7 +25688,7 @@ function drawStatGenRegistrationsLineChart(canvasId){
       const compareSource = hasValidSnapshot
         ? state.statGenCompareSnapshot
         : { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], spese: [], report: null, servizi: [] };
-      const compareMap = __statGenSeriesListFromData__(compareSource || {});
+      const compareMap = __statGenSeriesListFromData__(compareSource || {}, compareYear);
       const currentByKey = {};
       seriesList.forEach((item) => { currentByKey[String(item?.key || '')] = item; });
       const compareKeys = selected ? [selected] : seriesList.map((item) => String(item?.key || '')).filter(Boolean);
@@ -25639,6 +25701,7 @@ function drawStatGenRegistrationsLineChart(canvasId){
           key: String(key) + '-compare-year',
           label: String(base.label || 'Confronto') + ' ' + String(compareYear),
           values: compareValues,
+          endIndex: Number.isFinite(Number(compareMap?.__endIndexByKey?.[key])) ? Number(compareMap.__endIndexByKey[key]) : 11,
           color: base.color || '#9aa3af',
           dash: [6,4],
           pointFill: '#ffffff',
@@ -45746,7 +45809,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.214';
+  var BUILD_TAG='dDAE_3.215';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -46729,6 +46792,7 @@ function syncGuestEmailActionLink(isView){
           key: key + '-compare-year',
           label: String(base.label || row.label || 'Confronto') + ' ' + String(compareYear),
           values: vals,
+          endIndex: Number.isFinite(Number(row?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(row.endIndex)))) : 11,
           color: base.color || row.color || '#9aa3af',
           dash: [6,4], pointFill:'#ffffff', lineWidth:1.8, radius:2.5, pointLineWidth:1.4
         });
@@ -46780,14 +46844,17 @@ function syncGuestEmailActionLink(isView){
   const oldDrawSpese = (typeof window.drawStatSpesePercentLineChart === 'function') ? window.drawStatSpesePercentLineChart : drawStatSpesePercentLineChart;
   window.drawStatSpesePercentLineChart = function(canvasId){
     const data = __statSpeseMonthlyBreakdown__();
-    const build = (source, compareYear) => [
-      { key:'totale-spese', label:'Totale spese', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.totale), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','totale-spese','#2b7cb4') },
-      { key:'contanti', label:'Contanti', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.contanti), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','contanti','#2563eb') },
-      { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.tassa), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','tassa-soggiorno','#c7b198') },
-      { key:'iva-22', label:'IVA 22%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva22), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','iva-22','#f29c50') },
-      { key:'iva-10', label:'IVA 10%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva10), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','iva-10','#6aa0b3') },
-      { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva4), compareYear ? { year:compareYear } : undefined), color: __statChartLineColorFromRenderedCard__('statspese','iva-4','#2b7cb4') }
-    ];
+    const build = (source, compareYear) => {
+      const yy = compareYear || state.exerciseYear || ((typeof loadExerciseYear === 'function') ? loadExerciseYear() : '');
+      return [
+        { key:'totale-spese', label:'Totale spese', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.totale), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.totale, yy), color: __statChartLineColorFromRenderedCard__('statspese','totale-spese','#2b7cb4') },
+        { key:'contanti', label:'Contanti', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.contanti), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.contanti, yy), color: __statChartLineColorFromRenderedCard__('statspese','contanti','#2563eb') },
+        { key:'tassa-soggiorno', label:'Tassa soggiorno', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.tassa), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.tassa, yy), color: __statChartLineColorFromRenderedCard__('statspese','tassa-soggiorno','#c7b198') },
+        { key:'iva-22', label:'IVA 22%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva22), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.iva22, yy), color: __statChartLineColorFromRenderedCard__('statspese','iva-22','#f29c50') },
+        { key:'iva-10', label:'IVA 10%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva10), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.iva10, yy), color: __statChartLineColorFromRenderedCard__('statspese','iva-10','#6aa0b3') },
+        { key:'iva-4', label:'IVA 4%', values: __statZeroFutureMonths__(__statMonthlyCumulative__(source.iva4), compareYear ? { year:compareYear } : undefined), endIndex:__statLastActiveMonthIndex__(source.iva4, yy), color: __statChartLineColorFromRenderedCard__('statspese','iva-4','#2b7cb4') }
+      ];
+    };
     let seriesList = build(data).filter((item)=>__statChartSeriesIsVisible__('statspese', item.key));
     if (!seriesList.length){ try{ __clearStatChartFilter__('statspese'); }catch(_){ } seriesList = build(data); }
     addCompareSeriesToList(seriesList, 'statspese', (snap)=> build(__statSpeseMonthlyBreakdownForRows__(Array.isArray(snap.spese) ? snap.spese : []), __ensureStatGenCompareYear__()));
@@ -50551,7 +50618,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.214',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.215',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
