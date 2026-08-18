@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.213";
+const BUILD_VERSION = "3.214";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -34427,16 +34427,34 @@ function sortGuestGroups(groups){
     }catch(_){ }
     return "";
   };
+  const checkoutTodayPriority = (guest) => {
+    try{
+      const today = todayISO();
+      const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
+        ? guest._groupBookings
+        : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
+      const hasCheckoutToday = rows.some((row) => {
+        const iso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
+        return !!iso && iso === today;
+      });
+      return hasCheckoutToday ? 0 : 1;
+    }catch(_){ return 1; }
+  };
 
   const out = (groups || []).slice();
   out.sort((a,b) => {
-    // dDAE_3.213 — regola principale: ordine cronologico di arrivo sempre rispettato.
-    // Solo a parità di giorno di arrivo, chi ha già effettuato il check-in viene prima.
+    // dDAE_3.214 — regola principale: ordine cronologico di arrivo sempre rispettato.
+    // A parità di giorno di arrivo, il check-out odierno precede un pernottamento ancora in corso;
+    // poi, a parità di stato, chi ha già effettuato il check-in viene prima.
     const arrivalA = arrivalKey(a);
     const arrivalB = arrivalKey(b);
     if (arrivalA && arrivalB && arrivalA !== arrivalB) return arrivalA.localeCompare(arrivalB);
     if (!arrivalA && arrivalB) return 1;
     if (arrivalA && !arrivalB) return -1;
+
+    const checkoutA = checkoutTodayPriority(a);
+    const checkoutB = checkoutTodayPriority(b);
+    if (checkoutA !== checkoutB) return checkoutA - checkoutB;
 
     const checkInA = checkInPriority(a);
     const checkInB = checkInPriority(b);
@@ -45728,7 +45746,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.213';
+  var BUILD_TAG='dDAE_3.214';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50533,7 +50551,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.213',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.214',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
