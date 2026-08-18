@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.210";
+const BUILD_VERSION = "3.211";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -10768,10 +10768,9 @@ function guestLedStatus(item){
     return { cls:"led-blue", label:"Evento concluso" };
   }
 
-  // dDAE_2.754 — Nuove regole LED multifunzione guest list:
-  // arrivo oggi = verde (lampeggiante finché manca check-in); dopo check-in
-  // diventa arancione se il checkout è domani, altrimenti verde fisso.
-  // Il giorno prima del checkout = arancione, checkout = rosso, dopo checkout = azzurro.
+  // dDAE_3.211 — Regola scheda ospite dopo check-in:
+  // l'arancione indica il soggiorno già avviato e parte subito dalla conferma del check-in.
+  // Non dipende più dal giorno precedente al checkout. Checkout = rosso, dopo checkout = azzurro.
   if (dOut != null) {
     if (t === dOut) {
       try{
@@ -10783,14 +10782,12 @@ function guestLedStatus(item){
     if (t > dOut) return { cls: "led-blue", label: "Ospite andato via" };
   }
 
-  if (dIn != null && t === dIn) {
-    if (!checkInDone) return { cls: "led-green", label: "Check-in oggi da confermare" };
-    if (dOut != null && t === (dOut - 1)) return { cls: "led-orange", label: "Check-out domani" };
-    return { cls: "led-green", label: "Check-in effettuato" };
+  if (dIn != null && t === dIn && !checkInDone) {
+    return { cls: "led-green", label: "Check-in oggi da confermare" };
   }
 
-  if (dOut != null && t === (dOut - 1)) {
-    return { cls: "led-orange", label: "Check-out domani" };
+  if (checkInDone && (dIn == null || t >= dIn) && (dOut == null || t < dOut)) {
+    return { cls: "led-orange", label: (dIn != null && t === dIn) ? "Check-in effettuato" : "In soggiorno" };
   }
 
   if (dIn != null) {
@@ -45701,7 +45698,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.210';
+  var BUILD_TAG='dDAE_3.211';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50506,7 +50503,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.210',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.211',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
