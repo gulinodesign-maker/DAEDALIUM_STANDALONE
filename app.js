@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.216";
+const BUILD_VERSION = "3.217";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -23665,14 +23665,19 @@ function __statGuestMoney__(value){
 }
 
 function __statGuestMonthIso__(row){
+  // dDAE_3.217 — per i grafici legati alle prenotazioni il mese reale è quello
+  // del soggiorno, non quello in cui la prenotazione è stata creata. In questo modo
+  // una prenotazione registrata a gennaio per un arrivo a maggio non anticipa la curva.
   const candidates = [
+    row?.check_in, row?.checkIn, row?.checkin,
+    row?.arrivo, row?.arrival, row?.data_arrivo, row?.dataArrivo,
+    row?.check_out, row?.checkOut, row?.checkout,
+    row?.partenza, row?.departure, row?.data_partenza, row?.dataPartenza,
     row?.data_prenotazione, row?.dataPrenotazione,
     row?.booking_date, row?.bookingDate,
     row?.createdAt, row?.created_at,
     row?.updatedAt, row?.updated_at,
-    row?.data, row?.date,
-    row?.check_in, row?.checkIn, row?.arrivo, row?.data_arrivo, row?.dataArrivo,
-    row?.check_out, row?.checkOut, row?.partenza, row?.data_partenza, row?.dataPartenza
+    row?.data, row?.date
   ];
   for (const raw of candidates){
     let iso = '';
@@ -24075,7 +24080,7 @@ function __statMonthlyCumulative__(values){
   });
 }
 
-// dDAE_3.216 — una serie mensile deve terminare nell'ultimo mese con dati reali.
+// dDAE_3.217 — una serie mensile deve terminare nell'ultimo mese con dati reali.
 // Serve soprattutto per i grafici cumulativi: i mesi successivi non devono
 // prolungare artificialmente l'ultimo totale disponibile.
 function __statLastActiveMonthIndex__(values, year){
@@ -24100,7 +24105,7 @@ function __statLastActiveMonthIndex__(values, year){
 }
 
 
-// dDAE_3.216 — Chiusura grafici sul giorno reale dell'ultima prenotazione.
+// dDAE_3.217 — Chiusura grafici sul giorno reale dell'ultima prenotazione.
 // Tutte le serie statistiche terminano a quota zero nel giorno di fine dell'ultimo
 // soggiorno disponibile per l'anno visualizzato. Il dato delle card non viene alterato:
 // questa informazione serve soltanto al rendering dell'estremita della curva.
@@ -24980,16 +24985,18 @@ function __statGenRegistrationsByMonth__(sourceRows){
   };
 
   const pickIso = (row) => {
+    // dDAE_3.217 — il fatturato mensile segue l'arrivo effettivo del soggiorno.
+    // Le date di creazione/prenotazione restano solo fallback per record storici.
     const candidates = [
+      row?.check_in, row?.checkIn, row?.checkin,
+      row?.arrivo, row?.arrival, row?.data_arrivo, row?.dataArrivo,
+      row?.check_out, row?.checkOut, row?.checkout,
+      row?.partenza, row?.departure, row?.data_partenza, row?.dataPartenza,
       row?.data_prenotazione, row?.dataPrenotazione,
       row?.booking_date, row?.bookingDate,
       row?.createdAt, row?.created_at,
       row?.updatedAt, row?.updated_at,
-      row?.data, row?.date,
-      row?.check_in, row?.checkIn,
-      row?.arrivo, row?.dataArrivo,
-      row?.check_out, row?.checkOut,
-      row?.partenza, row?.dataPartenza
+      row?.data, row?.date
     ];
     for (const raw of candidates){
       let iso = '';
@@ -45909,7 +45916,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.216';
+  var BUILD_TAG='dDAE_3.217';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50718,7 +50725,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.216',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.217',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
