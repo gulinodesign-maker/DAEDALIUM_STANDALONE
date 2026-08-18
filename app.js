@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.217";
+const BUILD_VERSION = "3.218";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -25490,6 +25490,12 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const textHex = __statSharedLineChartResolvedTextHex__(visual, isDark);
   const defaultLineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
   const opts = options || {};
+  const requestedAxisCount = Math.trunc(Number(opts.axisCount || 0) || 0);
+  const suppliedAxisLabels = Array.isArray(opts.axisLabels) ? opts.axisLabels.map((value) => String(value ?? '')) : [];
+  const axisCount = Math.max(2, requestedAxisCount > 1 ? requestedAxisCount : (suppliedAxisLabels.length > 1 ? suppliedAxisLabels.length : 12));
+  const useMonthlyTerminal = opts.useMonthlyTerminal !== false;
+  const xGridEvery = Math.max(1, Math.trunc(Number(opts.xGridEvery || 1) || 1));
+  const xLabelEvery = Math.max(1, Math.trunc(Number(opts.xLabelEvery || 1) || 1));
   const requestedLineColor = String(opts.lineColor || '').trim();
   const lineColor = requestedLineColor || defaultLineColor;
   const compareLineColor = String((options && options.compareLineColor) || (isDark ? '#7dd3fc' : '#2563eb'));
@@ -25504,15 +25510,16 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const trendLineWidth = isBoldTrend ? (2 * 1.70) : 2;
 
   const seriesListRaw = Array.isArray(opts.seriesList) ? opts.seriesList.filter(Boolean) : [];
-  const vals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
-  const compareVals = new Array(12).fill(0).map((_, i)=> Math.max(0, Number((opts.compareValues || [])[i] || 0) || 0));
+  const vals = new Array(axisCount).fill(0).map((_, i)=> Math.max(0, Number((values || [])[i] || 0) || 0));
+  const compareVals = new Array(axisCount).fill(0).map((_, i)=> Math.max(0, Number((opts.compareValues || [])[i] || 0) || 0));
   const seriesList = seriesListRaw.length
     ? seriesListRaw.map((item, idx) => ({
         key: String(item?.key || `series-${idx+1}`),
         label: String(item?.label || item?.key || `Serie ${idx+1}`),
-        values: new Array(12).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
-        endIndex: Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11,
-        terminalIso: String(item?.terminalIso || __statLatestReservationTerminalISOForSeries__(item) || ''),
+        values: new Array(axisCount).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
+        endIndex: Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(axisCount - 1, Math.trunc(Number(item.endIndex)))) : (axisCount - 1),
+        terminalIso: String(item?.terminalIso || (useMonthlyTerminal ? (__statLatestReservationTerminalISOForSeries__(item) || '') : '') || ''),
+        terminalPosition: (item?.terminalPosition !== null && item?.terminalPosition !== undefined && item?.terminalPosition !== '' && Number.isFinite(Number(item.terminalPosition))) ? Math.max(0, Math.min(axisCount - 1, Number(item.terminalPosition))) : null,
         color: String(item?.color || lineColor),
         dash: Array.isArray(item?.dash) ? item.dash : [],
         pointFill: String(item?.pointFill || pointFill),
@@ -25525,8 +25532,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: 'primary',
         label: 'Serie principale',
         values: vals,
-        endIndex: 11,
-        terminalIso: __statLatestReservationTerminalISOForSeries__({ key:'primary' }),
+        endIndex: axisCount - 1,
+        terminalIso: useMonthlyTerminal ? __statLatestReservationTerminalISOForSeries__({ key:'primary' }) : '',
+        terminalPosition: null,
         color: lineColor,
         dash: [],
         pointFill,
@@ -25538,8 +25546,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: 'compare',
         label: 'Confronto',
         values: compareVals,
-        endIndex: 11,
-        terminalIso: __statLatestReservationTerminalISOForSeries__({ key:'compare-compare-year', isCompareYear:true }),
+        endIndex: axisCount - 1,
+        terminalIso: useMonthlyTerminal ? __statLatestReservationTerminalISOForSeries__({ key:'compare-compare-year', isCompareYear:true }) : '',
+        terminalPosition: null,
         color: compareLineColor,
         dash: [5, 4],
         pointFill: comparePointFill,
@@ -25549,9 +25558,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         visible: true
       }] : []);
 
-  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), endIndex:11, terminalIso:__statLatestReservationTerminalISOForSeries__({key:'primary'}), color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
+  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(axisCount).fill(0), endIndex:axisCount - 1, terminalIso:useMonthlyTerminal ? __statLatestReservationTerminalISOForSeries__({key:'primary'}) : '', terminalPosition:null, color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
   const maxValue = activeSeries.reduce((best, item) => {
-    const last = Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11;
+    const last = Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(axisCount - 1, Math.trunc(Number(item.endIndex)))) : (axisCount - 1);
     const visibleValues = last >= 0 ? (item.values || []).slice(0, last + 1) : [];
     return Math.max(best, ...visibleValues.map((value) => Number(value || 0) || 0));
   }, 0);
@@ -25580,8 +25589,10 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.fillText(yTickFormatter(tickValue), 1, y);
   }
 
-  for (let i = 0; i < 12; i += 1){
-    const x = pad.left + (chartW / 11) * i;
+  for (let i = 0; i < axisCount; i += 1){
+    const shouldDrawGrid = (i === 0 || i === axisCount - 1 || ((i + 1) % xGridEvery) === 0);
+    if (!shouldDrawGrid) continue;
+    const x = pad.left + (chartW / Math.max(1, axisCount - 1)) * i;
     ctx.beginPath();
     ctx.moveTo(x, pad.top);
     ctx.lineTo(x, baseY);
@@ -25594,21 +25605,23 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.lineTo(pad.left + chartW, baseY);
   ctx.stroke();
 
-  const makePoints = (series, endIndex = 11, terminalIso = '') => {
-    const terminalPos = __statMonthlyAxisPositionForISO__(terminalIso);
-    const hasTerminal = Number.isFinite(Number(terminalPos));
-    const lastByData = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(endIndex)))) : 11;
+  const makePoints = (series, endIndex = axisCount - 1, terminalIso = '', terminalPosition = null) => {
+    const monthlyTerminalPos = useMonthlyTerminal ? __statMonthlyAxisPositionForISO__(terminalIso) : null;
+    const hasExplicitTerminalPosition = terminalPosition !== null && terminalPosition !== undefined && terminalPosition !== '' && Number.isFinite(Number(terminalPosition));
+    const terminalPos = hasExplicitTerminalPosition ? Number(terminalPosition) : monthlyTerminalPos;
+    const hasTerminal = terminalPos !== null && terminalPos !== undefined && terminalPos !== '' && Number.isFinite(Number(terminalPos));
+    const lastByData = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(axisCount - 1, Math.trunc(Number(endIndex)))) : (axisCount - 1);
     // Con un terminale di prenotazione valido mostriamo i valori fino al mese in cui
     // cade l'ultima partenza; poi aggiungiamo un punto a quota zero sul giorno esatto.
-    const last = hasTerminal ? Math.max(0, Math.min(11, Math.floor(Number(terminalPos)))) : lastByData;
+    const last = hasTerminal ? Math.max(0, Math.min(axisCount - 1, Math.floor(Number(terminalPos)))) : lastByData;
     if (last < 0) return [];
     const points = (Array.isArray(series) ? series : []).slice(0, last + 1).map((value, idx)=>{
-      const x = pad.left + (chartW / 11) * idx;
+      const x = pad.left + (chartW / Math.max(1, axisCount - 1)) * idx;
       const y = baseY - ((value / yMax) * chartH);
       return { x, y, value, idx };
     });
     if (hasTerminal && points.length){
-      const terminalX = pad.left + (chartW / 11) * Number(terminalPos);
+      const terminalX = pad.left + (chartW / Math.max(1, axisCount - 1)) * Number(terminalPos);
       points.push({ x:terminalX, y:baseY, value:0, idx:Number(terminalPos), terminal:true, terminalIso:String(terminalIso || '') });
     }
     return points;
@@ -25717,7 +25730,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.restore();
   };
 
-  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex, item.terminalIso || '') }));
+  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex, item.terminalIso || '', item.terminalPosition) }));
   renderedSeries.forEach((item) => {
     drawSeriesFill(item.points, {
       color: item.color || lineColor,
@@ -25739,9 +25752,13 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.font = '800 10px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
-  const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
-  for (let idx = 0; idx < 12; idx += 1){
-    const x = pad.left + (chartW / 11) * idx;
+  const labels = suppliedAxisLabels.length
+    ? suppliedAxisLabels.slice(0, axisCount)
+    : (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
+  for (let idx = 0; idx < axisCount; idx += 1){
+    const shouldDrawLabel = (idx === 0 || idx === axisCount - 1 || ((idx + 1) % xLabelEvery) === 0);
+    if (!shouldDrawLabel) continue;
+    const x = pad.left + (chartW / Math.max(1, axisCount - 1)) * idx;
     ctx.fillText(labels[idx] || String(idx + 1), x, height - 5);
   }
 
@@ -25914,23 +25931,172 @@ function __computeStatMensiliFromSnapshot__(snapshot){
   }
 }
 
+// dDAE_3.218 — Statistiche Mensili: asse X giornaliero del mese selezionato.
+function __statMensiliSelectedMonthIndex__(){
+  const raw = String(__getStatChartFilter__('statmensili') || '').trim();
+  if (raw){
+    const stable = raw.match(/^month-(\d{1,2})$/i);
+    if (stable){
+      const idx = parseInt(stable[1], 10) - 1;
+      if (idx >= 0 && idx < 12) return idx;
+    }
+    const lower = raw.toLocaleLowerCase();
+    let italianNames = [];
+    try{ italianNames = __getMonthNamesForLocale__('it-IT', true) || []; }catch(_){ italianNames = []; }
+    const currentNames = Array.isArray(__MONTHS_IT) ? __MONTHS_IT : [];
+    for (let i = 0; i < 12; i += 1){
+      const aliases = [italianNames[i], currentNames[i], `Mese ${i + 1}`]
+        .map((value) => String(value || '').trim().toLocaleLowerCase())
+        .filter(Boolean);
+      if (aliases.includes(lower)) return i;
+    }
+  }
+
+  try{
+    const selectedYear = Number(state?.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+    const now = new Date();
+    if (Number.isFinite(selectedYear) && selectedYear === now.getFullYear()) return Math.max(0, Math.min(11, now.getMonth()));
+  }catch(_){ }
+
+  try{
+    const stats = state?.statMensili || computeStatMensili();
+    const months = Array.isArray(stats?.byMonth) ? stats.byMonth : [];
+    for (let i = Math.min(11, months.length - 1); i >= 0; i -= 1){
+      if (Math.abs(Number(months[i] || 0) || 0) > 0.0001) return i;
+    }
+  }catch(_){ }
+  return 0;
+}
+
+function __statMensiliDailyRevenueForData__(source, sourceYear, monthIndex){
+  const year = Number(sourceYear);
+  const safeYear = Number.isFinite(year) ? Math.trunc(year) : new Date().getFullYear();
+  const safeMonth = Math.max(0, Math.min(11, Number(monthIndex) || 0));
+  const daysInMonth = new Date(Date.UTC(safeYear, safeMonth + 1, 0)).getUTCDate();
+  const daily = new Array(Math.max(2, daysInMonth || 31)).fill(0);
+  const guests = Array.isArray(source?.guests) ? source.guests : [];
+  const servizi = Array.isArray(source?.servizi) ? source.servizi : [];
+  const guestDayById = new Map();
+  let latestCheckoutDayIndex = -1;
+  let latestActivityDayIndex = -1;
+
+  const money = (value) => {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    let text = String(value).trim();
+    if (!text) return 0;
+    if (text.includes(',') && text.includes('.')) text = text.replace(/\./g, '').replace(',', '.');
+    else if (text.includes(',')) text = text.replace(',', '.');
+    const n = Number(text);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const parseIso = (raw) => {
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+    return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : '';
+  };
+
+  const monthPrefix = `${String(safeYear).padStart(4,'0')}-${String(safeMonth + 1).padStart(2,'0')}-`;
+  const monthLastIso = `${monthPrefix}${String(daily.length).padStart(2,'0')}`;
+
+  guests.forEach((guest) => {
+    if (!guest) return;
+    const inIso = parseIso(guest?.check_in ?? guest?.checkIn ?? guest?.arrivo ?? guest?.data_arrivo ?? guest?.checkin ?? '');
+    const outIso = parseIso(guest?.check_out ?? guest?.checkOut ?? guest?.partenza ?? guest?.data_partenza ?? guest?.checkout ?? '');
+    const revenueIso = inIso || outIso;
+    if (!revenueIso || !revenueIso.startsWith(monthPrefix)) return;
+
+    const day = parseInt(revenueIso.slice(8,10), 10);
+    if (!Number.isFinite(day) || day < 1 || day > daily.length) return;
+    const dayIndex = day - 1;
+    latestActivityDayIndex = Math.max(latestActivityDayIndex, dayIndex);
+
+    const gid = String(guestIdOf(guest) ?? guest?.id ?? guest?.ID ?? guest?.Id ?? '').trim();
+    if (gid) guestDayById.set(gid, dayIndex);
+
+    const pren = money(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+    if (Number.isFinite(pren) && pren !== 0) daily[dayIndex] += pren;
+
+    if (outIso){
+      if (outIso.startsWith(monthPrefix)){
+        const checkoutDay = parseInt(outIso.slice(8,10), 10);
+        if (Number.isFinite(checkoutDay) && checkoutDay >= 1 && checkoutDay <= daily.length){
+          latestCheckoutDayIndex = Math.max(latestCheckoutDayIndex, checkoutDay - 1);
+        }
+      } else if (outIso > monthLastIso){
+        // Il soggiorno continua oltre il mese selezionato: non inventare una chiusura anticipata.
+        latestCheckoutDayIndex = Math.max(latestCheckoutDayIndex, daily.length);
+      }
+    }
+  });
+
+  servizi.forEach((item) => {
+    if (!item) return;
+    const deleted = item?.isDeleted ?? item?.is_deleted ?? item?.deleted;
+    if (String(deleted) === '1' || deleted === true) return;
+    const gid = String(item?.ospite_id ?? item?.ospiteId ?? item?.guest_id ?? item?.guestId ?? '').trim();
+    if (!gid || !guestDayById.has(gid)) return;
+    const dayIndex = guestDayById.get(gid);
+    const qtyRaw = money(item?.qty ?? 1);
+    const qty = (Number.isFinite(qtyRaw) && qtyRaw > 0) ? qtyRaw : 1;
+    const amount = money(item?.importo ?? item?.amount ?? 0);
+    if (!Number.isFinite(amount) || amount === 0) return;
+    daily[dayIndex] += qty * amount;
+    latestActivityDayIndex = Math.max(latestActivityDayIndex, dayIndex);
+  });
+
+  let running = 0;
+  const cumulative = daily.map((value) => {
+    running += Number(value || 0) || 0;
+    return Math.round(running * 100) / 100;
+  });
+
+  let terminalPosition = null;
+  let endIndex = daily.length - 1;
+  if (latestCheckoutDayIndex >= 0 && latestCheckoutDayIndex < daily.length){
+    terminalPosition = latestCheckoutDayIndex;
+    endIndex = Math.max(0, latestCheckoutDayIndex - 1);
+  } else if (latestCheckoutDayIndex >= daily.length){
+    // Checkout fuori mese: mostra l'andamento fino all'ultimo giorno disponibile senza falsa discesa a zero.
+    terminalPosition = null;
+    endIndex = daily.length - 1;
+  } else if (latestActivityDayIndex >= 0){
+    const zeroDay = Math.min(daily.length - 1, latestActivityDayIndex + 1);
+    terminalPosition = zeroDay > latestActivityDayIndex ? zeroDay : null;
+    endIndex = latestActivityDayIndex;
+  }
+
+  return { daily, cumulative, daysInMonth:daily.length, endIndex, terminalPosition };
+}
+
 function drawStatMensiliOccupazioneLineChart(canvasId){
   const stats = (state && state.statMensili) ? state.statMensili : computeStatMensili();
-  const values = Array.isArray(stats && stats.byMonth) ? stats.byMonth : new Array(12).fill(0);
-  const selectedKey = __getStatChartFilter__('statmensili');
-  const filtered = __statMaskMonthlyValuesByCard__(values, selectedKey);
+  const monthIndex = __statMensiliSelectedMonthIndex__();
+  const selectedYearRaw = Number(state?.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const selectedYear = Number.isFinite(selectedYearRaw) ? Math.trunc(selectedYearRaw) : new Date().getFullYear();
+  const currentSource = {
+    guests: Array.isArray(state?.statsGuests) ? state.statsGuests : (Array.isArray(state?.guests) ? state.guests : []),
+    servizi: Array.isArray(state?.servizi) ? state.servizi : []
+  };
+  const currentDaily = __statMensiliDailyRevenueForData__(currentSource, selectedYear, monthIndex);
+  let axisCount = Math.max(2, Number(currentDaily?.daysInMonth || 0) || 31);
+  const cardKey = `month-${monthIndex + 1}`;
+  const monthName = String((Array.isArray(__MONTHS_IT) && __MONTHS_IT[monthIndex]) || `Mese ${monthIndex + 1}`).trim();
+
   let selectedColor = '#2B7CB4';
-  try{
-    if (selectedKey) {
-      selectedColor = __statChartLineColorFromRenderedCard__('statmensili', selectedKey, '#2B7CB4');
-    }
-  }catch(_){ selectedColor = '#2B7CB4'; }
+  try{ selectedColor = __statChartLineColorFromRenderedCard__('statmensili', cardKey, '#2B7CB4'); }catch(_){ selectedColor = '#2B7CB4'; }
+
   const seriesList = [{
     key: 'mensili',
-    label: 'Mensili ' + String(state.exerciseYear || loadExerciseYear() || ''),
-    values: filtered,
+    label: `${monthName} ${selectedYear}`,
+    values: currentDaily.cumulative,
+    endIndex: currentDaily.endIndex,
+    terminalIso: '',
+    terminalPosition: currentDaily.terminalPosition,
     color: selectedColor
   }];
+
   if (__ensureStatGenCompareEnabled__()){
     try{
       const compareYear = __ensureStatGenCompareYear__();
@@ -25940,14 +26106,17 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
       }
       const compareSource = hasValidSnapshot
         ? state.statGenCompareSnapshot
-        : { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], servizi: [], stanzeRows: Array.isArray(state.stanzeRows) ? state.stanzeRows : [] };
-      const compareStats = __computeStatMensiliFromSnapshot__(compareSource || {});
-      const compareValues = __statMaskMonthlyValuesByCard__(Array.isArray(compareStats && compareStats.byMonth) ? compareStats.byMonth : new Array(12).fill(0), selectedKey);
-      if (compareValues.some((value) => Math.abs(Number(value || 0) || 0) > 0.0001)){
+        : { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], servizi: [] };
+      const compareDaily = __statMensiliDailyRevenueForData__(compareSource || {}, compareYear, monthIndex);
+      axisCount = Math.max(axisCount, Math.max(2, Number(compareDaily?.daysInMonth || 0) || 0));
+      if ((compareDaily.cumulative || []).some((value) => Math.abs(Number(value || 0) || 0) > 0.0001)){
         seriesList.push({
           key: 'mensili-compare-year',
-          label: 'Mensili ' + String(compareYear),
-          values: compareValues,
+          label: `${monthName} ${compareYear}`,
+          values: compareDaily.cumulative,
+          endIndex: compareDaily.endIndex,
+          terminalIso: '',
+          terminalPosition: compareDaily.terminalPosition,
           color: selectedColor,
           dash: [6,4],
           pointFill: '#ffffff',
@@ -25958,13 +26127,20 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
       }
     }catch(_){ }
   }
-  __drawSharedMonthlyLineChart__(canvasId, filtered, {
+
+  const axisLabels = new Array(axisCount).fill(0).map((_, idx)=> String(idx + 1));
+  __drawSharedMonthlyLineChart__(canvasId, currentDaily.cumulative, {
     mode: 'currency',
     seriesList,
     lineColor: selectedColor,
+    axisCount,
+    axisLabels,
+    useMonthlyTerminal: false,
+    xGridEvery: 5,
+    xLabelEvery: 5,
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value),
-    pointAriaLabel: 'Serie mensili'
+    pointAriaLabel: `Serie giornaliera ${monthName}`
   });
 }
 
@@ -45916,7 +46092,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.217';
+  var BUILD_TAG='dDAE_3.218';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50725,7 +50901,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.217',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.218',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
