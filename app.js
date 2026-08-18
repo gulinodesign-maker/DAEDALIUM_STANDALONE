@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.218";
+const BUILD_VERSION = "3.219";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -25518,6 +25518,12 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         key: String(item?.key || `series-${idx+1}`),
         label: String(item?.label || item?.key || `Serie ${idx+1}`),
         values: new Array(12).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
+        progressPoints: Array.isArray(item?.progressPoints) ? item.progressPoints.map((pt) => ({
+          xRatio: Math.max(0, Math.min(1, Number(pt?.xRatio || 0) || 0)),
+          value: Math.max(0, Number(pt?.value || 0) || 0),
+          synthetic: !!pt?.synthetic,
+          bookingIso: String(pt?.bookingIso || '')
+        })).sort((a,b) => a.xRatio - b.xRatio) : [],
         endIndex: Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11,
         terminalIso: String(item?.terminalIso || __statLatestReservationTerminalISOForSeries__(item) || ''),
         color: String(item?.color || lineColor),
@@ -25558,6 +25564,9 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
 
   const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), endIndex:11, terminalIso:__statLatestReservationTerminalISOForSeries__({key:'primary'}), color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
   const maxValue = activeSeries.reduce((best, item) => {
+    if (focusMonthIndex >= 0 && Array.isArray(item?.progressPoints) && item.progressPoints.length){
+      return Math.max(best, ...item.progressPoints.map((pt) => Number(pt?.value || 0) || 0));
+    }
     const last = Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11;
     const visibleValues = last >= 0 ? (item.values || []).slice(0, last + 1) : [];
     return Math.max(best, ...visibleValues.map((value) => Number(value || 0) || 0));
@@ -25611,16 +25620,26 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.lineTo(pad.left + chartW, baseY);
   ctx.stroke();
 
-  const makePoints = (series, endIndex = 11, terminalIso = '') => {
+  const makePoints = (series, endIndex = 11, terminalIso = '', itemCfg = null) => {
     if (focusMonthIndex >= 0){
-      const value = Math.max(0, Number((Array.isArray(series) ? series : [])[focusMonthIndex] || 0) || 0);
-      const centerX = pad.left + (chartW / 2);
-      const centerY = baseY - ((value / yMax) * chartH);
-      // I due estremi rappresentano esclusivamente i confini grafici del mese selezionato.
-      // Non sono mesi adiacenti e non ricevono etichette/punti visibili.
+      const progress = Array.isArray(itemCfg?.progressPoints) ? itemCfg.progressPoints : [];
+      if (progress.length){
+        return progress.map((pt) => {
+          const ratio = Math.max(0, Math.min(1, Number(pt?.xRatio || 0) || 0));
+          const value = Math.max(0, Number(pt?.value || 0) || 0);
+          return {
+            x: pad.left + (chartW * ratio),
+            y: baseY - ((value / yMax) * chartH),
+            value,
+            idx: focusMonthIndex,
+            synthetic: !!pt?.synthetic,
+            bookingIso: String(pt?.bookingIso || '')
+          };
+        });
+      }
+      // Nessuna prenotazione nel mese: linea piatta a zero, senza forme artificiali.
       return [
         { x:pad.left, y:baseY, value:0, idx:focusMonthIndex, synthetic:true },
-        { x:centerX, y:centerY, value, idx:focusMonthIndex, focus:true },
         { x:pad.left + chartW, y:baseY, value:0, idx:focusMonthIndex, synthetic:true }
       ];
     }
@@ -25747,7 +25766,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.restore();
   };
 
-  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex, item.terminalIso || '') }));
+  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex, item.terminalIso || '', item) }));
   renderedSeries.forEach((item) => {
     drawSeriesFill(item.points, {
       color: item.color || lineColor,
@@ -25949,6 +25968,156 @@ function __computeStatMensiliFromSnapshot__(snapshot){
   }
 }
 
+// dDAE_3.219 — Mensili: andamento cumulativo reale in base alla data di prenotazione.
+// Il mese selezionato resta l'unica etichetta dell'asse X: le date/giorni servono
+// esclusivamente per posizionare i punti della curva e non vengono mostrate a video.
+function __statMensiliBookingDateISO__(row){
+  const candidates = [
+    row?.data_prenotazione, row?.dataPrenotazione,
+    row?.booking_date, row?.bookingDate,
+    row?.reservation_date, row?.reservationDate,
+    row?.data_inserimento, row?.dataInserimento,
+    row?.insertion_date, row?.insertionDate,
+    row?.createdAt, row?.created_at
+  ];
+  for (const raw of candidates){
+    if (raw === null || raw === undefined || String(raw).trim() === '') continue;
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : ''; }catch(_){ iso = ''; }
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    try{
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    }catch(_){ }
+  }
+  return '';
+}
+
+function __statMensiliStayDateISO__(row){
+  const candidates = [
+    row?.check_in, row?.checkIn, row?.checkin,
+    row?.arrivo, row?.arrival, row?.data_arrivo, row?.dataArrivo,
+    row?.check_out, row?.checkOut, row?.checkout,
+    row?.partenza, row?.departure, row?.data_partenza, row?.dataPartenza
+  ];
+  for (const raw of candidates){
+    if (raw === null || raw === undefined || String(raw).trim() === '') continue;
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : ''; }catch(_){ iso = ''; }
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    try{
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    }catch(_){ }
+  }
+  return '';
+}
+
+function __statMensiliProgressPointsForData__(source, monthIndex, targetTotal){
+  const idx = Number(monthIndex);
+  if (!Number.isFinite(idx) || idx < 0 || idx > 11) return [];
+  const guests = Array.isArray(source?.guests)
+    ? source.guests
+    : (Array.isArray(source?.statsGuests) ? source.statsGuests : []);
+  const servizi = Array.isArray(source?.servizi) ? source.servizi : [];
+  const money = (value) => {
+    try{ if (typeof __statGuestMoney__ === 'function') return Number(__statGuestMoney__(value) || 0) || 0; }catch(_){ }
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    let s = String(value).trim();
+    if (!s) return 0;
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const serviceByGuest = Object.create(null);
+  servizi.forEach((row) => {
+    if (!row) return;
+    const del = row?.isDeleted ?? row?.is_deleted ?? row?.deleted;
+    if (String(del) === '1' || del === true) return;
+    const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
+    if (!gid) return;
+    const qtyRaw = money(row?.qty ?? 1);
+    const qty = Number.isFinite(qtyRaw) && qtyRaw > 0 ? qtyRaw : 1;
+    const amt = money(row?.importo ?? row?.amount ?? 0);
+    if (!Number.isFinite(amt) || Math.abs(amt) < 0.0001) return;
+    serviceByGuest[gid] = (Number(serviceByGuest[gid] || 0) || 0) + (qty * amt);
+  });
+
+  const eventsByIso = new Map();
+  let undatedAmount = 0;
+  guests.forEach((guest) => {
+    if (!guest) return;
+    const stayIso = __statMensiliStayDateISO__(guest);
+    if (!stayIso || !/^\d{4}-\d{2}-\d{2}$/.test(stayIso)) return;
+    const mm = parseInt(stayIso.slice(5, 7), 10) - 1;
+    if (mm !== idx) return;
+    const gid = String(guestIdOf(guest) ?? guest?.id ?? guest?.ID ?? guest?.Id ?? '').trim();
+    const pren = money(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+    const serviceTotal = gid ? (Number(serviceByGuest[gid] || 0) || 0) : 0;
+    const amount = pren + serviceTotal;
+    if (!Number.isFinite(amount) || Math.abs(amount) < 0.0001) return;
+    // La data prenotazione/inserimento è il riferimento principale. Il soggiorno
+    // è solo fallback per record storici che non hanno timestamp di creazione.
+    const bookingIso = __statMensiliBookingDateISO__(guest) || stayIso;
+    if (!bookingIso){ undatedAmount += amount; return; }
+    eventsByIso.set(bookingIso, (Number(eventsByIso.get(bookingIso) || 0) || 0) + amount);
+  });
+
+  let events = Array.from(eventsByIso.entries()).map(([iso, amount]) => ({
+    iso,
+    ts: Date.parse(String(iso) + 'T00:00:00Z'),
+    amount: Number(amount || 0) || 0
+  })).filter((item) => Number.isFinite(item.ts)).sort((a, b) => a.ts - b.ts);
+
+  if (undatedAmount && events.length){
+    events[events.length - 1].amount += undatedAmount;
+  }
+  const requestedTotal = Math.max(0, Number(targetTotal || 0) || 0);
+  if (!events.length){
+    if (!(requestedTotal > 0)) return [
+      { xRatio:0, value:0, synthetic:true },
+      { xRatio:1, value:0, synthetic:true }
+    ];
+    // Fallback solo per archivi privi di qualsiasi data di inserimento: nessuna
+    // parabola artificiale, un unico incremento leggibile verso il totale reale.
+    return [
+      { xRatio:0, value:0, synthetic:true },
+      { xRatio:0.58, value:requestedTotal, synthetic:false },
+      { xRatio:1, value:requestedTotal, synthetic:true }
+    ];
+  }
+
+  const rawTotal = events.reduce((sum, item) => sum + (Number(item.amount || 0) || 0), 0);
+  const scale = (requestedTotal > 0 && Math.abs(rawTotal) > 0.0001) ? (requestedTotal / rawTotal) : 1;
+  const minTs = events[0].ts;
+  const maxTs = events[events.length - 1].ts;
+  const span = Math.max(0, maxTs - minTs);
+  const leftInset = 0.06;
+  const rightInset = 0.94;
+  let cumulative = 0;
+  const out = [{ xRatio:0, value:0, synthetic:true }];
+  events.forEach((item, eventIndex) => {
+    cumulative += (Number(item.amount || 0) || 0) * scale;
+    const ratio = span > 0
+      ? leftInset + (((item.ts - minTs) / span) * (rightInset - leftInset))
+      : 0.58;
+    out.push({
+      xRatio:Math.max(0, Math.min(1, ratio)),
+      value:Math.max(0, cumulative),
+      synthetic:false,
+      bookingIso:item.iso,
+      eventIndex
+    });
+  });
+  const finalValue = requestedTotal > 0 ? requestedTotal : Math.max(0, cumulative);
+  if (out.length > 1) out[out.length - 1].value = finalValue;
+  out.push({ xRatio:1, value:finalValue, synthetic:true });
+  return out;
+}
+
 function drawStatMensiliOccupazioneLineChart(canvasId){
   const stats = (state && state.statMensili) ? state.statMensili : computeStatMensili();
   const values = Array.isArray(stats && stats.byMonth) ? stats.byMonth : new Array(12).fill(0);
@@ -25971,10 +26140,20 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
       selectedColor = __statChartLineColorFromRenderedCard__('statmensili', selectedKey, '#2B7CB4');
     }
   }catch(_){ selectedColor = '#2B7CB4'; }
+
+  const currentSource = {
+    guests: Array.isArray(state?.statsGuests) ? state.statsGuests : (Array.isArray(state?.guests) ? state.guests : []),
+    servizi: Array.isArray(state?.servizi) ? state.servizi : []
+  };
+  const currentProgress = focusMonthIndex >= 0
+    ? __statMensiliProgressPointsForData__(currentSource, focusMonthIndex, Number(values[focusMonthIndex] || 0) || 0)
+    : [];
+
   const seriesList = [{
     key: 'mensili',
     label: 'Mensili ' + String(state.exerciseYear || loadExerciseYear() || ''),
     values: filtered,
+    progressPoints: currentProgress,
     color: selectedColor
   }];
   if (__ensureStatGenCompareEnabled__()){
@@ -25988,12 +26167,17 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
         ? state.statGenCompareSnapshot
         : { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], servizi: [], stanzeRows: Array.isArray(state.stanzeRows) ? state.stanzeRows : [] };
       const compareStats = __computeStatMensiliFromSnapshot__(compareSource || {});
-      const compareValues = __statMaskMonthlyValuesByCard__(Array.isArray(compareStats && compareStats.byMonth) ? compareStats.byMonth : new Array(12).fill(0), selectedKey);
+      const compareRawValues = Array.isArray(compareStats && compareStats.byMonth) ? compareStats.byMonth : new Array(12).fill(0);
+      const compareValues = __statMaskMonthlyValuesByCard__(compareRawValues, selectedKey);
       if (compareValues.some((value) => Math.abs(Number(value || 0) || 0) > 0.0001)){
+        const compareProgress = focusMonthIndex >= 0
+          ? __statMensiliProgressPointsForData__(compareSource || {}, focusMonthIndex, Number(compareRawValues[focusMonthIndex] || 0) || 0)
+          : [];
         seriesList.push({
           key: 'mensili-compare-year',
           label: 'Mensili ' + String(compareYear),
           values: compareValues,
+          progressPoints: compareProgress,
           color: selectedColor,
           dash: [6,4],
           pointFill: '#ffffff',
@@ -45964,7 +46148,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.218';
+  var BUILD_TAG='dDAE_3.219';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50773,7 +50957,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.218',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.219',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
