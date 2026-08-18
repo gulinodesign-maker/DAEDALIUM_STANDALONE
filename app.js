@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.215";
+const BUILD_VERSION = "3.216";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -24075,7 +24075,7 @@ function __statMonthlyCumulative__(values){
   });
 }
 
-// dDAE_3.215 — una serie mensile deve terminare nell'ultimo mese con dati reali.
+// dDAE_3.216 — una serie mensile deve terminare nell'ultimo mese con dati reali.
 // Serve soprattutto per i grafici cumulativi: i mesi successivi non devono
 // prolungare artificialmente l'ultimo totale disponibile.
 function __statLastActiveMonthIndex__(values, year){
@@ -24097,6 +24097,93 @@ function __statLastActiveMonthIndex__(values, year){
     if (Number.isFinite(yy) && yy === Number(now.getFullYear())) end = Math.min(end, Number(now.getMonth()));
   }catch(_){ }
   return Math.max(-1, Math.min(11, end));
+}
+
+
+// dDAE_3.216 — Chiusura grafici sul giorno reale dell'ultima prenotazione.
+// Tutte le serie statistiche terminano a quota zero nel giorno di fine dell'ultimo
+// soggiorno disponibile per l'anno visualizzato. Il dato delle card non viene alterato:
+// questa informazione serve soltanto al rendering dell'estremita della curva.
+function __statLatestReservationTerminalISOForRows__(rows, year){
+  const yy = Number(year);
+  if (!Number.isFinite(yy) || yy < 1900 || yy > 2200) return '';
+  const yearStart = `${String(Math.trunc(yy)).padStart(4,'0')}-01-01`;
+  const yearEnd = `${String(Math.trunc(yy)).padStart(4,'0')}-12-31`;
+  const list = Array.isArray(rows) ? rows : [];
+  let best = '';
+
+  const parseIso = (raw) => {
+    let iso = '';
+    try{ iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw || '') : ''; }catch(_){ iso = ''; }
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    try{
+      const d = new Date(raw || '');
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0,10);
+    }catch(_){ }
+    return '';
+  };
+
+  list.forEach((row) => {
+    if (!row) return;
+    const inIso = parseIso(row?.check_in ?? row?.checkIn ?? row?.checkin ?? row?.arrivo ?? row?.arrival ?? row?.data_arrivo ?? row?.dataArrivo ?? '');
+    const outIso = parseIso(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.partenza ?? row?.departure ?? row?.data_partenza ?? row?.dataPartenza ?? '');
+
+    // Una prenotazione che attraversa il cambio anno viene chiusa sul limite dell'anno
+    // mostrato; normalmente il terminale coincide con il giorno di check-out.
+    if (inIso || outIso){
+      const start = inIso || outIso;
+      const end = outIso || inIso;
+      if (start <= yearEnd && end >= yearStart){
+        const candidate = end > yearEnd ? yearEnd : (end < yearStart ? yearStart : end);
+        if (candidate && candidate > best) best = candidate;
+        return;
+      }
+    }
+
+    // Fallback per record storici privi di check-in/check-out: usa la data prenotazione.
+    const bookingIso = (typeof __statGuestMonthIso__ === 'function') ? __statGuestMonthIso__(row) : '';
+    if (bookingIso && bookingIso.slice(0,4) === String(Math.trunc(yy)) && bookingIso > best) best = bookingIso;
+  });
+  return best;
+}
+
+function __statLatestReservationTerminalISOForSeries__(seriesItem){
+  const key = String(seriesItem?.key || '');
+  const isCompare = key.endsWith('-compare-year') || !!seriesItem?.isCompareYear;
+  let yy = Number.NaN;
+  if (isCompare){
+    try{ yy = Number((typeof __ensureStatGenCompareYear__ === 'function') ? __ensureStatGenCompareYear__() : state?.statGenCompareSnapshotYear); }catch(_){ yy = Number.NaN; }
+  } else {
+    try{ yy = Number(state?.exerciseYear || ((typeof loadExerciseYear === 'function') ? loadExerciseYear() : '')); }catch(_){ yy = Number.NaN; }
+  }
+  if (!Number.isFinite(yy)) return '';
+
+  let rows = [];
+  if (isCompare){
+    try{
+      const snapYear = Number(state?.statGenCompareSnapshotYear);
+      if (snapYear === yy && Array.isArray(state?.statGenCompareSnapshot?.guests)) rows = state.statGenCompareSnapshot.guests;
+      else if (Array.isArray(state?.statGenCompareGuests)) rows = state.statGenCompareGuests;
+    }catch(_){ rows = []; }
+  } else {
+    try{ rows = Array.isArray(state?.statsGuests) ? state.statsGuests : (Array.isArray(state?.guests) ? state.guests : []); }catch(_){ rows = []; }
+  }
+  return __statLatestReservationTerminalISOForRows__(rows, yy);
+}
+
+function __statMonthlyAxisPositionForISO__(iso){
+  const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const yy = Number(m[1]);
+  const mm = Number(m[2]);
+  const dd = Number(m[3]);
+  if (!Number.isFinite(yy) || !Number.isFinite(mm) || !Number.isFinite(dd) || mm < 1 || mm > 12) return null;
+  const days = new Date(Date.UTC(yy, mm, 0)).getUTCDate();
+  if (!(days > 0)) return null;
+  const fraction = Math.max(0, Math.min(0.999, (dd - 1) / days));
+  // L'asse storico usa i 12 tick mensili 0..11. Fino a novembre il giorno mantiene
+  // quindi una posizione fra due tick; in dicembre viene chiuso sul tick D finale.
+  return Math.max(0, Math.min(11, (mm - 1) + fraction));
 }
 
 function __statMaskMonthlyValuesByCard__(values, cardKey){
@@ -25418,6 +25505,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         label: String(item?.label || item?.key || `Serie ${idx+1}`),
         values: new Array(12).fill(0).map((_, i)=> Math.max(0, Number((item?.values || [])[i] || 0) || 0)),
         endIndex: Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11,
+        terminalIso: String(item?.terminalIso || __statLatestReservationTerminalISOForSeries__(item) || ''),
         color: String(item?.color || lineColor),
         dash: Array.isArray(item?.dash) ? item.dash : [],
         pointFill: String(item?.pointFill || pointFill),
@@ -25431,6 +25519,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         label: 'Serie principale',
         values: vals,
         endIndex: 11,
+        terminalIso: __statLatestReservationTerminalISOForSeries__({ key:'primary' }),
         color: lineColor,
         dash: [],
         pointFill,
@@ -25443,6 +25532,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         label: 'Confronto',
         values: compareVals,
         endIndex: 11,
+        terminalIso: __statLatestReservationTerminalISOForSeries__({ key:'compare-compare-year', isCompareYear:true }),
         color: compareLineColor,
         dash: [5, 4],
         pointFill: comparePointFill,
@@ -25452,7 +25542,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
         visible: true
       }] : []);
 
-  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), endIndex:11, color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
+  const activeSeries = seriesList.length ? seriesList : [{ key:'primary', label:'Serie principale', values:new Array(12).fill(0), endIndex:11, terminalIso:__statLatestReservationTerminalISOForSeries__({key:'primary'}), color:lineColor, dash:[], pointFill, lineWidth:trendLineWidth, radius:3, pointLineWidth:2, visible:true }];
   const maxValue = activeSeries.reduce((best, item) => {
     const last = Number.isFinite(Number(item?.endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(item.endIndex)))) : 11;
     const visibleValues = last >= 0 ? (item.values || []).slice(0, last + 1) : [];
@@ -25497,14 +25587,24 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.lineTo(pad.left + chartW, baseY);
   ctx.stroke();
 
-  const makePoints = (series, endIndex = 11) => {
-    const last = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(endIndex)))) : 11;
+  const makePoints = (series, endIndex = 11, terminalIso = '') => {
+    const terminalPos = __statMonthlyAxisPositionForISO__(terminalIso);
+    const hasTerminal = Number.isFinite(Number(terminalPos));
+    const lastByData = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(endIndex)))) : 11;
+    // Con un terminale di prenotazione valido mostriamo i valori fino al mese in cui
+    // cade l'ultima partenza; poi aggiungiamo un punto a quota zero sul giorno esatto.
+    const last = hasTerminal ? Math.max(0, Math.min(11, Math.floor(Number(terminalPos)))) : lastByData;
     if (last < 0) return [];
-    return (Array.isArray(series) ? series : []).slice(0, last + 1).map((value, idx)=>{
+    const points = (Array.isArray(series) ? series : []).slice(0, last + 1).map((value, idx)=>{
       const x = pad.left + (chartW / 11) * idx;
       const y = baseY - ((value / yMax) * chartH);
       return { x, y, value, idx };
     });
+    if (hasTerminal && points.length){
+      const terminalX = pad.left + (chartW / 11) * Number(terminalPos);
+      points.push({ x:terminalX, y:baseY, value:0, idx:Number(terminalPos), terminal:true, terminalIso:String(terminalIso || '') });
+    }
+    return points;
   };
 
   // dDAE_3.210: curva cubica monotona (PCHIP-like).
@@ -25610,7 +25710,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.restore();
   };
 
-  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex) }));
+  const renderedSeries = activeSeries.map((item) => ({ ...item, points: makePoints(item.values || [], item.endIndex, item.terminalIso || '') }));
   renderedSeries.forEach((item) => {
     drawSeriesFill(item.points, {
       color: item.color || lineColor,
@@ -45809,7 +45909,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.215';
+  var BUILD_TAG='dDAE_3.216';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50618,7 +50718,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.215',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.216',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
