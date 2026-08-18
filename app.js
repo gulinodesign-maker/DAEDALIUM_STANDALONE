@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.217";
+const BUILD_VERSION = "3.218";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -25490,6 +25490,13 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const textHex = __statSharedLineChartResolvedTextHex__(visual, isDark);
   const defaultLineColor = __statSharedLineChartResolvedStrokeHex__(visual, isDark);
   const opts = options || {};
+  // dDAE_3.218 — nella pagina Mensili, quando è selezionata una card mese,
+  // il grafico viene zoomato sul solo mese scelto: nessun altro mese appare sull'asse.
+  const focusMonthRaw = Number(opts.focusMonthIndex);
+  const focusMonthIndex = (Number.isFinite(focusMonthRaw) && focusMonthRaw >= 0)
+    ? Math.max(0, Math.min(11, Math.trunc(focusMonthRaw)))
+    : -1;
+  const focusMonthLabel = String(opts.focusMonthLabel || ((focusMonthIndex >= 0 && Array.isArray(__MONTHS_IT)) ? (__MONTHS_IT[focusMonthIndex] || '') : '')).trim();
   const requestedLineColor = String(opts.lineColor || '').trim();
   const lineColor = requestedLineColor || defaultLineColor;
   const compareLineColor = String((options && options.compareLineColor) || (isDark ? '#7dd3fc' : '#2563eb'));
@@ -25580,12 +25587,22 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.fillText(yTickFormatter(tickValue), 1, y);
   }
 
-  for (let i = 0; i < 12; i += 1){
-    const x = pad.left + (chartW / 11) * i;
-    ctx.beginPath();
-    ctx.moveTo(x, pad.top);
-    ctx.lineTo(x, baseY);
-    ctx.stroke();
+  if (focusMonthIndex >= 0){
+    [0, 0.5, 1].forEach((ratio) => {
+      const x = pad.left + (chartW * ratio);
+      ctx.beginPath();
+      ctx.moveTo(x, pad.top);
+      ctx.lineTo(x, baseY);
+      ctx.stroke();
+    });
+  } else {
+    for (let i = 0; i < 12; i += 1){
+      const x = pad.left + (chartW / 11) * i;
+      ctx.beginPath();
+      ctx.moveTo(x, pad.top);
+      ctx.lineTo(x, baseY);
+      ctx.stroke();
+    }
   }
 
   ctx.strokeStyle = axisColor;
@@ -25595,6 +25612,18 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.stroke();
 
   const makePoints = (series, endIndex = 11, terminalIso = '') => {
+    if (focusMonthIndex >= 0){
+      const value = Math.max(0, Number((Array.isArray(series) ? series : [])[focusMonthIndex] || 0) || 0);
+      const centerX = pad.left + (chartW / 2);
+      const centerY = baseY - ((value / yMax) * chartH);
+      // I due estremi rappresentano esclusivamente i confini grafici del mese selezionato.
+      // Non sono mesi adiacenti e non ricevono etichette/punti visibili.
+      return [
+        { x:pad.left, y:baseY, value:0, idx:focusMonthIndex, synthetic:true },
+        { x:centerX, y:centerY, value, idx:focusMonthIndex, focus:true },
+        { x:pad.left + chartW, y:baseY, value:0, idx:focusMonthIndex, synthetic:true }
+      ];
+    }
     const terminalPos = __statMonthlyAxisPositionForISO__(terminalIso);
     const hasTerminal = Number.isFinite(Number(terminalPos));
     const lastByData = Number.isFinite(Number(endIndex)) ? Math.max(-1, Math.min(11, Math.trunc(Number(endIndex)))) : 11;
@@ -25706,6 +25735,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     ctx.stroke();
     ctx.setLineDash([]);
     seriesPoints.forEach((pt)=>{
+      if (pt && pt.synthetic) return;
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, cfg.radius || 3, 0, Math.PI * 2);
       ctx.fillStyle = cfg.pointFill || pointFill;
@@ -25740,9 +25770,14 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   const labels = (__MONTHS_IT || []).map((m)=> String(m || '').slice(0, 1).toUpperCase());
-  for (let idx = 0; idx < 12; idx += 1){
-    const x = pad.left + (chartW / 11) * idx;
-    ctx.fillText(labels[idx] || String(idx + 1), x, height - 5);
+  if (focusMonthIndex >= 0){
+    const label = focusMonthLabel || String((__MONTHS_IT || [])[focusMonthIndex] || (focusMonthIndex + 1));
+    ctx.fillText(label, pad.left + (chartW / 2), height - 5);
+  } else {
+    for (let idx = 0; idx < 12; idx += 1){
+      const x = pad.left + (chartW / 11) * idx;
+      ctx.fillText(labels[idx] || String(idx + 1), x, height - 5);
+    }
   }
 
   let peak = null;
@@ -25919,6 +25954,17 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
   const values = Array.isArray(stats && stats.byMonth) ? stats.byMonth : new Array(12).fill(0);
   const selectedKey = __getStatChartFilter__('statmensili');
   const filtered = __statMaskMonthlyValuesByCard__(values, selectedKey);
+  const focusMonthIndex = (() => {
+    const raw = String(selectedKey || '').trim();
+    const stable = raw.match(/^month-(\d{1,2})$/i);
+    if (stable){
+      const idx = parseInt(stable[1], 10) - 1;
+      if (idx >= 0 && idx < 12) return idx;
+    }
+    const names = Array.isArray(__MONTHS_IT) ? __MONTHS_IT : [];
+    const idx = names.findIndex((label) => String(label || '').trim().toLocaleLowerCase() === raw.toLocaleLowerCase());
+    return idx >= 0 ? idx : -1;
+  })();
   let selectedColor = '#2B7CB4';
   try{
     if (selectedKey) {
@@ -25962,6 +26008,8 @@ function drawStatMensiliOccupazioneLineChart(canvasId){
     mode: 'currency',
     seriesList,
     lineColor: selectedColor,
+    focusMonthIndex,
+    focusMonthLabel: focusMonthIndex >= 0 ? String((__MONTHS_IT || [])[focusMonthIndex] || '') : '',
     bubbleFormatter: (value) => __statLineChartCompactEuro__(value),
     yTickFormatter: (value) => __statLineChartCompactEuro__(value),
     pointAriaLabel: 'Serie mensili'
@@ -45916,7 +45964,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.217';
+  var BUILD_TAG='dDAE_3.218';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50725,7 +50773,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.217',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.218',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
