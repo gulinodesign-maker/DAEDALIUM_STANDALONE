@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.209";
+const BUILD_VERSION = "3.210";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -25325,7 +25325,10 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
   const minChartHeight = isLandscapeStatChart ? 72 : 224;
   const measuredHeight = Math.round(parentRect.height || parent.clientHeight || canvas.clientHeight || minChartHeight);
   const height = isLandscapeStatChart ? Math.max(minChartHeight, measuredHeight) : Math.max(224, measuredHeight);
-  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  // dDAE_3.210: supersampling Retina per grafici statistiche più nitidi.
+  // Manteniamo invariata la dimensione CSS e aumentiamo solo la risoluzione interna del canvas.
+  const nativeDpr = Math.max(1, Number(window.devicePixelRatio || 1) || 1);
+  const dpr = Math.max(2, Math.min(4, nativeDpr * 1.35));
   canvas.width = Math.round(width * dpr);
   canvas.height = Math.round(height * dpr);
   canvas.style.width = `${width}px`;
@@ -25445,6 +25448,63 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     return { x, y, value, idx };
   });
 
+  // dDAE_3.210: curva cubica monotona (PCHIP-like).
+  // Passa sempre dai valori reali mensili ma ammorbidisce i segmenti senza creare
+  // picchi artificiali tra due punti consecutivi. La stessa traccia viene usata
+  // sia per la linea sia per la sfumatura sottostante.
+  const traceSmoothSeriesPath = (seriesPoints) => {
+    if (!Array.isArray(seriesPoints) || !seriesPoints.length) return;
+    const n = seriesPoints.length;
+    ctx.moveTo(seriesPoints[0].x, seriesPoints[0].y);
+    if (n === 1) return;
+
+    const h = new Array(n - 1);
+    const delta = new Array(n - 1);
+    for (let i = 0; i < n - 1; i += 1){
+      h[i] = Math.max(0.0001, seriesPoints[i + 1].x - seriesPoints[i].x);
+      delta[i] = (seriesPoints[i + 1].y - seriesPoints[i].y) / h[i];
+    }
+
+    const tangent = new Array(n).fill(0);
+    if (n === 2){
+      tangent[0] = delta[0];
+      tangent[1] = delta[0];
+    } else {
+      // Tangenti interne: media armonica pesata, azzerata nei cambi di verso.
+      for (let i = 1; i < n - 1; i += 1){
+        const d0 = delta[i - 1];
+        const d1 = delta[i];
+        if (!d0 || !d1 || (d0 > 0) !== (d1 > 0)){
+          tangent[i] = 0;
+        } else {
+          const w1 = (2 * h[i]) + h[i - 1];
+          const w2 = h[i] + (2 * h[i - 1]);
+          tangent[i] = (w1 + w2) / ((w1 / d0) + (w2 / d1));
+        }
+      }
+
+      const endpointTangent = (h0, h1, d0, d1) => {
+        let m = (((2 * h0) + h1) * d0 - h0 * d1) / (h0 + h1);
+        if (!Number.isFinite(m) || (m > 0) !== (d0 > 0)) return 0;
+        if ((d0 > 0) !== (d1 > 0) && Math.abs(m) > Math.abs(3 * d0)) m = 3 * d0;
+        return m;
+      };
+      tangent[0] = endpointTangent(h[0], h[1], delta[0], delta[1]);
+      tangent[n - 1] = endpointTangent(h[n - 2], h[n - 3], delta[n - 2], delta[n - 3]);
+    }
+
+    for (let i = 0; i < n - 1; i += 1){
+      const p0 = seriesPoints[i];
+      const p1 = seriesPoints[i + 1];
+      const segW = h[i];
+      const cp1x = p0.x + (segW / 3);
+      const cp1y = p0.y + (tangent[i] * segW / 3);
+      const cp2x = p1.x - (segW / 3);
+      const cp2y = p1.y - (tangent[i + 1] * segW / 3);
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p1.x, p1.y);
+    }
+  };
+
   const drawSeriesFill = (seriesPoints, cfg = {}) => {
     if (!Array.isArray(seriesPoints) || seriesPoints.length < 2) return;
     const colorHex = __graphColorValueToHex__(cfg.color || lineColor, defaultLineColor);
@@ -25458,10 +25518,7 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     gradient.addColorStop(1, hexToRgba(colorHex, 0));
     ctx.save();
     ctx.beginPath();
-    seriesPoints.forEach((pt, idx)=>{
-      if (idx === 0) ctx.moveTo(pt.x, pt.y);
-      else ctx.lineTo(pt.x, pt.y);
-    });
+    traceSmoothSeriesPath(seriesPoints);
     ctx.lineTo(seriesPoints[seriesPoints.length - 1].x, baseY);
     ctx.lineTo(seriesPoints[0].x, baseY);
     ctx.closePath();
@@ -25474,12 +25531,11 @@ function __drawSharedMonthlyLineChart__(canvasId, values, options){
     if (!Array.isArray(seriesPoints) || !seriesPoints.length) return;
     ctx.save();
     ctx.beginPath();
-    seriesPoints.forEach((pt, idx)=>{
-      if (idx === 0) ctx.moveTo(pt.x, pt.y);
-      else ctx.lineTo(pt.x, pt.y);
-    });
+    traceSmoothSeriesPath(seriesPoints);
     ctx.strokeStyle = cfg.color || lineColor;
     ctx.lineWidth = cfg.lineWidth || trendLineWidth;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
     ctx.setLineDash(Array.isArray(cfg.dash) ? cfg.dash : []);
     ctx.stroke();
     ctx.setLineDash([]);
@@ -45645,7 +45701,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.209';
+  var BUILD_TAG='dDAE_3.210';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50450,7 +50506,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.209',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.210',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
