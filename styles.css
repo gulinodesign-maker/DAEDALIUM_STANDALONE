@@ -33227,3 +33227,37 @@ body.ddae-dark .guest-score-picker-option.selected{
   background-image:none !important;
   box-shadow:none !important;
 }
+
+
+/* dDAE_3.225 — Punteggio: numero recensioni centrato nella card CHANNEL. */
+#page-statchannel .stat-row[data-stat-scope="score"]{
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  column-gap: 10px !important;
+}
+#page-statchannel .stat-row[data-stat-scope="score"] .stat-name{
+  justify-self: start !important;
+}
+#page-statchannel .stat-row[data-stat-scope="score"] .stat-review-count{
+  justify-self: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 14px !important;
+  line-height: 1.1 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1px !important;
+  color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+}
+#page-statchannel .stat-row[data-stat-scope="score"] .stat-val{
+  justify-self: end !important;
+}
+body.ddae-dark #page-statchannel .stat-row[data-stat-scope="score"] .stat-review-count{
+  color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color: var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
+@media (max-width: 390px){
+  #page-statchannel .stat-row[data-stat-scope="score"]{ column-gap: 7px !important; }
+  #page-statchannel .stat-row[data-stat-scope="score"] .stat-review-count{ font-size: 12px !important; }
+}
