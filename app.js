@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.222";
+const BUILD_VERSION = "3.223";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -10768,9 +10768,9 @@ function guestLedStatus(item){
     return { cls:"led-blue", label:"Evento concluso" };
   }
 
-  // dDAE_3.211 — Regola scheda ospite dopo check-in:
-  // l'arancione indica il soggiorno già avviato e parte subito dalla conferma del check-in.
-  // Non dipende più dal giorno precedente al checkout. Checkout = rosso, dopo checkout = azzurro.
+  // dDAE_3.223 — Regola colore soggiorno:
+  // check-in confermato nel giorno di arrivo = giallo; dai giorni successivi,
+  // finché il check-out non è concluso = arancione. Checkout = rosso, dopo checkout = azzurro.
   if (dOut != null) {
     if (t === dOut) {
       try{
@@ -10787,7 +10787,8 @@ function guestLedStatus(item){
   }
 
   if (checkInDone && (dIn == null || t >= dIn) && (dOut == null || t < dOut)) {
-    return { cls: "led-orange", label: (dIn != null && t === dIn) ? "Check-in effettuato" : "In soggiorno" };
+    if (dIn != null && t === dIn) return { cls: "led-yellow", label: "Check-in effettuato" };
+    return { cls: "led-orange", label: "In soggiorno" };
   }
 
   if (dIn != null) {
@@ -22412,6 +22413,7 @@ function __guestStatusVisualColor__(ledClass){
   const cls = String(ledClass || '');
   if (cls.includes('led-red')) return 'red-5';
   if (cls.includes('led-orange')) return 'orange-4';
+  if (cls.includes('led-yellow')) return 'yellow-4';
   if (cls.includes('led-green')) return 'green-5';
   if (cls.includes('led-blue')) return 'sky-5';
   return 'gray-3';
@@ -46254,7 +46256,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.222';
+  var BUILD_TAG='dDAE_3.223';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51063,7 +51065,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.222',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.223',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
