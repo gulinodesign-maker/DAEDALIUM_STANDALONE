@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.223";
+const BUILD_VERSION = "3.224";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -34833,9 +34833,51 @@ function groupGuestsByName(items){
 function sortGuestGroups(groups){
   const by = state.guestSortBy || "arrivo";
   const dir = (state.guestSortDir === "desc") ? -1 : 1;
+  const source = (groups || []).slice();
+
+  // dDAE_3.224 — Le priorità operative (check-out completato, cronologia arrivo,
+  // check-out odierno e check-in effettuato) appartengono ESCLUSIVAMENTE al
+  // filtro/ordinamento Check-in (arrivo). Gli altri ordinamenti devono restare
+  // indipendenti e rispettare solo il proprio criterio.
+  if (by === "nome"){
+    source.sort((a,b) => {
+      const an = normalizeGuestNameKey(a?.nome);
+      const bn = normalizeGuestNameKey(b?.nome);
+      const cmp = String(an || '').localeCompare(String(bn || ''), "it") * dir;
+      if (cmp) return cmp;
+      const aa = Number(a?._sourceInsNo ?? a?._insNo) || 1e18;
+      const bb = Number(b?._sourceInsNo ?? b?._insNo) || 1e18;
+      return aa - bb;
+    });
+    return source;
+  }
+
+  if (by === "inserimento"){
+    source.sort((a,b) => {
+      const aa = Number(a?._insNo) || 1e18;
+      const bb = Number(b?._insNo) || 1e18;
+      if (aa !== bb) return (aa - bb) * dir;
+      return normalizeGuestNameKey(a?.nome).localeCompare(normalizeGuestNameKey(b?.nome), "it");
+    });
+    return source;
+  }
+
+  if (by === "checkout"){
+    source.sort((a,b) => {
+      const ta = (a?._checkoutTs == null) ? null : Number(a._checkoutTs);
+      const tb = (b?._checkoutTs == null) ? null : Number(b._checkoutTs);
+      if (ta != null && tb != null && ta !== tb) return (ta - tb) * dir;
+      if (ta == null && tb != null) return 1;
+      if (ta != null && tb == null) return -1;
+      const aa = Number(a?._sourceInsNo ?? a?._insNo) || 1e18;
+      const bb = Number(b?._sourceInsNo ?? b?._insNo) || 1e18;
+      return aa - bb;
+    });
+    return source;
+  }
+
   const today = todayISO();
   const todayDay = _dayNumFromISO(today);
-  const source = (groups || []).slice();
 
   // dDAE_3.222 — calcola una sola volta le chiavi operative usate dall'ordinamento.
   // Le regole restano identiche alla 3.221, ma il comparator non ricalcola stato,
@@ -46256,7 +46298,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.223';
+  var BUILD_TAG='dDAE_3.224';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51065,7 +51107,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.223',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.224',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
