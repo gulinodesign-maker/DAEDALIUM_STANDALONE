@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.221";
+const BUILD_VERSION = "3.222";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -22317,16 +22317,32 @@ function __applyTaxPageCardAll__(){
 
 const __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_guest_list_card_visual_v1';
 
+let __guestListCardVisualMapCache__ = null;
+let __guestListCardVisualMapCacheRaw__ = null;
 function __loadGuestListCardVisualMap__(){
   try{
-    const raw = localStorage.getItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__);
+    const raw = localStorage.getItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__) || '';
+    if (__guestListCardVisualMapCache__ && raw === __guestListCardVisualMapCacheRaw__) return __guestListCardVisualMapCache__;
     const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  }catch(_){ return {}; }
+    const map = parsed && typeof parsed === 'object' ? parsed : {};
+    __guestListCardVisualMapCache__ = map;
+    __guestListCardVisualMapCacheRaw__ = raw;
+    return map;
+  }catch(_){
+    __guestListCardVisualMapCache__ = {};
+    __guestListCardVisualMapCacheRaw__ = '';
+    return __guestListCardVisualMapCache__;
+  }
 }
 
 function __saveGuestListCardVisualMap__(map){
-  try{ localStorage.setItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+  try{
+    const clean = (map && typeof map === 'object') ? map : {};
+    const raw = JSON.stringify(clean);
+    localStorage.setItem(__GUEST_LIST_CARD_VISUAL_STORAGE_KEY__, raw);
+    __guestListCardVisualMapCache__ = clean;
+    __guestListCardVisualMapCacheRaw__ = raw;
+  }catch(_){ }
 }
 
 function __guestListCardVisualDefault__(){
@@ -34815,91 +34831,71 @@ function groupGuestsByName(items){
 function sortGuestGroups(groups){
   const by = state.guestSortBy || "arrivo";
   const dir = (state.guestSortDir === "desc") ? -1 : 1;
-  const nameKey = (s) => normalizeGuestNameKey(s);
-  const checkInPriority = (guest) => {
-    try{
-      const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
-        ? guest._groupBookings
-        : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
-      return rows.some((row) => __guestCheckInDone__(row)) ? 0 : 1;
-    }catch(_){ return 1; }
-  };
-  const arrivalKey = (guest) => {
-    try{
-      const iso = __guestCardArrivalISO__(guest);
-      if (iso) return iso;
-    }catch(_){ }
-    try{
-      const ts = (guest?._arrivoTs == null) ? null : Number(guest._arrivoTs);
-      if (Number.isFinite(ts)) return new Date(ts).toISOString().slice(0,10);
-    }catch(_){ }
-    return "";
-  };
-  const checkoutTodayPriority = (guest) => {
-    try{
-      const today = todayISO();
-      const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
-        ? guest._groupBookings
-        : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
-      const hasCheckoutToday = rows.some((row) => {
-        const iso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
-        return !!iso && iso === today;
-      });
-      return hasCheckoutToday ? 0 : 1;
-    }catch(_){ return 1; }
-  };
-  const checkoutCompletedPriority = (guest) => {
+  const today = todayISO();
+  const todayDay = _dayNumFromISO(today);
+  const source = (groups || []).slice();
+
+  // dDAE_3.222 — calcola una sola volta le chiavi operative usate dall'ordinamento.
+  // Le regole restano identiche alla 3.221, ma il comparator non ricalcola stato,
+  // saldo, check-in/check-out e date decine di volte per la stessa card.
+  for (const guest of source){
     try{
       const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
         ? guest._groupBookings
         : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
       const bookableRows = rows.filter((row) => row && !__guestUsesOnlyLocaleRooms__(row));
-      if (!bookableRows.length) return 1;
-      const todayDay = _dayNumFromISO(todayISO());
-      if (todayDay == null) return 1;
-      const completed = bookableRows.every((row) => {
-        const outIso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
-        const outDay = _dayNumFromISO(outIso);
-        if (outDay == null) return false;
-        if (todayDay > outDay) return true;
-        if (todayDay < outDay) return false;
-        const remaining = __guestRemainingForLed__(row);
-        return Number.isFinite(remaining) && remaining <= 0.0001;
+      let checkoutCompleted = false;
+      if (bookableRows.length && todayDay != null){
+        checkoutCompleted = bookableRows.every((row) => {
+          const outIso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
+          const outDay = _dayNumFromISO(outIso);
+          if (outDay == null) return false;
+          if (todayDay > outDay) return true;
+          if (todayDay < outDay) return false;
+          const remaining = __guestRemainingForLed__(row);
+          return Number.isFinite(remaining) && remaining <= 0.0001;
+        });
+      }
+      const hasCheckoutToday = rows.some((row) => {
+        const iso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
+        return !!iso && iso === today;
       });
-      return completed ? 0 : 1;
-    }catch(_){ return 1; }
-  };
+      let arrival = '';
+      try{ arrival = __guestCardArrivalISO__(guest) || ''; }catch(_){ }
+      if (!arrival){
+        const ts = (guest?._arrivoTs == null) ? null : Number(guest._arrivoTs);
+        if (Number.isFinite(ts)) arrival = new Date(ts).toISOString().slice(0,10);
+      }
+      guest.__sortMeta3222 = {
+        checkoutDone: checkoutCompleted ? 0 : 1,
+        arrival,
+        checkoutToday: hasCheckoutToday ? 0 : 1,
+        checkIn: rows.some((row) => __guestCheckInDone__(row)) ? 0 : 1,
+        name: normalizeGuestNameKey(guest?.nome)
+      };
+    }catch(_){
+      guest.__sortMeta3222 = { checkoutDone:1, arrival:'', checkoutToday:1, checkIn:1, name:normalizeGuestNameKey(guest?.nome) };
+    }
+  }
 
-  const out = (groups || []).slice();
-  out.sort((a,b) => {
-    // dDAE_3.221 — priorità assoluta: le schede con check-out già effettuato
-    // precedono sempre tutte le schede ancora da concludere, indipendentemente dagli altri criteri.
-    const checkoutDoneA = checkoutCompletedPriority(a);
-    const checkoutDoneB = checkoutCompletedPriority(b);
-    if (checkoutDoneA !== checkoutDoneB) return checkoutDoneA - checkoutDoneB;
+  source.sort((a,b) => {
+    const ma = a?.__sortMeta3222 || {};
+    const mb = b?.__sortMeta3222 || {};
 
-    // dDAE_3.214 — regola principale: ordine cronologico di arrivo sempre rispettato.
-    // A parità di giorno di arrivo, il check-out odierno precede un pernottamento ancora in corso;
-    // poi, a parità di stato, chi ha già effettuato il check-in viene prima.
-    const arrivalA = arrivalKey(a);
-    const arrivalB = arrivalKey(b);
+    // dDAE_3.221 — priorità assoluta: check-out già effettuati prima di tutto.
+    if ((ma.checkoutDone ?? 1) !== (mb.checkoutDone ?? 1)) return (ma.checkoutDone ?? 1) - (mb.checkoutDone ?? 1);
+
+    // dDAE_3.214 — ordine cronologico di arrivo sempre rispettato.
+    const arrivalA = ma.arrival || '';
+    const arrivalB = mb.arrival || '';
     if (arrivalA && arrivalB && arrivalA !== arrivalB) return arrivalA.localeCompare(arrivalB);
     if (!arrivalA && arrivalB) return 1;
     if (arrivalA && !arrivalB) return -1;
 
-    const checkoutA = checkoutTodayPriority(a);
-    const checkoutB = checkoutTodayPriority(b);
-    if (checkoutA !== checkoutB) return checkoutA - checkoutB;
+    if ((ma.checkoutToday ?? 1) !== (mb.checkoutToday ?? 1)) return (ma.checkoutToday ?? 1) - (mb.checkoutToday ?? 1);
+    if ((ma.checkIn ?? 1) !== (mb.checkIn ?? 1)) return (ma.checkIn ?? 1) - (mb.checkIn ?? 1);
 
-    const checkInA = checkInPriority(a);
-    const checkInB = checkInPriority(b);
-    if (checkInA !== checkInB) return checkInA - checkInB;
-
-    // Gli altri criteri restano disponibili come terzo livello, senza rompere
-    // la cronologia di arrivo né la precedenza del check-in nello stesso giorno.
-    if (by === "nome"){
-      return nameKey(a?.nome).localeCompare(nameKey(b?.nome), "it") * dir;
-    }
+    if (by === "nome") return String(ma.name || '').localeCompare(String(mb.name || ''), "it") * dir;
     if (by === "inserimento"){
       const aa = Number(a?._insNo) || 1e18;
       const bb = Number(b?._insNo) || 1e18;
@@ -34916,9 +34912,9 @@ function sortGuestGroups(groups){
     const aa = Number(a?._sourceInsNo ?? a?._insNo) || 1e18;
     const bb = Number(b?._sourceInsNo ?? b?._insNo) || 1e18;
     if (aa !== bb) return aa - bb;
-    return nameKey(a?.nome).localeCompare(nameKey(b?.nome), "it");
+    return String(ma.name || '').localeCompare(String(mb.name || ''), "it");
   });
-  return out;
+  return source;
 }
 
 
@@ -39507,6 +39503,50 @@ function __calendarSelectedColumnIndex(anchor){
   }catch(_){ return -1; }
 }
 
+// dDAE_3.222 — selezionare un altro giorno nello stesso mese non ricostruisce
+// l'intera griglia: aggiorna solo evidenziazione, badge e outline.
+function __calendarApplySelectedDateInPlace__(dateValue){
+  try{
+    if (!state.calendar) return false;
+    const selected = (dateValue instanceof Date) ? new Date(dateValue) : __calendarDateFromIso__(dateValue);
+    selected.setHours(0,0,0,0);
+    const current = (state.calendar.anchor instanceof Date) ? new Date(state.calendar.anchor) : new Date(state.calendar.anchor || Date.now());
+    current.setHours(0,0,0,0);
+    if (selected.getFullYear() !== current.getFullYear() || selected.getMonth() !== current.getMonth()) return false;
+    const grid = document.getElementById('calGridMonth');
+    if (!grid || grid.hidden) return false;
+
+    state.calendar.anchor = selected;
+    state.calendar.selectedDateISO = isoDate(selected);
+    const selectedIso = state.calendar.selectedDateISO;
+    const selectedTs = selected.getTime();
+    const selectedCol = __calendarSelectedColumnIndex(selected);
+
+    grid.querySelectorAll('.cal-cell.cal-head').forEach((head) => {
+      head.classList.toggle('is-today-col', Number(head.dataset.dayIndex || 0) === selectedCol);
+    });
+    grid.querySelectorAll('.cal-cell[data-room][data-date]').forEach((cell) => {
+      const startIso = String(cell.dataset.date || '').slice(0,10);
+      const startTs = /^\d{4}-\d{2}-\d{2}$/.test(startIso) ? new Date(startIso + 'T00:00:00').getTime() : NaN;
+      const span = Math.max(1, parseInt(cell.dataset.spanDays || '1', 10) || 1);
+      const covers = Number.isFinite(startTs) && selectedTs >= startTs && selectedTs < (startTs + span * 86400000);
+      cell.classList.toggle('is-today-col', covers);
+      if (covers){
+        cell.style.setProperty('--today-span', String(span));
+        cell.style.setProperty('--today-offset', String(Math.max(0, Math.round((selectedTs - startTs) / 86400000))));
+      } else {
+        cell.style.removeProperty('--today-span');
+        cell.style.removeProperty('--today-offset');
+      }
+    });
+    const input = document.getElementById('calDateInput');
+    if (input) input.value = selectedIso;
+    try{ addCalendarTodayColumnOutline(grid, selectedCol, getConfiguredRoomsCount(6) + 1); }catch(_){ }
+    try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
+    return true;
+  }catch(_){ return false; }
+}
+
 function __calendarOccupiedRoomsCountForDate__(dateIso){
   try{
     const safeIso = __calendarNormalizeIso__(dateIso);
@@ -39716,21 +39756,28 @@ function setupCalendario(){
 
   const shiftAnchorAndRender = (newAnchor, { force=false, scrollDayLeft=null, selectedDate=null } = {}) => {
     newAnchor.setHours(0,0,0,0);
-    state.calendar.anchor = newAnchor;
-    if (selectedDate){
-      state.calendar.selectedDateISO = __calendarNormalizeIso__(selectedDate);
-    } else {
-      state.calendar.selectedDateISO = isoDate(newAnchor);
+    const previousAnchor = (state.calendar && state.calendar.anchor instanceof Date) ? new Date(state.calendar.anchor) : new Date(state.calendar?.anchor || Date.now());
+    previousAnchor.setHours(0,0,0,0);
+    const sameRenderedMonth = previousAnchor.getFullYear() === newAnchor.getFullYear() && previousAnchor.getMonth() === newAnchor.getMonth();
+    const targetIso = selectedDate ? __calendarNormalizeIso__(selectedDate) : isoDate(newAnchor);
+
+    let updatedInPlace = false;
+    if (sameRenderedMonth){
+      updatedInPlace = __calendarApplySelectedDateInPlace__(newAnchor);
+      if (updatedInPlace) state.calendar.selectedDateISO = targetIso;
     }
-    // Render immediato: prima cambia pagina, poi aggiorna i dati
-    renderCalendario();
-    __updateCalendarSelectedDayBadges__({ show:true });
+    if (!updatedInPlace){
+      state.calendar.anchor = newAnchor;
+      state.calendar.selectedDateISO = targetIso;
+      renderCalendario();
+      __updateCalendarSelectedDayBadges__({ show:true });
+    }
     if (scrollDayLeft != null){
       requestAnimationFrame(() => {
         try{ scrollCalendarMonthToDayLeft(scrollDayLeft); }catch(_){ }
       });
     }
-    // Refresh in background (no loader)
+    // Refresh in background (no loader); il rangeKey evita letture duplicate nello stesso mese.
     __scheduleCalendarFetch({ force, showLoader:false });
   };
 
@@ -40934,6 +40981,7 @@ function bindCalendarCellActions(cell, options){
   let holdTimer = null;
   let holdTriggered = false;
   let insertDrag = null;
+  let globalDragHandlersBound = false;
 
   const clearHold = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
   const isAdmin = () => { try{ return !!__isAdmin__(); }catch(_){ return false; } };
@@ -41137,6 +41185,7 @@ function bindCalendarCellActions(cell, options){
     }finally{
       stopAutoScroll();
       unlockPassiveHorizontalScroll();
+      try{ unbindGlobalDragListeners(); }catch(_){ }
       try{ window.__ddaeCalendarInsertDragActive = false; }catch(_){ }
       setTimeout(clearInsertSelection, 450);
       insertDrag = null;
@@ -41172,6 +41221,7 @@ function bindCalendarCellActions(cell, options){
         };
         try{ cell.setPointerCapture && ev && cell.setPointerCapture(ev.pointerId); }catch(_){ }
         lockPassiveHorizontalScroll();
+        try{ bindGlobalDragListeners(); }catch(_){ }
         try{ window.__ddaeCalendarInsertDragActive = true; }catch(_){ }
         updateInsertSelection(dateIso);
         return;
@@ -41243,6 +41293,7 @@ function bindCalendarCellActions(cell, options){
     if (insertDrag) {
       stopAutoScroll();
       unlockPassiveHorizontalScroll();
+      try{ unbindGlobalDragListeners(); }catch(_){ }
       try{ window.__ddaeCalendarInsertDragActive = false; }catch(_){ }
       insertDrag = null;
       clearInsertSelection();
@@ -41259,10 +41310,7 @@ function bindCalendarCellActions(cell, options){
     openCalendarCellZoom(cell, payload);
   };
 
-  try{ cell.addEventListener('pointerdown', startHold, { passive:true }); }catch(_){ cell.addEventListener('pointerdown', startHold); }
-  try{ cell.addEventListener('pointermove', moveHold, { passive:false }); }catch(_){ cell.addEventListener('pointermove', moveHold); }
-  try{ document.addEventListener('pointermove', moveHold, { passive:false }); }catch(_){ document.addEventListener('pointermove', moveHold); }
-  try{ document.addEventListener('touchmove', function(ev){
+  const onGlobalTouchMove = (ev) => {
     try{
       if (!insertDrag) return;
       const t = ev.touches && ev.touches[0];
@@ -41272,25 +41320,44 @@ function bindCalendarCellActions(cell, options){
       moveHold({ clientX:t.clientX, clientY:t.clientY, preventDefault:()=>{}, stopPropagation:()=>{} });
       ev.preventDefault();
     }catch(_){ }
-  }, { passive:false }); }catch(_){ }
-  try{ document.addEventListener('touchend', function(ev){
+  };
+  const onGlobalTouchEnd = (ev) => {
     try{
       if (!insertDrag) return;
       const t = (ev.changedTouches && ev.changedTouches[0]) || null;
-      const fake = t ? { clientX:t.clientX, clientY:t.clientY, preventDefault:()=>{}, stopPropagation:()=>{} } : { clientX:insertDrag.lastX, clientY:insertDrag.lastY, preventDefault:()=>{}, stopPropagation:()=>{} };
+      const fake = t
+        ? { clientX:t.clientX, clientY:t.clientY, preventDefault:()=>{}, stopPropagation:()=>{} }
+        : { clientX:insertDrag.lastX, clientY:insertDrag.lastY, preventDefault:()=>{}, stopPropagation:()=>{} };
       updateReleaseEndpoint(fake);
       applyCalendarInsertToGuest();
       ev.preventDefault();
     }catch(_){ }
-  }, { passive:false }); }catch(_){ }
-  ['pointerup'].forEach((evt) => {
-    try{ cell.addEventListener(evt, endHold, { passive:false }); }catch(_){ cell.addEventListener(evt, endHold); }
-    try{ document.addEventListener(evt, endHold, { passive:false }); }catch(_){ document.addEventListener(evt, endHold); }
-  });
-  ['pointercancel'].forEach((evt) => {
-    try{ cell.addEventListener(evt, endHold, { passive:false }); }catch(_){ cell.addEventListener(evt, endHold); }
-    try{ document.addEventListener(evt, endHold, { passive:false }); }catch(_){ document.addEventListener(evt, endHold); }
-  });
+  };
+  const bindGlobalDragListeners = () => {
+    if (globalDragHandlersBound) return;
+    globalDragHandlersBound = true;
+    try{ document.addEventListener('pointermove', moveHold, { passive:false }); }catch(_){ document.addEventListener('pointermove', moveHold); }
+    try{ document.addEventListener('pointerup', endHold, { passive:false }); }catch(_){ document.addEventListener('pointerup', endHold); }
+    try{ document.addEventListener('pointercancel', endHold, { passive:false }); }catch(_){ document.addEventListener('pointercancel', endHold); }
+    try{ document.addEventListener('touchmove', onGlobalTouchMove, { passive:false }); }catch(_){ document.addEventListener('touchmove', onGlobalTouchMove); }
+    try{ document.addEventListener('touchend', onGlobalTouchEnd, { passive:false }); }catch(_){ document.addEventListener('touchend', onGlobalTouchEnd); }
+    try{ document.addEventListener('touchcancel', cancelHold, { passive:false }); }catch(_){ document.addEventListener('touchcancel', cancelHold); }
+  };
+  const unbindGlobalDragListeners = () => {
+    if (!globalDragHandlersBound) return;
+    globalDragHandlersBound = false;
+    try{ document.removeEventListener('pointermove', moveHold, false); }catch(_){ }
+    try{ document.removeEventListener('pointerup', endHold, false); }catch(_){ }
+    try{ document.removeEventListener('pointercancel', endHold, false); }catch(_){ }
+    try{ document.removeEventListener('touchmove', onGlobalTouchMove, false); }catch(_){ }
+    try{ document.removeEventListener('touchend', onGlobalTouchEnd, false); }catch(_){ }
+    try{ document.removeEventListener('touchcancel', cancelHold, false); }catch(_){ }
+  };
+
+  try{ cell.addEventListener('pointerdown', startHold, { passive:true }); }catch(_){ cell.addEventListener('pointerdown', startHold); }
+  try{ cell.addEventListener('pointermove', moveHold, { passive:false }); }catch(_){ cell.addEventListener('pointermove', moveHold); }
+  try{ cell.addEventListener('pointerup', endHold, { passive:false }); }catch(_){ cell.addEventListener('pointerup', endHold); }
+  try{ cell.addEventListener('pointercancel', endHold, { passive:false }); }catch(_){ cell.addEventListener('pointercancel', endHold); }
   cell.addEventListener('contextmenu', (ev) => { try{ ev.preventDefault(); }catch(_){ } });
   cell.addEventListener('click', onClick);
 }
@@ -41329,8 +41396,8 @@ function renderCalendarioMonth(){
     grid.style.setProperty('grid-template-columns', `repeat(${daysCount}, var(--cal-day-w))`, 'important');
   }catch(_){ }
 
-  const occ = buildMonthOccupancy(displayStart, daysCount);
   const roomsCount = getConfiguredRoomsCount(6);
+  const occ = buildMonthOccupancy(displayStart, daysCount, roomsCount);
   const todayCol = __calendarSelectedColumnIndex(anchor);
   renderCalendarRoomRail(roomsCount);
 
@@ -41366,10 +41433,13 @@ function renderCalendarioMonth(){
         const previousScrollLeft = Number(daysWrap?.scrollLeft || 0);
         const selected = new Date(d);
         selected.setHours(0,0,0,0);
-        state.calendar.anchor = selected;
-        state.calendar.selectedDateISO = isoDate(selected);
-        renderCalendarioMonth();
-        try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
+        const sameMonthUpdated = __calendarApplySelectedDateInPlace__(selected);
+        if (!sameMonthUpdated){
+          state.calendar.anchor = selected;
+          state.calendar.selectedDateISO = isoDate(selected);
+          renderCalendarioMonth();
+          try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
+        }
         requestAnimationFrame(() => {
           try{ if (daysWrap) daysWrap.scrollLeft = previousScrollLeft; }catch(_){ }
           try{ refreshCalendarTodayColumnOutline(); }catch(_){ }
@@ -41486,7 +41556,7 @@ function renderCalendarioMonth(){
   try{ __scheduleCalendarioLayoutRefresh(); }catch(_){ }
 }
 
-function buildMonthOccupancy(monthStart, daysCount){
+function buildMonthOccupancy(monthStart, daysCount, roomsCountHint){
   const map = new Map();
   const guests = (state.calendar && Array.isArray(state.calendar.guests)) ? state.calendar.guests : [];
   const monthEndEx = addDays(monthStart, daysCount);
@@ -41504,7 +41574,8 @@ function buildMonthOccupancy(monthStart, daysCount){
     const last = addDays(co, -1);
     const lastIso = isoDate(last);
 
-    const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
+    const roomLimit = Number(roomsCountHint) > 0 ? Number(roomsCountHint) : getConfiguredRoomsCount(6);
+    const roomsArr = __guestRoomsArrayForCalendar__(g, roomLimit);
     if (!roomsArr.length) continue;
 
     const initials = initialsFromName(g.nome || g.name || g.Nome || g.NOME || g.guestName || g.fullName || g.full_name || "");
@@ -41512,6 +41583,9 @@ function buildMonthOccupancy(monthStart, daysCount){
     const mOn = !!(g.matrimonio);
     const gOn = truthy(g.g ?? g.flag_g ?? g.gruppo_g ?? g.group ?? g.g_flag);
     const cOn = truthy(g.col_c ?? g.colC ?? g.c ?? g.C ?? g.flag_c ?? g.flagC ?? g.colc ?? g.c_flag);
+    const badge = getGuestChannelBadgeData(g);
+    const roomDots = new Map();
+    for (const r of roomsArr) roomDots.set(r, dotsForGuestRoom(guestId, r));
 
     for (let d = new Date(ci); d < co; d = addDays(d, 1)) {
       if (d < monthStart || d >= monthEndEx) continue;
@@ -41519,8 +41593,7 @@ function buildMonthOccupancy(monthStart, daysCount){
       const isLast = !__guestUsesOnlyLocaleRooms__(g) && dIso === lastIso;
 
       for (const r of roomsArr) {
-        const dots = dotsForGuestRoom(guestId, r);
-        const badge = getGuestChannelBadgeData(g);
+        const dots = roomDots.get(r) || [];
         map.set(`${dIso}:${r}`, { guestId, initials, dots, lastDay: isLast, checkoutIso: coStr, mOn, gOn, cOn, channelInitial: String(badge.initial || '').trim().slice(0,1).toUpperCase(), channelColor: badge.color, channelTextColor: badge.textColor || '', channelStyle: badge.style || __tagColorInlineStyle__(badge.color || 'orange', badge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }) });
       }
     }
@@ -46181,7 +46254,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.221';
+  var BUILD_TAG='dDAE_3.222';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50990,7 +51063,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.221',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.222',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
