@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.220";
+const BUILD_VERSION = "3.221";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -34848,9 +34848,36 @@ function sortGuestGroups(groups){
       return hasCheckoutToday ? 0 : 1;
     }catch(_){ return 1; }
   };
+  const checkoutCompletedPriority = (guest) => {
+    try{
+      const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
+        ? guest._groupBookings
+        : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
+      const bookableRows = rows.filter((row) => row && !__guestUsesOnlyLocaleRooms__(row));
+      if (!bookableRows.length) return 1;
+      const todayDay = _dayNumFromISO(todayISO());
+      if (todayDay == null) return 1;
+      const completed = bookableRows.every((row) => {
+        const outIso = __parseDateFlexibleToISO(row?.check_out ?? row?.checkOut ?? row?.checkout ?? row?.data_check_out ?? row?.dataPartenza ?? row?.partenza ?? row?.departure ?? row?.guestCheckOut);
+        const outDay = _dayNumFromISO(outIso);
+        if (outDay == null) return false;
+        if (todayDay > outDay) return true;
+        if (todayDay < outDay) return false;
+        const remaining = __guestRemainingForLed__(row);
+        return Number.isFinite(remaining) && remaining <= 0.0001;
+      });
+      return completed ? 0 : 1;
+    }catch(_){ return 1; }
+  };
 
   const out = (groups || []).slice();
   out.sort((a,b) => {
+    // dDAE_3.221 — priorità assoluta: le schede con check-out già effettuato
+    // precedono sempre tutte le schede ancora da concludere, indipendentemente dagli altri criteri.
+    const checkoutDoneA = checkoutCompletedPriority(a);
+    const checkoutDoneB = checkoutCompletedPriority(b);
+    if (checkoutDoneA !== checkoutDoneB) return checkoutDoneA - checkoutDoneB;
+
     // dDAE_3.214 — regola principale: ordine cronologico di arrivo sempre rispettato.
     // A parità di giorno di arrivo, il check-out odierno precede un pernottamento ancora in corso;
     // poi, a parità di stato, chi ha già effettuato il check-in viene prima.
@@ -46154,7 +46181,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.220';
+  var BUILD_TAG='dDAE_3.221';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50963,7 +50990,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.220',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.221',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
