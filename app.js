@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.225";
+const BUILD_VERSION = "3.226";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -39589,6 +39589,9 @@ function __calendarApplySelectedDateInPlace__(dateValue){
     });
     const input = document.getElementById('calDateInput');
     if (input) input.value = selectedIso;
+    // dDAE_3.226 — il lampeggio checkout segue sempre il giorno selezionato,
+    // anche quando il calendario viene aggiornato in-place senza ricostruire il mese.
+    try{ __calendarRefreshCheckoutBlinkInPlace__(); }catch(_){ }
     try{ addCalendarTodayColumnOutline(grid, selectedCol, getConfiguredRoomsCount(6) + 1); }catch(_){ }
     try{ __updateCalendarSelectedDayBadges__({ show:true }); }catch(_){ }
     return true;
@@ -40497,6 +40500,28 @@ function scrollCalendarMonthToDayLeft(dayIndex){
     const target = Math.max(0, headLeft - twoCellsBack);
     try{ wrap.scrollTo({ left: target, behavior: 'auto' }); }catch(_){ wrap.scrollLeft = target; }
     try{ if (wrap.__roomFreezeUpdate) wrap.__roomFreezeUpdate(); }catch(_){ }
+  }catch(_){ }
+}
+
+function __calendarRefreshCheckoutBlinkInPlace__(){
+  try{
+    const grid = document.getElementById('calGridMonth');
+    if (!grid || grid.hidden) return;
+    const selectedIso = __calendarSelectedIso__();
+    grid.querySelectorAll('.cal-cell.has-booking').forEach((cell) => {
+      try{
+        cell.classList.remove('is-checkout-booking-blink', 'is-checkout-paid', 'is-checkout-unpaid');
+        cell.removeAttribute('data-checkout-guest-id');
+        cell.removeAttribute('data-checkout-remaining');
+
+        const checkoutIso = String(cell.dataset.checkoutIso || '').slice(0,10);
+        if (!checkoutIso || checkoutIso !== selectedIso) return;
+        __calendarApplyCheckoutPaymentBorder__(cell, {
+          checkoutIso,
+          guestId: String(cell.dataset.guestId || '').trim()
+        });
+      }catch(_){ }
+    });
   }catch(_){ }
 }
 
@@ -41534,6 +41559,9 @@ function renderCalendarioMonth(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `cal-cell room-${r} has-booking`;
+      // Metadati stabili per ricalcolare il lampeggio senza ridisegnare il calendario.
+      cell.dataset.guestId = String(info.guestId || '').trim();
+      cell.dataset.checkoutIso = String(info.checkoutIso || '').slice(0,10);
       __calendarApplyCheckoutPaymentBorder__(cell, info);
       cell.dataset.date = dIso;
       cell.dataset.room = String(r);
@@ -46302,7 +46330,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.225';
+  var BUILD_TAG='dDAE_3.226';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51111,7 +51139,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.225',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.226',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -33229,7 +33229,7 @@ body.ddae-dark .guest-score-picker-option.selected{
 }
 
 
-/* dDAE_3.225 — Punteggio: numero recensioni centrato nella card CHANNEL. */
+/* dDAE_3.226 — Punteggio: numero recensioni centrato nella card CHANNEL. */
 #page-statchannel .stat-row[data-stat-scope="score"]{
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
