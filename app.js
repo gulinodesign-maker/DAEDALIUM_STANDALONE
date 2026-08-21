@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.228";
+const BUILD_VERSION = "3.229";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -28762,9 +28762,14 @@ function enterGuestCreateMode(){
   try{ window.__ddae_renderRooms && window.__ddae_renderRooms(); }catch(_){ }
 }
 
-function enterGuestEditMode(ospite){
-  try{ ensureRoomsPickerButtons(); }catch(_){ }
-  setGuestFormViewOnly(false);
+function enterGuestEditMode(ospite, options = {}){
+  const __fromView = !!(options && options.fromView);
+  // dDAE_3.229 — apertura scheda: la sola lettura non deve inizializzare
+  // picker stanze / disponibilità / UI di modifica prima del primo paint.
+  if (!__fromView){
+    // setGuestFormViewOnly(false) costruisce già il picker: evita una seconda ricostruzione DOM.
+    setGuestFormViewOnly(false);
+  }
 
   state.guestCreateFromGroup = false;
 
@@ -28818,8 +28823,11 @@ function enterGuestEditMode(ospite){
       state.guestServicesComputedTotal = 0;
     }
   }catch(_){ }
-  // Precarica servizi in background (UI apre subito)
-  try{ setTimeout(() => { try{ loadServiziForOspite(ospite); }catch(_){} }, 0); }catch(_){}
+  // Precarica servizi in background soltanto in modifica. In sola lettura
+  // il fetch parte dopo che la scheda è già stata resa visibile.
+  if (!__fromView){
+    try{ setTimeout(() => { try{ loadServiziForOspite(ospite); }catch(_){} }, 60); }catch(_){}
+  }
 
 
 state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
@@ -28869,8 +28877,8 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
 refreshFloatingLabels();
   try { updateGuestRemaining(); } catch (_) {}
 
-  // Servizi: carica sempre (anche se l'ospite non ha servizi_totale valorizzato)
-  try{ loadServiziForOspite(ospite); }catch(_){ }
+  // Servizi: il caricamento è già pianificato sopra in background.
+  // Evita la seconda richiesta sincrona della prima apertura.
 
 
   // deposit type (se disponibile). Retroattivo: se importo Acconto/Saldo è zero, nessun led deve restare acceso.
@@ -28949,20 +28957,25 @@ refreshFloatingLabels();
   } catch (_) {}
 
   try{ __syncGuestLocaleRulesUi__(); }catch(_){ }
-  try { updateOspiteHdActions(); } catch (_) {}
+  if (!__fromView){ try { updateOspiteHdActions(); } catch (_) {} }
 
   // ✅ FIX dDAE: entrando in modifica con date gia' valorizzate, ricalcola subito disponibilita' stanze.
   // In iOS/Safari PWA gli handler input/change dei campi date possono non partire finche' l'utente non li tocca.
   // refreshRoomsAvailability/renderRooms sono definiti in setupOspite: li esponiamo su window e li richiamiamo qui.
-  try {
-    state._roomsAvailKey = "";
-    const run = () => {
-      try { window.__ddae_renderRooms && window.__ddae_renderRooms(); } catch (_) {}
-      try { window.__ddae_refreshRoomsAvailability && window.__ddae_refreshRoomsAvailability(); } catch (_) {}
-    };
-    setTimeout(run, 50);
-    setTimeout(run, 180);
-  } catch (_) {}
+  if (!__fromView){
+    try {
+      state._roomsAvailKey = "";
+      const run = () => {
+        try { window.__ddae_renderRooms && window.__ddae_renderRooms(); } catch (_) {}
+        try { window.__ddae_refreshRoomsAvailability && window.__ddae_refreshRoomsAvailability(); } catch (_) {}
+      };
+      // Una sola verifica dopo il paint: prima veniva lanciata due volte (50/180 ms).
+      try{
+        if (window.requestAnimationFrame) window.requestAnimationFrame(() => setTimeout(run, 0));
+        else setTimeout(run, 60);
+      }catch(_){ setTimeout(run, 60); }
+    } catch (_) {}
+  }
 
   // Multi prenotazioni: in modifica mostra sempre il riquadro (anche se singolo) + tasto +
   try{
@@ -28985,11 +28998,11 @@ refreshFloatingLabels();
     }
 
     state.guestGroupActiveId = guestIdOf(ospite);
-    renderGuestMulti({ mode: "edit" });
+    if (!__fromView) renderGuestMulti({ mode: "edit" });
   }catch(_){ }
 
 
-  try { updateGuestPriceVisibility(); } catch (_) {}
+  if (!__fromView){ try { updateGuestPriceVisibility(); } catch (_) {} }
 }
 
 function _guestIdOf(item){
@@ -31291,8 +31304,9 @@ function __populateGuestGroupInfoFromBooking__(ospite){
     try{ refreshFloatingLabels(); }catch(_){ }
     try{ __syncGuestLocaleRulesUi__(ospite); }catch(_){ }
     try{ updateGuestTaxTotalPill(ospite); }catch(_){ try{ updateGuestTaxTotalPill(); }catch(__){ } }
-    try{ loadServiziForOspite(ospite); }catch(_){ }
+    // Priorità all'azione operativa: abilita subito il check-in; i servizi arrivano dopo.
     try{ __syncGuestCheckInButton__(); }catch(_){ }
+    try{ setTimeout(() => { try{ loadServiziForOspite(ospite); }catch(_){} }, 60); }catch(_){ }
   }catch(_){ }
 }
 
@@ -32492,7 +32506,11 @@ function setGuestFormViewOnly(isView, ospite){
   if (createChoice) createChoice.hidden = !!isView || !isCreateMode;
 
   const picker = document.getElementById("roomsPicker");
-  if (picker) { try{ ensureRoomsPickerButtons(); }catch(_){ } picker.hidden = !!isView; }
+  if (picker) {
+    // dDAE_3.229 — in sola lettura il picker è nascosto: non costruirlo inutilmente.
+    if (!isView) { try{ ensureRoomsPickerButtons(); }catch(_){ } }
+    picker.hidden = !!isView;
+  }
 
   const ro = document.getElementById("roomsReadOnly");
   if (ro) {
@@ -32542,37 +32560,22 @@ function setGuestFormViewOnly(isView, ospite){
 }
 
 function enterGuestViewMode(ospite){
-  // Riempiamo la maschera usando la stessa logica dell'edit, poi blocchiamo tutto in sola lettura
-  enterGuestEditMode(ospite);
+  // Riempiamo i dati senza avviare la parte pesante della modalità modifica.
+  enterGuestEditMode(ospite, { fromView:true });
   state.guestMode = "view";
   try{ updateGuestFormModeClass(); }catch(_){ }
   try{ syncGuestCreatePrimaryStack(); }catch(_){ }
+  try{ updateGuestPriceVisibility(); }catch(_){ }
   state.guestViewItem = ospite || null;
   state.guestViewPrimaryId = guestIdOf(ospite) || ospite?.id || null;
   state.guestGroupActiveId = null;
 
   
-  // Servizi: carica sempre elenco e totale (anche se non ci sono multi-prenotazioni)
+  // Servizi: la cache è già stata applicata da enterGuestEditMode.
+  // La rete parte dopo il primo paint della scheda, senza ritardare apertura/check-in.
   try{
     state.guestServicesManualOverride = false;
-    const ospiteId = guestIdOf(ospite) || (ospite?.id ?? null);
-    const key = ospiteId ? String(ospiteId) : "";
-    const cache = (key && state.guestServicesCacheById) ? state.guestServicesCacheById[key] : null;
-
-    state.guestServicesLoadingFor = null;
-
-    if (cache && Array.isArray(cache.items)){
-      state.guestServicesItems = cache.items.slice();
-      state.guestServicesComputedTotal = isFinite(cache.total) ? cache.total : serviziComputeTotal(state.guestServicesItems);
-      state.guestServicesLoadedFor = ospiteId;
-      state.guestServicesLoadedAt = cache.loadedAt || 0;
-    } else {
-      state.guestServicesLoadedFor = null;
-      state.guestServicesLoadedAt = 0;
-      state.guestServicesItems = [];
-      state.guestServicesComputedTotal = 0;
-    }
-    loadServiziForOspite(ospite);
+    setTimeout(() => { try{ loadServiziForOspite(ospite); }catch(_){} }, 90);
   }catch(_){ }
 
 const title = document.getElementById("ospiteFormTitle");
@@ -35956,21 +35959,19 @@ function renderGuestCards(){
     const open = () => {
       try{ if ((card.__guestListCardSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
 
-      const sameNameItems = Array.isArray(first?._groupBookings) && first._groupBookings.length
-        ? {
-            key: String(__guestCardKeyOf__(first)).trim(),
-            bookings: first._groupBookings
-          }
-        : groupGuestsByName(items || []).find(g => String(g.key) === String(__guestCardKeyOf__(first)).trim());
-      if (sameNameItems && sameNameItems.bookings && sameNameItems.bookings.length > 1){
+      // dDAE_3.229 — le card sono già raggruppate durante il render: riusa il gruppo
+      // pronto invece di rifare groupGuestsByName al primo tap. Vale anche per gruppi singoli.
+      const sameNameItems = (Array.isArray(first?._groupBookings) && first._groupBookings.length)
+        ? { key:String(__guestCardKeyOf__(first)).trim(), bookings:first._groupBookings }
+        : null;
+      if (sameNameItems && sameNameItems.bookings && sameNameItems.bookings.length){
         state.guestGroupBookings = sameNameItems.bookings;
         state.guestGroupKey = sameNameItems.key;
         state.guestGroupActiveId = guestIdOf(first);
       } else {
-        state.guestGroupBookings = null;
-        state.guestGroupKey = null;
-        state.guestGroupActiveId = null;
-        try{ clearGuestMulti(); }catch(_){ }
+        state.guestGroupBookings = [first];
+        state.guestGroupKey = String(__guestCardKeyOf__(first)).trim() || null;
+        state.guestGroupActiveId = guestIdOf(first) || null;
       }
       state.guestReturnPage = "ospiti";
       enterGuestViewMode(first);
@@ -39589,7 +39590,7 @@ function __calendarApplySelectedDateInPlace__(dateValue){
     });
     const input = document.getElementById('calDateInput');
     if (input) input.value = selectedIso;
-    // dDAE_3.228 — il lampeggio checkout segue sempre il giorno selezionato,
+    // dDAE_3.229 — il lampeggio checkout segue sempre il giorno selezionato,
     // anche quando il calendario viene aggiornato in-place senza ricostruire il mese.
     try{ __calendarRefreshCheckoutBlinkInPlace__(); }catch(_){ }
     try{ addCalendarTodayColumnOutline(grid, selectedCol, getConfiguredRoomsCount(6) + 1); }catch(_){ }
@@ -46330,7 +46331,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.228';
+  var BUILD_TAG='dDAE_3.229';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51139,7 +51140,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.228',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.229',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
