@@ -33262,11 +33262,11 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="score"] .stat-review
   #page-statchannel .stat-row[data-stat-scope="score"] .stat-review-count{ font-size: 12px !important; }
 }
 
-/* dDAE_3.227 — Calendario: testo STANZA/LOCALE dominante nella card del popup zoom. */
+/* dDAE_3.228 — Calendario: testo STANZA/LOCALE dominante nella card del popup zoom. */
 .calendar-cell-zoom .cal-cell-room-info span{
   font-size:clamp(28px, 9vw, 38px) !important;
   line-height:.96 !important;
-  font-weight:900 !important;
+  font-weight:400 !important;
   letter-spacing:-.025em !important;
   text-transform:uppercase !important;
   opacity:1 !important;
