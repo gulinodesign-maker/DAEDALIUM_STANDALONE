@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.229";
+const BUILD_VERSION = "3.230";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -28764,7 +28764,7 @@ function enterGuestCreateMode(){
 
 function enterGuestEditMode(ospite, options = {}){
   const __fromView = !!(options && options.fromView);
-  // dDAE_3.229 — apertura scheda: la sola lettura non deve inizializzare
+  // dDAE_3.230 — apertura scheda: la sola lettura non deve inizializzare
   // picker stanze / disponibilità / UI di modifica prima del primo paint.
   if (!__fromView){
     // setGuestFormViewOnly(false) costruisce già il picker: evita una seconda ricostruzione DOM.
@@ -32507,7 +32507,7 @@ function setGuestFormViewOnly(isView, ospite){
 
   const picker = document.getElementById("roomsPicker");
   if (picker) {
-    // dDAE_3.229 — in sola lettura il picker è nascosto: non costruirlo inutilmente.
+    // dDAE_3.230 — in sola lettura il picker è nascosto: non costruirlo inutilmente.
     if (!isView) { try{ ensureRoomsPickerButtons(); }catch(_){ } }
     picker.hidden = !!isView;
   }
@@ -35337,7 +35337,8 @@ function __guestReportCanvas__(guest){
     return count > 1 ? Math.max(cardH, 120 + Math.min(count, 8) * 48 + (count > 8 ? 26 : 0)) : cardH;
   };
   const __guestReportHeaderPhone=__guestReportGuestPhone__(safeGuest);
-  const innerHeaderH=__guestReportHeaderPhone ? 238 : 184;
+  // dDAE_3.230 — nome ospite e telefono condividono la stessa riga.
+  const innerHeaderH=184;
   const innerHeight=innerHeaderH+rows.reduce((sum,row)=>sum+serviceRowHeight(row)+gap,0)+footerH;
   const height=outerTop+innerHeight;
   const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); if(!ctx) return null;
@@ -35348,40 +35349,52 @@ function __guestReportCanvas__(guest){
   const accountName=__guestReportAccountName__();
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
   const guestPhone=__guestReportHeaderPhone;
-  const maxTitleWidth=width-184;
-  const fitFont=(text, startSize, minSize, weight='900')=>{
+  const fitFont=(text, startSize, minSize, maxWidth, weight='900')=>{
     let size=startSize;
+    const allowed=Math.max(1, Number(maxWidth) || (width-184));
     ctx.font=`${weight} ${size}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
-    while(ctx.measureText(String(text || '')).width>maxTitleWidth && size>minSize){
+    while(ctx.measureText(String(text || '')).width>allowed && size>minSize){
       size-=2;
       ctx.font=`${weight} ${size}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
     }
     return size;
   };
 
-  // dDAE_3.040 — Report ospite: nome account fuori dal riquadro, in alto centrato, grande e azzurro.
+  // dDAE_3.230 — il nome dell'hotel sfrutta quasi tutta la larghezza della scheda.
   ctx.textAlign='center';
   ctx.fillStyle='#2d9cdb';
-  const accountFontSize=fitFont(accountName, 64, 42, '900');
+  const accountFontSize=fitFont(accountName, 120, 42, width-64, '900');
   ctx.font=`900 ${accountFontSize}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
-  ctx.fillText(accountName, width/2, 96);
+  ctx.fillText(accountName, width/2, 108);
 
   radiusRect(28,outerTop,width-56,innerHeight-28,48); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(15,23,42,0.08)'; ctx.stroke();
 
+  // dDAE_3.230 — nome a sinistra e telefono a destra sulla stessa riga.
+  const headerLeft=92;
+  const headerRight=width-92;
+  const headerBaseline=outerTop+108;
+  let phoneFontSize=0;
+  let phoneWidth=0;
+  if(guestPhone){
+    phoneFontSize=fitFont(guestPhone, 46, 32, Math.min(470, (headerRight-headerLeft)*0.42), '800');
+    ctx.font=`800 ${phoneFontSize}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
+    phoneWidth=ctx.measureText(guestPhone).width;
+  }
+  const guestMaxWidth=Math.max(320, (headerRight-headerLeft)-phoneWidth-(guestPhone?56:0));
   ctx.textAlign='left';
   ctx.fillStyle='#10243e';
-  const guestFontSize=fitFont(guestName, 68, 44, '900');
+  const guestFontSize=fitFont(guestName, 68, 38, guestMaxWidth, '900');
   ctx.font=`900 ${guestFontSize}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
-  ctx.fillText(guestName,92,outerTop+102);
+  ctx.fillText(guestName,headerLeft,headerBaseline);
 
-  let y=outerTop+166;
   if(guestPhone){
+    ctx.textAlign='right';
     ctx.fillStyle='#60738a';
-    const phoneFontSize=fitFont(guestPhone, 46, 34, '800');
     ctx.font=`800 ${phoneFontSize}px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif`;
-    ctx.fillText(guestPhone,92,outerTop+158);
-    y=outerTop+222;
+    ctx.fillText(guestPhone,headerRight,headerBaseline);
   }
+  ctx.textAlign='left';
+  let y=outerTop+166;
   rows.forEach((row,idx)=>{
     const rowH = serviceRowHeight(row);
     radiusRect(92,y,width-184,rowH,34);
@@ -35959,7 +35972,7 @@ function renderGuestCards(){
     const open = () => {
       try{ if ((card.__guestListCardSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
 
-      // dDAE_3.229 — le card sono già raggruppate durante il render: riusa il gruppo
+      // dDAE_3.230 — le card sono già raggruppate durante il render: riusa il gruppo
       // pronto invece di rifare groupGuestsByName al primo tap. Vale anche per gruppi singoli.
       const sameNameItems = (Array.isArray(first?._groupBookings) && first._groupBookings.length)
         ? { key:String(__guestCardKeyOf__(first)).trim(), bookings:first._groupBookings }
@@ -39590,7 +39603,7 @@ function __calendarApplySelectedDateInPlace__(dateValue){
     });
     const input = document.getElementById('calDateInput');
     if (input) input.value = selectedIso;
-    // dDAE_3.229 — il lampeggio checkout segue sempre il giorno selezionato,
+    // dDAE_3.230 — il lampeggio checkout segue sempre il giorno selezionato,
     // anche quando il calendario viene aggiornato in-place senza ricostruire il mese.
     try{ __calendarRefreshCheckoutBlinkInPlace__(); }catch(_){ }
     try{ addCalendarTodayColumnOutline(grid, selectedCol, getConfiguredRoomsCount(6) + 1); }catch(_){ }
@@ -46331,7 +46344,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.229';
+  var BUILD_TAG='dDAE_3.230';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51140,7 +51153,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.229',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.230',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
