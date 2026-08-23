@@ -33283,3 +33283,29 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="score"] .stat-review
     font-size:clamp(27px, 9vw, 35px) !important;
   }
 }
+
+
+/* dDAE_3.231 — PMS: percentuale di incidenza CHANNEL centrata nella card. */
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%,-50%) !important;
+  z-index:2 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  font-size:17px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  letter-spacing:.1px !important;
+  color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  pointer-events:none !important;
+}
+body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share{
+  color:var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
+@media (max-width:390px){
+  #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share{ font-size:15px !important; }
+}
