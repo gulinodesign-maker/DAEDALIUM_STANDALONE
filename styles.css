@@ -33285,7 +33285,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="score"] .stat-review
 }
 
 
-/* dDAE_3.231 — PMS: percentuale di incidenza CHANNEL centrata nella card. */
+/* dDAE_3.232 — PMS: percentuale di incidenza CHANNEL centrata nella card. */
 #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share{
   position:absolute !important;
   left:50% !important;
@@ -33308,4 +33308,348 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 @media (max-width:390px){
   #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share{ font-size:15px !important; }
+}
+
+
+/* dDAE_3.232 — Global Liquid Glass restyle (light + dark mode) */
+:root{
+  --lg-surface-light: rgba(255,255,255,0.34);
+  --lg-surface-light-strong: rgba(255,255,255,0.52);
+  --lg-surface-dark: rgba(15,23,42,0.34);
+  --lg-surface-dark-strong: rgba(15,23,42,0.50);
+}
+body{
+  --lg-surface: var(--lg-surface-light);
+  --lg-surface-strong: var(--lg-surface-light-strong);
+  --lg-border: rgba(255,255,255,0.52);
+  --lg-border-strong: rgba(255,255,255,0.72);
+  --lg-shadow: 0 18px 48px rgba(15,23,42,0.14), 0 4px 14px rgba(15,23,42,0.10), inset 0 1px 0 rgba(255,255,255,0.58), inset 0 0 0 1px rgba(255,255,255,0.32);
+  --lg-shadow-soft: 0 12px 34px rgba(15,23,42,0.10), 0 2px 10px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.54), inset 0 0 0 1px rgba(255,255,255,0.28);
+  --lg-backdrop: blur(22px) saturate(1.24);
+  --lg-sheen: linear-gradient(135deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.26) 42%, rgba(255,255,255,0.10) 72%, rgba(255,255,255,0.06) 100%);
+  --lg-sheen-soft: linear-gradient(135deg, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0.18) 48%, rgba(255,255,255,0.08) 100%);
+}
+body.ddae-dark{
+  --lg-surface: var(--lg-surface-dark);
+  --lg-surface-strong: var(--lg-surface-dark-strong);
+  --lg-border: rgba(255,255,255,0.16);
+  --lg-border-strong: rgba(255,255,255,0.24);
+  --lg-shadow: 0 22px 52px rgba(0,0,0,0.42), 0 4px 14px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 0 0 1px rgba(255,255,255,0.10);
+  --lg-shadow-soft: 0 12px 34px rgba(0,0,0,0.34), 0 2px 12px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 0 0 1px rgba(255,255,255,0.08);
+  --lg-backdrop: blur(24px) saturate(1.18);
+  --lg-sheen: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.09) 40%, rgba(255,255,255,0.04) 72%, rgba(255,255,255,0.02) 100%);
+  --lg-sheen-soft: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.07) 48%, rgba(255,255,255,0.03) 100%);
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(1200px 520px at 15% -10%, rgba(255,255,255,0.30), transparent 58%),
+    radial-gradient(900px 500px at 100% 10%, rgba(255,255,255,0.18), transparent 60%),
+    radial-gradient(1000px 520px at 50% 100%, rgba(255,255,255,0.12), transparent 66%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+}
+body.ddae-dark::before{
+  opacity: 0.46;
+}
+#app{ position:relative; z-index:1; }
+
+:where(.topservizi,
+       .card,
+       .guest-card,
+       .modal-card,
+       .guest-form-card,
+       .kpi-card,
+       .catrow,
+       .legrow,
+       .stats-graph-card,
+       .settings-equal-card,
+       .settings-main-row-modal,
+       .month-row,
+       .stat-row,
+       .sync-status,
+       .sync-status-badge,
+       .report-card,
+       .report-field,
+       .report-panel,
+       .topbar,
+       .toolbar,
+       .dropdown,
+       .popover,
+       .tooltip,
+       .popup,
+       .dialog,
+       .sheet,
+       .panel,
+       .tile,
+       .menu,
+       [class*=" card"],
+       [class^="card"],
+       [class*="-card"],
+       [class*="popup"],
+       [class*="modal"],
+       [class*="sheet"],
+       [class*="panel"],
+       [class*="menu"],
+       [class*="tile"],
+       [class*="dialog"],
+       button,
+       .btn,
+       .icon-btn,
+       .settings-btn,
+       .spesa-category-btn,
+       .pay-pill,
+       .settings-year-pill,
+       [class*="btn"],
+       [class*="pill"],
+       [class*="chip"],
+       [class*="tab"],
+       input,
+       select,
+       textarea){
+  -webkit-backdrop-filter: var(--lg-backdrop) !important;
+  backdrop-filter: var(--lg-backdrop) !important;
+  box-shadow: var(--lg-shadow-soft) !important;
+  background-image: var(--lg-sheen-soft) !important;
+  border-color: var(--lg-border) !important;
+}
+
+:where(.topservizi,
+       .card,
+       .guest-card,
+       .modal-card,
+       .guest-form-card,
+       .kpi-card,
+       .catrow,
+       .legrow,
+       .stats-graph-card,
+       .settings-equal-card,
+       .settings-main-row-modal,
+       .month-row,
+       .stat-row,
+       .sync-status,
+       .sync-status-badge,
+       .report-card,
+       .report-field,
+       .report-panel,
+       .dropdown,
+       .popover,
+       .tooltip,
+       .popup,
+       .dialog,
+       .sheet,
+       .panel,
+       .tile,
+       .menu,
+       [class*=" card"],
+       [class^="card"],
+       [class*="-card"],
+       [class*="popup"],
+       [class*="modal"],
+       [class*="sheet"],
+       [class*="panel"],
+       [class*="menu"],
+       [class*="tile"],
+       [class*="dialog"]){
+  position: relative;
+  overflow: hidden;
+}
+
+:where(.topservizi,
+       .card,
+       .guest-card,
+       .modal-card,
+       .guest-form-card,
+       .kpi-card,
+       .catrow,
+       .legrow,
+       .stats-graph-card,
+       .settings-equal-card,
+       .settings-main-row-modal,
+       .month-row,
+       .stat-row,
+       .sync-status,
+       .sync-status-badge,
+       .report-card,
+       .report-field,
+       .report-panel,
+       .dropdown,
+       .popover,
+       .tooltip,
+       .popup,
+       .dialog,
+       .sheet,
+       .panel,
+       .tile,
+       .menu,
+       [class*=" card"],
+       [class^="card"],
+       [class*="-card"],
+       [class*="popup"],
+       [class*="modal"],
+       [class*="sheet"],
+       [class*="panel"],
+       [class*="menu"],
+       [class*="tile"],
+       [class*="dialog"])::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.02) 45%),
+    radial-gradient(180px 80px at 18% 0%, rgba(255,255,255,0.38), transparent 74%);
+  opacity:0.82;
+}
+body.ddae-dark :where(.topservizi,
+       .card,
+       .guest-card,
+       .modal-card,
+       .guest-form-card,
+       .kpi-card,
+       .catrow,
+       .legrow,
+       .stats-graph-card,
+       .settings-equal-card,
+       .settings-main-row-modal,
+       .month-row,
+       .stat-row,
+       .sync-status,
+       .sync-status-badge,
+       .report-card,
+       .report-field,
+       .report-panel,
+       .dropdown,
+       .popover,
+       .tooltip,
+       .popup,
+       .dialog,
+       .sheet,
+       .panel,
+       .tile,
+       .menu,
+       [class*=" card"],
+       [class^="card"],
+       [class*="-card"],
+       [class*="popup"],
+       [class*="modal"],
+       [class*="sheet"],
+       [class*="panel"],
+       [class*="menu"],
+       [class*="tile"],
+       [class*="dialog"])::after{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 45%),
+    radial-gradient(180px 80px at 18% 0%, rgba(255,255,255,0.18), transparent 74%);
+  opacity:0.62;
+}
+
+:where(button,
+       .btn,
+       .icon-btn,
+       .settings-btn,
+       .spesa-category-btn,
+       .pay-pill,
+       .settings-year-pill,
+       [class*="btn"],
+       [class*="pill"],
+       [class*="chip"],
+       [class*="tab"]){
+  box-shadow: var(--lg-shadow) !important;
+  transform: translateZ(0);
+}
+:where(button,
+       .btn,
+       .icon-btn,
+       .settings-btn,
+       .spesa-category-btn,
+       .pay-pill,
+       .settings-year-pill,
+       [class*="btn"],
+       [class*="pill"],
+       [class*="chip"],
+       [class*="tab"]):active{
+  transform: scale(0.985);
+}
+
+:where(input, select, textarea){
+  background-color: var(--lg-surface-strong) !important;
+}
+body.ddae-dark :where(input, select, textarea){
+  color: rgba(241,245,249,0.96) !important;
+}
+
+:where(.ui-ico, .ui-ico *, .icon, .icon *, [class*="icon"] svg, [class*="icon"] path){
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.30));
+}
+body.ddae-dark :where(.ui-ico, .ui-ico *, .icon, .icon *, [class*="icon"] svg, [class*="icon"] path){
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.18));
+}
+
+:where(.home-grid > *,
+       .stats-head-row > *,
+       .settings-grid > *,
+       .report-grid > *,
+       .clean-grid .cell,
+       .cal-cell,
+       .cal-roomnum,
+       .calendar-cell,
+       .graph-wrap,
+       .statgen-line-chart-wrap,
+       canvas){
+  -webkit-backdrop-filter: var(--lg-backdrop);
+  backdrop-filter: var(--lg-backdrop);
+}
+
+:where(.guest-card, [class*="guest-card"], [class*="prenot"], [class*="booking-card"], [class*="ospit"]){
+  box-shadow: var(--lg-shadow) !important;
+}
+
+body.ddae-dark :where(.topservizi, .card, .guest-card, .modal-card, .guest-form-card, .kpi-card, .catrow, .legrow, .stats-graph-card, .settings-equal-card, .settings-main-row-modal, .month-row, .stat-row, .report-card, .report-field, .report-panel, .dropdown, .popover, .tooltip, .popup, .dialog, .sheet, .panel, .tile, .menu, [class*=" card"], [class^="card"], [class*="-card"], [class*="popup"], [class*="modal"], [class*="sheet"], [class*="panel"], [class*="menu"], [class*="tile"], [class*="dialog"], button, .btn, .icon-btn, .settings-btn, .spesa-category-btn, .pay-pill, .settings-year-pill, [class*="btn"], [class*="pill"], [class*="chip"], [class*="tab"], input, select, textarea){
+  background-image: var(--lg-sheen-soft) !important;
+}
+
+body.ddae-dark .topservizi,
+body.ddae-dark .brand,
+body.ddae-dark .topservizi-year,
+body.ddae-dark .card,
+body.ddae-dark .modal-card,
+body.ddae-dark .guest-form-card,
+body.ddae-dark .kpi-card,
+body.ddae-dark .month-row,
+body.ddae-dark .stat-row,
+body.ddae-dark .report-card,
+body.ddae-dark .report-field,
+body.ddae-dark .report-panel,
+body.ddae-dark button,
+body.ddae-dark .btn,
+body.ddae-dark .icon-btn,
+body.ddae-dark .settings-btn,
+body.ddae-dark .settings-btn-label,
+body.ddae-dark .guest-card .name,
+body.ddae-dark .guest-card .meta,
+body.ddae-dark .topservizi-center,
+body.ddae-dark .topservizi-year{
+  color: rgba(241,245,249,0.96) !important;
+}
+
+.topservizi,
+.brand,
+.brand-left,
+.brand-right{
+  backdrop-filter: var(--lg-backdrop) !important;
+  -webkit-backdrop-filter: var(--lg-backdrop) !important;
+}
+
+body.ddae-dark .topservizi{
+  background: rgba(10,14,22,0.28) !important;
+}
+body:not(.ddae-dark) .topservizi{
+  background: rgba(255,255,255,0.28) !important;
 }
