@@ -33311,213 +33311,340 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.232 — Statistiche Nazionalità */
-#page-statnazionalita .stats-head-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+/* dDAE_3.233 — Statistiche Nazionalità: layout allineato alle altre sezioni */
+#page-statnazionalita .stats-gen.stats-layered{
+  height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  max-height: calc(100dvh - 88px - var(--safe-top, 0px)) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  padding:14px 14px calc(16px + var(--safe-bottom, 0px)) !important;
 }
-#page-statnazionalita .stats-head-actions{
-  display:flex;
-  align-items:center;
-  gap:10px;
+#page-statnazionalita .stats-fixed-layer{
+  flex:0 0 auto !important;
+  position:relative !important;
+  z-index:20 !important;
+  padding:0 0 10px !important;
+  margin:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
-#page-statnazionalita .stats-title{
-  margin-bottom:0;
+#page-statnazionalita .stats-scroll-layer{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  padding:0 0 calc(20px + var(--safe-bottom, 0px)) !important;
+  margin:0 !important;
 }
-#page-statnazionalita .stat-nationality-row{
-  align-items:flex-start;
+#page-statnazionalita .stats-fixed-layer .stats-head-row{
+  margin:0 6px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
 }
-#page-statnazionalita .stat-nationality-main{
-  flex:1 1 auto;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+#page-statnazionalita .stats-fixed-layer .stats-title{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
-#page-statnazionalita .stat-nationality-title{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
+#page-statnazionalita .stats-compare-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  min-width:0 !important;
+  margin-left:auto !important;
 }
-#page-statnazionalita .stat-nationality-flag{
-  font-size:22px;
-  line-height:1;
-  flex:0 0 auto;
+#page-statnazionalita .stats-compare-btn,
+#page-statnazionalita .statgen-compare-toggle-btn,
+#page-statnazionalita .statgen-compare-year-btn{
+  width:58px !important;
+  min-width:58px !important;
+  height:38px !important;
+  min-height:38px !important;
+  border-radius:14px !important;
+  padding:0 8px !important;
+  flex:0 0 auto !important;
+  box-shadow:none !important;
+  background-image:none !important;
 }
-#page-statnazionalita .stat-nationality-meta{
-  font-size:13px;
-  line-height:1.35;
-  opacity:0.92;
-  font-weight:700;
+#page-statnazionalita .stats-fixed-layer .stats-divider{
+  margin:0 10px 8px !important;
 }
-#page-statnazionalita .stat-nationality-channels{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+#page-statnazionalita .stats-fixed-layer .statgen-line-chart-wrap,
+#page-statnazionalita .statgen-line-chart-wrap{
+  width:calc(100% - 20px) !important;
+  margin:0 10px !important;
+  height:118px !important;
+  min-height:118px !important;
+  max-height:118px !important;
+  flex:0 0 118px !important;
+  border-radius:16px !important;
 }
-#page-statnazionalita .stat-nationality-chip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:5px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.16);
-  border:1px solid rgba(255,255,255,0.20);
-  font-size:12px;
-  line-height:1.2;
-  font-weight:700;
+#page-statnazionalita .stats-fixed-layer .statgen-line-chart,
+#page-statnazionalita .statgen-line-chart{
+  display:block !important;
+  width:100% !important;
+  height:118px !important;
+  max-height:118px !important;
 }
-#page-statnazionalita .stat-nationality-chip.is-empty{
-  opacity:0.85;
-}
-#page-statnazionalita .stat-nationality-chip-name{
-  font-weight:800;
-}
-#page-statnazionalita .stat-val{
-  padding-top:2px;
+body.ddae-dark #page-statnazionalita .statgen-line-chart-wrap{
+  background:#000 !important;
 }
 
+/* Card Nazione: stessa altezza e linguaggio visivo delle card PMS. */
+#page-statnazionalita .stats-stack{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  padding:0 !important;
+}
+#page-statnazionalita .stat-row{
+  border-radius:22px !important;
+  position:relative !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 22px rgba(15,23,42,0.12) !important;
+  padding:16px 18px !important;
+  height:84px !important;
+  min-height:84px !important;
+  max-height:84px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  background:rgba(255,255,255,0.60) !important;
+}
+#page-statnazionalita .stat-row::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background:transparent !important;
+  opacity:0 !important;
+}
+#page-statnazionalita .stat-row::after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:21px;
+  border:1px solid rgba(255,255,255,0.30);
+  pointer-events:none;
+}
+#page-statnazionalita .stat-row > *{
+  position:relative;
+  z-index:1;
+}
+#page-statnazionalita .stat-name,
+#page-statnazionalita .stat-val{
+  color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+}
+#page-statnazionalita .stat-name{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  width:auto !important;
+  text-align:left !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  font-size:18px !important;
+}
+#page-statnazionalita .stat-val{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:max-content !important;
+  text-align:right !important;
+  font-size:20px !important;
+  white-space:nowrap !important;
+}
+#page-statnazionalita .stat-row.is-pressing{
+  transform:scale(0.985) !important;
+  box-shadow:inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))), 0 10px 22px rgba(15,23,42,0.12) !important;
+}
+body.ddae-dark #page-statnazionalita .stat-row{
+  background:rgba(12,23,46,0.96) !important;
+  color:#f8fbff !important;
+  box-shadow:0 10px 24px rgba(0,0,0,0.28) !important;
+}
+body.ddae-dark #page-statnazionalita .stat-row::after{
+  border-color:rgba(148,163,184,0.28) !important;
+}
+
+/* Popup: solo dati aggregati, nessun nominativo/prenotazione individuale. */
 #statNationalityModal .operatori-editor-card{
-  width:min(94vw, 760px);
-  max-width:760px;
+  width:min(94vw, 720px);
+  max-width:720px;
   max-height:min(88vh, 820px);
 }
 #statNationalityModal .operatori-editor-body{
   overflow:auto;
 }
-.stat-nationality-modal-summary{
+.stat-nationality-summary-grid{
   display:grid;
-  grid-template-columns:repeat(3, minmax(0,1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
-  margin-bottom:14px;
 }
-.stat-nationality-modal-kpi{
-  background:rgba(103,189,235,0.14);
-  border:1px solid rgba(36,94,168,0.18);
+.stat-nationality-summary-card{
   border-radius:18px;
-  padding:12px;
+  padding:14px;
+  background:rgba(103,189,235,0.12);
+  border:1px solid rgba(36,94,168,0.16);
 }
-.stat-nationality-modal-kpi-label{
+.stat-nationality-summary-label{
   font-size:12px;
-  line-height:1.2;
   font-weight:700;
-  color:rgba(15,23,42,0.72);
-  margin-bottom:4px;
+  color:rgba(15,23,42,0.64);
+  margin-bottom:5px;
 }
-.stat-nationality-modal-kpi-value{
-  font-size:20px;
+.stat-nationality-summary-value{
+  font-size:22px;
   line-height:1.15;
   font-weight:900;
   color:rgba(15,23,42,0.92);
 }
-.stat-nationality-modal-section{
+.stat-nationality-detail-section{
   margin-top:16px;
 }
-.stat-nationality-modal-section-title{
-  font-size:14px;
+.stat-nationality-detail-title{
+  font-size:13px;
   line-height:1.2;
   font-weight:900;
-  color:rgba(15,23,42,0.78);
-  margin-bottom:10px;
+  color:rgba(15,23,42,0.72);
   text-transform:uppercase;
-  letter-spacing:0.02em;
+  letter-spacing:.03em;
+  margin-bottom:10px;
 }
-.stat-nationality-modal-channels{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.stat-nationality-modal-channels .stat-nationality-chip{
-  background:rgba(36,94,168,0.10);
-  border-color:rgba(36,94,168,0.14);
-  color:rgba(15,23,42,0.88);
-}
-.stat-nationality-bookings{
+.stat-nationality-channel-list{
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:9px;
 }
-.stat-nationality-booking{
-  background:rgba(255,255,255,0.78);
+.stat-nationality-channel-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:12px;
+  min-height:54px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.72);
   border:1px solid rgba(15,23,42,0.08);
-  border-radius:18px;
-  padding:12px 14px;
-  box-shadow:0 8px 22px rgba(15,23,42,0.08);
 }
-.stat-nationality-booking-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-}
-.stat-nationality-booking-name{
-  font-size:16px;
-  line-height:1.2;
+.stat-nationality-channel-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:15px;
   font-weight:900;
-  color:rgba(15,23,42,0.92);
+  color:rgba(15,23,42,0.90);
 }
-.stat-nationality-booking-amount{
+.stat-nationality-channel-pct{
+  font-size:14px;
+  font-weight:800;
+  color:rgba(15,23,42,0.70);
+  white-space:nowrap;
+}
+.stat-nationality-channel-amount{
   font-size:16px;
-  line-height:1.2;
   font-weight:900;
   color:#245EA8;
   white-space:nowrap;
 }
-.stat-nationality-booking-grid{
+.stat-nationality-month-list{
   display:grid;
-  grid-template-columns:repeat(2, minmax(0,1fr));
-  gap:8px 14px;
-  margin-top:10px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
 }
-.stat-nationality-booking-field{
-  min-width:0;
+.stat-nationality-month-card{
+  border-radius:14px;
+  padding:10px;
+  background:rgba(255,255,255,0.68);
+  border:1px solid rgba(15,23,42,0.07);
+  text-align:center;
 }
-.stat-nationality-booking-label{
-  display:block;
+.stat-nationality-month-name{
   font-size:11px;
-  line-height:1.2;
   font-weight:800;
   color:rgba(15,23,42,0.58);
   text-transform:uppercase;
-  letter-spacing:0.03em;
-  margin-bottom:2px;
 }
-.stat-nationality-booking-value{
-  display:block;
-  font-size:13px;
-  line-height:1.3;
+.stat-nationality-month-value{
+  margin-top:3px;
+  font-size:14px;
+  font-weight:900;
   color:rgba(15,23,42,0.88);
-  font-weight:700;
-  overflow-wrap:anywhere;
 }
-@media (max-width: 640px){
-  .stat-nationality-modal-summary{ grid-template-columns:1fr; }
-  .stat-nationality-booking-grid{ grid-template-columns:1fr; }
+body.ddae-dark .stat-nationality-summary-card,
+body.ddae-dark .stat-nationality-channel-row,
+body.ddae-dark .stat-nationality-month-card{
+  background:rgba(15,23,42,0.78);
+  border-color:rgba(148,163,184,0.18);
 }
-body.ddae-dark .stat-nationality-modal-kpi{
-  background:rgba(30,41,59,0.72);
-  border-color:rgba(148,163,184,0.26);
-}
-body.ddae-dark .stat-nationality-modal-kpi-label,
-body.ddae-dark .stat-nationality-modal-section-title,
-body.ddae-dark .stat-nationality-booking-label{
+body.ddae-dark .stat-nationality-summary-label,
+body.ddae-dark .stat-nationality-detail-title,
+body.ddae-dark .stat-nationality-channel-pct,
+body.ddae-dark .stat-nationality-month-name{
   color:rgba(226,232,240,0.72);
 }
-body.ddae-dark .stat-nationality-modal-kpi-value,
-body.ddae-dark .stat-nationality-booking-name,
-body.ddae-dark .stat-nationality-booking-value,
+body.ddae-dark .stat-nationality-summary-value,
+body.ddae-dark .stat-nationality-channel-name,
+body.ddae-dark .stat-nationality-month-value,
 body.ddae-dark #statNationalityModal .operatori-editor-title{
   color:rgba(248,250,252,0.94);
 }
-body.ddae-dark .stat-nationality-booking{
-  background:rgba(15,23,42,0.82);
-  border-color:rgba(148,163,184,0.18);
+
+@media (max-width:380px){
+  #page-statnazionalita .stats-compare-btn,
+  #page-statnazionalita .statgen-compare-toggle-btn,
+  #page-statnazionalita .statgen-compare-year-btn{
+    width:50px !important;
+    min-width:50px !important;
+  }
 }
-body.ddae-dark .stat-nationality-modal-channels .stat-nationality-chip{
-  background:rgba(15,23,42,0.52);
-  border-color:rgba(148,163,184,0.18);
-  color:rgba(248,250,252,0.92);
+@media (max-width:520px){
+  .stat-nationality-summary-grid{grid-template-columns:1fr 1fr;}
+  .stat-nationality-channel-row{grid-template-columns:minmax(0,1fr) auto;}
+  .stat-nationality-channel-amount{grid-column:1 / -1;text-align:right;}
+  .stat-nationality-month-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (orientation:landscape){
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered{
+    height:100% !important;
+    max-height:100% !important;
+    width:100% !important;
+    padding:6px 8px calc(6px + var(--safe-bottom,0px)) !important;
+  }
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-scroll-layer{
+    display:none !important;
+  }
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-fixed-layer{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+  }
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-fixed-layer .statgen-line-chart-wrap{
+    flex:1 1 auto !important;
+    width:100% !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    margin:0 !important;
+    border-radius:14px !important;
+  }
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-fixed-layer .statgen-line-chart{
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
+    min-height:0 !important;
+  }
 }
