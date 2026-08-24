@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.236";
+const BUILD_VERSION = "3.237";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -4071,6 +4071,8 @@ async function __dbImport__(kind){
       return;
     }
 
+    // dDAE_3.237: unifica i riferimenti storici MANUALE nel CHANNEL PRIVATO prima di scrivere il backup.
+    try{ __canonicalizeBackupChannelsDeep__(data); }catch(_){ }
 
     const allowedTables = new Set(__dbTablesForKind__(kind));
     const ds = data.datasets || {};
@@ -4395,6 +4397,7 @@ async function __exportRosterOperators__(){
 
     try{
       const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
+      try{ __canonicalizeBackupChannelsDeep__(__multiYearBackup__); }catch(_){ }
       payload.multiYear = __multiYearBackup__;
       payload.meta.multiYear = __multiYearBackup__;
     }catch(_){ }
@@ -4429,6 +4432,8 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
+    // dDAE_3.237: il backup esportato non conserva più MANUALE come channel separato.
+    try{ __canonicalizeBackupChannelsDeep__(datasets); }catch(_){ }
     try{
       const activeNames = new Set((typeof getActiveOperatorNames === 'function' ? getActiveOperatorNames() : []).map((name) => String(name || '').trim().toLowerCase()).filter(Boolean));
       if (Array.isArray(datasets.operatori)){
@@ -13949,8 +13954,107 @@ function __parseChannelCommissionValue__(value, fallback = 0){
   return isFinite(n) ? Math.round(n * 100) / 100 : fallback;
 }
 
+/* dDAE_3.237 — CHANNEL: MANUALE è un alias storico di PRIVATO. */
+const __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__ = 'ch-2025-manuale';
+const __DDAE_LEGACY_MANUAL_CHANNEL_IDS__ = new Set([
+  'ch-1773854223825'
+]);
+
+function __normalizeChannelAliasName__(value){
+  let clean = '';
+  try{ clean = String(value || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase(); }
+  catch(_){ clean = String(value || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
+  if (clean === 'manuale' || clean === 'privato' || clean === 'diretto' || clean === 'direct' || clean === 'private') return 'privato';
+  return clean;
+}
+
+function __isLegacyManualChannelId__(id){
+  const key = String(id || '').trim();
+  return !!(key && __DDAE_LEGACY_MANUAL_CHANNEL_IDS__.has(key));
+}
+
+function __privateChannelFromCatalog__(catalog){
+  const list = Array.isArray(catalog) ? catalog : [];
+  return list.find((item) => __normalizeChannelAliasName__(item?.nome || item?.name || '') === 'privato') || null;
+}
+
+function __canonicalizeGuestChannelRecord__(record, catalogOverride){
+  if (!record || typeof record !== 'object') return record;
+  const rawId = String(record?.channel_id ?? record?.channelId ?? record?.channel ?? record?.channel_id_ref ?? '').trim();
+  const rawName = String(record?.channel_nome ?? record?.channelNome ?? record?.channel_name ?? record?.channelName ?? record?.nome_channel ?? record?.channel_label ?? '').trim();
+  const aliasName = __normalizeChannelAliasName__(rawName);
+  if (!(aliasName === 'privato' || __isLegacyManualChannelId__(rawId))) return record;
+
+  let catalog = Array.isArray(catalogOverride) ? catalogOverride : [];
+  if (!catalog.length){ try{ catalog = getChannelCatalogFromSettings(); }catch(_){ catalog = []; } }
+  let item = __privateChannelFromCatalog__(catalog);
+  if (!item){
+    item = {
+      id: __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__, nome:'PRIVATO', commissione:0, iniziale:'M',
+      colore:'acid-5', coloreTesto:'', coloreGrafico:'acid-5'
+    };
+  }
+  const out = record;
+  try{ out.channel_id = String(item.id || __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__); }catch(_){ }
+  try{ if ('channelId' in out) out.channelId = String(item.id || __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__); }catch(_){ }
+  try{ out.channel_nome = String(item.nome || 'PRIVATO'); }catch(_){ }
+  try{ if ('channelNome' in out) out.channelNome = String(item.nome || 'PRIVATO'); }catch(_){ }
+  try{ if ('channel_name' in out) out.channel_name = String(item.nome || 'PRIVATO'); }catch(_){ }
+  try{ if ('channelName' in out) out.channelName = String(item.nome || 'PRIVATO'); }catch(_){ }
+  try{ out.channel_colore = String(item.colore || out.channel_colore || 'acid-5'); }catch(_){ }
+  try{ out.channel_colore_testo = String(item.coloreTesto || ''); }catch(_){ }
+  try{ out.channel_iniziale = String(item.iniziale || 'M'); }catch(_){ }
+  try{ out.channel_commissione = Number(item.commissione || 0); }catch(_){ }
+  try{ out.channel_commission_pct = Number(item.commissione || 0); }catch(_){ }
+  return out;
+}
+
+function __canonicalizeGuestChannelList__(rows, catalogOverride){
+  const list = Array.isArray(rows) ? rows : [];
+  list.forEach((row) => { try{ __canonicalizeGuestChannelRecord__(row, catalogOverride); }catch(_){ } });
+  return list;
+}
+
+function __canonicalizeChannelCatalogSettingRows__(rows){
+  const list = Array.isArray(rows) ? rows : [];
+  list.forEach((row) => {
+    try{
+      const key = String(row?.key ?? row?.Key ?? '').trim().toLowerCase();
+      if (key !== 'channel_catalogo') return;
+      const raw = row?.value ?? row?.Value ?? '';
+      const parsed = JSON.parse(String(raw || '[]'));
+      const clean = __normalizeChannelCatalogList__(Array.isArray(parsed) ? parsed : []);
+      if ('value' in row || !('Value' in row)) row.value = JSON.stringify(clean);
+      if ('Value' in row) row.Value = JSON.stringify(clean);
+    }catch(_){ }
+  });
+  return list;
+}
+
+function __canonicalizeBackupChannelsDeep__(node, seen){
+  if (!node || typeof node !== 'object') return node;
+  const visited = seen || new WeakSet();
+  try{ if (visited.has(node)) return node; visited.add(node); }catch(_){ }
+  if (Array.isArray(node)){
+    node.forEach((item) => { try{ __canonicalizeBackupChannelsDeep__(item, visited); }catch(_){ } });
+    return node;
+  }
+  try{
+    const key = String(node?.key ?? node?.Key ?? '').trim().toLowerCase();
+    if (key === 'channel_catalogo') __canonicalizeChannelCatalogSettingRows__([node]);
+  }catch(_){ }
+  try{
+    const hasChannelFields = ('channel_id' in node) || ('channelId' in node) || ('channel_nome' in node) || ('channelNome' in node) || ('channel_name' in node) || ('channelName' in node);
+    if (hasChannelFields) __canonicalizeGuestChannelRecord__(node);
+  }catch(_){ }
+  Object.keys(node).forEach((key) => {
+    try{ const value = node[key]; if (value && typeof value === 'object') __canonicalizeBackupChannelsDeep__(value, visited); }catch(_){ }
+  });
+  return node;
+}
+
 function __normalizeChannelCatalogList__(list){
-  return (Array.isArray(list) ? list : []).map((item, idx) => ({
+  const base = (Array.isArray(list) ? list : []).map((item, idx) => ({
     id: String(item?.id || `ch-${Date.now()}-${idx}`),
     nome: String(item?.nome || item?.name || '').trim(),
     commissione: __parseChannelCommissionValue__(item?.commissione ?? item?.commission ?? item?.percentuale ?? '', 0),
@@ -13959,6 +14063,35 @@ function __normalizeChannelCatalogList__(list){
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
     coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
   })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
+
+  const privateItems = base.filter((item) => __normalizeChannelAliasName__(item.nome) === 'privato');
+  let privateCanonical = privateItems.find((item) => String(item.nome || '').trim().toLowerCase() === 'privato')
+    || privateItems.find((item) => String(item.id || '').trim() === __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__)
+    || privateItems[0]
+    || null;
+  if (privateCanonical){
+    privateCanonical = {
+      ...privateCanonical,
+      id: String(privateCanonical.id || __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__),
+      nome: 'PRIVATO',
+      iniziale: String(privateCanonical.iniziale || 'M').trim().slice(0,1).toUpperCase() || 'M'
+    };
+  }
+
+  const out = [];
+  const seenIds = new Set();
+  const seenNames = new Set();
+  base.forEach((item) => {
+    if (__normalizeChannelAliasName__(item.nome) === 'privato') return;
+    const id = String(item.id || '').trim();
+    const nameKey = __normalizeChannelAliasName__(item.nome);
+    if ((id && seenIds.has(id)) || (nameKey && seenNames.has(nameKey))) return;
+    if (id) seenIds.add(id);
+    if (nameKey) seenNames.add(nameKey);
+    out.push(item);
+  });
+  if (privateCanonical) out.push(privateCanonical);
+  return out;
 }
 
 function __parseChannelCatalogRaw__(raw){
@@ -14041,7 +14174,11 @@ async function saveChannelCatalogToSettings(list){
 function getChannelCatalogItemById(id){
   const key = __singleActionButtonSharedKey__(id);
   if (!key) return null;
-  return getChannelCatalogFromSettings().find(item => String(item.id) === key) || null;
+  const catalog = getChannelCatalogFromSettings();
+  const exact = catalog.find(item => String(item.id) === key) || null;
+  if (exact) return exact;
+  if (__isLegacyManualChannelId__(key)) return __privateChannelFromCatalog__(catalog) || null;
+  return null;
 }
 
 function populateGuestChannelOptions(selectedId = null){
@@ -18134,7 +18271,7 @@ async function __readAllOspitiRowsForGuestYear__({ force = false, showLoader = f
     const localRows = await __tblGet__('ospiti', []);
     if (Array.isArray(localRows) && localRows.length) allRows = __guestRowsMergeByStableId__(allRows, localRows);
   }catch(_){ }
-  return Array.isArray(allRows) ? allRows : [];
+  return Array.isArray(allRows) ? __canonicalizeGuestChannelList__(allRows) : [];
 }
 
 function __apiUsesExerciseYear__(action){
@@ -20822,7 +20959,7 @@ async function loadOspiti({ from="", to="", force=false } = {}){
   const lsKey = `ospiti|ALL|guestlist`;
   const hit = !force ? __lsGet(lsKey) : null;
   if (hit && Array.isArray(hit.data) && hit.data.length){
-    state.guests = __filterGuestsByExerciseYear__(hit.data, selectedYear);
+    state.guests = __filterGuestsByExerciseYear__(__canonicalizeGuestChannelList__(hit.data), selectedYear);
     try{ requestAnimationFrame(renderGuestCards); } catch(_){ renderGuestCards(); }
   }
 
@@ -20985,7 +21122,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
       state.reportAll = hitR.data;
     }
     if (hitG && Array.isArray(hitG.data)) {
-      state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(hitG.data, state.exerciseYear || loadExerciseYear()), false);
+      state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(__canonicalizeGuestChannelList__(hitG.data), state.exerciseYear || loadExerciseYear()), false);
     }
     if (hasLocal) state._statsDataKey = key;
   }
@@ -21007,7 +21144,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
         state._statsDataKey = key;
         __lsSet(lsReportKey, state.reportAll);
         __lsSet(lsSpeseKey, state.speseAll);
-        state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear()), false);
+        state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(__canonicalizeGuestChannelList__(Array.isArray(ospiti) ? ospiti : []), state.exerciseYear || loadExerciseYear()), false);
         __lsSet(lsGuestsKey, state.statsGuests);
 
         try{
@@ -21031,7 +21168,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
   state._statsDataKey = key;
   __lsSet(lsReportKey, state.reportAll);
   __lsSet(lsSpeseKey, state.speseAll);
-  state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(Array.isArray(ospiti) ? ospiti : [], state.exerciseYear || loadExerciseYear()), false);
+  state.statsGuests = __guestFilterPreventiviRows__(__filterGuestsByExerciseYear__(__canonicalizeGuestChannelList__(Array.isArray(ospiti) ? ospiti : []), state.exerciseYear || loadExerciseYear()), false);
   __lsSet(lsGuestsKey, state.statsGuests);
 }
 
@@ -24374,10 +24511,17 @@ function __statChannelCommissionPct__(guest){
 }
 
 function __statChannelBucketLabelFromGuest__(guest){
+  try{
+    const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+    const item = channelId ? getChannelCatalogItemById(channelId) : null;
+    if (item?.nome) return String(item.nome).trim();
+  }catch(_){ }
   const candidates = [guest?.channel_nome, guest?.channelNome, guest?.channel_name, guest?.channelName, guest?.pms, guest?.fonte];
   for (const raw of candidates){
     const clean = String(raw || '').trim();
-    if (clean) return clean;
+    if (!clean) continue;
+    if (__normalizeChannelAliasName__(clean) === 'privato') return 'PRIVATO';
+    return clean;
   }
   return 'PMS';
 }
@@ -24537,7 +24681,7 @@ function __statScoreSeriesForGuests__(sourceGuests){
     if (monthIdx < 0 || monthIdx > 11) return;
     const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
     const rawLabel = String(guest?.channel_nome ?? guest?.channelNome ?? guest?.channel_name ?? guest?.channelName ?? guest?.pms ?? guest?.fonte ?? '').trim();
-    const item = (channelId && catalogById.get(channelId)) || catalogByName.get(__statScoreChannelNormalizeName__(rawLabel)) || null;
+    const item = (channelId && (catalogById.get(channelId) || (()=>{ try{ return getChannelCatalogItemById(channelId); }catch(_){ return null; } })())) || catalogByName.get(__statScoreChannelNormalizeName__(rawLabel)) || (__normalizeChannelAliasName__(rawLabel) === 'privato' ? __privateChannelFromCatalog__(catalog) : null) || null;
     const label = String(item?.nome || rawLabel || 'PMS').trim() || 'PMS';
     const canonicalId = String(item?.id || channelId || '').trim();
     const key = canonicalId ? `channel:${canonicalId}` : `channel-name:${__statScoreChannelNormalizeName__(label) || 'pms'}`;
@@ -46366,7 +46510,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.236';
+  var BUILD_TAG='dDAE_3.237';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48085,16 +48229,16 @@ try{
           if (label) return label;
         }
         if (bookingMoney(guest) > 0) return 'Booking';
-        return 'Manuale';
+        return 'PRIVATO';
       };
 
       const map = new Map();
       const ensure = (label) => {
-        const safeLabel = cleanLabel(label) || 'Manuale';
-        const key = labelKey(safeLabel) || 'manuale';
+        const safeLabel = cleanLabel(label) || 'PRIVATO';
+        const key = labelKey(safeLabel) || 'privato';
         if (!map.has(key)) map.set(key, { key, label: safeLabel, current:0, compare:0, order: map.size });
         const row = map.get(key);
-        if ((!row.label || row.label === 'Manuale') && safeLabel) row.label = safeLabel;
+        if ((!row.label || row.label === 'PRIVATO') && safeLabel) row.label = safeLabel;
         return row;
       };
       const addGuests = (guests, side) => {
@@ -51175,7 +51319,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.236',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.237',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
