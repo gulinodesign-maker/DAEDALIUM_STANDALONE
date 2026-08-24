@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.233";
+const BUILD_VERSION = "3.234";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46366,7 +46366,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.233';
+  var BUILD_TAG='dDAE_3.234';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51175,7 +51175,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.233',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.234',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51602,7 +51602,7 @@ try{
 })();
 
 
-/* dDAE_3.233 — Statistiche Nazionalità */
+/* dDAE_3.234 — Statistiche Nazionalità */
 (function(){
   const PAGE_KEY = 'statnazionalita';
   const PAGE_ID = 'page-statnazionalita';
@@ -51618,7 +51618,6 @@ try{
   const COMPARE_YEAR_LABEL_ID = 'statNationalityCompareYearBtnLabel';
   const TITLE = 'Nazionalità';
   const PALETTE = ['#245EA8','#67BDEB','#7AA21D','#F29C50','#6AA0B3','#C7B198','#7C3AED','#EF4444','#059669','#A855F7','#0EA5E9','#8B5CF6'];
-  const MONTHS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
   function esc(value){
     try{ return escapeHtml(String(value == null ? '' : value)); }catch(_){
@@ -51687,17 +51686,42 @@ try{
     try{ if (typeof __readGuestNationalityFromRecord__ === 'function') option = __readGuestNationalityFromRecord__(guest || {}); }catch(_){ option = null; }
     const code = String(option?.code || guest?.nazionalita_code || guest?.country_code || '').trim().toUpperCase();
     const label = String(option?.name || guest?.nazionalita_nome || guest?.country_name || 'Non selezionata').trim() || 'Non selezionata';
+    const flag = String(option?.flag || guest?.country_flag || '🏳️').trim() || '🏳️';
     const key = code ? `nat:${code}` : `nat-name:${normalizeText(label) || 'non-selezionata'}`;
-    return { key, code, label };
+    return { key, code, label, flag };
   }
   function readChannel(guest){
     const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
-    let item = null;
-    try{ if (channelId && typeof getChannelCatalogItemById === 'function') item = getChannelCatalogItemById(channelId); }catch(_){ item = null; }
+    let catalog = [];
+    try{ catalog = (typeof getChannelCatalogFromSettings === 'function') ? getChannelCatalogFromSettings() : []; }catch(_){ catalog = []; }
+    const byId = new Map();
+    const byName = new Map();
+    (Array.isArray(catalog) ? catalog : []).forEach((entry) => {
+      const id = String(entry?.id || '').trim();
+      const nameKey = normalizeText(entry?.nome || '');
+      if (id) byId.set(id, entry);
+      if (nameKey && !byName.has(nameKey)) byName.set(nameKey, entry);
+    });
+    let item = channelId ? (byId.get(channelId) || null) : null;
+    if (!item){
+      try{ if (channelId && typeof getChannelCatalogItemById === 'function') item = getChannelCatalogItemById(channelId); }catch(_){ item = null; }
+    }
     let fallback = '';
     try{ if (typeof __statChannelBucketLabelFromGuest__ === 'function') fallback = String(__statChannelBucketLabelFromGuest__(guest) || '').trim(); }catch(_){ }
-    const label = String(item?.nome || fallback || guest?.channel_nome || guest?.channelNome || guest?.pms || guest?.fonte || 'PMS').trim() || 'PMS';
-    const key = channelId ? `channel:${channelId}` : `channel-name:${normalizeText(label) || 'pms'}`;
+    if (!fallback) fallback = String(guest?.channel_nome || guest?.channelNome || guest?.channel_name || guest?.channelName || guest?.pms || guest?.fonte || guest?.source || guest?.canale || '').trim();
+    const fallbackKey = normalizeText(fallback);
+    const privateChannel = byName.get('privato') || byName.get('diretto') || byName.get('direct') || byName.get('private') || null;
+
+    /* Record storici: "Manuale" era un fallback tecnico del canale diretto. Se oggi esiste
+       Privato/Diretto, confluisce sempre lì nella statistica Nazionalità, evitando il duplicato. */
+    if (item && normalizeText(item?.nome || '') === 'manuale' && privateChannel) item = privateChannel;
+    if (!item && fallbackKey === 'manuale' && privateChannel) item = privateChannel;
+    if (!item && fallbackKey && byName.has(fallbackKey)) item = byName.get(fallbackKey);
+    if (!item && fallbackKey === 'manuale' && privateChannel) item = privateChannel;
+
+    const label = String(item?.nome || fallback || 'PMS').trim() || 'PMS';
+    const canonicalId = String(item?.id || '').trim();
+    const key = canonicalId ? `channel:${canonicalId}` : `channel-name:${normalizeText(label) || 'pms'}`;
     return { key, label };
   }
   function buildRows(sourceGuests){
@@ -51722,6 +51746,7 @@ try{
           key:nat.key,
           label:nat.label,
           code:nat.code,
+          flag:nat.flag,
           count:0,
           amount:0,
           monthlyAmount:new Array(12).fill(0),
@@ -51764,6 +51789,7 @@ try{
         key:bucket.key,
         label:bucket.label,
         code:bucket.code,
+        flag:bucket.flag,
         count:bucket.count,
         share: totalCount > 0 ? bucket.count / totalCount : 0,
         value:bucket.amount,
@@ -51852,7 +51878,7 @@ try{
     const rows = currentRows();
     stack.innerHTML = rows.map((row)=>`
       <button class="stat-row" data-stat-card-key="${esc(row.key)}" type="button" aria-label="${esc(row.label)} ${esc(pctFmt(row.share))}">
-        <span class="stat-name">${esc(row.label)}</span>
+        <span class="stat-nationality-card-name"><span class="stat-nationality-flag-dot" aria-hidden="true"><span class="stat-nationality-flag-glyph">${esc(row.flag || '🏳️')}</span></span><span class="stat-name">${esc(row.label)}</span></span>
         <span class="stat-val">${esc(pctFmt(row.share))}</span>
       </button>
     `).join('');
@@ -51912,22 +51938,13 @@ try{
       </div>
     `).join('');
   }
-  function monthRowsHtml(row){
-    const total = Math.max(0,Number(row?.value||0));
-    const vals = Array.isArray(row?.values)?row.values:new Array(12).fill(0);
-    return vals.map((value,index)=>{
-      const amount = Number(value||0);
-      const share = total>0 ? amount/total : 0;
-      return `<div class="stat-nationality-month-card"><div class="stat-nationality-month-name">${MONTHS[index]}</div><div class="stat-nationality-month-value">${esc(pctFmt(share))} · ${esc(euroFmt(amount))}</div></div>`;
-    }).join('');
-  }
   function openNationalityModal(cardKey){
     const row = currentRows().find((item)=>String(item.key)===String(cardKey||''));
     const modal = document.getElementById(MODAL_ID);
     const title = document.getElementById(MODAL_TITLE_ID);
     const details = document.getElementById(DETAILS_ID);
     if (!row || !modal || !details) return;
-    if (title) title.textContent = row.label || TITLE;
+    if (title) title.textContent = `${row.flag || '🏳️'} ${row.label || TITLE}`;
     details.innerHTML = `
       <div class="stat-nationality-summary-grid">
         <div class="stat-nationality-summary-card"><div class="stat-nationality-summary-label">Percentuale presenza</div><div class="stat-nationality-summary-value">${esc(pctFmt(row.share||0))}</div></div>
@@ -51938,10 +51955,6 @@ try{
       <div class="stat-nationality-detail-section">
         <div class="stat-nationality-detail-title">Ripartizione per channel</div>
         <div class="stat-nationality-channel-list">${channelRowsHtml(row)}</div>
-      </div>
-      <div class="stat-nationality-detail-section">
-        <div class="stat-nationality-detail-title">Distribuzione mensile</div>
-        <div class="stat-nationality-month-list">${monthRowsHtml(row)}</div>
       </div>
     `;
     modal.hidden=false;
