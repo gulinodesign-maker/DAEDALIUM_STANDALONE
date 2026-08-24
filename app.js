@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.234";
+const BUILD_VERSION = "3.235";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46366,7 +46366,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.234';
+  var BUILD_TAG='dDAE_3.235';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51175,7 +51175,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.234',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.235',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51602,7 +51602,7 @@ try{
 })();
 
 
-/* dDAE_3.234 — Statistiche Nazionalità */
+/* dDAE_3.235 — Statistiche Nazionalità */
 (function(){
   const PAGE_KEY = 'statnazionalita';
   const PAGE_ID = 'page-statnazionalita';
@@ -51618,6 +51618,7 @@ try{
   const COMPARE_YEAR_LABEL_ID = 'statNationalityCompareYearBtnLabel';
   const TITLE = 'Nazionalità';
   const PALETTE = ['#245EA8','#67BDEB','#7AA21D','#F29C50','#6AA0B3','#C7B198','#7C3AED','#EF4444','#059669','#A855F7','#0EA5E9','#8B5CF6'];
+  let selectedNationalityKey = '';
 
   function esc(value){
     try{ return escapeHtml(String(value == null ? '' : value)); }catch(_){
@@ -51872,44 +51873,77 @@ try{
       }
     }catch(_){ }
   }
+  function inlineDetailsHtml(row){
+    return `
+      <div class="stat-nationality-inline-detail-inner">
+        <div class="stat-nationality-summary-grid">
+          <div class="stat-nationality-summary-card"><div class="stat-nationality-summary-label">Percentuale presenza</div><div class="stat-nationality-summary-value">${esc(pctFmt(row.share||0))}</div></div>
+          <div class="stat-nationality-summary-card"><div class="stat-nationality-summary-label">Numero prenotazioni</div><div class="stat-nationality-summary-value">${esc(String(row.count||0))}</div></div>
+          <div class="stat-nationality-summary-card"><div class="stat-nationality-summary-label">Importo totale</div><div class="stat-nationality-summary-value">${esc(euroFmt(row.value||0))}</div></div>
+          <div class="stat-nationality-summary-card"><div class="stat-nationality-summary-label">Importo medio prenotazione</div><div class="stat-nationality-summary-value">${esc(euroFmt(row.average||0))}</div></div>
+        </div>
+        <div class="stat-nationality-detail-section">
+          <div class="stat-nationality-detail-title">Ripartizione per channel</div>
+          <div class="stat-nationality-channel-list">${channelRowsHtml(row)}</div>
+        </div>
+      </div>
+    `;
+  }
   function renderCards(){
     const stack = document.getElementById(STACK_ID);
     if (!stack) return;
     const rows = currentRows();
-    stack.innerHTML = rows.map((row)=>`
-      <button class="stat-row" data-stat-card-key="${esc(row.key)}" type="button" aria-label="${esc(row.label)} ${esc(pctFmt(row.share))}">
-        <span class="stat-nationality-card-name"><span class="stat-nationality-flag-dot" aria-hidden="true"><span class="stat-nationality-flag-glyph">${esc(row.flag || '🏳️')}</span></span><span class="stat-name">${esc(row.label)}</span></span>
-        <span class="stat-val">${esc(pctFmt(row.share))}</span>
-      </button>
-    `).join('');
+    if (selectedNationalityKey && !rows.some((row)=>String(row.key)===String(selectedNationalityKey))) selectedNationalityKey='';
+    stack.innerHTML = rows.map((row)=>{
+      const open = String(selectedNationalityKey) === String(row.key);
+      return `
+        <div class="stat-nationality-accordion${open ? ' is-open' : ''}" data-nationality-key="${esc(row.key)}">
+          <button class="stat-row${open ? ' is-selected' : ''}" data-stat-card-key="${esc(row.key)}" type="button" aria-label="${esc(row.label)} ${esc(pctFmt(row.share))}" aria-expanded="${open ? 'true' : 'false'}">
+            <span class="stat-nationality-card-name"><span class="stat-nationality-flag-dot" aria-hidden="true"><span class="stat-nationality-flag-glyph">${esc(row.flag || '🏳️')}</span></span><span class="stat-name">${esc(row.label)}</span></span>
+            <span class="stat-val">${esc(pctFmt(row.share))}</span>
+          </button>
+          <div class="stat-nationality-inline-detail"${open ? '' : ' hidden'}>${open ? inlineDetailsHtml(row) : ''}</div>
+        </div>
+      `;
+    }).join('');
     stack.querySelectorAll('.stat-row').forEach((card)=>{
       const row = rows.find((item)=>String(item.key)===String(card.dataset.statCardKey||''));
       if (!row) return;
       try{ if (typeof __applyStatCardTextColor__ === 'function') __applyStatCardTextColor__(card,PAGE_KEY,row.key,row.fallback?.bg||'#245EA8'); }catch(_){ }
       try{ if (typeof __bindStatCardColorLongPress__ === 'function') __bindStatCardColorLongPress__(card,PAGE_KEY,row.key,row.fallback?.bg||'#245EA8'); }catch(_){ }
-      if (!card.__boundNationalityOpen){
-        card.__boundNationalityOpen=true;
-        bindFastTap(card,()=>openNationalityModal(String(card.dataset.statCardKey||'')));
+      if (!card.__boundNationalityAccordion){
+        card.__boundNationalityAccordion=true;
+        bindFastTap(card,()=>{
+          try{ if (card.classList.contains('is-pressing')) return; }catch(_){ }
+          const key=String(card.dataset.statCardKey||'');
+          selectedNationalityKey=(String(selectedNationalityKey)===key)?'':key;
+          renderCards();
+          drawChart();
+        });
       }
     });
   }
   function drawChart(){
     const rows = currentRows();
-    const primary = rows.map((row)=>({
+    const allPrimary = rows.map((row)=>({
       key:row.key,
       label:row.label,
       values:Array.isArray(row.values)?row.values.slice(0,12):new Array(12).fill(0),
       color:(typeof __statChartLineColorFromRenderedCard__==='function') ? __statChartLineColorFromRenderedCard__(PAGE_KEY,row.key,row.fallback?.bg||'#245EA8') : (row.fallback?.bg||'#245EA8')
     }));
+    const primary = selectedNationalityKey
+      ? allPrimary.filter((item)=>String(item.key)===String(selectedNationalityKey))
+      : allPrimary;
     const seriesList = primary.slice();
     if (compareEnabled()){
       const yy = compareYear();
-      const currentByKey = {};
-      primary.forEach((item)=>{ currentByKey[String(item.key||'')]=item; });
+      const colorByKey = {};
+      allPrimary.forEach((item)=>{ colorByKey[String(item.key||'')]=item; });
       compareRows().forEach((row)=>{
+        if (selectedNationalityKey && String(row.key)!==String(selectedNationalityKey)) return;
         const vals = Array.isArray(row.values)?row.values.slice(0,12):[];
         if (!vals.some((v)=>Math.abs(Number(v||0)||0)>0.0001)) return;
-        const base = currentByKey[String(row.key||'')] || row;
+        const base = colorByKey[String(row.key||'')] || row;
         seriesList.push({
           key:String(row.key||'')+'-compare-year',
           label:String(base.label||row.label||'Confronto')+' '+yy,

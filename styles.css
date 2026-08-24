@@ -33897,3 +33897,74 @@ body.ddae-dark #page-statnazionalita .stat-nationality-flag-dot{
     min-height:0 !important;
   }
 }
+
+/* dDAE_3.235 — Nazionalità: dettaglio a tendina e filtro grafico per nazione */
+#page-statnazionalita .stat-nationality-accordion{
+  width:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  min-width:0 !important;
+}
+#page-statnazionalita .stat-nationality-accordion .stat-row{
+  width:100% !important;
+  flex:0 0 84px !important;
+  transition:border-radius .18s ease, box-shadow .18s ease, transform .12s ease !important;
+}
+#page-statnazionalita .stat-nationality-accordion.is-open .stat-row{
+  border-bottom-left-radius:18px !important;
+  border-bottom-right-radius:18px !important;
+  box-shadow:0 7px 18px rgba(15,23,42,0.10) !important;
+}
+#page-statnazionalita .stat-nationality-accordion.is-open .stat-row::after{
+  border-bottom-left-radius:17px !important;
+  border-bottom-right-radius:17px !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail{
+  width:calc(100% - 18px) !important;
+  margin:-1px auto 0 !important;
+  padding:10px 0 2px !important;
+  box-sizing:border-box !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail[hidden]{
+  display:none !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail-inner{
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:12px !important;
+  border-radius:0 0 20px 20px !important;
+  background:rgba(255,255,255,0.78) !important;
+  border:1px solid rgba(15,23,42,0.10) !important;
+  border-top:0 !important;
+  box-shadow:0 12px 24px rgba(15,23,42,0.10) !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail .stat-nationality-summary-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail .stat-nationality-summary-card{
+  min-height:78px !important;
+  box-sizing:border-box !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail .stat-nationality-channel-row{
+  background:rgba(255,255,255,0.66) !important;
+}
+#page-statnazionalita .stat-row.is-selected{
+  box-shadow:inset 0 0 0 2px var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))), 0 7px 18px rgba(15,23,42,0.10) !important;
+}
+body.ddae-dark #page-statnazionalita .stat-nationality-inline-detail-inner{
+  background:rgba(10,20,40,0.96) !important;
+  border-color:rgba(148,163,184,0.22) !important;
+  box-shadow:0 12px 28px rgba(0,0,0,0.34) !important;
+}
+body.ddae-dark #page-statnazionalita .stat-nationality-inline-detail .stat-nationality-channel-row{
+  background:rgba(15,23,42,0.86) !important;
+}
+@media (max-width:520px){
+  #page-statnazionalita .stat-nationality-inline-detail .stat-nationality-summary-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  #page-statnazionalita .stat-nationality-inline-detail-inner{
+    padding:10px !important;
+  }
+}
