@@ -33968,3 +33968,95 @@ body.ddae-dark #page-statnazionalita .stat-nationality-inline-detail .stat-natio
     padding:10px !important;
   }
 }
+
+
+/* dDAE_3.236 — Nazionalità: grafico e tendina in layer separati, nessuna sovrapposizione */
+body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered{
+  display:flex !important;
+  flex-direction:column !important;
+  position:relative !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+  padding:14px 14px calc(14px + var(--safe-bottom, 0px)) !important;
+  box-sizing:border-box !important;
+}
+body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered > .stats-fixed-layer{
+  position:relative !important;
+  inset:auto !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  flex:0 0 auto !important;
+  z-index:20 !important;
+  padding:0 0 10px !important;
+  margin:0 !important;
+  overflow:visible !important;
+  transform:none !important;
+  -webkit-transform:none !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered > .stats-scroll-layer{
+  position:relative !important;
+  inset:auto !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  min-height:0 !important;
+  flex:1 1 auto !important;
+  z-index:10 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding:0 0 calc(20px + var(--safe-bottom, 0px)) !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  transform:none !important;
+  -webkit-transform:none !important;
+}
+body[data-page="statnazionalita"] #page-statnazionalita .stats-scroll-layer .stats-stack{
+  position:relative !important;
+  z-index:1 !important;
+  padding-top:0 !important;
+}
+#page-statnazionalita .stat-nationality-accordion,
+#page-statnazionalita .stat-nationality-inline-detail,
+#page-statnazionalita .stat-nationality-inline-detail-inner{
+  position:relative !important;
+  z-index:auto !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail{
+  overflow:visible !important;
+}
+#page-statnazionalita .stat-nationality-inline-detail-inner{
+  margin:0 !important;
+}
+
+@media (orientation:landscape){
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered > .stats-fixed-layer{
+    position:absolute !important;
+    top:20px !important;
+    right:20px !important;
+    bottom:20px !important;
+    left:20px !important;
+    width:auto !important;
+    height:auto !important;
+    flex:none !important;
+    overflow:hidden !important;
+  }
+  body[data-page="statnazionalita"] #page-statnazionalita .stats-gen.stats-layered > .stats-scroll-layer{
+    display:none !important;
+  }
+}

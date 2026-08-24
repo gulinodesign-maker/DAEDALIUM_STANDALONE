@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.235";
+const BUILD_VERSION = "3.236";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46366,7 +46366,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.235';
+  var BUILD_TAG='dDAE_3.236';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51175,7 +51175,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.235',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.236',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51602,7 +51602,7 @@ try{
 })();
 
 
-/* dDAE_3.235 — Statistiche Nazionalità */
+/* dDAE_3.236 — Statistiche Nazionalità */
 (function(){
   const PAGE_KEY = 'statnazionalita';
   const PAGE_ID = 'page-statnazionalita';
@@ -52164,4 +52164,161 @@ try{
     try{ window.addEventListener('orientationchange',()=>{ setTimeout(()=>{ if(String(state?.page||'')===PAGE_KEY){ ensureFixedLayer(); drawChart(); } },80); },{passive:true}); }catch(_){ }
   };
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+
+
+/* dDAE_3.236 — Nazionalità: selettore anno tap, colore solo long press */
+(function(){
+  const PAGE_KEY='statnazionalita';
+  const YEAR_ID='statNationalityCompareYearBtn';
+  let installQueued=false;
+
+  function block(e){
+    try{ e && e.preventDefault && e.preventDefault(); }catch(_){ }
+    try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ }
+    try{ e && e.stopImmediatePropagation && e.stopImmediatePropagation(); }catch(_){ }
+    return false;
+  }
+
+  function installYearButton(){
+    const old=document.getElementById(YEAR_ID);
+    if (!old || old.dataset.ddae236YearFixed==='1') return;
+
+    /* Clonazione intenzionale: elimina i listener legacy che potevano far partire
+       contemporaneamente selettore anno e popup design sui tap iOS. */
+    const btn=old.cloneNode(true);
+    btn.dataset.ddae236YearFixed='1';
+    btn.dataset.headerColorHoldBound='1';
+    btn.__boundNationalityYear=true;
+    try{ old.parentNode.replaceChild(btn,old); }catch(_){ return; }
+
+    let timer=null;
+    let hold=false;
+    let active=false;
+    let pointerId=null;
+    let touchUntil=0;
+    const clear=()=>{ if(timer){ try{ clearTimeout(timer); }catch(_){ } timer=null; } };
+    const openColor=()=>{
+      hold=true;
+      active=false;
+      try{ btn.classList.add('is-pressing'); }catch(_){ }
+      try{ if(typeof __openStatGenCompareYearButtonColorPicker__==='function') __openStatGenCompareYearButtonColorPicker__(); }catch(_){ }
+    };
+    const openYear=()=>{
+      try{ if(typeof __openStatGenCompareYearPicker__==='function') __openStatGenCompareYearPicker__(); }catch(_){ }
+    };
+
+    if (typeof window!=='undefined' && 'PointerEvent' in window){
+      btn.addEventListener('pointerdown',(e)=>{
+        try{ if(e.pointerType==='mouse' && e.button!==0) return; }catch(_){ }
+        pointerId=e.pointerId;
+        active=true;
+        hold=false;
+        clear();
+        timer=setTimeout(openColor,560);
+      },{passive:true});
+      const finish=(e,cancelled)=>{
+        if (!active && !hold) return;
+        try{ if(pointerId!=null && e.pointerId!=null && e.pointerId!==pointerId) return; }catch(_){ }
+        const wasHold=hold;
+        clear();
+        active=false;
+        pointerId=null;
+        if (wasHold){
+          block(e);
+          setTimeout(()=>{ hold=false; try{btn.classList.remove('is-pressing');}catch(_){} },120);
+          return;
+        }
+        if (!cancelled){
+          block(e);
+          openYear();
+        }
+      };
+      btn.addEventListener('pointerup',(e)=>finish(e,false),{passive:false});
+      btn.addEventListener('pointercancel',(e)=>finish(e,true),{passive:false});
+      btn.addEventListener('pointerleave',(e)=>{ if(active && !hold){ clear(); active=false; pointerId=null; } },{passive:true});
+      /* Blocca il click sintetico successivo al pointerup/long press. */
+      btn.addEventListener('click',(e)=>block(e),true);
+    }else{
+      btn.addEventListener('touchstart',()=>{
+        touchUntil=Date.now()+900;
+        active=true; hold=false; clear(); timer=setTimeout(openColor,560);
+      },{passive:true});
+      btn.addEventListener('touchend',(e)=>{
+        const wasHold=hold; clear(); active=false; touchUntil=Date.now()+900;
+        if(wasHold){ block(e); setTimeout(()=>{hold=false;try{btn.classList.remove('is-pressing');}catch(_){}},120); return; }
+        block(e); openYear();
+      },{passive:false});
+      btn.addEventListener('touchcancel',()=>{ clear(); active=false; hold=false; try{btn.classList.remove('is-pressing');}catch(_){} },{passive:true});
+      btn.addEventListener('mousedown',(e)=>{
+        if(Date.now()<touchUntil) return;
+        if((e.button||0)!==0) return;
+        active=true; hold=false; clear(); timer=setTimeout(openColor,560);
+      },true);
+      btn.addEventListener('mouseup',(e)=>{
+        if(Date.now()<touchUntil) return block(e);
+        const wasHold=hold; clear(); active=false;
+        if(wasHold){ block(e); setTimeout(()=>{hold=false;try{btn.classList.remove('is-pressing');}catch(_){}},120); return; }
+        block(e); openYear();
+      },true);
+      btn.addEventListener('mouseleave',()=>{ if(active && !hold){clear();active=false;} },true);
+      btn.addEventListener('click',(e)=>block(e),true);
+    }
+    btn.addEventListener('contextmenu',(e)=>block(e),true);
+    btn.addEventListener('keydown',(e)=>{
+      if(!e || (e.key!=='Enter' && e.key!==' ')) return;
+      block(e); openYear();
+    });
+    try{ if(typeof __headerActionApplyToButton__==='function') __headerActionApplyToButton__(btn); }catch(_){ }
+  }
+
+  function afterNationalityRender(){
+    installYearButton();
+    if(String(state?.page||'')!==PAGE_KEY) return;
+    /* Il layer grafico e il layer scroll sono fratelli flex: misurazione solo informativa,
+       mai usata come padding che possa far risalire la tendina sopra il grafico. */
+    try{
+      const page=document.getElementById('page-statnazionalita');
+      const container=page?.querySelector?.('.stats-gen.stats-layered');
+      const fixed=container?.querySelector?.(':scope > .stats-fixed-layer');
+      if(container && fixed){
+        const h=Math.ceil(fixed.getBoundingClientRect().height||fixed.offsetHeight||0);
+        if(h>0) container.style.setProperty('--stats-fixed-layer-height',h+'px');
+      }
+    }catch(_){ }
+  }
+
+  function queue(){
+    if(installQueued) return;
+    installQueued=true;
+    const run=()=>{ installQueued=false; afterNationalityRender(); };
+    try{ requestAnimationFrame(run); }catch(_){ setTimeout(run,0); }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{ queue(); setTimeout(queue,120); },{once:true});
+  else { queue(); setTimeout(queue,120); }
+
+  try{
+    const obs=new MutationObserver(()=>queue());
+    obs.observe(document.body,{childList:true,subtree:true});
+  }catch(_){ }
+
+  try{
+    document.addEventListener('click',(e)=>{
+      const card=e.target?.closest?.('#page-statnazionalita .stat-row[data-stat-card-key]');
+      if(!card) return;
+      setTimeout(()=>{
+        try{
+          const accordion=card.closest('.stat-nationality-accordion');
+          if(!accordion || !accordion.classList.contains('is-open')) return;
+          const scroll=accordion.closest('.stats-scroll-layer');
+          if(!scroll) return;
+          const top=accordion.offsetTop;
+          const bottom=top+accordion.offsetHeight;
+          if(top<scroll.scrollTop) scroll.scrollTo({top:Math.max(0,top-8),behavior:'smooth'});
+          else if(bottom>scroll.scrollTop+scroll.clientHeight) scroll.scrollTo({top:Math.max(0,bottom-scroll.clientHeight+8),behavior:'smooth'});
+        }catch(_){ }
+      },80);
+    },false);
+  }catch(_){ }
 })();
