@@ -101,7 +101,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.231";
+const BUILD_VERSION = "3.232";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46362,7 +46362,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.231';
+  var BUILD_TAG='dDAE_3.232';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51171,7 +51171,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.231',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.232',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51595,4 +51595,555 @@ try{
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', after, {once:true}); else after();
   try{ window.addEventListener('pageshow', after, {passive:true}); }catch(_){ }
   try{ window.__ddae3186SyncGuestEconomicChannelDot = syncGuestEconomicChannelDot; }catch(_){ }
+})();
+
+
+/* dDAE_3.232 — Statistiche Nazionalità */
+(function(){
+  const PAGE_KEY = 'statnazionalita';
+  const BUTTON_ID = 'goStatNazionalita';
+  const PAGE_ID = 'page-statnazionalita';
+  const STACK_ID = 'statNazRows';
+  const CANVAS_ID = 'statNationalityCanvas';
+  const MODAL_ID = 'statNationalityModal';
+  const DETAILS_ID = 'statNationalityDetails';
+  const MODAL_TITLE_ID = 'statNationalityModalTitle';
+  const COMPARE_TOGGLE_ID = 'statNationalityCompareToggleBtn';
+  const COMPARE_TOGGLE_LABEL_ID = 'statNationalityCompareToggleBtnLabel';
+  const COMPARE_YEAR_ID = 'statNationalityCompareYearBtn';
+  const COMPARE_YEAR_LABEL_ID = 'statNationalityCompareYearBtnLabel';
+  const TITLE = 'Nazionalità';
+  const PALETTE = ['#245EA8','#67BDEB','#7AA21D','#F29C50','#6AA0B3','#C7B198','#7C3AED','#EF4444','#059669','#A855F7','#0EA5E9','#8B5CF6'];
+
+  function esc(value){
+    try{ return escapeHtml(String(value == null ? '' : value)); }catch(_){
+      return String(value == null ? '' : value)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+  }
+  function euroFmt(value){
+    const n = Number(value || 0);
+    try{ return (typeof euro === 'function') ? euro(n) : n.toLocaleString('it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return '€' + (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); }
+  }
+  function pctFmt(value){
+    const n = Math.max(0, Number(value || 0) * 100);
+    try{ return n.toLocaleString('it-IT', { minimumFractionDigits:0, maximumFractionDigits:1 }) + '%'; }catch(_){ return (Math.round(n * 10) / 10 + '').replace('.', ',') + '%'; }
+  }
+  function compactEuro(value){
+    try{ return (typeof __statLineChartCompactEuro__ === 'function') ? __statLineChartCompactEuro__(value) : euroFmt(value); }catch(_){ return euroFmt(value); }
+  }
+  function normalizeText(value){
+    try{ return String(value || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase(); }catch(_){ return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase(); }
+  }
+  function bookingCountLabel(count){
+    const n = Math.max(0, Math.trunc(Number(count || 0)));
+    return n === 1 ? '1 prenotazione' : `${n} prenotazioni`;
+  }
+  function currentGuests(){
+    try{ return Array.isArray(state?.statsGuests) ? state.statsGuests.slice() : (Array.isArray(state?.guests) ? state.guests.slice() : []); }catch(_){ return []; }
+  }
+  function compareGuests(){
+    try{
+      const year = String((typeof __ensureStatGenCompareYear__ === 'function') ? __ensureStatGenCompareYear__() : (state?.statGenCompareSnapshotYear || '')).trim();
+      if (String(state?.statGenCompareSnapshotYear || '') === year && Array.isArray(state?.statGenCompareSnapshot?.guests)) return state.statGenCompareSnapshot.guests.slice();
+      if (Array.isArray(state?.statGenCompareGuests)) return state.statGenCompareGuests.slice();
+    }catch(_){ }
+    return [];
+  }
+  function readMoneyValue(raw){
+    const s = String(raw == null ? '' : raw).replace(/\s+/g,'').replace(/\./g,'').replace(',', '.').replace(/[^0-9+\-.]/g,'');
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function guestAmount(guest){
+    try{
+      if (typeof __statGuestMoney__ === 'function') return Number(__statGuestMoney__(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0) || 0);
+    }catch(_){ }
+    return readMoneyValue(guest?.importo_prenotazione ?? guest?.importo_prenota ?? guest?.importoPrenotazione ?? guest?.importoPrenota ?? 0);
+  }
+  function guestMonthIso(guest){
+    try{ if (typeof __statGuestMonthIso__ === 'function') return String(__statGuestMonthIso__(guest) || ''); }catch(_){ }
+    const candidates = [guest?.check_in, guest?.checkIn, guest?.arrivo, guest?.dataArrivo, guest?.booking_date, guest?.bookingDate, guest?.createdAt, guest?.created_at];
+    for (const raw of candidates){
+      const clean = String(raw || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+      const m = clean.match(/(\d{4}-\d{2}-\d{2})/);
+      if (m) return m[1];
+    }
+    return '';
+  }
+  function currentYearValue(){
+    try{ return String(state?.exerciseYear || ((typeof loadExerciseYear === 'function') ? loadExerciseYear() : '') || '').trim(); }catch(_){ return ''; }
+  }
+  function readNationality(guest){
+    let opt = null;
+    try{ if (typeof __readGuestNationalityFromRecord__ === 'function') opt = __readGuestNationalityFromRecord__(guest || {}); }catch(_){ opt = null; }
+    const code = String(opt?.code || guest?.nazionalita_code || guest?.country_code || '').trim().toUpperCase();
+    const name = String(opt?.name || guest?.nazionalita_nome || guest?.country_name || 'Non selezionata').trim() || 'Non selezionata';
+    const flag = String(opt?.flag || guest?.country_flag || '🏳️').trim() || '🏳️';
+    const key = code ? ('nat:' + code) : ('nat-name:' + (normalizeText(name) || 'non-selezionata'));
+    return { key, code, label:name, flag };
+  }
+  function readChannel(guest){
+    const channelId = String(guest?.channel_id ?? guest?.channelId ?? '').trim();
+    let item = null;
+    try{ if (channelId && typeof getChannelCatalogItemById === 'function') item = getChannelCatalogItemById(channelId); }catch(_){ item = null; }
+    let label = '';
+    try{ if (typeof __statChannelBucketLabelFromGuest__ === 'function') label = String(__statChannelBucketLabelFromGuest__(guest) || '').trim(); }catch(_){ }
+    label = String(item?.nome || label || guest?.channel_nome || guest?.channelNome || guest?.pms || guest?.fonte || 'PMS').trim() || 'PMS';
+    const key = channelId ? ('channel:' + channelId) : ('channel-name:' + (normalizeText(label) || 'pms'));
+    const color = String(item?.colore || guest?.channel_colore || guest?.channelColor || '').trim();
+    return { key, label, color };
+  }
+  function buildRows(sourceGuests){
+    const guests = Array.isArray(sourceGuests) ? sourceGuests : [];
+    const buckets = new Map();
+    let totalBookings = 0;
+    const channelOrder = new Map();
+    try{
+      const catalog = (typeof getChannelCatalogFromSettings === 'function') ? getChannelCatalogFromSettings() : [];
+      catalog.forEach((item, idx) => {
+        const idKey = 'channel:' + String(item?.id || '').trim();
+        const nameKey = 'channel-name:' + (normalizeText(item?.nome || '') || 'pms');
+        if (!channelOrder.has(idKey)) channelOrder.set(idKey, idx);
+        if (!channelOrder.has(nameKey)) channelOrder.set(nameKey, idx);
+      });
+    }catch(_){ }
+    guests.forEach((guest) => {
+      const nat = readNationality(guest || {});
+      if (!buckets.has(nat.key)){
+        const color = PALETTE[buckets.size % PALETTE.length];
+        buckets.set(nat.key, {
+          key:nat.key,
+          code:nat.code,
+          label:nat.label,
+          flag:nat.flag,
+          count:0,
+          total:0,
+          monthly:new Array(12).fill(0),
+          channels:new Map(),
+          guests:[],
+          fallback:{ bg:color, border:color, fg:'' }
+        });
+      }
+      const bucket = buckets.get(nat.key);
+      totalBookings += 1;
+      bucket.count += 1;
+      const amount = Math.max(0, Number(guestAmount(guest) || 0));
+      bucket.total = Math.round((Number(bucket.total || 0) + amount) * 100) / 100;
+      const iso = guestMonthIso(guest);
+      const monthIdx = iso ? Math.max(0, Math.min(11, Number(String(iso).slice(5,7)) - 1)) : -1;
+      if (monthIdx >= 0 && monthIdx < 12){
+        bucket.monthly[monthIdx] = Math.round((Number(bucket.monthly[monthIdx] || 0) + amount) * 100) / 100;
+      }
+      const channel = readChannel(guest || {});
+      if (!bucket.channels.has(channel.key)) bucket.channels.set(channel.key, { key:channel.key, label:channel.label, color:channel.color, amount:0, count:0 });
+      const cBucket = bucket.channels.get(channel.key);
+      cBucket.amount = Math.round((Number(cBucket.amount || 0) + amount) * 100) / 100;
+      cBucket.count += 1;
+      bucket.guests.push(guest);
+    });
+    const rows = Array.from(buckets.values()).map((bucket) => {
+      const channels = Array.from(bucket.channels.values());
+      channels.sort((a,b) => {
+        const ao = channelOrder.has(a.key) ? channelOrder.get(a.key) : Number.MAX_SAFE_INTEGER;
+        const bo = channelOrder.has(b.key) ? channelOrder.get(b.key) : Number.MAX_SAFE_INTEGER;
+        if (ao !== bo) return ao - bo;
+        if (Math.abs(Number(b.amount || 0) - Number(a.amount || 0)) > 0.0001) return Number(b.amount || 0) - Number(a.amount || 0);
+        return String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' });
+      });
+      return {
+        key:bucket.key,
+        code:bucket.code,
+        label:bucket.label,
+        flag:bucket.flag,
+        count:bucket.count,
+        share: totalBookings > 0 ? (bucket.count / totalBookings) : 0,
+        value:bucket.total,
+        values:bucket.monthly.slice(0,12),
+        channels,
+        bookings:bucket.guests.slice(),
+        fallback:bucket.fallback || { bg:'#245EA8', border:'#245EA8', fg:'' }
+      };
+    });
+    rows.sort((a,b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      if (Math.abs(Number(b.value || 0) - Number(a.value || 0)) > 0.0001) return Number(b.value || 0) - Number(a.value || 0);
+      return String(a.label || '').localeCompare(String(b.label || ''), 'it', { sensitivity:'base' });
+    });
+    rows.totalBookings = totalBookings;
+    return rows;
+  }
+  function currentRows(){ return buildRows(currentGuests()); }
+  function compareRows(){ return buildRows(compareGuests()); }
+  function ensureCompareSnapshot(){
+    try{
+      if (!(typeof __ensureStatGenCompareEnabled__ === 'function' && __ensureStatGenCompareEnabled__())) return;
+      const year = String((typeof __ensureStatGenCompareYear__ === 'function') ? __ensureStatGenCompareYear__() : '').trim();
+      const loaded = String(state?.statGenCompareSnapshotYear || '') === year && Array.isArray(state?.statGenCompareSnapshot?.guests);
+      if (!loaded && typeof __loadStatGenCompareGuests__ === 'function') __loadStatGenCompareGuests__({ force:false }).catch(()=>{});
+    }catch(_){ }
+  }
+  function compareEnabled(){
+    try{ return !!(typeof __ensureStatGenCompareEnabled__ === 'function' && __ensureStatGenCompareEnabled__()); }catch(_){ return false; }
+  }
+  function compareYear(){
+    try{ return String((typeof __ensureStatGenCompareYear__ === 'function') ? __ensureStatGenCompareYear__() : '').trim() || '2025'; }catch(_){ return '2025'; }
+  }
+  function updateCompareButtons(){
+    try{
+      const enabled = compareEnabled();
+      const year = compareYear();
+      const toggle = document.getElementById(COMPARE_TOGGLE_ID);
+      const toggleLabel = document.getElementById(COMPARE_TOGGLE_LABEL_ID);
+      const yearBtn = document.getElementById(COMPARE_YEAR_ID);
+      const yearLabel = document.getElementById(COMPARE_YEAR_LABEL_ID);
+      if (toggleLabel) toggleLabel.textContent = enabled ? 'ON' : 'OFF';
+      if (yearLabel) yearLabel.textContent = year;
+      if (toggle){
+        toggle.classList.toggle('is-active', enabled);
+        toggle.classList.toggle('is-inactive', !enabled);
+        toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+        toggle.title = `Confronto ${enabled ? 'ON' : 'OFF'}`;
+      }
+      if (yearBtn) yearBtn.title = `Anno confronto ${year}`;
+    }catch(_){ }
+  }
+  function channelSummaryHtml(row, modalMode){
+    const channels = Array.isArray(row?.channels) ? row.channels : [];
+    if (!channels.length) return `<span class="stat-nationality-chip is-empty">Nessun channel</span>`;
+    return channels.map((item) => {
+      return `<span class="stat-nationality-chip"><span class="stat-nationality-chip-name">${esc(item.label || 'PMS')}</span><span class="stat-nationality-chip-val">${esc(euroFmt(item.amount || 0))}</span></span>`;
+    }).join('');
+  }
+  function renderCards(){
+    const stack = document.getElementById(STACK_ID);
+    if (!stack) return;
+    const rows = currentRows();
+    stack.innerHTML = rows.map((row) => {
+      return `
+        <button class="stat-row stat-nationality-row" data-stat-card-key="${esc(row.key)}" type="button">
+          <div class="stat-nationality-main">
+            <div class="stat-nationality-title"><span class="stat-nationality-flag" aria-hidden="true">${esc(row.flag || '🏳️')}</span><span class="stat-name">${esc(row.label || 'Non selezionata')}</span></div>
+            <div class="stat-nationality-meta">${esc(bookingCountLabel(row.count))} · ${esc(pctFmt(row.share))}</div>
+            <div class="stat-nationality-channels">${channelSummaryHtml(row)}</div>
+          </div>
+          <span class="stat-val">${esc(euroFmt(row.value || 0))}</span>
+        </button>
+      `;
+    }).join('');
+    stack.querySelectorAll('.stat-row').forEach((card) => {
+      const row = rows.find((item) => String(item.key) === String(card.dataset.statCardKey || ''));
+      if (!row) return;
+      try{ if (typeof __applyStatCardTextColor__ === 'function') __applyStatCardTextColor__(card, PAGE_KEY, row.key, row.fallback?.bg || '#245EA8'); }catch(_){ }
+      try{ if (typeof __bindStatCardColorLongPress__ === 'function') __bindStatCardColorLongPress__(card, PAGE_KEY, row.key, row.fallback?.bg || '#245EA8'); }catch(_){ }
+      if (!card.__boundOpenNationality){
+        card.__boundOpenNationality = true;
+        bindFastTap(card, () => { openNationalityModal(String(card.dataset.statCardKey || '')); });
+      }
+    });
+  }
+  function drawChart(){
+    const rows = currentRows();
+    const currentSeries = rows.map((item) => ({
+      key:item.key,
+      label:`${item.flag || '🏳️'} ${item.label || 'Non selezionata'}`,
+      values:Array.isArray(item.values) ? item.values.slice(0,12) : new Array(12).fill(0),
+      color:(typeof __statChartLineColorFromRenderedCard__ === 'function') ? __statChartLineColorFromRenderedCard__(PAGE_KEY, item.key, item.fallback?.bg || '#245EA8') : (item.fallback?.bg || '#245EA8')
+    }));
+    const seriesList = currentSeries.slice();
+    if (compareEnabled()){
+      const year = compareYear();
+      const currentByKey = {};
+      currentSeries.forEach((item) => { currentByKey[String(item.key || '')] = item; });
+      compareRows().forEach((row) => {
+        const vals = Array.isArray(row.values) ? row.values.slice(0,12) : [];
+        if (!vals.some((value) => Math.abs(Number(value || 0) || 0) > 0.0001)) return;
+        const base = currentByKey[String(row.key || '')] || row;
+        seriesList.push({
+          key:String(row.key || '') + '-compare-year',
+          label:String(base.label || row.label || 'Confronto') + ' ' + String(year),
+          values:vals,
+          color:base.color || base.fallback?.bg || '#9aa3af',
+          dash:[6,4],
+          pointFill:'#ffffff',
+          lineWidth:1.8,
+          radius:2.5,
+          pointLineWidth:1.4
+        });
+      });
+    }
+    try{
+      if (typeof __drawSharedMonthlyLineChart__ === 'function') __drawSharedMonthlyLineChart__(CANVAS_ID, (seriesList[0] && seriesList[0].values) ? seriesList[0].values : new Array(12).fill(0), {
+        seriesList,
+        bubbleFormatter:(value) => compactEuro(value),
+        yTickFormatter:(value) => compactEuro(value)
+      });
+    }catch(_){ }
+  }
+  function renderStatNationality(){
+    updateCompareButtons();
+    const page = document.getElementById(PAGE_ID);
+    const title = page ? page.querySelector('.stats-title') : null;
+    if (title) title.textContent = TITLE;
+    renderCards();
+    drawChart();
+    ensureCompareSnapshot();
+    try{ if (typeof __ddaeStatsFixedGraphLayerRefresh__ === 'function') __ddaeStatsFixedGraphLayerRefresh__(); }catch(_){ }
+  }
+  function formatDate(raw){
+    const value = String(raw || '').trim();
+    if (!value) return '—';
+    const m = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+    const m2 = value.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (m2) return `${m2[3]}/${m2[2]}/${m2[1]}`;
+    return value;
+  }
+  function guestName(guest){
+    const candidates = [guest?.nome_completo, guest?.nomeCompleto, guest?.nome, guest?.name, [guest?.nome, guest?.cognome].filter(Boolean).join(' ')];
+    for (const raw of candidates){
+      const clean = String(raw || '').trim();
+      if (clean) return clean;
+    }
+    return 'Prenotazione';
+  }
+  function guestRoom(guest){
+    const candidates = [guest?.stanza_nome, guest?.stanzaNome, guest?.stanza, guest?.room_name, guest?.roomName, guest?.room, guest?.camera, guest?.locale];
+    for (const raw of candidates){ const clean = String(raw || '').trim(); if (clean) return clean; }
+    return '—';
+  }
+  function guestPeople(guest){
+    const total = Number(guest?.ospiti ?? guest?.numero_ospiti ?? guest?.numeroOspiti ?? 0) || 0;
+    const adults = Number(guest?.adulti ?? guest?.adulti_count ?? guest?.adults ?? 0) || 0;
+    const children = Number(guest?.bambini ?? guest?.children ?? 0) || 0;
+    if (total > 0) return String(total);
+    if (adults > 0 || children > 0) return children > 0 ? `${adults} + ${children}` : String(adults);
+    return '—';
+  }
+  function bookingIdValue(guest){
+    const candidates = [guest?.booking_id, guest?.bookingId, guest?.numero_prenotazione, guest?.numeroPrenotazione, guest?.id];
+    for (const raw of candidates){ const clean = String(raw || '').trim(); if (clean) return clean; }
+    return '—';
+  }
+  function guestPhone(guest){
+    const candidates = [guest?.telefono, guest?.phone, guest?.whatsapp, guest?.telefonoWhatsApp, guest?.telefono_whatsapp];
+    for (const raw of candidates){ const clean = String(raw || '').trim(); if (clean) return clean; }
+    return '—';
+  }
+  function openNationalityModal(cardKey){
+    const modal = document.getElementById(MODAL_ID);
+    const title = document.getElementById(MODAL_TITLE_ID);
+    const details = document.getElementById(DETAILS_ID);
+    if (!modal || !details) return;
+    const rows = currentRows();
+    const row = rows.find((item) => String(item.key) === String(cardKey || ''));
+    if (!row) return;
+    if (title) title.textContent = `${row.flag || '🏳️'} ${row.label || TITLE}`;
+    details.innerHTML = `
+      <div class="stat-nationality-modal-summary">
+        <div class="stat-nationality-modal-kpi"><div class="stat-nationality-modal-kpi-label">Prenotazioni</div><div class="stat-nationality-modal-kpi-value">${esc(String(row.count || 0))}</div></div>
+        <div class="stat-nationality-modal-kpi"><div class="stat-nationality-modal-kpi-label">Presenza</div><div class="stat-nationality-modal-kpi-value">${esc(pctFmt(row.share || 0))}</div></div>
+        <div class="stat-nationality-modal-kpi"><div class="stat-nationality-modal-kpi-label">Importo totale</div><div class="stat-nationality-modal-kpi-value">${esc(euroFmt(row.value || 0))}</div></div>
+      </div>
+      <div class="stat-nationality-modal-section">
+        <div class="stat-nationality-modal-section-title">Importo per channel</div>
+        <div class="stat-nationality-modal-channels">${channelSummaryHtml(row, true)}</div>
+      </div>
+      <div class="stat-nationality-modal-section">
+        <div class="stat-nationality-modal-section-title">Dettaglio prenotazioni</div>
+        <div class="stat-nationality-bookings">${(Array.isArray(row.bookings) ? row.bookings : []).map((guest) => {
+          const channel = readChannel(guest || {});
+          return `
+            <div class="stat-nationality-booking">
+              <div class="stat-nationality-booking-head">
+                <div class="stat-nationality-booking-name">${esc(guestName(guest))}</div>
+                <div class="stat-nationality-booking-amount">${esc(euroFmt(guestAmount(guest) || 0))}</div>
+              </div>
+              <div class="stat-nationality-booking-grid">
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Check-in</span><span class="stat-nationality-booking-value">${esc(formatDate(guest?.check_in ?? guest?.checkIn ?? guest?.arrivo ?? guest?.dataArrivo ?? ''))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Check-out</span><span class="stat-nationality-booking-value">${esc(formatDate(guest?.check_out ?? guest?.checkOut ?? guest?.partenza ?? guest?.dataPartenza ?? ''))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Camera / locale</span><span class="stat-nationality-booking-value">${esc(guestRoom(guest))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Channel</span><span class="stat-nationality-booking-value">${esc(channel.label || 'PMS')}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">N. prenotazione</span><span class="stat-nationality-booking-value">${esc(bookingIdValue(guest))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Ospiti</span><span class="stat-nationality-booking-value">${esc(guestPeople(guest))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Telefono</span><span class="stat-nationality-booking-value">${esc(guestPhone(guest))}</span></div>
+                <div class="stat-nationality-booking-field"><span class="stat-nationality-booking-label">Anno</span><span class="stat-nationality-booking-value">${esc(String(guestMonthIso(guest) || '').slice(0,4) || currentYearValue() || '—')}</span></div>
+              </div>
+            </div>
+          `;
+        }).join('')}</div>
+      </div>
+    `;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function closeNationalityModal(){
+    const modal = document.getElementById(MODAL_ID);
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  function ensureButton(){
+    const grid = document.querySelector('#page-statistiche .home-grid');
+    if (!grid || document.getElementById(BUTTON_ID)) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'home-main';
+    btn.id = BUTTON_ID;
+    btn.setAttribute('aria-label', TITLE);
+    btn.innerHTML = `
+      <div aria-hidden="true" class="home-main-glyph alt"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="M4 7.5c2.4 1.8 4.9 2.7 8 2.7s5.6-.9 8-2.7"></path><path d="M4 16.5c2.4-1.8 4.9-2.7 8-2.7s5.6.9 8 2.7"></path><path d="M7 5.5c1.5 2 2.2 4.2 2.2 6.5S8.5 16.5 7 18.5"></path><path d="M17 5.5c-1.5 2-2.2 4.2-2.2 6.5s.7 4.5 2.2 6.5"></path></svg></div>
+      <div class="home-main-label small">Nazionalità</div>
+    `;
+    grid.insertBefore(btn, document.getElementById('goStatPunteggio') || null);
+  }
+  function ensurePage(){
+    if (document.getElementById(PAGE_ID)) return;
+    const ref = document.getElementById('page-statchannel');
+    if (!ref || !ref.parentNode) return;
+    const section = document.createElement('section');
+    section.className = 'page';
+    section.hidden = true;
+    section.id = PAGE_ID;
+    section.innerHTML = `
+      <div class="stats-gen">
+        <div class="stats-head-row stats-compare-head-row">
+          <div class="stats-title">${TITLE}</div>
+          <div class="stats-head-actions statgen-head-actions stats-compare-actions" aria-label="Azioni grafico">
+            <button type="button" id="${COMPARE_TOGGLE_ID}" class="piscina-action-btn statgen-compare-toggle-btn stats-compare-btn" aria-label="Confronto anno grafico ${TITLE}"><span id="${COMPARE_TOGGLE_LABEL_ID}" class="statgen-compare-toggle-label">ON</span></button>
+            <button type="button" id="${COMPARE_YEAR_ID}" class="piscina-action-btn statgen-compare-year-btn stats-compare-btn" aria-label="Seleziona anno confronto grafico ${TITLE}"><span id="${COMPARE_YEAR_LABEL_ID}" class="statgen-compare-year-value">2025</span></button>
+          </div>
+        </div>
+        <div aria-hidden="true" class="stats-divider"></div>
+        <div class="statgen-line-chart-wrap" data-stat-line-chart-key="${PAGE_KEY}">
+          <canvas class="statgen-line-chart" height="118" id="${CANVAS_ID}"></canvas>
+        </div>
+        <div class="stats-stack" id="${STACK_ID}"></div>
+      </div>
+    `;
+    ref.parentNode.insertBefore(section, ref.nextSibling);
+  }
+  function ensureModal(){
+    if (document.getElementById(MODAL_ID)) return;
+    const modal = document.createElement('div');
+    modal.id = MODAL_ID;
+    modal.className = 'modal';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <div aria-modal="true" class="modal-card operatori-editor-card" role="dialog">
+        <div class="operatori-editor-hd">
+          <div class="operatori-editor-title" id="${MODAL_TITLE_ID}">${TITLE}</div>
+          <button aria-label="Chiudi" class="btn ghost operatori-editor-close" id="statNationalityModalClose" type="button">✕</button>
+        </div>
+        <div class="operatori-editor-body" id="${DETAILS_ID}"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  function bindStaticUi(){
+    const btn = document.getElementById(BUTTON_ID);
+    if (btn && !btn.__boundNationalityOpen){
+      btn.__boundNationalityOpen = true;
+      bindFastTap(btn, () => { try{ showPage(PAGE_KEY); }catch(_){ } });
+    }
+    const modal = document.getElementById(MODAL_ID);
+    if (modal && !modal.__boundNationalityModal){
+      modal.__boundNationalityModal = true;
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeNationalityModal(); });
+    }
+    const closeBtn = document.getElementById('statNationalityModalClose');
+    if (closeBtn && !closeBtn.__boundNationalityClose){
+      closeBtn.__boundNationalityClose = true;
+      bindFastTap(closeBtn, closeNationalityModal);
+    }
+    const toggle = document.getElementById(COMPARE_TOGGLE_ID);
+    if (toggle && !toggle.__boundNationalityCompareToggle){
+      toggle.__boundNationalityCompareToggle = true;
+      bindFastTap(toggle, () => {
+        try{ if (typeof __toggleStatGenCompareEnabled__ === 'function') __toggleStatGenCompareEnabled__(); }catch(_){ }
+        setTimeout(() => { updateCompareButtons(); if (String(state?.page || '') === PAGE_KEY) renderStatNationality(); }, 40);
+      });
+    }
+    const yearBtn = document.getElementById(COMPARE_YEAR_ID);
+    if (yearBtn && !yearBtn.__boundNationalityCompareYear){
+      yearBtn.__boundNationalityCompareYear = true;
+      bindFastTap(yearBtn, () => { try{ if (typeof __openStatGenCompareYearPicker__ === 'function') __openStatGenCompareYearPicker__(); }catch(_){ } });
+    }
+  }
+  function refreshIfActive(){
+    try{ updateCompareButtons(); }catch(_){ }
+    try{ if (String(state?.page || '') === PAGE_KEY) renderStatNationality(); }catch(_){ }
+  }
+  function ensureUi(){
+    ensureButton();
+    ensurePage();
+    ensureModal();
+    bindStaticUi();
+    updateCompareButtons();
+  }
+
+  const oldShowPage = (typeof window.showPage === 'function') ? window.showPage : (typeof showPage === 'function' ? showPage : null);
+  if (oldShowPage && !window.__ddaeNationalityShowPagePatched){
+    window.__ddaeNationalityShowPagePatched = true;
+    window.showPage = function(page){
+      const result = oldShowPage.apply(this, arguments);
+      try{ ensureUi(); }catch(_){ }
+      if (page === PAGE_KEY){
+        Promise.all([
+          (typeof ensureStatsAllData === 'function') ? ensureStatsAllData({ showLoader:true }) : Promise.resolve(),
+          (typeof loadOspiti === 'function') ? loadOspiti({ ...(state?.period || {}), force:false }) : Promise.resolve()
+        ]).then(() => {
+          if (String(state?.page || '') !== PAGE_KEY) return;
+          renderStatNationality();
+        }).catch((e) => { try{ toast(e?.message || 'Errore caricamento statistiche', 'orange'); }catch(_){ } });
+      }
+      return result;
+    };
+    try{ showPage = window.showPage; }catch(_){ }
+  }
+
+  if (typeof window.__toggleStatGenCompareEnabled__ === 'function' && !window.__ddaeNationalityCompareTogglePatched){
+    const oldToggleCompare = window.__toggleStatGenCompareEnabled__;
+    window.__ddaeNationalityCompareTogglePatched = true;
+    window.__toggleStatGenCompareEnabled__ = function(){
+      const result = oldToggleCompare.apply(this, arguments);
+      setTimeout(refreshIfActive, 60);
+      return result;
+    };
+    try{ __toggleStatGenCompareEnabled__ = window.__toggleStatGenCompareEnabled__; }catch(_){ }
+  }
+  if (typeof window.__saveStatGenCompareYearModal__ === 'function' && !window.__ddaeNationalityCompareYearSavePatched){
+    const oldSaveCompareYear = window.__saveStatGenCompareYearModal__;
+    window.__ddaeNationalityCompareYearSavePatched = true;
+    window.__saveStatGenCompareYearModal__ = function(){
+      const result = oldSaveCompareYear.apply(this, arguments);
+      setTimeout(refreshIfActive, 80);
+      return result;
+    };
+    try{ __saveStatGenCompareYearModal__ = window.__saveStatGenCompareYearModal__; }catch(_){ }
+  }
+  if (typeof window.__loadStatGenCompareGuests__ === 'function' && !window.__ddaeNationalityLoadComparePatched){
+    const oldLoadCompareGuests = window.__loadStatGenCompareGuests__;
+    window.__ddaeNationalityLoadComparePatched = true;
+    window.__loadStatGenCompareGuests__ = async function(){
+      const result = await oldLoadCompareGuests.apply(this, arguments);
+      setTimeout(refreshIfActive, 80);
+      return result;
+    };
+    try{ __loadStatGenCompareGuests__ = window.__loadStatGenCompareGuests__; }catch(_){ }
+  }
+
+  try{ window.renderStatNationality = renderStatNationality; }catch(_){ }
+  try{ window.drawStatNationalityLineChart = drawChart; }catch(_){ }
+  try{ window.openNationalityModal = openNationalityModal; }catch(_){ }
+  try{ window.closeNationalityModal = closeNationalityModal; }catch(_){ }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureUi, { once:true });
+  else ensureUi();
 })();
