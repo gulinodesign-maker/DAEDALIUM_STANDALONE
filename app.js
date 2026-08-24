@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.237";
+const BUILD_VERSION = "3.238";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -4071,7 +4071,7 @@ async function __dbImport__(kind){
       return;
     }
 
-    // dDAE_3.237: unifica i riferimenti storici MANUALE nel CHANNEL PRIVATO prima di scrivere il backup.
+    // dDAE_3.238: unifica i riferimenti storici MANUALE nel CHANNEL PRIVATO prima di scrivere il backup.
     try{ __canonicalizeBackupChannelsDeep__(data); }catch(_){ }
 
     const allowedTables = new Set(__dbTablesForKind__(kind));
@@ -4432,7 +4432,7 @@ async function __dbExport__(kind, preopenWin){
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
     }
-    // dDAE_3.237: il backup esportato non conserva più MANUALE come channel separato.
+    // dDAE_3.238: il backup esportato non conserva più MANUALE come channel separato.
     try{ __canonicalizeBackupChannelsDeep__(datasets); }catch(_){ }
     try{
       const activeNames = new Set((typeof getActiveOperatorNames === 'function' ? getActiveOperatorNames() : []).map((name) => String(name || '').trim().toLowerCase()).filter(Boolean));
@@ -13954,7 +13954,7 @@ function __parseChannelCommissionValue__(value, fallback = 0){
   return isFinite(n) ? Math.round(n * 100) / 100 : fallback;
 }
 
-/* dDAE_3.237 — CHANNEL: MANUALE è un alias storico di PRIVATO. */
+/* dDAE_3.238 — CHANNEL: MANUALE è un alias storico di PRIVATO. */
 const __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__ = 'ch-2025-manuale';
 const __DDAE_LEGACY_MANUAL_CHANNEL_IDS__ = new Set([
   'ch-1773854223825'
@@ -46510,7 +46510,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.237';
+  var BUILD_TAG='dDAE_3.238';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51319,7 +51319,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.237',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.238',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52228,8 +52228,9 @@ try{
   }
   function showNationalityBackTool(active){
     try{
+      if (!active) return;
       const tool=document.getElementById('statChannelTopTools');
-      if (tool) tool.hidden=!active;
+      if (tool) tool.hidden=false;
     }catch(_){ }
   }
   function refreshIfActive(){
