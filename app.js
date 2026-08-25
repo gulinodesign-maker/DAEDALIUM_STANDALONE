@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.241";
+const BUILD_VERSION = "3.242";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -471,6 +471,62 @@ async function __kvDel__(k){
         tx.objectStore(__IDB_STORE__).delete(k);
       }catch(_){ resolve(false); }
     });
+  }catch(_){ return false; }
+}
+
+
+// dDAE_3.242 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
+const __COCKTAIL_IMAGE_ASSET_PREFIX__ = "asset:cocktail-image:";
+function __cocktailImageAssetKey__(slot){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + String(slot || "").trim(); }
+async function __cocktailImageAssetGet__(slot){
+  try{ return await __kvGet__(__cocktailImageAssetKey__(slot)); }catch(_){ return null; }
+}
+async function __cocktailImageAssetSet__(slot, data){
+  try{
+    const key = __cocktailImageAssetKey__(slot);
+    if (!String(slot || '').trim() || !String(data || '').startsWith('data:image/')) return false;
+    return await __kvSet__(key, String(data));
+  }catch(_){ return false; }
+}
+async function __cocktailImageAssetDel__(slot){
+  try{ return await __kvDel__(__cocktailImageAssetKey__(slot)); }catch(_){ return false; }
+}
+async function __collectCocktailImageAssetsForBackup__(){
+  const out = {};
+  try{
+    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    for (const key of (Array.isArray(keys) ? keys : [])){
+      const slot = String(key || '').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
+      if (!slot) continue;
+      const data = await __kvGet__(key);
+      if (typeof data === 'string' && data.startsWith('data:image/')) out[slot] = data;
+    }
+  }catch(_){ }
+  try{
+    const raw = localStorage.getItem('dDAE_servizi_cocktails_v1');
+    const store = raw ? JSON.parse(raw) : {};
+    if (store && typeof store === 'object'){
+      Object.keys(store).forEach((slot) => {
+        const image = String(store?.[slot]?.image || '');
+        if (image.startsWith('data:image/') && !out[slot]) out[slot] = image;
+      });
+    }
+  }catch(_){ }
+  return out;
+}
+async function __restoreCocktailImageAssetsFromBackup__(payload){
+  try{
+    const src = (payload?.assets?.cocktailImages && typeof payload.assets.cocktailImages === 'object')
+      ? payload.assets.cocktailImages
+      : ((payload?.meta?.cocktailImageAssets && typeof payload.meta.cocktailImageAssets === 'object') ? payload.meta.cocktailImageAssets : null);
+    if (!src) return false;
+    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    for (const key of (Array.isArray(keys) ? keys : [])) await __kvDel__(key);
+    for (const slot of Object.keys(src)){
+      const data = String(src[slot] || '');
+      if (data.startsWith('data:image/')) await __cocktailImageAssetSet__(slot, data);
+    }
+    return true;
   }catch(_){ return false; }
 }
 
@@ -4185,6 +4241,7 @@ async function __dbImport__(kind){
     }catch(_){ }
 
     try{ __restoreBackupLocalStorage__(backupLocalStorage); }catch(_){ }
+    try{ await __restoreCocktailImageAssetsFromBackup__(data); }catch(_){ }
     if (__isAuthEntryBackupImport__){
       try{ localStorage.setItem(__AUTH_BACKUP_FORCE_ADMIN_KEY, "1"); }catch(_){ }
       try{
@@ -4442,15 +4499,18 @@ async function __dbExport__(kind, preopenWin){
     }catch(_){ }
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
+    const cocktailImageAssets = await __collectCocktailImageAssetsForBackup__();
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
       exportedAt: __nowIso__(),
       datasets,
       localStorage: backupLocalStorage,
+      assets: { cocktailImages: cocktailImageAssets },
       meta: {
         localStorage: backupLocalStorage,
-        themeSlots: backupThemeSlots
+        themeSlots: backupThemeSlots,
+        cocktailImageAssets: cocktailImageAssets
       }
     };
 
@@ -35060,7 +35120,7 @@ function sortGuestGroups(groups){
       const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
         ? guest._groupBookings
         : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
-      // dDAE_3.241 — la priorità di ordinamento deve coincidere con lo stato
+      // dDAE_3.242 — la priorità di ordinamento deve coincidere con lo stato
       // realmente mostrato dalla card. Questo include anche i locali/Piscina:
       // un evento passato è visualizzato azzurro (led-blue) e quindi deve essere
       // trattato come concluso, senza essere escluso dal gruppo check-out.
@@ -35116,7 +35176,7 @@ function sortGuestGroups(groups){
     const ma = a?.__sortMeta3222 || {};
     const mb = b?.__sortMeta3222 || {};
 
-    // dDAE_3.241 — gerarchia assoluta del filtro Check-in:
+    // dDAE_3.242 — gerarchia assoluta del filtro Check-in:
     // 1) check-out già conclusi; 2) check-out del giorno ancora da concludere;
     // 3) pernottamenti/arrivi restanti. Nessun check-out può finire sotto un soggiorno in corso.
     if ((ma.checkoutDone ?? 1) !== (mb.checkoutDone ?? 1)) return (ma.checkoutDone ?? 1) - (mb.checkoutDone ?? 1);
@@ -46529,7 +46589,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.241';
+  var BUILD_TAG='dDAE_3.242';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49771,7 +49831,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
   function handleFile(file){
     try{
       if(!file) return;
-      // dDAE_3.241 — Un file immagine non deve mai entrare nel parser backup.
+      // dDAE_3.242 — Un file immagine non deve mai entrare nel parser backup.
       // Questo protegge soprattutto Safari/iOS, dove il picker Foto può lasciare
       // il file selezionato mentre un controllo backup ritardato scandisce gli input.
       var fileType=String(file.type||'').toLowerCase();
@@ -49816,7 +49876,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       var btn=ev.target && ev.target.closest ? ev.target.closest('button,input,label,[role="button"]') : null;
       if(!btn) return;
-      // dDAE_3.241 — Il picker immagine dei record/cocktail è un'azione editor,
+      // dDAE_3.242 — Il picker immagine dei record/cocktail è un'azione editor,
       // non un import backup. Escludilo prima anche dal riconoscimento geometrico.
       try{
         var linkedFor=String(btn.getAttribute&&btn.getAttribute('for')||'');
@@ -49837,7 +49897,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
           Array.prototype.forEach.call(inputs,function(inp){
             try{
               if(inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
-              // dDAE_3.241 — Non scandire mai gli input immagine nel fallback backup ritardato.
+              // dDAE_3.242 — Non scandire mai gli input immagine nel fallback backup ritardato.
               if(inp.id==='cocktailImageInput'||inp.dataset.ddaeCocktailImage==='1'||inp.getAttribute('data-ddae-cocktail-image')==='1'||String(inp.accept||'').toLowerCase().indexOf('image/')>=0) return;
               if(inp.files && inp.files[0]) handleFile(inp.files[0]);
             }catch(_){}
@@ -50901,6 +50961,9 @@ try{
   let activeViewData=null;
   let imageData='';
   let imageProcessPromise=Promise.resolve();
+  const imageAssetCache=new Map();
+  const IMAGE_MAX_SIDE=320;
+  const IMAGE_JPEG_QUALITY=0.52;
   let chargeQuantity=1;
   const $=id=>document.getElementById(id);
   const lang=()=>String(localStorage.getItem('dDAE_language')||localStorage.getItem('ddae_language')||document.documentElement.lang||'it').slice(0,2).toLowerCase();
@@ -50913,7 +50976,82 @@ try{
   };
   const t=k=>(words[lang()]||words.it)[k]||words.it[k]||k;
   function read(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(_){return {}}}
-  function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Immagine troppo grande');}catch(__){}return false;}}
+  function write(v){try{localStorage.setItem(STORE_KEY,JSON.stringify(v));return true;}catch(_){try{toast('Memoria locale piena');}catch(__){}return false;}}
+  async function loadImageForSlot(slot,data){
+    try{
+      const inline=String(data?.image||'');
+      if(inline.startsWith('data:image/')) return inline;
+      if(imageAssetCache.has(slot)) return imageAssetCache.get(slot)||'';
+      const stored=await __cocktailImageAssetGet__(slot);
+      const value=(typeof stored==='string'&&stored.startsWith('data:image/'))?stored:'';
+      imageAssetCache.set(slot,value);
+      return value;
+    }catch(_){ return ''; }
+  }
+  async function saveImageForSlot(slot,data){
+    try{
+      const value=String(data||'');
+      if(!slot||!value.startsWith('data:image/'))return false;
+      const ok=await __cocktailImageAssetSet__(slot,value);
+      if(ok)imageAssetCache.set(slot,value);
+      return !!ok;
+    }catch(_){return false;}
+  }
+  async function decodeImageFile(file){
+    if(!file)throw new Error('file');
+    let drawable=null, cleanup=function(){};
+    if(typeof createImageBitmap==='function'){
+      try{
+        drawable=await createImageBitmap(file,{imageOrientation:'from-image'});
+        cleanup=function(){try{drawable&&drawable.close&&drawable.close();}catch(_){}};
+      }catch(_){drawable=null;}
+    }
+    if(!drawable){
+      let url='';
+      try{
+        url=URL.createObjectURL(file);
+        const img=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('decode'));el.src=url;});
+        drawable=img;
+        cleanup=function(){try{URL.revokeObjectURL(url);}catch(_){}};
+      }catch(_){try{if(url)URL.revokeObjectURL(url);}catch(__){} drawable=null;}
+    }
+    if(!drawable){
+      const raw=await new Promise((resolve,reject)=>{try{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error||new Error('read'));r.onabort=()=>reject(new Error('abort'));r.readAsDataURL(file);}catch(e){reject(e);}});
+      const img=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('decode'));el.src=raw;});
+      drawable=img;
+      cleanup=function(){};
+    }
+    try{
+      const w=Number(drawable.naturalWidth||drawable.width||1), h=Number(drawable.naturalHeight||drawable.height||1);
+      if(!(w>0&&h>0))throw new Error('size');
+      const scale=Math.min(1,IMAGE_MAX_SIDE/Math.max(w,h));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(w*scale));
+      canvas.height=Math.max(1,Math.round(h*scale));
+      const ctx=canvas.getContext('2d',{alpha:false});
+      if(!ctx)throw new Error('canvas');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(drawable,0,0,canvas.width,canvas.height);
+      const encoded=canvas.toDataURL('image/jpeg',IMAGE_JPEG_QUALITY);
+      if(!encoded||encoded.length<32)throw new Error('encode');
+      return encoded;
+    }finally{try{cleanup();}catch(_){}}
+  }
+  async function migrateLegacyInlineImages(){
+    try{
+      const all=read();let changed=false;
+      for(const slot of Object.keys(all||{})){
+        const rec=all[slot];
+        if(!rec||typeof rec!=='object')continue;
+        const inline=String(rec.image||'');
+        if(!inline.startsWith('data:image/'))continue;
+        const ok=await saveImageForSlot(slot,inline);
+        if(ok){rec.imageRef='idb';delete rec.image;changed=true;}
+      }
+      if(changed)write(all);
+      return changed;
+    }catch(_){return false;}
+  }
   function ensureCocktailAnalcoliciClone(){
     try{
       const marker='dDAE_servizi_cocktail_analcolici_seeded_v1';
@@ -51005,7 +51143,7 @@ try{
     if(stepsList)stepsList.hidden=!visible;
   }
   function openEditor(slot){
-    activeSlot=slot; const data=read()[slot]||{}; imageData=data.image||''; syncText();
+    activeSlot=slot; const data=read()[slot]||{}; imageData=String(data.image||''); syncText();
     const showRecipe=isCocktailSlot(slot);
     setRecipeFieldsVisible(showRecipe);
     $('cocktailNameInput').value=data.name||'';
@@ -51013,6 +51151,13 @@ try{
     $('cocktailIngredientsList').innerHTML=''; if(showRecipe)(data.ingredients&&data.ingredients.length?data.ingredients:[{}]).forEach(addIngredient);
     $('cocktailStepsList').innerHTML=''; if(showRecipe)(data.steps&&data.steps.length?data.steps:['']).forEach(addStep);
     const p=$('cocktailImagePreview'); p.hidden=!imageData; p.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';
+    imageProcessPromise=loadImageForSlot(slot,data).then((loaded)=>{
+      if(activeSlot!==slot)return loaded;
+      imageData=loaded||'';
+      const preview=$('cocktailImagePreview');
+      if(preview){preview.hidden=!imageData;preview.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';}
+      return loaded;
+    }).catch(()=> '');
     $('cocktailImageInput').value=''; const deleteBtn=$('cocktailDeleteBtn'); if(deleteBtn)deleteBtn.disabled=!(data&&data.name); const m=$('serviziSlotModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
   }
   function closeView(){const m=$('cocktailViewModal');if(m){m.hidden=true;m.setAttribute('aria-hidden','true');}document.body.classList.remove('modal-open');}
@@ -51022,7 +51167,8 @@ try{
     setRecipeViewVisible(isCocktailSlot(slot));
     syncText(); $('cocktailViewTitle').textContent=data.name||'';
     const priceEl=$('cocktailViewPrice'); if(priceEl){const price=String(data.price||'').trim();priceEl.textContent=price?(price.includes('€')?price:price+' €'):'';priceEl.hidden=!price;}
-    const img=$('cocktailViewImage'); if(data.image){img.src=data.image;img.alt=data.name||t('cocktail');img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
+    const img=$('cocktailViewImage'); if(img){img.hidden=true;img.removeAttribute('src');}
+    loadImageForSlot(slot,data).then((src)=>{if(activeViewSlot!==slot||!src||!img)return;img.src=src;img.alt=data.name||t('cocktail');img.hidden=false;}).catch(()=>{});
     $('cocktailViewIngredients').innerHTML=(data.ingredients||[]).map(x=>'<li><span>'+esc(x.dose||'')+'</span> '+esc(x.name||'')+'</li>').join('');
     $('cocktailViewSteps').innerHTML=(data.steps||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
     const m=$('cocktailViewModal');m.hidden=false;m.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
@@ -51357,7 +51503,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.241',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.242',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51376,16 +51522,21 @@ try{
     const name=$('cocktailNameInput').value.trim(); const price=$('cocktailPriceInput').value.trim(); if(!name){try{toast(t('required'));}catch(_){alert(t('required'));}return;}
     const ingredients=Array.from(document.querySelectorAll('#cocktailIngredientsList .cocktail-ingredient-row')).map(r=>({name:r.querySelector('.cocktail-ingredient-name').value.trim(),dose:r.querySelector('.cocktail-ingredient-dose').value.trim()})).filter(x=>x.name||x.dose);
     const steps=Array.from(document.querySelectorAll('#cocktailStepsList .cocktail-step-text')).map(x=>x.value.trim()).filter(Boolean);
-    const all=read(); all[activeSlot]={name,price,ingredients,steps,image:imageData,updatedAt:Date.now()}; if(!write(all))return; render(); closeEditor();
+    if(imageData){const ok=await saveImageForSlot(activeSlot,imageData);if(!ok){try{toast('Impossibile salvare l’immagine');}catch(_){}return;}}
+    const all=read(); const previous=(all[activeSlot]&&typeof all[activeSlot]==='object')?all[activeSlot]:{};
+    all[activeSlot]={...previous,name,price,ingredients,steps,imageRef:imageData?'idb':(previous.imageRef||''),updatedAt:Date.now()};
+    delete all[activeSlot].image;
+    if(!write(all))return; render(); closeEditor();
   }
   function deleteCocktail(){
     const all=read();
     const existing=activeSlot&&all[activeSlot];
     if(!existing||!existing.name){try{toast(t('emptyDelete'));}catch(_){ }return;}
     if(!window.confirm(t('deleteConfirm')))return;
+    const slotToDelete=activeSlot;
     delete all[activeSlot];
     if(!write(all))return;
-    imageData='';
+    imageData='';imageAssetCache.delete(slotToDelete);__cocktailImageAssetDel__(slotToDelete).catch(()=>{});
     render();
     closeEditor();
     try{toast(t('deleted'));}catch(_){ }
@@ -51395,26 +51546,18 @@ try{
       const d=all[btn.id]; const glyph=btn.querySelector('.servizi-slot-glyph');
       btn.classList.toggle('cocktail-slot-filled',!!(d&&d.name)); btn.setAttribute('aria-label',d&&d.name?d.name:(btn.dataset.emptyLabel||btn.getAttribute('aria-label')||'Slot'));
       if(glyph){
-        const hasImage=!!(d&&d.image);
+        const hasImage=!!(d&&(d.image||d.imageRef||imageAssetCache.has(btn.id)));
         glyph.style.setProperty('background-image','none','important');
         glyph.style.setProperty('background-size','auto','important');
         glyph.style.setProperty('background-position','center','important');
         glyph.style.setProperty('background-repeat','no-repeat','important');
         let slotImg=glyph.querySelector('.cocktail-slot-image');
+        if(!slotImg){slotImg=document.createElement('img');slotImg.className='cocktail-slot-image';slotImg.alt='';slotImg.setAttribute('aria-hidden','true');glyph.appendChild(slotImg);}
         if(hasImage){
-          if(!slotImg){
-            slotImg=document.createElement('img');
-            slotImg.className='cocktail-slot-image';
-            slotImg.alt='';
-            slotImg.setAttribute('aria-hidden','true');
-            glyph.appendChild(slotImg);
-          }
-          if(slotImg.src!==d.image) slotImg.src=d.image;
-          slotImg.hidden=false;
           glyph.classList.add('has-cocktail-image');
+          loadImageForSlot(btn.id,d).then((src)=>{if(!src){slotImg.hidden=true;slotImg.removeAttribute('src');glyph.classList.remove('has-cocktail-image');return;}if(slotImg.src!==src)slotImg.src=src;slotImg.hidden=false;}).catch(()=>{});
         }else{
-          if(slotImg){slotImg.hidden=true;slotImg.removeAttribute('src');}
-          glyph.classList.remove('has-cocktail-image');
+          slotImg.hidden=true;slotImg.removeAttribute('src');glyph.classList.remove('has-cocktail-image');
         }
       }
       let label=btn.querySelector('.cocktail-slot-name');
@@ -51467,52 +51610,44 @@ try{
     if(cocktailImageInput){
       cocktailImageInput.dataset.ddaeCocktailImage='1';
       cocktailImageInput.setAttribute('data-ddae-cocktail-image','1');
-      const processCocktailImage=function(input,ev){
-        try{ if(ev&&ev.cancelable!==false)ev.preventDefault(); }catch(_){ }
-        try{ ev&&ev.stopPropagation(); ev&&ev.stopImmediatePropagation(); }catch(_){ }
+      const processCocktailImage=function(input){
         const f=input&&input.files&&input.files[0]; if(!f)return Promise.resolve();
-        // dDAE_3.241 — Su iOS il MIME può essere vuoto per alcune foto/HEIC.
-        // Accetta quindi anche le estensioni immagine note; il decoder Image farà
-        // comunque la validazione effettiva prima del salvataggio.
         const fType=String(f.type||'').toLowerCase();
         const fName=String(f.name||'').toLowerCase();
-        const isImage=fType.startsWith('image/') || /\.(?:jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(fName);
+        const isImage=fType.startsWith('image/') || /\.(?:jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(fName) || !fType;
         if(!isImage){try{toast('File immagine non valido');}catch(_){ }return Promise.resolve();}
         const slotAtSelection=activeSlot;
+        const preview=$('cocktailImagePreview');
+        let tempUrl='';
+        try{
+          tempUrl=URL.createObjectURL(f);
+          if(preview){preview.hidden=false;preview.style.backgroundImage='url("'+tempUrl.replace(/"/g,'%22')+'")';}
+        }catch(_){ }
         imageProcessPromise=(async function(){
           try{
-            const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f);});
-            const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=raw;});
-            const maxSide=360, scale=Math.min(1,maxSide/Math.max(img.naturalWidth||1,img.naturalHeight||1));
-            const canvas=document.createElement('canvas');
-            canvas.width=Math.max(1,Math.round((img.naturalWidth||1)*scale));
-            canvas.height=Math.max(1,Math.round((img.naturalHeight||1)*scale));
-            const ctx=canvas.getContext('2d',{alpha:false});
-            if(!ctx)throw new Error('canvas');
-            ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.drawImage(img,0,0,canvas.width,canvas.height);
-            const encoded=canvas.toDataURL('image/jpeg',0.58);
-            if(!encoded||encoded.length<32)throw new Error('encode');
+            const encoded=await decodeImageFile(f);
             imageData=encoded;
+            const ok=await saveImageForSlot(slotAtSelection,encoded);
+            if(!ok)throw new Error('storage');
             const all=read();
             const previous=(all[slotAtSelection]&&typeof all[slotAtSelection]==='object')?all[slotAtSelection]:{};
-            all[slotAtSelection]={...previous,image:encoded,imageUpdatedAt:Date.now()};
-            if(!write(all))throw new Error('storage');
-            const p=$('cocktailImagePreview');
-            if(p){p.hidden=false;p.style.backgroundImage='url("'+encoded.replace(/"/g,'%22')+'")';}
+            all[slotAtSelection]={...previous,imageRef:'idb',imageUpdatedAt:Date.now()};
+            delete all[slotAtSelection].image;
+            if(!write(all))throw new Error('metadata');
+            if(preview&&activeSlot===slotAtSelection){preview.hidden=false;preview.style.backgroundImage='url("'+encoded.replace(/"/g,'%22')+'")';}
             render();
-          }catch(_){try{toast('Immagine non valida o memoria piena');}catch(__){ }}
-        })().finally(function(){
-          // Permette di selezionare di nuovo la stessa foto senza dover chiudere l'editor.
-          try{ input.value=''; }catch(_){ }
-        });
+            try{toast('Immagine caricata');}catch(_){ }
+          }catch(err){
+            if(preview&&activeSlot===slotAtSelection){preview.hidden=!imageData;preview.style.backgroundImage=imageData?'url("'+imageData.replace(/"/g,'%22')+'")':'';}
+            try{toast('Impossibile caricare questa immagine');}catch(__){ }
+          }finally{
+            try{if(tempUrl)URL.revokeObjectURL(tempUrl);}catch(_){ }
+            try{input.value='';}catch(_){ }
+          }
+        })();
         return imageProcessPromise;
       };
-      window.addEventListener('change',function(ev){
-        const input=ev&&ev.target;
-        if(!input||input.id!=='cocktailImageInput')return;
-        processCocktailImage(input,ev);
-      },{capture:true,passive:false});
+      cocktailImageInput.addEventListener('change',function(){processCocktailImage(cocktailImageInput);},{passive:true});
     }
     $('cocktailViewClose')?.addEventListener('click',closeView);
     $('serviziSlotModal')?.addEventListener('click',ev=>{if(ev.target===$('serviziSlotModal'))closeEditor();});
@@ -51536,6 +51671,7 @@ try{
     $('cocktailRoomCalendarBtn')?.addEventListener('click',openChargeCalendar);
     ensureCocktailAnalcoliciClone();
     syncText();render();
+    migrateLegacyInlineImages().then(()=>render()).catch(()=>{});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
   window.addEventListener('ddae:language-change',syncText);
