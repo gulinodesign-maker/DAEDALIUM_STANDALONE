@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.238";
+const BUILD_VERSION = "3.239";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -35099,17 +35099,19 @@ function sortGuestGroups(groups){
     const ma = a?.__sortMeta3222 || {};
     const mb = b?.__sortMeta3222 || {};
 
-    // dDAE_3.221 — priorità assoluta: check-out già effettuati prima di tutto.
+    // dDAE_3.239 — gerarchia assoluta del filtro Check-in:
+    // 1) check-out già conclusi; 2) check-out del giorno ancora da concludere;
+    // 3) pernottamenti/arrivi restanti. Nessun check-out può finire sotto un soggiorno in corso.
     if ((ma.checkoutDone ?? 1) !== (mb.checkoutDone ?? 1)) return (ma.checkoutDone ?? 1) - (mb.checkoutDone ?? 1);
+    if ((ma.checkoutToday ?? 1) !== (mb.checkoutToday ?? 1)) return (ma.checkoutToday ?? 1) - (mb.checkoutToday ?? 1);
 
-    // dDAE_3.214 — ordine cronologico di arrivo sempre rispettato.
+    // L'ordine cronologico di arrivo resta vincolante ALL'INTERNO dello stesso gruppo operativo.
     const arrivalA = ma.arrival || '';
     const arrivalB = mb.arrival || '';
     if (arrivalA && arrivalB && arrivalA !== arrivalB) return arrivalA.localeCompare(arrivalB);
     if (!arrivalA && arrivalB) return 1;
     if (arrivalA && !arrivalB) return -1;
 
-    if ((ma.checkoutToday ?? 1) !== (mb.checkoutToday ?? 1)) return (ma.checkoutToday ?? 1) - (mb.checkoutToday ?? 1);
     if ((ma.checkIn ?? 1) !== (mb.checkIn ?? 1)) return (ma.checkIn ?? 1) - (mb.checkIn ?? 1);
 
     if (by === "nome") return String(ma.name || '').localeCompare(String(mb.name || ''), "it") * dir;
@@ -46510,7 +46512,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.238';
+  var BUILD_TAG='dDAE_3.239';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51319,7 +51321,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.238',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.239',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
