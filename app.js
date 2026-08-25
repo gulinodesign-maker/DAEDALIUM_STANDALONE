@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.240";
+const BUILD_VERSION = "3.241";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -35060,7 +35060,7 @@ function sortGuestGroups(groups){
       const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
         ? guest._groupBookings
         : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
-      // dDAE_3.240 — la priorità di ordinamento deve coincidere con lo stato
+      // dDAE_3.241 — la priorità di ordinamento deve coincidere con lo stato
       // realmente mostrato dalla card. Questo include anche i locali/Piscina:
       // un evento passato è visualizzato azzurro (led-blue) e quindi deve essere
       // trattato come concluso, senza essere escluso dal gruppo check-out.
@@ -35116,7 +35116,7 @@ function sortGuestGroups(groups){
     const ma = a?.__sortMeta3222 || {};
     const mb = b?.__sortMeta3222 || {};
 
-    // dDAE_3.240 — gerarchia assoluta del filtro Check-in:
+    // dDAE_3.241 — gerarchia assoluta del filtro Check-in:
     // 1) check-out già conclusi; 2) check-out del giorno ancora da concludere;
     // 3) pernottamenti/arrivi restanti. Nessun check-out può finire sotto un soggiorno in corso.
     if ((ma.checkoutDone ?? 1) !== (mb.checkoutDone ?? 1)) return (ma.checkoutDone ?? 1) - (mb.checkoutDone ?? 1);
@@ -46529,7 +46529,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.240';
+  var BUILD_TAG='dDAE_3.241';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49771,6 +49771,12 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
   function handleFile(file){
     try{
       if(!file) return;
+      // dDAE_3.241 — Un file immagine non deve mai entrare nel parser backup.
+      // Questo protegge soprattutto Safari/iOS, dove il picker Foto può lasciare
+      // il file selezionato mentre un controllo backup ritardato scandisce gli input.
+      var fileType=String(file.type||'').toLowerCase();
+      var fileName=String(file.name||'').toLowerCase();
+      if(fileType.indexOf('image/')===0 || /\.(?:jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(fileName)) return;
       var reader=new FileReader();
       reader.onload=function(){
         try{
@@ -49810,6 +49816,17 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       var btn=ev.target && ev.target.closest ? ev.target.closest('button,input,label,[role="button"]') : null;
       if(!btn) return;
+      // dDAE_3.241 — Il picker immagine dei record/cocktail è un'azione editor,
+      // non un import backup. Escludilo prima anche dal riconoscimento geometrico.
+      try{
+        var linkedFor=String(btn.getAttribute&&btn.getAttribute('for')||'');
+        var linkedInput=linkedFor?document.getElementById(linkedFor):null;
+        var imagePicker=btn.id==='cocktailImagePickerBtn' || btn.id==='cocktailImageInput' ||
+          (btn.closest&&btn.closest('.cocktail-image-picker')) ||
+          (linkedInput && linkedInput.type==='file' && String(linkedInput.accept||'').toLowerCase().indexOf('image/')>=0) ||
+          (btn.querySelector && btn.querySelector('input[type="file"][accept*="image/"]'));
+        if(imagePicker) return;
+      }catch(_){}
       var mark=String(btn.id||btn.className||btn.getAttribute('aria-label')||btn.title||btn.textContent||'').toLowerCase();
       var rect=btn.getBoundingClientRect();
       var isLogoutImport = rect && rect.top < 130 && rect.left > (window.innerWidth*0.72);
@@ -49820,6 +49837,8 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
           Array.prototype.forEach.call(inputs,function(inp){
             try{
               if(inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
+              // dDAE_3.241 — Non scandire mai gli input immagine nel fallback backup ritardato.
+              if(inp.id==='cocktailImageInput'||inp.dataset.ddaeCocktailImage==='1'||inp.getAttribute('data-ddae-cocktail-image')==='1'||String(inp.accept||'').toLowerCase().indexOf('image/')>=0) return;
               if(inp.files && inp.files[0]) handleFile(inp.files[0]);
             }catch(_){}
           });
@@ -51338,7 +51357,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.240',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.241',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -51452,7 +51471,13 @@ try{
         try{ if(ev&&ev.cancelable!==false)ev.preventDefault(); }catch(_){ }
         try{ ev&&ev.stopPropagation(); ev&&ev.stopImmediatePropagation(); }catch(_){ }
         const f=input&&input.files&&input.files[0]; if(!f)return Promise.resolve();
-        if(!String(f.type||'').toLowerCase().startsWith('image/')){try{toast('File immagine non valido');}catch(_){ }return Promise.resolve();}
+        // dDAE_3.241 — Su iOS il MIME può essere vuoto per alcune foto/HEIC.
+        // Accetta quindi anche le estensioni immagine note; il decoder Image farà
+        // comunque la validazione effettiva prima del salvataggio.
+        const fType=String(f.type||'').toLowerCase();
+        const fName=String(f.name||'').toLowerCase();
+        const isImage=fType.startsWith('image/') || /\.(?:jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff?)$/i.test(fName);
+        if(!isImage){try{toast('File immagine non valido');}catch(_){ }return Promise.resolve();}
         const slotAtSelection=activeSlot;
         imageProcessPromise=(async function(){
           try{
@@ -51477,7 +51502,10 @@ try{
             if(p){p.hidden=false;p.style.backgroundImage='url("'+encoded.replace(/"/g,'%22')+'")';}
             render();
           }catch(_){try{toast('Immagine non valida o memoria piena');}catch(__){ }}
-        })();
+        })().finally(function(){
+          // Permette di selezionare di nuovo la stessa foto senza dover chiudere l'editor.
+          try{ input.value=''; }catch(_){ }
+        });
         return imageProcessPromise;
       };
       window.addEventListener('change',function(ev){
