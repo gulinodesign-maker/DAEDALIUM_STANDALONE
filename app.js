@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.246";
+const BUILD_VERSION = "3.247";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46600,7 +46600,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.246';
+  var BUILD_TAG='dDAE_3.247';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51514,7 +51514,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.246',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.247',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52663,17 +52663,39 @@ try{
 })();
 
 
-/* dDAE_3.246 — messaggio WhatsApp ospite: traduzione tramite backend OpenAI, senza fallback al testo originale */
-(function __setupGuestConfiguredWhatsAppMessage3245__(){
+/* dDAE_3.247 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+(function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
+  const TRANSLATIONS_STORAGE_KEY = 'dDAE_guest_whatsapp_message_translations_v1';
   const SETTING_KEY = 'guest_whatsapp_message_template';
-  const TRANSLATE_TIMEOUT_MS = 18000;
+  const TRANSLATION_SCHEMA = 1;
+  const TRANSLATE_TIMEOUT_MS = 9000;
+  const BACKGROUND_RETRY_MS = 12 * 60 * 1000;
   const $ = (id) => document.getElementById(id);
 
+  const MANAGED_LANGUAGES = [
+    'it','en','fr','de','es','pt','nl','pl','ro','ru','uk','el','cs','sk','hr','sr','hu','bg','tr','sv','nb','da','fi','et','lv','lt',
+    'sl','sq','mk','is','ar','he','fa','ka','hy','az','ja','ko','zh-cn','zh-tw','th','vi','id','ms','hi','ur','bn'
+  ];
+
+  const LINGVA_INSTANCES = [
+    'https://lingva.ml',
+    'https://translate.plausibility.cloud'
+  ];
+
+  let backgroundRunning = false;
+  let lastBackgroundAttempt = 0;
+  let backendDisabledUntil = 0;
+  const providerDisabledUntil = Object.create(null);
+
   function cleanLang(raw){
-    const s = String(raw || '').trim().toLowerCase().replace('_','-');
+    const s = String(raw || '').trim().toLowerCase().replace(/_/g,'-');
     if (!s) return '';
+    if (s === 'zh-tw' || s === 'zh-hk' || s === 'zh-hant') return 'zh-tw';
+    if (s === 'zh-cn' || s === 'zh-sg' || s === 'zh-hans' || s === 'zh') return 'zh-cn';
+    if (s === 'pt-br' || s === 'pt-pt') return 'pt';
+    if (s === 'no' || s === 'nn' || s === 'nb-no') return 'nb';
     const direct = s.match(/^[a-z]{2,3}(?:-[a-z]{2,4})?$/i);
     if (direct){
       const base = direct[0].split('-')[0];
@@ -52750,6 +52772,43 @@ try{
     }catch(_){ return storedTemplate(); }
   }
 
+  function readTranslationPackage(){
+    try{
+      const raw = localStorage.getItem(TRANSLATIONS_STORAGE_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (!data || typeof data !== 'object' || Number(data.schema||0) !== TRANSLATION_SCHEMA) return null;
+      if (!data.translations || typeof data.translations !== 'object') data.translations = {};
+      return data;
+    }catch(_){ return null; }
+  }
+
+  function writeTranslationPackage(pkg){
+    try{ localStorage.setItem(TRANSLATIONS_STORAGE_KEY, JSON.stringify(pkg || {})); }catch(_){ }
+  }
+
+  function removeTranslationPackage(){
+    try{ localStorage.removeItem(TRANSLATIONS_STORAGE_KEY); }catch(_){ }
+  }
+
+  function createTranslationPackage(source, previous){
+    const same = previous && String(previous.sourceText||'') === source;
+    const translations = same && previous.translations && typeof previous.translations === 'object'
+      ? Object.assign({}, previous.translations)
+      : {};
+    translations.it = source;
+    return {
+      schema: TRANSLATION_SCHEMA,
+      sourceLang: 'it',
+      sourceText: source,
+      generatedAt: same ? String(previous.generatedAt || '') : '',
+      updatedAt: new Date().toISOString(),
+      translations,
+      missing: MANAGED_LANGUAGES.filter((lang)=>!String(translations[lang]||'').trim()),
+      complete: false
+    };
+  }
+
   function closeSettingsModal(){
     const modal=$('guestMessageSettingsModal'); if (!modal) return;
     modal.hidden=true; modal.setAttribute('aria-hidden','true');
@@ -52766,28 +52825,24 @@ try{
     setTimeout(()=>{ try{ input.focus({preventScroll:true}); }catch(_){ try{input.focus();}catch(__){} } },80);
   }
 
-  async function saveSettings(){
-    const value=String($('guestMessageTemplateInput')?.value || '').trim();
-    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
-    try{
-      if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
-      if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
-    }catch(_){ }
-    closeSettingsModal();
-    try{ toast(value ? 'Messaggio WhatsApp salvato' : 'Messaggio WhatsApp rimosso','green'); }catch(_){ }
+  function normalizeProviderLang(lang){
+    const l = cleanLang(lang) || String(lang||'').trim().toLowerCase();
+    if (l === 'zh-cn') return 'zh';
+    if (l === 'zh-tw') return 'zh-TW';
+    if (l === 'nb') return 'no';
+    return l;
   }
 
   function translationEndpoint(){
-    let configured = String(window.DDAE_OPENAI_TRANSLATE_ENDPOINT || window.DDAE_TRANSLATE_API_URL || '').trim();
-    if (!configured){ try{ configured=String(localStorage.getItem('dDAE_openai_translate_endpoint_v1')||'').trim(); }catch(_){ } }
-    if (configured) return configured;
-    return './api/translate';
+    let configured = String(window.DDAE_TRANSLATE_API_URL || window.DDAE_OPENAI_TRANSLATE_ENDPOINT || '').trim();
+    if (!configured){ try{ configured=String(localStorage.getItem('dDAE_translate_endpoint_v1')||localStorage.getItem('dDAE_openai_translate_endpoint_v1')||'').trim(); }catch(_){ } }
+    return configured;
   }
 
   function extractTranslation(payload){
     try{
       if (typeof payload === 'string') return payload.trim();
-      const candidates = [payload?.translatedText, payload?.translation, payload?.text, payload?.result, payload?.message];
+      const candidates = [payload?.translatedText, payload?.translation, payload?.text, payload?.result, payload?.message, payload?.responseData?.translatedText];
       for (const value of candidates){
         const s=String(value||'').trim();
         if (s) return s;
@@ -52798,30 +52853,204 @@ try{
     return '';
   }
 
-  async function translateMessage(text,targetLang){
-    const source=String(text||'').trim(); const target=String(targetLang||'').trim().toLowerCase();
-    if (!source || !target) return '';
-    if (target==='it' || target==='it-it') return source;
-
+  async function fetchWithTimeout(url, opts, timeoutMs){
     const controller=(typeof AbortController!=='undefined') ? new AbortController() : null;
-    const timer=controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },TRANSLATE_TIMEOUT_MS) : null;
+    const timer=controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },timeoutMs||TRANSLATE_TIMEOUT_MS) : null;
     try{
-      const opts={
+      const o=Object.assign({ cache:'no-store', credentials:'omit' }, opts||{});
+      if (controller) o.signal=controller.signal;
+      return await fetch(url,o);
+    }finally{ if (timer) clearTimeout(timer); }
+  }
+
+  function utf8Len(value){
+    const s=String(value||'');
+    try{ return new TextEncoder().encode(s).length; }catch(_){ return unescape(encodeURIComponent(s)).length; }
+  }
+
+  function splitForMyMemory(text, maxBytes){
+    const source=String(text||'');
+    if (utf8Len(source) <= maxBytes) return [source];
+    const pieces=[];
+    let rest=source;
+    while (rest){
+      let cut=Math.min(rest.length, Math.max(80, Math.floor(maxBytes*0.72)));
+      while (cut>1 && utf8Len(rest.slice(0,cut))>maxBytes) cut=Math.max(1,cut-20);
+      if (cut<rest.length){
+        const head=rest.slice(0,cut);
+        const best=Math.max(head.lastIndexOf('\n'),head.lastIndexOf('. '),head.lastIndexOf('! '),head.lastIndexOf('? '),head.lastIndexOf('; '),head.lastIndexOf(', '),head.lastIndexOf(' '));
+        if (best>Math.floor(cut*0.55)) cut=best+1;
+      }
+      pieces.push(rest.slice(0,cut));
+      rest=rest.slice(cut);
+    }
+    return pieces.filter(Boolean);
+  }
+
+  async function translateViaLingva(text,target){
+    const to=normalizeProviderLang(target);
+    if (!to) throw new Error('lang');
+    const chunks = String(text||'').length > 1400 ? splitForMyMemory(text,1200) : [String(text||'')];
+    for (const base of LINGVA_INSTANCES){
+      if (Date.now() < Number(providerDisabledUntil[base]||0)) continue;
+      try{
+        const out=[];
+        for (const chunk of chunks){
+          const url=base.replace(/\/$/,'')+'/api/v1/it/'+encodeURIComponent(to)+'/'+encodeURIComponent(chunk);
+          const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },4500);
+          if (!res.ok) throw new Error('lingva '+res.status);
+          const payload=await res.json();
+          const translated=extractTranslation(payload);
+          if (!translated) throw new Error('lingva empty');
+          out.push(translated);
+        }
+        const joined=out.join('').trim();
+        if (joined) return joined;
+      }catch(_){ providerDisabledUntil[base]=Date.now()+3*60*1000; }
+    }
+    throw new Error('lingva unavailable');
+  }
+
+  async function translateViaMyMemory(text,target){
+    const to=normalizeProviderLang(target);
+    if (!to) throw new Error('lang');
+    const provider='mymemory';
+    if (Date.now() < Number(providerDisabledUntil[provider]||0)) throw new Error('mymemory disabled');
+    const chunks=splitForMyMemory(text,430);
+    const out=[];
+    try{
+      for (const chunk of chunks){
+        const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(chunk)+'&langpair=it%7C'+encodeURIComponent(to)+'&mt=1';
+        const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },5000);
+        if (!res.ok) throw new Error('mymemory '+res.status);
+        const payload=await res.json();
+        const translated=extractTranslation(payload);
+        if (!translated || /MYMEMORY WARNING/i.test(translated)) throw new Error('mymemory empty');
+        out.push(translated);
+      }
+      return out.join('').trim();
+    }catch(err){
+      providerDisabledUntil[provider]=Date.now()+15*60*1000;
+      throw err;
+    }
+  }
+
+  async function translateViaConfiguredBackend(text,target){
+    const endpoint=translationEndpoint();
+    if (!endpoint || Date.now()<backendDisabledUntil) throw new Error('backend disabled');
+    try{
+      const res=await fetchWithTimeout(endpoint,{
         method:'POST',
-        cache:'no-store',
-        credentials:'omit',
         headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-        body:JSON.stringify({ text:source, targetLang:target, sourceLang:'it' })
-      };
-      if (controller) opts.signal=controller.signal;
-      const res=await fetch(translationEndpoint(),opts);
-      if (!res.ok) throw new Error('openai translate '+res.status);
+        body:JSON.stringify({ text:String(text||''), targetLang:String(target||''), sourceLang:'it' })
+      },4500);
+      if (!res.ok){
+        if ([401,402,403,429].includes(res.status) || res.status>=500) backendDisabledUntil=Date.now()+5*60*1000;
+        throw new Error('backend '+res.status);
+      }
       const type=String(res.headers.get('content-type')||'').toLowerCase();
       const payload=type.includes('application/json') ? await res.json() : await res.text();
       const translated=extractTranslation(payload);
-      if (!translated) throw new Error('empty translation');
+      if (!translated) throw new Error('backend empty');
       return translated;
-    } finally { if (timer) clearTimeout(timer); }
+    }catch(err){ throw err; }
+  }
+
+  async function translateMessageForStorage(text,targetLang){
+    const source=String(text||'').trim();
+    const target=cleanLang(targetLang) || String(targetLang||'').trim().toLowerCase();
+    if (!source || !target) return '';
+    if (target==='it' || target==='it-it') return source;
+    try{ return await translateViaLingva(source,target); }catch(_){ }
+    try{ return await translateViaMyMemory(source,target); }catch(_){ }
+    try{ return await translateViaConfiguredBackend(source,target); }catch(_){ }
+    return '';
+  }
+
+  async function fillTranslationPackage(pkg, languages, concurrency){
+    const queue=(Array.isArray(languages)?languages:[]).filter((lang)=>lang && lang!=='it');
+    let cursor=0;
+    async function worker(){
+      while (cursor<queue.length){
+        const index=cursor++;
+        const lang=queue[index];
+        if (String(pkg.translations?.[lang]||'').trim()) continue;
+        const translated=String(await translateMessageForStorage(pkg.sourceText,lang) || '').trim();
+        if (translated) pkg.translations[lang]=translated;
+        pkg.updatedAt=new Date().toISOString();
+        pkg.missing=MANAGED_LANGUAGES.filter((code)=>!String(pkg.translations?.[code]||'').trim());
+        pkg.complete=pkg.missing.length===0;
+        if (pkg.complete && !pkg.generatedAt) pkg.generatedAt=pkg.updatedAt;
+        writeTranslationPackage(pkg);
+      }
+    }
+    const workers=[];
+    const n=Math.max(1,Math.min(Number(concurrency)||3,queue.length||1));
+    for(let i=0;i<n;i++) workers.push(worker());
+    await Promise.all(workers);
+    pkg.missing=MANAGED_LANGUAGES.filter((code)=>!String(pkg.translations?.[code]||'').trim());
+    pkg.complete=pkg.missing.length===0;
+    if (pkg.complete && !pkg.generatedAt) pkg.generatedAt=new Date().toISOString();
+    pkg.updatedAt=new Date().toISOString();
+    writeTranslationPackage(pkg);
+    return pkg;
+  }
+
+  async function saveMasterTemplate(value){
+    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+    try{
+      if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
+      if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
+    }catch(_){ }
+  }
+
+  async function saveSettings(){
+    const input=$('guestMessageTemplateInput');
+    const saveBtn=$('guestMessageSettingsSaveBtn');
+    const value=String(input?.value || '').trim();
+    if (!value){
+      await saveMasterTemplate('');
+      removeTranslationPackage();
+      closeSettingsModal();
+      try{ toast('Messaggio WhatsApp rimosso','green'); }catch(_){ }
+      return;
+    }
+
+    try{ if(saveBtn) saveBtn.disabled=true; if(input) input.setAttribute('aria-busy','true'); }catch(_){ }
+    try{ toast('Salvataggio e preparazione traduzioni…','blue'); }catch(_){ }
+    await saveMasterTemplate(value);
+
+    const previous=readTranslationPackage();
+    const pkg=createTranslationPackage(value,previous);
+    writeTranslationPackage(pkg);
+    const pending=MANAGED_LANGUAGES.filter((lang)=>!String(pkg.translations?.[lang]||'').trim());
+    try{ await fillTranslationPackage(pkg,pending,4); }catch(_){ }
+
+    try{ if(saveBtn) saveBtn.disabled=false; if(input) input.removeAttribute('aria-busy'); }catch(_){ }
+    closeSettingsModal();
+    const done=MANAGED_LANGUAGES.length-(pkg.missing?.length||0);
+    if (pkg.complete){
+      try{ toast('Messaggio salvato. Traduzioni memorizzate nel dispositivo.','green'); }catch(_){ }
+    }else{
+      try{ toast('Messaggio salvato: '+done+'/'+MANAGED_LANGUAGES.length+' traduzioni memorizzate. Completamento automatico online.','orange'); }catch(_){ }
+      setTimeout(()=>{ try{ completeTranslationsInBackground(true); }catch(_){ } },1500);
+    }
+  }
+
+  function translationFromPackage(pkg,target,template){
+    if (!pkg || String(pkg.sourceText||'') !== String(template||'')) return '';
+    const t=cleanLang(target) || String(target||'').trim().toLowerCase();
+    if (!t) return '';
+    if (t==='it' || t==='it-it') return String(template||'').trim();
+    const candidates=[t];
+    if (t==='zh') candidates.push('zh-cn');
+    const base=t.split('-')[0];
+    if (base && !candidates.includes(base)) candidates.push(base);
+    for (const code of candidates){
+      const v=String(pkg.translations?.[code]||'').trim();
+      if (v) return v;
+    }
+    return '';
   }
 
   async function sendConfigured(){
@@ -52833,20 +53062,31 @@ try{
     if (!template){ try{toast('Configura il messaggio WhatsApp nelle Impostazioni','orange');}catch(_){ } return false; }
     const target=resolveGuestLanguage(guest);
     if (!target){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return false; }
-    let translated='';
-    try{
-      try{ toast('Traduzione OpenAI…','blue'); }catch(_){ }
-      translated=String(await translateMessage(template,target) || '').trim();
-    }catch(_){
-      translated='';
-    }
+    const translated=translationFromPackage(readTranslationPackage(),target,template);
     if (!translated){
-      try{ toast('Traduzione OpenAI non disponibile. Messaggio non inviato.','orange'); }catch(_){ }
+      try{ toast('Traduzione non ancora memorizzata. Apri Impostazioni > Messaggio WhatsApp e premi Salva.','orange'); }catch(_){ }
+      try{ completeTranslationsInBackground(true); }catch(_){ }
       return false;
     }
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(translated);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
     return true;
+  }
+
+  async function completeTranslationsInBackground(force){
+    if (backgroundRunning) return;
+    if (!force && (Date.now()-lastBackgroundAttempt)<BACKGROUND_RETRY_MS) return;
+    if (typeof navigator!=='undefined' && navigator.onLine===false) return;
+    const template=storedTemplate();
+    if (!template) return;
+    let pkg=readTranslationPackage();
+    if (!pkg || String(pkg.sourceText||'')!==template) return;
+    const pending=MANAGED_LANGUAGES.filter((lang)=>!String(pkg.translations?.[lang]||'').trim());
+    if (!pending.length) return;
+    backgroundRunning=true;
+    lastBackgroundAttempt=Date.now();
+    try{ await fillTranslationPackage(pkg,pending,2); }catch(_){ }
+    backgroundRunning=false;
   }
 
   function bind(el,fn,key){
@@ -52873,11 +53113,15 @@ try{
     try{ setupGuestContactActionDock(); }catch(_){ }
     try{ setupLauncherIconLongPressPalette(); }catch(_){ }
     try{ __launcherIconApplyAll__(); }catch(_){ }
+    setTimeout(()=>{ try{ completeTranslationsInBackground(false); }catch(_){ } },2500);
   }
 
   window.__sendConfiguredGuestWhatsAppMessage__=sendConfigured;
   window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
-  window.__translateConfiguredGuestMessageWithOpenAI__=translateMessage;
+  window.__translateConfiguredGuestMessage__=translateMessageForStorage;
+  window.__translateConfiguredGuestMessageWithOpenAI__=translateMessageForStorage;
+  window.__completeConfiguredGuestMessageTranslations__=completeTranslationsInBackground;
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
+  window.addEventListener('online',()=>{ setTimeout(()=>{ try{ completeTranslationsInBackground(true); }catch(_){ } },600); });
 })();
