@@ -1,10 +1,10 @@
-/* dDAE_3.245 - Firebase frontend config + endpoint traduzione OpenAI */
+/* dDAE_3.246 - Firebase frontend config + endpoint traduzione OpenAI */
 const DDAE_LICENSE_PAYMENT_URL = "";
 
 // Endpoint del backend sicuro per traduzione OpenAI.
 // Se la funzione serverless viene distribuita insieme al progetto, lasciare vuoto usa ./api/translate.
 // Se resta su dominio esterno (es. Vercel), inserire qui l'URL HTTPS completo.
-window.DDAE_OPENAI_TRANSLATE_ENDPOINT = "";
+window.DDAE_OPENAI_TRANSLATE_ENDPOINT = "https://daedalium-translate-api.vercel.app/api/translate";
 window.DDAE_TRANSLATE_API_URL = window.DDAE_OPENAI_TRANSLATE_ENDPOINT;
 const FIREBASE_ENABLED = true;
 const FIREBASE_CONFIG = {
