@@ -1,7 +1,7 @@
 {
   "name": "daedalium-pwa",
   "private": true,
-  "version": "3.249",
+  "version": "3.250",
   "scripts": {
     "start": "vercel dev"
   }

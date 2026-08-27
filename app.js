@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.249";
+const BUILD_VERSION = "3.250";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46667,7 +46667,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.249';
+  var BUILD_TAG='dDAE_3.250';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48764,7 +48764,7 @@ try{
       var oldCad=document.getElementById('btnLaundryCadenceTop');
       if(oldCad && oldCad.parentNode) oldCad.parentNode.removeChild(oldCad);
       if(!document.getElementById('laundryReportLed')){
-        var grid=document.getElementById('topLedGrid'); if(grid){ var led=document.createElement('span'); led.id='laundryReportLed'; led.className='top-led top-led-laundry is-off'; led.setAttribute('role','status'); led.setAttribute('aria-label','Report lavanderia'); grid.appendChild(led); }
+        var grid=document.getElementById('topLedGrid'); if(grid){ var led=document.createElement('button'); led.type='button'; led.id='laundryReportLed'; led.className='top-led top-led-laundry bottom-alert-btn is-off'; led.setAttribute('data-alert-button-key','laundry'); led.setAttribute('aria-label','Report lavanderia'); led.innerHTML='<span class=\"bottom-alert-btn-label\" aria-hidden=\"true\">L</span>'; grid.appendChild(led); }
       }
     }catch(_){ }
   }
@@ -51581,7 +51581,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.249',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.250',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52730,7 +52730,7 @@ try{
 })();
 
 
-/* dDAE_3.249 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.250 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53255,4 +53255,191 @@ try{
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
   window.addEventListener('online',()=>{ setTimeout(()=>{ try{ completeTranslationsInBackground(true); }catch(_){ } },600); });
+})();
+
+
+/* dDAE_3.250 — Alert inferiori come tasti flat stile contatto.
+   Il popup colore modifica esclusivamente lo stato inattivo; lo stato attivo resta pilotato dalla categoria Alert della pagina Design. */
+(function(){
+  'use strict';
+  var KEY = 'dDAE_alert_button_visual_v1';
+  var ITEMS = {
+    ps:{id:'dbLedRead',label:'P'},
+    istat:{id:'dbLedIstat',label:'I'},
+    payment:{id:'dbLedWrite',label:'€'},
+    receipt:{id:'dbLedReceipt',label:'R'},
+    cashreceipt:{id:'dbLedCashReceipt',label:'CR'},
+    invoice:{id:'dbLedInvoice',label:'A'},
+    shopping:{id:'prodLedColazione',label:'S'},
+    products:{id:'prodLedPulizia',label:'PR'},
+    laundry:{id:'laundryReportLed',label:'L'}
+  };
+  var DEFAULT = { bg:'gray-2', border:'gray-3', fg:'gray-6', opacity:0.52 };
+
+  function normColor(v, fallback){
+    try{ return __normalizeOperatoreColor__(v || fallback || 'gray-2'); }catch(_){ return String(v || fallback || 'gray-2'); }
+  }
+  function normFg(v, fallback){
+    try{ return __normalizeOptionalOperatoreColor__(v || fallback || 'gray-6'); }catch(_){ return String(v || fallback || 'gray-6'); }
+  }
+  function normOpacity(v, fallback){
+    try{ return __designBgOpacityNormalize__(v ?? fallback ?? DEFAULT.opacity); }catch(_){ var n=Number(v ?? fallback ?? DEFAULT.opacity); return Math.max(0,Math.min(1,isFinite(n)?n:DEFAULT.opacity)); }
+  }
+  function normalizeOne(input){
+    var src=(input && typeof input==='object')?input:{};
+    var bg=normColor(src.bg || src.background || DEFAULT.bg, DEFAULT.bg);
+    return { bg:bg, border:normColor(src.border || src.borderColor || bg || DEFAULT.border, DEFAULT.border), fg:normFg(src.fg || src.color || DEFAULT.fg, DEFAULT.fg), opacity:normOpacity(src.opacity, DEFAULT.opacity) };
+  }
+  function read(){
+    var out={};
+    try{
+      var src=JSON.parse(localStorage.getItem(KEY)||'{}')||{};
+      Object.keys(ITEMS).forEach(function(k){ out[k]=normalizeOne(src[k]); });
+    }catch(_){ Object.keys(ITEMS).forEach(function(k){ out[k]=normalizeOne({}); }); }
+    return out;
+  }
+  function write(map){
+    try{
+      var clean={};
+      Object.keys(ITEMS).forEach(function(k){ clean[k]=normalizeOne(map && map[k]); });
+      localStorage.setItem(KEY,JSON.stringify(clean));
+    }catch(_){ }
+  }
+  function colorHex(spec, fallback){
+    try{ return __operatoreColorHex__(spec || fallback || 'gray-2'); }catch(_){ return String(spec || fallback || '#e2e8f0'); }
+  }
+  function rgba(hex, opacity){
+    try{ return hexToRgba(hex, opacity); }catch(_){ return String(hex || '#e2e8f0'); }
+  }
+  function textHex(bg, fg){
+    try{ return __tagColorTextHex__(bg || 'gray-2', fg || 'gray-6', false) || colorHex(fg || 'gray-6','gray-6'); }catch(_){ return colorHex(fg || 'gray-6','gray-6'); }
+  }
+  function ensureLabel(el, key){
+    try{
+      if(!el) return;
+      el.classList.add('bottom-alert-btn');
+      el.setAttribute('data-alert-button-key', key);
+      if(String(el.tagName||'').toLowerCase()==='button' && !el.getAttribute('type')) el.setAttribute('type','button');
+      var span=el.querySelector('.bottom-alert-btn-label');
+      if(!span){ span=document.createElement('span'); span.className='bottom-alert-btn-label'; span.setAttribute('aria-hidden','true'); el.appendChild(span); }
+      span.textContent=ITEMS[key].label;
+      span.classList.toggle('bottom-alert-btn-label-compact', ITEMS[key].label.length>1);
+    }catch(_){ }
+  }
+  function apply(){
+    var map=read();
+    Object.keys(ITEMS).forEach(function(key){
+      try{
+        var el=document.getElementById(ITEMS[key].id); if(!el) return;
+        ensureLabel(el,key);
+        var v=normalizeOne(map[key]);
+        var bgHex=colorHex(v.bg,DEFAULT.bg), borderHex=colorHex(v.border||v.bg,DEFAULT.border), fgHex=textHex(v.bg||bgHex,v.fg||DEFAULT.fg);
+        el.style.setProperty('--ddae-alert-button-off-bg',rgba(bgHex,v.opacity));
+        el.style.setProperty('--ddae-alert-button-off-border',rgba(borderHex,1));
+        el.style.setProperty('--ddae-alert-button-off-fg',fgHex);
+        el.style.setProperty('--ddae-alert-button-off-opacity',String(v.opacity));
+      }catch(_){ }
+    });
+  }
+  function applyPayloadToKey(key,payload,base){
+    var colors=(payload && payload.colors && typeof payload.colors==='object')?payload.colors:{};
+    var map=read();
+    var cur=normalizeOne(base || map[key]);
+    map[key]=normalizeOne({
+      bg:colors.bg || cur.bg,
+      border:colors.border || colors.bg || cur.border || cur.bg,
+      fg:colors.fg || cur.fg,
+      opacity:payload?.opacity ?? cur.opacity
+    });
+    write(map); apply();
+  }
+  function applyPayloadToAll(payload,changed){
+    try{
+      var colors=(payload && payload.colors && typeof payload.colors==='object')?payload.colors:{};
+      var map=read();
+      Object.keys(ITEMS).forEach(function(k){
+        var cur=normalizeOne(map[k]);
+        map[k]=normalizeOne({
+          bg:changed && changed.bg ? (colors.bg || cur.bg) : cur.bg,
+          border:changed && changed.border ? (colors.border || colors.bg || cur.border) : cur.border,
+          fg:changed && changed.fg ? (colors.fg || cur.fg) : cur.fg,
+          opacity:changed && changed.opacity ? (payload?.opacity ?? cur.opacity) : cur.opacity
+        });
+      });
+      write(map); apply();
+    }catch(_){ }
+  }
+  function openPicker(key){
+    try{
+      if(!ITEMS[key] || typeof __tagColorPopupOpen__!=='function') return;
+      var map=read();
+      var initial=normalizeOne(map[key]);
+      var preview=function(payload){ applyPayloadToKey(key,payload,initial); };
+      var revert=function(){ var next=read(); next[key]=initial; write(next); apply(); };
+      __tagColorPopupOpen__('alert-button-'+key,initial,function(payload){ applyPayloadToKey(key,payload,initial); },{
+        supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
+        opacity:initial.opacity,defaultMode:'bg',fallbackBg:initial.bg||DEFAULT.bg,
+        onPreview:preview,onRevert:revert,
+        applyCategory:{message:'Applicare le modifiche a tutti i tasti alert?',apply:async function(payload,changed){ applyPayloadToAll(payload,changed||{}); }}
+      });
+    }catch(_){ }
+  }
+  function bindHold(el,key){
+    try{ if(!el || el.dataset.alertButtonColorBound==='1') return; el.dataset.alertButtonColorBound='1'; }catch(_){ return; }
+    var timer=null, fired=false, startX=0, startY=0;
+    function clear(){ if(timer){ clearTimeout(timer); timer=null; } }
+    function point(ev){ try{ var t=(ev.touches&&ev.touches[0])||(ev.changedTouches&&ev.changedTouches[0]); return {x:t?t.clientX:(ev.clientX||0),y:t?t.clientY:(ev.clientY||0)}; }catch(_){ return {x:0,y:0}; } }
+    function block(ev){ try{ ev.preventDefault(); }catch(_){ } try{ ev.stopPropagation(); }catch(_){ } try{ ev.stopImmediatePropagation(); }catch(_){ } }
+    function start(ev){
+      try{ if(ev.type==='pointerdown' && ev.pointerType==='mouse' && ev.button!==0) return; }catch(_){ }
+      fired=false; clear(); var p=point(ev); startX=p.x; startY=p.y;
+      timer=setTimeout(function(){ fired=true; try{ el.__ddaeAlertButtonSuppressUntil=Date.now()+1100; }catch(_){ } try{ el.classList.add('is-pressing'); }catch(_){ } try{ __sfxGlass(); }catch(_){ } openPicker(key); },520);
+    }
+    function move(ev){ if(!timer) return; var p=point(ev); if(Math.abs(p.x-startX)>12 || Math.abs(p.y-startY)>12) clear(); }
+    function end(ev){
+      clear();
+      if(fired || (el.__ddaeAlertButtonSuppressUntil||0)>Date.now()) block(ev);
+      try{ el.classList.remove('is-pressing'); }catch(_){ }
+      setTimeout(function(){ fired=false; },0);
+    }
+    function guard(ev){ if((el.__ddaeAlertButtonSuppressUntil||0)>Date.now()) block(ev); }
+    if('PointerEvent' in window){
+      el.addEventListener('pointerdown',start,{passive:true,capture:true});
+      el.addEventListener('pointermove',move,{passive:true,capture:true});
+      el.addEventListener('pointerup',end,{passive:false,capture:true});
+      el.addEventListener('pointercancel',end,{passive:false,capture:true});
+    }else{
+      el.addEventListener('touchstart',start,{passive:true,capture:true});
+      el.addEventListener('touchmove',move,{passive:true,capture:true});
+      el.addEventListener('touchend',end,{passive:false,capture:true});
+      el.addEventListener('touchcancel',end,{passive:false,capture:true});
+      el.addEventListener('mousedown',start,{passive:true,capture:true});
+      el.addEventListener('mouseup',end,{passive:false,capture:true});
+      el.addEventListener('mouseleave',end,{passive:false,capture:true});
+    }
+    el.addEventListener('click',guard,true);
+    el.addEventListener('contextmenu',function(ev){ block(ev); },true);
+  }
+  function setup(){
+    Object.keys(ITEMS).forEach(function(key){ var el=document.getElementById(ITEMS[key].id); if(el){ ensureLabel(el,key); bindHold(el,key); } });
+    apply();
+  }
+  try{
+    var oldAdditional=(typeof __roomSettingsThemeAdditionalStorageKeys__==='function')?__roomSettingsThemeAdditionalStorageKeys__:null;
+    if(oldAdditional && !oldAdditional.__alertButtonVisualWrapped){
+      var wrappedAdditional=function(){ var list=oldAdditional.apply(this,arguments)||[]; if(list.indexOf(KEY)<0) list=list.concat([KEY]); return list; };
+      wrappedAdditional.__alertButtonVisualWrapped=true; __roomSettingsThemeAdditionalStorageKeys__=wrappedAdditional;
+    }
+  }catch(_){ }
+  try{
+    var oldStatsApply=(typeof __roomSettingsThemeStatsStorageApply__==='function')?__roomSettingsThemeStatsStorageApply__:null;
+    if(oldStatsApply && !oldStatsApply.__alertButtonVisualWrapped){
+      var wrappedStatsApply=function(){ var r=oldStatsApply.apply(this,arguments); try{ apply(); }catch(_){ } return r; };
+      wrappedStatsApply.__alertButtonVisualWrapped=true; __roomSettingsThemeStatsStorageApply__=wrappedStatsApply;
+    }
+  }catch(_){ }
+  window.__alertButtonVisualsApply__=apply;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup,{once:true}); else setTimeout(setup,0);
+  try{ window.addEventListener('pageshow',setup,{passive:true}); }catch(_){ }
+  setTimeout(setup,500);
 })();

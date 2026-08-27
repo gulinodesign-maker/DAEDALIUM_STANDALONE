@@ -34114,3 +34114,222 @@ html.dark-mode .guest-message-settings-hint{ color:rgba(226,232,240,.76) !import
   }
   #guestContactActionDock .guest-contact-action-btn .ui-ico{ width:25px !important; height:25px !important; }
 }
+
+/* dDAE_3.250 — Alert inferiori: veri tasti flat nello stile dei tasti contatto ospite. */
+:root{
+  --ddae-bottom-led-safe-space: 68px;
+}
+#bottomLedLayer.bottom-led-layer{
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-left: max(10px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+#bottomLedLayer #topLedGrid.bottom-led-grid{
+  width: min(720px, calc(100vw - 20px)) !important;
+  max-width: calc(100vw - 20px) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 48px !important;
+  display: grid !important;
+  grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
+  grid-auto-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 48px !important;
+  grid-auto-rows: 48px !important;
+  gap: 0 !important;
+  align-items: center !important;
+  justify-items: center !important;
+  justify-content: stretch !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+body.ddae-dark #bottomLedLayer #topLedGrid.bottom-led-grid{
+  background: transparent !important;
+  border: 0 !important;
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn{
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  position: relative !important;
+  width: clamp(30px, 9.2vw, 44px) !important;
+  min-width: clamp(30px, 9.2vw, 44px) !important;
+  max-width: clamp(30px, 9.2vw, 44px) !important;
+  height: clamp(30px, 9.2vw, 44px) !important;
+  min-height: clamp(30px, 9.2vw, 44px) !important;
+  max-height: clamp(30px, 9.2vw, 44px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 999px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: center !important;
+  align-self: center !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  animation: none !important;
+  -webkit-animation: none !important;
+  transform: none !important;
+  transition: transform .12s ease !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif !important;
+  font-size: clamp(10px, 2.8vw, 13px) !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+  overflow: hidden !important;
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn:active,
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.is-pressing{
+  transform: scale(.94) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn::before,
+#bottomLedLayer #topLedGrid > .bottom-alert-btn::after{
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+#bottomLedLayer .bottom-alert-btn-label{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  line-height: 1 !important;
+  font: inherit !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  pointer-events: none !important;
+}
+#bottomLedLayer .bottom-alert-btn-label-compact{
+  font-size: .72em !important;
+  letter-spacing: -.02em !important;
+}
+
+/* Stato inattivo: personalizzazione del singolo tasto tramite popup colore. */
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-alert.is-off,
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-product:not(.is-on),
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-laundry.is-off{
+  background: var(--ddae-alert-button-off-bg, rgba(226,232,240,.52)) !important;
+  background-color: var(--ddae-alert-button-off-bg, rgba(226,232,240,.52)) !important;
+  border-color: var(--ddae-alert-button-off-border, rgba(148,163,184,1)) !important;
+  color: var(--ddae-alert-button-off-fg, #475569) !important;
+  -webkit-text-fill-color: var(--ddae-alert-button-off-fg, #475569) !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+/* Stato attivo: questi valori arrivano esclusivamente dalla categoria Alert della pagina Design. */
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="ps"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-ps-bg, var(--ddae-reg-ps-bg, rgba(15,23,42,.96)));
+  --ddae-alert-button-active-border: var(--ddae-alert-ps-border, var(--ddae-reg-ps-border, rgba(15,23,42,1)));
+  --ddae-alert-button-active-fg: var(--ddae-alert-ps-fg, var(--ddae-reg-ps-fg, #fff));
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="istat"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-istat-bg, var(--ddae-reg-istat-bg, rgba(77,156,197,.96)));
+  --ddae-alert-button-active-border: var(--ddae-alert-istat-border, var(--ddae-reg-istat-border, rgba(77,156,197,1)));
+  --ddae-alert-button-active-fg: var(--ddae-alert-istat-fg, var(--ddae-reg-istat-fg, #fff));
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="payment"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-payment-bg, rgba(245,194,66,.98));
+  --ddae-alert-button-active-border: var(--ddae-alert-payment-border, rgba(232,178,26,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-payment-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="receipt"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-receipt-bg, rgba(239,68,68,.96));
+  --ddae-alert-button-active-border: var(--ddae-alert-receipt-border, rgba(220,38,38,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-receipt-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="cashreceipt"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-cashreceipt-bg, rgba(34,197,94,.96));
+  --ddae-alert-button-active-border: var(--ddae-alert-cashreceipt-border, rgba(22,163,74,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-cashreceipt-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="invoice"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-invoice-bg, rgba(122,70,209,.96));
+  --ddae-alert-button-active-border: var(--ddae-alert-invoice-border, rgba(90,46,166,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-invoice-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="shopping"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-shopping-bg, rgba(59,130,246,.92));
+  --ddae-alert-button-active-border: var(--ddae-alert-shopping-border, rgba(37,99,235,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-shopping-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="products"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-products-bg, rgba(249,115,22,.92));
+  --ddae-alert-button-active-border: var(--ddae-alert-products-border, rgba(234,88,12,1));
+  --ddae-alert-button-active-fg: var(--ddae-alert-products-fg, #fff);
+}
+#bottomLedLayer .bottom-alert-btn[data-alert-button-key="laundry"]{
+  --ddae-alert-button-active-bg: var(--ddae-alert-laundry-bg, #d7c4a3);
+  --ddae-alert-button-active-border: var(--ddae-alert-laundry-border, #b99f75);
+  --ddae-alert-button-active-fg: var(--ddae-alert-laundry-fg, #fff);
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-alert:not(.is-off),
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-product.is-on,
+#bottomLedLayer #topLedGrid > .bottom-alert-btn.top-led-laundry:not(.is-off){
+  background: var(--ddae-alert-button-active-bg) !important;
+  background-color: var(--ddae-alert-button-active-bg) !important;
+  border-color: var(--ddae-alert-button-active-border) !important;
+  color: var(--ddae-alert-button-active-fg) !important;
+  -webkit-text-fill-color: var(--ddae-alert-button-active-fg) !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  -webkit-animation: none !important;
+}
+
+/* Modalità operatore: restano solo i tre tasti operativi, centrati e sulla stessa riga. */
+body[data-role="operatore"] #bottomLedLayer #topLedGrid,
+#bottomLedLayer #topLedGrid.is-operator-leds{
+  width: max-content !important;
+  max-width: calc(100vw - 20px) !important;
+  grid-template-columns: repeat(3, clamp(34px, 11vw, 44px)) !important;
+  grid-auto-columns: clamp(34px, 11vw, 44px) !important;
+  gap: 16px !important;
+  justify-content: center !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
+#bottomLedLayer #topLedGrid.is-operator-leds .top-led-alert{
+  display: none !important;
+}
+@media (max-width: 340px){
+  #bottomLedLayer #topLedGrid.bottom-led-grid{
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
+  }
+  #bottomLedLayer #topLedGrid > .bottom-alert-btn{
+    width: clamp(29px, 9vw, 34px) !important;
+    min-width: clamp(29px, 9vw, 34px) !important;
+    max-width: clamp(29px, 9vw, 34px) !important;
+    height: clamp(29px, 9vw, 34px) !important;
+    min-height: clamp(29px, 9vw, 34px) !important;
+    max-height: clamp(29px, 9vw, 34px) !important;
+    font-size: 9.5px !important;
+  }
+}
