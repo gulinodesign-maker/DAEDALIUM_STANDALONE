@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.247";
+const BUILD_VERSION = "3.248";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -44538,6 +44538,73 @@ function triggerGuestPhoneAction(action){
   }catch(_){ }
 }
 
+const __HOTEL_LOCATION_TITLES_LOCAL__ = Object.freeze({
+  it:'Posizione hotel',
+  en:'Hotel location',
+  fr:'Emplacement de l’hôtel',
+  de:'Hotelstandort',
+  es:'Ubicación del hotel',
+  pt:'Localização do hotel',
+  nl:'Locatie van het hotel',
+  pl:'Lokalizacja hotelu',
+  ro:'Locația hotelului',
+  ru:'Расположение отеля',
+  uk:'Розташування готелю',
+  el:'Τοποθεσία ξενοδοχείου',
+  cs:'Poloha hotelu',
+  sk:'Poloha hotela',
+  hr:'Lokacija hotela',
+  sr:'Локација хотела',
+  hu:'A szálloda helye',
+  bg:'Местоположение на хотела',
+  tr:'Otel konumu',
+  sv:'Hotellets läge',
+  nb:'Hotellets beliggenhet',
+  da:'Hotellets beliggenhed',
+  fi:'Hotellin sijainti',
+  et:'Hotelli asukoht',
+  lv:'Viesnīcas atrašanās vieta',
+  lt:'Viešbučio vieta',
+  sl:'Lokacija hotela',
+  sq:'Vendndodhja e hotelit',
+  mk:'Локација на хотелот',
+  is:'Staðsetning hótelsins',
+  ar:'موقع الفندق',
+  he:'מיקום המלון',
+  fa:'موقعیت هتل',
+  ka:'სასტუმროს მდებარეობა',
+  hy:'Հյուրանոցի գտնվելու վայրը',
+  az:'Otelin yeri',
+  ja:'ホテルの場所',
+  ko:'호텔 위치',
+  'zh-cn':'酒店位置',
+  'zh-tw':'飯店位置',
+  th:'ตำแหน่งโรงแรม',
+  vi:'Vị trí khách sạn',
+  id:'Lokasi hotel',
+  ms:'Lokasi hotel',
+  hi:'होटल का स्थान',
+  ur:'ہوٹل کا مقام',
+  bn:'হোটেলের অবস্থান'
+});
+
+function __hotelLocationTitleForCurrentGuest__(){
+  try{
+    const guest=state?.guestViewItem || state?.guestEditSourceItem || null;
+    let lang='it';
+    try{
+      if (typeof window.__resolveConfiguredGuestMessageLanguage__ === 'function'){
+        lang=String(window.__resolveConfiguredGuestMessageLanguage__(guest) || 'it').trim().toLowerCase().replace(/_/g,'-');
+      }
+    }catch(_){ lang='it'; }
+    if (lang==='zh' || lang==='zh-hans') lang='zh-cn';
+    if (lang==='zh-hant' || lang==='zh-hk') lang='zh-tw';
+    if (lang==='no' || lang==='nn') lang='nb';
+    if (lang==='pt-br' || lang==='pt-pt') lang='pt';
+    return __HOTEL_LOCATION_TITLES_LOCAL__[lang] || __HOTEL_LOCATION_TITLES_LOCAL__[lang.split('-')[0]] || __HOTEL_LOCATION_TITLES_LOCAL__.it;
+  }catch(_){ return __HOTEL_LOCATION_TITLES_LOCAL__.it; }
+}
+
 function triggerGuestContactAction(action){
   try{
     const safeAction = String(action || '').trim().toLowerCase();
@@ -44555,7 +44622,7 @@ function triggerGuestContactAction(action){
       const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
       if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
       if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
-      const text = 'Posizione hotel: ' + link;
+      const text = __hotelLocationTitleForCurrentGuest__() + ': ' + link;
       const url = 'https://wa.me/' + encodeURIComponent(wa) + '?text=' + encodeURIComponent(text);
       try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
       return;
@@ -46600,7 +46667,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.247';
+  var BUILD_TAG='dDAE_3.248';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51514,7 +51581,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.247',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.248',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52663,7 +52730,7 @@ try{
 })();
 
 
-/* dDAE_3.247 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.248 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53053,6 +53120,36 @@ try{
     return '';
   }
 
+  function configuredMessageGuestTitle(guest){
+    const g=guest || state?.guestViewItem || state?.guestEditSourceItem || {};
+    let name='';
+    const nameValues=[g?.nome,g?.name,g?.guestName,g?.guest_name,g?.fullName,g?.full_name];
+    for (const raw of nameValues){ const v=String(raw||'').trim(); if(v){ name=v; break; } }
+    if (!name){ try{ name=String(document.getElementById('guestName')?.value || '').trim(); }catch(_){ } }
+    name=String(name||'').replace(/\s+/g,' ').trim().toLocaleUpperCase('it-IT');
+
+    let rooms=[];
+    try{ if (typeof __guestReportResolveRoomsArr__ === 'function') rooms=__guestReportResolveRoomsArr__(g) || []; }catch(_){ rooms=[]; }
+    if (!rooms.length){
+      try{
+        const bookings=(typeof __guestReportResolveBookings__ === 'function') ? (__guestReportResolveBookings__(g)||[]) : [];
+        for (const booking of bookings){
+          let arr=[];
+          try{ if (typeof _parseRoomsArr === 'function') arr=_parseRoomsArr(booking?.stanze ?? booking?.rooms ?? booking?.stanza ?? booking?.room ?? ''); }catch(_){ }
+          if (arr && arr.length){ rooms=arr; break; }
+        }
+      }catch(_){ }
+    }
+    if (!rooms.length){
+      try{ rooms=Array.from(state?.guestRooms || []); }catch(_){ rooms=[]; }
+    }
+    const room=String((rooms||[])[0] ?? '').trim().toLocaleUpperCase('it-IT');
+    if (name && room) return name+' - '+room;
+    if (name) return name;
+    if (room) return room;
+    return '';
+  }
+
   async function sendConfigured(){
     const guest=state?.guestViewItem || state?.guestEditSourceItem || null;
     const raw=(typeof __guestPhoneRawForContactAction__ === 'function') ? __guestPhoneRawForContactAction__() : String(guest?.telefono||'').trim();
@@ -53068,7 +53165,9 @@ try{
       try{ completeTranslationsInBackground(true); }catch(_){ }
       return false;
     }
-    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(translated);
+    const title=configuredMessageGuestTitle(guest);
+    const message=title ? (title+'\n\n'+translated) : translated;
+    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
     return true;
   }
