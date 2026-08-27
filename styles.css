@@ -34115,7 +34115,7 @@ html.dark-mode .guest-message-settings-hint{ color:rgba(226,232,240,.76) !import
   #guestContactActionDock .guest-contact-action-btn .ui-ico{ width:25px !important; height:25px !important; }
 }
 
-/* dDAE_3.251 — Alert inferiori: veri tasti flat nello stile dei tasti contatto ospite. */
+/* dDAE_3.252 — Alert inferiori: veri tasti flat nello stile dei tasti contatto ospite. */
 :root{
   --ddae-bottom-led-safe-space: 68px;
 }
@@ -34335,7 +34335,7 @@ body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
 }
 
 
-/* dDAE_3.251 — Alert: tutti i tasti sono iconografici, nella barra e nella pagina Design. */
+/* dDAE_3.252 — Alert: tutti i tasti sono iconografici, nella barra e nella pagina Design. */
 .ddae-alert-icon{
   width: 58% !important;
   height: 58% !important;
@@ -34362,4 +34362,63 @@ body[data-role="operatore"] #bottomLedLayer #topLedGrid .top-led-alert,
 #roomSettingsAlertDots .room-settings-color-dot-tag .ddae-alert-icon{
   width: 52% !important;
   height: 52% !important;
+}
+
+
+/* dDAE_3.252 — Alert Spesa unificato (Colazione + Prodotti) e tasti piu grandi. */
+:root{
+  --ddae-bottom-led-safe-space: 76px;
+}
+#bottomLedLayer #topLedGrid.bottom-led-grid{
+  min-height: 54px !important;
+  grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+  grid-auto-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 54px !important;
+  grid-auto-rows: 54px !important;
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn{
+  width: clamp(36px, 10.5vw, 50px) !important;
+  min-width: clamp(36px, 10.5vw, 50px) !important;
+  max-width: clamp(36px, 10.5vw, 50px) !important;
+  height: clamp(36px, 10.5vw, 50px) !important;
+  min-height: clamp(36px, 10.5vw, 50px) !important;
+  max-height: clamp(36px, 10.5vw, 50px) !important;
+}
+#bottomLedLayer #topLedGrid > .bottom-alert-btn .ddae-alert-icon{
+  width: 58% !important;
+  height: 58% !important;
+}
+body[data-role="operatore"] #bottomLedLayer #topLedGrid,
+#bottomLedLayer #topLedGrid.is-operator-leds{
+  width: max-content !important;
+  max-width: calc(100vw - 20px) !important;
+  grid-template-columns: repeat(2, clamp(44px, 12vw, 52px)) !important;
+  grid-auto-columns: clamp(44px, 12vw, 52px) !important;
+  grid-template-rows: 56px !important;
+  grid-auto-rows: 56px !important;
+  gap: 20px !important;
+  justify-content: center !important;
+}
+body[data-role="operatore"] #bottomLedLayer #prodLedColazione,
+#bottomLedLayer #topLedGrid.is-operator-leds #prodLedColazione{
+  grid-column: 1 !important;
+}
+body[data-role="operatore"] #bottomLedLayer #laundryReportLed,
+#bottomLedLayer #topLedGrid.is-operator-leds #laundryReportLed{
+  grid-column: 2 !important;
+}
+@media (max-width: 340px){
+  #bottomLedLayer #topLedGrid.bottom-led-grid{
+    grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+    grid-template-rows: 48px !important;
+    grid-auto-rows: 48px !important;
+  }
+  #bottomLedLayer #topLedGrid > .bottom-alert-btn{
+    width: clamp(32px, 9.8vw, 38px) !important;
+    min-width: clamp(32px, 9.8vw, 38px) !important;
+    max-width: clamp(32px, 9.8vw, 38px) !important;
+    height: clamp(32px, 9.8vw, 38px) !important;
+    min-height: clamp(32px, 9.8vw, 38px) !important;
+    max-height: clamp(32px, 9.8vw, 38px) !important;
+  }
 }

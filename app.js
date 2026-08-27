@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.251";
+const BUILD_VERSION = "3.252";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -19185,7 +19185,7 @@ state.page = page;
     if (leds2) leds2.hidden = isAuth;
     try{
       ['dbLedRead','dbLedIstat','dbLedWrite','dbLedReceipt','dbLedCashReceipt','dbLedInvoice'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = !!isOp; });
-      ['prodLedColazione','prodLedPulizia'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = false; });
+      ['prodLedColazione'].forEach((id)=>{ const el=document.getElementById(id); if(el) el.hidden = false; });
     }catch(_){ }
     try{ const opImpTop = document.getElementById("opImportRosterTop"); if (opImpTop) opImpTop.hidden = true; }catch(_){ }
     try{ const opLogoutTopBtn = document.getElementById("opLogoutTop"); if (opLogoutTopBtn) opLogoutTopBtn.hidden = true; }catch(_){ }
@@ -19769,14 +19769,23 @@ if (guestScrollTodayBtn){
     bindFastTap(goCol, () => { hideLauncher(); showPage("prodotti"); });
   }
 
-  // dDAE_3.080 — Il LED "Lista spesa" apre direttamente la relativa pagina.
+  // dDAE_3.252 — Unico tasto Spesa: rappresenta sia Colazione sia Prodotti.
   const shoppingLed = $("#prodLedColazione");
   if (shoppingLed && !shoppingLed.__shoppingPageBound){
     shoppingLed.__shoppingPageBound = true;
     const openShoppingPage = () => {
       try{
         state.prodottiUI = state.prodottiUI || { list:"colazione" };
-        state.prodottiUI.list = "colazione";
+        const anySavedIn = (arr) => Array.isArray(arr) && arr.some((i) => {
+          if (__normBool01(i?.isDeleted)) return false;
+          const q = parseInt(String(i?.qty ?? 0), 10);
+          return !isNaN(q) && q > 0;
+        });
+        const hasColazione = anySavedIn(state.colazione?.items);
+        const hasProdotti = anySavedIn(state.prodotti_pulizia?.items);
+        if (hasProdotti && !hasColazione) state.prodottiUI.list = "pulizia";
+        else if (hasColazione && !hasProdotti) state.prodottiUI.list = "colazione";
+        else if (state.prodottiUI.list !== "pulizia" && state.prodottiUI.list !== "colazione") state.prodottiUI.list = "colazione";
       }catch(_){ }
       try{ hideLauncher(); }catch(_){ }
       showPage("prodotti");
@@ -19788,28 +19797,6 @@ if (guestScrollTodayBtn){
       if (e.key !== "Enter" && e.key !== " ") return;
       try{ e.preventDefault(); }catch(_){ }
       openShoppingPage();
-    });
-  }
-
-  // dDAE_3.175 — Il LED arancione dei prodotti di pulizia apre la lista corretta.
-  const cleaningProductsLed = $("#prodLedPulizia");
-  if (cleaningProductsLed && !cleaningProductsLed.__cleaningProductsPageBound){
-    cleaningProductsLed.__cleaningProductsPageBound = true;
-    const openCleaningProductsPage = () => {
-      try{
-        state.prodottiUI = state.prodottiUI || { list:"colazione" };
-        state.prodottiUI.list = "pulizia";
-      }catch(_){ }
-      try{ hideLauncher(); }catch(_){ }
-      showPage("prodotti");
-    };
-    bindFastTap(cleaningProductsLed, openCleaningProductsPage);
-    cleaningProductsLed.setAttribute("role", "button");
-    cleaningProductsLed.setAttribute("tabindex", "0");
-    cleaningProductsLed.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      try{ e.preventDefault(); }catch(_){ }
-      openCleaningProductsPage();
     });
   }
 
@@ -36287,12 +36274,10 @@ function updateProdottiHomeBlink(){
   );
   if (btn) btn.classList.toggle("colazione-attn", !!any);
 
-  // Topservizi LED: acceso quando esiste almeno un prodotto "salvato" (pallino rosso)
-  // nella relativa lista.
+  // dDAE_3.252 — Unico alert Spesa: acceso se Colazione O Prodotti contiene almeno una quantita salvata.
   try{
-    const ledC = document.getElementById("prodLedColazione");
-    const ledP = document.getElementById("prodLedPulizia");
-    if (ledC && ledP){
+    const ledSpesa = document.getElementById("prodLedColazione");
+    if (ledSpesa){
       const anySavedIn = (arr) => {
         try{
           if (!Array.isArray(arr)) return false;
@@ -36306,12 +36291,14 @@ function updateProdottiHomeBlink(){
       };
       const hasC = anySavedIn(state.colazione?.items);
       const hasP = anySavedIn(state.prodotti_pulizia?.items);
-      ledC.classList.toggle("is-on", !!hasC);
-      ledP.classList.toggle("is-on", !!hasP);
-      try{ ledC.setAttribute("aria-label", hasC ? "Lista spesa attiva" : "Lista spesa vuota"); }catch(_){ }
-      try{ ledC.setAttribute("title", hasC ? "Lista spesa attiva" : "Lista spesa vuota"); }catch(_){ }
-      try{ ledP.setAttribute("aria-label", hasP ? "Prodotti attivi" : "Prodotti vuoti"); }catch(_){ }
-      try{ ledP.setAttribute("title", hasP ? "Prodotti attivi" : "Prodotti vuoti"); }catch(_){ }
+      const hasSpesa = !!(hasC || hasP);
+      ledSpesa.classList.toggle("is-on", hasSpesa);
+      let label = "Spesa vuota";
+      if (hasC && hasP) label = "Spesa attiva: Colazione e Prodotti";
+      else if (hasC) label = "Spesa attiva: Colazione";
+      else if (hasP) label = "Spesa attiva: Prodotti";
+      try{ ledSpesa.setAttribute("aria-label", label); }catch(_){ }
+      try{ ledSpesa.setAttribute("title", label); }catch(_){ }
     }
   }catch(_){ }
 }
@@ -46667,7 +46654,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.251';
+  var BUILD_TAG='dDAE_3.252';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48819,8 +48806,7 @@ try{
     receipt: { label:'R', title:'Alert ricevute',    bg:'red-5',   border:'red-6',   fg:'white', opacity:0.96 },
     cashreceipt: { label:'CR', title:'Alert contanti senza ricevuta', bg:'green-5', border:'green-6', fg:'white', opacity:0.96 },
     invoice: { label:'A', title:'Alert generico',     bg:'violet-5',border:'violet-6',fg:'white', opacity:0.96 },
-    shopping:{ label:'S', title:'Alert lista spesa', bg:'blue-4',  border:'blue-5',  fg:'white', opacity:0.92 },
-    products:{ label:'Pr', title:'Alert prodotti',   bg:'orange-4',border:'orange-5',fg:'white', opacity:0.92 },
+    shopping:{ label:'S', title:'Alert spesa',       bg:'blue-4',  border:'blue-5',  fg:'white', opacity:0.92 },
     laundry: { label:'L', title:'Alert lavanderia',  bg:'beige-4', border:'beige-5', fg:'white', opacity:0.92 }
   };
   var ICONS = {"ps":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M7 3h8l4 4v14H7z\"></path><path d=\"M15 3v5h5\"></path><path d=\"m10 14 2 2 4-5\"></path></svg>","istat":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 20V10\"></path><path d=\"M10 20V4\"></path><path d=\"M16 20v-7\"></path><path d=\"M22 20H2\"></path></svg>","score":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z\"></path></svg>","payment":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"></rect><path d=\"M3 10h18\"></path><path d=\"M7 15h4\"></path></svg>","receipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"></path><path d=\"M9 8h6\"></path><path d=\"M9 12h6\"></path><path d=\"M9 16h4\"></path></svg>","cashreceipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"></rect><path d=\"M7 9a3 3 0 0 1-1 1v4a3 3 0 0 1 1 1\"></path><path d=\"M17 9a3 3 0 0 0 1 1v4a3 3 0 0 0-1 1\"></path><circle cx=\"12\" cy=\"12\" r=\"2.5\"></circle></svg>","invoice":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 5h16v12H9l-5 4z\"></path><path d=\"M12 8v4\"></path><path d=\"M12 15h.01\"></path></svg>","shopping":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M3 5h2l2 10h10l3-7H6\"></path><circle cx=\"9\" cy=\"19\" r=\"1.5\"></circle><circle cx=\"17\" cy=\"19\" r=\"1.5\"></circle></svg>","products":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M9 4h6\"></path><path d=\"M11 4v3\"></path><path d=\"M13 7h4l2 3\"></path><path d=\"M8 9h8l2 3v9H6v-9z\"></path><path d=\"M6 13h12\"></path></svg>","laundry":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><circle cx=\"12\" cy=\"13\" r=\"5\"></circle><path d=\"M8 6h.01\"></path><path d=\"M11 6h5\"></path></svg>"};
@@ -49087,7 +49073,6 @@ try{
       if(alertKey === 'cashreceipt') return 'Contanti senza ricevuta';
       if(alertKey === 'invoice') return 'Alert generico';
       if(alertKey === 'shopping') return 'Spesa';
-      if(alertKey === 'products') return 'Prodotti';
       if(alertKey === 'laundry') return 'Lavanderia';
 
       if(btn && btn.hasAttribute && btn.hasAttribute('data-room-color')){
@@ -51583,7 +51568,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.251',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.252',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52732,7 +52717,7 @@ try{
 })();
 
 
-/* dDAE_3.251 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.252 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53260,7 +53245,7 @@ try{
 })();
 
 
-/* dDAE_3.251 — Alert inferiori come tasti flat stile contatto.
+/* dDAE_3.252 — Alert inferiori come tasti flat stile contatto.
    Il popup colore modifica esclusivamente lo stato inattivo; lo stato attivo resta pilotato dalla categoria Alert della pagina Design. */
 (function(){
   'use strict';
@@ -53273,7 +53258,6 @@ try{
     cashreceipt:{id:'dbLedCashReceipt'},
     invoice:{id:'dbLedInvoice'},
     shopping:{id:'prodLedColazione'},
-    products:{id:'prodLedPulizia'},
     laundry:{id:'laundryReportLed'}
   };
   var ICONS = {"ps":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M7 3h8l4 4v14H7z\"></path><path d=\"M15 3v5h5\"></path><path d=\"m10 14 2 2 4-5\"></path></svg>","istat":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 20V10\"></path><path d=\"M10 20V4\"></path><path d=\"M16 20v-7\"></path><path d=\"M22 20H2\"></path></svg>","payment":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"></rect><path d=\"M3 10h18\"></path><path d=\"M7 15h4\"></path></svg>","receipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"></path><path d=\"M9 8h6\"></path><path d=\"M9 12h6\"></path><path d=\"M9 16h4\"></path></svg>","cashreceipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"></rect><path d=\"M7 9a3 3 0 0 1-1 1v4a3 3 0 0 1 1 1\"></path><path d=\"M17 9a3 3 0 0 0 1 1v4a3 3 0 0 0-1 1\"></path><circle cx=\"12\" cy=\"12\" r=\"2.5\"></circle></svg>","invoice":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 5h16v12H9l-5 4z\"></path><path d=\"M12 8v4\"></path><path d=\"M12 15h.01\"></path></svg>","shopping":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M3 5h2l2 10h10l3-7H6\"></path><circle cx=\"9\" cy=\"19\" r=\"1.5\"></circle><circle cx=\"17\" cy=\"19\" r=\"1.5\"></circle></svg>","products":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M9 4h6\"></path><path d=\"M11 4v3\"></path><path d=\"M13 7h4l2 3\"></path><path d=\"M8 9h8l2 3v9H6v-9z\"></path><path d=\"M6 13h12\"></path></svg>","laundry":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><circle cx=\"12\" cy=\"13\" r=\"5\"></circle><path d=\"M8 6h.01\"></path><path d=\"M11 6h5\"></path></svg>"};
