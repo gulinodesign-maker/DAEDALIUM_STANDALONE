@@ -34060,3 +34060,57 @@ body[data-page="statnazionalita"] #page-statnazionalita .stats-scroll-layer .sta
     display:none !important;
   }
 }
+
+
+/* dDAE_3.243 — messaggio WhatsApp ospite configurabile */
+#settingsDataModal .settings-btn-guest-message{ color:#20a85a; }
+.guest-message-settings-card{
+  width:min(620px, calc(100vw - 32px)) !important;
+  max-width:calc(100vw - 32px) !important;
+}
+.guest-message-settings-hint{
+  margin:4px 4px 16px !important;
+  font-size:14px !important;
+  line-height:1.4 !important;
+  color:rgba(15,23,42,.68) !important;
+  font-weight:650 !important;
+}
+.guest-message-settings-field{ margin-top:6px !important; }
+.guest-message-settings-field textarea{
+  width:100% !important;
+  min-height:180px !important;
+  resize:vertical !important;
+  box-sizing:border-box !important;
+  padding:30px 16px 14px !important;
+  font:inherit !important;
+  line-height:1.4 !important;
+  border-radius:18px !important;
+}
+.guest-message-settings-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  align-items:center !important;
+  gap:12px !important;
+  margin-top:18px !important;
+}
+.guest-message-settings-actions .btn{ width:100% !important; min-height:52px !important; }
+#guestContactActionDock .guest-configured-message-action-btn .ui-ico{
+  width:28px !important;
+  height:28px !important;
+}
+body.ddae-dark .guest-message-settings-hint,
+body.dark-mode .guest-message-settings-hint,
+html.dark-mode .guest-message-settings-hint{ color:rgba(226,232,240,.76) !important; }
+@media (max-width:420px){
+  #guestContactActionDock{ gap:8px !important; width:calc(100vw - 20px) !important; }
+  #guestContactActionDock .guest-contact-action-btn{
+    flex-basis:48px !important;
+    width:48px !important;
+    height:48px !important;
+    min-width:48px !important;
+    min-height:48px !important;
+    max-width:48px !important;
+    max-height:48px !important;
+  }
+  #guestContactActionDock .guest-contact-action-btn .ui-ico{ width:25px !important; height:25px !important; }
+}

@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.242";
+const BUILD_VERSION = "3.243";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -475,7 +475,7 @@ async function __kvDel__(k){
 }
 
 
-// dDAE_3.242 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
+// dDAE_3.243 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
 const __COCKTAIL_IMAGE_ASSET_PREFIX__ = "asset:cocktail-image:";
 function __cocktailImageAssetKey__(slot){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + String(slot || "").trim(); }
 async function __cocktailImageAssetGet__(slot){
@@ -1510,7 +1510,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -12187,7 +12187,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
@@ -12211,6 +12211,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
   settingsHotelLocationBtn: 'green-5',
+  settingsGuestMessageBtn: 'green-5',
     settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
@@ -13438,7 +13439,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
@@ -13520,7 +13521,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -22759,11 +22760,11 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -22830,6 +22831,7 @@ function __defaultSingleActionButtonVisual__(btn){
     guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
+    guestConfiguredWhatsAppMessage:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
@@ -22865,6 +22867,8 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsDataCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     settingsAccountSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    guestMessageSettingsCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    guestMessageSettingsSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     calTodayOccupancyBadge:{ bg:'red-5', border:'red-6', fg:'white', opacity:1 },
     calTomorrowCheckoutBadge:{ bg:'sky-5', border:'sky-6', fg:'white', opacity:1 }
   };
@@ -22987,6 +22991,8 @@ function __singleActionButtonCategoryForId__(id){
     settingsDataCloseBtn:'cancel',
     settingsAccountSaveBtn:'save',
     settingsAccountCancelBtn:'cancel',
+    guestMessageSettingsCancelBtn:'cancel',
+    guestMessageSettingsSaveBtn:'save',
     settingsLicenseUnlockBtn:'save',
     settingsLicensePayBtn:'trigger',
     settingsLicenseRequestBtn:'trigger',
@@ -22995,6 +23001,7 @@ function __singleActionButtonCategoryForId__(id){
     guestPhoneActionCall:'guest-contact',
     guestPhoneActionWhatsApp:'guest-contact',
     guestPhoneActionSms:'guest-contact',
+    guestConfiguredWhatsAppMessage:'guest-contact',
     guestEmailActionMail:'guest-contact',
     guestGenderMale:'guest-gender',
     guestGenderFemale:'guest-gender',
@@ -35120,7 +35127,7 @@ function sortGuestGroups(groups){
       const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
         ? guest._groupBookings
         : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
-      // dDAE_3.242 — la priorità di ordinamento deve coincidere con lo stato
+      // dDAE_3.243 — la priorità di ordinamento deve coincidere con lo stato
       // realmente mostrato dalla card. Questo include anche i locali/Piscina:
       // un evento passato è visualizzato azzurro (led-blue) e quindi deve essere
       // trattato come concluso, senza essere escluso dal gruppo check-out.
@@ -35176,7 +35183,7 @@ function sortGuestGroups(groups){
     const ma = a?.__sortMeta3222 || {};
     const mb = b?.__sortMeta3222 || {};
 
-    // dDAE_3.242 — gerarchia assoluta del filtro Check-in:
+    // dDAE_3.243 — gerarchia assoluta del filtro Check-in:
     // 1) check-out già conclusi; 2) check-out del giorno ancora da concludere;
     // 3) pernottamenti/arrivi restanti. Nessun check-out può finire sotto un soggiorno in corso.
     if ((ma.checkoutDone ?? 1) !== (mb.checkoutDone ?? 1)) return (ma.checkoutDone ?? 1) - (mb.checkoutDone ?? 1);
@@ -44538,6 +44545,10 @@ function triggerGuestContactAction(action){
       openGuestEmailAction();
       return;
     }
+    if (safeAction === 'configured-whatsapp'){
+      try{ __sendConfiguredGuestWhatsAppMessage__(); }catch(_){ }
+      return;
+    }
     if (safeAction === 'hotel-location'){
       const raw = __guestPhoneRawForContactAction__();
       const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
@@ -46589,7 +46600,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.242';
+  var BUILD_TAG='dDAE_3.243';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49831,7 +49842,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
   function handleFile(file){
     try{
       if(!file) return;
-      // dDAE_3.242 — Un file immagine non deve mai entrare nel parser backup.
+      // dDAE_3.243 — Un file immagine non deve mai entrare nel parser backup.
       // Questo protegge soprattutto Safari/iOS, dove il picker Foto può lasciare
       // il file selezionato mentre un controllo backup ritardato scandisce gli input.
       var fileType=String(file.type||'').toLowerCase();
@@ -49876,7 +49887,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       var btn=ev.target && ev.target.closest ? ev.target.closest('button,input,label,[role="button"]') : null;
       if(!btn) return;
-      // dDAE_3.242 — Il picker immagine dei record/cocktail è un'azione editor,
+      // dDAE_3.243 — Il picker immagine dei record/cocktail è un'azione editor,
       // non un import backup. Escludilo prima anche dal riconoscimento geometrico.
       try{
         var linkedFor=String(btn.getAttribute&&btn.getAttribute('for')||'');
@@ -49897,7 +49908,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
           Array.prototype.forEach.call(inputs,function(inp){
             try{
               if(inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
-              // dDAE_3.242 — Non scandire mai gli input immagine nel fallback backup ritardato.
+              // dDAE_3.243 — Non scandire mai gli input immagine nel fallback backup ritardato.
               if(inp.id==='cocktailImageInput'||inp.dataset.ddaeCocktailImage==='1'||inp.getAttribute('data-ddae-cocktail-image')==='1'||String(inp.accept||'').toLowerCase().indexOf('image/')>=0) return;
               if(inp.files && inp.files[0]) handleFile(inp.files[0]);
             }catch(_){}
@@ -51503,7 +51514,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.242',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.243',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52649,4 +52660,188 @@ try{
       },80);
     },false);
   }catch(_){ }
+})();
+
+
+/* dDAE_3.243 — messaggio WhatsApp ospite configurabile + traduzione automatica */
+(function __setupGuestConfiguredWhatsAppMessage3243__(){
+  'use strict';
+  const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
+  const SETTING_KEY = 'guest_whatsapp_message_template';
+  const $ = (id) => document.getElementById(id);
+
+  function cleanLang(raw){
+    const s = String(raw || '').trim().toLowerCase().replace('_','-');
+    if (!s) return '';
+    const direct = s.match(/^[a-z]{2,3}(?:-[a-z]{2,4})?$/i);
+    if (direct){
+      const base = direct[0].split('-')[0];
+      const iso3 = { ita:'it',eng:'en',fra:'fr',fre:'fr',deu:'de',ger:'de',spa:'es',por:'pt',nld:'nl',dut:'nl',pol:'pl',ron:'ro',rum:'ro',rus:'ru',ukr:'uk',ell:'el',gre:'el',ces:'cs',cze:'cs',slk:'sk',slo:'sk',hrv:'hr',srp:'sr',hun:'hu',bul:'bg',tur:'tr',swe:'sv',nor:'nb',dan:'da',fin:'fi',est:'et',lav:'lv',lit:'lt',ara:'ar',heb:'he',jpn:'ja',kor:'ko',zho:'zh-cn',chi:'zh-cn' };
+      return iso3[base] || (base.length === 2 ? base : '');
+    }
+    const names = [
+      [/ital|italian/, 'it'], [/ingles|english|anglais|englisch/, 'en'], [/franc|french|français/, 'fr'],
+      [/tedesc|german|deutsch/, 'de'], [/spagn|spanish|españ/, 'es'], [/portogh|portugu/, 'pt'],
+      [/oland|dutch|neder/, 'nl'], [/polacc|polish|polski/, 'pl'], [/rumen|romanian|român/, 'ro'],
+      [/russ|russian/, 'ru'], [/ucrain|ukrain/, 'uk'], [/grec|greek|ellin/, 'el'], [/cec|czech/, 'cs'],
+      [/slovacc|slovak/, 'sk'], [/croat/, 'hr'], [/serb/, 'sr'], [/ungher|hungar/, 'hu'], [/bulgar/, 'bg'],
+      [/turc|turkish/, 'tr'], [/sved|swedish/, 'sv'], [/norveg|norwegian/, 'nb'], [/danes|danish/, 'da'],
+      [/finn|finnish/, 'fi'], [/eston/, 'et'], [/letton|latv/, 'lv'], [/lituan|lithuan/, 'lt'],
+      [/arab/, 'ar'], [/ebra|hebrew/, 'he'], [/giappon|japan/, 'ja'], [/corean|korean/, 'ko'], [/cines|chinese/, 'zh-cn']
+    ];
+    for (const [re, code] of names) if (re.test(s)) return code;
+    return '';
+  }
+
+  function countryLanguage(code){
+    const c = String(code || '').trim().toUpperCase();
+    const groups = {
+      it:['IT','SM','VA'], fr:['FR','MC','BE','LU'], de:['DE','AT','CH','LI'], en:['GB','UK','US','IE','AU','NZ','CA','SG','ZA','NG','GH','KE','TZ','JM','TT','BB','BS'],
+      es:['ES','MX','AR','CL','CO','PE','UY','VE','EC','BO','CR','PA','DO','GT','HN','NI','SV','CU','PR','PY'], pt:['PT','BR','AO','MZ','CV'], nl:['NL'],
+      pl:['PL'], cs:['CZ'], sk:['SK'], sl:['SI'], hr:['HR','BA'], sr:['RS','ME'], ro:['RO','MD'], hu:['HU'], el:['GR','CY'], tr:['TR'], sq:['AL'], bg:['BG'], mk:['MK'],
+      uk:['UA'], ru:['RU','BY','KZ'], lt:['LT'], lv:['LV'], et:['EE'], fi:['FI'], sv:['SE'], nb:['NO'], da:['DK'], is:['IS'],
+      ar:['SA','AE','QA','KW','BH','OM','JO','LB','MA','DZ','TN','EG','IQ','LY'], he:['IL'], fa:['IR','AF'], ka:['GE'], hy:['AM'], az:['AZ'],
+      ja:['JP'], ko:['KR'], 'zh-cn':['CN'], 'zh-tw':['TW','HK'], th:['TH'], vi:['VN'], id:['ID'], ms:['MY'], hi:['IN'], ur:['PK'], bn:['BD']
+    };
+    for (const [lang, arr] of Object.entries(groups)) if (arr.includes(c)) return lang;
+    return '';
+  }
+
+  function guestCountryCode(guest){
+    const g = guest || state?.guestViewItem || state?.guestEditSourceItem || {};
+    const values = [g.nazionalita_code,g.country_code,g.nazionalita,g.nazione,g.country,g.countryCode];
+    for (const raw of values){ const s=String(raw||'').trim().toUpperCase(); if (/^[A-Z]{2}$/.test(s)) return s; }
+    try{ const dom = String(document.getElementById('guestNationalityCode')?.value || '').trim().toUpperCase(); if (/^[A-Z]{2}$/.test(dom)) return dom; }catch(_){ }
+    try{ return String(__currentGuestNationalityCodeForPhone__() || '').trim().toUpperCase(); }catch(_){ return ''; }
+  }
+
+  function resolveGuestLanguage(guest){
+    const bookings = (typeof __guestReportResolveBookings__ === 'function') ? __guestReportResolveBookings__(guest || {}) : [guest || {}];
+    const all = [...(Array.isArray(bookings) ? bookings : []), guest || {}];
+    const fields = ['lingua_ospite','linguaOspite','guest_language','guestLanguage','language','lang','lingua','locale','preferred_language','preferredLanguage','lingua_cliente','linguaCliente','guest_lang','guestLang','guest_language_code','guestLanguageCode'];
+    for (const item of all){
+      if (!item) continue;
+      for (const key of fields){ const lang=cleanLang(item[key]); if (lang) return lang; }
+    }
+    return countryLanguage(guestCountryCode(guest));
+  }
+
+  function storedTemplate(){
+    try{
+      const local = String(localStorage.getItem(STORAGE_KEY) || '').trim();
+      if (local) return local;
+    }catch(_){ }
+    try{
+      if (typeof getSettingText === 'function'){
+        const value = String(getSettingText(SETTING_KEY, '') || '').trim();
+        if (value){ try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ } return value; }
+      }
+    }catch(_){ }
+    return '';
+  }
+
+  async function refreshTemplateFromSettings(){
+    try{
+      if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:false, showLoader:false });
+      const value = (typeof getSettingText === 'function') ? String(getSettingText(SETTING_KEY, '') || '').trim() : '';
+      if (value) try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+      return value || storedTemplate();
+    }catch(_){ return storedTemplate(); }
+  }
+
+  function closeSettingsModal(){
+    const modal=$('guestMessageSettingsModal'); if (!modal) return;
+    modal.hidden=true; modal.setAttribute('aria-hidden','true');
+    try{ document.body.classList.remove('modal-open'); }catch(_){ }
+  }
+
+  async function openSettingsModal(){
+    const modal=$('guestMessageSettingsModal'), input=$('guestMessageTemplateInput');
+    if (!modal || !input) return;
+    try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
+    input.value = await refreshTemplateFromSettings();
+    modal.hidden=false; modal.setAttribute('aria-hidden','false');
+    try{ document.body.classList.add('modal-open'); }catch(_){ }
+    setTimeout(()=>{ try{ input.focus({preventScroll:true}); }catch(_){ try{input.focus();}catch(__){} } },80);
+  }
+
+  async function saveSettings(){
+    const value=String($('guestMessageTemplateInput')?.value || '').trim();
+    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+    try{
+      if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
+      if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
+    }catch(_){ }
+    closeSettingsModal();
+    try{ toast(value ? 'Messaggio WhatsApp salvato' : 'Messaggio WhatsApp rimosso','green'); }catch(_){ }
+  }
+
+  async function translateMessage(text,targetLang){
+    const source=String(text||'').trim(); const target=String(targetLang||'').trim().toLowerCase();
+    if (!source || !target) return '';
+    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const timer = controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },9000) : null;
+    try{
+      const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+encodeURIComponent(target)+'&dt=t&q='+encodeURIComponent(source);
+      const res=await fetch(url,{ method:'GET', cache:'no-store', credentials:'omit', referrerPolicy:'no-referrer', signal:controller?.signal });
+      if (!res.ok) throw new Error('translate '+res.status);
+      const data=await res.json();
+      const translated=Array.isArray(data?.[0]) ? data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('') : '';
+      if (!translated.trim()) throw new Error('empty translation');
+      return translated.trim();
+    } finally { if (timer) clearTimeout(timer); }
+  }
+
+  async function sendConfigured(){
+    const guest=state?.guestViewItem || state?.guestEditSourceItem || null;
+    const raw=(typeof __guestPhoneRawForContactAction__ === 'function') ? __guestPhoneRawForContactAction__() : String(guest?.telefono||'').trim();
+    const wa=(typeof normalizeWhatsAppPhone === 'function') ? normalizeWhatsAppPhone(raw, guestCountryCode(guest)) : String(raw||'').replace(/\D/g,'');
+    if (!wa){ try{toast('Numero WhatsApp ospite mancante','orange');}catch(_){ } return false; }
+    const template=await refreshTemplateFromSettings();
+    if (!template){ try{toast('Configura il messaggio WhatsApp nelle Impostazioni','orange');}catch(_){ } return false; }
+    const target=resolveGuestLanguage(guest);
+    if (!target){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return false; }
+    let translated='';
+    try{
+      try{ toast('Traduzione messaggio…','blue'); }catch(_){ }
+      translated=await translateMessage(template,target);
+    }catch(_){
+      try{ toast('Traduzione non disponibile. Messaggio non inviato.','orange'); }catch(__){ }
+      return false;
+    }
+    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(translated);
+    try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
+    return true;
+  }
+
+  function bind(el,fn,key){
+    if (!el || el.dataset[key||'guestMessageBound']==='1') return;
+    el.dataset[key||'guestMessageBound']='1';
+    if (typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn);
+  }
+
+  function init(){
+    bind($('settingsGuestMessageBtn'),openSettingsModal,'guestMessageSettingsOpenBound');
+    bind($('guestMessageSettingsCloseBtn'),closeSettingsModal,'guestMessageSettingsCloseBound');
+    bind($('guestMessageSettingsCancelBtn'),closeSettingsModal,'guestMessageSettingsCancelBound');
+    bind($('guestMessageSettingsSaveBtn'),saveSettings,'guestMessageSettingsSaveBound');
+    const modal=$('guestMessageSettingsModal');
+    if (modal && modal.dataset.guestMessageBackdropBound!=='1'){
+      modal.dataset.guestMessageBackdropBound='1';
+      modal.addEventListener('click',(e)=>{ if(e.target===modal) closeSettingsModal(); });
+    }
+    ['guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn','guestConfiguredWhatsAppMessage'].forEach(id=>{
+      const btn=$(id); if(!btn)return;
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+      try{ __bindSingleActionButtonColorHold__(btn); }catch(_){ }
+    });
+    try{ setupGuestContactActionDock(); }catch(_){ }
+    try{ setupLauncherIconLongPressPalette(); }catch(_){ }
+    try{ __launcherIconApplyAll__(); }catch(_){ }
+  }
+
+  window.__sendConfiguredGuestWhatsAppMessage__=sendConfigured;
+  window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
+  window.addEventListener('pageshow',init);
 })();
