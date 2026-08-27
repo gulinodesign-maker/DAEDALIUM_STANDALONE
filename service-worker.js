@@ -1,5 +1,5 @@
 /* dDAE - Service Worker (PWA)
- * Build: 3.244
+ * Build: 3.245
  *
  * Obiettivi:
  * - cache name cambia ad ogni build
@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "3.244";
+const BUILD = "3.245";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)
@@ -89,7 +89,8 @@ function isApiRequest(url) {
     h === "firebase.googleapis.com" ||
     h === "www.googleapis.com" ||
     h === "translate.googleapis.com" ||
-    h === "clients5.google.com"
+    h === "clients5.google.com" ||
+    h === "api.openai.com"
   );
 }
 
@@ -167,6 +168,15 @@ self.addEventListener("fetch", (event) => {
   try {
     const u = new URL(event.request.url);
     if (u.origin === self.location.origin && u.pathname.endsWith("/version.json")) {
+      event.respondWith(fetch(event.request, { cache: "no-store" }));
+      return;
+    }
+  } catch (_) {}
+
+  // API same-origin (es. funzioni serverless /api): mai cache
+  try {
+    const apiUrl = new URL(event.request.url);
+    if (apiUrl.origin === self.location.origin && apiUrl.pathname.includes("/api/")) {
       event.respondWith(fetch(event.request, { cache: "no-store" }));
       return;
     }

@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.244";
+const BUILD_VERSION = "3.245";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46600,7 +46600,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.244';
+  var BUILD_TAG='dDAE_3.245';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51514,7 +51514,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.244',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.245',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52663,11 +52663,12 @@ try{
 })();
 
 
-/* dDAE_3.244 — messaggio WhatsApp ospite: traduzione resiliente + inoltro sempre disponibile */
-(function __setupGuestConfiguredWhatsAppMessage3244__(){
+/* dDAE_3.245 — messaggio WhatsApp ospite: traduzione tramite backend OpenAI, senza fallback al testo originale */
+(function __setupGuestConfiguredWhatsAppMessage3245__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
   const SETTING_KEY = 'guest_whatsapp_message_template';
+  const TRANSLATE_TIMEOUT_MS = 18000;
   const $ = (id) => document.getElementById(id);
 
   function cleanLang(raw){
@@ -52776,32 +52777,25 @@ try{
     try{ toast(value ? 'Messaggio WhatsApp salvato' : 'Messaggio WhatsApp rimosso','green'); }catch(_){ }
   }
 
-  function parseGoogleTranslation(data){
-    try{
-      if (Array.isArray(data?.[0])){
-        const value=data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim();
-        if (value) return value;
-      }
-      if (Array.isArray(data?.sentences)){
-        const value=data.sentences.map(part=>String(part?.trans||'')).join('').trim();
-        if (value) return value;
-      }
-    }catch(_){ }
-    return '';
+  function translationEndpoint(){
+    let configured = String(window.DDAE_OPENAI_TRANSLATE_ENDPOINT || window.DDAE_TRANSLATE_API_URL || '').trim();
+    if (!configured){ try{ configured=String(localStorage.getItem('dDAE_openai_translate_endpoint_v1')||'').trim(); }catch(_){ } }
+    if (configured) return configured;
+    return './api/translate';
   }
 
-  async function fetchTranslationEndpoint(url,timeoutMs){
-    const controller=(typeof AbortController!=='undefined') ? new AbortController() : null;
-    const timer=controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },Math.max(1000,Number(timeoutMs)||6000)) : null;
+  function extractTranslation(payload){
     try{
-      const opts={ method:'GET', cache:'no-store', credentials:'omit' };
-      if (controller) opts.signal=controller.signal;
-      const res=await fetch(url,opts);
-      if (!res.ok) throw new Error('translate '+res.status);
-      const translated=parseGoogleTranslation(await res.json());
-      if (!translated) throw new Error('empty translation');
-      return translated;
-    } finally { if (timer) clearTimeout(timer); }
+      if (typeof payload === 'string') return payload.trim();
+      const candidates = [payload?.translatedText, payload?.translation, payload?.text, payload?.result, payload?.message];
+      for (const value of candidates){
+        const s=String(value||'').trim();
+        if (s) return s;
+      }
+      const outputText = payload?.output?.[0]?.content?.find?.((part)=>part?.type==='output_text')?.text;
+      if (outputText) return String(outputText).trim();
+    }catch(_){ }
+    return '';
   }
 
   async function translateMessage(text,targetLang){
@@ -52809,32 +52803,25 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    const encodedTarget=encodeURIComponent(target);
-    const encodedSource=encodeURIComponent(source);
-    const urls=[
-      'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+encodedTarget+'&dt=t&q='+encodedSource,
-      'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl='+encodedTarget+'&q='+encodedSource
-    ];
-
-    return await new Promise((resolve,reject)=>{
-      let settled=false;
-      let pending=urls.length;
-      let lastError=null;
-      urls.forEach((url)=>{
-        fetchTranslationEndpoint(url,6500).then((value)=>{
-          if (settled) return;
-          settled=true;
-          resolve(value);
-        }).catch((err)=>{
-          lastError=err;
-          pending--;
-          if (!settled && pending<=0){
-            settled=true;
-            reject(lastError || new Error('translation unavailable'));
-          }
-        });
-      });
-    });
+    const controller=(typeof AbortController!=='undefined') ? new AbortController() : null;
+    const timer=controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },TRANSLATE_TIMEOUT_MS) : null;
+    try{
+      const opts={
+        method:'POST',
+        cache:'no-store',
+        credentials:'omit',
+        headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+        body:JSON.stringify({ text:source, targetLang:target, sourceLang:'it' })
+      };
+      if (controller) opts.signal=controller.signal;
+      const res=await fetch(translationEndpoint(),opts);
+      if (!res.ok) throw new Error('openai translate '+res.status);
+      const type=String(res.headers.get('content-type')||'').toLowerCase();
+      const payload=type.includes('application/json') ? await res.json() : await res.text();
+      const translated=extractTranslation(payload);
+      if (!translated) throw new Error('empty translation');
+      return translated;
+    } finally { if (timer) clearTimeout(timer); }
   }
 
   async function sendConfigured(){
@@ -52846,14 +52833,16 @@ try{
     if (!template){ try{toast('Configura il messaggio WhatsApp nelle Impostazioni','orange');}catch(_){ } return false; }
     const target=resolveGuestLanguage(guest);
     if (!target){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return false; }
-    let translated=template;
+    let translated='';
     try{
-      try{ toast('Traduzione messaggio…','blue'); }catch(_){ }
-      const value=await translateMessage(template,target);
-      if (String(value||'').trim()) translated=String(value).trim();
+      try{ toast('Traduzione OpenAI…','blue'); }catch(_){ }
+      translated=String(await translateMessage(template,target) || '').trim();
     }catch(_){
-      translated=template;
-      try{ toast('Traduzione non disponibile. Apro WhatsApp con il messaggio originale.','orange'); }catch(__){ }
+      translated='';
+    }
+    if (!translated){
+      try{ toast('Traduzione OpenAI non disponibile. Messaggio non inviato.','orange'); }catch(_){ }
+      return false;
     }
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(translated);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
@@ -52888,6 +52877,7 @@ try{
 
   window.__sendConfiguredGuestWhatsAppMessage__=sendConfigured;
   window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
+  window.__translateConfiguredGuestMessageWithOpenAI__=translateMessage;
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
 })();
