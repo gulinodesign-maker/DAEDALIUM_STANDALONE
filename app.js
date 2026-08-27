@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.243";
+const BUILD_VERSION = "3.244";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -44550,14 +44550,12 @@ function triggerGuestContactAction(action){
       return;
     }
     if (safeAction === 'hotel-location'){
-      const raw = __guestPhoneRawForContactAction__();
-      const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
-      if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
-      if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
-      const text = 'Posizione hotel: ' + link;
-      const url = 'https://wa.me/' + encodeURIComponent(wa) + '?text=' + encodeURIComponent(text);
-      try{ window.location.href = url; }catch(_){ window.open(url, '_blank', 'noopener'); }
+      try{
+        if (typeof window.__sendGuestHotelLocationMessage__ === 'function'){
+          window.__sendGuestHotelLocationMessage__();
+          return;
+        }
+      }catch(_){ }
       return;
     }
     triggerGuestPhoneAction(safeAction);
@@ -46600,7 +46598,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.243';
+  var BUILD_TAG='dDAE_3.244';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51514,7 +51512,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.243',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.244',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52792,6 +52790,32 @@ try{
     } finally { if (timer) clearTimeout(timer); }
   }
 
+  /* dDAE_3.244 — il testo della posizione hotel segue la lingua dell'ospite della scheda corrente. */
+  async function sendHotelLocation(){
+    const guest=state?.guestViewItem || state?.guestEditSourceItem || null;
+    const raw=(typeof __guestPhoneRawForContactAction__ === 'function') ? __guestPhoneRawForContactAction__() : String(guest?.telefono||'').trim();
+    const wa=(typeof normalizeWhatsAppPhone === 'function') ? normalizeWhatsAppPhone(raw, guestCountryCode(guest)) : String(raw||'').replace(/\D/g,'');
+    if (!wa){ try{toast('Numero WhatsApp ospite mancante','orange');}catch(_){ } return false; }
+    const link=String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
+    if (!link){ try{toast('Inserisci il link della posizione hotel nelle Impostazioni','orange');}catch(_){ } return false; }
+    const target=resolveGuestLanguage(guest);
+    if (!target){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return false; }
+    let label='Posizione hotel';
+    if (String(target).toLowerCase() !== 'it'){
+      try{
+        try{ toast('Traduzione messaggio…','blue'); }catch(_){ }
+        label=await translateMessage(label,target);
+      }catch(_){
+        try{ toast('Traduzione non disponibile. Messaggio non inviato.','orange'); }catch(__){ }
+        return false;
+      }
+    }
+    const text=String(label || 'Posizione hotel').trim()+': '+link;
+    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(text);
+    try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
+    return true;
+  }
+
   async function sendConfigured(){
     const guest=state?.guestViewItem || state?.guestEditSourceItem || null;
     const raw=(typeof __guestPhoneRawForContactAction__ === 'function') ? __guestPhoneRawForContactAction__() : String(guest?.telefono||'').trim();
@@ -52841,6 +52865,7 @@ try{
   }
 
   window.__sendConfiguredGuestWhatsAppMessage__=sendConfigured;
+  window.__sendGuestHotelLocationMessage__=sendHotelLocation;
   window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
