@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.250";
+const BUILD_VERSION = "3.251";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46667,7 +46667,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.250';
+  var BUILD_TAG='dDAE_3.251';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48764,7 +48764,7 @@ try{
       var oldCad=document.getElementById('btnLaundryCadenceTop');
       if(oldCad && oldCad.parentNode) oldCad.parentNode.removeChild(oldCad);
       if(!document.getElementById('laundryReportLed')){
-        var grid=document.getElementById('topLedGrid'); if(grid){ var led=document.createElement('button'); led.type='button'; led.id='laundryReportLed'; led.className='top-led top-led-laundry bottom-alert-btn is-off'; led.setAttribute('data-alert-button-key','laundry'); led.setAttribute('aria-label','Report lavanderia'); led.innerHTML='<span class=\"bottom-alert-btn-label\" aria-hidden=\"true\">L</span>'; grid.appendChild(led); }
+        var grid=document.getElementById('topLedGrid'); if(grid){ var led=document.createElement('button'); led.type='button'; led.id='laundryReportLed'; led.className='top-led top-led-laundry bottom-alert-btn is-off'; led.setAttribute('data-alert-button-key','laundry'); led.setAttribute('aria-label','Report lavanderia'); led.innerHTML='<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><circle cx=\"12\" cy=\"13\" r=\"5\"></circle><path d=\"M8 6h.01\"></path><path d=\"M11 6h5\"></path></svg>'; grid.appendChild(led); }
       }
     }catch(_){ }
   }
@@ -48823,6 +48823,8 @@ try{
     products:{ label:'Pr', title:'Alert prodotti',   bg:'orange-4',border:'orange-5',fg:'white', opacity:0.92 },
     laundry: { label:'L', title:'Alert lavanderia',  bg:'beige-4', border:'beige-5', fg:'white', opacity:0.92 }
   };
+  var ICONS = {"ps":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M7 3h8l4 4v14H7z\"></path><path d=\"M15 3v5h5\"></path><path d=\"m10 14 2 2 4-5\"></path></svg>","istat":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 20V10\"></path><path d=\"M10 20V4\"></path><path d=\"M16 20v-7\"></path><path d=\"M22 20H2\"></path></svg>","score":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z\"></path></svg>","payment":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"></rect><path d=\"M3 10h18\"></path><path d=\"M7 15h4\"></path></svg>","receipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"></path><path d=\"M9 8h6\"></path><path d=\"M9 12h6\"></path><path d=\"M9 16h4\"></path></svg>","cashreceipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"></rect><path d=\"M7 9a3 3 0 0 1-1 1v4a3 3 0 0 1 1 1\"></path><path d=\"M17 9a3 3 0 0 0 1 1v4a3 3 0 0 0-1 1\"></path><circle cx=\"12\" cy=\"12\" r=\"2.5\"></circle></svg>","invoice":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 5h16v12H9l-5 4z\"></path><path d=\"M12 8v4\"></path><path d=\"M12 15h.01\"></path></svg>","shopping":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M3 5h2l2 10h10l3-7H6\"></path><circle cx=\"9\" cy=\"19\" r=\"1.5\"></circle><circle cx=\"17\" cy=\"19\" r=\"1.5\"></circle></svg>","products":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M9 4h6\"></path><path d=\"M11 4v3\"></path><path d=\"M13 7h4l2 3\"></path><path d=\"M8 9h8l2 3v9H6v-9z\"></path><path d=\"M6 13h12\"></path></svg>","laundry":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><circle cx=\"12\" cy=\"13\" r=\"5\"></circle><path d=\"M8 6h.01\"></path><path d=\"M11 6h5\"></path></svg>"};
+  function alertIconMarkup(key){ return ICONS[key] || ICONS.invoice; }
   function normColor(v, fallback){
     try{ if (typeof __normalizeOperatoreColor__ === 'function') return __normalizeOperatoreColor__(v || fallback || 'blue-4'); }catch(_){ }
     return String(v || fallback || 'blue-4');
@@ -48917,7 +48919,7 @@ try{
       Object.keys(ALERTS).forEach(function(k){
         var btn = wrap.querySelector('[data-alert-led="'+k+'"]');
         if (!btn) return;
-        btn.textContent = ALERTS[k].label;
+        btn.innerHTML = alertIconMarkup(k);
         btn.setAttribute('aria-label', ALERTS[k].title);
         btn.title = ALERTS[k].title;
         btn.setAttribute('style', dotStyle(k));
@@ -51581,7 +51583,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.250',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.251',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52730,7 +52732,7 @@ try{
 })();
 
 
-/* dDAE_3.250 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.251 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53258,22 +53260,24 @@ try{
 })();
 
 
-/* dDAE_3.250 — Alert inferiori come tasti flat stile contatto.
+/* dDAE_3.251 — Alert inferiori come tasti flat stile contatto.
    Il popup colore modifica esclusivamente lo stato inattivo; lo stato attivo resta pilotato dalla categoria Alert della pagina Design. */
 (function(){
   'use strict';
   var KEY = 'dDAE_alert_button_visual_v1';
   var ITEMS = {
-    ps:{id:'dbLedRead',label:'P'},
-    istat:{id:'dbLedIstat',label:'I'},
-    payment:{id:'dbLedWrite',label:'€'},
-    receipt:{id:'dbLedReceipt',label:'R'},
-    cashreceipt:{id:'dbLedCashReceipt',label:'CR'},
-    invoice:{id:'dbLedInvoice',label:'A'},
-    shopping:{id:'prodLedColazione',label:'S'},
-    products:{id:'prodLedPulizia',label:'PR'},
-    laundry:{id:'laundryReportLed',label:'L'}
+    ps:{id:'dbLedRead'},
+    istat:{id:'dbLedIstat'},
+    payment:{id:'dbLedWrite'},
+    receipt:{id:'dbLedReceipt'},
+    cashreceipt:{id:'dbLedCashReceipt'},
+    invoice:{id:'dbLedInvoice'},
+    shopping:{id:'prodLedColazione'},
+    products:{id:'prodLedPulizia'},
+    laundry:{id:'laundryReportLed'}
   };
+  var ICONS = {"ps":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M7 3h8l4 4v14H7z\"></path><path d=\"M15 3v5h5\"></path><path d=\"m10 14 2 2 4-5\"></path></svg>","istat":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 20V10\"></path><path d=\"M10 20V4\"></path><path d=\"M16 20v-7\"></path><path d=\"M22 20H2\"></path></svg>","payment":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"></rect><path d=\"M3 10h18\"></path><path d=\"M7 15h4\"></path></svg>","receipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"></path><path d=\"M9 8h6\"></path><path d=\"M9 12h6\"></path><path d=\"M9 16h4\"></path></svg>","cashreceipt":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"></rect><path d=\"M7 9a3 3 0 0 1-1 1v4a3 3 0 0 1 1 1\"></path><path d=\"M17 9a3 3 0 0 0 1 1v4a3 3 0 0 0-1 1\"></path><circle cx=\"12\" cy=\"12\" r=\"2.5\"></circle></svg>","invoice":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M4 5h16v12H9l-5 4z\"></path><path d=\"M12 8v4\"></path><path d=\"M12 15h.01\"></path></svg>","shopping":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M3 5h2l2 10h10l3-7H6\"></path><circle cx=\"9\" cy=\"19\" r=\"1.5\"></circle><circle cx=\"17\" cy=\"19\" r=\"1.5\"></circle></svg>","products":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><path d=\"M9 4h6\"></path><path d=\"M11 4v3\"></path><path d=\"M13 7h4l2 3\"></path><path d=\"M8 9h8l2 3v9H6v-9z\"></path><path d=\"M6 13h12\"></path></svg>","laundry":"<svg aria-hidden=\"true\" class=\"ddae-alert-icon\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><circle cx=\"12\" cy=\"13\" r=\"5\"></circle><path d=\"M8 6h.01\"></path><path d=\"M11 6h5\"></path></svg>"};
+  function alertIconMarkup(key){ return ICONS[key] || ICONS.invoice; }
   var DEFAULT = { bg:'gray-2', border:'gray-3', fg:'gray-6', opacity:0.52 };
 
   function normColor(v, fallback){
@@ -53320,10 +53324,7 @@ try{
       el.classList.add('bottom-alert-btn');
       el.setAttribute('data-alert-button-key', key);
       if(String(el.tagName||'').toLowerCase()==='button' && !el.getAttribute('type')) el.setAttribute('type','button');
-      var span=el.querySelector('.bottom-alert-btn-label');
-      if(!span){ span=document.createElement('span'); span.className='bottom-alert-btn-label'; span.setAttribute('aria-hidden','true'); el.appendChild(span); }
-      span.textContent=ITEMS[key].label;
-      span.classList.toggle('bottom-alert-btn-label-compact', ITEMS[key].label.length>1);
+      el.innerHTML=alertIconMarkup(key);
     }catch(_){ }
   }
   function apply(){
