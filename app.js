@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.243";
+const BUILD_VERSION = "3.244";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46600,7 +46600,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.243';
+  var BUILD_TAG='dDAE_3.244';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51514,7 +51514,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.243',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.244',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52663,8 +52663,8 @@ try{
 })();
 
 
-/* dDAE_3.243 — messaggio WhatsApp ospite configurabile + traduzione automatica */
-(function __setupGuestConfiguredWhatsAppMessage3243__(){
+/* dDAE_3.244 — messaggio WhatsApp ospite: traduzione resiliente + inoltro sempre disponibile */
+(function __setupGuestConfiguredWhatsAppMessage3244__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
   const SETTING_KEY = 'guest_whatsapp_message_template';
@@ -52776,20 +52776,65 @@ try{
     try{ toast(value ? 'Messaggio WhatsApp salvato' : 'Messaggio WhatsApp rimosso','green'); }catch(_){ }
   }
 
+  function parseGoogleTranslation(data){
+    try{
+      if (Array.isArray(data?.[0])){
+        const value=data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim();
+        if (value) return value;
+      }
+      if (Array.isArray(data?.sentences)){
+        const value=data.sentences.map(part=>String(part?.trans||'')).join('').trim();
+        if (value) return value;
+      }
+    }catch(_){ }
+    return '';
+  }
+
+  async function fetchTranslationEndpoint(url,timeoutMs){
+    const controller=(typeof AbortController!=='undefined') ? new AbortController() : null;
+    const timer=controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },Math.max(1000,Number(timeoutMs)||6000)) : null;
+    try{
+      const opts={ method:'GET', cache:'no-store', credentials:'omit' };
+      if (controller) opts.signal=controller.signal;
+      const res=await fetch(url,opts);
+      if (!res.ok) throw new Error('translate '+res.status);
+      const translated=parseGoogleTranslation(await res.json());
+      if (!translated) throw new Error('empty translation');
+      return translated;
+    } finally { if (timer) clearTimeout(timer); }
+  }
+
   async function translateMessage(text,targetLang){
     const source=String(text||'').trim(); const target=String(targetLang||'').trim().toLowerCase();
     if (!source || !target) return '';
-    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    const timer = controller ? setTimeout(()=>{ try{controller.abort();}catch(_){ } },9000) : null;
-    try{
-      const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+encodeURIComponent(target)+'&dt=t&q='+encodeURIComponent(source);
-      const res=await fetch(url,{ method:'GET', cache:'no-store', credentials:'omit', referrerPolicy:'no-referrer', signal:controller?.signal });
-      if (!res.ok) throw new Error('translate '+res.status);
-      const data=await res.json();
-      const translated=Array.isArray(data?.[0]) ? data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('') : '';
-      if (!translated.trim()) throw new Error('empty translation');
-      return translated.trim();
-    } finally { if (timer) clearTimeout(timer); }
+    if (target==='it' || target==='it-it') return source;
+
+    const encodedTarget=encodeURIComponent(target);
+    const encodedSource=encodeURIComponent(source);
+    const urls=[
+      'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+encodedTarget+'&dt=t&q='+encodedSource,
+      'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl='+encodedTarget+'&q='+encodedSource
+    ];
+
+    return await new Promise((resolve,reject)=>{
+      let settled=false;
+      let pending=urls.length;
+      let lastError=null;
+      urls.forEach((url)=>{
+        fetchTranslationEndpoint(url,6500).then((value)=>{
+          if (settled) return;
+          settled=true;
+          resolve(value);
+        }).catch((err)=>{
+          lastError=err;
+          pending--;
+          if (!settled && pending<=0){
+            settled=true;
+            reject(lastError || new Error('translation unavailable'));
+          }
+        });
+      });
+    });
   }
 
   async function sendConfigured(){
@@ -52801,13 +52846,14 @@ try{
     if (!template){ try{toast('Configura il messaggio WhatsApp nelle Impostazioni','orange');}catch(_){ } return false; }
     const target=resolveGuestLanguage(guest);
     if (!target){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return false; }
-    let translated='';
+    let translated=template;
     try{
       try{ toast('Traduzione messaggio…','blue'); }catch(_){ }
-      translated=await translateMessage(template,target);
+      const value=await translateMessage(template,target);
+      if (String(value||'').trim()) translated=String(value).trim();
     }catch(_){
-      try{ toast('Traduzione non disponibile. Messaggio non inviato.','orange'); }catch(__){ }
-      return false;
+      translated=template;
+      try{ toast('Traduzione non disponibile. Apro WhatsApp con il messaggio originale.','orange'); }catch(__){ }
     }
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(translated);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
