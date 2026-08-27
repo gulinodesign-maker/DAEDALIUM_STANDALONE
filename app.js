@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.248";
+const BUILD_VERSION = "3.249";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46667,7 +46667,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.248';
+  var BUILD_TAG='dDAE_3.249';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51581,7 +51581,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.248',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.249',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52730,7 +52730,7 @@ try{
 })();
 
 
-/* dDAE_3.248 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.249 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53120,33 +53120,65 @@ try{
     return '';
   }
 
-  function configuredMessageGuestTitle(guest){
+  const GUEST_ROOM_LABELS = Object.freeze({
+    it:{one:'stanza',many:'stanze'}, en:{one:'room',many:'rooms'}, fr:{one:'chambre',many:'chambres'}, de:{one:'zimmer',many:'zimmer'},
+    es:{one:'habitación',many:'habitaciones'}, pt:{one:'quarto',many:'quartos'}, nl:{one:'kamer',many:'kamers'}, pl:{one:'pokój',many:'pokoje'},
+    ro:{one:'cameră',many:'camere'}, ru:{one:'номер',many:'номера'}, uk:{one:'номер',many:'номери'}, el:{one:'δωμάτιο',many:'δωμάτια'},
+    cs:{one:'pokoj',many:'pokoje'}, sk:{one:'izba',many:'izby'}, hr:{one:'soba',many:'sobe'}, sr:{one:'соба',many:'собе'},
+    hu:{one:'szoba',many:'szobák'}, bg:{one:'стая',many:'стаи'}, tr:{one:'oda',many:'odalar'}, sv:{one:'rum',many:'rum'},
+    nb:{one:'rom',many:'rom'}, da:{one:'værelse',many:'værelser'}, fi:{one:'huone',many:'huoneet'}, et:{one:'tuba',many:'toad'},
+    lv:{one:'numurs',many:'numuri'}, lt:{one:'kambarys',many:'kambariai'}, sl:{one:'soba',many:'sobe'}, sq:{one:'dhomë',many:'dhoma'},
+    mk:{one:'соба',many:'соби'}, is:{one:'herbergi',many:'herbergi'}, ar:{one:'غرفة',many:'غرف'}, he:{one:'חדר',many:'חדרים'},
+    fa:{one:'اتاق',many:'اتاق‌ها'}, ka:{one:'ოთახი',many:'ოთახები'}, hy:{one:'սենյակ',many:'սենյակներ'}, az:{one:'otaq',many:'otaqlar'},
+    ja:{one:'部屋',many:'部屋'}, ko:{one:'객실',many:'객실'}, 'zh-cn':{one:'房间',many:'房间'}, 'zh-tw':{one:'房間',many:'房間'},
+    th:{one:'ห้อง',many:'ห้อง'}, vi:{one:'phòng',many:'phòng'}, id:{one:'kamar',many:'kamar'}, ms:{one:'bilik',many:'bilik'},
+    hi:{one:'कमरा',many:'कमरे'}, ur:{one:'کمرہ',many:'کمرے'}, bn:{one:'কক্ষ',many:'কক্ষগুলো'}
+  });
+
+  function guestRoomLabel(targetLang,count){
+    let lang=cleanLang(targetLang) || String(targetLang||'it').trim().toLowerCase().replace(/_/g,'-') || 'it';
+    if (lang==='zh') lang='zh-cn';
+    const row=GUEST_ROOM_LABELS[lang] || GUEST_ROOM_LABELS[lang.split('-')[0]] || GUEST_ROOM_LABELS.it;
+    const raw=String(Number(count)===1 ? row.one : row.many);
+    try{ return raw.toLocaleUpperCase(lang); }catch(_){ return raw.toUpperCase(); }
+  }
+
+  function configuredMessageGuestTitle(guest,targetLang){
     const g=guest || state?.guestViewItem || state?.guestEditSourceItem || {};
     let name='';
     const nameValues=[g?.nome,g?.name,g?.guestName,g?.guest_name,g?.fullName,g?.full_name];
     for (const raw of nameValues){ const v=String(raw||'').trim(); if(v){ name=v; break; } }
     if (!name){ try{ name=String(document.getElementById('guestName')?.value || '').trim(); }catch(_){ } }
-    name=String(name||'').replace(/\s+/g,' ').trim().toLocaleUpperCase('it-IT');
+    name=String(name||'').replace(/\s+/g,' ').trim();
+    try{ name=name.toLocaleUpperCase(targetLang || 'it-IT'); }catch(_){ name=name.toUpperCase(); }
 
     let rooms=[];
-    try{ if (typeof __guestReportResolveRoomsArr__ === 'function') rooms=__guestReportResolveRoomsArr__(g) || []; }catch(_){ rooms=[]; }
+    const addRooms=(arr)=>{
+      for (const value of (Array.isArray(arr)?arr:[])){
+        const n=parseInt(value,10);
+        if (Number.isFinite(n) && n>0 && !rooms.includes(n)) rooms.push(n);
+      }
+    };
+    try{ if (typeof __guestReportResolveRoomsArr__ === 'function') addRooms(__guestReportResolveRoomsArr__(g) || []); }catch(_){ }
     if (!rooms.length){
       try{
         const bookings=(typeof __guestReportResolveBookings__ === 'function') ? (__guestReportResolveBookings__(g)||[]) : [];
         for (const booking of bookings){
           let arr=[];
           try{ if (typeof _parseRoomsArr === 'function') arr=_parseRoomsArr(booking?.stanze ?? booking?.rooms ?? booking?.stanza ?? booking?.room ?? ''); }catch(_){ }
-          if (arr && arr.length){ rooms=arr; break; }
+          addRooms(arr);
         }
       }catch(_){ }
     }
     if (!rooms.length){
-      try{ rooms=Array.from(state?.guestRooms || []); }catch(_){ rooms=[]; }
+      try{ addRooms(Array.from(state?.guestRooms || [])); }catch(_){ }
     }
-    const room=String((rooms||[])[0] ?? '').trim().toLocaleUpperCase('it-IT');
-    if (name && room) return name+' - '+room;
+    rooms.sort((a,b)=>a-b);
+    const roomNumbers=rooms.join('-');
+    const roomPart=roomNumbers ? (guestRoomLabel(targetLang,rooms.length)+' '+roomNumbers) : '';
+    if (name && roomPart) return name+' - '+roomPart;
     if (name) return name;
-    if (room) return room;
+    if (roomPart) return roomPart;
     return '';
   }
 
@@ -53165,7 +53197,7 @@ try{
       try{ completeTranslationsInBackground(true); }catch(_){ }
       return false;
     }
-    const title=configuredMessageGuestTitle(guest);
+    const title=configuredMessageGuestTitle(guest,target);
     const message=title ? (title+'\n\n'+translated) : translated;
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
