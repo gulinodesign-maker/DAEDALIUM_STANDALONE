@@ -34447,3 +34447,16 @@ body[data-page="roomsettings"]{
   --ddae-bottom-led-safe-space: 0px !important;
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
 }
+
+
+/* dDAE_3.257 — Alert inferiori visibili esclusivamente nella Home. */
+body:not([data-page="home"]) #bottomLedLayer,
+body:not([data-page="home"]) .bottom-led-layer{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+body:not([data-page="home"]){
+  --ddae-bottom-led-safe-space: 0px !important;
+}
