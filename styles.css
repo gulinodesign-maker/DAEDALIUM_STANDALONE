@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.259 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.260 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34462,7 +34462,7 @@ body:not([data-page="home"]){
 }
 
 
-/* dDAE_3.259 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+/* dDAE_3.260 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
 body[data-page="spese"]{
   padding-bottom:0 !important;
 }
@@ -34481,7 +34481,7 @@ body[data-page="spese"] #page-spese #speseViewList{
 }
 
 
-/* dDAE_3.259 - Spese: selezione periodo solo dal tasto calendario */
+/* dDAE_3.260 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
 #page-spese #spesePageTools{
   display:flex !important;
   align-items:center !important;
@@ -34495,4 +34495,30 @@ body[data-page="spese"] #page-spese #speseViewList{
   user-select:none !important;
   -webkit-user-select:none !important;
   pointer-events:none !important;
+}
+#page-spese #speseDateRangeField{
+  display:none !important;
+}
+#page-spese .spese-total-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+#page-spese .spese-date-range-inline{
+  width:100%;
+  margin-top:10px;
+  text-align:center;
+}
+#page-spese .spese-date-range-inline .guest-date-range-value{
+  display:block;
+  width:100%;
+  text-align:center;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:700;
+  color:var(--text);
+}
+body.ddae-dark #page-spese .spese-date-range-inline .guest-date-range-value{
+  color:#f8fbff;
 }
