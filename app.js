@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.261";
+const BUILD_VERSION = "3.262";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11123,12 +11123,9 @@ function __syncSpeseBudgetToggles__(){
     btn.classList.toggle('is-on', isFuori);
     btn.dataset.state = isFuori ? 'on' : 'off';
     btn.setAttribute('aria-pressed', isFuori ? 'true' : 'false');
-    if (id === 'speseBudgetToggle'){
-      btn.setAttribute('aria-label', isFuori ? 'Fuori Budget ON' : 'Fuori Budget OFF');
-      btn.setAttribute('title', isFuori ? 'Fuori Budget: ON' : 'Fuori Budget: OFF');
-    } else {
-      btn.setAttribute('title', isFuori ? 'Fuori Budget' : 'Budget');
-    }
+    btn.setAttribute('aria-label', isFuori ? 'Fuori Budget ON' : 'Fuori Budget OFF');
+    btn.setAttribute('title', isFuori ? 'Fuori Budget: ON' : 'Fuori Budget: OFF');
+    try{ __applySingleActionButtonVisual__(btn, isFuori ? 'on' : 'off'); }catch(_){ }
   });
 }
 function __bindSpeseBudgetToggles__(){
@@ -11137,12 +11134,115 @@ function __bindSpeseBudgetToggles__(){
     if (!btn || btn.dataset.budgetToggleBound === '1') return;
     btn.dataset.budgetToggleBound = '1';
     bindFastTap(btn, (ev)=>{
+      try{ if ((btn.__speseBudgetColorSuppressUntil || 0) > Date.now()) return; }catch(_){ }
       try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
       __setSpeseBudgetMode__(__speseBudgetModeIsFuori__() ? 'budget' : 'fuori');
     });
   });
   __syncSpeseBudgetToggles__();
 }
+function __speseBudgetToggleDraftToVisual__(payload, fallback){
+  try{
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    return __launcherVisualNormalize__({
+      bg: colors.bg || payload?.spec || fallback?.bg || 'gray-2',
+      border: colors.border || colors.bg || fallback?.border || fallback?.bg || 'gray-3',
+      fg: colors.fg || fallback?.fg || 'sky-6',
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback?.opacity ?? 0.80),
+      bold: false
+    }, fallback?.bg || 'gray-2');
+  }catch(_){ return __launcherVisualNormalize__(fallback || {}, 'gray-2'); }
+}
+
+async function __openSpeseBudgetToggleColorPicker__(btn){
+  try{
+    if (!btn || typeof __tagColorPopupOpen__ !== 'function') return;
+    const states = __singleActionButtonVisualStateMapFor__(btn);
+    const originals = { off:{...states.off}, on:{...states.on} };
+    const drafts = { off:{...originals.off}, on:{...originals.on} };
+    const activeState = __speseBudgetModeIsFuori__() ? 'on' : 'off';
+    const applyState = (stateName, payload) => {
+      const fallback = drafts[stateName] || originals[stateName];
+      const next = __speseBudgetToggleDraftToVisual__(payload, fallback);
+      drafts[stateName] = next;
+      __saveSingleActionButtonVisual__(btn, next, stateName);
+      __refreshSingleActionButtonSharedKey__(btn);
+      try{ __syncSpeseBudgetToggles__(); }catch(_){ }
+    };
+    __tagColorPopupOpen__('spese-budget-toggle', drafts[activeState], null, {
+      supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, supportsBold:false,
+      opacity:(drafts[activeState].opacity ?? 0.80), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || 'gray-2'),
+      onPreview:(payload) => {
+        const editor = (typeof __tagColorPopupState__ !== 'undefined') ? __tagColorPopupState__.stateEditor : null;
+        const stateName = editor && editor.activeState === 'on' ? 'on' : 'off';
+        applyState(stateName, payload);
+      },
+      stateEditor:{
+        activeState, drafts, originals, labels:{off:'OFF',on:'ON'}, fallbackBg:(drafts[activeState].bg || 'gray-2'),
+        onStatePreview:(stateName, payload) => applyState(stateName, payload),
+        onConfirm: async(all) => {
+          const off = __speseBudgetToggleDraftToVisual__(all?.off || drafts.off, drafts.off || originals.off);
+          const on = __speseBudgetToggleDraftToVisual__(all?.on || drafts.on, drafts.on || originals.on);
+          __saveSingleActionButtonVisual__(btn, off, 'off');
+          __saveSingleActionButtonVisual__(btn, on, 'on');
+          __refreshSingleActionButtonSharedKey__(btn);
+          try{ __syncSpeseBudgetToggles__(); }catch(_){ }
+          try{ toast('Fuori Budget: colori OFF/ON aggiornati'); }catch(_){ }
+        },
+        onRevert:() => {
+          __saveSingleActionButtonVisual__(btn, originals.off, 'off');
+          __saveSingleActionButtonVisual__(btn, originals.on, 'on');
+          __refreshSingleActionButtonSharedKey__(btn);
+          try{ __syncSpeseBudgetToggles__(); }catch(_){ }
+        }
+      }
+    });
+  }catch(_){ }
+}
+
+function __bindSpeseBudgetToggleColorHold__(btn){
+  try{ if (!btn || btn.dataset.speseBudgetColorBound === '1') return; btn.dataset.speseBudgetColorBound = '1'; }catch(_){ if (!btn) return; }
+  let timer = null, fired = false, startX = 0, startY = 0;
+  const clear = () => { if (timer){ clearTimeout(timer); timer = null; } };
+  const point = (ev) => { try{ const t=(ev.touches&&ev.touches[0])||(ev.changedTouches&&ev.changedTouches[0]); return {x:t?t.clientX:(ev.clientX||0), y:t?t.clientY:(ev.clientY||0)}; }catch(_){ return {x:0,y:0}; } };
+  const block = (ev) => { try{ ev.preventDefault(); }catch(_){ } try{ ev.stopPropagation(); }catch(_){ } try{ ev.stopImmediatePropagation(); }catch(_){ } };
+  const start = (ev) => {
+    try{ if (ev.type === 'pointerdown' && ev.pointerType === 'mouse' && ev.button !== 0) return; }catch(_){ }
+    fired = false; clear(); const p = point(ev); startX = p.x; startY = p.y;
+    timer = setTimeout(() => {
+      fired = true;
+      try{ btn.__speseBudgetColorSuppressUntil = Date.now() + 1200; }catch(_){ }
+      try{ btn.classList.add('is-pressing'); }catch(_){ }
+      try{ __sfxLongPressLow(); }catch(_){ }
+      try{ __openSpeseBudgetToggleColorPicker__(btn); }catch(_){ }
+    }, 520);
+  };
+  const move = (ev) => { if (!timer) return; const p = point(ev); if (Math.abs(p.x-startX) > 12 || Math.abs(p.y-startY) > 12) clear(); };
+  const end = (ev) => {
+    clear();
+    if (fired || (btn.__speseBudgetColorSuppressUntil || 0) > Date.now()) block(ev);
+    try{ btn.classList.remove('is-pressing'); }catch(_){ }
+    setTimeout(() => { fired = false; }, 0);
+  };
+  const guard = (ev) => { if ((btn.__speseBudgetColorSuppressUntil || 0) > Date.now()) block(ev); };
+  if ('PointerEvent' in window){
+    btn.addEventListener('pointerdown', start, {passive:true,capture:true});
+    btn.addEventListener('pointermove', move, {passive:true,capture:true});
+    btn.addEventListener('pointerup', end, {passive:false,capture:true});
+    btn.addEventListener('pointercancel', end, {passive:false,capture:true});
+  } else {
+    btn.addEventListener('touchstart', start, {passive:true,capture:true});
+    btn.addEventListener('touchmove', move, {passive:true,capture:true});
+    btn.addEventListener('touchend', end, {passive:false,capture:true});
+    btn.addEventListener('touchcancel', end, {passive:false,capture:true});
+    btn.addEventListener('mousedown', start, {passive:true,capture:true});
+    btn.addEventListener('mouseup', end, {passive:false,capture:true});
+    btn.addEventListener('mouseleave', end, {passive:false,capture:true});
+  }
+  btn.addEventListener('click', guard, true);
+  btn.addEventListener('contextmenu', block, true);
+}
+
 function __filterSpeseBudgetRows__(rows, mode){
   const wantFuori = String(mode || __speseBudgetModeRead__()) === 'fuori';
   return (Array.isArray(rows) ? rows : []).filter((row)=> __isFuoriBudgetSpesa__(row) === wantFuori);
@@ -22761,6 +22861,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
@@ -22842,6 +22943,7 @@ function __defaultSingleActionButtonVisual__(btn){
     guestHdInvoiceBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.90 },
     guestHdEditBtn:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.90 },
     guestHdDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    speseBudgetModeToggle:{ bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 },
     spesaCatBtnContanti:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     spesaCatBtnTassa:{ bg:'sand-4', border:'sand-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva22:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
@@ -22877,7 +22979,10 @@ function __defaultSingleActionButtonVisual__(btn){
 }
 
 function __singleActionButtonSupportsDualState__(btn){
-  try{ return !!(btn && btn.classList && (btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice'))); }catch(_){ return false; }
+  try{
+    const sharedKey = __singleActionButtonSharedKey__(btn);
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+  }catch(_){ return false; }
 }
 
 function __defaultSingleActionButtonStateVisuals__(btn){
@@ -22885,6 +22990,7 @@ function __defaultSingleActionButtonStateVisuals__(btn){
   try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
+  try{ if (__singleActionButtonSharedKey__(btn) === 'speseBudgetModeToggle') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.94 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
   const on = { ...base, opacity:0.88 };
@@ -22914,7 +23020,7 @@ function __singleActionButtonVisualFor__(btn, forcedStateKey, forcedVisual){
   const fallback = __defaultSingleActionButtonVisual__(btn);
   const safeStateKey = String(forcedStateKey || '').trim().toLowerCase() === 'on'
     ? 'on'
-    : ((forcedStateKey === 'off') ? 'off' : (((btn && btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn))) ? 'on' : 'off'));
+    : ((forcedStateKey === 'off') ? 'off' : (((btn && btn.classList && (btn.classList.contains('is-selected') || btn.classList.contains('is-on')) && __singleActionButtonSupportsDualState__(btn))) ? 'on' : 'off'));
   const resolved = forcedVisual
     ? __launcherVisualNormalize__(forcedVisual, (forcedVisual && forcedVisual.bg) || fallback.bg || 'blue-4')
     : (safeStateKey === 'on' ? states.on : states.off);
@@ -22930,7 +23036,7 @@ function __saveSingleActionButtonVisual__(btn, visual, stateKey){
     const clean = __launcherVisualNormalize__(visual || {}, fallback.bg || 'blue-4');
     if (__singleActionButtonSupportsDualState__(btn)){
       const states = __singleActionButtonVisualStateMapFor__(btn);
-      const safeStateKey = String(stateKey || ((btn && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off')).trim().toLowerCase() === 'on' ? 'on' : 'off';
+      const safeStateKey = String(stateKey || ((btn && btn.classList && (btn.classList.contains('is-selected') || btn.classList.contains('is-on'))) ? 'on' : 'off')).trim().toLowerCase() === 'on' ? 'on' : 'off';
       states[safeStateKey] = {
         bg: clean.bg || fallback.bg || 'blue-4',
         border: clean.border || clean.bg || fallback.border || fallback.bg || 'blue-4',
@@ -23082,7 +23188,7 @@ function __applySingleActionButtonVisual__(btn, forcedStateKey, forcedVisual){
       ? true
       : (String(forcedStateKey || '').trim().toLowerCase() === 'off'
           ? false
-          : !!(btn.classList && btn.classList.contains('is-selected') && __singleActionButtonSupportsDualState__(btn)));
+          : !!(btn.classList && (btn.classList.contains('is-selected') || btn.classList.contains('is-on')) && __singleActionButtonSupportsDualState__(btn)));
     const stateKey = selected ? 'on' : 'off';
     const visual = __singleActionButtonVisualFor__(btn, stateKey, forcedVisual);
     const bgHex = __operatoreColorHex__(visual.bg || 'blue-4');
@@ -23172,7 +23278,12 @@ async function __openSingleActionButtonColorPicker__(btn){
 }
 
 function __bindSingleActionButtonColorHold__(btn){
-  try{ if (!btn || btn.dataset.singleActionButtonColorBound === '1') return; btn.dataset.singleActionButtonColorBound = '1'; }catch(_){ if (!btn) return; }
+  try{
+    if (!btn) return;
+    if (__singleActionButtonSharedKey__(btn) === 'speseBudgetModeToggle') { __bindSpeseBudgetToggleColorHold__(btn); return; }
+    if (btn.dataset.singleActionButtonColorBound === '1') return;
+    btn.dataset.singleActionButtonColorBound = '1';
+  }catch(_){ if (!btn) return; }
   let timer = null;
   let fired = false;
   const clear = ()=>{ if (timer){ clearTimeout(timer); timer = null; } };
@@ -46667,7 +46778,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.261';
+  var BUILD_TAG='dDAE_3.262';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51581,7 +51692,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.261',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.262',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
