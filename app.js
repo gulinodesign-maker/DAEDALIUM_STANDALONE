@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.252";
+const BUILD_VERSION = "3.254";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -19769,7 +19769,7 @@ if (guestScrollTodayBtn){
     bindFastTap(goCol, () => { hideLauncher(); showPage("prodotti"); });
   }
 
-  // dDAE_3.252 — Unico tasto Spesa: rappresenta sia Colazione sia Prodotti.
+  // dDAE_3.253 — Unico tasto Spesa: rappresenta sia Colazione sia Prodotti.
   const shoppingLed = $("#prodLedColazione");
   if (shoppingLed && !shoppingLed.__shoppingPageBound){
     shoppingLed.__shoppingPageBound = true;
@@ -36274,7 +36274,7 @@ function updateProdottiHomeBlink(){
   );
   if (btn) btn.classList.toggle("colazione-attn", !!any);
 
-  // dDAE_3.252 — Unico alert Spesa: acceso se Colazione O Prodotti contiene almeno una quantita salvata.
+  // dDAE_3.253 — Unico alert Spesa: acceso se Colazione O Prodotti contiene almeno una quantita salvata.
   try{
     const ledSpesa = document.getElementById("prodLedColazione");
     if (ledSpesa){
@@ -46654,7 +46654,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.252';
+  var BUILD_TAG='dDAE_3.254';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51568,7 +51568,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.252',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.254',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52717,7 +52717,7 @@ try{
 })();
 
 
-/* dDAE_3.252 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
+/* dDAE_3.253 — messaggio WhatsApp ospite: traduzioni preparate al salvataggio e conservate localmente */
 (function __setupGuestConfiguredWhatsAppMessage3247__(){
   'use strict';
   const STORAGE_KEY = 'dDAE_guest_whatsapp_message_template_v1';
@@ -53245,7 +53245,7 @@ try{
 })();
 
 
-/* dDAE_3.252 — Alert inferiori come tasti flat stile contatto.
+/* dDAE_3.253 — Alert inferiori come tasti flat stile contatto.
    Il popup colore modifica esclusivamente lo stato inattivo; lo stato attivo resta pilotato dalla categoria Alert della pagina Design. */
 (function(){
   'use strict';
