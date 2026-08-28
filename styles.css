@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.258 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.259 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34462,7 +34462,7 @@ body:not([data-page="home"]){
 }
 
 
-/* dDAE_3.258 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+/* dDAE_3.259 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
 body[data-page="spese"]{
   padding-bottom:0 !important;
 }
@@ -34478,4 +34478,21 @@ body[data-page="spese"] #page-spese .spese-total-value{
 body[data-page="spese"] #page-spese #speseViewList{
   padding-bottom:0 !important;
   scroll-padding-bottom:0 !important;
+}
+
+
+/* dDAE_3.259 - Spese: selezione periodo solo dal tasto calendario */
+#page-spese #spesePageTools{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:nowrap !important;
+}
+#page-spese #spesePageTools > *{
+  flex:0 0 auto !important;
+}
+#page-spese .spese-date-range-display{
+  cursor:default !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+  pointer-events:none !important;
 }
