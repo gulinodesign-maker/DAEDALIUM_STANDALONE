@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.257 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.258 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34459,4 +34459,23 @@ body:not([data-page="home"]) .bottom-led-layer{
 }
 body:not([data-page="home"]){
   --ddae-bottom-led-safe-space: 0px !important;
+}
+
+
+/* dDAE_3.258 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+body[data-page="spese"]{
+  padding-bottom:0 !important;
+}
+body[data-page="spese"] .wrap{
+  padding-bottom:0 !important;
+}
+body[data-page="spese"] #page-spese .spese-total-label{
+  display:none !important;
+}
+body[data-page="spese"] #page-spese .spese-total-value{
+  margin-top:0 !important;
+}
+body[data-page="spese"] #page-spese #speseViewList{
+  padding-bottom:0 !important;
+  scroll-padding-bottom:0 !important;
 }
