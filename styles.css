@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.260 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.261 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34462,7 +34462,7 @@ body:not([data-page="home"]){
 }
 
 
-/* dDAE_3.260 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+/* dDAE_3.261 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
 body[data-page="spese"]{
   padding-bottom:0 !important;
 }
@@ -34481,7 +34481,7 @@ body[data-page="spese"] #page-spese #speseViewList{
 }
 
 
-/* dDAE_3.260 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
+/* dDAE_3.261 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
 #page-spese #spesePageTools{
   display:flex !important;
   align-items:center !important;
@@ -34521,4 +34521,49 @@ body[data-page="spese"] #page-spese #speseViewList{
 }
 body.ddae-dark #page-spese .spese-date-range-inline .guest-date-range-value{
   color:#f8fbff;
+}
+
+
+/* dDAE_3.261 - Spese: Fuori Budget quadrato come Calendario/+; stato ON/OFF iconografico. */
+#page-spese #speseBudgetToggle{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 !important;
+  border-radius:14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  flex:0 0 44px !important;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+#page-spese #speseBudgetToggle .budget-toggle-text{
+  display:none !important;
+}
+#page-spese #speseBudgetToggle .budget-toggle-knob{
+  width:28px !important;
+  height:28px !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  display:block !important;
+  background:#d1d5db !important;
+  border:1px solid rgba(15,23,42,.16) !important;
+  box-shadow:none !important;
+  transition:none !important;
+}
+#page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
+  background:#8b5cf6 !important;
+  border-color:#7c3aed !important;
+}
+body.ddae-dark #page-spese #speseBudgetToggle .budget-toggle-knob{
+  background:#64748b !important;
+  border-color:rgba(226,232,240,.30) !important;
+}
+body.ddae-dark #page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
+  background:#a78bfa !important;
+  border-color:#c4b5fd !important;
 }

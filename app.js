@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.260";
+const BUILD_VERSION = "3.261";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11121,8 +11121,14 @@ function __syncSpeseBudgetToggles__(){
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.classList.toggle('is-on', isFuori);
+    btn.dataset.state = isFuori ? 'on' : 'off';
     btn.setAttribute('aria-pressed', isFuori ? 'true' : 'false');
-    btn.setAttribute('title', isFuori ? 'Fuori Budget' : 'Budget');
+    if (id === 'speseBudgetToggle'){
+      btn.setAttribute('aria-label', isFuori ? 'Fuori Budget ON' : 'Fuori Budget OFF');
+      btn.setAttribute('title', isFuori ? 'Fuori Budget: ON' : 'Fuori Budget: OFF');
+    } else {
+      btn.setAttribute('title', isFuori ? 'Fuori Budget' : 'Budget');
+    }
   });
 }
 function __bindSpeseBudgetToggles__(){
@@ -13250,6 +13256,7 @@ function __bindHeaderActionLongPress__(btn){
     const clearHold = () => { try{ if (holdTimer) clearTimeout(holdTimer); }catch(_){ } holdTimer = null; };
     const openPicker = () => {
       holdTriggered = true;
+      try{ btn.__ddaeColorHoldSuppressUntil = Date.now() + 1100; }catch(_){ }
       __tagColorPopupOpen__('header-action-button', __headerActionVisualFor__(btn.id), (payload) => {
         const current = __headerActionVisualFor__(btn.id);
         const nextVisual = __designVisualFromPayload__(current, payload, current.bg || 'white');
@@ -13272,6 +13279,9 @@ function __bindHeaderActionLongPress__(btn){
     btn.addEventListener('touchcancel', () => { clearHold(); }, { passive:true, capture:true });
     btn.addEventListener('mousedown', (e) => {
       if ((e.button || 0) !== 0) return;
+      // iOS/Safari può generare un mousedown sintetico dopo un normale tap touch.
+      // Ignorarlo evita che un tap breve venga interpretato come long press colore.
+      if (touchAt && (Date.now() - touchAt) < 1000) return;
       holdTriggered = false;
       clearHold();
       holdTimer = setTimeout(() => { openPicker(); }, 500);
@@ -18452,12 +18462,14 @@ function bindFastTap(el, fn){
   let last = 0;
   const handler = (e)=>{
     const now = Date.now();
+    const target = e && e.currentTarget ? e.currentTarget : el;
+    // Un long press usato per il popup Design non deve eseguire anche l'azione primaria del tasto.
+    try{ if (target && Number(target.__ddaeColorHoldSuppressUntil || 0) > now){ e.preventDefault(); e.stopPropagation(); return; } }catch(_){ }
     if (now - last < 450) return;
     last = now;
     try{ e.preventDefault(); }catch(_){ }
     try{ e.stopPropagation(); }catch(_){ }
     try{
-      const target = e && e.currentTarget ? e.currentTarget : el;
       const inLicenseModal = !!(target && target.closest && target.closest('#settingsLicenseModal,#licenseRequestModal,#licenseUnlockModal,#licenseGeneratorModal,#licenseDateRangeModal'));
       if (inLicenseModal) __licenseModalSuppressUntil__ = Date.now() + 900;
     }catch(_){ }
@@ -46655,7 +46667,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.260';
+  var BUILD_TAG='dDAE_3.261';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51569,7 +51581,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.260',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.261',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
