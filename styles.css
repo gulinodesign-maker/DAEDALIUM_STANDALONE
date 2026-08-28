@@ -34434,3 +34434,16 @@ body[data-page="calendario"] #bottomLedLayer{
 body[data-page="calendario"]{
   --ddae-bottom-led-safe-space: 0px !important;
 }
+
+/* dDAE_3.256 — Design: barra alert inferiore completamente nascosta, senza spazio riservato. */
+body[data-page="roomsettings"] #bottomLedLayer,
+body[data-page="roomsettings"] .bottom-led-layer{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+body[data-page="roomsettings"]{
+  --ddae-bottom-led-safe-space: 0px !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
