@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.263 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.264 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34462,7 +34462,7 @@ body:not([data-page="home"]){
 }
 
 
-/* dDAE_3.263 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+/* dDAE_3.264 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
 body[data-page="spese"]{
   padding-bottom:0 !important;
 }
@@ -34481,7 +34481,7 @@ body[data-page="spese"] #page-spese #speseViewList{
 }
 
 
-/* dDAE_3.263 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
+/* dDAE_3.264 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
 #page-spese #spesePageTools{
   display:flex !important;
   align-items:center !important;
@@ -34524,7 +34524,7 @@ body.ddae-dark #page-spese .spese-date-range-inline .guest-date-range-value{
 }
 
 
-/* dDAE_3.263 - Spese: Fuori Budget quadrato come Calendario/+; stato ON/OFF iconografico. */
+/* dDAE_3.264 - Spese: Fuori Budget quadrato come Calendario/+; stato ON/OFF iconografico. */
 #page-spese #speseBudgetToggle{
   width:44px !important;
   min-width:44px !important;
@@ -34569,7 +34569,7 @@ body.ddae-dark #page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
 }
 
 
-/* dDAE_3.263 - Fuori Budget: tasto solo iconografico, quadrato, due stati colore editabili in Spese e Statistiche Spese. */
+/* dDAE_3.264 - Fuori Budget: tasto solo iconografico, quadrato, due stati colore editabili in Spese e Statistiche Spese. */
 #page-spese #speseBudgetToggle,
 #page-statspese #statSpeseBudgetTogglePage{
   width:44px !important;
@@ -34619,4 +34619,355 @@ body.ddae-dark #page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
 #page-spese #speseBudgetToggle.is-pressing,
 #page-statspese #statSpeseBudgetTogglePage.is-pressing{
   transform:scale(.97) !important;
+}
+
+/* dDAE_3.264 — Statistiche: Analisi e diagnostica prestazioni */
+#page-statanalisi{
+  width:100%;
+  min-width:0;
+  overflow:visible;
+}
+#page-statanalisi .stats-analysis-page{
+  width:100%;
+  max-width:760px;
+  margin:0 auto;
+  padding:18px 16px calc(28px + env(safe-area-inset-bottom));
+  box-sizing:border-box;
+}
+#page-statanalisi .analysis-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-width:0;
+}
+#page-statanalisi .analysis-title-row .stats-title{
+  min-width:0;
+  margin:0;
+  font-size:24px;
+  line-height:1.15;
+  font-weight:900;
+  color:var(--text);
+}
+#page-statanalisi .analysis-scope-pill{
+  flex:0 0 auto;
+  max-width:48%;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 11px;
+  border:1px solid rgba(15,23,42,.18);
+  border-radius:17px;
+  background:rgba(255,255,255,.70);
+  color:var(--text);
+  font-size:11px;
+  line-height:1.15;
+  font-weight:800;
+  text-align:center;
+  box-sizing:border-box;
+}
+#page-statanalisi .stats-divider{
+  height:1px;
+  margin:14px 0 16px;
+  background:rgba(15,23,42,.18);
+}
+#page-statanalisi .analysis-loading,
+#page-statanalisi .analysis-empty{
+  padding:22px 14px;
+  border:1px solid rgba(15,23,42,.14);
+  border-radius:20px;
+  background:rgba(255,255,255,.68);
+  color:var(--text);
+  font-size:14px;
+  font-weight:750;
+  text-align:center;
+}
+#page-statanalisi .analysis-content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+#page-statanalisi .analysis-content[hidden]{ display:none !important; }
+#page-statanalisi .analysis-health-card,
+#page-statanalisi .analysis-chart-card,
+#page-statanalisi .analysis-year-row,
+#page-statanalisi .analysis-message{
+  box-sizing:border-box;
+  border:1px solid rgba(15,23,42,.15);
+  background:rgba(255,255,255,.72);
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#page-statanalisi .analysis-health-card{
+  padding:15px 16px;
+  border-radius:20px;
+}
+#page-statanalisi .analysis-health-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--text);
+  font-size:15px;
+  font-weight:900;
+}
+#page-statanalisi .analysis-health-badge{
+  flex:0 0 auto;
+  padding:6px 9px;
+  border:1px solid rgba(15,23,42,.18);
+  border-radius:14px;
+  background:rgba(226,232,240,.84);
+  color:#334155;
+  font-size:10px;
+  line-height:1;
+  letter-spacing:.05em;
+  font-weight:950;
+}
+#page-statanalisi .analysis-health-badge.is-positive{
+  background:rgba(220,252,231,.92);
+  border-color:rgba(34,197,94,.45);
+  color:#166534;
+}
+#page-statanalisi .analysis-health-badge.is-warn{
+  background:rgba(254,226,226,.94);
+  border-color:rgba(239,68,68,.45);
+  color:#991b1b;
+}
+#page-statanalisi .analysis-health-text{
+  margin-top:8px;
+  color:var(--muted, #64748b);
+  font-size:12px;
+  line-height:1.35;
+  font-weight:650;
+}
+#page-statanalisi .analysis-kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+#page-statanalisi .analysis-kpi{
+  min-width:0;
+  min-height:102px;
+  padding:12px 13px;
+  border:1px solid rgba(15,23,42,.15);
+  border-radius:18px;
+  background:rgba(255,255,255,.72);
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  box-shadow:none !important;
+}
+#page-statanalisi .analysis-kpi > span{
+  color:var(--muted, #64748b);
+  font-size:11px;
+  line-height:1.1;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.035em;
+}
+#page-statanalisi .analysis-kpi > strong{
+  display:block;
+  max-width:100%;
+  margin-top:5px;
+  color:var(--text);
+  font-size:22px;
+  line-height:1.05;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-statanalisi .analysis-kpi > small{
+  display:block;
+  margin-top:7px;
+  color:var(--muted, #64748b);
+  font-size:10px;
+  line-height:1.2;
+  font-weight:750;
+}
+#page-statanalisi .analysis-kpi > small[data-tone="good"]{ color:#15803d; }
+#page-statanalisi .analysis-kpi > small[data-tone="warn"]{ color:#b91c1c; }
+#page-statanalisi .analysis-section-title{
+  margin:4px 2px -2px;
+  color:var(--text);
+  font-size:16px;
+  line-height:1.2;
+  font-weight:950;
+}
+#page-statanalisi .analysis-chart-card{
+  border-radius:20px;
+  padding:12px 12px 10px;
+  overflow:hidden;
+}
+#page-statanalisi #statAnalysisChart{
+  display:block;
+  max-width:100%;
+  margin:0 auto;
+}
+#page-statanalisi .analysis-chart-legend{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin-top:4px;
+  color:var(--text);
+  font-size:10px;
+  font-weight:800;
+}
+#page-statanalisi .analysis-chart-legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+#page-statanalisi .analysis-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  background:#64748b;
+}
+#page-statanalisi .analysis-dot.revenue{ background:#2b7cb4; }
+#page-statanalisi .analysis-dot.expenses{ background:#c9772b; }
+#page-statanalisi .analysis-dot.margin{ background:#39a35a; }
+#page-statanalisi .analysis-year-list,
+#page-statanalisi .analysis-diagnostic-list,
+#page-statanalisi .analysis-advice-list{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+#page-statanalisi .analysis-year-row{
+  border-radius:18px;
+  padding:12px 13px;
+}
+#page-statanalisi .analysis-year-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+#page-statanalisi .analysis-year-head strong{
+  color:var(--text);
+  font-size:17px;
+  font-weight:950;
+}
+#page-statanalisi .analysis-year-head span{
+  color:var(--muted, #64748b);
+  font-size:10px;
+  font-weight:800;
+}
+#page-statanalisi .analysis-year-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+#page-statanalisi .analysis-year-metrics > span{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+#page-statanalisi .analysis-year-metrics b{
+  color:var(--text);
+  font-size:12px;
+  line-height:1.1;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-statanalisi .analysis-year-metrics small{
+  color:var(--muted, #64748b);
+  font-size:9px;
+  line-height:1.1;
+  font-weight:750;
+}
+#page-statanalisi .analysis-message{
+  min-height:62px;
+  padding:12px 13px;
+  border-radius:18px;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+#page-statanalisi .analysis-message-icon{
+  flex:0 0 20px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  margin-top:1px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#94a3b8;
+  color:#fff;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+}
+#page-statanalisi .analysis-message.is-positive .analysis-message-icon{ background:#22c55e; }
+#page-statanalisi .analysis-message.is-warn .analysis-message-icon{ background:#ef4444; }
+#page-statanalisi .analysis-message.is-neutral .analysis-message-icon{ background:#94a3b8; }
+#page-statanalisi .analysis-message.is-advice .analysis-message-icon{ background:#2b7cb4; }
+#page-statanalisi .analysis-message > div{
+  min-width:0;
+  color:var(--text);
+  font-size:12px;
+  line-height:1.35;
+  font-weight:650;
+}
+#page-statanalisi .analysis-message strong{
+  display:block;
+  margin-bottom:3px;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.2;
+  font-weight:900;
+}
+#page-statanalisi .analysis-message p{
+  margin:0;
+  color:var(--muted, #64748b);
+}
+body.ddae-dark #page-statanalisi .analysis-scope-pill,
+body.ddae-dark #page-statanalisi .analysis-loading,
+body.ddae-dark #page-statanalisi .analysis-empty,
+body.ddae-dark #page-statanalisi .analysis-health-card,
+body.ddae-dark #page-statanalisi .analysis-chart-card,
+body.ddae-dark #page-statanalisi .analysis-year-row,
+body.ddae-dark #page-statanalisi .analysis-message,
+body.ddae-dark #page-statanalisi .analysis-kpi{
+  background:rgba(15,23,42,.74);
+  border-color:rgba(148,163,184,.25);
+}
+body.ddae-dark #page-statanalisi .stats-divider{
+  background:rgba(148,163,184,.28);
+}
+body.ddae-dark #page-statanalisi .analysis-health-badge{
+  background:rgba(51,65,85,.90);
+  border-color:rgba(148,163,184,.32);
+  color:#e2e8f0;
+}
+body.ddae-dark #page-statanalisi .analysis-health-badge.is-positive{
+  background:rgba(20,83,45,.88);
+  border-color:rgba(74,222,128,.46);
+  color:#dcfce7;
+}
+body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
+  background:rgba(127,29,29,.88);
+  border-color:rgba(248,113,113,.46);
+  color:#fee2e2;
+}
+@media (max-width:390px){
+  #page-statanalisi .stats-analysis-page{ padding-left:12px; padding-right:12px; }
+  #page-statanalisi .analysis-title-row .stats-title{ font-size:21px; }
+  #page-statanalisi .analysis-scope-pill{ max-width:44%; font-size:10px; }
+  #page-statanalisi .analysis-kpi > strong{ font-size:20px; }
+  #page-statanalisi .analysis-year-metrics{ gap:5px; }
+  #page-statanalisi .analysis-year-metrics b{ font-size:11px; }
 }

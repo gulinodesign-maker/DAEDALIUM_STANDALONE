@@ -47,7 +47,8 @@ function applyIconPalette(){
       goStatPiscina: "#D9CCC0",
       goStatPiscinaReport: "#C7B198",
       goStatCancellazioni: "#AFC9D8",
-      goStatOccupazione: "#67BDEB"
+      goStatOccupazione: "#67BDEB",
+      goStatAnalisi: "#7652C9"
     };
     document.querySelectorAll('#page-home .home-main').forEach((btn) => {
       const c = (typeof __launcherIconResolveHex__ === 'function')
@@ -102,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.263";
+const BUILD_VERSION = "3.264";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7950,7 +7951,7 @@ function __guestCardAlertFlags__(guest){
       const checkInDone = __guestCheckInDone__(g);
       if (checkInDone){
         if (!psReg) flags.ps = true;
-        // dDAE_3.263 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
+        // dDAE_3.264 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
         if (psReg && !istatReg) flags.istat = true;
       }
 
@@ -8004,7 +8005,7 @@ function computeTopGuestAlerts(guests){
     const checkInDone = __guestCheckInDone__(g);
 
     const missingPs = !!(checkInDone && !psReg);
-    // dDAE_3.263 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
+    // dDAE_3.264 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
     const missingIstat = !!(checkInDone && psReg && !istatReg);
     clearStoredDismissal('ps', psDismissed, guestId, missingPs);
     clearStoredDismissal('istat', istatDismissed, guestId, missingIstat);
@@ -12297,7 +12298,7 @@ const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goOspite: 'blue-6',
@@ -12345,6 +12346,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatCancellazioni: 'sky-4',
   goStatAmministratore: 'violet-4',
   goStatOccupazione: 'sky-4',
+  goStatAnalisi: 'violet-4',
   serviziCocktailBtn: 'orange-4',
   serviziVinoBtn: 'red-4',
   serviziBirraBtn: 'yellow-4',
@@ -13553,7 +13555,7 @@ function __launcherGridThemeButtonStyle__(){
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
   'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
-  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
+  'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
 function __launcherGridThemeOverwriteTargets__(visual){
@@ -18822,6 +18824,8 @@ const lav = e.target.closest && e.target.closest("#goLavanderia") || e.target.cl
     if (s4c){ hideLauncher(); showPage("statpulizie"); return; }
     const s4occ = e.target.closest && e.target.closest("#goStatOccupazione");
     if (s4occ){ hideLauncher(); showPage("statoccupazione"); return; }
+    const s4analysis = e.target.closest && e.target.closest("#goStatAnalisi");
+    if (s4analysis){ hideLauncher(); showPage("statanalisi"); return; }
 
   
     const s5 = e.target.closest && e.target.closest("#goStatAzienda");
@@ -19401,6 +19405,11 @@ state.page = page;
     statOccupazioneTopTools.hidden = (page !== "statoccupazione");
   }
 
+  const statAnalisiTopTools = $("#statAnalisiTopTools");
+  if (statAnalisiTopTools){
+    statAnalisiTopTools.hidden = (page !== "statanalisi");
+  }
+
   // Top tools (Statistiche → Spese generali)
   const statSpeseTopTools = $("#statSpeseTopTools");
   if (statSpeseTopTools){
@@ -19535,6 +19544,13 @@ state.page = page;
     ])
       .then(()=>{ if (state.navId !== _nav || state.page !== "statoccupazione") return; renderStatOccupazione(); })
       .catch(e=>toast(e.message));
+  }
+
+  if (page === "statanalisi") {
+    const _nav = navId;
+    Promise.resolve(renderStatAnalisi())
+      .then(()=>{ if (state.navId !== _nav || state.page !== "statanalisi") return; })
+      .catch(e=>{ try{ toast(e && e.message ? e.message : "Analisi non disponibile"); }catch(_){ } });
   }
 
 
@@ -20024,6 +20040,8 @@ if (guestScrollTodayBtn){
   if (s4c){ bindFastTap(s4c, () => { hideLauncher(); showPage("statpulizie"); }); }
   const s4occ = $("#goStatOccupazione");
   if (s4occ){ bindFastTap(s4occ, () => { hideLauncher(); showPage("statoccupazione"); }); }
+  const s4analysis = $("#goStatAnalisi");
+  if (s4analysis){ bindFastTap(s4analysis, () => { hideLauncher(); showPage("statanalisi"); }); }
 
   
   const s5 = $("#goStatAzienda");
@@ -20041,6 +20059,8 @@ if (guestScrollTodayBtn){
   if (btnBackStats){ bindFastTap(btnBackStats, () => { closeStatPieModal(); showPage("statistiche"); }); }
   const btnBackStatsOccupazione = $("#btnBackStatisticheOccupazione");
   if (btnBackStatsOccupazione){ bindFastTap(btnBackStatsOccupazione, () => { showPage("statistiche"); }); }
+  const btnBackStatsAnalisi = $("#btnBackStatisticheAnalisi");
+  if (btnBackStatsAnalisi){ bindFastTap(btnBackStatsAnalisi, () => { showPage("statistiche"); }); }
   // STATMENSILI: topservizi tools
   const btnBackStatsMensili = $("#btnBackStatisticheMensili");
   if (btnBackStatsMensili){
@@ -21319,6 +21339,7 @@ async function ensureStatsAllData({ showLoader=true, force=false } = {}){
           if (state.page === "statpulizie") renderStatPulizie(Array.isArray(state && state.statGraficiOperatoriRows) ? state.statGraficiOperatoriRows : []);
           if (state.page === "statazienda") renderStatAzienda();
           if (state.page === "statamministratore") renderStatAmministratore();
+          if (state.page === "statanalisi") renderStatAnalisi();
         }catch(_){ }
       })
       .catch(() => {});
@@ -46780,7 +46801,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.263';
+  var BUILD_TAG='dDAE_3.264';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51694,7 +51715,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.263',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.264',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53554,3 +53575,502 @@ try{
   try{ window.addEventListener('pageshow',setup,{passive:true}); }catch(_){ }
   setTimeout(setup,500);
 })();
+
+// =========================
+// dDAE_3.264 — Analisi e diagnostica prestazioni (locale, deterministica)
+// =========================
+let __analysisResizeBound__ = false;
+
+function __analysisMoney__(value){
+  try{ if (typeof __statGuestMoney__ === 'function') return Number(__statGuestMoney__(value) || 0) || 0; }catch(_){ }
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  let s = String(value).trim();
+  if (!s) return 0;
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.includes(',')) s = s.replace(',', '.');
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function __analysisDateIso__(row, kind){
+  const guestFields = [
+    'check_in','checkIn','checkin','arrivo','arrival','data_arrivo','dataArrivo',
+    'check_out','checkOut','checkout','partenza','departure','data_partenza','dataPartenza',
+    'data_prenotazione','dataPrenotazione','booking_date','bookingDate','createdAt','created_at'
+  ];
+  const speseFields = ['dataSpesa','data_spesa','data','date','createdAt','created_at'];
+  const deletedFields = [
+    'check_in','checkIn','arrivo','data_arrivo','dataArrivo',
+    'deletedAt','deleted_at','delete_date','data_cancellazione','dataCancellazione','createdAt','created_at'
+  ];
+  const fields = kind === 'spesa' ? speseFields : (kind === 'deleted' ? deletedFields : guestFields);
+  for (const key of fields){
+    const raw = row && row[key];
+    if (raw === null || raw === undefined || String(raw).trim() === '') continue;
+    try{
+      const iso = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(raw) : '';
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    }catch(_){ }
+    try{
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0,10);
+    }catch(_){ }
+  }
+  return '';
+}
+
+function __analysisCutoffContext__(exerciseYear){
+  const selected = Number(exerciseYear || new Date().getFullYear());
+  const now = new Date();
+  const nowYear = now.getFullYear();
+  const isCurrent = selected === nowYear;
+  const mm = String(now.getMonth() + 1).padStart(2,'0');
+  const dd = String(now.getDate()).padStart(2,'0');
+  return {
+    selectedYear:selected,
+    monthDay:isCurrent ? `${mm}-${dd}` : '12-31',
+    label:isCurrent ? `Confronto omogeneo al ${dd}/${mm}` : 'Confronto anni completi'
+  };
+}
+
+function __analysisFilterRowsForYear__(rows, year, monthDay, kind){
+  const yy = String(year || '').trim();
+  const cutoff = `${yy}-${monthDay || '12-31'}`;
+  return (Array.isArray(rows) ? rows : []).filter((row) => {
+    const iso = __analysisDateIso__(row, kind);
+    if (!iso) return true;
+    if (!iso.startsWith(yy + '-')) return false;
+    return iso <= cutoff;
+  });
+}
+
+function __analysisFilterSnapshotForYear__(snapshot, year, monthDay){
+  const guests = __analysisFilterRowsForYear__(snapshot?.guests, year, monthDay, 'guest');
+  const guestIds = new Set(guests.map((g)=>String((typeof guestIdOf === 'function' ? guestIdOf(g) : '') || g?.id || g?.guest_id || '').trim()).filter(Boolean));
+  const servizi = (Array.isArray(snapshot?.servizi) ? snapshot.servizi : []).filter((row)=>{
+    const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
+    return !gid || guestIds.has(gid);
+  });
+  const spese = __analysisFilterRowsForYear__(snapshot?.spese, year, monthDay, 'spesa');
+  return {
+    guests,
+    spese,
+    report:buildReportFromSpese(spese),
+    servizi,
+    stanzeRows:Array.isArray(snapshot?.stanzeRows) ? snapshot.stanzeRows : []
+  };
+}
+
+function __analysisRoomMaps__(snapshot){
+  const byGuest = Object.create(null);
+  const allRooms = new Set();
+  try{
+    (Array.isArray(snapshot?.stanzeRows) ? snapshot.stanzeRows : []).forEach((row)=>{
+      const gid = String(row?.ospite_id ?? row?.ospiteId ?? row?.guest_id ?? row?.guestId ?? '').trim();
+      const sn = String(row?.stanza_num ?? row?.stanzaNum ?? row?.room_number ?? row?.roomNumber ?? row?.stanza ?? row?.room ?? '').trim();
+      const n = parseInt(sn,10);
+      if (!Number.isFinite(n) || n <= 0) return;
+      allRooms.add(n);
+      if (!gid) return;
+      if (!byGuest[gid]) byGuest[gid] = new Set();
+      byGuest[gid].add(n);
+    });
+  }catch(_){ }
+  return { byGuest, allRooms };
+}
+
+function __analysisStayRoomNights__(guests, snapshot, year, monthDay){
+  const roomMaps = __analysisRoomMaps__(snapshot || {});
+  const fallbackRooms = (()=>{
+    if (roomMaps.allRooms.size) return roomMaps.allRooms.size;
+    try{ return Math.max(1, Number(getConfiguredRoomsCount(6) || 6)); }catch(_){ return 6; }
+  })();
+  const startMs = Date.parse(`${year}-01-01T00:00:00Z`);
+  const cutoffMs0 = Date.parse(`${year}-${monthDay || '12-31'}T00:00:00Z`);
+  const cutoffExclusive = Number.isFinite(cutoffMs0) ? cutoffMs0 + 86400000 : Date.parse(`${year}-12-31T00:00:00Z`) + 86400000;
+  let roomNights = 0;
+  let stayNights = 0;
+  (Array.isArray(guests) ? guests : []).forEach((g)=>{
+    try{ if (typeof __guestUsesOnlyLocaleRooms__ === 'function' && __guestUsesOnlyLocaleRooms__(g)) return; }catch(_){ }
+    let ci = '', co = '';
+    try{ ci = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.data_arrivo ?? '') : ''; }catch(_){ }
+    try{ co = (typeof __parseDateFlexibleToISO === 'function') ? __parseDateFlexibleToISO(g?.check_out ?? g?.checkOut ?? g?.partenza ?? g?.data_partenza ?? '') : ''; }catch(_){ }
+    if (!ci || !co) return;
+    const ciMs = Date.parse(ci + 'T00:00:00Z');
+    const coMs = Date.parse(co + 'T00:00:00Z');
+    if (!Number.isFinite(ciMs) || !Number.isFinite(coMs) || coMs <= ciMs) return;
+    const a = Math.max(ciMs, startMs);
+    const b = Math.min(coMs, cutoffExclusive);
+    if (b <= a) return;
+    const nights = Math.max(0, Math.round((b-a)/86400000));
+    if (!nights) return;
+    const gid = String((typeof guestIdOf === 'function' ? guestIdOf(g) : '') || g?.id || g?.guest_id || '').trim();
+    let rooms = gid && roomMaps.byGuest[gid] ? roomMaps.byGuest[gid].size : 0;
+    if (!rooms){
+      const raw = Number(g?.stanze ?? g?.rooms ?? g?.roomCount ?? 0);
+      rooms = Number.isFinite(raw) && raw > 0 ? Math.round(raw) : 1;
+    }
+    stayNights += nights;
+    roomNights += nights * Math.max(1,rooms);
+  });
+  const days = Math.max(1, Math.round((cutoffExclusive - startMs)/86400000));
+  const capacity = Math.max(1, fallbackRooms * days);
+  return { roomNights, stayNights, totalRooms:fallbackRooms, occupancyPct:Math.max(0,Math.min(100,(roomNights/capacity)*100)) };
+}
+
+function __analysisAverageScore__(guests){
+  try{
+    const series = __statScoreSeriesForGuests__(Array.isArray(guests) ? guests : []);
+    let sum = 0, count = 0;
+    (Array.isArray(series) ? series : []).forEach((row)=>{
+      const c = Number(row?.count || 0) || 0;
+      const v = Number(row?.value);
+      if (c > 0 && Number.isFinite(v)){ sum += v*c; count += c; }
+    });
+    return { value:count ? sum/count : null, count };
+  }catch(_){ return { value:null, count:0 }; }
+}
+
+function __analysisTopExpense__(spese){
+  const totals = new Map();
+  let total = 0;
+  (Array.isArray(spese) ? spese : []).forEach((row)=>{
+    try{ if (typeof __isFuoriBudgetSpesa__ === 'function' && __isFuoriBudgetSpesa__(row)) return; }catch(_){ }
+    const amount = __analysisMoney__(row?.importoLordo ?? row?.lordo ?? row?.importo ?? 0);
+    if (!(amount > 0)) return;
+    total += amount;
+    const label = String(row?.motivazione ?? row?.motivo ?? row?.descrizione ?? row?.categoria ?? 'Altro').trim() || 'Altro';
+    totals.set(label, (Number(totals.get(label) || 0) || 0) + amount);
+  });
+  const top = Array.from(totals.entries()).sort((a,b)=>b[1]-a[1])[0] || null;
+  return top ? { label:top[0], amount:top[1], share:total>0 ? (top[1]/total*100) : 0 } : null;
+}
+
+function __analysisChannelConcentration__(guests){
+  const totals = new Map();
+  let total = 0;
+  (Array.isArray(guests) ? guests : []).forEach((g)=>{
+    const amount = __analysisMoney__(g?.importo_prenotazione ?? g?.importo_prenota ?? g?.importoPrenotazione ?? g?.importoPrenota ?? 0);
+    if (!(amount > 0)) return;
+    total += amount;
+    const label = String(g?.channel_nome ?? g?.channelNome ?? g?.channel_name ?? g?.channelName ?? g?.pms ?? g?.fonte ?? 'Diretto').trim() || 'Diretto';
+    totals.set(label, (Number(totals.get(label) || 0) || 0) + amount);
+  });
+  const top = Array.from(totals.entries()).sort((a,b)=>b[1]-a[1])[0] || null;
+  return top ? { label:top[0], amount:top[1], share:total>0 ? top[1]/total*100 : 0 } : null;
+}
+
+function __analysisComputeMetrics__(snapshot, deletedRows, year, monthDay){
+  const sliced = __analysisFilterSnapshotForYear__(snapshot || {}, year, monthDay);
+  const gen = __computeStatGenFromData__(sliced);
+  const bookings = sliced.guests.length;
+  const revenue = Number(gen?.fatturatoTotale || 0) || 0;
+  const expenses = Number(gen?.speseTotali || 0) || 0;
+  const margin = revenue - expenses;
+  const stay = __analysisStayRoomNights__(sliced.guests, sliced, year, monthDay);
+  const score = __analysisAverageScore__(sliced.guests);
+  const cancRows = __analysisFilterRowsForYear__((Array.isArray(deletedRows) ? deletedRows : []).filter((r)=>{
+    const reason = String(r?.delete_reason ?? r?.deleteReason ?? '').trim().toLowerCase();
+    return !reason || reason === 'cancellazione' || reason.includes('cancell');
+  }), year, monthDay, 'deleted');
+  const cancellations = cancRows.length;
+  const totalDemand = bookings + cancellations;
+  return {
+    year:Number(year), revenue, expenses, margin,
+    marginPct:revenue>0 ? margin/revenue*100 : 0,
+    bookings,
+    avgBooking:bookings>0 ? revenue/bookings : 0,
+    costPerBooking:bookings>0 ? expenses/bookings : 0,
+    cancellations,
+    cancellationPct:totalDemand>0 ? cancellations/totalDemand*100 : 0,
+    nights:stay.stayNights,
+    roomNights:stay.roomNights,
+    occupancyPct:stay.occupancyPct,
+    score:score.value,
+    scoreCount:score.count,
+    topExpense:__analysisTopExpense__(sliced.spese),
+    topChannel:__analysisChannelConcentration__(sliced.guests),
+    hasData:bookings>0 || expenses>0 || revenue>0 || cancellations>0
+  };
+}
+
+async function __analysisLoadDeletedYear__(year){
+  try{
+    const yy = String(year);
+    const rows = await cachedGet('ospiti_eliminati', { from:`${yy}-01-01`, to:`${yy}-12-31`, anno:yy }, { showLoader:false, ttlMs:5*60*1000, swrMs:20*60*1000, force:false });
+    return Array.isArray(rows) ? rows : [];
+  }catch(_){ return []; }
+}
+
+async function __analysisLoadSnapshotYear__(year, currentYear){
+  const yy = String(year);
+  if (Number(year) === Number(currentYear)){
+    return {
+      guests:Array.isArray(state?.statsGuests) ? state.statsGuests.slice() : [],
+      spese:Array.isArray(state?.speseAll) ? state.speseAll.slice() : [],
+      report:state?.reportAll ? JSON.parse(JSON.stringify(state.reportAll)) : null,
+      servizi:Array.isArray(state?.servizi) ? state.servizi.slice() : [],
+      stanzeRows:Array.isArray(state?.stanzeRows) ? state.stanzeRows.slice() : []
+    };
+  }
+  try{
+    const snap = await __statGenLoadGuestsThroughPrimaryPipeline__(yy, { force:false });
+    if (snap && typeof snap === 'object' && !Array.isArray(snap)) return snap;
+  }catch(_){ }
+  return { guests:[], spese:[], report:null, servizi:[], stanzeRows:[] };
+}
+
+function __analysisPctDelta__(current, previous){
+  const c = Number(current || 0) || 0;
+  const p = Number(previous || 0) || 0;
+  if (Math.abs(p) < 0.000001) return Math.abs(c) < 0.000001 ? 0 : null;
+  return (c-p)/Math.abs(p)*100;
+}
+function __analysisPointDelta__(current, previous){
+  const c = Number(current);
+  const p = Number(previous);
+  if (!Number.isFinite(c) || !Number.isFinite(p)) return null;
+  return c-p;
+}
+function __analysisFmtPct__(n, digits=1){
+  const v=Number(n);
+  if (!Number.isFinite(v)) return '—';
+  return `${v.toLocaleString('it-IT',{minimumFractionDigits:digits,maximumFractionDigits:digits})}%`;
+}
+function __analysisFmtSignedPct__(n, digits=1){
+  const v=Number(n);
+  if (!Number.isFinite(v)) return 'nuovo';
+  const sign=v>0?'+':'';
+  return `${sign}${v.toLocaleString('it-IT',{minimumFractionDigits:digits,maximumFractionDigits:digits})}%`;
+}
+function __analysisFmtMoney__(n){
+  try{ return Number(n||0).toLocaleString('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }catch(_){ return euro(Number(n||0)); }
+}
+function __analysisDeltaTone__(delta, positiveIsGood=true){
+  if (!Number.isFinite(Number(delta)) || Math.abs(Number(delta)) < 1) return 'neutral';
+  const good = positiveIsGood ? Number(delta)>0 : Number(delta)<0;
+  return good ? 'good' : 'warn';
+}
+function __analysisSetDelta__(id, delta, positiveIsGood=true, suffix=' vs anno prec.'){
+  const el=document.getElementById(id); if(!el) return;
+  el.textContent = Number.isFinite(Number(delta)) ? `${__analysisFmtSignedPct__(delta)}${suffix}` : '—';
+  el.dataset.tone=__analysisDeltaTone__(delta,positiveIsGood);
+}
+
+function __analysisBuildSignals__(current, previous){
+  const signals=[];
+  const advice=[];
+  if (!previous){
+    signals.push({kind:'neutral',title:'Base storica limitata',text:'Servono almeno due anni con dati per una diagnosi comparativa completa.'});
+    advice.push('Continua a registrare in modo uniforme prenotazioni, spese, cancellazioni e punteggi: la qualità dei consigli aumenta con lo storico.');
+    return {signals,advice,status:'neutral'};
+  }
+  const revD=__analysisPctDelta__(current.revenue,previous.revenue);
+  const expD=__analysisPctDelta__(current.expenses,previous.expenses);
+  const bookD=__analysisPctDelta__(current.bookings,previous.bookings);
+  const avgD=__analysisPctDelta__(current.avgBooking,previous.avgBooking);
+  const occD=__analysisPointDelta__(current.occupancyPct,previous.occupancyPct);
+  const marginPD=__analysisPointDelta__(current.marginPct,previous.marginPct);
+  const scoreD=(current.score!=null && previous.score!=null) ? current.score-previous.score : null;
+  const cancD=__analysisPointDelta__(current.cancellationPct,previous.cancellationPct);
+
+  if (Number.isFinite(revD)){
+    if (revD >= 5) signals.push({kind:'positive',title:'Ricavi in crescita',text:`Ricavi ${__analysisFmtSignedPct__(revD)} rispetto al ${previous.year}.`});
+    else if (revD <= -5) signals.push({kind:'warn',title:'Ricavi in calo',text:`Ricavi ${__analysisFmtSignedPct__(revD)} rispetto al ${previous.year}.`});
+    else signals.push({kind:'neutral',title:'Ricavi stabili',text:`Variazione ricavi ${__analysisFmtSignedPct__(revD)}.`});
+  }
+  if (Number.isFinite(expD) && Number.isFinite(revD) && expD-revD >= 8){
+    signals.push({kind:'warn',title:'Costi più veloci dei ricavi',text:`Le spese crescono di ${Math.abs(expD-revD).toFixed(1).replace('.',',')} punti più dei ricavi.`});
+    const top=current.topExpense;
+    advice.push(top ? `Verifica prima la voce “${top.label}”: pesa circa ${__analysisFmtPct__(top.share,0)} delle spese del periodo.` : 'Rivedi le principali voci di costo e cerca aumenti non accompagnati da maggiori ricavi.');
+  } else if (Number.isFinite(expD) && Number.isFinite(revD) && revD-expD >= 8){
+    signals.push({kind:'positive',title:'Efficienza costi migliorata',text:'I ricavi stanno crescendo più rapidamente delle spese.'});
+  }
+  if (Number.isFinite(marginPD)){
+    if (marginPD <= -5){ signals.push({kind:'warn',title:'Margine sotto pressione',text:`Margine operativo ${marginPD.toFixed(1).replace('.',',')} punti rispetto al ${previous.year}.`}); advice.push('Proteggi il margine: controlla prezzi medi, sconti e costi variabili prima dei periodi di maggiore domanda.'); }
+    else if (marginPD >= 5) signals.push({kind:'positive',title:'Margine in miglioramento',text:`Margine operativo +${marginPD.toFixed(1).replace('.',',')} punti.`});
+  }
+  if (Number.isFinite(occD)){
+    if (occD <= -5){ signals.push({kind:'warn',title:'Occupazione in calo',text:`Occupazione ${occD.toFixed(1).replace('.',',')} punti rispetto al ${previous.year}.`}); advice.push('Individua i mesi con più camere vuote e valuta prezzi, disponibilità e canali con anticipo su quei periodi.'); }
+    else if (occD >= 5) signals.push({kind:'positive',title:'Occupazione in crescita',text:`Occupazione +${occD.toFixed(1).replace('.',',')} punti.`});
+  }
+  if (Number.isFinite(avgD) && avgD <= -8){ signals.push({kind:'warn',title:'Valore medio prenotazione in calo',text:`Importo medio ${__analysisFmtSignedPct__(avgD)}.`}); advice.push('Controlla il mix di soggiorni e le tariffe: più prenotazioni non compensano sempre un valore medio più basso.'); }
+  else if (Number.isFinite(avgD) && avgD >= 8) signals.push({kind:'positive',title:'Valore medio prenotazione in crescita',text:`Importo medio ${__analysisFmtSignedPct__(avgD)}.`});
+  if (Number.isFinite(cancD)){
+    if (cancD >= 2){ signals.push({kind:'warn',title:'Cancellazioni in aumento',text:`Tasso cancellazioni +${cancD.toFixed(1).replace('.',',')} punti.`}); advice.push('Controlla quali canali o periodi generano più cancellazioni e valuta condizioni di prenotazione più adatte.'); }
+    else if (cancD <= -2) signals.push({kind:'positive',title:'Cancellazioni in miglioramento',text:`Tasso cancellazioni ${cancD.toFixed(1).replace('.',',')} punti.`});
+  }
+  if (Number.isFinite(scoreD)){
+    if (scoreD <= -0.3){ signals.push({kind:'warn',title:'Punteggio in calo',text:`Media recensioni ${scoreD.toFixed(1).replace('.',',')} punti.`}); advice.push('Rileggi le recensioni recenti e concentra gli interventi sui problemi ricorrenti prima che incidano sulle prenotazioni.'); }
+    else if (scoreD >= 0.3) signals.push({kind:'positive',title:'Punteggio in crescita',text:`Media recensioni +${scoreD.toFixed(1).replace('.',',')} punti.`});
+  }
+  if (current.topChannel && current.topChannel.share >= 65){
+    signals.push({kind:'neutral',title:'Concentrazione canale',text:`${current.topChannel.label} genera circa ${__analysisFmtPct__(current.topChannel.share,0)} dei ricavi.`});
+    advice.push(`La dipendenza da ${current.topChannel.label} è elevata: mantieni il canale, ma prova a diversificare per ridurre il rischio commerciale.`);
+  }
+  if (!advice.length){
+    if (Number.isFinite(revD) && revD > 0) advice.push('L’andamento complessivo è favorevole: mantieni la disciplina sui costi mentre cresce la domanda.');
+    else advice.push('L’andamento è sostanzialmente stabile: concentra l’attenzione sui mesi più deboli invece di modificare tutto il modello operativo.');
+  }
+  if (Number.isFinite(bookD) && bookD > 8 && Number.isFinite(revD) && revD < bookD-5){
+    advice.push('Le prenotazioni crescono più dei ricavi: verifica che l’aumento dei volumi non stia arrivando da soggiorni troppo economici.');
+  }
+  const pos=signals.filter(s=>s.kind==='positive').length;
+  const warn=signals.filter(s=>s.kind==='warn').length;
+  const status=warn>=2 ? 'warn' : (pos>warn && pos>=2 ? 'positive' : 'neutral');
+  return {signals:signals.slice(0,8),advice:Array.from(new Set(advice)).slice(0,6),status};
+}
+
+function __analysisRenderAnnualRows__(metrics){
+  const root=document.getElementById('analysisYearRows'); if(!root) return;
+  const sorted=(Array.isArray(metrics)?metrics:[]).slice().sort((a,b)=>b.year-a.year);
+  root.innerHTML=sorted.map((m,idx)=>{
+    const prev=sorted[idx+1] || null;
+    const revD=prev?__analysisPctDelta__(m.revenue,prev.revenue):null;
+    return `<div class="analysis-year-row">
+      <div class="analysis-year-head"><strong>${escapeHtml(String(m.year))}</strong><span>${prev && Number.isFinite(Number(revD)) ? __analysisFmtSignedPct__(revD) + ' ricavi' : 'base'}</span></div>
+      <div class="analysis-year-metrics">
+        <span><b>${escapeHtml(__analysisFmtMoney__(m.revenue))}</b><small>Ricavi</small></span>
+        <span><b>${escapeHtml(__analysisFmtMoney__(m.expenses))}</b><small>Spese</small></span>
+        <span><b>${escapeHtml(__analysisFmtMoney__(m.margin))}</b><small>Margine</small></span>
+        <span><b>${escapeHtml(__analysisFmtPct__(m.occupancyPct,0))}</b><small>Occup.</small></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function __analysisRenderMessages__(id, items, adviceMode=false){
+  const root=document.getElementById(id); if(!root) return;
+  if (!(Array.isArray(items) && items.length)){
+    root.innerHTML='<div class="analysis-message is-neutral"><div>Nessun elemento rilevante.</div></div>';
+    return;
+  }
+  if (adviceMode){
+    root.innerHTML=items.map((txt,idx)=>`<div class="analysis-message is-advice"><span class="analysis-message-icon">${idx+1}</span><div>${escapeHtml(String(txt))}</div></div>`).join('');
+  }else{
+    root.innerHTML=items.map((it)=>`<div class="analysis-message is-${escapeHtml(it.kind||'neutral')}"><span class="analysis-message-icon" aria-hidden="true"></span><div><strong>${escapeHtml(it.title||'')}</strong><p>${escapeHtml(it.text||'')}</p></div></div>`).join('');
+  }
+}
+
+function __drawStatAnalysisChart__(metrics){
+  const canvas=document.getElementById('statAnalysisChart'); if(!canvas) return;
+  const list=(Array.isArray(metrics)?metrics:[]).slice().sort((a,b)=>a.year-b.year);
+  const parent=canvas.parentElement;
+  const cssW=Math.max(280,Math.floor((parent?.clientWidth||window.innerWidth||360)-24));
+  const cssH=190;
+  const dpr=Math.max(1,Math.min(3,window.devicePixelRatio||1));
+  canvas.style.width=cssW+'px'; canvas.style.height=cssH+'px';
+  canvas.width=Math.floor(cssW*dpr); canvas.height=Math.floor(cssH*dpr);
+  const ctx=canvas.getContext('2d'); if(!ctx) return;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,cssH);
+  const dark=!!document.body?.classList?.contains('ddae-dark');
+  const text=dark?'rgba(248,250,252,.88)':'rgba(15,23,42,.78)';
+  const grid=dark?'rgba(148,163,184,.22)':'rgba(15,23,42,.10)';
+  const series=[
+    {key:'revenue',color:'#2b7cb4'},
+    {key:'expenses',color:'#c9772b'},
+    {key:'margin',color:'#39a35a'}
+  ];
+  let min=0,max=0;
+  list.forEach((m)=>series.forEach((s)=>{ const v=Number(m[s.key]||0)||0; min=Math.min(min,v); max=Math.max(max,v); }));
+  if (Math.abs(max-min)<1){ max=min+1; }
+  const pad={l:46,r:10,t:14,b:34};
+  const w=cssW-pad.l-pad.r,h=cssH-pad.t-pad.b;
+  const y=(v)=>pad.t+h-((Number(v)-min)/(max-min))*h;
+  const x=(i)=>pad.l+(list.length<=1?w/2:(i/(list.length-1))*w);
+  ctx.lineWidth=1; ctx.strokeStyle=grid; ctx.fillStyle=text; ctx.font='600 10px system-ui'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const val=min+(max-min)*(i/4); const yy=y(val);
+    ctx.beginPath(); ctx.moveTo(pad.l,yy); ctx.lineTo(cssW-pad.r,yy); ctx.stroke();
+    const compact=Math.abs(val)>=1000?(val/1000).toLocaleString('it-IT',{maximumFractionDigits:0})+'k':Math.round(val).toString();
+    ctx.fillText(compact,pad.l-6,yy+3);
+  }
+  ctx.textAlign='center';
+  list.forEach((m,i)=>ctx.fillText(String(m.year),x(i),cssH-10));
+  series.forEach((s)=>{
+    if(!list.length) return;
+    ctx.strokeStyle=s.color; ctx.lineWidth=2.4; ctx.beginPath();
+    list.forEach((m,i)=>{ const xx=x(i), yy=y(m[s.key]); if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy); });
+    ctx.stroke();
+    list.forEach((m,i)=>{ ctx.fillStyle=dark?'#0b1220':'#ffffff'; ctx.strokeStyle=s.color; ctx.lineWidth=2; ctx.beginPath();ctx.arc(x(i),y(m[s.key]),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); });
+  });
+}
+
+function __analysisRender__(metrics, cutoff){
+  const content=document.getElementById('analysisContent');
+  const loading=document.getElementById('analysisLoading');
+  const empty=document.getElementById('analysisEmpty');
+  if (loading) loading.hidden=true;
+  const data=(Array.isArray(metrics)?metrics:[]).filter((m)=>m && m.hasData);
+  if (!data.length){ if(content)content.hidden=true; if(empty)empty.hidden=false; return; }
+  if(empty)empty.hidden=true; if(content)content.hidden=false;
+  const currentYear=Number(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const current=data.find((m)=>Number(m.year)===currentYear) || data.slice().sort((a,b)=>b.year-a.year)[0];
+  const previous=data.filter((m)=>m.year<current.year).sort((a,b)=>b.year-a.year)[0] || null;
+  const scope=document.getElementById('analysisScopeLabel'); if(scope)scope.textContent=cutoff?.label||'Confronto anni';
+  const set=(id,val)=>{ const el=document.getElementById(id); if(el)el.textContent=val; };
+  set('analysisRevenue',__analysisFmtMoney__(current.revenue));
+  set('analysisExpenses',__analysisFmtMoney__(current.expenses));
+  set('analysisMargin',__analysisFmtMoney__(current.margin));
+  set('analysisBookings',String(current.bookings));
+  set('analysisOccupancy',__analysisFmtPct__(current.occupancyPct,0));
+  set('analysisScore',current.score==null?'—':Number(current.score).toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:2})+' / 10');
+  if(previous){
+    __analysisSetDelta__('analysisRevenueDelta',__analysisPctDelta__(current.revenue,previous.revenue),true);
+    __analysisSetDelta__('analysisExpensesDelta',__analysisPctDelta__(current.expenses,previous.expenses),false);
+    __analysisSetDelta__('analysisMarginDelta',__analysisPctDelta__(current.margin,previous.margin),true);
+    __analysisSetDelta__('analysisBookingsDelta',__analysisPctDelta__(current.bookings,previous.bookings),true);
+    const occ=__analysisPointDelta__(current.occupancyPct,previous.occupancyPct); const occEl=document.getElementById('analysisOccupancyDelta'); if(occEl){ occEl.textContent=Number.isFinite(occ)?`${occ>0?'+':''}${occ.toFixed(1).replace('.',',')} pt vs anno prec.`:'—'; occEl.dataset.tone=__analysisDeltaTone__(occ,true); }
+    const sc=(current.score!=null&&previous.score!=null)?current.score-previous.score:null; const scEl=document.getElementById('analysisScoreDelta'); if(scEl){ scEl.textContent=Number.isFinite(sc)?`${sc>0?'+':''}${sc.toFixed(1).replace('.',',')} vs anno prec.`:'—'; scEl.dataset.tone=__analysisDeltaTone__(sc,true); }
+  }else{
+    ['analysisRevenueDelta','analysisExpensesDelta','analysisMarginDelta','analysisBookingsDelta','analysisOccupancyDelta','analysisScoreDelta'].forEach((id)=>{const el=document.getElementById(id);if(el){el.textContent='—';el.dataset.tone='neutral';}});
+  }
+  const diag=__analysisBuildSignals__(current,previous);
+  const badge=document.getElementById('analysisHealthBadge');
+  if(badge){ badge.className='analysis-health-badge is-'+diag.status; badge.textContent=diag.status==='warn'?'ATTENZIONE':diag.status==='positive'?'POSITIVO':'STABILE'; }
+  const health=document.getElementById('analysisHealthText');
+  if(health) health.textContent=previous?`Confronto ${current.year} vs ${previous.year}: ${diag.signals.filter(s=>s.kind==='positive').length} segnali positivi, ${diag.signals.filter(s=>s.kind==='warn').length} da controllare.`:'Manca ancora uno storico comparabile sufficiente.';
+  __analysisRenderAnnualRows__(data);
+  __analysisRenderMessages__('analysisDiagnostics',diag.signals,false);
+  __analysisRenderMessages__('analysisAdvice',diag.advice,true);
+  requestAnimationFrame(()=>{ try{ __drawStatAnalysisChart__(data); }catch(_){ } });
+  if(!__analysisResizeBound__){
+    __analysisResizeBound__=true;
+    window.addEventListener('resize',()=>{ try{ if(state?.page==='statanalisi'&&state?.statAnalysis?.metrics)__drawStatAnalysisChart__(state.statAnalysis.metrics.filter(m=>m.hasData)); }catch(_){ } },{passive:true});
+  }
+}
+
+async function renderStatAnalisi(){
+  const root=document.getElementById('page-statanalisi'); if(!root) return;
+  const loading=document.getElementById('analysisLoading'); const content=document.getElementById('analysisContent'); const empty=document.getElementById('analysisEmpty');
+  if(loading){loading.hidden=false;loading.textContent='Analisi dei dati in corso…';} if(content)content.hidden=true; if(empty)empty.hidden=true;
+  const selectedYear=Number(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+  const cutoff=__analysisCutoffContext__(selectedYear);
+  try{
+    await Promise.all([
+      ensureStatsAllData({showLoader:true,force:false}),
+      ensureSettingsLoaded({force:false,showLoader:false}).catch(()=>null),
+      (typeof load==='function'?load({showLoader:false}).catch(()=>null):Promise.resolve(null))
+    ]);
+    try{
+      const servizi=await cachedGet('servizi',{}, {showLoader:false,ttlMs:2*60*1000,swrMs:10*60*1000,force:false});
+      if(Array.isArray(servizi)) state.servizi=(typeof normalizeServiziResponse==='function'?normalizeServiziResponse(servizi):servizi);
+    }catch(_){ }
+    const candidateYears=[selectedYear,selectedYear-1,selectedYear-2,selectedYear-3];
+    const metrics=[];
+    for(const year of candidateYears){
+      if(state.navId && state.page!=='statanalisi') return;
+      const snapshot=await __analysisLoadSnapshotYear__(year,selectedYear);
+      const deleted=await __analysisLoadDeletedYear__(year);
+      const m=__analysisComputeMetrics__(snapshot,deleted,year,cutoff.monthDay);
+      metrics.push(m);
+    }
+    state.statAnalysis={metrics,cutoff};
+    if(state.page!=='statanalisi') return;
+    __analysisRender__(metrics,cutoff);
+  }catch(err){
+    if(loading){loading.hidden=false;loading.textContent='Analisi non disponibile.';}
+    try{ console.error('Analisi diagnostica',err); }catch(_){ }
+  }
+}

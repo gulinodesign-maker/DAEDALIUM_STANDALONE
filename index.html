@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.263" rel="stylesheet"/>
-<link href="./manifest.json?v=3.263" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.263" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.263" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.263" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.263" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.263" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.263" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.264" rel="stylesheet"/>
+<link href="./manifest.json?v=3.264" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.264" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.264" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.264" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.264" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.264" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.264" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.263";
+window.APP_VERSION = "3.264";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.263";
+  const LOCAL_BUILD = "dDAE_3.264";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.263";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.263")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.263")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.264")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.264")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -191,6 +191,14 @@ window.APP_VERSION = "3.263";
 </div>
 <div hidden="" id="statOccupazioneTopTools">
 <button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheOccupazione" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"></path>
+<path d="M9 12h12"></path>
+</svg>
+</button>
+</div>
+<div hidden="" id="statAnalisiTopTools">
+<button aria-label="Torna a Statistiche" class="icon-btn icon-btn-whiteorange" id="btnBackStatisticheAnalisi" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
 <path d="M15 18l-6-6 6-6"></path>
 <path d="M9 12h12"></path>
@@ -315,7 +323,7 @@ window.APP_VERSION = "3.263";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.263"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.264"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -531,7 +539,7 @@ window.APP_VERSION = "3.263";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.263</div></div></section>
+<div class="build" id="buildText">dDAE_3.264</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -685,7 +693,65 @@ window.APP_VERSION = "3.263";
 </svg></div>
 <div class="home-main-label small">Occupazione</div>
 </button>
+<button aria-label="Analisi e diagnostica" class="home-main" id="goStatAnalisi" type="button">
+<div aria-hidden="true" class="home-main-glyph"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M4 19V5"></path>
+<path d="M4 19h8"></path>
+<path d="M7 15l3-4 3 2 2-3"></path>
+<circle cx="17" cy="16" r="4"></circle>
+<path d="m20 19 2 2"></path>
+</svg></div>
+<div class="home-main-label small">Analisi</div>
+</button>
 </div>
+</div>
+</section>
+<!-- STATISTICHE: ANALISI E DIAGNOSTICA -->
+<section class="page" hidden="" id="page-statanalisi">
+<div class="stats-analysis-page">
+<div class="analysis-title-row">
+<div class="stats-title">Analisi e diagnostica</div>
+<div class="analysis-scope-pill" id="analysisScopeLabel">Confronto anni</div>
+</div>
+<div aria-hidden="true" class="stats-divider"></div>
+
+<div class="analysis-loading" id="analysisLoading">Analisi dei dati in corso…</div>
+<div class="analysis-content" id="analysisContent" hidden="">
+  <div class="analysis-health-card">
+    <div class="analysis-health-top">
+      <div>Stato prestazioni</div>
+      <div class="analysis-health-badge is-neutral" id="analysisHealthBadge">STABILE</div>
+    </div>
+    <div class="analysis-health-text" id="analysisHealthText">Confronto con l'anno precedente disponibile.</div>
+  </div>
+
+  <div class="analysis-kpi-grid">
+    <div class="analysis-kpi"><span>Ricavi</span><strong id="analysisRevenue">€0</strong><small id="analysisRevenueDelta">—</small></div>
+    <div class="analysis-kpi"><span>Spese</span><strong id="analysisExpenses">€0</strong><small id="analysisExpensesDelta">—</small></div>
+    <div class="analysis-kpi"><span>Margine</span><strong id="analysisMargin">€0</strong><small id="analysisMarginDelta">—</small></div>
+    <div class="analysis-kpi"><span>Prenotazioni</span><strong id="analysisBookings">0</strong><small id="analysisBookingsDelta">—</small></div>
+    <div class="analysis-kpi"><span>Occupazione</span><strong id="analysisOccupancy">0%</strong><small id="analysisOccupancyDelta">—</small></div>
+    <div class="analysis-kpi"><span>Punteggio</span><strong id="analysisScore">—</strong><small id="analysisScoreDelta">—</small></div>
+  </div>
+
+  <div class="analysis-section-title">Evoluzione annuale</div>
+  <div class="analysis-chart-card">
+    <canvas aria-label="Andamento annuale ricavi spese e margine" id="statAnalysisChart"></canvas>
+    <div class="analysis-chart-legend" aria-hidden="true">
+      <span><i class="analysis-dot revenue"></i>Ricavi</span>
+      <span><i class="analysis-dot expenses"></i>Spese</span>
+      <span><i class="analysis-dot margin"></i>Margine</span>
+    </div>
+  </div>
+  <div class="analysis-year-list" id="analysisYearRows"></div>
+
+  <div class="analysis-section-title">Diagnostica</div>
+  <div class="analysis-diagnostic-list" id="analysisDiagnostics"></div>
+
+  <div class="analysis-section-title">Consigli</div>
+  <div class="analysis-advice-list" id="analysisAdvice"></div>
+</div>
+<div class="analysis-empty" id="analysisEmpty" hidden="">Non ci sono ancora dati sufficienti per confrontare gli anni.</div>
 </div>
 </section>
 <!-- BAR -->
@@ -3168,7 +3234,7 @@ window.APP_VERSION = "3.263";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.263"></script>
-<script defer="" src="./app.js?v=3.263"></script>
+<script defer="" src="./config.js?v=3.264"></script>
+<script defer="" src="./app.js?v=3.264"></script>
 </body>
 </html>
