@@ -102,7 +102,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.262";
+const BUILD_VERSION = "3.263";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7950,7 +7950,8 @@ function __guestCardAlertFlags__(guest){
       const checkInDone = __guestCheckInDone__(g);
       if (checkInDone){
         if (!psReg) flags.ps = true;
-        if (!istatReg) flags.istat = true;
+        // dDAE_3.263 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
+        if (psReg && !istatReg) flags.istat = true;
       }
 
       if (_guestPaymentMissingNow(g)){
@@ -8003,7 +8004,8 @@ function computeTopGuestAlerts(guests){
     const checkInDone = __guestCheckInDone__(g);
 
     const missingPs = !!(checkInDone && !psReg);
-    const missingIstat = !!(checkInDone && !istatReg);
+    // dDAE_3.263 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
+    const missingIstat = !!(checkInDone && psReg && !istatReg);
     clearStoredDismissal('ps', psDismissed, guestId, missingPs);
     clearStoredDismissal('istat', istatDismissed, guestId, missingIstat);
 
@@ -46778,7 +46780,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.262';
+  var BUILD_TAG='dDAE_3.263';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51692,7 +51694,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.262',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.263',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
