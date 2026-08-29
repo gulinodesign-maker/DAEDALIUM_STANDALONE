@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.264";
+const BUILD_VERSION = "3.265";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7951,7 +7951,7 @@ function __guestCardAlertFlags__(guest){
       const checkInDone = __guestCheckInDone__(g);
       if (checkInDone){
         if (!psReg) flags.ps = true;
-        // dDAE_3.264 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
+        // dDAE_3.265 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
         if (psReg && !istatReg) flags.istat = true;
       }
 
@@ -8005,7 +8005,7 @@ function computeTopGuestAlerts(guests){
     const checkInDone = __guestCheckInDone__(g);
 
     const missingPs = !!(checkInDone && !psReg);
-    // dDAE_3.264 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
+    // dDAE_3.265 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
     const missingIstat = !!(checkInDone && psReg && !istatReg);
     clearStoredDismissal('ps', psDismissed, guestId, missingPs);
     clearStoredDismissal('istat', istatDismissed, guestId, missingIstat);
@@ -46801,7 +46801,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.264';
+  var BUILD_TAG='dDAE_3.265';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51715,7 +51715,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.264',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.265',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53577,7 +53577,7 @@ try{
 })();
 
 // =========================
-// dDAE_3.264 — Analisi e diagnostica prestazioni (locale, deterministica)
+// dDAE_3.265 — Analisi e diagnostica prestazioni (locale, deterministica)
 // =========================
 let __analysisResizeBound__ = false;
 
