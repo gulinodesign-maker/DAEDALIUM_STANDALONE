@@ -34449,7 +34449,7 @@ body[data-page="roomsettings"]{
 }
 
 
-/* dDAE_3.267 — Alert inferiori visibili esclusivamente nella Home. */
+/* dDAE_3.266 — Alert inferiori visibili esclusivamente nella Home. */
 body:not([data-page="home"]) #bottomLedLayer,
 body:not([data-page="home"]) .bottom-led-layer{
   display:none !important;
@@ -34462,7 +34462,7 @@ body:not([data-page="home"]){
 }
 
 
-/* dDAE_3.267 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
+/* dDAE_3.266 — Spese: riepilogo senza etichetta e rimozione dello spazio basso residuo. */
 body[data-page="spese"]{
   padding-bottom:0 !important;
 }
@@ -34481,7 +34481,7 @@ body[data-page="spese"] #page-spese #speseViewList{
 }
 
 
-/* dDAE_3.267 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
+/* dDAE_3.266 - Spese: selezione periodo solo dal tasto calendario; range centrato dentro la card importo. */
 #page-spese #spesePageTools{
   display:flex !important;
   align-items:center !important;
@@ -34524,7 +34524,7 @@ body.ddae-dark #page-spese .spese-date-range-inline .guest-date-range-value{
 }
 
 
-/* dDAE_3.267 - Spese: Fuori Budget quadrato come Calendario/+; stato ON/OFF iconografico. */
+/* dDAE_3.266 - Spese: Fuori Budget quadrato come Calendario/+; stato ON/OFF iconografico. */
 #page-spese #speseBudgetToggle{
   width:44px !important;
   min-width:44px !important;
@@ -34569,7 +34569,7 @@ body.ddae-dark #page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
 }
 
 
-/* dDAE_3.267 - Fuori Budget: tasto solo iconografico, quadrato, due stati colore editabili in Spese e Statistiche Spese. */
+/* dDAE_3.266 - Fuori Budget: tasto solo iconografico, quadrato, due stati colore editabili in Spese e Statistiche Spese. */
 #page-spese #speseBudgetToggle,
 #page-statspese #statSpeseBudgetTogglePage{
   width:44px !important;
@@ -34621,7 +34621,7 @@ body.ddae-dark #page-spese #speseBudgetToggle.is-on .budget-toggle-knob{
   transform:scale(.97) !important;
 }
 
-/* dDAE_3.267 — Statistiche: Analisi e diagnostica prestazioni */
+/* dDAE_3.266 — Statistiche: Analisi e diagnostica prestazioni */
 #page-statanalisi{
   width:100%;
   min-width:0;
