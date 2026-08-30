@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.265";
+const BUILD_VERSION = "3.266";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7874,8 +7874,50 @@ function __guestCheckInExpectedToday__(g){
 function __guestGroupCheckInExpectedToday__(guest){
   try{
     const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
-    return rows.some(g => __guestCheckInExpectedToday__(g));
+    const todayDay = _dayNumFromISO(todayISO());
+    if (todayDay == null) return false;
+    const todayRows = rows.filter((g) => {
+      const checkInDay = _dayNumFromISO(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+      return checkInDay != null && checkInDay === todayDay;
+    });
+    if (!todayRows.length) return false;
+    // Una card ospite può contenere più righe dello stesso soggiorno (es. più stanze).
+    // Se almeno una riga del soggiorno odierno registra il check-in, la card è confermata
+    // e non deve restare verde per una copia/riga non aggiornata dello stesso gruppo.
+    return !todayRows.some((g) => __guestCheckInDone__(g));
   }catch(_){ return false; }
+}
+
+function __guestGroupStatusRecord__(guest){
+  try{
+    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
+    if (!rows.length) return guest || {};
+    if (rows.length === 1) return rows[0];
+    const todayDay = _dayNumFromISO(todayISO());
+    if (todayDay == null) return rows[0];
+    const dayOf = (value) => _dayNumFromISO(value || '');
+    const activeRows = rows.filter((g) => {
+      const dIn = dayOf(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+      const dOut = dayOf(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? g?.dataPartenza ?? g?.partenza ?? '');
+      return dIn != null && dIn <= todayDay && (dOut == null || todayDay <= dOut);
+    });
+    if (!activeRows.length) return rows[0];
+    const representative = activeRows.find((g) => dayOf(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '') === todayDay)
+      || activeRows.find((g) => dayOf(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '') === todayDay)
+      || activeRows[0];
+    const anyDone = activeRows.some((g) => __guestCheckInDone__(g));
+    if (!anyDone) return representative;
+    return {
+      ...representative,
+      checkin_effettuato: '1',
+      checkInEffettuato: '1',
+      check_in_effettuato: '1',
+      checkInDone: true,
+      checkinDone: true,
+      checked_in: true,
+      checkedIn: true
+    };
+  }catch(_){ return guest || {}; }
 }
 
 
@@ -7951,7 +7993,7 @@ function __guestCardAlertFlags__(guest){
       const checkInDone = __guestCheckInDone__(g);
       if (checkInDone){
         if (!psReg) flags.ps = true;
-        // dDAE_3.265 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
+        // dDAE_3.266 — ISTAT si attiva solo dopo l'attivazione del tag Polizia della stessa scheda.
         if (psReg && !istatReg) flags.istat = true;
       }
 
@@ -8005,7 +8047,7 @@ function computeTopGuestAlerts(guests){
     const checkInDone = __guestCheckInDone__(g);
 
     const missingPs = !!(checkInDone && !psReg);
-    // dDAE_3.265 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
+    // dDAE_3.266 — l'alert ISTAT nasce solo quando il tag Polizia è già attivo per questa scheda.
     const missingIstat = !!(checkInDone && psReg && !istatReg);
     clearStoredDismissal('ps', psDismissed, guestId, missingPs);
     clearStoredDismissal('istat', istatDismissed, guestId, missingIstat);
@@ -36291,7 +36333,7 @@ function renderGuestCards(){
     const nationalityFlag = escapeHtml(String(first?.country_flag ?? nationalityOption?.flag ?? '🏳️').trim() || '🏳️');
     const nationalityName = escapeHtml(String(nationalityOption?.name || 'Nazionalità non selezionata').trim() || 'Nazionalità non selezionata');
 
-    const led = guestLedStatus(first);
+    const led = guestLedStatus(__guestGroupStatusRecord__(first));
     // dDAE_3.097 — check-in oggi non confermato: card verde lampeggiante.
     // La classe non viene applicata quando è attivo l'allarme rosso di checkout.
     if (!__guestIsPreventivo__(first) && urgentVisualState === 'checkin-unconfirmed') card.classList.add("is-status-card-blink");
@@ -46801,7 +46843,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.265';
+  var BUILD_TAG='dDAE_3.266';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51715,7 +51757,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.265',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.266',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53577,7 +53619,7 @@ try{
 })();
 
 // =========================
-// dDAE_3.265 — Analisi e diagnostica prestazioni (locale, deterministica)
+// dDAE_3.266 — Analisi e diagnostica prestazioni (locale, deterministica)
 // =========================
 let __analysisResizeBound__ = false;
 
