@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.267";
+const BUILD_VERSION = "3.268";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7762,6 +7762,28 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
+// dDAE_3.268 — evidenza verde nel popup schedine PS:
+// una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
+function __guestPsAlertCashOnlyOneNight__(g){
+  try{
+    if (!g) return false;
+    const inIso = formatISODateLocal(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+    const outIso = formatISODateLocal(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
+    const inDay = _dayNumFromISO(inIso);
+    const outDay = _dayNumFromISO(outIso);
+    if (inDay == null || outDay == null || (outDay - inDay) !== 1) return false;
+
+    const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? g?.deposit ?? 0);
+    const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? g?.depositType ?? g?.deposit_type ?? '');
+    const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
+    const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? g?.balanceType ?? g?.balance_type ?? '');
+
+    const hasCash = (dep > 0 && _isCashTypeStr_(depType)) || (saldo > 0 && _isCashTypeStr_(saldoType));
+    const hasElectronic = (dep > 0 && _isElectronicTypeStr_(depType)) || (saldo > 0 && _isElectronicTypeStr_(saldoType));
+    return !!(hasCash && !hasElectronic);
+  }catch(_){ return false; }
+}
+
 
 function __guestCheckInVisualDefaultState__(stateKey){
   return String(stateKey || '').toLowerCase() === 'on'
@@ -8286,6 +8308,13 @@ function openGuestAlertModal(kind){
       const it = row.item;
       const card = document.createElement('div');
       card.className = 'guest-alert-card';
+      // Solo nel popup Schedine PS: evidenzia in verde i soggiorni di una notte
+      // pagati in contanti senza alcun pagamento elettronico.
+      try{
+        if (String(cfg.tag || '').toLowerCase() === 'polizia' && __guestPsAlertCashOnlyOneNight__(it.guest || {})) {
+          card.classList.add('is-one-night-cash-only');
+        }
+      }catch(_){ }
       card.tabIndex = 0;
       card.setAttribute('role', 'button');
       card.setAttribute('aria-label', `Apri scheda ospite: ${it.name || 'Ospite'}`);
@@ -46804,7 +46833,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.267';
+  var BUILD_TAG='dDAE_3.268';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51718,7 +51747,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.267',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.268',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

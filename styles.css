@@ -34971,3 +34971,14 @@ body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
   #page-statanalisi .analysis-year-metrics{ gap:5px; }
   #page-statanalisi .analysis-year-metrics b{ font-size:11px; }
 }
+
+
+/* dDAE_3.268 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
+#guestAlertModal .guest-alert-card.is-one-night-cash-only{
+  background:rgba(52,199,89,0.22) !important;
+  border-color:rgba(52,199,89,0.62) !important;
+}
+body.ddae-dark #guestAlertModal .guest-alert-card.is-one-night-cash-only{
+  background:rgba(48,209,88,0.20) !important;
+  border-color:rgba(48,209,88,0.58) !important;
+}
