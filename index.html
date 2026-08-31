@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.269" rel="stylesheet"/>
-<link href="./manifest.json?v=3.269" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.269" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.269" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.269" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.269" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.269" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.269" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.270" rel="stylesheet"/>
+<link href="./manifest.json?v=3.270" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.270" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.270" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.270" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.270" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.270" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.270" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.269";
+window.APP_VERSION = "3.270";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.269";
+  const LOCAL_BUILD = "dDAE_3.270";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.269";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.269")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.269")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.270")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.270")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -323,7 +323,7 @@ window.APP_VERSION = "3.269";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.269"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.270"/>
 </div>
 <!-- MENU (2 pulsanti) -->
 <div class="auth-menu" id="authMenu">
@@ -539,7 +539,7 @@ window.APP_VERSION = "3.269";
 </button>
 </div>
 <div class="operator-db-row" hidden="" id="operatorDbRow"></div>
-<div class="build" id="buildText">dDAE_3.269</div></div></section>
+<div class="build" id="buildText">dDAE_3.270</div></div></section>
 <!-- PRODOTTI -->
 <section class="page" hidden="" id="page-prodotti">
 <div class="prodotti-page">
@@ -2481,17 +2481,15 @@ window.APP_VERSION = "3.269";
 <label for="channelEditorInitial">Iniziale</label>
 </div>
 </div>
-<div class="field float channel-visibility-editor-field">
-<select id="channelEditorVisibility" aria-label="Tag channel pubblico o privato">
+<select id="channelEditorVisibility" aria-label="Tag channel pubblico o privato" hidden>
 <option value="pubblico">PUBBLICO</option>
 <option value="privato">PRIVATO</option>
 </select>
-<label for="channelEditorVisibility">Tag channel</label>
-</div>
-<div class="row operatori-editor-actions editor-modal-actions">
-<button class="btn ghost" hidden="" id="channelEditorDelete" type="button">Elimina</button>
-<button class="btn ghost" id="channelEditorGraphColor" type="button">Tag</button>
-<button class="btn primary" id="channelEditorSave" type="button">Salva</button>
+<div class="row operatori-editor-actions editor-modal-actions channel-editor-icon-grid">
+<button aria-label="Elimina channel" class="btn ghost channel-editor-icon-action" hidden="" id="channelEditorDelete" title="Elimina" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 16h10l1-16"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+<button aria-label="Colore tag channel" class="btn ghost channel-editor-icon-action" id="channelEditorGraphColor" title="Tag" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M20 13 13 20l-9-9V4h7z"></path><circle cx="8.5" cy="8.5" r="1.4"></circle></svg></button>
+<button aria-label="Channel pubblico" aria-pressed="false" class="btn ghost channel-editor-icon-action channel-visibility-toggle" id="channelEditorVisibilityToggle" title="Pubblico" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3c2.4 2.5 3.7 5.5 3.7 9S14.4 18.5 12 21"></path><path d="M12 3C9.6 5.5 8.3 8.5 8.3 12S9.6 18.5 12 21"></path></svg></button>
+<button aria-label="Salva channel" class="btn primary channel-editor-icon-action" id="channelEditorSave" title="Salva" type="button"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"></path></svg></button>
 </div>
 </div>
 </div>
@@ -3241,7 +3239,7 @@ window.APP_VERSION = "3.269";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.269"></script>
-<script defer="" src="./app.js?v=3.269"></script>
+<script defer="" src="./config.js?v=3.270"></script>
+<script defer="" src="./app.js?v=3.270"></script>
 </body>
 </html>

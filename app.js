@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.269";
+const BUILD_VERSION = "3.270";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7762,7 +7762,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.269 — evidenza verde nel popup schedine PS:
+// dDAE_3.270 — evidenza verde nel popup schedine PS:
 // una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
@@ -7781,6 +7781,25 @@ function __guestPsAlertCashOnlyOneNight__(g){
     const hasCash = (dep > 0 && _isCashTypeStr_(depType)) || (saldo > 0 && _isCashTypeStr_(saldoType));
     const hasElectronic = (dep > 0 && _isElectronicTypeStr_(depType)) || (saldo > 0 && _isElectronicTypeStr_(saldoType));
     return !!(hasCash && !hasElectronic);
+  }catch(_){ return false; }
+}
+
+// dDAE_3.270 — nel popup schedine PS la card è azzurra solo se il channel
+// associato alla prenotazione è classificato PRIVATO nel catalogo Channel.
+function __guestPsAlertPrivateChannel__(g){
+  try{
+    if (!g) return false;
+    const id = String(g?.channel_id ?? g?.channelId ?? '').trim();
+    let item = id ? getChannelCatalogItemById(id) : null;
+    if (!item){
+      const rawName = String(g?.channel_nome ?? g?.channelNome ?? g?.channel_name ?? g?.channelName ?? '').trim();
+      if (rawName){
+        const norm = __normalizeChannelAliasName__(rawName);
+        const list = getChannelCatalogFromSettings();
+        item = (Array.isArray(list) ? list : []).find((row) => __normalizeChannelAliasName__(row?.nome || row?.name || '') === norm) || null;
+      }
+    }
+    return !!(item && __normalizeChannelVisibility__(item?.visibilita ?? item?.visibility, item?.nome || item?.name || '') === 'privato');
   }catch(_){ return false; }
 }
 
@@ -8308,11 +8327,13 @@ function openGuestAlertModal(kind){
       const it = row.item;
       const card = document.createElement('div');
       card.className = 'guest-alert-card';
-      // Solo nel popup Schedine PS: evidenzia in verde i soggiorni di una notte
-      // pagati in contanti senza alcun pagamento elettronico.
+      // Popup Schedine PS: verde ha priorità (una notte + contanti + nessun elettronico);
+      // altrimenti azzurro esclusivamente per channel classificato PRIVATO.
       try{
-        if (String(cfg.tag || '').toLowerCase() === 'polizia' && __guestPsAlertCashOnlyOneNight__(it.guest || {})) {
-          card.classList.add('is-one-night-cash-only');
+        if (String(cfg.tag || '').toLowerCase() === 'polizia') {
+          const guest = it.guest || {};
+          if (__guestPsAlertCashOnlyOneNight__(guest)) card.classList.add('is-one-night-cash-only');
+          else if (__guestPsAlertPrivateChannel__(guest)) card.classList.add('is-private-channel');
         }
       }catch(_){ }
       card.tabIndex = 0;
@@ -15354,7 +15375,7 @@ function __applySettingsEditorButtonBoldAndVisuals__(){
   try{
     [
       'operatoriEditorSave','operatoriEditorCancel','operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor',
-      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor',
+      'channelEditorSave','channelEditorCancel','channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','channelEditorVisibilityToggle','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor',
       'laundryCatalogEditorSave','laundryCatalogEditorCancel','laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','roomCatalogEditorSave','roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor'
     ].forEach((id)=>{
       const btn = document.getElementById(id);
@@ -15622,6 +15643,31 @@ function __channelSetSelectedGraphColor__(color){
   __setTagPreviewButtonStyle__('channelEditorDotColor', __channelPageUi.color || 'orange-2', __channelPageUi.textColor || '', false);
 }
 
+function __channelVisibilityToggleSync__(){
+  try{
+    const sel = document.getElementById('channelEditorVisibility');
+    const btn = document.getElementById('channelEditorVisibilityToggle');
+    if (!sel || !btn) return;
+    const isPrivate = __normalizeChannelVisibility__(sel.value, '') === 'privato';
+    btn.classList.toggle('is-selected', isPrivate);
+    btn.classList.toggle('is-on', isPrivate);
+    btn.setAttribute('aria-pressed', isPrivate ? 'true' : 'false');
+    btn.setAttribute('aria-label', isPrivate ? 'Channel privato' : 'Channel pubblico');
+    btn.setAttribute('title', isPrivate ? 'Privato' : 'Pubblico');
+    btn.innerHTML = isPrivate
+      ? '<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><circle cx="12" cy="15" r="1"></circle></svg>'
+      : '<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3c2.4 2.5 3.7 5.5 3.7 9S14.4 18.5 12 21"></path><path d="M12 3C9.6 5.5 8.3 8.5 8.3 12S9.6 18.5 12 21"></path></svg>';
+    try{ __applySingleActionButtonVisual__(btn, isPrivate ? 'on' : 'off'); }catch(_){ }
+  }catch(_){ }
+}
+function __channelVisibilityToggleSet__(value){
+  try{
+    const sel = document.getElementById('channelEditorVisibility');
+    if (sel) sel.value = __normalizeChannelVisibility__(value, '');
+    __channelVisibilityToggleSync__();
+  }catch(_){ }
+}
+
 function __channelOpenModal__(item){
   const modal = document.getElementById('channelEditorModal');
   if (!modal) return;
@@ -15640,6 +15686,7 @@ function __channelOpenModal__(item){
   if (commEl) commEl.value = current && isFinite(Number(current.commissione)) ? String(Number(current.commissione)) : '';
   if (iniEl) iniEl.value = current?.iniziale ? String(current.iniziale).slice(0,1).toUpperCase() : '';
   if (visEl) visEl.value = __normalizeChannelVisibility__(current?.visibilita, current?.nome || '');
+  try{ __channelVisibilityToggleSync__(); }catch(_){ }
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
@@ -15665,7 +15712,7 @@ function __channelCloseModal__(){
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  try{ const visEl = document.getElementById('channelEditorVisibility'); if (visEl) visEl.value = 'pubblico'; }catch(_){ }
+  try{ const visEl = document.getElementById('channelEditorVisibility'); if (visEl) visEl.value = 'pubblico'; __channelVisibilityToggleSync__(); }catch(_){ }
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
   __channelPageUi.graphColor = '';
@@ -15733,6 +15780,17 @@ function setupChannelPage(){
   if (graphColorBtn) bindFastTap(graphColorBtn, () => {
     __openTagColorPickerFor__('channel');
   });
+  const visibilityBtn = document.getElementById('channelEditorVisibilityToggle');
+  if (visibilityBtn && !visibilityBtn.__channelVisibilityBound){
+    visibilityBtn.__channelVisibilityBound = true;
+    bindFastTap(visibilityBtn, () => {
+      try{
+        const sel = document.getElementById('channelEditorVisibility');
+        const nowPrivate = __normalizeChannelVisibility__(sel?.value || 'pubblico', '') === 'privato';
+        __channelVisibilityToggleSet__(nowPrivate ? 'pubblico' : 'privato');
+      }catch(_){ }
+    });
+  }
   const dotColorBtn = document.getElementById('channelEditorDotColor');
   if (dotColorBtn) bindFastTap(dotColorBtn, () => { __openSettingsDotColorPickerFor__('channel'); });
   try{
@@ -22930,7 +22988,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'rc_cancel','rc_save',
   'settingsConfigCancel','settingsConfigSave',
   'settingsBackupCancel','settingsBackupImport','settingsBackupExport',
-  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorDotColor','channelEditorSave',
+  'channelEditorDelete','channelEditorCancel','channelEditorGraphColor','channelEditorDotColor','channelEditorVisibilityToggle','channelEditorSave',
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
@@ -22995,6 +23053,7 @@ function __defaultSingleActionButtonVisual__(btn){
     operatoriEditorSaldoBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 },
     laundryCatalogEditorTagColor:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
     channelEditorDotColor:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
+    channelEditorVisibilityToggle:{ bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 },
     laundryCatalogEditorDotColor:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     operatoriEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     channelEditorSave:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -23055,7 +23114,7 @@ function __defaultSingleActionButtonVisual__(btn){
 function __singleActionButtonSupportsDualState__(btn){
   try{
     const sharedKey = __singleActionButtonSharedKey__(btn);
-    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
   }catch(_){ return false; }
 }
 
@@ -23064,6 +23123,7 @@ function __defaultSingleActionButtonStateVisuals__(btn){
   try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
+  try{ if (btn && btn.id === 'channelEditorVisibilityToggle') return { off:{ ...base, bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 }, on:{ ...base, bg:'indigo-5', border:'indigo-6', fg:'white', opacity:0.94 } }; }catch(_){}
   try{ if (__singleActionButtonSharedKey__(btn) === 'speseBudgetModeToggle') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.94 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
@@ -23234,7 +23294,7 @@ function __forceSettingsEditorActionButtonBold__(btn){
     if (!btn || !btn.id) return;
     const ids = new Set([
       'operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorSave',
-      'channelEditorDelete','channelEditorGraphColor','channelEditorSave',
+      'channelEditorDelete','channelEditorGraphColor','channelEditorVisibilityToggle','channelEditorSave',
       'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
       'laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorSave'
     ]);
@@ -45439,7 +45499,7 @@ function syncGuestEmailActionLink(isView){
 (function(){
   const IDS = [
     'operatoriEditorDelete','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorCancel','operatoriEditorSave',
-    'channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','channelEditorCancel','channelEditorSave',
+    'channelEditorDelete','channelEditorGraphColor','channelEditorDotColor','channelEditorVisibilityToggle','channelEditorCancel','channelEditorSave',
     'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
     'laundryCatalogEditorDelete','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorCancel','laundryCatalogEditorSave'
   ];
@@ -46852,7 +46912,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.269';
+  var BUILD_TAG='dDAE_3.270';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51766,7 +51826,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.269',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.270',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

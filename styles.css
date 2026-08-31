@@ -34973,7 +34973,7 @@ body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
 }
 
 
-/* dDAE_3.269 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
+/* dDAE_3.270 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
 #guestAlertModal .guest-alert-card.is-one-night-cash-only{
   background:rgba(52,199,89,0.22) !important;
   border-color:rgba(52,199,89,0.62) !important;
@@ -34984,7 +34984,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-one-night-cash-only{
 }
 
 
-/* dDAE_3.269 - Channel: classificazione PUBBLICO / PRIVATO */
+/* dDAE_3.270 - Channel: classificazione PUBBLICO / PRIVATO */
 #channelEditorModal .channel-visibility-editor-field{
   margin-top:12px;
 }
@@ -35019,4 +35019,59 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-one-night-cash-only{
 }
 body.ddae-dark .channel-visibility-badge{
   color:#f8fbff;
+}
+
+
+/* dDAE_3.270 - Alert schedine PS: azzurro esclusivamente per channel PRIVATO; verde mantiene priorità. */
+#guestAlertModal .guest-alert-card.is-private-channel{
+  background:rgba(56,189,248,0.18) !important;
+  border-color:rgba(14,165,233,0.55) !important;
+}
+body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
+  background:rgba(56,189,248,0.20) !important;
+  border-color:rgba(56,189,248,0.58) !important;
+}
+
+/* dDAE_3.270 - Channel editor: 4 tasti iconografici su una sola riga. */
+#channelEditorModal .channel-visibility-editor-field{
+  display:none !important;
+}
+#channelEditorModal .channel-editor-icon-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:10px !important;
+  width:100% !important;
+  margin-top:14px !important;
+}
+#channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  aspect-ratio:1 / 1 !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border-radius:18px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+}
+#channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action[hidden]{
+  display:none !important;
+}
+#channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{
+  width:34px !important;
+  height:34px !important;
+  flex:0 0 34px !important;
+}
+#channelEditorModal #channelEditorVisibilityToggle.is-selected,
+#channelEditorModal #channelEditorVisibilityToggle.is-on{
+  transform:none !important;
+}
+@media (max-width:430px){
+  #channelEditorModal .channel-editor-icon-grid{ gap:8px !important; }
+  #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action{ border-radius:16px !important; }
+  #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{ width:30px !important; height:30px !important; flex-basis:30px !important; }
 }
