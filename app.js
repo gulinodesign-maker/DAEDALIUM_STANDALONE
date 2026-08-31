@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.268";
+const BUILD_VERSION = "3.269";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7762,7 +7762,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.268 — evidenza verde nel popup schedine PS:
+// dDAE_3.269 — evidenza verde nel popup schedine PS:
 // una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
@@ -14199,7 +14199,7 @@ function __canonicalizeGuestChannelRecord__(record, catalogOverride){
   if (!item){
     item = {
       id: __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__, nome:'PRIVATO', commissione:0, iniziale:'M',
-      colore:'acid-5', coloreTesto:'', coloreGrafico:'acid-5'
+      colore:'acid-5', coloreTesto:'', coloreGrafico:'acid-5', visibilita:'privato'
     };
   }
   const out = record;
@@ -14261,6 +14261,17 @@ function __canonicalizeBackupChannelsDeep__(node, seen){
   return node;
 }
 
+function __normalizeChannelVisibility__(value, name){
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (['privato','private','diretto','direct'].includes(raw)) return 'privato';
+  if (['pubblico','public','ota','portale'].includes(raw)) return 'pubblico';
+  return __normalizeChannelAliasName__(name) === 'privato' ? 'privato' : 'pubblico';
+}
+
+function __channelVisibilityLabel__(value, name){
+  return __normalizeChannelVisibility__(value, name) === 'privato' ? 'PRIVATO' : 'PUBBLICO';
+}
+
 function __normalizeChannelCatalogList__(list){
   const base = (Array.isArray(list) ? list : []).map((item, idx) => ({
     id: String(item?.id || `ch-${Date.now()}-${idx}`),
@@ -14270,6 +14281,7 @@ function __normalizeChannelCatalogList__(list){
     colore: __normalizeChannelColor__(item?.colore),
     coloreTesto: __normalizeChannelTextColor__(item?.coloreTesto ?? item?.textColor),
     coloreGrafico: __normalizeChannelGraphColor__(item?.coloreGrafico ?? item?.graphColor ?? item?.dotColor),
+    visibilita: __normalizeChannelVisibility__(item?.visibilita ?? item?.visibility ?? item?.tipoChannel ?? item?.tipo_channel ?? item?.accesso, item?.nome || item?.name || ''),
   })).filter(item => item.nome).map(item => ({ ...item, iniziale: item.iniziale || __channelInitialFromName__(item.nome) }));
 
   const privateItems = base.filter((item) => __normalizeChannelAliasName__(item.nome) === 'privato');
@@ -14282,7 +14294,8 @@ function __normalizeChannelCatalogList__(list){
       ...privateCanonical,
       id: String(privateCanonical.id || __DDAE_PRIVATE_CHANNEL_CANONICAL_ID__),
       nome: 'PRIVATO',
-      iniziale: String(privateCanonical.iniziale || 'M').trim().slice(0,1).toUpperCase() || 'M'
+      iniziale: String(privateCanonical.iniziale || 'M').trim().slice(0,1).toUpperCase() || 'M',
+      visibilita: 'privato'
     };
   }
 
@@ -15619,12 +15632,14 @@ function __channelOpenModal__(item){
   const nomeEl = document.getElementById('channelEditorNome');
   const commEl = document.getElementById('channelEditorCommission');
   const iniEl = document.getElementById('channelEditorInitial');
+  const visEl = document.getElementById('channelEditorVisibility');
   const delBtn = document.getElementById('channelEditorDelete');
   if (title) title.textContent = current ? 'Modifica channel' : 'Nuovo channel';
   if (idEl) idEl.value = current?.id ? String(current.id) : '';
   if (nomeEl) nomeEl.value = current?.nome ? String(current.nome) : '';
   if (commEl) commEl.value = current && isFinite(Number(current.commissione)) ? String(Number(current.commissione)) : '';
   if (iniEl) iniEl.value = current?.iniziale ? String(current.iniziale).slice(0,1).toUpperCase() : '';
+  if (visEl) visEl.value = __normalizeChannelVisibility__(current?.visibilita, current?.nome || '');
   if (!__channelPageUi.tones || !Object.keys(__channelPageUi.tones).length) __initColorToneMap__(__channelPageUi, 'orange');
   if (delBtn) delBtn.hidden = !current;
   __channelPageUi.textColor = __normalizeOptionalOperatoreColor__(current?.coloreTesto);
@@ -15650,6 +15665,7 @@ function __channelCloseModal__(){
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  try{ const visEl = document.getElementById('channelEditorVisibility'); if (visEl) visEl.value = 'pubblico'; }catch(_){ }
   __channelPageUi.editingId = '';
   __channelPageUi.textColor = '';
   __channelPageUi.graphColor = '';
@@ -15678,6 +15694,7 @@ async function renderChannelPage(){
         <div class="operatori-item-left">
           <span class="operatori-tag color-${item.colore}" style="${__laundryEscapeAttr__(__tagColorInlineStyle__(item.colore || 'orange-4', item.coloreTesto || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}"><span class="channel-tag-letter">${String(item.iniziale || __channelInitialFromName__(item.nome)).slice(0,1).toUpperCase()}</span></span>
           <div class="operatori-name">${String(item.nome || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]||s))}</div>
+          <span class="channel-visibility-badge is-${__normalizeChannelVisibility__(item.visibilita, item.nome)}">${__channelVisibilityLabel__(item.visibilita, item.nome)}</span>
           <span class="channel-graph-dot" style="background:${__laundryEscapeAttr__(__graphColorValueToHex__(item.coloreGrafico || item.coloreTesto || item.colore || 'orange-4', '#2b7cb4'))}"></span>
         </div>
         <div class="operatori-item-actions">
@@ -15742,6 +15759,7 @@ function setupChannelPage(){
       if (!isFinite(commissione)){ toast('Commissione non valida'); return; }
       const id = String(document.getElementById('channelEditorId')?.value || '').trim();
       const initialRaw = String(document.getElementById('channelEditorInitial')?.value || '').trim();
+      const visibilityRaw = String(document.getElementById('channelEditorVisibility')?.value || 'pubblico').trim();
       const list = getChannelCatalogFromSettings();
       const nextItem = {
         id: id || `ch-${Date.now()}`,
@@ -15751,6 +15769,7 @@ function setupChannelPage(){
         colore: __channelPageUi.color || 'orange',
         coloreTesto: __channelPageUi.textColor || '',
         coloreGrafico: __channelPageUi.graphColor || __channelPageUi.color || 'orange-2',
+        visibilita: __normalizeChannelVisibility__(visibilityRaw, nome),
       };
       const idx = list.findIndex(item => String(item.id) === nextItem.id);
       if (idx >= 0) list[idx] = nextItem;
@@ -46833,7 +46852,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.268';
+  var BUILD_TAG='dDAE_3.269';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51747,7 +51766,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.268',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.269',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

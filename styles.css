@@ -34973,7 +34973,7 @@ body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
 }
 
 
-/* dDAE_3.268 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
+/* dDAE_3.269 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
 #guestAlertModal .guest-alert-card.is-one-night-cash-only{
   background:rgba(52,199,89,0.22) !important;
   border-color:rgba(52,199,89,0.62) !important;
@@ -34981,4 +34981,42 @@ body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
 body.ddae-dark #guestAlertModal .guest-alert-card.is-one-night-cash-only{
   background:rgba(48,209,88,0.20) !important;
   border-color:rgba(48,209,88,0.58) !important;
+}
+
+
+/* dDAE_3.269 - Channel: classificazione PUBBLICO / PRIVATO */
+#channelEditorModal .channel-visibility-editor-field{
+  margin-top:12px;
+}
+#channelEditorModal #channelEditorVisibility{
+  min-height:58px;
+  font-weight:850;
+  letter-spacing:.03em;
+}
+.channel-visibility-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  min-height:24px;
+  padding:3px 9px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.16);
+  background:rgba(226,232,240,.88);
+  color:var(--ico-blue-night);
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.channel-visibility-badge.is-privato{
+  background:rgba(132,204,22,.20);
+  border-color:rgba(77,124,15,.38);
+}
+.channel-visibility-badge.is-pubblico{
+  background:rgba(56,189,248,.16);
+  border-color:rgba(2,132,199,.34);
+}
+body.ddae-dark .channel-visibility-badge{
+  color:#f8fbff;
 }
