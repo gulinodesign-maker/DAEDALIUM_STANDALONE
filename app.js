@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.270";
+const BUILD_VERSION = "3.271";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7762,7 +7762,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.270 — evidenza verde nel popup schedine PS:
+// dDAE_3.271 — evidenza verde nel popup schedine PS:
 // una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
@@ -7784,7 +7784,7 @@ function __guestPsAlertCashOnlyOneNight__(g){
   }catch(_){ return false; }
 }
 
-// dDAE_3.270 — nel popup schedine PS la card è azzurra solo se il channel
+// dDAE_3.271 — nel popup schedine PS la card è azzurra solo se il channel
 // associato alla prenotazione è classificato PRIVATO nel catalogo Channel.
 function __guestPsAlertPrivateChannel__(g){
   try{
@@ -23373,20 +23373,82 @@ async function __openSingleActionButtonColorPicker__(btn){
     const __insideSettingsEditorAction__ = !!(btn.closest && btn.closest('#operatoriEditorModal,#channelEditorModal,#roomCatalogEditorModal,#laundryCatalogEditorModal'));
     if ((__settingsEditorColorPopupIsSuppressed__() || __settingsEditorModalRecentlyOpened__(2400)) && !__insideSettingsEditorAction__) return;
     const label = __guestFilterButtonLocalizedLabel__(btn);
-    const editState = __singleActionButtonSupportsDualState__(btn)
-      ? await (async()=>{
-          const choice = await __confirmTwoActions__(
-            __guestFilterButtonEditStatePrompt__(label),
-            __guestFilterButtonStateLabel__('active'),
-            __guestFilterButtonStateLabel__('distractive')
-          );
-          if (choice !== 'yes' && choice !== 'no') return '';
-          return choice === 'yes' ? 'on' : 'off';
-        })()
-      : ((__singleActionButtonSupportsDualState__(btn) && btn.classList && btn.classList.contains('is-selected')) ? 'on' : 'off');
-    if (!editState) return;
-    const current = __singleActionButtonVisualFor__(btn, editState);
+    const isDual = __singleActionButtonSupportsDualState__(btn);
     const category = __singleActionButtonCategoryForId__(btn);
+
+    if (isDual){
+      const states = __singleActionButtonVisualStateMapFor__(btn);
+      const originals = { off:{...states.off}, on:{...states.on} };
+      const drafts = { off:{...originals.off}, on:{...originals.on} };
+      const activeState = (btn.classList && (btn.classList.contains('is-selected') || btn.classList.contains('is-on'))) ? 'on' : 'off';
+      const payloadToVisual = (payload, fallback) => {
+        const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+        return {
+          bg: colors.bg || fallback.bg || 'blue-4',
+          border: colors.border || fallback.border || colors.bg || fallback.bg || 'blue-4',
+          fg: colors.fg || fallback.fg || 'white',
+          opacity: __designBgOpacityNormalize__(payload?.opacity ?? fallback.opacity ?? 0.80),
+          bold: false
+        };
+      };
+      const applyState = (stateName, payload, previewOnly) => {
+        const safeState = String(stateName || 'off') === 'on' ? 'on' : 'off';
+        const next = payloadToVisual(payload, drafts[safeState] || originals[safeState]);
+        drafts[safeState] = next;
+        __saveSingleActionButtonVisual__(btn, next, safeState);
+        if (previewOnly){
+          try{ __applySingleActionButtonVisual__(btn, safeState, next); }catch(_){ }
+        } else {
+          try{ __refreshSingleActionButtonSharedKey__(btn); }catch(_){ }
+        }
+        return next;
+      };
+      const editor = {
+        activeState,
+        drafts,
+        originals,
+        labels:{ off:'OFF', on:'ON' },
+        fallbackBg:(drafts[activeState].bg || 'blue-4'),
+        onStatePreview:(stateName, payload) => { applyState(stateName, payload, true); },
+        onConfirm: async(all) => {
+          const finalOff = payloadToVisual(all?.off || drafts.off, drafts.off || originals.off);
+          const finalOn = payloadToVisual(all?.on || drafts.on, drafts.on || originals.on);
+          __saveSingleActionButtonVisual__(btn, finalOff, 'off');
+          __saveSingleActionButtonVisual__(btn, finalOn, 'on');
+          try{ __refreshSingleActionButtonSharedKey__(btn); }catch(_){ }
+          try{ toast(`${label}: colori OFF/ON aggiornati`); }catch(_){ }
+        },
+        onRevert:() => {
+          __saveSingleActionButtonVisual__(btn, originals.off, 'off');
+          __saveSingleActionButtonVisual__(btn, originals.on, 'on');
+          try{ __refreshSingleActionButtonSharedKey__(btn); }catch(_){ }
+        }
+      };
+      const popupOptions = {
+        supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true,
+        opacity:(drafts[activeState].opacity ?? 0.80), defaultMode:'bg', fallbackBg:(drafts[activeState].bg || 'blue-4'),
+        onPreview:(payload) => {
+          const stateEditor = (typeof __tagColorPopupState__ !== 'undefined' && __tagColorPopupState__.stateEditor) ? __tagColorPopupState__.stateEditor : editor;
+          const stateName = stateEditor && stateEditor.activeState === 'on' ? 'on' : 'off';
+          applyState(stateName, payload, true);
+        },
+        stateEditor:editor
+      };
+      if (category){
+        popupOptions.applyCategory = {
+          message:'Applicare le modifiche a tutti i tasti della stessa categoria?',
+          apply: async(payload, changed) => {
+            const stateName = editor && editor.activeState === 'on' ? 'on' : 'off';
+            __applySingleActionButtonVisualToCategory__(btn, payload, changed, stateName);
+          }
+        };
+      }
+      __tagColorPopupOpen__('single-action-button', drafts[activeState], null, popupOptions);
+      return;
+    }
+
+    const editState = 'off';
+    const current = __singleActionButtonVisualFor__(btn, editState);
     const applyVisual = (payload) => {
       const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
       const next = {
@@ -46912,7 +46974,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.270';
+  var BUILD_TAG='dDAE_3.271';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51826,7 +51888,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.270',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.271',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

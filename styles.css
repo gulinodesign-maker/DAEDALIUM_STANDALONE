@@ -34973,7 +34973,7 @@ body.ddae-dark #page-statanalisi .analysis-health-badge.is-warn{
 }
 
 
-/* dDAE_3.270 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
+/* dDAE_3.271 — Popup Schedine PS: una notte + contanti + nessun elettronico = card verde. */
 #guestAlertModal .guest-alert-card.is-one-night-cash-only{
   background:rgba(52,199,89,0.22) !important;
   border-color:rgba(52,199,89,0.62) !important;
@@ -34984,7 +34984,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-one-night-cash-only{
 }
 
 
-/* dDAE_3.270 - Channel: classificazione PUBBLICO / PRIVATO */
+/* dDAE_3.271 - Channel: classificazione PUBBLICO / PRIVATO */
 #channelEditorModal .channel-visibility-editor-field{
   margin-top:12px;
 }
@@ -35022,7 +35022,7 @@ body.ddae-dark .channel-visibility-badge{
 }
 
 
-/* dDAE_3.270 - Alert schedine PS: azzurro esclusivamente per channel PRIVATO; verde mantiene priorità. */
+/* dDAE_3.271 - Alert schedine PS: azzurro esclusivamente per channel PRIVATO; verde mantiene priorità. */
 #guestAlertModal .guest-alert-card.is-private-channel{
   background:rgba(56,189,248,0.18) !important;
   border-color:rgba(14,165,233,0.55) !important;
@@ -35032,7 +35032,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   border-color:rgba(56,189,248,0.58) !important;
 }
 
-/* dDAE_3.270 - Channel editor: 4 tasti iconografici su una sola riga. */
+/* dDAE_3.271 - Channel editor: 4 tasti iconografici su una sola riga. */
 #channelEditorModal .channel-visibility-editor-field{
   display:none !important;
 }
