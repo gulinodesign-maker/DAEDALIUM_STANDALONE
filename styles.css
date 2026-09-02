@@ -35076,7 +35076,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{ width:30px !important; height:30px !important; flex-basis:30px !important; }
 }
 
-/* dDAE_3.277 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
+/* dDAE_3.278 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
 #guestContactActionDock{
   width:min(360px, calc(100vw - 40px)) !important;
   justify-content:center !important;
@@ -35238,4 +35238,57 @@ html.dark-mode .guest-message-title-btn{
     width:calc(100vw - 24px) !important;
     max-width:calc(100vw - 24px) !important;
   }
+}
+
+
+/* dDAE_3.278 — Catalogo messaggi: UI essenziale, eliminazione per record e feedback sopra i popup. */
+#guestMessagesSettingsModal .guest-message-settings-hint{
+  display:none !important;
+}
+.guest-message-catalog-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 54px !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100% !important;
+}
+.guest-message-catalog-row .guest-message-title-btn{
+  min-width:0 !important;
+}
+.guest-message-delete-btn{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  width:54px !important;
+  min-width:54px !important;
+  max-width:54px !important;
+  height:54px !important;
+  min-height:54px !important;
+  max-height:54px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  border-radius:16px !important;
+  border:1px solid rgba(15,23,42,.16) !important;
+  box-shadow:none !important;
+  filter:none !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+.guest-message-delete-btn .ui-ico{
+  width:25px !important;
+  height:25px !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.1 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+/* I toast di salvataggio/traduzione devono essere davanti al modal, mai dietro. */
+.toast{
+  z-index:5000 !important;
+}
+body.modal-open .toast{
+  top:calc(var(--safe-top) + 18px) !important;
+  bottom:auto !important;
 }

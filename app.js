@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.277";
+const BUILD_VERSION = "3.278";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46996,7 +46996,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.277';
+  var BUILD_TAG='dDAE_3.278';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51910,7 +51910,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.277',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.278',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53438,7 +53438,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.277: traduzione avviene esclusivamente nella fase di salvataggio.
+    // dDAE_3.278: traduzione avviene esclusivamente nella fase di salvataggio.
     // Si usano più provider con fallback; nessuna di queste chiamate viene eseguita al momento dell'invio.
     const providers=[translateViaLingva,translateViaGoogle,translateViaLibreTranslate,translateViaMyMemory,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53674,7 +53674,7 @@ try{
 })();
 
 
-/* dDAE_3.277 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.278 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53842,18 +53842,53 @@ try{
     if(list) list.hidden=true; if(editor) editor.hidden=false;
     setTimeout(()=>{ try{title?.focus({preventScroll:true});}catch(_){ } },60);
   }
+  async function deleteMessageRecord(id){
+    const rec=getRecord(id); if(!rec)return;
+    let ok=false;
+    try{
+      if(typeof confirmYesNo==='function') ok=await confirmYesNo('Eliminare definitivamente il messaggio “'+String(rec.title||'Messaggio')+'”?');
+      else ok=window.confirm('Eliminare definitivamente il messaggio “'+String(rec.title||'Messaggio')+'”?');
+    }catch(_){ ok=false; }
+    if(!ok)return;
+    const next=catalog.filter(r=>String(r.id)!==String(id));
+    try{
+      await persistCatalog(next);
+      catalog=validCatalog(next);
+      if(String(editorId||'')===String(id)) editorId='';
+      renderCatalogList();
+      try{toast('Messaggio eliminato','green');}catch(_){ }
+    }catch(_){
+      try{toast('Errore durante l’eliminazione del messaggio','orange');}catch(__){ }
+    }
+  }
   function renderCatalogList(){
     const host=$('guestMessageCatalogList'); if(!host)return;
     host.innerHTML='';
     if(!catalog.length){ host.innerHTML='<div class="guest-message-empty">Nessun messaggio. Usa + per aggiungerne uno.</div>'; return; }
     catalog.forEach((rec,index)=>{
+      const row=document.createElement('div');
+      row.className='guest-message-catalog-row';
+
       const btn=document.createElement('button');
       btn.type='button'; btn.className='guest-message-title-btn'; btn.id='guestMessageCatalogTitle_'+String(index+1);
       btn.dataset.singleActionKey='guestMessageCatalogTitleButton';
       btn.textContent=rec.title||('Messaggio '+(index+1));
       btn.setAttribute('aria-label','Modifica '+btn.textContent);
       bindVisual(btn); safeTap(btn,()=>openEditor(rec.id),'catalogOpenBound');
-      host.appendChild(btn);
+
+      const del=document.createElement('button');
+      del.type='button';
+      del.className='guest-message-delete-btn';
+      del.id='guestMessageCatalogDelete_'+String(index+1);
+      del.dataset.singleActionKey='guestMessageCatalogDeleteButton';
+      del.setAttribute('aria-label','Elimina '+btn.textContent);
+      del.setAttribute('title','Elimina');
+      del.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M7 7l1 13h8l1-13"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>';
+      bindVisual(del); safeTap(del,()=>{ void deleteMessageRecord(rec.id); },'catalogDeleteBound');
+
+      row.appendChild(btn);
+      row.appendChild(del);
+      host.appendChild(row);
     });
   }
   async function openSettings(){
@@ -53916,7 +53951,7 @@ try{
       return;
     }
     try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
-    try{toast('Messaggio salvato. Tutte le traduzioni sono nella memoria del dispositivo e nel backup.','green');}catch(_){ }
+    try{toast('Traduzioni completate e messaggio salvato.','green');}catch(_){ }
     showCatalogView();
   }
 
