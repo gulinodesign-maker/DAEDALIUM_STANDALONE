@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.275";
+const BUILD_VERSION = "3.276";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46996,7 +46996,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.275';
+  var BUILD_TAG='dDAE_3.276';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51910,7 +51910,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.275',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.276',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53587,7 +53587,7 @@ try{
 })();
 
 
-/* dDAE_3.275 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.276 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53602,7 +53602,6 @@ try{
   let catalog=[];
   let editorId='';
   let selectedSendId='';
-  let translating=false;
 
   function safeId(){ return 'msg_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); }
   function normalizeRecord(row){
@@ -53701,7 +53700,6 @@ try{
           const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
           if(value) rec.translations[lang]=value;
           rec.updatedAt=new Date().toISOString();
-          writeLocal(catalog);
         }catch(_){ }
       }
     }
@@ -53709,15 +53707,8 @@ try{
     await Promise.all(Array.from({length:n},()=>worker()));
     return rec;
   }
-  async function completeAllTranslations(){
-    if(translating || (typeof navigator!=='undefined'&&navigator.onLine===false)) return;
-    translating=true;
-    try{
-      await loadCatalog(false);
-      for(const rec of catalog) await translateRecord(rec);
-      await persistCatalog(catalog);
-    }catch(_){ }
-    translating=false;
+  function missingTranslations(rec){
+    return MANAGED_LANGUAGES.filter(lang=>!translationFor(rec,lang));
   }
 
   function bindVisual(btn){
@@ -53776,22 +53767,43 @@ try{
     const text=String($('guestMessageTemplateInputV2')?.value||'').trim();
     if(!title){ try{toast('Inserisci il titolo del messaggio','orange');}catch(_){ } return; }
     if(!text){ try{toast('Inserisci il testo del messaggio','orange');}catch(_){ } return; }
-    let rec=editorId?getRecord(editorId):null;
-    if(!rec){ rec={id:safeId(),title,text,translations:{it:text},updatedAt:new Date().toISOString()}; catalog.push(rec); }
-    else{
-      const changed=String(rec.text||'')!==text;
-      rec.title=title; rec.text=text; rec.updatedAt=new Date().toISOString();
-      if(changed) rec.translations={it:text}; else {rec.translations=rec.translations||{};rec.translations.it=text;}
-    }
-    writeLocal(catalog);
+
+    const previous=editorId?getRecord(editorId):null;
+    const sameText=!!previous && String(previous.text||'')===text;
+    const candidate={
+      id:previous?String(previous.id):safeId(),
+      title,
+      text,
+      translations:sameText&&previous.translations&&typeof previous.translations==='object'?Object.assign({},previous.translations):{it:text},
+      updatedAt:new Date().toISOString()
+    };
+    candidate.translations.it=text;
+
     const saveBtn=$('guestMessageEditorSaveBtn');
-    try{if(saveBtn)saveBtn.disabled=true;toast('Salvataggio e preparazione traduzioni…','blue');}catch(_){ }
-    try{ await translateRecord(rec); await persistCatalog(catalog); }catch(_){ await persistCatalog(catalog); }
+    try{if(saveBtn)saveBtn.disabled=true;toast('Preparazione di tutte le traduzioni…','blue');}catch(_){ }
+
+    try{ await translateRecord(candidate); }catch(_){ }
+    const missing=missingTranslations(candidate);
+    if(missing.length){
+      try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
+      try{toast('Salvataggio non completato: mancano '+missing.length+' traduzioni. Riprova con connessione Internet.','orange');}catch(_){ }
+      return;
+    }
+
+    const next=catalog.slice();
+    const idx=next.findIndex(r=>String(r.id)===String(candidate.id));
+    if(idx>=0) next[idx]=candidate; else next.push(candidate);
+    try{
+      await persistCatalog(next);
+      catalog=validCatalog(next);
+    }catch(_){
+      try{if(saveBtn)saveBtn.disabled=false;}catch(__){ }
+      try{toast('Errore durante il salvataggio del messaggio','orange');}catch(__){ }
+      return;
+    }
     try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
-    const complete=MANAGED_LANGUAGES.every(l=>!!translationFor(rec,l));
-    try{toast(complete?'Messaggio salvato. Traduzioni memorizzate.':'Messaggio salvato. Le traduzioni mancanti saranno completate online.',complete?'green':'orange');}catch(_){ }
+    try{toast('Messaggio salvato. Tutte le traduzioni sono nella memoria del dispositivo e nel backup.','green');}catch(_){ }
     showCatalogView();
-    if(!complete) setTimeout(()=>completeAllTranslations(),800);
   }
 
   function closeSend(){ const m=$('guestMessageSendModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');} try{document.body.classList.remove('modal-open');}catch(_){ } selectedSendId=''; }
@@ -53823,12 +53835,11 @@ try{
     const guest=state?.guestViewItem||state?.guestEditSourceItem||null;
     const lang=languageForGuest(guest);
     if(!lang){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return ''; }
-    let translated=translationFor(rec,lang);
+    const translated=translationFor(rec,lang);
     if(!translated){
-      try{toast('Preparazione traduzione…','blue');}catch(_){ }
-      await translateRecord(rec,lang); translated=translationFor(rec,lang); await persistCatalog(catalog);
+      try{toast('Traduzione non memorizzata. Apri Impostazioni, modifica il messaggio e premi Salva.','orange');}catch(_){ }
+      return '';
     }
-    if(!translated){ try{toast('Traduzione non disponibile','orange');}catch(_){ } return ''; }
     let guestTitle='';
     try{guestTitle=String(window.__configuredGuestMessageGuestTitle__?.(guest,lang)||'').trim();}catch(_){ }
     return guestTitle?(guestTitle+'\n\n'+translated):translated;
@@ -53872,14 +53883,13 @@ try{
     bindVisual($('guestMessageHubAction'));
     const sm=$('guestMessagesSettingsModal'); if(sm&&sm.dataset.backdropV2!=='1'){sm.dataset.backdropV2='1';sm.addEventListener('click',e=>{if(e.target===sm)closeSettings();});}
     const sendm=$('guestMessageSendModal'); if(sendm&&sendm.dataset.backdropV2!=='1'){sendm.dataset.backdropV2='1';sendm.addEventListener('click',e=>{if(e.target===sendm)closeSend();});}
-    loadCatalog(false).then(()=>setTimeout(()=>completeAllTranslations(),2200)).catch(()=>{});
+    loadCatalog(false).catch(()=>{});
   }
   window.__openGuestMessageSendModal__=openSend;
   window.__openGuestMessagesSettingsModal__=openSettings;
   window.__getGuestMessageCatalog__=()=>catalog.slice();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else setTimeout(init,0);
   window.addEventListener('pageshow',init);
-  window.addEventListener('online',()=>setTimeout(()=>completeAllTranslations(),900));
 })();
 
 
