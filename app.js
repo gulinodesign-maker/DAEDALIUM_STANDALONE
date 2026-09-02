@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.280";
+const BUILD_VERSION = "3.274";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -1511,7 +1511,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -12354,7 +12354,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
@@ -12378,7 +12378,7 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   settingsRoomCatalogBtn: 'blue-4',
   settingsLaundryCatalogBtn: 'indigo-4',
   settingsHotelLocationBtn: 'green-5',
-  settingsGuestMessagesBtn: 'green-5',
+  settingsGuestMessageBtn: 'green-5',
     settingsConfigBtn: 'red-4',
   settingsExportRosterBtn: 'violet-4',
   settingsLanguageBtn: 'sky-4',
@@ -13612,7 +13612,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
@@ -13660,9 +13660,6 @@ function __launcherIconVisualFor__(id){
   const key = __singleActionButtonSharedKey__(id);
   if (!key) return { fg:'blue-4', bg:'', border:'', opacity:0.80, bold:false };
   const map = __launcherIconColorMapRead__();
-  if (key === 'settingsGuestMessagesBtn' && !map[key] && map.settingsGuestMessageBtn){
-    try{ map[key] = map.settingsGuestMessageBtn; __launcherIconColorMapWrite__(map); }catch(_){ }
-  }
   if (key === 'goDbSync'){
     const raw = map[key];
     if (!raw || typeof raw !== 'object'){
@@ -13697,7 +13694,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessageBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -23000,7 +22997,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
@@ -23073,8 +23070,6 @@ function __defaultSingleActionButtonVisual__(btn){
     guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
-    guestMessageSendWhatsAppChannel:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
-    guestMessageSendMessengerChannel:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestConfiguredWhatsAppMessage:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
@@ -23124,7 +23119,7 @@ function __defaultSingleActionButtonVisual__(btn){
 function __singleActionButtonSupportsDualState__(btn){
   try{
     const sharedKey = __singleActionButtonSharedKey__(btn);
-    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
   }catch(_){ return false; }
 }
 
@@ -23134,8 +23129,6 @@ function __defaultSingleActionButtonStateVisuals__(btn){
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
   try{ if (btn && btn.id === 'channelEditorVisibilityToggle') return { off:{ ...base, bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 }, on:{ ...base, bg:'indigo-5', border:'indigo-6', fg:'white', opacity:0.94 } }; }catch(_){}
-  try{ if (__singleActionButtonSharedKey__(btn) === 'guestMessageSendWhatsAppChannel') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.94 } }; }catch(_){}
-  try{ if (__singleActionButtonSharedKey__(btn) === 'guestMessageSendMessengerChannel') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'sky-5', border:'sky-5', fg:'white', opacity:0.94 } }; }catch(_){}
   try{ if (__singleActionButtonSharedKey__(btn) === 'speseBudgetModeToggle') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.94 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
@@ -23387,7 +23380,6 @@ async function __openSingleActionButtonColorPicker__(btn){
     const label = __guestFilterButtonLocalizedLabel__(btn);
     const isDual = __singleActionButtonSupportsDualState__(btn);
     const category = __singleActionButtonCategoryForId__(btn);
-    const sharedKey = __singleActionButtonSharedKey__(btn);
 
     if (isDual){
       const states = __singleActionButtonVisualStateMapFor__(btn);
@@ -23420,7 +23412,7 @@ async function __openSingleActionButtonColorPicker__(btn){
         activeState,
         drafts,
         originals,
-        labels:(sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel') ? { off:'SPENTO', on:'ACCESO' } : { off:'OFF', on:'ON' },
+        labels:{ off:'OFF', on:'ON' },
         fallbackBg:(drafts[activeState].bg || 'blue-4'),
         onStatePreview:(stateName, payload) => { applyState(stateName, payload, true); },
         onConfirm: async(all) => {
@@ -44942,10 +44934,6 @@ function triggerGuestContactAction(action){
       openGuestEmailAction();
       return;
     }
-    if (safeAction === 'guest-messages'){
-      try{ if (typeof window.__openGuestMessageSendModal__ === 'function') window.__openGuestMessageSendModal__(); }catch(_){ }
-      return;
-    }
     if (safeAction === 'configured-whatsapp'){
       try{ __sendConfiguredGuestWhatsAppMessage__(); }catch(_){ }
       return;
@@ -47001,7 +46989,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.280';
+  var BUILD_TAG='dDAE_3.274';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51915,7 +51903,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.280',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.274',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53081,36 +53069,14 @@ try{
   ];
 
   const LINGVA_INSTANCES = [
-    'https://translate.plausibility.cloud',
-    'https://lingva.lunar.icu',
-    'https://translate.projectsegfau.lt',
-    'https://translate.dr460nf1r3.org',
-    'https://lingva.garudalinux.org',
-    'https://translate.jae.fi',
-    'https://translate.igna.wtf',
-    'https://lingva.ml'
+    'https://lingva.ml',
+    'https://translate.plausibility.cloud'
   ];
-  const LIBRETRANSLATE_INSTANCES = [
-    'https://translate.terraprint.co',
-    'https://trans.zillyhuhn.com',
-    'https://translate.lotigara.ru'
-  ];
-  const GOOGLE_TRANSLATE_ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
 
   let backgroundRunning = false;
   let lastBackgroundAttempt = 0;
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
-
-  // dDAE_3.280 — i cooldown dei traduttori sono separati per lingua.
-  // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
-  function providerCooldownKey(provider,target){
-    return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
-  }
-  function resetTranslationProviderCooldowns(){
-    try{ Object.keys(providerDisabledUntil).forEach((key)=>{ delete providerDisabledUntil[key]; }); }catch(_){ }
-    backendDisabledUntil = 0;
-  }
 
   function cleanLang(raw){
     const s = String(raw || '').trim().toLowerCase().replace(/_/g,'-');
@@ -53314,15 +53280,13 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const chunks = String(text||'').length > 1400 ? splitForMyMemory(text,1200) : [String(text||'')];
-    const ordered=LINGVA_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
-    for (const base of ordered){
-      const cooldownKey=providerCooldownKey(base,to);
-      if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) continue;
+    for (const base of LINGVA_INSTANCES){
+      if (Date.now() < Number(providerDisabledUntil[base]||0)) continue;
       try{
         const out=[];
         for (const chunk of chunks){
           const url=base.replace(/\/$/,'')+'/api/v1/it/'+encodeURIComponent(to)+'/'+encodeURIComponent(chunk);
-          const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },3200);
+          const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },4500);
           if (!res.ok) throw new Error('lingva '+res.status);
           const payload=await res.json();
           const translated=extractTranslation(payload);
@@ -53330,86 +53294,17 @@ try{
           out.push(translated);
         }
         const joined=out.join('').trim();
-        if (joined){
-          providerDisabledUntil[cooldownKey]=0;
-          return joined;
-        }
-      }catch(_){ providerDisabledUntil[cooldownKey]=Date.now()+75*1000; }
+        if (joined) return joined;
+      }catch(_){ providerDisabledUntil[base]=Date.now()+3*60*1000; }
     }
     throw new Error('lingva unavailable');
-  }
-
-  function extractGoogleTranslation(payload){
-    try{
-      if (!Array.isArray(payload) || !Array.isArray(payload[0])) return '';
-      return payload[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim();
-    }catch(_){ return ''; }
-  }
-
-  async function translateViaGoogle(text,target){
-    const to=normalizeProviderLang(target);
-    if (!to) throw new Error('lang');
-    const provider='google-gtx';
-    const cooldownKey=providerCooldownKey(provider,to);
-    if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) throw new Error('google disabled');
-    const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
-    const out=[];
-    try{
-      for (const chunk of chunks){
-        const url=GOOGLE_TRANSLATE_ENDPOINT+'?client=gtx&sl=it&tl='+encodeURIComponent(to)+'&dt=t&q='+encodeURIComponent(chunk);
-        const res=await fetchWithTimeout(url,{method:'GET',headers:{'Accept':'application/json,text/plain,*/*'}},3800);
-        if(!res.ok) throw new Error('google '+res.status);
-        const payload=await res.json();
-        const translated=extractGoogleTranslation(payload);
-        if(!translated) throw new Error('google empty');
-        out.push(translated);
-      }
-      providerDisabledUntil[cooldownKey]=0;
-      return out.join('').trim();
-    }catch(err){
-      providerDisabledUntil[cooldownKey]=Date.now()+90*1000;
-      throw err;
-    }
-  }
-
-  async function translateViaLibreTranslate(text,target){
-    let to=normalizeProviderLang(target);
-    if (!to) throw new Error('lang');
-    if (to==='zh-TW') to='zt';
-    if (to==='zh') to='zh';
-    if (to==='no') to='nb';
-    const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
-    const ordered=LIBRETRANSLATE_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
-    for(const base of ordered){
-      const cooldownKey=providerCooldownKey(base,to);
-      if(Date.now()<Number(providerDisabledUntil[cooldownKey]||0)) continue;
-      try{
-        const out=[];
-        for(const chunk of chunks){
-          const res=await fetchWithTimeout(base.replace(/\/$/,'')+'/translate',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Accept':'application/json'},
-            body:JSON.stringify({q:chunk,source:'it',target:to,format:'text'})
-          },4200);
-          if(!res.ok) throw new Error('libre '+res.status);
-          const payload=await res.json();
-          const translated=String(payload?.translatedText||payload?.translation||'').trim();
-          if(!translated) throw new Error('libre empty');
-          out.push(translated);
-        }
-        providerDisabledUntil[cooldownKey]=0;
-        return out.join('').trim();
-      }catch(_){ providerDisabledUntil[cooldownKey]=Date.now()+2*60*1000; }
-    }
-    throw new Error('libre unavailable');
   }
 
   async function translateViaMyMemory(text,target){
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const provider='mymemory';
-    const cooldownKey=providerCooldownKey(provider,to);
-    if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) throw new Error('mymemory disabled');
+    if (Date.now() < Number(providerDisabledUntil[provider]||0)) throw new Error('mymemory disabled');
     const chunks=splitForMyMemory(text,430);
     const out=[];
     try{
@@ -53422,10 +53317,9 @@ try{
         if (!translated || /MYMEMORY WARNING/i.test(translated)) throw new Error('mymemory empty');
         out.push(translated);
       }
-      providerDisabledUntil[cooldownKey]=0;
       return out.join('').trim();
     }catch(err){
-      providerDisabledUntil[cooldownKey]=Date.now()+8*60*1000;
+      providerDisabledUntil[provider]=Date.now()+15*60*1000;
       throw err;
     }
   }
@@ -53440,7 +53334,7 @@ try{
         body:JSON.stringify({ text:String(text||''), targetLang:String(target||''), sourceLang:'it' })
       },4500);
       if (!res.ok){
-        if ([401,402,403,429].includes(res.status) || res.status>=500) backendDisabledUntil=Date.now()+30*60*1000;
+        if ([401,402,403,429].includes(res.status) || res.status>=500) backendDisabledUntil=Date.now()+5*60*1000;
         throw new Error('backend '+res.status);
       }
       const type=String(res.headers.get('content-type')||'').toLowerCase();
@@ -53456,16 +53350,9 @@ try{
     const target=cleanLang(targetLang) || String(targetLang||'').trim().toLowerCase();
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
-
-    // dDAE_3.280: traduzione avviene esclusivamente nella fase di salvataggio.
-    // Si usano più provider con fallback; nessuna di queste chiamate viene eseguita al momento dell'invio.
-    const providers=[translateViaGoogle,translateViaLingva,translateViaMyMemory,translateViaLibreTranslate,translateViaConfiguredBackend];
-    for(const provider of providers){
-      try{
-        const translated=String(await provider(source,target)||'').trim();
-        if(translated) return translated;
-      }catch(_){ }
-    }
+    try{ return await translateViaLingva(source,target); }catch(_){ }
+    try{ return await translateViaMyMemory(source,target); }catch(_){ }
+    try{ return await translateViaConfiguredBackend(source,target); }catch(_){ }
     return '';
   }
 
@@ -53662,7 +53549,7 @@ try{
   }
 
   function init(){
-    bind($('settingsGuestMessageBtnLegacy'),openSettingsModal,'guestMessageSettingsOpenBound');
+    bind($('settingsGuestMessageBtn'),openSettingsModal,'guestMessageSettingsOpenBound');
     bind($('guestMessageSettingsCloseBtn'),closeSettingsModal,'guestMessageSettingsCloseBound');
     bind($('guestMessageSettingsCancelBtn'),closeSettingsModal,'guestMessageSettingsCancelBound');
     bind($('guestMessageSettingsSaveBtn'),saveSettings,'guestMessageSettingsSaveBound');
@@ -53679,412 +53566,17 @@ try{
     try{ setupGuestContactActionDock(); }catch(_){ }
     try{ setupLauncherIconLongPressPalette(); }catch(_){ }
     try{ __launcherIconApplyAll__(); }catch(_){ }
+    setTimeout(()=>{ try{ completeTranslationsInBackground(false); }catch(_){ } },2500);
   }
 
   window.__sendConfiguredGuestWhatsAppMessage__=sendConfigured;
-  window.__configuredGuestMessageGuestTitle__=configuredMessageGuestTitle;
   window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
   window.__translateConfiguredGuestMessage__=translateMessageForStorage;
   window.__translateConfiguredGuestMessageWithOpenAI__=translateMessageForStorage;
-  window.__resetConfiguredGuestMessageTranslationProviders__=resetTranslationProviderCooldowns;
   window.__completeConfiguredGuestMessageTranslations__=completeTranslationsInBackground;
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
-  // La gestione delle traduzioni in background è demandata al catalogo messaggi multi-template.
-})();
-
-
-/* dDAE_3.280 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.280 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.280 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
-(function __setupGuestMessageCatalog3275__(){
-  'use strict';
-  const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
-  const CATALOG_SETTING_KEY='guest_message_templates_json';
-  const LEGACY_TEMPLATE_KEY='dDAE_guest_whatsapp_message_template_v1';
-  const LEGACY_TRANSLATIONS_KEY='dDAE_guest_whatsapp_message_translations_v1';
-  const MANAGED_LANGUAGES=[
-    'it','en','fr','de','es','pt','nl','pl','ro','ru','uk','el','cs','sk','hr','sr','hu','bg','tr','sv','nb','da','fi','et','lv','lt',
-    'sl','sq','mk','is','ar','he','fa','ka','hy','az','ja','ko','zh-cn','zh-tw','th','vi','id','ms','hi','ur','bn'
-  ];
-  const $=(id)=>document.getElementById(id);
-  let catalog=[];
-  let editorId='';
-  let selectedSendId='';
-
-  function safeId(){ return 'msg_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); }
-  function normalizeRecord(row){
-    const r=(row && typeof row==='object')?row:{};
-    const text=String(r.text ?? r.message ?? r.template ?? '').trim();
-    const title=String(r.title ?? r.titolo ?? '').trim();
-    const tr=(r.translations && typeof r.translations==='object')?Object.assign({},r.translations):{};
-    if (text && !String(tr.it||'').trim()) tr.it=text;
-    return { id:String(r.id||safeId()), title:title||'Messaggio', text, translations:tr, updatedAt:String(r.updatedAt||'') };
-  }
-  function validCatalog(value){ return Array.isArray(value) ? value.map(normalizeRecord).filter(r=>r.text||r.title) : []; }
-  function readLocal(){
-    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw){ const parsed=JSON.parse(raw); const rows=validCatalog(parsed); if(rows.length) return rows; } }catch(_){ }
-    return [];
-  }
-  function migrateLegacy(){
-    try{
-      const text=String(localStorage.getItem(LEGACY_TEMPLATE_KEY)||'').trim();
-      if(!text) return [];
-      let translations={it:text};
-      try{
-        const raw=localStorage.getItem(LEGACY_TRANSLATIONS_KEY); const pkg=raw?JSON.parse(raw):null;
-        if(pkg && String(pkg.sourceText||'').trim()===text && pkg.translations && typeof pkg.translations==='object') translations=Object.assign({},pkg.translations,{it:text});
-      }catch(_){ }
-      return [{id:safeId(),title:'Messaggio 1',text,translations,updatedAt:new Date().toISOString()}];
-    }catch(_){ return []; }
-  }
-  function writeLocal(rows){
-    catalog=validCatalog(rows);
-    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); }catch(_){ }
-    return catalog;
-  }
-  async function readRemote(){
-    try{
-      if(typeof ensureSettingsLoaded==='function') await ensureSettingsLoaded({force:false,showLoader:false});
-      if(typeof getSettingText==='function'){
-        const raw=String(getSettingText(CATALOG_SETTING_KEY,'')||'').trim();
-        if(raw){ const rows=validCatalog(JSON.parse(raw)); if(rows.length) return rows; }
-      }
-    }catch(_){ }
-    return [];
-  }
-  async function persistCatalog(rows,opts){
-    const safe=writeLocal(rows);
-    if(opts && opts.localOnly) return safe;
-    try{
-      // Nel dataset sincronizzato salviamo solo i master (titolo + italiano). Le traduzioni restano locali/backup.
-      const masters=safe.map(r=>({id:r.id,title:r.title,text:r.text,updatedAt:r.updatedAt||''}));
-      if(typeof api==='function') await api('impostazioni',{method:'POST',body:{[CATALOG_SETTING_KEY]:JSON.stringify(masters)},showLoader:false});
-      if(typeof ensureSettingsLoaded==='function') await ensureSettingsLoaded({force:true,showLoader:false});
-    }catch(_){ }
-    return safe;
-  }
-  async function loadCatalog(useRemote){
-    const localRows=readLocal();
-    let rows=[];
-    if(useRemote) rows=await readRemote();
-    if(rows.length && localRows.length){
-      rows=rows.map(remote=>{
-        const local=localRows.find(item=>String(item.id)===String(remote.id) && String(item.text||'')===String(remote.text||''));
-        if(local && local.translations && typeof local.translations==='object') remote.translations=Object.assign({},local.translations,{it:remote.text});
-        return remote;
-      });
-    }
-    if(!rows.length) rows=localRows;
-    if(!rows.length) rows=migrateLegacy();
-    writeLocal(rows);
-    return catalog;
-  }
-  function getRecord(id){ return catalog.find(r=>String(r.id)===String(id))||null; }
-  function languageForGuest(guest){
-    try{ return String(window.__resolveConfiguredGuestMessageLanguage__?.(guest)||'').trim().toLowerCase(); }catch(_){ return ''; }
-  }
-  function translationFor(rec,lang){
-    if(!rec) return '';
-    const raw=String(lang||'').trim().toLowerCase().replace(/_/g,'-');
-    if(!raw) return '';
-    if(raw==='it'||raw==='it-it') return String(rec.text||'').trim();
-    const candidates=[raw];
-    if(raw==='zh') candidates.push('zh-cn');
-    const base=raw.split('-')[0]; if(base&&!candidates.includes(base)) candidates.push(base);
-    for(const code of candidates){ const v=String(rec.translations?.[code]||'').trim(); if(v) return v; }
-    return '';
-  }
-  async function translateRecord(rec,onlyLang,onProgress){
-    if(!rec||!rec.text||typeof window.__translateConfiguredGuestMessage__!=='function') return rec;
-    const langs=onlyLang?[onlyLang]:MANAGED_LANGUAGES;
-    rec.translations=rec.translations&&typeof rec.translations==='object'?rec.translations:{};
-    rec.translations.it=rec.text;
-
-    // Ogni messaggio parte con una sessione traduttori pulita. I cooldown del messaggio
-    // precedente non possono più impedire la creazione del secondo/terzo messaggio.
-    try{ window.__resetConfiguredGuestMessageTranslationProviders__?.(); }catch(_){ }
-
-    const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
-    const maxRounds=onlyLang?3:4;
-    for(let round=0;round<maxRounds;round++){
-      const queue=langs.filter(l=>l&&l!=='it'&&!translationFor(rec,l));
-      if(!queue.length) break;
-
-      // Serializzazione intenzionale: su iOS evita raffiche di 40+ richieste contemporanee
-      // e consente di salvare ogni lingua appena disponibile.
-      for(const lang of queue){
-        try{
-          const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
-          if(value){
-            rec.translations[lang]=value;
-            rec.updatedAt=new Date().toISOString();
-            try{ if(typeof onProgress==='function') onProgress(rec,lang); }catch(_){ }
-          }
-        }catch(_){ }
-        if(!onlyLang) await sleep(180);
-      }
-
-      if(!missingTranslations(rec).length) break;
-      if(round<maxRounds-1){
-        // Nuovo giro con provider riabilitati: utile dopo un 429/transitorio.
-        try{ window.__resetConfiguredGuestMessageTranslationProviders__?.(); }catch(_){ }
-        await sleep(900 + round*700);
-      }
-    }
-    return rec;
-  }
-  function missingTranslations(rec){
-    return MANAGED_LANGUAGES.filter(lang=>!translationFor(rec,lang));
-  }
-
-  function bindVisual(btn){
-    if(!btn) return;
-    try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
-    try{ __bindSingleActionButtonColorHold__(btn); }catch(_){ }
-  }
-  function safeTap(btn,fn,key){
-    if(!btn||btn.dataset[key||'guestMsgV2Bound']==='1') return;
-    btn.dataset[key||'guestMsgV2Bound']='1';
-    const handler=(ev)=>{
-      try{ if((btn.__singleActionButtonSuppressTapUntil||0)>Date.now()) return; ev?.preventDefault?.(); ev?.stopPropagation?.(); }catch(_){ }
-      fn(ev);
-    };
-    if(typeof bindFastTap==='function') bindFastTap(btn,handler); else btn.addEventListener('click',handler);
-  }
-  function closeSettings(){ const m=$('guestMessagesSettingsModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');} try{document.body.classList.remove('modal-open');}catch(_){ } }
-  function showCatalogView(){
-    editorId='';
-    const list=$('guestMessageCatalogView'), editor=$('guestMessageEditorView');
-    if(list) list.hidden=false; if(editor) editor.hidden=true;
-    renderCatalogList();
-  }
-  function openEditor(id){
-    editorId=String(id||'');
-    const rec=editorId?getRecord(editorId):null;
-    const title=$('guestMessageTitleInput'), text=$('guestMessageTemplateInputV2');
-    if(title) title.value=rec?rec.title:'';
-    if(text) text.value=rec?rec.text:'';
-    const list=$('guestMessageCatalogView'), editor=$('guestMessageEditorView');
-    if(list) list.hidden=true; if(editor) editor.hidden=false;
-    setTimeout(()=>{ try{title?.focus({preventScroll:true});}catch(_){ } },60);
-  }
-  async function deleteMessageRecord(id){
-    const rec=getRecord(id); if(!rec)return;
-    let ok=false;
-    try{
-      if(typeof confirmYesNo==='function') ok=await confirmYesNo('Eliminare definitivamente il messaggio “'+String(rec.title||'Messaggio')+'”?');
-      else ok=window.confirm('Eliminare definitivamente il messaggio “'+String(rec.title||'Messaggio')+'”?');
-    }catch(_){ ok=false; }
-    if(!ok)return;
-    const next=catalog.filter(r=>String(r.id)!==String(id));
-    try{
-      await persistCatalog(next);
-      catalog=validCatalog(next);
-      if(String(editorId||'')===String(id)) editorId='';
-      renderCatalogList();
-      try{toast('Messaggio eliminato','green');}catch(_){ }
-    }catch(_){
-      try{toast('Errore durante l’eliminazione del messaggio','orange');}catch(__){ }
-    }
-  }
-  function renderCatalogList(){
-    const host=$('guestMessageCatalogList'); if(!host)return;
-    host.innerHTML='';
-    if(!catalog.length){ host.innerHTML='<div class="guest-message-empty">Nessun messaggio. Usa + per aggiungerne uno.</div>'; return; }
-    catalog.forEach((rec,index)=>{
-      const row=document.createElement('div');
-      row.className='guest-message-catalog-row';
-
-      const btn=document.createElement('button');
-      btn.type='button'; btn.className='guest-message-title-btn'; btn.id='guestMessageCatalogTitle_'+String(index+1);
-      btn.dataset.singleActionKey='guestMessageCatalogTitleButton';
-      btn.textContent=rec.title||('Messaggio '+(index+1));
-      btn.setAttribute('aria-label','Modifica '+btn.textContent);
-      bindVisual(btn); safeTap(btn,()=>openEditor(rec.id),'catalogOpenBound');
-
-      const del=document.createElement('button');
-      del.type='button';
-      del.className='guest-message-delete-btn';
-      del.id='guestMessageCatalogDelete_'+String(index+1);
-      del.dataset.singleActionKey='guestMessageCatalogDeleteButton';
-      del.setAttribute('aria-label','Elimina '+btn.textContent);
-      del.setAttribute('title','Elimina');
-      del.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M7 7l1 13h8l1-13"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>';
-      bindVisual(del); safeTap(del,()=>{ void deleteMessageRecord(rec.id); },'catalogDeleteBound');
-
-      row.appendChild(btn);
-      row.appendChild(del);
-      host.appendChild(row);
-    });
-  }
-  async function openSettings(){
-    try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
-    await loadCatalog(true);
-    renderCatalogList(); showCatalogView();
-    const m=$('guestMessagesSettingsModal'); if(!m)return; m.hidden=false;m.setAttribute('aria-hidden','false');try{document.body.classList.add('modal-open');}catch(_){ }
-  }
-  async function saveEditor(){
-    const title=String($('guestMessageTitleInput')?.value||'').trim();
-    const text=String($('guestMessageTemplateInputV2')?.value||'').trim();
-    if(!title){ try{toast('Inserisci il titolo del messaggio','orange');}catch(_){ } return; }
-    if(!text){ try{toast('Inserisci il testo del messaggio','orange');}catch(_){ } return; }
-
-    const previous=editorId?getRecord(editorId):null;
-    const sameText=!!previous && String(previous.text||'')===text;
-    const candidate={
-      id:previous?String(previous.id):safeId(),
-      title,
-      text,
-      translations:sameText&&previous.translations&&typeof previous.translations==='object'?Object.assign({},previous.translations):{it:text},
-      updatedAt:new Date().toISOString()
-    };
-    candidate.translations.it=text;
-    // Per i nuovi messaggi conserva lo stesso id anche se il primo tentativo di traduzione è parziale,
-    // così i successivi Salva completano lo stesso record senza duplicarlo.
-    if(!editorId) editorId=String(candidate.id);
-
-    const saveBtn=$('guestMessageEditorSaveBtn');
-    try{if(saveBtn)saveBtn.disabled=true;toast('Preparazione di tutte le traduzioni…','blue');}catch(_){ }
-
-    // Crea/subito il record indipendente. In questo modo un secondo messaggio non può
-    // essere perso solo perché una traduzione esterna ha avuto un errore temporaneo.
-    let baseRows=catalog.slice();
-    let baseIdx=baseRows.findIndex(r=>String(r.id)===String(candidate.id));
-    if(baseIdx>=0) baseRows[baseIdx]=candidate; else baseRows.push(candidate);
-    writeLocal(baseRows);
-
-    // Conserva progressivamente ogni lingua nello stesso record.
-    const persistProgress=(draft)=>{
-      try{
-        const partial=catalog.slice();
-        const pidx=partial.findIndex(r=>String(r.id)===String(draft.id));
-        if(pidx>=0) partial[pidx]=normalizeRecord(draft); else partial.push(normalizeRecord(draft));
-        writeLocal(partial);
-      }catch(_){ }
-    };
-    try{ await translateRecord(candidate,null,persistProgress); }catch(_){ }
-    persistProgress(candidate);
-
-    // Salva sempre il master del messaggio (anche se la rete ha lasciato qualche lingua
-    // incompleta); le traduzioni riuscite restano nel localStorage e quindi nel backup.
-    const next=catalog.slice();
-    const idx=next.findIndex(r=>String(r.id)===String(candidate.id));
-    if(idx>=0) next[idx]=candidate; else next.push(candidate);
-    try{
-      await persistCatalog(next);
-      catalog=validCatalog(next);
-    }catch(_){
-      try{if(saveBtn)saveBtn.disabled=false;}catch(__){ }
-      try{toast('Errore durante il salvataggio del messaggio','orange');}catch(__){ }
-      return;
-    }
-
-    const missing=missingTranslations(candidate);
-    try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
-    if(missing.length){
-      const preview=missing.slice(0,6).map(x=>String(x).toUpperCase()).join(', ');
-      try{toast('Messaggio salvato. Traduzioni parziali: mancano '+missing.length+(preview?' ('+preview+(missing.length>6?'…':'')+')':'')+'. Premi Salva per ritentare solo quelle mancanti.','orange');}catch(_){ }
-      return;
-    }
-    try{toast('Traduzioni completate e messaggio salvato.','green');}catch(_){ }
-    showCatalogView();
-  }
-
-  function closeSend(){ const m=$('guestMessageSendModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');} try{document.body.classList.remove('modal-open');}catch(_){ } selectedSendId=''; }
-  function updateSendButtons(){
-    const active=!!getRecord(selectedSendId);
-    ['guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn'].forEach(id=>{
-      const b=$(id); if(!b) return;
-      // Il tasto resta fisicamente interattivo anche da SPENTO per consentire il long-press colore.
-      try{ b.disabled=false; }catch(_){ }
-      b.setAttribute('aria-disabled',active?'false':'true');
-      b.classList.toggle('is-on',active);
-      b.classList.toggle('is-off',!active);
-      b.dataset.state=active?'on':'off';
-      try{ __applySingleActionButtonVisual__(b,active?'on':'off'); }catch(_){ }
-    });
-  }
-  function renderSendList(){
-    const host=$('guestMessageSendList'); if(!host)return;
-    host.innerHTML='';
-    catalog.forEach((rec,index)=>{
-      const btn=document.createElement('button');
-      btn.type='button'; btn.className='guest-message-title-btn guest-message-send-title-btn'; btn.id='guestMessageSendTitle_'+String(index+1);
-      btn.dataset.singleActionKey='guestMessageChoiceButton'; btn.textContent=rec.title||('Messaggio '+(index+1));
-      btn.setAttribute('aria-pressed',String(rec.id)===String(selectedSendId)?'true':'false');
-      if(String(rec.id)===String(selectedSendId)) btn.classList.add('is-selected');
-      bindVisual(btn); safeTap(btn,()=>{selectedSendId=rec.id;renderSendList();updateSendButtons();},'sendChoiceBound');
-      host.appendChild(btn);
-    });
-  }
-  async function openSend(){
-    await loadCatalog(true);
-    if(!catalog.length){ try{toast('Configura almeno un messaggio nelle Impostazioni','orange');}catch(_){ } return; }
-    selectedSendId=''; renderSendList(); updateSendButtons();
-    const m=$('guestMessageSendModal'); if(!m)return; m.hidden=false;m.setAttribute('aria-hidden','false');try{document.body.classList.add('modal-open');}catch(_){ }
-  }
-  async function preparedSelectedMessage(){
-    const rec=getRecord(selectedSendId); if(!rec)return '';
-    const guest=state?.guestViewItem||state?.guestEditSourceItem||null;
-    const lang=languageForGuest(guest);
-    if(!lang){ try{toast('Lingua ospite non disponibile','orange');}catch(_){ } return ''; }
-    const translated=translationFor(rec,lang);
-    if(!translated){
-      try{toast('Traduzione non memorizzata. Apri Impostazioni, modifica il messaggio e premi Salva.','orange');}catch(_){ }
-      return '';
-    }
-    let guestTitle='';
-    try{guestTitle=String(window.__configuredGuestMessageGuestTitle__?.(guest,lang)||'').trim();}catch(_){ }
-    return guestTitle?(guestTitle+'\n\n'+translated):translated;
-  }
-  async function sendWhatsApp(){
-    const message=await preparedSelectedMessage(); if(!message)return;
-    const guest=state?.guestViewItem||state?.guestEditSourceItem||null;
-    const raw=(typeof __guestPhoneRawForContactAction__==='function')?__guestPhoneRawForContactAction__():String(guest?.telefono||'').trim();
-    let wa=''; try{wa=(typeof normalizeWhatsAppPhone==='function')?normalizeWhatsAppPhone(raw,(typeof __currentGuestNationalityCodeForPhone__==='function'?__currentGuestNationalityCodeForPhone__():'')):String(raw||'').replace(/\D/g,'');}catch(_){ }
-    if(!wa){try{toast('Numero WhatsApp ospite mancante','orange');}catch(_){ }return;}
-    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
-    closeSend(); try{window.location.href=url;}catch(_){try{window.open(url,'_blank','noopener');}catch(__){ }}
-  }
-  async function copyText(text){
-    try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text);return true;}}catch(_){ }
-    try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return !!ok;}catch(_){return false;}
-  }
-  async function sendMessenger(){
-    const message=await preparedSelectedMessage(); if(!message)return;
-    // Messenger non espone un deep-link pubblico affidabile per precompilare testo arbitrario
-    // senza conoscere l'ID Messenger del destinatario. Evitiamo comunque lo share-sheet iOS:
-    // il testo viene copiato e Messenger viene aperto direttamente.
-    const copied=await copyText(message);
-    if(copied){try{toast('Messaggio copiato. Messenger aperto direttamente.','blue');}catch(_){ }}
-    closeSend();
-    try{
-      window.location.href='fb-messenger://';
-    }catch(_){
-      try{ window.location.href='https://www.messenger.com/'; }catch(__){ }
-    }
-  }
-
-  function init(){
-    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,openSettings,'openSettingsBound');
-    safeTap($('guestMessagesSettingsCloseBtn'),closeSettings,'closeSettingsBound');
-    safeTap($('guestMessageSettingsAddBtn'),()=>openEditor(''),'addSettingsBound'); bindVisual($('guestMessageSettingsAddBtn'));
-    safeTap($('guestMessageEditorCancelBtn'),showCatalogView,'editorCancelBound'); bindVisual($('guestMessageEditorCancelBtn'));
-    safeTap($('guestMessageEditorSaveBtn'),saveEditor,'editorSaveBound'); bindVisual($('guestMessageEditorSaveBtn'));
-    safeTap($('guestMessageSendCloseBtn'),closeSend,'sendCloseBound');
-    safeTap($('guestMessageSendWhatsAppBtn'),sendWhatsApp,'sendWaBound'); bindVisual($('guestMessageSendWhatsAppBtn'));
-    safeTap($('guestMessageSendMessengerBtn'),sendMessenger,'sendMessengerBound'); bindVisual($('guestMessageSendMessengerBtn'));
-    bindVisual($('guestMessageHubAction'));
-    const sm=$('guestMessagesSettingsModal'); if(sm&&sm.dataset.backdropV2!=='1'){sm.dataset.backdropV2='1';sm.addEventListener('click',e=>{if(e.target===sm)closeSettings();});}
-    const sendm=$('guestMessageSendModal'); if(sendm&&sendm.dataset.backdropV2!=='1'){sendm.dataset.backdropV2='1';sendm.addEventListener('click',e=>{if(e.target===sendm)closeSend();});}
-    loadCatalog(false).catch(()=>{});
-  }
-  window.__openGuestMessageSendModal__=openSend;
-  window.__openGuestMessagesSettingsModal__=openSettings;
-  window.__getGuestMessageCatalog__=()=>catalog.slice();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else setTimeout(init,0);
-  window.addEventListener('pageshow',init);
+  window.addEventListener('online',()=>{ setTimeout(()=>{ try{ completeTranslationsInBackground(true); }catch(_){ } },600); });
 })();
 
 
