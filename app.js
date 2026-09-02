@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.272";
+const BUILD_VERSION = "3.273";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7762,7 +7762,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.272 — evidenza verde nel popup schedine PS:
+// dDAE_3.273 — evidenza verde nel popup schedine PS:
 // una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
@@ -7784,11 +7784,16 @@ function __guestPsAlertCashOnlyOneNight__(g){
   }catch(_){ return false; }
 }
 
-// dDAE_3.272 — nel popup schedine PS la card è verde se il channel
-// associato alla prenotazione è classificato PRIVATO nel catalogo Channel.
+// dDAE_3.273 — nel popup schedine PS il channel PRIVATO rende verde la card
+// solo se il soggiorno dura esattamente una notte.
 function __guestPsAlertPrivateChannel__(g){
   try{
     if (!g) return false;
+    const inIso = formatISODateLocal(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
+    const outIso = formatISODateLocal(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
+    const inDay = _dayNumFromISO(inIso);
+    const outDay = _dayNumFromISO(outIso);
+    if (inDay == null || outDay == null || (outDay - inDay) !== 1) return false;
     const id = String(g?.channel_id ?? g?.channelId ?? '').trim();
     let item = id ? getChannelCatalogItemById(id) : null;
     if (!item){
@@ -8327,8 +8332,8 @@ function openGuestAlertModal(kind){
       const it = row.item;
       const card = document.createElement('div');
       card.className = 'guest-alert-card';
-      // Popup Schedine PS: verde per una notte + contanti + nessun elettronico;
-      // verde anche per channel classificato PRIVATO.
+      // Popup Schedine PS: il verde è consentito solo per soggiorni di una notte;
+      // poi vale se contanti senza elettronico oppure channel classificato PRIVATO.
       try{
         if (String(cfg.tag || '').toLowerCase() === 'polizia') {
           const guest = it.guest || {};
@@ -46974,7 +46979,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.272';
+  var BUILD_TAG='dDAE_3.273';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51888,7 +51893,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.272',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.273',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
