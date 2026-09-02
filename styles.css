@@ -35076,7 +35076,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{ width:30px !important; height:30px !important; flex-basis:30px !important; }
 }
 
-/* dDAE_3.276 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
+/* dDAE_3.277 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
 #guestContactActionDock{
   width:min(360px, calc(100vw - 40px)) !important;
   justify-content:center !important;

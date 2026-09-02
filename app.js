@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.276";
+const BUILD_VERSION = "3.277";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -46996,7 +46996,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.276';
+  var BUILD_TAG='dDAE_3.277';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51910,7 +51910,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.276',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.277',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53076,9 +53076,21 @@ try{
   ];
 
   const LINGVA_INSTANCES = [
-    'https://lingva.ml',
-    'https://translate.plausibility.cloud'
+    'https://translate.plausibility.cloud',
+    'https://lingva.lunar.icu',
+    'https://translate.projectsegfau.lt',
+    'https://translate.dr460nf1r3.org',
+    'https://lingva.garudalinux.org',
+    'https://translate.jae.fi',
+    'https://translate.igna.wtf',
+    'https://lingva.ml'
   ];
+  const LIBRETRANSLATE_INSTANCES = [
+    'https://translate.terraprint.co',
+    'https://trans.zillyhuhn.com',
+    'https://translate.lotigara.ru'
+  ];
+  const GOOGLE_TRANSLATE_ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
 
   let backgroundRunning = false;
   let lastBackgroundAttempt = 0;
@@ -53287,13 +53299,14 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const chunks = String(text||'').length > 1400 ? splitForMyMemory(text,1200) : [String(text||'')];
-    for (const base of LINGVA_INSTANCES){
+    const ordered=LINGVA_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[a]||0)-Number(providerDisabledUntil[b]||0));
+    for (const base of ordered){
       if (Date.now() < Number(providerDisabledUntil[base]||0)) continue;
       try{
         const out=[];
         for (const chunk of chunks){
           const url=base.replace(/\/$/,'')+'/api/v1/it/'+encodeURIComponent(to)+'/'+encodeURIComponent(chunk);
-          const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },4500);
+          const res=await fetchWithTimeout(url,{ method:'GET', headers:{ 'Accept':'application/json' } },3200);
           if (!res.ok) throw new Error('lingva '+res.status);
           const payload=await res.json();
           const translated=extractTranslation(payload);
@@ -53301,10 +53314,76 @@ try{
           out.push(translated);
         }
         const joined=out.join('').trim();
-        if (joined) return joined;
-      }catch(_){ providerDisabledUntil[base]=Date.now()+3*60*1000; }
+        if (joined){
+          providerDisabledUntil[base]=0;
+          return joined;
+        }
+      }catch(_){ providerDisabledUntil[base]=Date.now()+75*1000; }
     }
     throw new Error('lingva unavailable');
+  }
+
+  function extractGoogleTranslation(payload){
+    try{
+      if (!Array.isArray(payload) || !Array.isArray(payload[0])) return '';
+      return payload[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim();
+    }catch(_){ return ''; }
+  }
+
+  async function translateViaGoogle(text,target){
+    const to=normalizeProviderLang(target);
+    if (!to) throw new Error('lang');
+    const provider='google-gtx';
+    if (Date.now() < Number(providerDisabledUntil[provider]||0)) throw new Error('google disabled');
+    const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
+    const out=[];
+    try{
+      for (const chunk of chunks){
+        const url=GOOGLE_TRANSLATE_ENDPOINT+'?client=gtx&sl=it&tl='+encodeURIComponent(to)+'&dt=t&q='+encodeURIComponent(chunk);
+        const res=await fetchWithTimeout(url,{method:'GET',headers:{'Accept':'application/json,text/plain,*/*'}},3800);
+        if(!res.ok) throw new Error('google '+res.status);
+        const payload=await res.json();
+        const translated=extractGoogleTranslation(payload);
+        if(!translated) throw new Error('google empty');
+        out.push(translated);
+      }
+      providerDisabledUntil[provider]=0;
+      return out.join('').trim();
+    }catch(err){
+      providerDisabledUntil[provider]=Date.now()+90*1000;
+      throw err;
+    }
+  }
+
+  async function translateViaLibreTranslate(text,target){
+    let to=normalizeProviderLang(target);
+    if (!to) throw new Error('lang');
+    if (to==='zh-TW') to='zt';
+    if (to==='zh') to='zh';
+    if (to==='no') to='nb';
+    const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
+    const ordered=LIBRETRANSLATE_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[a]||0)-Number(providerDisabledUntil[b]||0));
+    for(const base of ordered){
+      if(Date.now()<Number(providerDisabledUntil[base]||0)) continue;
+      try{
+        const out=[];
+        for(const chunk of chunks){
+          const res=await fetchWithTimeout(base.replace(/\/$/,'')+'/translate',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json'},
+            body:JSON.stringify({q:chunk,source:'it',target:to,format:'text'})
+          },4200);
+          if(!res.ok) throw new Error('libre '+res.status);
+          const payload=await res.json();
+          const translated=String(payload?.translatedText||payload?.translation||'').trim();
+          if(!translated) throw new Error('libre empty');
+          out.push(translated);
+        }
+        providerDisabledUntil[base]=0;
+        return out.join('').trim();
+      }catch(_){ providerDisabledUntil[base]=Date.now()+2*60*1000; }
+    }
+    throw new Error('libre unavailable');
   }
 
   async function translateViaMyMemory(text,target){
@@ -53324,9 +53403,10 @@ try{
         if (!translated || /MYMEMORY WARNING/i.test(translated)) throw new Error('mymemory empty');
         out.push(translated);
       }
+      providerDisabledUntil[provider]=0;
       return out.join('').trim();
     }catch(err){
-      providerDisabledUntil[provider]=Date.now()+15*60*1000;
+      providerDisabledUntil[provider]=Date.now()+8*60*1000;
       throw err;
     }
   }
@@ -53341,7 +53421,7 @@ try{
         body:JSON.stringify({ text:String(text||''), targetLang:String(target||''), sourceLang:'it' })
       },4500);
       if (!res.ok){
-        if ([401,402,403,429].includes(res.status) || res.status>=500) backendDisabledUntil=Date.now()+5*60*1000;
+        if ([401,402,403,429].includes(res.status) || res.status>=500) backendDisabledUntil=Date.now()+30*60*1000;
         throw new Error('backend '+res.status);
       }
       const type=String(res.headers.get('content-type')||'').toLowerCase();
@@ -53357,9 +53437,16 @@ try{
     const target=cleanLang(targetLang) || String(targetLang||'').trim().toLowerCase();
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
-    try{ return await translateViaLingva(source,target); }catch(_){ }
-    try{ return await translateViaMyMemory(source,target); }catch(_){ }
-    try{ return await translateViaConfiguredBackend(source,target); }catch(_){ }
+
+    // dDAE_3.277: traduzione avviene esclusivamente nella fase di salvataggio.
+    // Si usano più provider con fallback; nessuna di queste chiamate viene eseguita al momento dell'invio.
+    const providers=[translateViaLingva,translateViaGoogle,translateViaLibreTranslate,translateViaMyMemory,translateViaConfiguredBackend];
+    for(const provider of providers){
+      try{
+        const translated=String(await provider(source,target)||'').trim();
+        if(translated) return translated;
+      }catch(_){ }
+    }
     return '';
   }
 
@@ -53587,7 +53674,7 @@ try{
 })();
 
 
-/* dDAE_3.276 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.277 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53686,25 +53773,38 @@ try{
     for(const code of candidates){ const v=String(rec.translations?.[code]||'').trim(); if(v) return v; }
     return '';
   }
-  async function translateRecord(rec,onlyLang){
+  async function translateRecord(rec,onlyLang,onProgress){
     if(!rec||!rec.text||typeof window.__translateConfiguredGuestMessage__!=='function') return rec;
     const langs=onlyLang?[onlyLang]:MANAGED_LANGUAGES;
     rec.translations=rec.translations&&typeof rec.translations==='object'?rec.translations:{};
     rec.translations.it=rec.text;
-    const queue=langs.filter(l=>l&&l!=='it'&&!translationFor(rec,l));
-    let cursor=0;
-    async function worker(){
-      while(cursor<queue.length){
-        const lang=queue[cursor++];
-        try{
-          const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
-          if(value) rec.translations[lang]=value;
-          rec.updatedAt=new Date().toISOString();
-        }catch(_){ }
+
+    const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+    const maxRounds=onlyLang?2:3;
+    for(let round=0;round<maxRounds;round++){
+      const queue=langs.filter(l=>l&&l!=='it'&&!translationFor(rec,l));
+      if(!queue.length) break;
+      let cursor=0;
+      async function worker(){
+        while(cursor<queue.length){
+          const lang=queue[cursor++];
+          try{
+            const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
+            if(value){
+              rec.translations[lang]=value;
+              rec.updatedAt=new Date().toISOString();
+              try{ if(typeof onProgress==='function') onProgress(rec,lang); }catch(_){ }
+            }
+          }catch(_){ }
+          // Evita raffiche aggressive sui servizi pubblici e i rate limit su iOS.
+          if(!onlyLang) await sleep(90);
+        }
       }
+      const n=Math.max(1,Math.min(onlyLang?1:2,queue.length||1));
+      await Promise.all(Array.from({length:n},()=>worker()));
+      if(!missingTranslations(rec).length) break;
+      if(round<maxRounds-1) await sleep(550 + round*450);
     }
-    const n=Math.max(1,Math.min(4,queue.length||1));
-    await Promise.all(Array.from({length:n},()=>worker()));
     return rec;
   }
   function missingTranslations(rec){
@@ -53778,15 +53878,29 @@ try{
       updatedAt:new Date().toISOString()
     };
     candidate.translations.it=text;
+    // Per i nuovi messaggi conserva lo stesso id anche se il primo tentativo di traduzione è parziale,
+    // così i successivi Salva completano lo stesso record senza duplicarlo.
+    if(!editorId) editorId=String(candidate.id);
 
     const saveBtn=$('guestMessageEditorSaveBtn');
     try{if(saveBtn)saveBtn.disabled=true;toast('Preparazione di tutte le traduzioni…','blue');}catch(_){ }
 
-    try{ await translateRecord(candidate); }catch(_){ }
+    // Conserva progressivamente le traduzioni riuscite: un eventuale retry riparte solo da quelle mancanti.
+    const persistProgress=(draft)=>{
+      try{
+        const partial=catalog.slice();
+        const pidx=partial.findIndex(r=>String(r.id)===String(draft.id));
+        if(pidx>=0) partial[pidx]=normalizeRecord(draft); else partial.push(normalizeRecord(draft));
+        writeLocal(partial);
+      }catch(_){ }
+    };
+    try{ await translateRecord(candidate,null,persistProgress); }catch(_){ }
+    persistProgress(candidate);
     const missing=missingTranslations(candidate);
     if(missing.length){
       try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
-      try{toast('Salvataggio non completato: mancano '+missing.length+' traduzioni. Riprova con connessione Internet.','orange');}catch(_){ }
+      const preview=missing.slice(0,6).map(x=>String(x).toUpperCase()).join(', ');
+      try{toast('Traduzioni memorizzate parzialmente. Mancano '+missing.length+(preview?' ('+preview+(missing.length>6?'…':'')+')':'')+'. Premi di nuovo Salva per completare.','orange');}catch(_){ }
       return;
     }
 
