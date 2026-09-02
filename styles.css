@@ -35076,7 +35076,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{ width:30px !important; height:30px !important; flex-basis:30px !important; }
 }
 
-/* dDAE_3.278 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
+/* dDAE_3.279 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
 #guestContactActionDock{
   width:min(360px, calc(100vw - 40px)) !important;
   justify-content:center !important;
@@ -35201,8 +35201,9 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   -webkit-tap-highlight-color:transparent !important;
 }
 .guest-message-channel-btn:disabled{
-  opacity:.38 !important;
+  opacity:1 !important;
 }
+/* dDAE_3.279 — lo stato SPENTO/ACCESO dei canali è pilotato dal tema, non dall'opacità nativa disabled. */
 .guest-message-channel-btn .ui-ico{
   width:31px !important;
   height:31px !important;
@@ -35241,7 +35242,7 @@ html.dark-mode .guest-message-title-btn{
 }
 
 
-/* dDAE_3.278 — Catalogo messaggi: UI essenziale, eliminazione per record e feedback sopra i popup. */
+/* dDAE_3.279 — Catalogo messaggi: UI essenziale, eliminazione per record e feedback sopra i popup. */
 #guestMessagesSettingsModal .guest-message-settings-hint{
   display:none !important;
 }

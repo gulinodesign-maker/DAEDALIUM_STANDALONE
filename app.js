@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.278";
+const BUILD_VERSION = "3.279";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -23000,7 +23000,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
@@ -23073,6 +23073,8 @@ function __defaultSingleActionButtonVisual__(btn){
     guestPhoneActionCall:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestPhoneActionSms:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
+    guestMessageSendWhatsAppChannel:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
+    guestMessageSendMessengerChannel:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestConfiguredWhatsAppMessage:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
@@ -23122,7 +23124,7 @@ function __defaultSingleActionButtonVisual__(btn){
 function __singleActionButtonSupportsDualState__(btn){
   try{
     const sharedKey = __singleActionButtonSharedKey__(btn);
-    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
   }catch(_){ return false; }
 }
 
@@ -23132,6 +23134,8 @@ function __defaultSingleActionButtonStateVisuals__(btn){
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
   try{ if (btn && btn.id === 'channelEditorVisibilityToggle') return { off:{ ...base, bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 }, on:{ ...base, bg:'indigo-5', border:'indigo-6', fg:'white', opacity:0.94 } }; }catch(_){}
+  try{ if (__singleActionButtonSharedKey__(btn) === 'guestMessageSendWhatsAppChannel') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.94 } }; }catch(_){}
+  try{ if (__singleActionButtonSharedKey__(btn) === 'guestMessageSendMessengerChannel') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'sky-5', border:'sky-5', fg:'white', opacity:0.94 } }; }catch(_){}
   try{ if (__singleActionButtonSharedKey__(btn) === 'speseBudgetModeToggle') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.94 } }; }catch(_){}
   if (!__singleActionButtonSupportsDualState__(btn)) return { off:{ ...base }, on:{ ...base } };
   const off = { ...base, opacity:0.52 };
@@ -23383,6 +23387,7 @@ async function __openSingleActionButtonColorPicker__(btn){
     const label = __guestFilterButtonLocalizedLabel__(btn);
     const isDual = __singleActionButtonSupportsDualState__(btn);
     const category = __singleActionButtonCategoryForId__(btn);
+    const sharedKey = __singleActionButtonSharedKey__(btn);
 
     if (isDual){
       const states = __singleActionButtonVisualStateMapFor__(btn);
@@ -23415,7 +23420,7 @@ async function __openSingleActionButtonColorPicker__(btn){
         activeState,
         drafts,
         originals,
-        labels:{ off:'OFF', on:'ON' },
+        labels:(sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel') ? { off:'SPENTO', on:'ACCESO' } : { off:'OFF', on:'ON' },
         fallbackBg:(drafts[activeState].bg || 'blue-4'),
         onStatePreview:(stateName, payload) => { applyState(stateName, payload, true); },
         onConfirm: async(all) => {
@@ -46996,7 +47001,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.278';
+  var BUILD_TAG='dDAE_3.279';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51910,7 +51915,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.278',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.279',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53438,7 +53443,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.278: traduzione avviene esclusivamente nella fase di salvataggio.
+    // dDAE_3.279: traduzione avviene esclusivamente nella fase di salvataggio.
     // Si usano più provider con fallback; nessuna di queste chiamate viene eseguita al momento dell'invio.
     const providers=[translateViaLingva,translateViaGoogle,translateViaLibreTranslate,translateViaMyMemory,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53674,7 +53679,8 @@ try{
 })();
 
 
-/* dDAE_3.278 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.279 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.279 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53958,7 +53964,16 @@ try{
   function closeSend(){ const m=$('guestMessageSendModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');} try{document.body.classList.remove('modal-open');}catch(_){ } selectedSendId=''; }
   function updateSendButtons(){
     const active=!!getRecord(selectedSendId);
-    ['guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn'].forEach(id=>{const b=$(id);if(b){b.disabled=!active;b.setAttribute('aria-disabled',active?'false':'true');}});
+    ['guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn'].forEach(id=>{
+      const b=$(id); if(!b) return;
+      // Il tasto resta fisicamente interattivo anche da SPENTO per consentire il long-press colore.
+      try{ b.disabled=false; }catch(_){ }
+      b.setAttribute('aria-disabled',active?'false':'true');
+      b.classList.toggle('is-on',active);
+      b.classList.toggle('is-off',!active);
+      b.dataset.state=active?'on':'off';
+      try{ __applySingleActionButtonVisual__(b,active?'on':'off'); }catch(_){ }
+    });
   }
   function renderSendList(){
     const host=$('guestMessageSendList'); if(!host)return;
@@ -54008,16 +54023,17 @@ try{
   }
   async function sendMessenger(){
     const message=await preparedSelectedMessage(); if(!message)return;
-    try{
-      if(navigator.share){
-        await navigator.share({text:message});
-        closeSend(); return;
-      }
-    }catch(err){ if(err&&String(err.name||'')==='AbortError') return; }
+    // Messenger non espone un deep-link pubblico affidabile per precompilare testo arbitrario
+    // senza conoscere l'ID Messenger del destinatario. Evitiamo comunque lo share-sheet iOS:
+    // il testo viene copiato e Messenger viene aperto direttamente.
     const copied=await copyText(message);
-    if(copied){try{toast('Messaggio copiato. Seleziona la chat in Messenger e incollalo.','blue');}catch(_){ }}
+    if(copied){try{toast('Messaggio copiato. Messenger aperto direttamente.','blue');}catch(_){ }}
     closeSend();
-    try{window.location.href='fb-messenger://';setTimeout(()=>{try{window.open('https://www.messenger.com/','_blank','noopener');}catch(_){ }},900);}catch(_){try{window.open('https://www.messenger.com/','_blank','noopener');}catch(__){ }}
+    try{
+      window.location.href='fb-messenger://';
+    }catch(_){
+      try{ window.location.href='https://www.messenger.com/'; }catch(__){ }
+    }
   }
 
   function init(){
