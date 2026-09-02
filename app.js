@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.282";
+const BUILD_VERSION = "3.283";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -47001,7 +47001,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.282';
+  var BUILD_TAG='dDAE_3.283';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51915,7 +51915,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.282',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.283',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53115,7 +53115,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.282 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.283 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53527,7 +53527,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.282: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.283: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53764,9 +53764,9 @@ try{
 })();
 
 
-/* dDAE_3.282 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.282 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.282 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.283 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.283 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.283 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -54139,12 +54139,17 @@ try{
     return guestTitle?(guestTitle+'\n\n'+translated):translated;
   }
   async function sendWhatsApp(){
-    const message=await preparedSelectedMessage(); if(!message)return;
     const guest=state?.guestViewItem||state?.guestEditSourceItem||null;
     const raw=(typeof __guestPhoneRawForContactAction__==='function')?__guestPhoneRawForContactAction__():String(guest?.telefono||'').trim();
     let wa=''; try{wa=(typeof normalizeWhatsAppPhone==='function')?normalizeWhatsAppPhone(raw,(typeof __currentGuestNationalityCodeForPhone__==='function'?__currentGuestNationalityCodeForPhone__():'')):String(raw||'').replace(/\D/g,'');}catch(_){ }
     if(!wa){try{toast('Numero WhatsApp ospite mancante','orange');}catch(_){ }return;}
-    const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
+    let url='https://wa.me/'+encodeURIComponent(wa);
+    // Se è stato scelto un titolo, apre la chat con il messaggio memorizzato;
+    // se il canale viene premuto direttamente, apre la chat vuota del contatto.
+    if(getRecord(selectedSendId)){
+      const message=await preparedSelectedMessage(); if(!message)return;
+      url+='?text='+encodeURIComponent(message);
+    }
     closeSend(); try{window.location.href=url;}catch(_){try{window.open(url,'_blank','noopener');}catch(__){ }}
   }
   async function copyText(text){
@@ -54152,18 +54157,24 @@ try{
     try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return !!ok;}catch(_){return false;}
   }
   async function sendMessenger(){
-    const message=await preparedSelectedMessage(); if(!message)return;
-    // Messenger non espone un deep-link pubblico affidabile per precompilare testo arbitrario
-    // senza conoscere l'ID Messenger del destinatario. Evitiamo comunque lo share-sheet iOS:
-    // il testo viene copiato e Messenger viene aperto direttamente.
-    const copied=await copyText(message);
-    if(copied){try{toast('Messaggio copiato. Messenger aperto direttamente.','blue');}catch(_){ }}
-    closeSend();
-    try{
-      window.location.href='fb-messenger://';
-    }catch(_){
-      try{ window.location.href='https://www.messenger.com/'; }catch(__){ }
+    const guest=state?.guestViewItem||state?.guestEditSourceItem||null;
+    const raw=(typeof __guestPhoneRawForContactAction__==='function')?__guestPhoneRawForContactAction__():String(guest?.telefono||'').trim();
+    const phone=String(raw||'').trim();
+    if(!phone){try{toast('Numero ospite mancante','orange');}catch(_){ }return;}
+    let message='';
+    // Stessa logica di WhatsApp: titolo selezionato = testo precompilato;
+    // pressione diretta del canale = conversazione SMS/iMessage vuota.
+    if(getRecord(selectedSendId)){
+      message=await preparedSelectedMessage(); if(!message)return;
     }
+    const cleanPhone=phone.replace(/[^+\d]/g,'');
+    let url='sms:'+encodeURIComponent(cleanPhone||phone);
+    if(message){
+      // Su iOS il separatore &body mantiene il destinatario già impostato nell'app Messaggi.
+      url+='&body='+encodeURIComponent(message);
+    }
+    closeSend();
+    try{ window.location.href=url; }catch(_){ }
   }
 
   function init(){
