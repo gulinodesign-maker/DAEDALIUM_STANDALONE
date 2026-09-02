@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.281";
+const BUILD_VERSION = "3.282";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -47001,7 +47001,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.281';
+  var BUILD_TAG='dDAE_3.282';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51915,7 +51915,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.281',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.282',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53115,7 +53115,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.281 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.282 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53527,7 +53527,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.281: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.282: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53764,13 +53764,14 @@ try{
 })();
 
 
-/* dDAE_3.281 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.281 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.281 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.282 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.282 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.282 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
   const CATALOG_SETTING_KEY='guest_message_templates_json';
+  const CATALOG_INITIALIZED_KEY='dDAE_guest_message_catalog_initialized_v1';
   const LEGACY_TEMPLATE_KEY='dDAE_guest_whatsapp_message_template_v1';
   const LEGACY_TRANSLATIONS_KEY='dDAE_guest_whatsapp_message_translations_v1';
   const MANAGED_LANGUAGES=[
@@ -53792,8 +53793,9 @@ try{
     return { id:String(r.id||safeId()), title:title||'Messaggio', text, translations:tr, updatedAt:String(r.updatedAt||'') };
   }
   function validCatalog(value){ return Array.isArray(value) ? value.map(normalizeRecord).filter(r=>r.text||r.title) : []; }
+  function localCatalogExists(){ try{ return localStorage.getItem(CATALOG_STORAGE_KEY)!==null || localStorage.getItem(CATALOG_INITIALIZED_KEY)==='1'; }catch(_){ return false; } }
   function readLocal(){
-    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw){ const parsed=JSON.parse(raw); const rows=validCatalog(parsed); if(rows.length) return rows; } }catch(_){ }
+    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
     return [];
   }
   function migrateLegacy(){
@@ -53810,7 +53812,7 @@ try{
   }
   function writeLocal(rows){
     catalog=validCatalog(rows);
-    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); }catch(_){ }
+    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); localStorage.setItem(CATALOG_INITIALIZED_KEY,'1'); }catch(_){ }
     return catalog;
   }
   async function readRemote(){
@@ -53835,9 +53837,12 @@ try{
     return safe;
   }
   async function loadCatalog(useRemote){
+    const hadLocal=localCatalogExists();
     const localRows=readLocal();
     let rows=[];
-    if(useRemote) rows=await readRemote();
+    // Un catalogo locale esplicitamente vuoto è uno stato valido: non deve essere
+    // ripopolato dal vecchio template legacy o da una copia remota obsoleta.
+    if(useRemote && !(hadLocal && localRows.length===0)) rows=await readRemote();
     if(rows.length && localRows.length){
       const merged=rows.map(remote=>{
         const local=localRows.find(item=>String(item.id)===String(remote.id) && String(item.text||'')===String(remote.text||''));
@@ -53852,7 +53857,7 @@ try{
       rows=merged;
     }
     if(!rows.length) rows=localRows;
-    if(!rows.length) rows=migrateLegacy();
+    if(!rows.length && !hadLocal) rows=migrateLegacy();
     writeLocal(rows);
     return catalog;
   }
@@ -53942,6 +53947,7 @@ try{
     const title=$('guestMessageTitleInput'), text=$('guestMessageTemplateInputV2');
     if(title) title.value=rec?rec.title:'';
     if(text) text.value=rec?rec.text:'';
+    const progressWrap=$('guestMessageTranslationProgress'); if(progressWrap) progressWrap.hidden=true;
     const list=$('guestMessageCatalogView'), editor=$('guestMessageEditorView');
     if(list) list.hidden=true; if(editor) editor.hidden=false;
     setTimeout(()=>{ try{title?.focus({preventScroll:true});}catch(_){ } },60);
@@ -54022,7 +54028,18 @@ try{
     if(!editorId) editorId=String(candidate.id);
 
     const saveBtn=$('guestMessageEditorSaveBtn');
-    try{if(saveBtn)saveBtn.disabled=true;toast('Preparazione di tutte le traduzioni…','blue');}catch(_){ }
+    const progressWrap=$('guestMessageTranslationProgress');
+    const progressBar=$('guestMessageTranslationProgressBar');
+    const progressText=$('guestMessageTranslationProgressText');
+    const progressTotal=MANAGED_LANGUAGES.filter(l=>l!=='it').length;
+    const setProgress=(done,total,label)=>{
+      const t=Math.max(1,Number(total)||progressTotal), d=Math.max(0,Math.min(t,Number(done)||0));
+      if(progressWrap) progressWrap.hidden=false;
+      if(progressBar){ progressBar.max=t; progressBar.value=d; }
+      if(progressText) progressText.textContent=label||('Traduzioni '+d+'/'+t);
+    };
+    setProgress(0,progressTotal,'Traduzioni 0/'+progressTotal);
+    try{if(saveBtn)saveBtn.disabled=true;}catch(_){ }
 
     // Crea/subito il record indipendente. In questo modo un secondo messaggio non può
     // essere perso solo perché una traduzione esterna ha avuto un errore temporaneo.
@@ -54031,19 +54048,15 @@ try{
     if(baseIdx>=0) baseRows[baseIdx]=candidate; else baseRows.push(candidate);
     writeLocal(baseRows);
 
-    // Conserva progressivamente ogni lingua nello stesso record.
-    let lastProgressToastAt=0;
+    // Conserva progressivamente ogni lingua nello stesso record e aggiorna una
+    // barra fissa nel popup: nessun toast intermittente durante il processo.
     const persistProgress=(draft,lang,done,total)=>{
       try{
         const partial=catalog.slice();
         const pidx=partial.findIndex(r=>String(r.id)===String(draft.id));
         if(pidx>=0) partial[pidx]=normalizeRecord(draft); else partial.push(normalizeRecord(draft));
         writeLocal(partial);
-        const now=Date.now();
-        if(done && total && (done===1 || done===total || done%5===0 || now-lastProgressToastAt>9000)){
-          lastProgressToastAt=now;
-          try{toast('Traduzioni memorizzate '+done+'/'+total+'…','blue');}catch(_){ }
-        }
+        if(Number.isFinite(Number(done)) && Number.isFinite(Number(total))) setProgress(done,total);
       }catch(_){ }
     };
     try{ await translateRecord(candidate,null,persistProgress); }catch(_){ }
@@ -54059,6 +54072,7 @@ try{
       catalog=validCatalog(next);
     }catch(_){
       try{if(saveBtn)saveBtn.disabled=false;}catch(__){ }
+      setProgress(0,progressTotal,'Errore salvataggio');
       try{toast('Errore durante il salvataggio del messaggio','orange');}catch(__){ }
       return;
     }
@@ -54066,12 +54080,15 @@ try{
     const missing=missingTranslations(candidate);
     try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
     if(missing.length){
+      const completed=progressTotal-missing.filter(x=>x!=='it').length;
+      setProgress(completed,progressTotal,'Traduzioni '+completed+'/'+progressTotal+' — incomplete');
       const preview=missing.slice(0,6).map(x=>String(x).toUpperCase()).join(', ');
       try{toast('Traduzioni non ancora complete: mancano '+missing.length+(preview?' ('+preview+(missing.length>6?'…':'')+')':'')+'. Le traduzioni riuscite sono già memorizzate; premi Salva per completare le mancanti.','orange');}catch(_){ }
       return;
     }
+    setProgress(progressTotal,progressTotal,'Traduzioni completate');
     try{toast('Traduzioni completate e messaggio salvato.','green');}catch(_){ }
-    showCatalogView();
+    setTimeout(()=>{ try{ if(progressWrap) progressWrap.hidden=true; }catch(_){ } showCatalogView(); },650);
   }
 
   function closeSend(){ const m=$('guestMessageSendModal'); if(m){m.hidden=true;m.setAttribute('aria-hidden','true');} try{document.body.classList.remove('modal-open');}catch(_){ } selectedSendId=''; }
