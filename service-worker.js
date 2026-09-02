@@ -89,7 +89,6 @@ function isApiRequest(url) {
     h === "firebase.googleapis.com" ||
     h === "www.googleapis.com" ||
     h === "translate.googleapis.com" ||
-    h === "api.simplytranslate.ai" ||
     h === "clients5.google.com" ||
     h === "api.openai.com"
   );
