@@ -1,4 +1,4 @@
-/* dDAE_3.279 - Firebase frontend config + endpoint traduzione opzionale */
+/* dDAE_3.280 - Firebase frontend config + endpoint traduzione opzionale */
 const DDAE_LICENSE_PAYMENT_URL = "";
 
 // Endpoint di traduzione opzionale usato solo come fallback durante il salvataggio delle traduzioni.

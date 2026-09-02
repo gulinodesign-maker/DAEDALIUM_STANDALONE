@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.279";
+const BUILD_VERSION = "3.280";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -47001,7 +47001,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.279';
+  var BUILD_TAG='dDAE_3.280';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51915,7 +51915,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.279',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.280',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53102,6 +53102,16 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
+  // dDAE_3.280 — i cooldown dei traduttori sono separati per lingua.
+  // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
+  function providerCooldownKey(provider,target){
+    return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
+  }
+  function resetTranslationProviderCooldowns(){
+    try{ Object.keys(providerDisabledUntil).forEach((key)=>{ delete providerDisabledUntil[key]; }); }catch(_){ }
+    backendDisabledUntil = 0;
+  }
+
   function cleanLang(raw){
     const s = String(raw || '').trim().toLowerCase().replace(/_/g,'-');
     if (!s) return '';
@@ -53304,9 +53314,10 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const chunks = String(text||'').length > 1400 ? splitForMyMemory(text,1200) : [String(text||'')];
-    const ordered=LINGVA_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[a]||0)-Number(providerDisabledUntil[b]||0));
+    const ordered=LINGVA_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
     for (const base of ordered){
-      if (Date.now() < Number(providerDisabledUntil[base]||0)) continue;
+      const cooldownKey=providerCooldownKey(base,to);
+      if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) continue;
       try{
         const out=[];
         for (const chunk of chunks){
@@ -53320,10 +53331,10 @@ try{
         }
         const joined=out.join('').trim();
         if (joined){
-          providerDisabledUntil[base]=0;
+          providerDisabledUntil[cooldownKey]=0;
           return joined;
         }
-      }catch(_){ providerDisabledUntil[base]=Date.now()+75*1000; }
+      }catch(_){ providerDisabledUntil[cooldownKey]=Date.now()+75*1000; }
     }
     throw new Error('lingva unavailable');
   }
@@ -53339,7 +53350,8 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const provider='google-gtx';
-    if (Date.now() < Number(providerDisabledUntil[provider]||0)) throw new Error('google disabled');
+    const cooldownKey=providerCooldownKey(provider,to);
+    if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) throw new Error('google disabled');
     const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
     const out=[];
     try{
@@ -53352,10 +53364,10 @@ try{
         if(!translated) throw new Error('google empty');
         out.push(translated);
       }
-      providerDisabledUntil[provider]=0;
+      providerDisabledUntil[cooldownKey]=0;
       return out.join('').trim();
     }catch(err){
-      providerDisabledUntil[provider]=Date.now()+90*1000;
+      providerDisabledUntil[cooldownKey]=Date.now()+90*1000;
       throw err;
     }
   }
@@ -53367,9 +53379,10 @@ try{
     if (to==='zh') to='zh';
     if (to==='no') to='nb';
     const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
-    const ordered=LIBRETRANSLATE_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[a]||0)-Number(providerDisabledUntil[b]||0));
+    const ordered=LIBRETRANSLATE_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
     for(const base of ordered){
-      if(Date.now()<Number(providerDisabledUntil[base]||0)) continue;
+      const cooldownKey=providerCooldownKey(base,to);
+      if(Date.now()<Number(providerDisabledUntil[cooldownKey]||0)) continue;
       try{
         const out=[];
         for(const chunk of chunks){
@@ -53384,9 +53397,9 @@ try{
           if(!translated) throw new Error('libre empty');
           out.push(translated);
         }
-        providerDisabledUntil[base]=0;
+        providerDisabledUntil[cooldownKey]=0;
         return out.join('').trim();
-      }catch(_){ providerDisabledUntil[base]=Date.now()+2*60*1000; }
+      }catch(_){ providerDisabledUntil[cooldownKey]=Date.now()+2*60*1000; }
     }
     throw new Error('libre unavailable');
   }
@@ -53395,7 +53408,8 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const provider='mymemory';
-    if (Date.now() < Number(providerDisabledUntil[provider]||0)) throw new Error('mymemory disabled');
+    const cooldownKey=providerCooldownKey(provider,to);
+    if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) throw new Error('mymemory disabled');
     const chunks=splitForMyMemory(text,430);
     const out=[];
     try{
@@ -53408,10 +53422,10 @@ try{
         if (!translated || /MYMEMORY WARNING/i.test(translated)) throw new Error('mymemory empty');
         out.push(translated);
       }
-      providerDisabledUntil[provider]=0;
+      providerDisabledUntil[cooldownKey]=0;
       return out.join('').trim();
     }catch(err){
-      providerDisabledUntil[provider]=Date.now()+8*60*1000;
+      providerDisabledUntil[cooldownKey]=Date.now()+8*60*1000;
       throw err;
     }
   }
@@ -53443,9 +53457,9 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.279: traduzione avviene esclusivamente nella fase di salvataggio.
+    // dDAE_3.280: traduzione avviene esclusivamente nella fase di salvataggio.
     // Si usano più provider con fallback; nessuna di queste chiamate viene eseguita al momento dell'invio.
-    const providers=[translateViaLingva,translateViaGoogle,translateViaLibreTranslate,translateViaMyMemory,translateViaConfiguredBackend];
+    const providers=[translateViaGoogle,translateViaLingva,translateViaMyMemory,translateViaLibreTranslate,translateViaConfiguredBackend];
     for(const provider of providers){
       try{
         const translated=String(await provider(source,target)||'').trim();
@@ -53672,6 +53686,7 @@ try{
   window.__resolveConfiguredGuestMessageLanguage__=resolveGuestLanguage;
   window.__translateConfiguredGuestMessage__=translateMessageForStorage;
   window.__translateConfiguredGuestMessageWithOpenAI__=translateMessageForStorage;
+  window.__resetConfiguredGuestMessageTranslationProviders__=resetTranslationProviderCooldowns;
   window.__completeConfiguredGuestMessageTranslations__=completeTranslationsInBackground;
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else setTimeout(init,0);
   window.addEventListener('pageshow',init);
@@ -53679,8 +53694,9 @@ try{
 })();
 
 
-/* dDAE_3.279 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.279 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.280 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.280 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.280 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53785,31 +53801,36 @@ try{
     rec.translations=rec.translations&&typeof rec.translations==='object'?rec.translations:{};
     rec.translations.it=rec.text;
 
+    // Ogni messaggio parte con una sessione traduttori pulita. I cooldown del messaggio
+    // precedente non possono più impedire la creazione del secondo/terzo messaggio.
+    try{ window.__resetConfiguredGuestMessageTranslationProviders__?.(); }catch(_){ }
+
     const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
-    const maxRounds=onlyLang?2:3;
+    const maxRounds=onlyLang?3:4;
     for(let round=0;round<maxRounds;round++){
       const queue=langs.filter(l=>l&&l!=='it'&&!translationFor(rec,l));
       if(!queue.length) break;
-      let cursor=0;
-      async function worker(){
-        while(cursor<queue.length){
-          const lang=queue[cursor++];
-          try{
-            const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
-            if(value){
-              rec.translations[lang]=value;
-              rec.updatedAt=new Date().toISOString();
-              try{ if(typeof onProgress==='function') onProgress(rec,lang); }catch(_){ }
-            }
-          }catch(_){ }
-          // Evita raffiche aggressive sui servizi pubblici e i rate limit su iOS.
-          if(!onlyLang) await sleep(90);
-        }
+
+      // Serializzazione intenzionale: su iOS evita raffiche di 40+ richieste contemporanee
+      // e consente di salvare ogni lingua appena disponibile.
+      for(const lang of queue){
+        try{
+          const value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim();
+          if(value){
+            rec.translations[lang]=value;
+            rec.updatedAt=new Date().toISOString();
+            try{ if(typeof onProgress==='function') onProgress(rec,lang); }catch(_){ }
+          }
+        }catch(_){ }
+        if(!onlyLang) await sleep(180);
       }
-      const n=Math.max(1,Math.min(onlyLang?1:2,queue.length||1));
-      await Promise.all(Array.from({length:n},()=>worker()));
+
       if(!missingTranslations(rec).length) break;
-      if(round<maxRounds-1) await sleep(550 + round*450);
+      if(round<maxRounds-1){
+        // Nuovo giro con provider riabilitati: utile dopo un 429/transitorio.
+        try{ window.__resetConfiguredGuestMessageTranslationProviders__?.(); }catch(_){ }
+        await sleep(900 + round*700);
+      }
     }
     return rec;
   }
@@ -53926,7 +53947,14 @@ try{
     const saveBtn=$('guestMessageEditorSaveBtn');
     try{if(saveBtn)saveBtn.disabled=true;toast('Preparazione di tutte le traduzioni…','blue');}catch(_){ }
 
-    // Conserva progressivamente le traduzioni riuscite: un eventuale retry riparte solo da quelle mancanti.
+    // Crea/subito il record indipendente. In questo modo un secondo messaggio non può
+    // essere perso solo perché una traduzione esterna ha avuto un errore temporaneo.
+    let baseRows=catalog.slice();
+    let baseIdx=baseRows.findIndex(r=>String(r.id)===String(candidate.id));
+    if(baseIdx>=0) baseRows[baseIdx]=candidate; else baseRows.push(candidate);
+    writeLocal(baseRows);
+
+    // Conserva progressivamente ogni lingua nello stesso record.
     const persistProgress=(draft)=>{
       try{
         const partial=catalog.slice();
@@ -53937,14 +53965,9 @@ try{
     };
     try{ await translateRecord(candidate,null,persistProgress); }catch(_){ }
     persistProgress(candidate);
-    const missing=missingTranslations(candidate);
-    if(missing.length){
-      try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
-      const preview=missing.slice(0,6).map(x=>String(x).toUpperCase()).join(', ');
-      try{toast('Traduzioni memorizzate parzialmente. Mancano '+missing.length+(preview?' ('+preview+(missing.length>6?'…':'')+')':'')+'. Premi di nuovo Salva per completare.','orange');}catch(_){ }
-      return;
-    }
 
+    // Salva sempre il master del messaggio (anche se la rete ha lasciato qualche lingua
+    // incompleta); le traduzioni riuscite restano nel localStorage e quindi nel backup.
     const next=catalog.slice();
     const idx=next.findIndex(r=>String(r.id)===String(candidate.id));
     if(idx>=0) next[idx]=candidate; else next.push(candidate);
@@ -53956,7 +53979,14 @@ try{
       try{toast('Errore durante il salvataggio del messaggio','orange');}catch(__){ }
       return;
     }
+
+    const missing=missingTranslations(candidate);
     try{if(saveBtn)saveBtn.disabled=false;}catch(_){ }
+    if(missing.length){
+      const preview=missing.slice(0,6).map(x=>String(x).toUpperCase()).join(', ');
+      try{toast('Messaggio salvato. Traduzioni parziali: mancano '+missing.length+(preview?' ('+preview+(missing.length>6?'…':'')+')':'')+'. Premi Salva per ritentare solo quelle mancanti.','orange');}catch(_){ }
+      return;
+    }
     try{toast('Traduzioni completate e messaggio salvato.','green');}catch(_){ }
     showCatalogView();
   }
