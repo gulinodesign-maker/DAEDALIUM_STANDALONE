@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.273";
+const BUILD_VERSION = "3.274";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -40206,7 +40206,13 @@ function __calendarCheckoutRoomsCountForDate__(dateIso){
         const coStr = formatISODateLocal(__guestCheckOutRaw__(g));
         if (!coStr || coStr !== safeIso) continue;
         const roomsArr = __guestRoomsArrayForCalendar__(g, getConfiguredRoomsCount(6));
-        roomsArr.forEach((r) => { const n = Number(r || 0) || 0; if (n > 0) rooms.add(String(n)); });
+        roomsArr.forEach((r) => {
+          const n = Number(r || 0) || 0;
+          if (n <= 0) return;
+          // I locali restano nel calendario, ma non sono camere da conteggiare al check-out.
+          if (typeof isRoomSlotLocale === 'function' && isRoomSlotLocale(n)) return;
+          rooms.add(String(n));
+        });
       }catch(_){ }
     }
     return rooms.size;
@@ -40647,7 +40653,11 @@ function __calendarCheckoutRoomsForSelectedDate__(){
       const roomsArr = __guestRoomsArrayForCalendar__(g, maxRooms);
       for (const r of roomsArr){
         const n = Number(r);
-        if (isFinite(n) && n >= 1 && n <= maxRooms) rooms.add(String(Math.floor(n)));
+        if (!isFinite(n) || n < 1 || n > maxRooms) continue;
+        const slot = Math.floor(n);
+        // Un locale non deve essere marcato come camera in check-out.
+        if (typeof isRoomSlotLocale === 'function' && isRoomSlotLocale(slot)) continue;
+        rooms.add(String(slot));
       }
     }
   }catch(_){ }
@@ -46979,7 +46989,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.273';
+  var BUILD_TAG='dDAE_3.274';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51893,7 +51903,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.273',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.274',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
