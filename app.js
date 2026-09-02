@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.283";
+const BUILD_VERSION = "3.284";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -2176,6 +2176,45 @@ function __fsDecode__(doc){
   }catch(_){ return {}; }
 }
 
+function __syncProgressEnsure__(){
+  let host = document.getElementById("ddaeSyncProgress");
+  if (host) return host;
+  host = document.createElement("div");
+  host.id = "ddaeSyncProgress";
+  host.className = "ddae-sync-progress";
+  host.hidden = true;
+  host.innerHTML = '<div class="ddae-sync-progress__label"><span id="ddaeSyncProgressText">Sincronizzazione…</span><strong id="ddaeSyncProgressPct">0%</strong></div><div class="ddae-sync-progress__track"><div id="ddaeSyncProgressFill" class="ddae-sync-progress__fill"></div></div>';
+  document.body.appendChild(host);
+  return host;
+}
+function __syncProgressShow__(text, pct){
+  const host = __syncProgressEnsure__();
+  window.__DDAE_SYNC_PROGRESS_ACTIVE__ = true;
+  host.hidden = false;
+  host.dataset.state = "running";
+  __syncProgressUpdate__(text || "Sincronizzazione…", pct == null ? 4 : pct);
+}
+function __syncProgressUpdate__(text, pct){
+  const host = __syncProgressEnsure__();
+  const p = Math.max(0, Math.min(100, Number(pct == null ? 0 : pct)));
+  const label = document.getElementById("ddaeSyncProgressText");
+  const pc = document.getElementById("ddaeSyncProgressPct");
+  const fill = document.getElementById("ddaeSyncProgressFill");
+  if (label && text) label.textContent = String(text);
+  if (pc) pc.textContent = Math.round(p) + "%";
+  if (fill) fill.style.width = p + "%";
+}
+function __syncProgressFinish__(ok){
+  const host = __syncProgressEnsure__();
+  host.dataset.state = ok ? "ok" : "error";
+  __syncProgressUpdate__(ok ? "Sincronizzazione completata" : "Sincronizzazione non riuscita", 100);
+}
+function __syncProgressHide__(){
+  const host = document.getElementById("ddaeSyncProgress");
+  if (host) host.hidden = true;
+  window.__DDAE_SYNC_PROGRESS_ACTIVE__ = false;
+}
+
 function __syncDiagNow__(){ try{ return performance.now(); }catch(_){ return Date.now(); } }
 let __SYNC_DIAG__ = null;
 function __syncDiagBegin__(){
@@ -2183,7 +2222,7 @@ function __syncDiagBegin__(){
   try{ window.__DDAE_LAST_SYNC_DIAG__ = __SYNC_DIAG__; }catch(_){}
   return __SYNC_DIAG__;
 }
-function __syncDiagSetPhase__(name){ try{ if (__SYNC_DIAG__) __SYNC_DIAG__.currentPhase = String(name || "fase"); }catch(_){} }
+function __syncDiagSetPhase__(name){ try{ if (__SYNC_DIAG__) __SYNC_DIAG__.currentPhase = String(name || "fase"); if (window.__DDAE_SYNC_PROGRESS_ACTIVE__) __syncProgressUpdate__(String(name || "Sincronizzazione…"), Math.min(92, 10 + ((__SYNC_DIAG__?.phases?.length || 0) * 12))); }catch(_){} }
 async function __syncDiagStep__(name, fn){
   const t = __syncDiagNow__();
   __syncDiagSetPhase__(name);
@@ -2234,9 +2273,8 @@ function __syncDiagFinish__(ok){
     const opLine = [`GET ${d.counts.GET||0}/${((d.totals.GET||0)/1000).toFixed(1)}s`, `LIST ${d.counts.LIST||0}/${((d.totals.LIST||0)/1000).toFixed(1)}s`, `SET ${d.counts.SET||0}/${((d.totals.SET||0)/1000).toFixed(1)}s`, `DEL ${d.counts.DELETE||0}/${((d.totals.DELETE||0)/1000).toFixed(1)}s`].join("  ");
     const msg = [`Diagnostica sync dDAE_${BUILD_VERSION}`, `Totale: ${(d.totalMs/1000).toFixed(1)}s`, opLine, "", "Fasi più lente:", ...(phaseLines.length ? phaseLines : ["nessun dato"]), "", "Chiamate più lente:", ...(pathLines.length ? pathLines : ["nessun dato"]), "", "Dettagli salvati in console/localStorage."].join("\n");
     try{
-      if (localStorage.getItem("dDAE_sync_diag_popup_v1") === "1") alert(msg);
-      else toast(`Sync ${(d.totalMs/1000).toFixed(1)}s`, ok ? "green" : "orange");
-    }catch(_){ try{ toast(`Sync ${(d.totalMs/1000).toFixed(1)}s`, ok ? "green" : "orange"); }catch(__){} }
+      if (localStorage.getItem("dDAE_sync_diag_popup_v1") === "1") console.info(msg);
+    }catch(_){}
   }catch(_){}
 }
 
@@ -3583,7 +3621,7 @@ async function __handleSyncBoth__(){
   __syncDiagBegin__();
   __fbLoadLink__();
   const restoreState = __captureSyncRestoreState();
-  try{ toast("Sync diagnostica in corso...", "blue"); }catch(_){}
+  try{ __syncProgressShow__("Sincronizzazione in corso…", 4); }catch(_){}
   const __sleep__ = (ms) => new Promise(r => setTimeout(r, ms));
   const __attemptSync__ = async (name, fn, tries = 2, delay = 350) => {
     let last = false;
@@ -3615,7 +3653,7 @@ async function __handleSyncBoth__(){
     }
   }catch(_){ }
   const ok = (exported !== false) || (imported !== false);
-  try{ toast(ok ? "Sync completata" : "Sync non riuscita", ok ? "green" : "orange"); }catch(_){}
+  try{ __syncProgressFinish__(ok); }catch(_){}
   try{ __syncDiagFinish__(ok); }catch(_){}
   setTimeout(()=>{ try{ __writeRestoreState(restoreState); }catch(_){ } try{ location.reload(); }catch(_){ } }, 900);
   return ok;
@@ -8941,6 +8979,7 @@ function euro(n){
 
 let __toastTimer = null;
 function toast(msg, kind){
+  if (window.__DDAE_SYNC_PROGRESS_ACTIVE__) return;
   const t = $("#toast");
   if (!t) return;
   try{ msg = __translateText__ ? __translateText__(msg) : msg; }catch(_){ }
@@ -47001,7 +47040,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.283';
+  var BUILD_TAG='dDAE_3.284';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51915,7 +51954,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.283',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.284',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53115,7 +53154,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.283 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.284 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53527,7 +53566,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.283: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.284: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53764,9 +53803,9 @@ try{
 })();
 
 
-/* dDAE_3.283 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.283 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.283 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.284 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.284 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.284 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
