@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.284";
+const BUILD_VERSION = "3.285";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -2187,27 +2187,63 @@ function __syncProgressEnsure__(){
   document.body.appendChild(host);
   return host;
 }
+let __SYNC_PROGRESS_VISUAL__ = 0;
+let __SYNC_PROGRESS_TARGET__ = 0;
+let __SYNC_PROGRESS_TIMER__ = null;
+let __SYNC_PROGRESS_TEXT__ = "Sincronizzazione…";
+function __syncProgressPaint__(){
+  const label = document.getElementById("ddaeSyncProgressText");
+  const pc = document.getElementById("ddaeSyncProgressPct");
+  const fill = document.getElementById("ddaeSyncProgressFill");
+  if (label) label.textContent = String(__SYNC_PROGRESS_TEXT__ || "Sincronizzazione…");
+  if (pc) pc.textContent = Math.round(__SYNC_PROGRESS_VISUAL__) + "%";
+  if (fill) fill.style.width = __SYNC_PROGRESS_VISUAL__ + "%";
+}
+function __syncProgressStartTicker__(){
+  try{ if (__SYNC_PROGRESS_TIMER__) clearInterval(__SYNC_PROGRESS_TIMER__); }catch(_){}
+  __SYNC_PROGRESS_TIMER__ = setInterval(()=>{
+    if (!window.__DDAE_SYNC_PROGRESS_ACTIVE__) return;
+    const ceiling = Math.min(96, Math.max(__SYNC_PROGRESS_TARGET__, __SYNC_PROGRESS_VISUAL__ + 0.18));
+    if (__SYNC_PROGRESS_VISUAL__ < ceiling){
+      const gap = ceiling - __SYNC_PROGRESS_VISUAL__;
+      __SYNC_PROGRESS_VISUAL__ = Math.min(ceiling, __SYNC_PROGRESS_VISUAL__ + Math.max(0.18, Math.min(0.72, gap * 0.09)));
+      __syncProgressPaint__();
+    }
+  }, 110);
+}
 function __syncProgressShow__(text, pct){
   const host = __syncProgressEnsure__();
   window.__DDAE_SYNC_PROGRESS_ACTIVE__ = true;
   host.hidden = false;
   host.dataset.state = "running";
-  __syncProgressUpdate__(text || "Sincronizzazione…", pct == null ? 4 : pct);
+  __SYNC_PROGRESS_VISUAL__ = Math.max(0, Math.min(100, Number(pct == null ? 4 : pct)));
+  __SYNC_PROGRESS_TARGET__ = __SYNC_PROGRESS_VISUAL__;
+  __SYNC_PROGRESS_TEXT__ = text || "Sincronizzazione…";
+  __syncProgressPaint__();
+  __syncProgressStartTicker__();
 }
 function __syncProgressUpdate__(text, pct){
-  const host = __syncProgressEnsure__();
-  const p = Math.max(0, Math.min(100, Number(pct == null ? 0 : pct)));
-  const label = document.getElementById("ddaeSyncProgressText");
-  const pc = document.getElementById("ddaeSyncProgressPct");
-  const fill = document.getElementById("ddaeSyncProgressFill");
-  if (label && text) label.textContent = String(text);
-  if (pc) pc.textContent = Math.round(p) + "%";
-  if (fill) fill.style.width = p + "%";
+  __syncProgressEnsure__();
+  if (text) __SYNC_PROGRESS_TEXT__ = String(text);
+  const p = Math.max(0, Math.min(100, Number(pct == null ? __SYNC_PROGRESS_TARGET__ : pct)));
+  __SYNC_PROGRESS_TARGET__ = Math.max(__SYNC_PROGRESS_TARGET__, p);
+  __syncProgressPaint__();
 }
 function __syncProgressFinish__(ok){
   const host = __syncProgressEnsure__();
   host.dataset.state = ok ? "ok" : "error";
-  __syncProgressUpdate__(ok ? "Sincronizzazione completata" : "Sincronizzazione non riuscita", 100);
+  __SYNC_PROGRESS_TEXT__ = ok ? "Sincronizzazione completata" : "Sincronizzazione non riuscita";
+  __SYNC_PROGRESS_TARGET__ = 100;
+  try{ if (__SYNC_PROGRESS_TIMER__) clearInterval(__SYNC_PROGRESS_TIMER__); }catch(_){}
+  __SYNC_PROGRESS_TIMER__ = null;
+  const finishTick = ()=>{
+    const gap = 100 - __SYNC_PROGRESS_VISUAL__;
+    if (gap <= 0.05){ __SYNC_PROGRESS_VISUAL__ = 100; __syncProgressPaint__(); return; }
+    __SYNC_PROGRESS_VISUAL__ = Math.min(100, __SYNC_PROGRESS_VISUAL__ + Math.max(0.8, gap * 0.18));
+    __syncProgressPaint__();
+    requestAnimationFrame(finishTick);
+  };
+  requestAnimationFrame(finishTick);
 }
 function __syncProgressHide__(){
   const host = document.getElementById("ddaeSyncProgress");
@@ -2222,7 +2258,7 @@ function __syncDiagBegin__(){
   try{ window.__DDAE_LAST_SYNC_DIAG__ = __SYNC_DIAG__; }catch(_){}
   return __SYNC_DIAG__;
 }
-function __syncDiagSetPhase__(name){ try{ if (__SYNC_DIAG__) __SYNC_DIAG__.currentPhase = String(name || "fase"); if (window.__DDAE_SYNC_PROGRESS_ACTIVE__) __syncProgressUpdate__(String(name || "Sincronizzazione…"), Math.min(92, 10 + ((__SYNC_DIAG__?.phases?.length || 0) * 12))); }catch(_){} }
+function __syncDiagSetPhase__(name){ try{ if (__SYNC_DIAG__) __SYNC_DIAG__.currentPhase = String(name || "fase"); if (window.__DDAE_SYNC_PROGRESS_ACTIVE__) __syncProgressUpdate__(String(name || "Sincronizzazione…"), Math.min(94, 18 + ((__SYNC_DIAG__?.phases?.length || 0) * 16))); }catch(_){} }
 async function __syncDiagStep__(name, fn){
   const t = __syncDiagNow__();
   __syncDiagSetPhase__(name);
@@ -47040,7 +47076,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.284';
+  var BUILD_TAG='dDAE_3.285';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51954,7 +51990,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.284',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.285',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53154,7 +53190,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.284 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.285 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53566,7 +53602,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.284: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.285: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53803,9 +53839,9 @@ try{
 })();
 
 
-/* dDAE_3.284 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.284 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.284 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.285 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.285 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.285 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
