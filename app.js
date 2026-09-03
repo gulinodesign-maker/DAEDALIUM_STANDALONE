@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.285";
+const BUILD_VERSION = "3.286";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -47076,7 +47076,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.285';
+  var BUILD_TAG='dDAE_3.286';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51990,7 +51990,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.285',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.286',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53182,6 +53182,8 @@ try{
     'https://translate.google.com/translate_a/single'
   ];
   let googleEndpointCursor=0;
+  let lingvaInstanceCursor=0;
+  let libreInstanceCursor=0;
   let googleDisabledUntil=0;
   let googleDictionaryDisabledUntil=0;
 
@@ -53190,7 +53192,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.285 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.286 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53378,6 +53380,13 @@ try{
 
   function translationSleep(ms){ return new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0))); }
 
+  function rotateTranslationInstances(list,start){
+    const rows=Array.isArray(list)?list.slice():[];
+    if(!rows.length) return rows;
+    const offset=((Number(start)||0)%rows.length+rows.length)%rows.length;
+    return rows.slice(offset).concat(rows.slice(0,offset));
+  }
+
   function utf8Len(value){
     const s=String(value||'');
     try{ return new TextEncoder().encode(s).length; }catch(_){ return unescape(encodeURIComponent(s)).length; }
@@ -53406,8 +53415,9 @@ try{
     const to=normalizeProviderLang(target);
     if (!to) throw new Error('lang');
     const chunks = String(text||'').length > 1400 ? splitForMyMemory(text,1200) : [String(text||'')];
-    const ordered=LINGVA_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
-    for (const base of ordered.slice(0,3)){
+    const rotated=rotateTranslationInstances(LINGVA_INSTANCES,lingvaInstanceCursor++);
+    const ordered=rotated.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
+    for (const base of ordered.slice(0,4)){
       const cooldownKey=providerCooldownKey(base,to);
       if (Date.now() < Number(providerDisabledUntil[cooldownKey]||0)) continue;
       try{
@@ -53524,8 +53534,9 @@ try{
     if (to==='zh') to='zh';
     if (to==='no') to='nb';
     const chunks=String(text||'').length>1800?splitForMyMemory(text,1600):[String(text||'')];
-    const ordered=LIBRETRANSLATE_INSTANCES.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
-    for(const base of ordered.slice(0,2)){
+    const rotated=rotateTranslationInstances(LIBRETRANSLATE_INSTANCES,libreInstanceCursor++);
+    const ordered=rotated.slice().sort((a,b)=>Number(providerDisabledUntil[providerCooldownKey(a,to)]||0)-Number(providerDisabledUntil[providerCooldownKey(b,to)]||0));
+    for(const base of ordered.slice(0,3)){
       const cooldownKey=providerCooldownKey(base,to);
       if(Date.now()<Number(providerDisabledUntil[cooldownKey]||0)) continue;
       try{
@@ -53602,7 +53613,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.285: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.286: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53839,9 +53850,9 @@ try{
 })();
 
 
-/* dDAE_3.285 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.285 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.285 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.286 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.286 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.286 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53956,36 +53967,44 @@ try{
     const langs=onlyLang?[onlyLang]:MANAGED_LANGUAGES;
     rec.translations=rec.translations&&typeof rec.translations==='object'?rec.translations:{};
     rec.translations.it=rec.text;
-    try{ window.__resetConfiguredGuestMessageTranslationProviders__?.(); }catch(_){ }
 
+    // Non azzerare i cooldown fra un messaggio e il successivo: se un provider ha
+    // appena limitato il primo messaggio, il secondo deve passare ai fallback invece
+    // di ricominciare dallo stesso endpoint ancora bloccato.
     const targetLangs=langs.filter(l=>l&&l!=='it');
     const total=targetLangs.length;
     let completed=targetLangs.filter(l=>!!translationFor(rec,l)).length;
-    const rounds=onlyLang?2:2;
+    const rounds=onlyLang?2:3;
+    let attempted=0;
+    try{ if(typeof onProgress==='function') onProgress(rec,'',completed,total,attempted,'start'); }catch(_){ }
 
     for(let round=0;round<rounds;round++){
       const queue=targetLangs.filter(l=>!translationFor(rec,l));
       if(!queue.length) break;
       if(round>0){
-        // Mantieni i cooldown della stessa sessione: se un provider ha appena risposto 429/403,
-        // il secondo giro deve usare i fallback invece di martellarlo di nuovo.
-        await new Promise(resolve=>setTimeout(resolve,4200));
+        // Dai tempo ai limiti temporanei di scadere e consenti ai fallback ruotati
+        // di prendere il posto del provider usato nel giro precedente.
+        await new Promise(resolve=>setTimeout(resolve,6500));
       }
 
+      attempted=0;
       for(const lang of queue){
         if(translationFor(rec,lang)) continue;
+        attempted+=1;
+        try{ if(typeof onProgress==='function') onProgress(rec,lang,completed,total,attempted,'trying'); }catch(_){ }
         let value='';
         try{ value=String(await window.__translateConfiguredGuestMessage__(rec.text,lang)||'').trim(); }catch(_){ value=''; }
         if(value){
           rec.translations[lang]=value;
           rec.updatedAt=new Date().toISOString();
           completed=targetLangs.filter(l=>!!translationFor(rec,l)).length;
-          try{ if(typeof onProgress==='function') onProgress(rec,lang,completed,total); }catch(_){ }
-          // Ritmo volutamente lento: evita che Safari/iOS e i provider considerino il salvataggio una raffica automatica.
-          if(!onlyLang) await new Promise(resolve=>setTimeout(resolve,1400));
+          try{ if(typeof onProgress==='function') onProgress(rec,lang,completed,total,attempted,'saved'); }catch(_){ }
+          // Piccola pausa fra richieste riuscite per ridurre i 429 senza rendere
+          // apparentemente fermo il processo sul messaggio successivo.
+          if(!onlyLang) await new Promise(resolve=>setTimeout(resolve,1100));
         }else{
-          // Su un fallimento non martellare immediatamente il provider successivo/lingua successiva.
-          if(!onlyLang) await new Promise(resolve=>setTimeout(resolve,2400));
+          try{ if(typeof onProgress==='function') onProgress(rec,lang,completed,total,attempted,'failed'); }catch(_){ }
+          if(!onlyLang) await new Promise(resolve=>setTimeout(resolve,1600));
         }
       }
     }
@@ -54125,13 +54144,18 @@ try{
 
     // Conserva progressivamente ogni lingua nello stesso record e aggiorna una
     // barra fissa nel popup: nessun toast intermittente durante il processo.
-    const persistProgress=(draft,lang,done,total)=>{
+    const persistProgress=(draft,lang,done,total,attempted,status)=>{
       try{
         const partial=catalog.slice();
         const pidx=partial.findIndex(r=>String(r.id)===String(draft.id));
         if(pidx>=0) partial[pidx]=normalizeRecord(draft); else partial.push(normalizeRecord(draft));
         writeLocal(partial);
-        if(Number.isFinite(Number(done)) && Number.isFinite(Number(total))) setProgress(done,total);
+        if(Number.isFinite(Number(done)) && Number.isFinite(Number(total))){
+          const d=Math.max(0,Number(done)||0), t=Math.max(1,Number(total)||progressTotal);
+          let label='Traduzioni '+d+'/'+t;
+          if(status==='trying' && lang) label+=' · '+String(lang).toUpperCase();
+          setProgress(d,t,label);
+        }
       }catch(_){ }
     };
     try{ await translateRecord(candidate,null,persistProgress); }catch(_){ }
