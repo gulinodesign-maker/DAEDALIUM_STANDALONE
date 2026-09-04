@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.287";
+const BUILD_VERSION = "3.288";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -27427,7 +27427,16 @@ function __statMensiliCompareValuesForExpanded__(){
     const compareSource = hasValidSnapshot
       ? state.statGenCompareSnapshot
       : { guests: Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [], servizi: [], stanzeRows: Array.isArray(state.stanzeRows) ? state.stanzeRows : [] };
-    const compareStats = __computeStatMensiliFromSnapshot__(compareSource || {});
+    const previousExerciseYear = state.exerciseYear;
+    let compareStats;
+    try{
+      // Il calcolo mensile filtra le spese e la capacità camere usando state.exerciseYear.
+      // Durante il confronto deve quindi usare l'anno di riferimento, non l'anno corrente.
+      if (year) state.exerciseYear = String(year);
+      compareStats = __computeStatMensiliFromSnapshot__(compareSource || {});
+    }finally{
+      state.exerciseYear = previousExerciseYear;
+    }
     return {
       year,
       byMonth: Array.isArray(compareStats && compareStats.byMonth) ? compareStats.byMonth : new Array(12).fill(0),
@@ -47076,7 +47085,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.287';
+  var BUILD_TAG='dDAE_3.288';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51990,7 +51999,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.287',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.288',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53192,7 +53201,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.287 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.288 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53613,7 +53622,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.287: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.288: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53850,9 +53859,9 @@ try{
 })();
 
 
-/* dDAE_3.287 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.287 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.287 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.288 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.288 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.288 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
