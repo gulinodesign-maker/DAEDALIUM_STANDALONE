@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.288";
+const BUILD_VERSION = "3.289";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6132,37 +6132,16 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  try{
-    // 1) restore "one-shot" (session -> local)
-    let raw = null;
-    try { raw = sessionStorage.getItem(__RESTORE_KEY); } catch(_) {}
-    if (!raw){
-      try { raw = localStorage.getItem(__RESTORE_KEY); } catch(_) {}
-    }
-    if (raw){
-      try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
-      try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
-      const obj = JSON.parse(raw);
-      if (obj && typeof obj === "object"){
-        if (!obj.page){
-          let last = null;
-          try { last = __sanitizePage(localStorage.getItem(__LAST_PAGE_KEY)); } catch(_) {}
-          obj.page = __readHashPage() || last || "home";
-        } else {
-          obj.page = __sanitizePage(obj.page) || "home";
-        }
-        return obj;
-      }
-    }
-
-    // 2) fallback: hash / last page (persistente)
-    const pHash = __readHashPage();
-    if (pHash) return { page: pHash };
-    let pLast = null;
-    try { pLast = __sanitizePage(localStorage.getItem(__LAST_PAGE_KEY)); } catch(_) {}
-    if (pLast) return { page: pLast };
-    return null;
-  } catch(_) { return null; }
+  // dDAE_3.289 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
+  try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
+  try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
+  try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
+  try {
+    const homeHash = __HASH_PREFIX + encodeURIComponent("home");
+    if (location.hash !== homeHash) history.replaceState(null, document.title, homeHash);
+  } catch(_) {}
+  return null;
 }
 
 function __writeRestoreState(obj){
@@ -6181,7 +6160,8 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  try { localStorage.setItem(__LAST_PAGE_KEY, p); } catch(_) {}
+  // dDAE_3.289 — nessuna memoria persistente dell’ultima schermata.
+  try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
 
@@ -47085,7 +47065,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.288';
+  var BUILD_TAG='dDAE_3.289';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51999,7 +51979,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.288',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.289',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53201,7 +53181,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.288 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.289 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53622,7 +53602,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.288: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.289: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53859,9 +53839,9 @@ try{
 })();
 
 
-/* dDAE_3.288 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.288 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.288 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.289 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.289 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.289 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
