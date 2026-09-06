@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.289";
+const BUILD_VERSION = "3.290";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6132,7 +6132,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.289 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.290 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6160,7 +6160,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.289 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.290 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -32758,7 +32758,7 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
   const uniquePrefixes = Array.from(new Set([
     '972','971','966','995','994','502','506','90','81','82','86','91','212','213','216','20','27','1','7',
     '30','31','32','33','34','39','40','41','43','44','45','46','47','48','49','351','352',
-    '353','354','358','36','372','380','381','385','386','389','420','421','355','356','52','54',
+    '353','354','358','36','370','371','372','373','380','381','385','386','389','420','421','355','356','52','54',
     '55','61','64'
   ])).sort(function(a,b){ return b.length - a.length; });
 
@@ -32788,7 +32788,7 @@ const __GUEST_NATIONALITY_PHONE_PREFIXES__ = [
   ['972','IL'], ['971','AE'], ['966','SA'], ['972','IL'], ['972','IL'], ['995','GE'], ['994','AZ'],
   ['90','TR'], ['81','JP'], ['82','KR'], ['86','CN'], ['91','IN'], ['212','MA'], ['213','DZ'], ['216','TN'], ['20','EG'], ['27','ZA'],
   ['1','US'], ['7','RU'], ['30','GR'], ['31','NL'], ['32','BE'], ['33','FR'], ['34','ES'], ['39','IT'], ['40','RO'], ['41','CH'], ['43','AT'], ['44','GB'], ['45','DK'], ['46','SE'], ['47','NO'], ['48','PL'], ['49','DE'],
-  ['351','PT'], ['352','LU'], ['353','IE'], ['354','IS'], ['358','FI'], ['36','HU'], ['372','EE'], ['380','UA'], ['381','RS'], ['385','HR'], ['386','SI'], ['389','MK'], ['420','CZ'], ['421','SK'], ['355','AL'], ['356','MT'],
+  ['351','PT'], ['352','LU'], ['353','IE'], ['354','IS'], ['358','FI'], ['36','HU'], ['370','LT'], ['371','LV'], ['372','EE'], ['373','MD'], ['380','UA'], ['381','RS'], ['385','HR'], ['386','SI'], ['389','MK'], ['420','CZ'], ['421','SK'], ['355','AL'], ['356','MT'],
   ['52','MX'], ['502','GT'], ['54','AR'], ['55','BR'], ['61','AU'], ['64','NZ'], ['506','CR'], ['972','IL']
 ];
 function __detectGuestNationalityFromPhone__(raw){
@@ -47065,7 +47065,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.289';
+  var BUILD_TAG='dDAE_3.290';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51979,7 +51979,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.289',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.290',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53181,7 +53181,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.289 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.290 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53602,7 +53602,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.289: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.290: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53839,9 +53839,9 @@ try{
 })();
 
 
-/* dDAE_3.289 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.289 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.289 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.290 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.290 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.290 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
