@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.291";
+const BUILD_VERSION = "3.292";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6132,7 +6132,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.291 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.292 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6160,7 +6160,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.291 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.292 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -47065,7 +47065,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.291';
+  var BUILD_TAG='dDAE_3.292';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51979,7 +51979,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.291',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.292',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53181,7 +53181,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.291 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.292 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53602,7 +53602,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.291: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.292: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53839,9 +53839,9 @@ try{
 })();
 
 
-/* dDAE_3.291 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.291 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.291 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.292 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.292 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.292 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
