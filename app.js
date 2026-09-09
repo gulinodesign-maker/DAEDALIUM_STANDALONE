@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.294";
+const BUILD_VERSION = "3.295";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.294 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.295 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18636,6 +18636,7 @@ const __STRUCTURE_LOCAL_CATALOG_PREFIX__ = 'dDAE_structures_v1:';
 const __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ = 'dDAE_structure_storage_v2:';
 const __STRUCTURE_MIGRATION_PREFIX__ = 'dDAE_structure_legacy_migrated_v2:';
 const __STRUCTURE_SYNC_ROOT_PREFIX__ = 'dDAE_structure_sync_legacy_root_v1:';
+const __STRUCTURE_DELETE_PENDING_PREFIX__ = 'dDAE_structure_delete_pending_v1:';
 const __STRUCTURE_SCOPED_SETTING_KEYS__ = new Set([
   'operatori','operatori_catalogo','tariffa_oraria','costo_benzina',
   'channel_catalogo','stanze_catalogo','numero_stanze','stanze_ui',
@@ -18743,7 +18744,7 @@ function __structureStorageIsAppKey__(key){
 function __structureStorageIsGlobalKey__(key){
   const k=String(key||''); const l=k.toLowerCase();
   if(!k) return true;
-  if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__)) return true;
+  if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__) || k.startsWith(__STRUCTURE_DELETE_PENDING_PREFIX__)) return true;
   if(k === 'dDAE_structure_option_button_visual_v1') return true;
   if(l.startsWith('ddae_local_cache_v')) return true;
   if(k.includes(':structure:')) return true;
@@ -18887,6 +18888,130 @@ async function __structureRename__(sid, rawName){
   return updated[idx];
 }
 
+
+// dDAE_3.295 — Eliminazione definitiva della struttura selezionata.
+function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
+function __structureDeletePendingRead__(){
+  try{
+    const rows=JSON.parse(localStorage.getItem(__structureDeletePendingKey__())||'[]');
+    return Array.isArray(rows)?rows.filter(x=>x&&x.sid&&x.teamId):[];
+  }catch(_){ return []; }
+}
+function __structureDeletePendingWrite__(rows){
+  try{
+    const clean=(Array.isArray(rows)?rows:[]).filter(x=>x&&x.sid&&x.teamId);
+    if(clean.length) localStorage.setItem(__structureDeletePendingKey__(),JSON.stringify(clean));
+    else localStorage.removeItem(__structureDeletePendingKey__());
+  }catch(_){ }
+}
+function __structureDeleteQueueRemote__(job){
+  try{
+    if(!job?.sid || !job?.teamId) return;
+    const rows=__structureDeletePendingRead__();
+    const key=String(job.teamId)+'|'+String(job.sid);
+    const next=rows.filter(x=>(String(x.teamId)+'|'+String(x.sid))!==key);
+    next.push({sid:String(job.sid),teamId:String(job.teamId),legacySyncRoot:!!job.legacySyncRoot,queuedAt:String(job.queuedAt||__nowIso__())});
+    __structureDeletePendingWrite__(next);
+  }catch(_){ }
+}
+function __structureFsRelativePath__(doc){
+  try{
+    const name=String(doc?.name||''); const marker='/documents/'; const i=name.indexOf(marker);
+    return i>=0 ? name.slice(i+marker.length) : '';
+  }catch(_){ return ''; }
+}
+async function __structureDeleteRemoteJob__(job){
+  try{
+    const sid=__fbSafeStructureId__(job?.sid); const teamId=String(job?.teamId||'').trim();
+    if(!sid || !teamId || !FIREBASE_ENABLED || !FIREBASE_CONFIG?.apiKey) return true;
+    const legacy=!!job?.legacySyncRoot;
+    const syncBase=legacy ? `sync/${teamId}` : `sync/${teamId}/structures/${sid}`;
+    for(const collection of ['admin_chunks','operators']){
+      let docs=[]; try{ docs=await __fsList__(`${syncBase}/${collection}`); }catch(_){ docs=[]; }
+      for(const doc of (Array.isArray(docs)?docs:[])){
+        const path=__structureFsRelativePath__(doc); if(path) try{ await __fsDelete__(path); }catch(_){ }
+      }
+    }
+    try{ await __fsDelete__(`${syncBase}/boards/spesa`); }catch(_){ }
+    const rootOk=await __fsDelete__(syncBase).catch(()=>false);
+    if(!legacy){ try{ await __fsDelete__(`teams/${teamId}/structures/${sid}`); }catch(_){ } }
+    return !!rootOk;
+  }catch(_){ return false; }
+}
+async function __structureRetryPendingRemoteDeletes__(){
+  const rows=__structureDeletePendingRead__(); if(!rows.length) return;
+  const keep=[];
+  for(const job of rows){
+    let ok=false; try{ ok=await __structureDeleteRemoteJob__(job); }catch(_){ ok=false; }
+    if(!ok) keep.push(job);
+  }
+  __structureDeletePendingWrite__(keep);
+}
+function __structureRemoveOptionVisual__(sid){
+  try{
+    const safe=String(sid||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64)||'structure';
+    const id='structureSelectOption_'+safe;
+    const raw=localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
+    const map=raw?JSON.parse(raw):{};
+    if(map&&typeof map==='object'&&!Array.isArray(map)&&Object.prototype.hasOwnProperty.call(map,id)){
+      delete map[id]; localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,JSON.stringify(map));
+    }
+  }catch(_){ }
+}
+async function __structureDelete__(sid){
+  const id=String(sid||'').trim();
+  const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
+  if(!item) throw new Error('Struttura non disponibile');
+  const legacy=__structureUsesLegacySyncRoot__(id);
+  const wasActive=(__structureActiveId__()===id);
+  let teamId=''; try{ __fbLoadLink__(); teamId=String(__FB_STATE__?.teamId||'').trim(); }catch(_){ }
+
+  // Cancella tutti i dataset di tutti gli anni e gli asset appartenenti alla struttura.
+  const dataPrefix=`ctx:${__ctxDataUidForStructure__(id)}:`;
+  try{ for(const key of (await __kvKeys__(dataPrefix))) await __kvDel__(key); }catch(_){ }
+  try{ const assetPrefix=__cocktailImageAssetContextPrefix__(id); for(const key of (await __kvKeys__(assetPrefix))) await __kvDel__(key); }catch(_){ }
+
+  // La prima struttura conteneva la migrazione dell'archivio storico pre-multistruttura:
+  // eliminando quella struttura vanno rimossi anche i residui legacy, mai riutilizzati da altre strutture.
+  if(legacy){
+    try{
+      const legacyPrefix=`ctx:${String(__ctxUid__()||'anon')}:`;
+      for(const key of (await __kvKeys__(legacyPrefix))) await __kvDel__(key);
+    }catch(_){ }
+  }
+
+  // Pulisce sia lo snapshot sia le chiavi localStorage specifiche della struttura.
+  if(wasActive){
+    try{ __structureScopableStorageKeys__().forEach(k=>{ try{localStorage.removeItem(k);}catch(_){} }); }catch(_){ }
+  }
+  try{
+    const suffix=':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(id);
+    const remove=[];
+    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&String(k).includes(suffix)) remove.push(k); }
+    remove.forEach(k=>{try{localStorage.removeItem(k);}catch(_){}});
+  }catch(_){ }
+  try{ localStorage.removeItem(__structureStorageSnapshotKey__(id)); }catch(_){ }
+  try{ localStorage.removeItem(__structureMigrationKey__(id)); }catch(_){ }
+  try{ localStorage.removeItem(__structureSyncRootKey__(id)); }catch(_){ }
+  try{ __structureRemoveOptionVisual__(id); }catch(_){ }
+
+  // Nessuna selezione automatica dopo la cancellazione.
+  if(wasActive){ try{ localStorage.removeItem(__structureSelectedStorageKey__()); }catch(_){ } }
+  __structureWriteLocalCatalog__(list.filter(x=>x.id!==id));
+  try{ invalidateApiCache(); }catch(_){ }
+  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
+  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
+  __structureUpdateUi__();
+
+  // La cancellazione cloud è best-effort e viene ritentata automaticamente se il dispositivo è offline.
+  if(teamId){
+    const job={sid:id,teamId,legacySyncRoot:legacy,queuedAt:__nowIso__()};
+    __structureDeleteQueueRemote__(job);
+    try{ if(await __structureDeleteRemoteJob__(job)){ const keep=__structureDeletePendingRead__().filter(x=>!(String(x.sid)===id&&String(x.teamId)===teamId)); __structureDeletePendingWrite__(keep); } }catch(_){ }
+  }
+  return item;
+}
+
 async function __structureSelect__(sid){
   const id=String(sid||'').trim(); const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
   if(!item) throw new Error('Struttura non disponibile');
@@ -18941,12 +19066,14 @@ function __structureSetEditorMode__(mode){
   const input=document.getElementById('structureNameInput');
   const title=document.getElementById('structureCreateTitle');
   const newBtn=document.getElementById('structureCreateNewBtn');
+  const deleteBtn=document.getElementById('structureDeleteBtn');
   const active=__structureActive__();
   const safeMode=(mode==='edit' && active)?'edit':'create';
   if(modal) modal.dataset.structureMode=safeMode;
   if(title) title.textContent=safeMode==='edit'?'Modifica struttura':'Nuova struttura';
   if(input) input.value=safeMode==='edit'?(active?.nome||''):'';
   if(newBtn) newBtn.hidden=(safeMode!=='edit');
+  if(deleteBtn) deleteBtn.hidden=(safeMode!=='edit');
   try{ if(modal) modal.querySelector('[role="dialog"]')?.setAttribute('aria-label',safeMode==='edit'?'Modifica struttura':'Nuova struttura'); }catch(_){ }
   setTimeout(()=>{try{input?.focus(); if(safeMode==='edit') input?.select();}catch(_){}},80);
 }
@@ -18972,6 +19099,18 @@ function __setupStructureUi__(){
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCancelBtn'),()=>__structureCloseCreateModal__(true));
   bind(document.getElementById('structureCreateNewBtn'),()=>__structureSetEditorMode__('create'));
+  bind(document.getElementById('structureDeleteBtn'),async()=>{
+    const active=__structureActive__(); if(!active) return;
+    const ok=await confirmYesNo(`Eliminare definitivamente la struttura “${active.nome}” e tutti i suoi dati? L'operazione non può essere annullata.`);
+    if(!ok) return;
+    const btn=document.getElementById('structureDeleteBtn'); try{ if(btn) btn.disabled=true; }catch(_){}
+    try{
+      const deleted=await __structureDelete__(active.id);
+      __structureCloseCreateModal__(false);
+      try{toast('Struttura eliminata: '+deleted.nome,'green');}catch(_){}
+      setTimeout(()=>{try{location.reload();}catch(_){}},180);
+    }catch(e){ try{ if(btn) btn.disabled=false; }catch(_){} try{toast(e?.message||'Errore eliminazione struttura','orange');}catch(_){} }
+  });
   bind(document.getElementById('structureCreateSaveBtn'),async()=>{
     const modal=document.getElementById('structureCreateModal');
     const input=document.getElementById('structureNameInput');
@@ -18988,7 +19127,7 @@ function __setupStructureUi__(){
       }
     }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
   });
-  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateNewBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
+  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
   const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
   const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
   const homeGrid=document.querySelector('#page-home .home-grid');
@@ -19005,6 +19144,8 @@ function __setupStructureUi__(){
 }
 try{ document.addEventListener('DOMContentLoaded',()=>{try{__setupStructureUi__();__structureUpdateUi__();}catch(_){}},{once:true}); }catch(_){ }
 try{ window.addEventListener('pageshow',()=>{try{__structureUpdateUi__();}catch(_){}},{passive:true}); }catch(_){ }
+try{ window.addEventListener('online',()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},{passive:true}); }catch(_){ }
+try{ setTimeout(()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},1400); }catch(_){ }
 
 
 // ===== Year filtering (client-side) =====
@@ -23584,7 +23725,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCancelBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCancelBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -23706,6 +23847,7 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsLicenseGeneratorBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     settingsLicenseCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     settingsDataCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    structureDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
     settingsAccountSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     guestMessageSettingsCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
@@ -47611,7 +47753,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.294';
+  var BUILD_TAG='dDAE_3.295';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52504,7 +52646,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.294',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.295',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -35484,3 +35484,17 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
   filter:none!important;
 }
 .structure-new-mode-btn[hidden]{display:none!important;}
+
+
+/* dDAE_3.295 — Struttura: eliminazione definitiva, flat e personalizzabile */
+.structure-delete-btn{
+  width:100%!important;
+  min-height:54px!important;
+  margin:12px 0 0!important;
+  border-radius:16px!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+.structure-delete-btn[hidden]{display:none!important;}
+.structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
