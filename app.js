@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.297";
+const BUILD_VERSION = "3.298";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.297 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.298 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -13471,7 +13471,10 @@ function __pillApplyAll__(){
 
 function __bindPillLongPress__(btn){
   try{
-    if (!btn || !btn.id || btn.dataset.pillColorHoldBound === '1') return;
+    if (!btn || !btn.id) return;
+    // Home usa un gestore dedicato: tap breve = selezione struttura, long press reale = Design.
+    if (btn.id === 'homeYearPill') return;
+    if (btn.dataset.pillColorHoldBound === '1') return;
     btn.dataset.pillColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
@@ -18891,7 +18894,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.297 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.298 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19099,17 +19102,128 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
+// dDAE_3.298 — Home context pill: separazione rigorosa tap / long press su iOS.
+function __bindHomeYearPillInteractions__(){
+  const btn=document.getElementById('homeYearPill');
+  if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
+  btn.dataset.homeContextInteractionBound='1';
+  try{ __pillApplyToButton__(btn); }catch(_){ }
+
+  const HOLD_MS=800;
+  const MOVE_TOLERANCE=12;
+  let timer=null;
+  let holdFired=false;
+  let moved=false;
+  let startX=0,startY=0;
+  let suppressClickUntil=0;
+  let pointerActive=false;
+
+  const clearTimer=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+  const point=(e)=>{
+    const t=e?.touches?.[0] || e?.changedTouches?.[0] || e;
+    return {x:Number(t?.clientX||0),y:Number(t?.clientY||0)};
+  };
+  const block=(e)=>{
+    try{e?.preventDefault?.();}catch(_){ }
+    try{e?.stopImmediatePropagation?.();}catch(_){ }
+    try{e?.stopPropagation?.();}catch(_){ }
+  };
+  const suppressPrimary=(ms=1600)=>{
+    const until=Date.now()+Math.max(0,Number(ms)||0);
+    suppressClickUntil=Math.max(suppressClickUntil,until);
+    try{ __pillLongPressSuppress__(btn,ms); }catch(_){ }
+    try{ btn.__ddaeColorHoldSuppressUntil=until; }catch(_){ }
+  };
+  const openColor=()=>{
+    if(holdFired || moved || !pointerActive) return;
+    holdFired=true;
+    suppressPrimary(1800);
+    const current=__pillVisualFor__(btn.id);
+    __tagColorPopupOpen__('pill-single-button',current,(payload)=>{
+      try{
+        const nextVisual=__designVisualFromPayload__(current,payload,current.bg||'blue-4');
+        __writePillVisual__(btn.id,nextVisual);
+        if(payload && payload.opacity!=null) __designBgOpacityWrite__(payload.opacity);
+        __pillApplyAll__();
+        try{renderRoomSettingsPage();}catch(_){ }
+      }catch(_){ }
+    },{
+      supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
+      opacity:current.opacity ?? __designBgOpacityRead__(),defaultMode:'bg',
+      fallbackBg:(current.bg||'blue-4'),
+      applyCategory:{message:'Applicare le modifiche a tutti i pulsanti pill?',apply:async(payload,changed)=>{await __applyPillChangesToCategory__(payload,changed);}}
+    });
+  };
+  const start=(e)=>{
+    try{ if(e?.type==='pointerdown' && e.pointerType==='mouse' && e.button!==0) return; }catch(_){ }
+    clearTimer();
+    holdFired=false;
+    moved=false;
+    pointerActive=true;
+    try{ if(e?.type==='pointerdown' && e.pointerId!=null && btn.setPointerCapture) btn.setPointerCapture(e.pointerId); }catch(_){ }
+    const p=point(e); startX=p.x; startY=p.y;
+    timer=setTimeout(openColor,HOLD_MS);
+  };
+  const move=(e)=>{
+    if(!pointerActive || !timer) return;
+    const p=point(e);
+    if(Math.abs(p.x-startX)>MOVE_TOLERANCE || Math.abs(p.y-startY)>MOVE_TOLERANCE){
+      moved=true; clearTimer();
+    }
+  };
+  const finish=(e,cancelled=false)=>{
+    if(!pointerActive) return;
+    pointerActive=false;
+    clearTimer();
+    if(holdFired){
+      suppressPrimary(1800);
+      block(e);
+      holdFired=false;
+      return;
+    }
+    if(cancelled || moved) return;
+    // Il tap breve viene gestito qui, non da bindFastTap: nessun timer Design può sopravvivere al rilascio.
+    suppressClickUntil=Date.now()+700;
+    try{ __sfxTap(); }catch(_){ }
+    try{ __structureOpenSelectModal__(); }catch(_){ }
+  };
+  const click=(e)=>{
+    // Click sintetico successivo a touch/pointerup: sempre assorbito.
+    if(Date.now()<suppressClickUntil){ block(e); return; }
+    // Accessibilità tastiera: click senza una sequenza pointer precedente.
+    try{ __sfxTap(); }catch(_){ }
+    try{ __structureOpenSelectModal__(); }catch(_){ }
+  };
+
+  const usePointer=typeof window!=='undefined' && ('PointerEvent' in window);
+  if(usePointer){
+    btn.addEventListener('pointerdown',start,{passive:true,capture:true});
+    btn.addEventListener('pointermove',move,{passive:true,capture:true});
+    btn.addEventListener('pointerup',(e)=>finish(e,false),{passive:false,capture:true});
+    btn.addEventListener('pointercancel',(e)=>finish(e,true),{passive:false,capture:true});
+    btn.addEventListener('pointerleave',(e)=>{ if(pointerActive && e?.pointerType==='mouse') finish(e,true); },{passive:false,capture:true});
+  }else if(typeof window!=='undefined' && ('ontouchstart' in window)){
+    btn.addEventListener('touchstart',start,{passive:true,capture:true});
+    btn.addEventListener('touchmove',move,{passive:true,capture:true});
+    btn.addEventListener('touchend',(e)=>finish(e,false),{passive:false,capture:true});
+    btn.addEventListener('touchcancel',(e)=>finish(e,true),{passive:false,capture:true});
+  }else{
+    btn.addEventListener('mousedown',start,true);
+    btn.addEventListener('mouseup',(e)=>finish(e,false),true);
+    btn.addEventListener('mouseleave',(e)=>finish(e,true),true);
+  }
+  btn.addEventListener('click',click,true);
+  btn.addEventListener('contextmenu',(e)=>{ block(e); },true);
+  btn.addEventListener('selectstart',(e)=>{ block(e); },true);
+  btn.addEventListener('dragstart',(e)=>{ block(e); },true);
+}
+
 function __setupStructureUi__(){
   if(window.__ddaeStructureUiBound) { __structureUpdateUi__(); return; }
   window.__ddaeStructureUiBound=true;
   const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
   bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
-  bind(document.getElementById('homeYearPill'),()=>{
-    const homePill=document.getElementById('homeYearPill');
-    try{ if (__pillLongPressSuppressed__(homePill) || Number(homePill?.__ddaeColorHoldSuppressUntil||0) > Date.now()) return; }catch(_){ }
-    __structureOpenSelectModal__();
-  });
-  try{ const homePill=document.getElementById('homeYearPill'); if(homePill){ __pillApplyToButton__(homePill); __bindPillLongPress__(homePill); } }catch(_){ }
+  try{ __bindHomeYearPillInteractions__(); }catch(_){ }
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
@@ -47771,7 +47885,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.297';
+  var BUILD_TAG='dDAE_3.298';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52664,7 +52778,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.297',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.298',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.297 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.298 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.297 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.298 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.297 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.298 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,5 +35567,14 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.297 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.298 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
+
+
+/* dDAE_3.298 — Home context pill: niente popup Design sul tap breve */
+#page-home #homeYearPill{
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+}
