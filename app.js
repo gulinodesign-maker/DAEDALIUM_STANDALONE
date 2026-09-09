@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.293";
+const BUILD_VERSION = "3.294";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.293 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.294 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18744,6 +18744,7 @@ function __structureStorageIsGlobalKey__(key){
   const k=String(key||''); const l=k.toLowerCase();
   if(!k) return true;
   if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__)) return true;
+  if(k === 'dDAE_structure_option_button_visual_v1') return true;
   if(l.startsWith('ddae_local_cache_v')) return true;
   if(k.includes(':structure:')) return true;
   const exact=new Set([
@@ -18918,7 +18919,11 @@ function __structureOpenSelectModal__(){
   if(!modal||!listEl) return;
   const rows=__structureCatalog__(); const activeId=__structureActiveId__(); listEl.innerHTML='';
   rows.forEach((item)=>{
-    const btn=document.createElement('button'); btn.type='button'; btn.className='settings-btn settings-btn-channel structure-option-btn'; btn.dataset.singleActionKey='structureSelectOption'; btn.dataset.structureId=item.id;
+    const btn=document.createElement('button'); btn.type='button'; btn.className='settings-btn settings-btn-channel structure-option-btn';
+    const safeStructureButtonId=String(item.id||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64) || 'structure';
+    btn.id='structureSelectOption_'+safeStructureButtonId;
+    btn.dataset.singleActionKey=btn.id;
+    btn.dataset.structureId=item.id;
     btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14"></path><path d="M8 21v-5h8v5"></path><path d="M8 9h2"></path><path d="M14 9h2"></path></svg><span class="settings-btn-label"></span><span class="structure-option-check" aria-hidden="true"></span>';
     const lab=btn.querySelector('.settings-btn-label'); if(lab) lab.textContent=item.nome;
     if(item.id===activeId){ btn.classList.add('is-selected'); const ck=btn.querySelector('.structure-option-check'); if(ck) ck.textContent='✓'; }
@@ -23009,6 +23014,7 @@ const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
 const __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_filter_button_visual_v1';
 const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
+const __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_structure_option_button_visual_v1';
 const __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_tax_page_card_visual_v1';
 const __TAX_PAGE_CARD_TARGET_IDS__ = ['taxTotalRow','taxPayingCard','taxKidsCard','taxReducedCard'];
 
@@ -23587,12 +23593,29 @@ function __loadSingleActionButtonVisualMap__(){
   try{
     const raw = localStorage.getItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__);
     const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    const base = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    let structure = {};
+    try{
+      const rawStructure = localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
+      const parsedStructure = rawStructure ? JSON.parse(rawStructure) : {};
+      structure = parsedStructure && typeof parsedStructure === 'object' && !Array.isArray(parsedStructure) ? parsedStructure : {};
+    }catch(_){ structure = {}; }
+    return { ...base, ...structure };
   }catch(_){ return {}; }
 }
 
 function __saveSingleActionButtonVisualMap__(map){
-  try{ localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+  try{
+    const src = map && typeof map === 'object' && !Array.isArray(map) ? map : {};
+    const base = {};
+    const structure = {};
+    Object.keys(src).forEach((key)=>{
+      if (String(key || '').startsWith('structureSelectOption_')) structure[key] = src[key];
+      else base[key] = src[key];
+    });
+    localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(base));
+    localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(structure));
+  }catch(_){ }
 }
 
 function __singleActionButtonSharedKey__(btnOrId){
@@ -23690,7 +23713,10 @@ function __defaultSingleActionButtonVisual__(btn){
     calTodayOccupancyBadge:{ bg:'red-5', border:'red-6', fg:'white', opacity:1 },
     calTomorrowCheckoutBadge:{ bg:'sky-5', border:'sky-6', fg:'white', opacity:1 }
   };
-  const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
+  const structureOptionFallback = String(id || '').startsWith('structureSelectOption_')
+    ? { bg:'orange-4', border:'orange-4', fg:'blue-4', opacity:0.80 }
+    : null;
+  const fallback = structureOptionFallback || defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
 }
 
@@ -30906,6 +30932,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
+    __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,
     __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__,
@@ -47584,7 +47611,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.293';
+  var BUILD_TAG='dDAE_3.294';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52477,7 +52504,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.293',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.294',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

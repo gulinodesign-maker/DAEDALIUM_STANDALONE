@@ -35468,12 +35468,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.293 — Home: +20px tra pill struttura/anno e griglia 3x3 */
+/* dDAE_3.294 — Home: +20px tra pill struttura/anno e griglia 3x3 */
 #page-home .home-grid{
   transform:translate(-3px,30px)!important;
 }
 
-/* dDAE_3.293 — Gestione struttura: azione nuova struttura nel popup editabile */
+/* dDAE_3.294 — Gestione struttura: azione nuova struttura nel popup editabile */
 .structure-new-mode-btn{
   width:100%!important;
   min-height:54px!important;
