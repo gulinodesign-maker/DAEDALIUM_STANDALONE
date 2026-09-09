@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.296";
+const BUILD_VERSION = "3.297";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.296 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.297 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -13485,6 +13485,8 @@ function __bindPillLongPress__(btn){
     const openPicker = () => {
       if (!canOpenPicker()) return;
       holdTriggered = true;
+      try{ __pillLongPressSuppress__(btn, 1800); }catch(_){ }
+      try{ btn.__ddaeColorHoldSuppressUntil = Date.now() + 1800; }catch(_){ }
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
         try{
@@ -13523,7 +13525,7 @@ function __bindPillLongPress__(btn){
     }, true);
     btn.addEventListener('contextmenu', (e) => {
       try{ e.preventDefault(); }catch(_){ }
-      if (canOpenPicker()){
+      if (btn.id !== 'homeYearPill' && canOpenPicker()){
         try{ openPicker(); }catch(_){ }
       }
       try{ e.stopPropagation(); }catch(_){ }
@@ -18889,7 +18891,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.296 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.297 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19102,7 +19104,12 @@ function __setupStructureUi__(){
   window.__ddaeStructureUiBound=true;
   const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
   bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
-  bind(document.getElementById('homeYearPill'),__structureOpenSelectModal__);
+  bind(document.getElementById('homeYearPill'),()=>{
+    const homePill=document.getElementById('homeYearPill');
+    try{ if (__pillLongPressSuppressed__(homePill) || Number(homePill?.__ddaeColorHoldSuppressUntil||0) > Date.now()) return; }catch(_){ }
+    __structureOpenSelectModal__();
+  });
+  try{ const homePill=document.getElementById('homeYearPill'); if(homePill){ __pillApplyToButton__(homePill); __bindPillLongPress__(homePill); } }catch(_){ }
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
@@ -47764,7 +47771,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.296';
+  var BUILD_TAG='dDAE_3.297';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52657,7 +52664,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.296',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.297',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
