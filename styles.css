@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.295 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.296 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35498,3 +35498,70 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 .structure-delete-btn[hidden]{display:none!important;}
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
+
+
+/* dDAE_3.296 — Home: +20px tra separatore top bar e pill struttura/anno */
+#page-home .home-page{
+  padding-top:32px !important;
+}
+
+/* dDAE_3.296 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+.structure-create-hd{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+}
+.structure-create-close-btn{
+  width:40px !important;
+  min-width:40px !important;
+  height:40px !important;
+  min-height:40px !important;
+  padding:0 !important;
+  border-radius:999px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  background-image:none !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+.structure-modal-actions-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  margin-top:14px !important;
+}
+.structure-modal-actions-grid .btn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:58px !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 10px !important;
+  border-radius:16px !important;
+  white-space:normal !important;
+  text-align:center !important;
+  background-image:none !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+.structure-new-mode-btn,
+.structure-delete-btn,
+.structure-save-btn{
+  width:100% !important;
+  min-height:58px !important;
+  margin:0 !important;
+}
+.structure-modal-actions-grid .btn[disabled]{
+  opacity:.42 !important;
+  pointer-events:none !important;
+}
+@media (max-width:390px){
+  .structure-modal-actions-grid{ gap:10px !important; }
+  .structure-modal-actions-grid .btn{ font-size:14px !important; padding:0 8px !important; }
+}

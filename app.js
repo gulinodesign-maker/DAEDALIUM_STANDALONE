@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.295";
+const BUILD_VERSION = "3.296";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.295 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.296 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18889,7 +18889,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.295 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.296 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19072,8 +19072,16 @@ function __structureSetEditorMode__(mode){
   if(modal) modal.dataset.structureMode=safeMode;
   if(title) title.textContent=safeMode==='edit'?'Modifica struttura':'Nuova struttura';
   if(input) input.value=safeMode==='edit'?(active?.nome||''):'';
-  if(newBtn) newBtn.hidden=(safeMode!=='edit');
-  if(deleteBtn) deleteBtn.hidden=(safeMode!=='edit');
+  if(newBtn){
+    newBtn.hidden=false;
+    newBtn.disabled=(safeMode==='create');
+    newBtn.setAttribute('aria-disabled', newBtn.disabled ? 'true' : 'false');
+  }
+  if(deleteBtn){
+    deleteBtn.hidden=false;
+    deleteBtn.disabled=(safeMode!=='edit');
+    deleteBtn.setAttribute('aria-disabled', deleteBtn.disabled ? 'true' : 'false');
+  }
   try{ if(modal) modal.querySelector('[role="dialog"]')?.setAttribute('aria-label',safeMode==='edit'?'Modifica struttura':'Nuova struttura'); }catch(_){ }
   setTimeout(()=>{try{input?.focus(); if(safeMode==='edit') input?.select();}catch(_){}},80);
 }
@@ -19097,7 +19105,7 @@ function __setupStructureUi__(){
   bind(document.getElementById('homeYearPill'),__structureOpenSelectModal__);
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
-  bind(document.getElementById('structureCreateCancelBtn'),()=>__structureCloseCreateModal__(true));
+  bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
   bind(document.getElementById('structureCreateNewBtn'),()=>__structureSetEditorMode__('create'));
   bind(document.getElementById('structureDeleteBtn'),async()=>{
     const active=__structureActive__(); if(!active) return;
@@ -19127,7 +19135,7 @@ function __setupStructureUi__(){
       }
     }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
   });
-  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
+  ['structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
   const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
   const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
   const homeGrid=document.querySelector('#page-home .home-grid');
@@ -23725,7 +23733,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCancelBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -23847,7 +23855,10 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsLicenseGeneratorBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     settingsLicenseCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     settingsDataCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    structureCreateCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    structureCreateNewBtn:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     structureDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    structureCreateSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     guestMessageSettingsCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
@@ -47753,7 +47764,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.295';
+  var BUILD_TAG='dDAE_3.296';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52646,7 +52657,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.295',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.296',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
