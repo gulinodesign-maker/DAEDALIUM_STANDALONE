@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.292";
+const BUILD_VERSION = "3.293";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5735,72 +5735,46 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     if (!/^\d{4}$/.test(yy)) return null;
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
-    const prefix = `ctx:${currentUid}:`;
-    const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__(prefix) : [];
-    const suffix = `:${yy}:tbl:ospiti`;
-    let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').startsWith(prefix) && String(k || '').endsWith(suffix));
-    if (!guestKeys.length) return null;
+
+    // dDAE_3.293 — confronto storico rigorosamente della struttura attiva.
+    // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
+    // la presenza di ospiti come prerequisito: un anno può avere sole spese.
+    const readRows = async (table) => {
+      try{
+        const value = await __kvGet__(`ctx:${currentUid}:${yy}:tbl:${String(table || '').trim()}`);
+        return Array.isArray(value) ? value.slice() : [];
+      }catch(_){ return []; }
+    };
 
     const fields = [
       'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
       'createdAt','created_at','updatedAt','updated_at'
     ];
-    const seenGuests = new Set();
-    const seenSpese = new Set();
-    const seenServizi = new Set();
-    const seenStanze = new Set();
-    const guestsOut = [];
-    const speseOut = [];
-    const serviziOut = [];
-    const stanzeOut = [];
+    const guestsRaw = await readRows('ospiti');
+    const speseRaw = await readRows('spese');
+    const serviziRaw = await readRows('servizi');
+    const stanzeRaw = await readRows('stanze');
+    const operatoriRaw = await readRows('operatori');
+    const deletedRaw = await readRows('ospiti_eliminati');
 
-    const addUnique = (list, rows, seen, keyFn) => {
-      try{
-        (Array.isArray(rows) ? rows : []).forEach((row) => {
-          if (!row || typeof row !== 'object') return;
-          let key = '';
-          try{ key = String(keyFn(row) || ''); }catch(_){ key = ''; }
-          if (!key){
-            try{ key = JSON.stringify(row); }catch(_){ key = String(Math.random()); }
-          }
-          if (seen.has(key)) return;
-          seen.add(key);
-          list.push(row);
-        });
-      }catch(_){ }
-    };
+    const guests = __guestFilterPreventiviRows__(__filterByExerciseYear__(guestsRaw, yy, fields), false);
+    const spese = __filterByExerciseYear__(speseRaw, yy, ['dataSpesa','data','data_spesa']);
+    const deletedGuests = __filterByExerciseYear__(deletedRaw, yy, fields);
 
-    for (const key of guestKeys){
-      const parts = String(key || '').split(':');
-      const uid = parts[1] || '';
-      if (!uid) continue;
-      const guestsRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:ospiti`);
-      const filteredGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(Array.isArray(guestsRaw) ? guestsRaw : [], yy, fields), false);
-      addUnique(guestsOut, filteredGuests, seenGuests, (row) => String(row.id || row.guest_id || row.uid || row.booking_id || row.numero_prenotazione || row.numeroPrenotazione || '') || [row.nome || row.name || '', row.check_in || row.checkIn || row.arrivo || '', row.check_out || row.checkOut || row.partenza || '', row.stanza || row.room || row.room_id || ''].join('|'));
-
-      const speseRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:spese`);
-      const spese = __filterByExerciseYear__(Array.isArray(speseRaw) ? speseRaw : [], yy, ['dataSpesa','data','data_spesa']);
-      addUnique(speseOut, spese, seenSpese, (row) => String(row.id || row.spesa_id || row.uid || '') || [row.dataSpesa || row.data || row.data_spesa || '', row.descrizione || row.description || row.nome || '', row.importo || row.amount || row.totale || ''].join('|'));
-
-      const serviziRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:servizi`);
-      addUnique(serviziOut, Array.isArray(serviziRaw) ? serviziRaw : [], seenServizi, (row) => String(row.id || row.servizio_id || row.uid || row.nome || row.name || JSON.stringify(row || {})));
-
-      const stanzeRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:stanze`);
-      addUnique(stanzeOut, Array.isArray(stanzeRaw) ? stanzeRaw : [], seenStanze, (row) => String(row.id || row.stanza_id || row.numero || row.roomNumber || row.nome || row.name || JSON.stringify(row || {})));
-    }
-
-    if (!guestsOut.length && !speseOut.length) return null;
     return {
-      guests: guestsOut.slice(),
-      spese: speseOut.slice(),
-      report: buildReportFromSpese(Array.isArray(speseOut) ? speseOut : []),
-      servizi: serviziOut.slice(),
-      stanzeRows: stanzeOut.slice()
+      structureId: (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '',
+      uid: currentUid,
+      year: yy,
+      guests: Array.isArray(guests) ? guests.slice() : [],
+      spese: Array.isArray(spese) ? spese.slice() : [],
+      report: buildReportFromSpese(Array.isArray(spese) ? spese : []),
+      servizi: Array.isArray(serviziRaw) ? serviziRaw.slice() : [],
+      stanzeRows: Array.isArray(stanzeRaw) ? stanzeRaw.slice() : [],
+      operatoriRows: Array.isArray(operatoriRaw) ? operatoriRaw.slice() : [],
+      deletedGuests: Array.isArray(deletedGuests) ? deletedGuests.slice() : []
     };
-  }catch(_){ }
-  return null;
+  }catch(_){ return null; }
 }
-
 
 async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
   const targetYear = String(year || '').trim();
@@ -5808,7 +5782,7 @@ async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(targetYear);
-    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length) return directSnapshot;
+    if (directSnapshot) return directSnapshot;
   }catch(_){ }
 
   const backup = {
@@ -5870,7 +5844,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(compareYear);
-    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length){
+    if (directSnapshot){
       if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
       state.statGenCompareGuests = directSnapshot.guests.slice();
       state.statGenCompareSnapshotYear = compareYear;
@@ -5879,7 +5853,11 @@ async function __loadStatGenCompareGuests__(opts = {}){
         spese: Array.isArray(directSnapshot.spese) ? directSnapshot.spese.slice() : [],
         report: directSnapshot.report ? JSON.parse(JSON.stringify(directSnapshot.report)) : null,
         servizi: Array.isArray(directSnapshot.servizi) ? directSnapshot.servizi.slice() : [],
-        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : []
+        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : [],
+        operatoriRows: Array.isArray(directSnapshot.operatoriRows) ? directSnapshot.operatoriRows.slice() : [],
+        deletedGuests: Array.isArray(directSnapshot.deletedGuests) ? directSnapshot.deletedGuests.slice() : [],
+        structureId: String(directSnapshot.structureId || ''),
+        uid: String(directSnapshot.uid || '')
       };
       try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     }
@@ -18892,6 +18870,22 @@ async function __structureCreate__(rawName){
   __structureUpdateUi__();
   return item;
 }
+async function __structureRename__(sid, rawName){
+  const id=String(sid||'').trim();
+  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
+  if(!id) throw new Error('Seleziona una struttura');
+  if(!name) throw new Error('Inserisci il nome della struttura');
+  const list=__structureCatalog__();
+  const idx=list.findIndex(x=>x.id===id);
+  if(idx<0) throw new Error('Struttura non disponibile');
+  if(list.some((x,i)=>i!==idx && String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
+  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
+  const updated=list.map((x,i)=>i===idx?Object.assign({},x,{nome:name,updatedAt:now}):x);
+  __structureWriteLocalCatalog__(updated);
+  __structureUpdateUi__();
+  return updated[idx];
+}
+
 async function __structureSelect__(sid){
   const id=String(sid||'').trim(); const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
   if(!item) throw new Error('Struttura non disponibile');
@@ -18937,14 +18931,29 @@ function __structureOpenSelectModal__(){
   modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
 }
 function __structureCloseSelectModal__(){ const modal=document.getElementById('structureSelectModal'); if(!modal)return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); try{document.body.classList.remove('modal-open');}catch(_){ } }
+function __structureSetEditorMode__(mode){
+  const modal=document.getElementById('structureCreateModal');
+  const input=document.getElementById('structureNameInput');
+  const title=document.getElementById('structureCreateTitle');
+  const newBtn=document.getElementById('structureCreateNewBtn');
+  const active=__structureActive__();
+  const safeMode=(mode==='edit' && active)?'edit':'create';
+  if(modal) modal.dataset.structureMode=safeMode;
+  if(title) title.textContent=safeMode==='edit'?'Modifica struttura':'Nuova struttura';
+  if(input) input.value=safeMode==='edit'?(active?.nome||''):'';
+  if(newBtn) newBtn.hidden=(safeMode!=='edit');
+  try{ if(modal) modal.querySelector('[role="dialog"]')?.setAttribute('aria-label',safeMode==='edit'?'Modifica struttura':'Nuova struttura'); }catch(_){ }
+  setTimeout(()=>{try{input?.focus(); if(safeMode==='edit') input?.select();}catch(_){}},80);
+}
 function __structureOpenCreateModal__(){
   const dataModal=document.getElementById('settingsDataModal'); if(dataModal && dataModal.dataset.dataMode==='inactive') return;
   try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
   const modal=document.getElementById('structureCreateModal'); const input=document.getElementById('structureNameInput'); if(!modal||!input)return;
-  input.value=''; modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ } setTimeout(()=>{try{input.focus();}catch(_){}},80);
+  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
+  __structureSetEditorMode__(__structureHasActive__()?'edit':'create');
 }
 function __structureCloseCreateModal__(reopenData){
-  const modal=document.getElementById('structureCreateModal'); if(modal){modal.hidden=true; modal.setAttribute('aria-hidden','true');}
+  const modal=document.getElementById('structureCreateModal'); if(modal){modal.hidden=true; modal.setAttribute('aria-hidden','true'); modal.dataset.structureMode='';}
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
@@ -18957,11 +18966,24 @@ function __setupStructureUi__(){
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCancelBtn'),()=>__structureCloseCreateModal__(true));
+  bind(document.getElementById('structureCreateNewBtn'),()=>__structureSetEditorMode__('create'));
   bind(document.getElementById('structureCreateSaveBtn'),async()=>{
+    const modal=document.getElementById('structureCreateModal');
     const input=document.getElementById('structureNameInput');
-    try{ const item=await __structureCreate__(input?.value||''); __structureCloseCreateModal__(true); try{toast('Struttura '+item.nome+' creata. Selezionala nelle Impostazioni.','green');}catch(_){} }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
+    const mode=String(modal?.dataset?.structureMode||'create');
+    try{
+      if(mode==='edit' && __structureHasActive__()){
+        const item=await __structureRename__(__structureActiveId__(),input?.value||'');
+        __structureCloseCreateModal__(true);
+        try{toast('Struttura aggiornata: '+item.nome,'green');}catch(_){}
+      }else{
+        const item=await __structureCreate__(input?.value||'');
+        __structureCloseCreateModal__(true);
+        try{toast('Struttura '+item.nome+' creata. Selezionala nelle Impostazioni.','green');}catch(_){}
+      }
+    }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
   });
-  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
+  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateNewBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
   const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
   const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
   const homeGrid=document.querySelector('#page-home .home-grid');
@@ -47562,7 +47584,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.292';
+  var BUILD_TAG='dDAE_3.293';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48561,29 +48583,18 @@ function syncGuestEmailActionLink(isView){
       try{
         const compareYear = __ensureStatGenCompareYear__();
         let snapshot = state.statGenCompareSnapshot || {};
-        // completa snapshot con operatori e ospiti eliminati, quando disponibili in IndexedDB/local cache.
+        // completa snapshot SOLO dal context della struttura attiva.
         try{
-          if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
-            const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
-            const suffixOp = `:${compareYear}:tbl:operatori`;
-            const suffixDel = `:${compareYear}:tbl:ospiti_eliminati`;
-            const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-            const pickKey = (suffix) => {
-              const arr = keys.filter((k)=>String(k||'').endsWith(suffix));
-              arr.sort((a,b)=>{
-                const au = String(a||'').split(':')[1] || '';
-                const bu = String(b||'').split(':')[1] || '';
-                const ap = currentUid && au === currentUid ? 0 : 1;
-                const bp = currentUid && bu === currentUid ? 0 : 1;
-                if (ap !== bp) return ap-bp;
-                return String(a).localeCompare(String(b));
-              });
-              return arr[0] || '';
-            };
-            const opKey = pickKey(suffixOp);
-            if (opKey){ const rows = await __kvGet__(opKey); if (Array.isArray(rows)) snapshot.operatoriRows = rows.slice(); }
-            const delKey = pickKey(suffixDel);
-            if (delKey){ const rows = await __kvGet__(delKey); if (Array.isArray(rows)) snapshot.deletedGuests = rows.slice(); }
+          const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+          if (currentUid){
+            if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
+              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:operatori`);
+              snapshot.operatoriRows = Array.isArray(rows) ? rows.slice() : [];
+            }
+            if (!Array.isArray(snapshot.deletedGuests) || !snapshot.deletedGuests.length){
+              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:ospiti_eliminati`);
+              snapshot.deletedGuests = Array.isArray(rows) ? rows.slice() : [];
+            }
           }
         }catch(_){ }
         state.statGenCompareSnapshot = snapshot;
@@ -49050,34 +49061,24 @@ function syncGuestEmailActionLink(isView){
       const year = compareYear();
       if (!year) return;
       const snap = (state.statGenCompareSnapshot && typeof state.statGenCompareSnapshot === 'object') ? state.statGenCompareSnapshot : {};
-      const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
-      if (!Array.isArray(keys) || !keys.length) { state.statGenCompareSnapshot = snap; return; }
-      const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-      function pickKey(table){
-        const suffix = ':' + year + ':tbl:' + table;
-        const arr = keys.filter((k)=>String(k || '').endsWith(suffix));
-        arr.sort((a,b)=>{
-          const au = String(a || '').split(':')[1] || '';
-          const bu = String(b || '').split(':')[1] || '';
-          const ap = currentUid && au === currentUid ? 0 : 1;
-          const bp = currentUid && bu === currentUid ? 0 : 1;
-          if (ap !== bp) return ap - bp;
-          return String(a).localeCompare(String(b));
-        });
-        return arr[0] || '';
-      }
+      const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+      if (!currentUid){ state.statGenCompareSnapshot = snap; return; }
+
       async function fill(prop, table){
         try{
           if (Array.isArray(snap[prop]) && snap[prop].length) return;
-          const key = pickKey(table);
-          if (!key || typeof __kvGet__ !== 'function') return;
-          const rows = await __kvGet__(key);
-          if (Array.isArray(rows)) snap[prop] = rows.slice();
-        }catch(_){ }
+          const rows = (typeof __kvGet__ === 'function') ? await __kvGet__(`ctx:${currentUid}:${year}:tbl:${table}`) : null;
+          let clean = Array.isArray(rows) ? rows.slice() : [];
+          if (table === 'spese') clean = __filterByExerciseYear__(clean, year, ['dataSpesa','data','data_spesa']);
+          else if (table === 'ospiti_eliminati') clean = __filterByExerciseYear__(clean, year, __statGenGuestYearFields__());
+          snap[prop] = clean;
+        }catch(_){ snap[prop] = Array.isArray(snap[prop]) ? snap[prop] : []; }
       }
       await fill('spese', 'spese');
       await fill('operatoriRows', 'operatori');
       await fill('deletedGuests', 'ospiti_eliminati');
+      snap.structureId = (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '';
+      snap.uid = currentUid;
       state.statGenCompareSnapshot = snap;
     }catch(_){ }
   }
@@ -52476,7 +52477,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.292',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.293',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
