@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.291";
+const BUILD_VERSION = "3.292";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -478,7 +478,13 @@ async function __kvDel__(k){
 
 // dDAE_3.243 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
 const __COCKTAIL_IMAGE_ASSET_PREFIX__ = "asset:cocktail-image:";
-function __cocktailImageAssetKey__(slot){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + String(slot || "").trim(); }
+function __cocktailImageAssetContextPrefix__(forcedStructureId){
+  try{
+    const uid = forcedStructureId ? __ctxDataUidForStructure__(forcedStructureId) : __ctxDataUid__();
+    return __COCKTAIL_IMAGE_ASSET_PREFIX__ + encodeURIComponent(String(uid||'anon~s~__none__')) + ':';
+  }catch(_){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + 'anon~s~__none__:'; }
+}
+function __cocktailImageAssetKey__(slot){ return __cocktailImageAssetContextPrefix__() + String(slot || "").trim(); }
 async function __cocktailImageAssetGet__(slot){
   try{ return await __kvGet__(__cocktailImageAssetKey__(slot)); }catch(_){ return null; }
 }
@@ -495,9 +501,10 @@ async function __cocktailImageAssetDel__(slot){
 async function __collectCocktailImageAssetsForBackup__(){
   const out = {};
   try{
-    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    const contextPrefix = __cocktailImageAssetContextPrefix__();
+    const keys = await __kvKeys__(contextPrefix);
     for (const key of (Array.isArray(keys) ? keys : [])){
-      const slot = String(key || '').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
+      const slot = String(key || '').slice(contextPrefix.length);
       if (!slot) continue;
       const data = await __kvGet__(key);
       if (typeof data === 'string' && data.startsWith('data:image/')) out[slot] = data;
@@ -521,7 +528,8 @@ async function __restoreCocktailImageAssetsFromBackup__(payload){
       ? payload.assets.cocktailImages
       : ((payload?.meta?.cocktailImageAssets && typeof payload.meta.cocktailImageAssets === 'object') ? payload.meta.cocktailImageAssets : null);
     if (!src) return false;
-    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    const contextPrefix = __cocktailImageAssetContextPrefix__();
+    const keys = await __kvKeys__(contextPrefix);
     for (const key of (Array.isArray(keys) ? keys : [])) await __kvDel__(key);
     for (const slot of Object.keys(src)){
       const data = String(src[slot] || '');
@@ -557,7 +565,7 @@ async function __kvKeys__(prefix){
 function __tblKey__(name){
   // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
   try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
-  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
+  return `ctx:${__ctxDataUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
 // dDAE_3.078 — Le tabelle collegate alle prenotazioni sono logicamente indipendenti
@@ -797,7 +805,7 @@ function __rowsForYearIndependentMirror__(rows, table, year, guestRows){
 
 async function __yearIndependentTableKeys__(name, data, guestRows){
   const table = String(name || '').trim().toLowerCase();
-  const uid = String(__ctxUid__() || '').trim();
+  const uid = String(__ctxDataUid__() || '').trim();
   const suffix = `:tbl:${table}`;
   const prefix = `ctx:${uid}:`;
   const out = new Set([`ctx:${uid}:${__ctxYear__()}:tbl:${table}`]);
@@ -822,7 +830,7 @@ async function __yearIndependentTableKeys__(name, data, guestRows){
 
 function __yearFromYearIndependentKey__(key, table){
   try{
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const prefix = `ctx:${uid}:`;
     const suffix = `:tbl:${String(table || '').trim().toLowerCase()}`;
     const k = String(key || '');
@@ -839,7 +847,7 @@ function __yearFromYearIndependentKey__(key, table){
 async function __writeYearIndependentMirrors__(table, rows, guestRows){
   try{
     const t = String(table || '').trim().toLowerCase();
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const currentYear = String(__ctxYear__() || '').trim();
     const list = Array.isArray(rows) ? rows : [];
     if (!uid || !t) return false;
@@ -898,20 +906,15 @@ async function __repairTableYearFromOtherContexts__(name, year){
     const yy = String(year || __ctxYear__() || '').trim();
     if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti' || __isYearIndependentLocalTable__(table)) return null;
     if (typeof __kvKeys__ !== 'function' || typeof __kvGet__ !== 'function' || typeof __kvSet__ !== 'function') return null;
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const targetKey = `ctx:${uid}:${yy}:tbl:${table}`;
-    const keys = await __kvKeys__('ctx:');
+    const prefix = `ctx:${uid}:`;
+    const keys = await __kvKeys__(prefix);
     let candidates = (Array.isArray(keys) ? keys : []).filter((k)=>{
       const ks = String(k || '');
-      return ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
+      return ks.startsWith(prefix) && ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
     });
-    candidates.sort((a,b)=>{
-      const au = String(a).split(':')[1] || '';
-      const bu = String(b).split(':')[1] || '';
-      const ap = uid && au === uid ? 0 : 1;
-      const bp = uid && bu === uid ? 0 : 1;
-      return ap - bp || String(a).localeCompare(String(b));
-    });
+    candidates.sort((a,b)=>String(a).localeCompare(String(b)));
     for (const k of candidates){
       const val = await __kvGet__(k);
       if (table === 'impostazioni' && (Array.isArray(val) || (val && typeof val === 'object'))){
@@ -930,6 +933,7 @@ async function __repairTableYearFromOtherContexts__(name, year){
 }
 
 async function __tblGet__(name, fallback){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)) return await __readYearIndependentTable__(name, fallback);
   const v = await __kvGet__(__tblKey__(name));
   if (v === null || v === undefined){
@@ -943,6 +947,7 @@ async function __tblGet__(name, fallback){
 }
 
 async function __tblSet__(name, data){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const table = String(name || '').trim().toLowerCase();
@@ -957,6 +962,7 @@ async function __tblSet__(name, data){
 }
 
 async function __tblDel__(name){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const keys = await __yearIndependentTableKeys__(name);
@@ -2097,14 +2103,62 @@ function __randStr__(n){
   for (let i=0;i<n;i++) s += a[(Math.random()*a.length)|0];
   return s;
 }
+function __fbSafeStructureId__(sid){
+  return String(sid || '').trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80);
+}
+function __fbSyncBasePath__(teamId, forcedStructureId){
+  const tid=String(teamId||'').trim();
+  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
+  if(!sid) return `sync/${tid}`;
+  try{ if(__structureUsesLegacySyncRoot__(sid)) return `sync/${tid}`; }catch(_){ }
+  return `sync/${tid}/structures/${sid}`;
+}
+function __fbTeamPath__(teamId, forcedStructureId){
+  const tid=String(teamId||'').trim();
+  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
+  if(!sid) return `teams/${tid}`;
+  try{ if(__structureUsesLegacySyncRoot__(sid)) return `teams/${tid}`; }catch(_){ }
+  return `teams/${tid}/structures/${sid}`;
+}
+function __fbActiveStructureMeta__(){
+  try{ const a=__structureActive__(); return a ? {id:a.id,nome:a.nome} : null; }catch(_){ return null; }
+}
+function __fbPayloadMatchesActiveStructure__(payload){
+  try{
+    const active=__structureActive__();
+    const meta=payload?.structure;
+    if(!active) return true;
+    if(meta?.id) return String(meta.id)===String(active.id);
+    const list=__structureCatalog__();
+    return !!(list.length && list[0].id===active.id);
+  }catch(_){ return false; }
+}
+async function __structureAdoptFromSyncPayload__(payload){
+  try{
+    const meta=payload?.structure; if(!meta?.id || __structureHasActive__()) return false;
+    const sid=__fbSafeStructureId__(meta.id); if(!sid) return false;
+    const list=__structureCatalog__();
+    if(!list.some(x=>x.id===sid)) __structureWriteLocalCatalog__(list.concat({id:sid,nome:String(meta.nome||'Struttura').trim().slice(0,48)||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
+    __structureSetLegacySyncRoot__(sid,true);
+    await __structureSelect__(sid);
+    return true;
+  }catch(_){ return false; }
+}
 function __qrCodeText__(teamId, teamKey){
+  const active=(typeof __structureActive__==='function') ? __structureActive__() : null;
+  const list=(typeof __structureCatalog__==='function') ? __structureCatalog__() : [];
+  if(active && list.length && list[0].id!==active.id){
+    return `DDAE|${teamId}|${teamKey}|${encodeURIComponent(active.id)}|${encodeURIComponent(active.nome||'Struttura')}`;
+  }
   return `DDAE|${teamId}|${teamKey}`;
 }
 function __parseQr__(txt){
-  const s = String(txt||"").trim();
-  const m = s.match(/^DDAE\|([^|]+)\|([^|]+)$/i);
-  if (!m) return null;
-  return { teamId: m[1], teamKey: m[2] };
+  const parts=String(txt||'').trim().split('|');
+  if(parts.length<3 || parts.length>5 || String(parts[0]||'').toUpperCase()!=='DDAE' || !parts[1] || !parts[2]) return null;
+  let structureId='', structureName='';
+  try{ structureId=parts[3]?decodeURIComponent(parts[3]):''; }catch(_){ structureId=parts[3]||''; }
+  try{ structureName=parts[4]?decodeURIComponent(parts[4]):''; }catch(_){ structureName=parts[4]||''; }
+  return {teamId:parts[1],teamKey:parts[2],structureId:__fbSafeStructureId__(structureId),structureName:String(structureName||'').slice(0,48)};
 }
 
 async function __fbGetIdToken__(){
@@ -2420,7 +2474,7 @@ async function __fbClearAdminChunks__(teamId, maxCount){
   const tasks = [];
   for (let i = 0; i < Math.max(n, 12); i++){
     const id = String(i).padStart(4, "0");
-    tasks.push(__fsDelete__(`sync/${teamId}/admin_chunks/${id}`).catch(()=>false));
+    tasks.push(__fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`).catch(()=>false));
   }
   await Promise.all(tasks);
 }
@@ -2433,13 +2487,13 @@ async function __fbWriteAdminPayload__(payload){
   const nowIso = __nowIso__();
   let previousChunkCount = 0;
   try{
-    const oldDoc = await __fsGet__(`sync/${teamId}`);
+    const oldDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
     const oldData = oldDoc ? __fsDecode__(oldDoc) : {};
     previousChunkCount = parseInt(String(oldData?.admin_chunk_count || oldData?.adminChunks || "0"), 10) || 0;
   }catch(_){}
 
   if (raw.length <= __FB_ADMIN_CHUNK_SIZE__){
-    await __fsSet__(`sync/${teamId}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
       admin_json: raw,
       admin_core_json: "",
       admin_chunked: "false",
@@ -2459,7 +2513,7 @@ async function __fbWriteAdminPayload__(payload){
   }
   for (let i = 0; i < chunks.length; i++){
     const id = String(i).padStart(4, "0");
-    await __fsSet__(`sync/${teamId}/admin_chunks/${id}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`, {
       part: chunks[i],
       index: String(i),
       total: String(chunks.length),
@@ -2469,14 +2523,14 @@ async function __fbWriteAdminPayload__(payload){
   if (previousChunkCount > chunks.length){
     for (let i = chunks.length; i < previousChunkCount; i++){
       const id = String(i).padStart(4, "0");
-      try{ await __fsDelete__(`sync/${teamId}/admin_chunks/${id}`); }catch(_){}
+      try{ await __fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`); }catch(_){}
     }
   }
 
   let coreRaw = "";
   try{
     const ds = (payload && payload.datasets && typeof payload.datasets === "object") ? payload.datasets : {};
-    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), datasets:{} };
+    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets:{} };
     ["impostazioni", "ospiti", "stanze", "servizi"].forEach((t)=>{
       if (ds[t] !== undefined) core.datasets[t] = ds[t];
     });
@@ -2493,7 +2547,7 @@ async function __fbWriteAdminPayload__(payload){
     build: BUILD_VERSION
   };
   if (coreRaw) rootData.admin_core_json = coreRaw;
-  await __fsSet__(`sync/${teamId}`, rootData);
+  await __fsSet__(`${__fbSyncBasePath__(teamId)}`, rootData);
   return true;
 }
 
@@ -2507,7 +2561,7 @@ async function __fbReadAdminPayload__(){
       const s = String(raw || "");
       if (!s) return null;
       const p = JSON.parse(s);
-      return (p && p.datasets) ? p : null;
+      return (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) ? p : null;
     }catch(_){ return null; }
   };
 
@@ -2518,7 +2572,7 @@ async function __fbReadAdminPayload__(){
     const getPart = async (id) => {
       for (let attempt = 0; attempt < 3; attempt++){
         try{
-          const partDoc = await __fsGet__(`sync/${teamId}/admin_chunks/${id}`);
+          const partDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`);
           if (partDoc) return partDoc;
         }catch(_){ }
         try{ await new Promise(r => setTimeout(r, 180 + attempt * 260)); }catch(_){ }
@@ -2537,7 +2591,7 @@ async function __fbReadAdminPayload__(){
 
   const readChunkedByList = async () => {
     try{
-      const docs = await __fsList__(`sync/${teamId}/admin_chunks`);
+      const docs = await __fsList__(`${__fbSyncBasePath__(teamId)}/admin_chunks`);
       if (!Array.isArray(docs) || !docs.length) return null;
       let rows = docs.map((doc)=>{
         const d = __fsDecode__(doc);
@@ -2560,7 +2614,7 @@ async function __fbReadAdminPayload__(){
   };
 
   try{
-    const docAdmin = await __fsGet__(`sync/${teamId}`);
+    const docAdmin = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
     if (!docAdmin) return null;
     const dataA = __fsDecode__(docAdmin);
     const rawA = String(dataA.admin_json || "");
@@ -2630,7 +2684,7 @@ async function __fbEnsureSyncRoot__(opts){
     if (!teamKey && teamData && teamData.key) teamKey = String(teamData.key || "");
   }catch(_){}
   try{
-    await __fsSet__(`sync/${teamId}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
       key: teamKey,
       schema: "dDAE_sync_v2",
       build: BUILD_VERSION,
@@ -2649,7 +2703,7 @@ async function __fbEnsureOperatorRegistry__(operatorName){
   if (!safeName) return false;
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
   try{
-    await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${safeName}`, {
+    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${safeName}`, {
       operator: safeName,
       registeredAt: { __ts: __nowIso__() },
       updatedAt: { __ts: __nowIso__() }
@@ -2663,7 +2717,7 @@ async function __fbEnsureTeamRoster__(){
   if (!__FB_STATE__.teamId) return false;
   const ops = await __fbGetRosterOperators__();
   try{
-    await __fsSet__(`teams/${__FB_STATE__.teamId}`, {
+    await __fsSet__(__fbTeamPath__(__FB_STATE__.teamId), {
       key: __FB_STATE__.teamKey || "",
       operators: ops,
       updatedAt: { __ts: __nowIso__() }
@@ -2794,6 +2848,14 @@ async function __qrScanAndLink__(){
   const data = __fsDecode__(doc);
   if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
 
+  if(parsed.structureId){
+    try{
+      const list=__structureCatalog__();
+      if(!list.some(x=>x.id===parsed.structureId)) __structureWriteLocalCatalog__(list.concat({id:parsed.structureId,nome:parsed.structureName||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
+      __structureSetLegacySyncRoot__(parsed.structureId,false);
+      await __structureSelect__(parsed.structureId);
+    }catch(_){ }
+  }
   __fbSaveLink__(parsed.teamId, parsed.teamKey);
   try{ await __fbEnsureSyncRoot__({ teamId: parsed.teamId, teamKey: parsed.teamKey }); }catch(_){}
   try{ await __fbEnsureOperatorRegistry__(__operatorName__()); }catch(_){}
@@ -2872,12 +2934,13 @@ async function __fbExportSpesaBoard__(opts){
       kind:"DDAE_SPESA_BOARD",
       build: BUILD_VERSION,
       at: __nowIso__(),
+      structure: __fbActiveStructureMeta__(),
       datasets:{
         colazione: Array.isArray(colazione)?colazione:[],
         prodotti_pulizia: Array.isArray(prodotti)?prodotti:[]
       }
     };
-    await __fsSet__(`sync/${__FB_STATE__.teamId}/boards/spesa`, {
+    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`, {
       spesa_json: JSON.stringify(payload),
       updatedAt: { __ts: __nowIso__() }
     });
@@ -2891,13 +2954,13 @@ async function __fbReadSpesaBoardPayload__(){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) return null;
   try{
-    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/boards/spesa`);
+    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`);
     if (!doc) return null;
     const data = __fsDecode__(doc);
     const raw = String(data?.spesa_json || "");
     if (!raw) return null;
     const p = JSON.parse(raw);
-    if (p && p.datasets) return p;
+    if (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) return p;
   }catch(_){}
   return null;
 }
@@ -2906,7 +2969,7 @@ async function __fbBuildAdminPayload__(){
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
-  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
+  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
 }
 
 async function __fbExportAdmin__(opts){
@@ -2935,18 +2998,21 @@ async function __fbImportOperator__(opts){
 let payloads = [];
 try{
   const pA = await __fbReadAdminPayload__();
-  if (pA && pA.datasets) payloads.push(pA);
+  if (pA && pA.datasets){
+    try{ await __structureAdoptFromSyncPayload__(pA); }catch(_){ }
+    if(__fbPayloadMatchesActiveStructure__(pA)) payloads.push(pA);
+  }
 }catch(_){}
 
 try{
-  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+  const docsOps = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
   (docsOps||[]).forEach(d=>{
     try{
       const dd = __fsDecode__(d);
       const rawO = String(dd.operator_json||"");
       if (!rawO) return;
       const pO = JSON.parse(rawO);
-      if (pO && pO.datasets) payloads.push(pO);
+      if (pO && pO.datasets && __fbPayloadMatchesActiveStructure__(pO)) payloads.push(pO);
     }catch(_){}
   });
 }catch(_){}
@@ -3256,9 +3322,9 @@ async function __fbExportOperator__(opts){
     colazione: await __tblGet__("colazione", []),
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
   };
-  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
+  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
-  await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
+  await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
   try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
@@ -3295,7 +3361,7 @@ async function __fbImportAdmin__(opts){
   // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
   // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
   try{
-    const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+    const docsAll = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
     const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
     if (!ops.length) ops = fromDocs;
     else {
@@ -3383,13 +3449,13 @@ async function __fbImportAdmin__(opts){
 
   for (const op of ops){
 
-    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/operators/${op}`);
+    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${op}`);
     if (!doc) continue;
     const d = __fsDecode__(doc);
     const raw = String(d.operator_json||"");
     if (!raw) continue;
     let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
-    if (!payload || !payload.datasets) continue;
+    if (!payload || !payload.datasets || !__fbPayloadMatchesActiveStructure__(payload)) continue;
 
     // merge pulizie entries (merge by id or by key data+stanza; max per-col)
     try{
@@ -4351,6 +4417,7 @@ async function __dbImport__(kind){
       }
     }catch(_){ }
 
+    try{ await __structureBackupRestoreAll__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreTopLevelYears__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreMultiYear__(data, allowedTables); }catch(_){ }
     try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
@@ -4557,6 +4624,76 @@ async function __exportRosterOperators__(){
 }
 
 
+
+async function __structureBackupCollectAll__(tables){
+  try{
+    const activeId=__structureActiveId__();
+    if(activeId) __structureCaptureStorageSnapshot__(activeId);
+    const allowed=new Set((Array.isArray(tables)?tables:[]).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
+    const catalog=__structureCatalog__();
+    const out={schemaVersion:1,catalog:catalog.map(x=>({id:x.id,nome:x.nome,createdAt:x.createdAt||'',updatedAt:x.updatedAt||''})),selectedId:activeId||'',structures:{}};
+    for(const item of catalog){
+      const sid=String(item.id||''); if(!sid) continue;
+      const uid=__ctxDataUidForStructure__(sid); const prefix=`ctx:${uid}:`;
+      const keys=await __kvKeys__(prefix); const years={};
+      for(const key of (Array.isArray(keys)?keys:[])){
+        const rest=String(key||'').slice(prefix.length); const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/); if(!m) continue;
+        const table=m[2]; if(!allowed.has(table)) continue;
+        const val=await __kvGet__(key); if(val===undefined || val===null) continue;
+        if(!years[m[1]]) years[m[1]]={}; years[m[1]][table]=val;
+      }
+      const cocktailImages={};
+      try{
+        const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const assetKeys=await __kvKeys__(assetPrefix);
+        for(const assetKey of (Array.isArray(assetKeys)?assetKeys:[])){
+          const slot=String(assetKey||'').slice(assetPrefix.length); if(!slot) continue;
+          const data=await __kvGet__(assetKey); if(typeof data==='string'&&data.startsWith('data:image/')) cocktailImages[slot]=data;
+        }
+      }catch(_){ }
+      out.structures[sid]={id:sid,nome:item.nome||'Struttura',legacySyncRoot:__structureUsesLegacySyncRoot__(sid),storage:__structureReadStorageSnapshot__(sid),assets:{cocktailImages},years};
+    }
+    return out;
+  }catch(_){ return {schemaVersion:1,catalog:[],selectedId:'',structures:{}}; }
+}
+async function __structureBackupRestoreAll__(payload,tables){
+  try{
+    const src=payload?.multiStructure || payload?.meta?.multiStructure;
+    if(!src || typeof src!=='object' || !src.structures || typeof src.structures!=='object') return false;
+    const allowed=new Set((Array.from(tables||[])).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
+    const catalog=__structureNormalizeList__(src.catalog || Object.values(src.structures));
+    if(!catalog.length) return false;
+    __structureWriteLocalCatalog__(catalog);
+    for(const item of catalog){
+      const sid=item.id; const entry=src.structures?.[sid]||{};
+      __structureSetLegacySyncRoot__(sid,entry.legacySyncRoot===undefined ? (catalog[0].id===sid) : !!entry.legacySyncRoot);
+      if(entry.storage && typeof entry.storage==='object'){
+        try{ localStorage.setItem(__structureStorageSnapshotKey__(sid),JSON.stringify(entry.storage)); }catch(_){ }
+      }
+      try{
+        const imgs=entry?.assets?.cocktailImages; if(imgs&&typeof imgs==='object'){
+          const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const oldKeys=await __kvKeys__(assetPrefix);
+          for(const k of (Array.isArray(oldKeys)?oldKeys:[])) await __kvDel__(k);
+          for(const slot of Object.keys(imgs)){ const data=String(imgs[slot]||''); if(data.startsWith('data:image/')) await __kvSet__(assetPrefix+slot,data); }
+        }
+      }catch(_){ }
+      const years=entry.years&&typeof entry.years==='object'?entry.years:{};
+      for(const year of Object.keys(years)){
+        if(!/^[0-9]{4}$/.test(year)) continue;
+        const ds=years[year]&&typeof years[year]==='object'?years[year]:{};
+        for(const table of Object.keys(ds)){
+          if(!allowed.has(table)) continue;
+          await __kvSet__(`ctx:${__ctxDataUidForStructure__(sid)}:${year}:tbl:${table}`,ds[table]);
+        }
+      }
+    }
+    let selected=String(src.selectedId||'').trim(); if(!catalog.some(x=>x.id===selected)) selected=catalog[0].id;
+    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
+    __structureApplyStorageSnapshot__(selected);
+    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
+    return true;
+  }catch(_){ return false; }
+}
+
 async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -4573,6 +4710,7 @@ async function __dbExport__(kind, preopenWin){
         datasets.operatori = datasets.operatori.filter((row) => activeNames.has(String(getCanonicalActiveOperatorName(row?.operatore || row?.nome || '') || '').trim().toLowerCase()));
       }
     }catch(_){ }
+    try{ if(__structureActiveId__()) __structureCaptureStorageSnapshot__(__structureActiveId__()); }catch(_){ }
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
     const cocktailImageAssets = await __collectCocktailImageAssetsForBackup__();
@@ -4594,6 +4732,11 @@ async function __dbExport__(kind, preopenWin){
       const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
       payload.multiYear = __multiYearBackup__;
       payload.meta.multiYear = __multiYearBackup__;
+    }catch(_){ }
+    try{
+      const __multiStructureBackup__ = await __structureBackupCollectAll__(tables);
+      payload.multiStructure = __multiStructureBackup__;
+      payload.meta.multiStructure = __multiStructureBackup__;
     }catch(_){ }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -5543,7 +5686,7 @@ function __statGenReadYearGuestsLocalCache__(year){
   try{
     const yy = String(year || '').trim();
     if (!yy) return [];
-    const currentUid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : '';
+    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '') : '';
     const out = [];
     const seen = new Set();
     const addRows = (rows) => {
@@ -5577,7 +5720,7 @@ function __statGenReadYearGuestsLocalCache__(year){
         const k = localStorage.key(i);
         if (!k) continue;
         const ks = String(k);
-        if (ks.indexOf(`${yy}:ospitiALL|`) >= 0 || (ks.indexOf(`|${yy}|${yy}-01-01|${yy}-12-31`) >= 0 && ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
+        if (currentUid && ks.startsWith(`${__lsPrefixBase}${currentUid}:${yy}:`) && (ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
       }
     }catch(_){ }
 
@@ -5590,22 +5733,13 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
   try{
     const yy = String(year || '').trim();
     if (!/^\d{4}$/.test(yy)) return null;
-    const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
+    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+    if (!currentUid) return null;
+    const prefix = `ctx:${currentUid}:`;
+    const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__(prefix) : [];
     const suffix = `:${yy}:tbl:ospiti`;
-    let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').endsWith(suffix));
+    let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').startsWith(prefix) && String(k || '').endsWith(suffix));
     if (!guestKeys.length) return null;
-
-    const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-    guestKeys.sort((a, b) => {
-      const au = String(a || '').split(':')[1] || '';
-      const bu = String(b || '').split(':')[1] || '';
-      const ap = currentUid && au === currentUid ? 0 : 1;
-      const bp = currentUid && bu === currentUid ? 0 : 1;
-      if (ap !== bp) return ap - bp;
-      if (au === 'anon') return 1;
-      if (bu === 'anon') return -1;
-      return String(a).localeCompare(String(b));
-    });
 
     const fields = [
       'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
@@ -5935,18 +6069,20 @@ function __setTopserviziCenterLabel__(){
 
 function updateYearPill(){
   const y = String(state.exerciseYear || loadExerciseYear() || "").trim();
-  const pills = [
-    document.getElementById("yearPill"),
-    document.getElementById("homeYearPill")
-  ].filter(Boolean);
-
-  pills.forEach((pill) => {
-    if (!y){ pill.hidden = true; }
-    else{
-      pill.textContent = y;
-      pill.hidden = false;
+  const yearPill = document.getElementById("yearPill");
+  if (yearPill){
+    yearPill.hidden = !y;
+    if (y) yearPill.textContent = y;
+  }
+  const homePill = document.getElementById("homeYearPill");
+  if (homePill){
+    homePill.hidden = !y;
+    if (y){
+      const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
+      homePill.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
+      homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
     }
-  });
+  }
 
   // Topservizi: anno (default) o mese (solo Calendario)
   try{ __setTopserviziCenterLabel__(); }catch(_){ }
@@ -6133,7 +6269,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.291 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.292 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6161,7 +6297,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.291 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.292 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -13050,7 +13186,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeStructurePill','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -18503,13 +18639,25 @@ function __ctxYear__(){
   return String(new Date().getFullYear());
 }
 
-function __ctxSig__(){ return `${__ctxUid__()}|${__ctxYear__()}`; }
+function __ctxDataUidForStructure__(forcedStructureId){
+  try{
+    const account = encodeURIComponent(String(__ctxUid__() || 'anon'));
+    const sid = String(forcedStructureId || (typeof __structureActiveId__ === 'function' ? __structureActiveId__() : '') || '__none__')
+      .trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80) || '__none__';
+    return `${account}~s~${sid}`;
+  }catch(_){ return `anon~s~__none__`; }
+}
+function __ctxDataUid__(){ return __ctxDataUidForStructure__(''); }
+function __ctxSig__(){ return `${__ctxDataUid__()}|${__ctxYear__()}`; }
 
 
-// dDAE_3.291 — Multi-struttura per account: catalogo condiviso, selezione locale e Dati isolati per struttura.
+// dDAE_3.292 — Multi-struttura: ogni struttura è un ambiente dati indipendente.
 const __STRUCTURE_CATALOG_SETTING_KEY__ = 'strutture_catalogo';
 const __STRUCTURE_SELECTED_STORAGE_PREFIX__ = 'dDAE_structure_selected_v1:';
 const __STRUCTURE_LOCAL_CATALOG_PREFIX__ = 'dDAE_structures_v1:';
+const __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ = 'dDAE_structure_storage_v2:';
+const __STRUCTURE_MIGRATION_PREFIX__ = 'dDAE_structure_legacy_migrated_v2:';
+const __STRUCTURE_SYNC_ROOT_PREFIX__ = 'dDAE_structure_sync_legacy_root_v1:';
 const __STRUCTURE_SCOPED_SETTING_KEYS__ = new Set([
   'operatori','operatori_catalogo','tariffa_oraria','costo_benzina',
   'channel_catalogo','stanze_catalogo','numero_stanze','stanze_ui',
@@ -18525,6 +18673,15 @@ function __structureAccountSuffix__(){
 }
 function __structureCatalogStorageKey__(){ return __STRUCTURE_LOCAL_CATALOG_PREFIX__ + __structureAccountSuffix__(); }
 function __structureSelectedStorageKey__(){ return __STRUCTURE_SELECTED_STORAGE_PREFIX__ + __structureAccountSuffix__(); }
+function __structureStorageSnapshotKey__(sid){ return __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureMigrationKey__(sid){ return __STRUCTURE_MIGRATION_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureSyncRootKey__(sid){ return __STRUCTURE_SYNC_ROOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureSetLegacySyncRoot__(sid,yes){ try{ localStorage.setItem(__structureSyncRootKey__(sid),yes?'1':'0'); }catch(_){ } }
+function __structureUsesLegacySyncRoot__(sid){
+  const id=String(sid||'').trim(); if(!id) return true;
+  try{ const raw=localStorage.getItem(__structureSyncRootKey__(id)); if(raw==='1') return true; if(raw==='0') return false; }catch(_){ }
+  try{ const list=__structureCatalog__(); return !!(list.length && list[0].id===id); }catch(_){ return true; }
+}
 function __structureNormalizeList__(input){
   let rows=input;
   try{ if (typeof rows === 'string') rows=JSON.parse(rows || '[]'); }catch(_){ rows=[]; }
@@ -18557,19 +18714,15 @@ function __structureCatalogFromSettings__(){
   }catch(_){ return []; }
 }
 function __structureHydrateFromSettings__(){
+  const local=__structureReadLocalCatalog__();
+  if(local.length) return local;
   try{
-    const remote=__structureCatalogFromSettings__();
-    if(remote.length || (state?.settings?.byKey && state.settings.byKey[__STRUCTURE_CATALOG_SETTING_KEY__])) return __structureWriteLocalCatalog__(remote);
+    const legacy=__structureCatalogFromSettings__();
+    if(legacy.length) return __structureWriteLocalCatalog__(legacy);
   }catch(_){ }
-  return __structureReadLocalCatalog__();
+  return local;
 }
-function __structureCatalog__(){
-  try{
-    const remote=__structureCatalogFromSettings__();
-    if(remote.length || (state?.settings?.byKey && state.settings.byKey[__STRUCTURE_CATALOG_SETTING_KEY__])) return __structureWriteLocalCatalog__(remote);
-  }catch(_){ }
-  return __structureReadLocalCatalog__();
-}
+function __structureCatalog__(){ return __structureHydrateFromSettings__(); }
 function __structureActiveId__(){
   try{
     const id=String(localStorage.getItem(__structureSelectedStorageKey__()) || '').trim();
@@ -18605,34 +18758,126 @@ function __structureAllowsLegacyFallback__(){
     return !!(active && list.length && list[0].id===active.id);
   }catch(_){ return false; }
 }
+function __structureStorageIsAppKey__(key){
+  const k=String(key||''); const l=k.toLowerCase();
+  return k.startsWith('dDAE_') || k.startsWith('ddae_') || k.startsWith('__ddae_') || l.startsWith('ddae:');
+}
+function __structureStorageIsGlobalKey__(key){
+  const k=String(key||''); const l=k.toLowerCase();
+  if(!k) return true;
+  if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__)) return true;
+  if(l.startsWith('ddae_local_cache_v')) return true;
+  if(k.includes(':structure:')) return true;
+  const exact=new Set([
+    'dDAE_session_v2','dDAE_session','ddae_session','session','auth',
+    'dDAE_user','ddae_user','dDAE_current_user','currentUser','user',
+    'dDAE_user_id','ddae_user_id','dDAE_user_email','ddae_user_email',
+    'dDAE_logged_in','ddae_logged_in','ddae_fb_teamId','ddae_fb_teamKey',
+    'dDAE_pending_build','dDAE_update_attempt_build','dDAE_update_attempt_at','__ddae_restore_state',
+    '__ddae_auth_backup_force_admin_login_v1','__ddae_auth_backup_import_active_v1'
+  ]);
+  return exact.has(k);
+}
+function __structureScopableStorageKeys__(){
+  const keys=[];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i); if(!k) continue;
+      if(!__structureStorageIsAppKey__(k) || __structureStorageIsGlobalKey__(k)) continue;
+      keys.push(k);
+    }
+  }catch(_){ }
+  return keys;
+}
+function __structureCaptureStorageSnapshot__(sid){
+  const id=String(sid||'').trim(); if(!id) return {};
+  const out={};
+  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ out[k]=String(localStorage.getItem(k)??''); }catch(_){ } }); }catch(_){ }
+  try{ localStorage.setItem(__structureStorageSnapshotKey__(id),JSON.stringify(out)); }catch(_){ }
+  return out;
+}
+function __structureReadStorageSnapshot__(sid){
+  try{ const p=JSON.parse(localStorage.getItem(__structureStorageSnapshotKey__(sid))||'{}'); return p&&typeof p==='object'&&!Array.isArray(p)?p:{}; }catch(_){ return {}; }
+}
+function __structureApplyStorageSnapshot__(sid){
+  const id=String(sid||'').trim(); if(!id) return;
+  const snap=__structureReadStorageSnapshot__(id);
+  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }); }catch(_){ }
+  Object.keys(snap).forEach((k)=>{ try{ if(__structureStorageIsAppKey__(k) && !__structureStorageIsGlobalKey__(k)) localStorage.setItem(k,String(snap[k]??'')); }catch(_){ } });
+}
+let __structureMigrationInflight__=null;
+async function __structureEnsureActiveMigrated__(){
+  try{
+    const sid=__structureActiveId__(); if(!sid) return;
+    const list=__structureCatalog__(); if(!list.length || list[0].id!==sid) return;
+    __structureSetLegacySyncRoot__(sid,true);
+    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
+    if(__structureMigrationInflight__) return await __structureMigrationInflight__;
+    __structureMigrationInflight__=Promise.resolve(__structureSeedLegacyForFirst__(sid)).finally(()=>{__structureMigrationInflight__=null;});
+    return await __structureMigrationInflight__;
+  }catch(_){ }
+}
 async function __structureSeedLegacyForFirst__(sid){
   try{
     const list=__structureCatalog__();
     if(!list.length || list[0].id!==sid) return;
-    const rows0=await __tblGet__('impostazioni',[]); const rows=Array.isArray(rows0)?rows0.slice():[];
-    const keyOf=r=>String(r?.key||r?.Key||'').trim().toLowerCase();
-    const now=__nowIso__(); let changed=false;
-    __STRUCTURE_SCOPED_SETTING_KEYS__.forEach((base)=>{
-      const target=__structureScopedSettingKey__(base,sid);
-      if(rows.some(r=>keyOf(r)===target)) return;
-      const legacy=rows.find(r=>keyOf(r)===base);
-      if(!legacy) return;
-      rows.push(Object.assign({},legacy,{key:target,createdAt:legacy?.createdAt||now,updatedAt:now})); changed=true;
-    });
-    if(changed) await __tblSet__('impostazioni',rows);
-    const localBases=[
-      'dDAE_room_catalog_v1','ddae_laundry_catalog_v1','dDAE_guest_message_catalog_v1',
-      'dDAE_guest_message_catalog_initialized_v1','dDAE_guest_whatsapp_message_template_v1',
-      'dDAE_guest_whatsapp_message_translations_v1','dDAE_hotel_location_link_v1'
-    ];
-    localBases.forEach((base)=>{
-      try{
-        const target=__structureLocalStorageKey__(base,sid);
-        if(localStorage.getItem(target)!==null) return;
-        const legacy=localStorage.getItem(base);
-        if(legacy!==null) localStorage.setItem(target,legacy);
-      }catch(_){ }
-    });
+    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
+
+    // Conserva tutte le preferenze correnti come stato iniziale della prima struttura.
+    if(!Object.keys(__structureReadStorageSnapshot__(sid)).length) __structureCaptureStorageSnapshot__(sid);
+
+    // Migra TUTTI i dataset storici dell'account nella prima struttura soltanto.
+    const accountUid=String(__ctxUid__()||'anon');
+    const sourcePrefix=`ctx:${accountUid}:`;
+    const targetUid=__ctxDataUidForStructure__(sid);
+    const keys=await __kvKeys__(sourcePrefix);
+    for(const key of (Array.isArray(keys)?keys:[])){
+      const k=String(key||'');
+      if(!k.startsWith(sourcePrefix)) continue;
+      const rest=k.slice(sourcePrefix.length);
+      const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/);
+      if(!m) continue;
+      const target=`ctx:${targetUid}:${m[1]}:tbl:${m[2]}`;
+      const existing=await __kvGet__(target);
+      if(existing!==undefined && existing!==null) continue;
+      const val=await __kvGet__(k);
+      if(val!==undefined && val!==null) await __kvSet__(target,val);
+    }
+
+    // Duplica le vecchie impostazioni Dati con la chiave struttura prevista dalla UI.
+    const years=new Set([String(__ctxYear__())]);
+    for(const key of (Array.isArray(keys)?keys:[])){
+      const m=String(key||'').slice(sourcePrefix.length).match(/^([0-9]{4}):tbl:impostazioni$/);
+      if(m) years.add(m[1]);
+    }
+    for(const year of years){
+      if(!/^[0-9]{4}$/.test(year)) continue;
+      const targetKey=`ctx:${targetUid}:${year}:tbl:impostazioni`;
+      const rows0=await __kvGet__(targetKey); const rows=Array.isArray(rows0)?rows0.slice():[];
+      const keyOf=r=>String(r?.key||r?.Key||'').trim().toLowerCase();
+      const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString()); let changed=false;
+      __STRUCTURE_SCOPED_SETTING_KEYS__.forEach((base)=>{
+        const target=__structureScopedSettingKey__(base,sid);
+        if(rows.some(r=>keyOf(r)===target)) return;
+        const legacy=rows.find(r=>keyOf(r)===base);
+        if(!legacy) return;
+        rows.push(Object.assign({},legacy,{key:target,createdAt:legacy?.createdAt||now,updatedAt:now})); changed=true;
+      });
+      if(changed) await __kvSet__(targetKey,rows);
+    }
+    // Migra anche le immagini Servizi/Cocktail della vecchia struttura singola.
+    try{
+      const oldAssetKeys=await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+      const targetPrefix=__cocktailImageAssetContextPrefix__(sid);
+      for(const oldKey of (Array.isArray(oldAssetKeys)?oldAssetKeys:[])){
+        const rest=String(oldKey||'').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
+        if(!rest || rest.includes(':')) continue; // le nuove chiavi hanno namespace:slot
+        const target=targetPrefix+rest;
+        const exists=await __kvGet__(target); if(exists!==undefined && exists!==null) continue;
+        const val=await __kvGet__(oldKey); if(typeof val==='string' && val.startsWith('data:image/')) await __kvSet__(target,val);
+      }
+    }catch(_){ }
+    try{ localStorage.setItem(__structureMigrationKey__(sid),'1'); }catch(_){ }
   }catch(_){ }
 }
 async function __structureCreate__(rawName){
@@ -18640,12 +18885,10 @@ async function __structureCreate__(rawName){
   if(!name) throw new Error('Inserisci il nome della struttura');
   const list=__structureCatalog__();
   if(list.some(x=>String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
-  const now=__nowIso__();
+  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
   const item={id:'s_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),nome:name,createdAt:now,updatedAt:now};
-  const next=__structureWriteLocalCatalog__(list.concat(item));
-  await api('impostazioni',{method:'POST',body:{strutture_catalogo:JSON.stringify(next)},showLoader:false});
-  try{ await ensureSettingsLoaded({force:true,showLoader:false}); }catch(_){ }
-  __structureWriteLocalCatalog__(next);
+  __structureWriteLocalCatalog__(list.concat(item));
+  __structureSetLegacySyncRoot__(item.id,list.length===0);
   __structureUpdateUi__();
   return item;
 }
@@ -18654,18 +18897,25 @@ async function __structureSelect__(sid){
   if(!item) throw new Error('Struttura non disponibile');
   const prev=__structureActiveId__();
   if(prev===id) return item;
+  if(prev) __structureCaptureStorageSnapshot__(prev);
   await __structureSeedLegacyForFirst__(id);
+  __structureApplyStorageSnapshot__(id);
   try{ localStorage.setItem(__structureSelectedStorageKey__(),id); }catch(_){ }
   try{ invalidateApiCache(); }catch(_){ }
+  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
   try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
   return item;
+}
+function __structureContextLabel__(year){
+  const y=String(year||__ctxYear__()||'').trim(); const a=__structureActive__();
+  return a ? `${a.nome} - ${y}` : `Struttura - ${y}`;
 }
 function __structureUpdateUi__(){
   const active=__structureActive__();
   const label=active ? active.nome : 'Seleziona struttura';
   const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
   const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
-  const home=document.getElementById('homeStructurePill'); if(home){ home.textContent=active ? active.nome : 'Struttura'; home.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura'); }
+  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=__structureContextLabel__(y); home.setAttribute('aria-label',active ? ('Struttura '+active.nome+', anno '+y) : ('Seleziona struttura, anno '+y)); }
   const enabled=!!active;
   __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
 }
@@ -18703,7 +18953,7 @@ function __setupStructureUi__(){
   window.__ddaeStructureUiBound=true;
   const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
   bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
-  bind(document.getElementById('homeStructurePill'),__structureOpenSelectModal__);
+  bind(document.getElementById('homeYearPill'),__structureOpenSelectModal__);
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCancelBtn'),()=>__structureCloseCreateModal__(true));
@@ -18714,11 +18964,20 @@ function __setupStructureUi__(){
   ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
   const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
   const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
+  const homeGrid=document.querySelector('#page-home .home-grid');
+  if(homeGrid && !homeGrid.__ddaeStructureGuard){
+    homeGrid.__ddaeStructureGuard=true;
+    homeGrid.addEventListener('click',(e)=>{
+      if(__structureHasActive__()) return;
+      const btn=e.target?.closest?.('.home-main'); if(!btn) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_){ }
+      try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){ }
+    },true);
+  }
   __structureUpdateUi__();
 }
 try{ document.addEventListener('DOMContentLoaded',()=>{try{__setupStructureUi__();__structureUpdateUi__();}catch(_){}},{once:true}); }catch(_){ }
 try{ window.addEventListener('pageshow',()=>{try{__structureUpdateUi__();}catch(_){}},{passive:true}); }catch(_){ }
-
 
 
 // ===== Year filtering (client-side) =====
@@ -18866,7 +19125,7 @@ function __apiUsesExerciseYear__(action){
   return true;
 }
 
-function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
+function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxDataUid__()}:${__ctxYear__()}:`; }
 
 function __lsClearAll(){
   // cancella TUTTE le cache dell'app (tutti account/anni)
@@ -47303,7 +47562,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.291';
+  var BUILD_TAG='dDAE_3.292';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50124,7 +50383,7 @@ try{
 /* dDAE_2.990 — Backup: login da logout + ripristino multi-anno */
 async function __ddaeBackupCollectMultiYear__(tables){
   try{
-    const uid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const uid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
     const out = { uid: uid || 'anon', years: {} };
@@ -50167,7 +50426,7 @@ async function __ddaeBackupRestoreTopLevelYears__(payload, tables){
     if (!ds || !Object.keys(ds).length) return false;
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const years = new Set();
@@ -50227,7 +50486,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const activeYear = (typeof __ctxYear__ === 'function') ? String(__ctxYear__() || '').trim() : '';
@@ -52217,7 +52476,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.291',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.292',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53421,7 +53680,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.291 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.292 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53842,7 +54101,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.291: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.292: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -54079,9 +54338,9 @@ try{
 })();
 
 
-/* dDAE_3.291 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.291 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.291 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.292 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.292 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.292 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
