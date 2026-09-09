@@ -12996,11 +12996,11 @@ body[data-role="operatore"] #page-home .home-main-label{
 }
 .settings-year-wheel-fade-top{
   top:0;
-  background:linear-gradient(to bottom, rgba(248,250,252,0.98), rgba(248,250,252,0));
+  background:transparent;
 }
 .settings-year-wheel-fade-bottom{
   bottom:0;
-  background:linear-gradient(to top, rgba(248,250,252,0.98), rgba(248,250,252,0));
+  background:transparent;
 }
 
 
@@ -13358,10 +13358,10 @@ body.ddae-dark .settings-year-wheel-highlight{
   border-color: rgba(88,183,244,0.28) !important;
 }
 body.ddae-dark .settings-year-wheel-fade-top{
-  background: linear-gradient(to bottom, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
+  background: transparent !important;
 }
 body.ddae-dark .settings-year-wheel-fade-bottom{
-  background: linear-gradient(to top, rgba(15,23,42,0.98), rgba(15,23,42,0)) !important;
+  background: transparent !important;
 }
 body.ddae-dark #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
 body.ddae-dark #page-opsettings .settings-actions.settings-actions-reference .settings-btn{
@@ -31392,7 +31392,7 @@ html.dark-mode .tag-color-state-btn.is-active{
   border-radius:12px !important;
   clip-path:inset(0 round 12px) !important;
   -webkit-clip-path:inset(0 round 12px) !important;
-  -webkit-mask-image:-webkit-radial-gradient(white, black) !important;
+  -webkit-mask-image:none !important;
   transform:translateZ(0) !important;
   -webkit-transform:translateZ(0) !important;
   backface-visibility:hidden !important;
@@ -35076,7 +35076,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
   #channelEditorModal .channel-editor-icon-grid > .channel-editor-icon-action .ui-ico{ width:30px !important; height:30px !important; flex-basis:30px !important; }
 }
 
-/* dDAE_3.290 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
+/* dDAE_3.291 — Messaggistica ospite semplificata: catalogo titolato + invio unico. */
 #guestContactActionDock{
   width:min(360px, calc(100vw - 40px)) !important;
   justify-content:center !important;
@@ -35203,7 +35203,7 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
 .guest-message-channel-btn:disabled{
   opacity:1 !important;
 }
-/* dDAE_3.290 — lo stato SPENTO/ACCESO dei canali è pilotato dal tema, non dall'opacità nativa disabled. */
+/* dDAE_3.291 — lo stato SPENTO/ACCESO dei canali è pilotato dal tema, non dall'opacità nativa disabled. */
 .guest-message-channel-btn .ui-ico{
   width:31px !important;
   height:31px !important;
@@ -35242,7 +35242,7 @@ html.dark-mode .guest-message-title-btn{
 }
 
 
-/* dDAE_3.290 — Catalogo messaggi: UI essenziale, eliminazione per record e feedback sopra i popup. */
+/* dDAE_3.291 — Catalogo messaggi: UI essenziale, eliminazione per record e feedback sopra i popup. */
 #guestMessagesSettingsModal .guest-message-settings-hint{
   display:none !important;
 }
@@ -35295,7 +35295,7 @@ body.modal-open .toast{
 }
 
 
-/* dDAE_3.290 — avanzamento traduzioni fisso nel popup e campi editor senza etichette. */
+/* dDAE_3.291 — avanzamento traduzioni fisso nel popup e campi editor senza etichette. */
 #guestMessageEditorView .field.float > label{display:none !important;}
 #guestMessageEditorView .field.float input,
 #guestMessageEditorView .field.float textarea{padding-top:16px !important;}
@@ -35305,6 +35305,106 @@ body.modal-open .toast{
 #guestMessageTranslationProgressBar{display:block !important;width:100% !important;height:12px !important;accent-color:currentColor !important;}
 
 
-/* dDAE_3.290 — sync: barra di avanzamento fissa, nessuna sequenza di pill. */
+/* dDAE_3.291 — sync: barra di avanzamento fissa, nessuna sequenza di pill. */
 .ddae-sync-progress{position:fixed;z-index:2147483000;left:max(18px,env(safe-area-inset-left));right:max(18px,env(safe-area-inset-right));top:calc(env(safe-area-inset-top) + 78px);padding:13px 16px 15px;border:1px solid rgba(20,45,70,.22);border-radius:18px;background:rgba(255,255,255,.97);box-shadow:0 8px 24px rgba(0,0,0,.18);color:#13253f;font-weight:800;pointer-events:none}
 .ddae-sync-progress[hidden]{display:none!important}.ddae-sync-progress__label{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:15px;line-height:1.2}.ddae-sync-progress__label strong{font-variant-numeric:tabular-nums}.ddae-sync-progress__track{height:10px;margin-top:10px;border-radius:999px;background:rgba(20,45,70,.12);overflow:hidden}.ddae-sync-progress__fill{height:100%;width:0;border-radius:999px;background:#2d9fe8;transition:width .22s ease}.ddae-sync-progress[data-state="ok"] .ddae-sync-progress__fill{background:#239447}.ddae-sync-progress[data-state="error"] .ddae-sync-progress__fill{background:#d56a1d}
+
+
+/* dDAE_3.291 — Multi-struttura: layout flat, selettore stabile e popup dedicati */
+#page-home .home-page{ position:relative !important; }
+#page-home #homeStructurePill.home-structure-pill{
+  min-width:150px !important;
+  max-width:min(290px,76vw) !important;
+  min-height:38px !important;
+  height:38px !important;
+  margin:0 auto -38px !important;
+  padding:0 18px !important;
+  transform:translateY(-38px) !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-overflow:ellipsis !important;
+  border-radius:999px !important;
+  box-shadow:none !important;
+  background-image:none !important;
+}
+#page-impostazioni #settingsStructureBtn{
+  margin-top:-63px !important;
+  background-image:none !important;
+}
+#page-impostazioni #settingsStructureBtn .settings-btn-label{
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+#settingsDataModal #settingsStructureCreateBtn{ background-image:none !important; }
+#settingsDataModal .settings-btn.is-structure-disabled{ opacity:.34 !important; cursor:not-allowed !important; }
+#settingsDataModal .settings-btn.is-structure-disabled .settings-btn-label,
+#settingsDataModal .settings-btn.is-structure-disabled .ui-ico{ opacity:.76 !important; }
+.structure-select-card,.structure-create-card{
+  width:min(92vw,520px) !important;
+  max-height:calc(100dvh - var(--safe-top,0px) - var(--safe-bottom,0px) - 48px) !important;
+  overflow:auto !important;
+  border-radius:24px !important;
+  background-image:none !important;
+}
+.structure-select-list{ display:flex !important; flex-direction:column !important; gap:12px !important; }
+.structure-option-btn{
+  width:100% !important;
+  min-height:70px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:14px !important;
+  padding:0 18px !important;
+  border-radius:18px !important;
+  background-image:none !important;
+}
+.structure-option-btn .ui-ico{ width:30px !important; height:30px !important; flex:0 0 30px !important; }
+.structure-option-btn .settings-btn-label{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  text-align:left !important;
+  font-size:20px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.structure-option-check{ width:28px !important; flex:0 0 28px !important; text-align:center !important; font-size:24px !important; font-weight:900 !important; }
+.structure-select-empty{ padding:18px 10px !important; text-align:center !important; font-size:16px !important; font-weight:750 !important; color:#60738a !important; }
+.structure-name-field{ margin:8px 0 16px !important; }
+.structure-name-field input{ width:100% !important; min-height:58px !important; border-radius:16px !important; background-image:none !important; }
+.structure-modal-actions{ display:flex !important; align-items:center !important; gap:12px !important; margin-top:14px !important; }
+.structure-modal-actions .btn{ flex:1 1 0 !important; min-height:58px !important; border-radius:16px !important; background-image:none !important; }
+body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
+
+/* dDAE_3.291 — Selettore struttura compatto sopra l'anno, senza spostare i controlli esistenti */
+#page-impostazioni #settingsStructureBtn{
+  height:38px !important;
+  min-height:38px !important;
+  margin-top:-47px !important;
+  border-radius:999px !important;
+  padding:0 16px !important;
+  gap:12px !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+#page-impostazioni #settingsStructureBtn .ui-ico{
+  width:22px !important;
+  height:22px !important;
+  margin-left:4px !important;
+}
+#page-impostazioni #settingsStructureBtn .settings-btn-label{
+  font-size:14px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.structure-select-card,
+.structure-create-card,
+.structure-option-btn,
+.structure-modal-actions .btn{
+  box-shadow:none !important;
+  filter:none !important;
+}

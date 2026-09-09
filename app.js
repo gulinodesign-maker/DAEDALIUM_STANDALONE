@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.290";
+const BUILD_VERSION = "3.291";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -1486,12 +1486,13 @@ async function __localApiImpostazioni__(method, body){
   if (method === "POST"){
     const now = __nowIso__();
     const upsert = (nextRow) => {
-      const key = String(nextRow?.key || "").trim().toLowerCase();
-      if (!key) return;
+      const baseKey = String(nextRow?.key || "").trim().toLowerCase();
+      if (!baseKey) return;
+      const key = (typeof __structureScopedSettingKey__ === 'function') ? __structureScopedSettingKey__(baseKey) : baseKey;
       const idx = rows.findIndex(r => String(r?.key || r?.Key || "").trim().toLowerCase() === key);
       const prev = idx >= 0 ? rows[idx] : null;
       const merged = Object.assign({}, prev || {}, nextRow || {});
-      merged.key = nextRow.key;
+      merged.key = key;
       merged.createdAt = prev?.createdAt || nextRow.createdAt || now;
       merged.updatedAt = now;
       if (idx >= 0) rows[idx] = merged;
@@ -1511,7 +1512,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json","strutture_catalogo","hotel_location_link"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -6132,7 +6133,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.290 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.291 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6160,7 +6161,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.290 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.291 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -11938,7 +11939,15 @@ function __parseSettingsRows(rows) {
 
 function getSettingRow(key) {
   const k = __normKey(key);
-  return (state.settings && state.settings.byKey && state.settings.byKey[k]) ? state.settings.byKey[k] : null;
+  const map = (state.settings && state.settings.byKey) ? state.settings.byKey : null;
+  if (!map) return null;
+  try{
+    if (typeof __structureSettingIsScoped__ === 'function' && __structureSettingIsScoped__(k) && typeof __structureHasActive__ === 'function' && __structureHasActive__()) {
+      const scoped = __structureScopedSettingKey__(k);
+      return map[scoped] || null;
+    }
+  }catch(_){ }
+  return map[k] || null;
 }
 
 function getSettingText(key, fallback = "") {
@@ -12003,14 +12012,14 @@ const __LAUNDRY_CATALOG_CACHE_KEY__ = "ddae_laundry_catalog_v1";
 function __persistLaundryCatalogCache__(list){
   try{
     const clean = __sanitizeLaundryCatalogList__(list, { fallbackToDefault: false });
-    localStorage.setItem(__LAUNDRY_CATALOG_CACHE_KEY__, JSON.stringify(clean));
+    localStorage.setItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__), JSON.stringify(clean));
     return clean;
   }catch(_){ return []; }
 }
 
 function __readLaundryCatalogCache__(){
   try{
-    const raw = localStorage.getItem(__LAUNDRY_CATALOG_CACHE_KEY__);
+    const raw = localStorage.getItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__));
     if (!String(raw || '').trim()) return [];
     const parsed = JSON.parse(String(raw || '[]'));
     return __sanitizeLaundryCatalogList__(parsed, { fallbackToDefault: false });
@@ -12409,7 +12418,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
@@ -12424,6 +12433,8 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatistiche: 'beige-4',
   goProdotti: 'gray-3',
   goDbSync: 'white',
+  settingsStructureBtn: 'orange-4',
+  settingsStructureCreateBtn: 'orange-4',
   settingsSaveBtn: 'sky-3',
   settingsDbBtn: 'green-4',
   settingsRoomsBtn: 'yellow-4',
@@ -13039,7 +13050,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeStructurePill','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -13667,7 +13678,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
@@ -13718,6 +13729,9 @@ function __launcherIconVisualFor__(id){
   if (key === 'settingsGuestMessagesBtn' && !map[key] && map.settingsGuestMessageBtn){
     try{ map[key] = map.settingsGuestMessageBtn; __launcherIconColorMapWrite__(map); }catch(_){ }
   }
+  if ((key === 'settingsStructureCreateBtn' || key === 'settingsStructureBtn') && !map[key] && map.settingsChannelBtn){
+    return __launcherVisualNormalize__(map.settingsChannelBtn, 'orange-4');
+  }
   if (key === 'goDbSync'){
     const raw = map[key];
     if (!raw || typeof raw !== 'object'){
@@ -13752,7 +13766,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsStructureBtn','settingsStructureCreateBtn','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -14312,7 +14326,7 @@ function __canonicalizeChannelCatalogSettingRows__(rows){
   list.forEach((row) => {
     try{
       const key = String(row?.key ?? row?.Key ?? '').trim().toLowerCase();
-      if (key !== 'channel_catalogo') return;
+      if (!(key === 'channel_catalogo' || key.endsWith(':channel_catalogo'))) return;
       const raw = row?.value ?? row?.Value ?? '';
       const parsed = JSON.parse(String(raw || '[]'));
       const clean = __normalizeChannelCatalogList__(Array.isArray(parsed) ? parsed : []);
@@ -14333,7 +14347,7 @@ function __canonicalizeBackupChannelsDeep__(node, seen){
   }
   try{
     const key = String(node?.key ?? node?.Key ?? '').trim().toLowerCase();
-    if (key === 'channel_catalogo') __canonicalizeChannelCatalogSettingRows__([node]);
+    if (key === 'channel_catalogo' || key.endsWith(':channel_catalogo')) __canonicalizeChannelCatalogSettingRows__([node]);
   }catch(_){ }
   try{
     const hasChannelFields = ('channel_id' in node) || ('channelId' in node) || ('channel_nome' in node) || ('channelNome' in node) || ('channel_name' in node) || ('channelName' in node);
@@ -14452,7 +14466,7 @@ async function ensureChannelCatalogGlobalLoaded({ force = false, showLoader = fa
     const all = [];
     (Array.isArray(rows) ? rows : []).forEach((row)=>{
       const key = __normKey(row?.key ?? row?.Key ?? row?.KEY);
-      if (key !== "channel_catalogo") return;
+      if (typeof __structureSettingKeyMatches__ === "function" ? !__structureSettingKeyMatches__(key, "channel_catalogo") : key !== "channel_catalogo") return;
       all.push(__parseChannelCatalogRaw__(row?.value ?? row?.Value ?? row?.val ?? ""));
     });
     const merged = __mergeChannelCatalogLists__(...all, annualFallback);
@@ -14587,7 +14601,9 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     const rows = data?.rows || data?.items || [];
     state.settings.rows = Array.isArray(rows) ? rows : [];
     state.settings.byKey = __parseSettingsRows(state.settings.rows);
+    try{ if (typeof __structureHydrateFromSettings__ === 'function') __structureHydrateFromSettings__(); }catch(_){ }
     try{ __persistLaundryCatalogCache__(getLaundryCatalogFromSettings()); }catch(_){ }
+    try{ if (typeof __structureUpdateUi__ === 'function') __structureUpdateUi__(); }catch(_){ }
     state.settings.loaded = true;
     state.settings.loadedAt = Date.now();
 
@@ -16145,13 +16161,14 @@ function __scheduleRoomCatalogRecoveryToSettings__(catalog){
         const rows0 = await __tblGet__('impostazioni', []);
         const rows = Array.isArray(rows0) ? rows0.slice() : [];
         const keyOf = (row) => String(row?.key || row?.Key || '').trim().toLowerCase();
-        const hasCatalog = rows.some((row) => keyOf(row) === 'stanze_catalogo' && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
+        const hasCatalog = rows.some((row) => __structureSettingKeyMatches__(keyOf(row), 'stanze_catalogo') && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
         if (hasCatalog) return;
         const now = __nowIso__();
         const upsert = (key, value) => {
-          const idx = rows.findIndex((row) => keyOf(row) === key);
+          const scopedKey = __structureScopedSettingKey__(key);
+          const idx = rows.findIndex((row) => keyOf(row) === scopedKey);
           const prev = idx >= 0 ? rows[idx] : {};
-          const next = { ...prev, key, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
+          const next = { ...prev, key:scopedKey, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
           if (idx >= 0) rows[idx] = next; else rows.push(next);
         };
         upsert('stanze_catalogo', JSON.stringify(clean));
@@ -16173,12 +16190,12 @@ function getRoomCatalogFromSettings(){
     const clean = __roomCatalogParseRaw__(raw);
     if (clean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, JSON.stringify(clean)); }catch(_){ }
+      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), JSON.stringify(clean)); }catch(_){ }
       return clean;
     }
   }catch(_){ }
   try{
-    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__ROOM_CATALOG_STORAGE_KEY__) || '');
+    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__)) || '');
     if (localClean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = localClean; }catch(_){ }
       try{ __scheduleRoomCatalogRecoveryToSettings__(localClean); }catch(_){ }
@@ -16213,14 +16230,14 @@ async function saveRoomCatalogToSettings(list){
   const clean = __roomCatalogNormalizeList__(list);
   const raw = JSON.stringify(clean);
   try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-  try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, raw); }catch(_){ }
+  try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), raw); }catch(_){ }
   const ui = __syncRoomCatalogColorsToRoomsUi__(clean);
   await api('impostazioni', { method:'POST', body:{ stanze_catalogo:clean, numero_stanze:clean.length, stanze_ui:JSON.stringify(ui) }, showLoader:true });
   try{
     state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
-    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
-    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
+    state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{ __applyRoomsUiConfig__(); }catch(_){ }
@@ -16888,6 +16905,9 @@ function setupImpostazioni() {
   }
   try{ __syncDarkModeButtons__(); }catch(_){ }
 
+  try{ __setupStructureUi__(); }catch(_){ }
+  try{ __structureUpdateUi__(); }catch(_){ }
+
   const settingsYearPill = document.getElementById("settingsYearPill");
   if (settingsYearPill && !settingsYearPill.__boundYearTap){
     settingsYearPill.__boundYearTap = true;
@@ -16906,6 +16926,7 @@ function setupImpostazioni() {
   const __openSettingsDataModal__ = () => {
     try{
       if (!settingsDataModal) return;
+      try{ __structureUpdateUi__(); }catch(_){ }
       __setSettingsDataModalMode__('active');
       settingsDataModal.hidden = false;
       settingsDataModal.setAttribute('aria-hidden','false');
@@ -16919,6 +16940,7 @@ function setupImpostazioni() {
   };
   try{ window.__openSettingsDataModal__ = __openSettingsDataModal__; window.__closeSettingsDataModal__ = __closeSettingsDataModal__; }catch(_){ }
   const __goSettingsDataChild__ = (pageName) => {
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
     try{ window.__settingsDataReturnActive = true; }catch(_){ }
     try{ __closeSettingsDataModal__(); }catch(_){ }
     try{ hideLauncher(); }catch(_){ }
@@ -18484,6 +18506,220 @@ function __ctxYear__(){
 function __ctxSig__(){ return `${__ctxUid__()}|${__ctxYear__()}`; }
 
 
+// dDAE_3.291 — Multi-struttura per account: catalogo condiviso, selezione locale e Dati isolati per struttura.
+const __STRUCTURE_CATALOG_SETTING_KEY__ = 'strutture_catalogo';
+const __STRUCTURE_SELECTED_STORAGE_PREFIX__ = 'dDAE_structure_selected_v1:';
+const __STRUCTURE_LOCAL_CATALOG_PREFIX__ = 'dDAE_structures_v1:';
+const __STRUCTURE_SCOPED_SETTING_KEYS__ = new Set([
+  'operatori','operatori_catalogo','tariffa_oraria','costo_benzina',
+  'channel_catalogo','stanze_catalogo','numero_stanze','stanze_ui',
+  'laundry_catalogo','laundry_prices','guest_whatsapp_message_template',
+  'guest_message_templates_json','hotel_location_link'
+]);
+const __STRUCTURE_DATA_BUTTON_IDS__ = [
+  'settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn',
+  'settingsLaundryCatalogBtn','settingsGuestMessagesBtn','settingsHotelLocationBtn'
+];
+function __structureAccountSuffix__(){
+  try{ return encodeURIComponent(String(__ctxUid__() || 'anon')); }catch(_){ return 'anon'; }
+}
+function __structureCatalogStorageKey__(){ return __STRUCTURE_LOCAL_CATALOG_PREFIX__ + __structureAccountSuffix__(); }
+function __structureSelectedStorageKey__(){ return __STRUCTURE_SELECTED_STORAGE_PREFIX__ + __structureAccountSuffix__(); }
+function __structureNormalizeList__(input){
+  let rows=input;
+  try{ if (typeof rows === 'string') rows=JSON.parse(rows || '[]'); }catch(_){ rows=[]; }
+  const out=[]; const seen=new Set();
+  (Array.isArray(rows)?rows:[]).forEach((row,idx)=>{
+    const name=String(row?.nome ?? row?.name ?? row?.label ?? '').trim().replace(/\s+/g,' ').slice(0,48);
+    if(!name) return;
+    let id=String(row?.id ?? '').trim().replace(/[^a-zA-Z0-9_-]/g,'').slice(0,64).toLowerCase();
+    if(!id) id='s_'+String(idx+1)+'_'+String(Date.now());
+    if(seen.has(id)) return;
+    seen.add(id);
+    out.push({id,nome:name,createdAt:String(row?.createdAt || ''),updatedAt:String(row?.updatedAt || '')});
+  });
+  return out;
+}
+function __structureReadLocalCatalog__(){
+  try{ return __structureNormalizeList__(localStorage.getItem(__structureCatalogStorageKey__()) || '[]'); }catch(_){ return []; }
+}
+function __structureWriteLocalCatalog__(rows){
+  const clean=__structureNormalizeList__(rows);
+  try{ localStorage.setItem(__structureCatalogStorageKey__(),JSON.stringify(clean)); }catch(_){ }
+  return clean;
+}
+function __structureCatalogFromSettings__(){
+  try{
+    const map=state?.settings?.byKey || {};
+    const row=map[__STRUCTURE_CATALOG_SETTING_KEY__];
+    if(!row) return [];
+    return __structureNormalizeList__(row?.value ?? row?.Value ?? row?.val ?? '[]');
+  }catch(_){ return []; }
+}
+function __structureHydrateFromSettings__(){
+  try{
+    const remote=__structureCatalogFromSettings__();
+    if(remote.length || (state?.settings?.byKey && state.settings.byKey[__STRUCTURE_CATALOG_SETTING_KEY__])) return __structureWriteLocalCatalog__(remote);
+  }catch(_){ }
+  return __structureReadLocalCatalog__();
+}
+function __structureCatalog__(){
+  try{
+    const remote=__structureCatalogFromSettings__();
+    if(remote.length || (state?.settings?.byKey && state.settings.byKey[__STRUCTURE_CATALOG_SETTING_KEY__])) return __structureWriteLocalCatalog__(remote);
+  }catch(_){ }
+  return __structureReadLocalCatalog__();
+}
+function __structureActiveId__(){
+  try{
+    const id=String(localStorage.getItem(__structureSelectedStorageKey__()) || '').trim();
+    if(!id) return '';
+    return __structureCatalog__().some(x=>x.id===id) ? id : '';
+  }catch(_){ return ''; }
+}
+function __structureActive__(){ const id=__structureActiveId__(); return id ? (__structureCatalog__().find(x=>x.id===id) || null) : null; }
+function __structureHasActive__(){ return !!__structureActiveId__(); }
+function __structureSettingIsScoped__(key){ return __STRUCTURE_SCOPED_SETTING_KEYS__.has(String(key||'').trim().toLowerCase()); }
+function __structureScopedSettingKey__(baseKey, forcedStructureId){
+  const base=String(baseKey||'').trim().toLowerCase();
+  if(!base || !__structureSettingIsScoped__(base)) return base;
+  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
+  return sid ? ('struttura:'+sid+':'+base) : base;
+}
+function __structureSettingKeyMatches__(storedKey, baseKey){
+  const stored=String(storedKey||'').trim().toLowerCase();
+  const base=String(baseKey||'').trim().toLowerCase();
+  if(!__structureSettingIsScoped__(base) || !__structureHasActive__()) return stored===base;
+  return stored===__structureScopedSettingKey__(base);
+}
+function __structureLocalStorageKey__(baseKey, forcedStructureId){
+  const base=String(baseKey||'').trim();
+  if(!base) return base;
+  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
+  if(!sid) return base;
+  return base+':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(sid);
+}
+function __structureAllowsLegacyFallback__(){
+  try{
+    const active=__structureActive__(); const list=__structureCatalog__();
+    return !!(active && list.length && list[0].id===active.id);
+  }catch(_){ return false; }
+}
+async function __structureSeedLegacyForFirst__(sid){
+  try{
+    const list=__structureCatalog__();
+    if(!list.length || list[0].id!==sid) return;
+    const rows0=await __tblGet__('impostazioni',[]); const rows=Array.isArray(rows0)?rows0.slice():[];
+    const keyOf=r=>String(r?.key||r?.Key||'').trim().toLowerCase();
+    const now=__nowIso__(); let changed=false;
+    __STRUCTURE_SCOPED_SETTING_KEYS__.forEach((base)=>{
+      const target=__structureScopedSettingKey__(base,sid);
+      if(rows.some(r=>keyOf(r)===target)) return;
+      const legacy=rows.find(r=>keyOf(r)===base);
+      if(!legacy) return;
+      rows.push(Object.assign({},legacy,{key:target,createdAt:legacy?.createdAt||now,updatedAt:now})); changed=true;
+    });
+    if(changed) await __tblSet__('impostazioni',rows);
+    const localBases=[
+      'dDAE_room_catalog_v1','ddae_laundry_catalog_v1','dDAE_guest_message_catalog_v1',
+      'dDAE_guest_message_catalog_initialized_v1','dDAE_guest_whatsapp_message_template_v1',
+      'dDAE_guest_whatsapp_message_translations_v1','dDAE_hotel_location_link_v1'
+    ];
+    localBases.forEach((base)=>{
+      try{
+        const target=__structureLocalStorageKey__(base,sid);
+        if(localStorage.getItem(target)!==null) return;
+        const legacy=localStorage.getItem(base);
+        if(legacy!==null) localStorage.setItem(target,legacy);
+      }catch(_){ }
+    });
+  }catch(_){ }
+}
+async function __structureCreate__(rawName){
+  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
+  if(!name) throw new Error('Inserisci il nome della struttura');
+  const list=__structureCatalog__();
+  if(list.some(x=>String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
+  const now=__nowIso__();
+  const item={id:'s_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),nome:name,createdAt:now,updatedAt:now};
+  const next=__structureWriteLocalCatalog__(list.concat(item));
+  await api('impostazioni',{method:'POST',body:{strutture_catalogo:JSON.stringify(next)},showLoader:false});
+  try{ await ensureSettingsLoaded({force:true,showLoader:false}); }catch(_){ }
+  __structureWriteLocalCatalog__(next);
+  __structureUpdateUi__();
+  return item;
+}
+async function __structureSelect__(sid){
+  const id=String(sid||'').trim(); const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
+  if(!item) throw new Error('Struttura non disponibile');
+  const prev=__structureActiveId__();
+  if(prev===id) return item;
+  await __structureSeedLegacyForFirst__(id);
+  try{ localStorage.setItem(__structureSelectedStorageKey__(),id); }catch(_){ }
+  try{ invalidateApiCache(); }catch(_){ }
+  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
+  return item;
+}
+function __structureUpdateUi__(){
+  const active=__structureActive__();
+  const label=active ? active.nome : 'Seleziona struttura';
+  const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
+  const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
+  const home=document.getElementById('homeStructurePill'); if(home){ home.textContent=active ? active.nome : 'Struttura'; home.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura'); }
+  const enabled=!!active;
+  __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
+}
+function __structureOpenSelectModal__(){
+  const modal=document.getElementById('structureSelectModal'); const listEl=document.getElementById('structureSelectList'); const empty=document.getElementById('structureSelectEmpty');
+  if(!modal||!listEl) return;
+  const rows=__structureCatalog__(); const activeId=__structureActiveId__(); listEl.innerHTML='';
+  rows.forEach((item)=>{
+    const btn=document.createElement('button'); btn.type='button'; btn.className='settings-btn settings-btn-channel structure-option-btn'; btn.dataset.singleActionKey='structureSelectOption'; btn.dataset.structureId=item.id;
+    btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14"></path><path d="M8 21v-5h8v5"></path><path d="M8 9h2"></path><path d="M14 9h2"></path></svg><span class="settings-btn-label"></span><span class="structure-option-check" aria-hidden="true"></span>';
+    const lab=btn.querySelector('.settings-btn-label'); if(lab) lab.textContent=item.nome;
+    if(item.id===activeId){ btn.classList.add('is-selected'); const ck=btn.querySelector('.structure-option-check'); if(ck) ck.textContent='✓'; }
+    const select=async()=>{ try{ const picked=await __structureSelect__(item.id); __structureCloseSelectModal__(); try{toast('Struttura: '+picked.nome,'green');}catch(_){} setTimeout(()=>{try{location.reload();}catch(_){}},180); }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){}} };
+    if(typeof bindFastTap==='function') bindFastTap(btn,select); else btn.addEventListener('click',select);
+    try{ __applySingleActionButtonVisual__(btn); __bindSingleActionButtonColorHold__(btn); }catch(_){ }
+    listEl.appendChild(btn);
+  });
+  if(empty) empty.hidden=rows.length!==0;
+  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
+}
+function __structureCloseSelectModal__(){ const modal=document.getElementById('structureSelectModal'); if(!modal)return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); try{document.body.classList.remove('modal-open');}catch(_){ } }
+function __structureOpenCreateModal__(){
+  const dataModal=document.getElementById('settingsDataModal'); if(dataModal && dataModal.dataset.dataMode==='inactive') return;
+  try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
+  const modal=document.getElementById('structureCreateModal'); const input=document.getElementById('structureNameInput'); if(!modal||!input)return;
+  input.value=''; modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ } setTimeout(()=>{try{input.focus();}catch(_){}},80);
+}
+function __structureCloseCreateModal__(reopenData){
+  const modal=document.getElementById('structureCreateModal'); if(modal){modal.hidden=true; modal.setAttribute('aria-hidden','true');}
+  try{document.body.classList.remove('modal-open');}catch(_){ }
+  if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
+}
+function __setupStructureUi__(){
+  if(window.__ddaeStructureUiBound) { __structureUpdateUi__(); return; }
+  window.__ddaeStructureUiBound=true;
+  const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
+  bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
+  bind(document.getElementById('homeStructurePill'),__structureOpenSelectModal__);
+  bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
+  bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
+  bind(document.getElementById('structureCreateCancelBtn'),()=>__structureCloseCreateModal__(true));
+  bind(document.getElementById('structureCreateSaveBtn'),async()=>{
+    const input=document.getElementById('structureNameInput');
+    try{ const item=await __structureCreate__(input?.value||''); __structureCloseCreateModal__(true); try{toast('Struttura '+item.nome+' creata. Selezionala nelle Impostazioni.','green');}catch(_){} }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
+  });
+  ['structureSelectCloseBtn','structureCreateCancelBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
+  const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
+  const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
+  __structureUpdateUi__();
+}
+try{ document.addEventListener('DOMContentLoaded',()=>{try{__setupStructureUi__();__structureUpdateUi__();}catch(_){}},{once:true}); }catch(_){ }
+try{ window.addEventListener('pageshow',()=>{try{__structureUpdateUi__();}catch(_){}},{passive:true}); }catch(_){ }
+
+
 
 // ===== Year filtering (client-side) =====
 // Some backend endpoints may ignore anno/from/to; enforce exercise year on the client.
@@ -18787,8 +19023,9 @@ function bindFastTap(el, fn){
     try{ e.stopPropagation(); }catch(_){ }
     try{ e.stopImmediatePropagation(); }catch(_){ }
 
-    // Il popup riaperto tramite Servizi è una copia inattiva: nessuno dei cinque tasti esegue azioni.
+    // Il popup riaperto tramite Servizi è una copia inattiva: nessun tasto dati esegue azioni.
     if (modal && modal.dataset.dataMode === 'inactive') return false;
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return false; }
 
     const now = Date.now();
     if (now - lastTap < 450) return false;
@@ -23060,7 +23297,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCancelBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -29628,7 +29865,7 @@ function _guestIdOf(item){
 
 function getConfiguredRoomsCount(fallback = 6){
   try{
-    const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
+    const n = parseInt(String(getSettingNumber('numero_stanze', fallback)), 10);
     if (Number.isFinite(n) && n >= 0) return n;
   }catch(_){ }
   return Math.max(0, parseInt(fallback, 10) || 6);
@@ -29801,12 +30038,12 @@ async function saveRoomsUiConfigToSettings(config, { showToast = false } = {}){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:raw, val:raw, Value:raw };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:raw, val:raw, Value:raw };
     if (catalogClean){
       state.settings.roomCatalogGlobal = catalogClean;
-      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, catalogRaw); }catch(_){ }
-      state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:catalogRaw, val:catalogRaw, Value:catalogRaw };
-      state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
+      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), catalogRaw); }catch(_){ }
+      state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:catalogRaw, val:catalogRaw, Value:catalogRaw };
+      state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
     }
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -31597,7 +31834,8 @@ async function saveRoomsCountSetting(nextCount){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:n, val:n, Value:n };
+    const __roomCountKey = __structureScopedSettingKey__('numero_stanze');
+    state.settings.byKey[__roomCountKey] = { key:__roomCountKey, value:n, val:n, Value:n };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{
@@ -45017,7 +45255,7 @@ function triggerGuestContactAction(action){
     if (safeAction === 'hotel-location'){
       const raw = __guestPhoneRawForContactAction__();
       const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
+      const link = String(localStorage.getItem(__structureLocalStorageKey__('dDAE_hotel_location_link_v1')) || getSettingText('hotel_location_link','') || '').trim();
       if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
       if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
       const text = __hotelLocationTitleForCurrentGuest__() + ': ' + link;
@@ -47065,7 +47303,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.290';
+  var BUILD_TAG='dDAE_3.291';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50677,20 +50915,20 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       if (typeof __roomCatalogNormalizeList__ === 'function') list = __roomCatalogNormalizeList__(list);
       if (Array.isArray(list) && list.length) return list;
     }catch(_){ }
-    try{ return parseRoomCatalog(localStorage.getItem(ROOM_CATALOG_KEY) || '[]'); }catch(_){ return []; }
+    try{ return parseRoomCatalog(localStorage.getItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY)) || '[]'); }catch(_){ return []; }
   }
 
   function persistLocalCatalog(list){
     try{
       var clean = (typeof __roomCatalogNormalizeList__ === 'function') ? __roomCatalogNormalizeList__(list) : (Array.isArray(list) ? list : []);
       if (!clean.length) return clean;
-      localStorage.setItem(ROOM_CATALOG_KEY, JSON.stringify(clean));
+      localStorage.setItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY), JSON.stringify(clean));
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
       try{
         state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
         var raw = JSON.stringify(clean);
-        state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
-        state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+        state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
+        state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
       }catch(_){ }
       return clean;
     }catch(_){ return Array.isArray(list) ? list : []; }
@@ -51979,7 +52217,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.290',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.291',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52220,7 +52458,8 @@ try{
     const modal = byId('hotelLocationModal');
     const input = byId('hotelLocationLinkInput');
     if (!modal || !input) return;
-    try{ input.value = String(localStorage.getItem(STORAGE_KEY) || ''); }catch(_){ input.value = ''; }
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
+    try{ input.value = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || getSettingText('hotel_location_link','') || ''); }catch(_){ input.value = ''; }
     try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
     modal.hidden = false;
     modal.setAttribute('aria-hidden','false');
@@ -52234,7 +52473,8 @@ try{
     if (value){
       try{ new URL(value); }catch(_){ try{ toast('Link posizione non valido', 'orange'); }catch(__){ } return; }
     }
-    try{ localStorage.setItem(STORAGE_KEY, value); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY), value); }catch(_){ }
+    try{ if (typeof api === 'function') api('impostazioni',{method:'POST',body:{hotel_location_link:value},showLoader:false}).catch(()=>{}); }catch(_){ }
     closeModal();
     try{ toast(value ? 'Posizione hotel salvata' : 'Posizione hotel rimossa', 'green'); }catch(_){ }
   }
@@ -53181,7 +53421,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.290 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.291 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53255,13 +53495,13 @@ try{
 
   function storedTemplate(){
     try{
-      const local = String(localStorage.getItem(STORAGE_KEY) || '').trim();
+      const local = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || '').trim();
       if (local) return local;
     }catch(_){ }
     try{
       if (typeof getSettingText === 'function'){
         const value = String(getSettingText(SETTING_KEY, '') || '').trim();
-        if (value){ try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ } return value; }
+        if (value){ try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ } return value; }
       }
     }catch(_){ }
     return '';
@@ -53271,14 +53511,14 @@ try{
     try{
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:false, showLoader:false });
       const value = (typeof getSettingText === 'function') ? String(getSettingText(SETTING_KEY, '') || '').trim() : '';
-      if (value) try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+      if (value) try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
       return value || storedTemplate();
     }catch(_){ return storedTemplate(); }
   }
 
   function readTranslationPackage(){
     try{
-      const raw = localStorage.getItem(TRANSLATIONS_STORAGE_KEY);
+      const raw = localStorage.getItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY));
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object' || Number(data.schema||0) !== TRANSLATION_SCHEMA) return null;
@@ -53288,11 +53528,11 @@ try{
   }
 
   function writeTranslationPackage(pkg){
-    try{ localStorage.setItem(TRANSLATIONS_STORAGE_KEY, JSON.stringify(pkg || {})); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY), JSON.stringify(pkg || {})); }catch(_){ }
   }
 
   function removeTranslationPackage(){
-    try{ localStorage.removeItem(TRANSLATIONS_STORAGE_KEY); }catch(_){ }
+    try{ localStorage.removeItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY)); }catch(_){ }
   }
 
   function createTranslationPackage(source, previous){
@@ -53602,7 +53842,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.290: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.291: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53644,7 +53884,7 @@ try{
   }
 
   async function saveMasterTemplate(value){
-    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
     try{
       if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -53839,9 +54079,9 @@ try{
 })();
 
 
-/* dDAE_3.290 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.290 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.290 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.291 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.291 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.291 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53868,13 +54108,14 @@ try{
     return { id:String(r.id||safeId()), title:title||'Messaggio', text, translations:tr, updatedAt:String(r.updatedAt||'') };
   }
   function validCatalog(value){ return Array.isArray(value) ? value.map(normalizeRecord).filter(r=>r.text||r.title) : []; }
-  function localCatalogExists(){ try{ return localStorage.getItem(CATALOG_STORAGE_KEY)!==null || localStorage.getItem(CATALOG_INITIALIZED_KEY)==='1'; }catch(_){ return false; } }
+  function localCatalogExists(){ try{ return localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY))!==null || localStorage.getItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY))==='1'; }catch(_){ return false; } }
   function readLocal(){
-    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
+    try{ const raw=localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY)); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
     return [];
   }
   function migrateLegacy(){
     try{
+      if (typeof __structureAllowsLegacyFallback__ === 'function' && !__structureAllowsLegacyFallback__()) return [];
       const text=String(localStorage.getItem(LEGACY_TEMPLATE_KEY)||'').trim();
       if(!text) return [];
       let translations={it:text};
@@ -53887,7 +54128,7 @@ try{
   }
   function writeLocal(rows){
     catalog=validCatalog(rows);
-    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); localStorage.setItem(CATALOG_INITIALIZED_KEY,'1'); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY),JSON.stringify(catalog)); localStorage.setItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY),'1'); }catch(_){ }
     return catalog;
   }
   async function readRemote(){
@@ -54284,7 +54525,7 @@ try{
   }
 
   function init(){
-    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,openSettings,'openSettingsBound');
+    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,()=>{ if(!__structureHasActive__()){ try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){} return; } openSettings(); },'openSettingsBound');
     safeTap($('guestMessagesSettingsCloseBtn'),closeSettings,'closeSettingsBound');
     safeTap($('guestMessageSettingsAddBtn'),()=>openEditor(''),'addSettingsBound'); bindVisual($('guestMessageSettingsAddBtn'));
     safeTap($('guestMessageEditorCancelBtn'),showCatalogView,'editorCancelBound'); bindVisual($('guestMessageEditorCancelBtn'));
