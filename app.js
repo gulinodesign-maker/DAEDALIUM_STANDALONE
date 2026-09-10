@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.299";
+const BUILD_VERSION = "3.290";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -478,13 +478,7 @@ async function __kvDel__(k){
 
 // dDAE_3.243 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
 const __COCKTAIL_IMAGE_ASSET_PREFIX__ = "asset:cocktail-image:";
-function __cocktailImageAssetContextPrefix__(forcedStructureId){
-  try{
-    const uid = forcedStructureId ? __ctxDataUidForStructure__(forcedStructureId) : __ctxDataUid__();
-    return __COCKTAIL_IMAGE_ASSET_PREFIX__ + encodeURIComponent(String(uid||'anon~s~__none__')) + ':';
-  }catch(_){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + 'anon~s~__none__:'; }
-}
-function __cocktailImageAssetKey__(slot){ return __cocktailImageAssetContextPrefix__() + String(slot || "").trim(); }
+function __cocktailImageAssetKey__(slot){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + String(slot || "").trim(); }
 async function __cocktailImageAssetGet__(slot){
   try{ return await __kvGet__(__cocktailImageAssetKey__(slot)); }catch(_){ return null; }
 }
@@ -501,10 +495,9 @@ async function __cocktailImageAssetDel__(slot){
 async function __collectCocktailImageAssetsForBackup__(){
   const out = {};
   try{
-    const contextPrefix = __cocktailImageAssetContextPrefix__();
-    const keys = await __kvKeys__(contextPrefix);
+    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
     for (const key of (Array.isArray(keys) ? keys : [])){
-      const slot = String(key || '').slice(contextPrefix.length);
+      const slot = String(key || '').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
       if (!slot) continue;
       const data = await __kvGet__(key);
       if (typeof data === 'string' && data.startsWith('data:image/')) out[slot] = data;
@@ -528,8 +521,7 @@ async function __restoreCocktailImageAssetsFromBackup__(payload){
       ? payload.assets.cocktailImages
       : ((payload?.meta?.cocktailImageAssets && typeof payload.meta.cocktailImageAssets === 'object') ? payload.meta.cocktailImageAssets : null);
     if (!src) return false;
-    const contextPrefix = __cocktailImageAssetContextPrefix__();
-    const keys = await __kvKeys__(contextPrefix);
+    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
     for (const key of (Array.isArray(keys) ? keys : [])) await __kvDel__(key);
     for (const slot of Object.keys(src)){
       const data = String(src[slot] || '');
@@ -565,7 +557,7 @@ async function __kvKeys__(prefix){
 function __tblKey__(name){
   // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
   try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
-  return `ctx:${__ctxDataUid__()}:${__ctxYear__()}:tbl:${name}`;
+  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
 // dDAE_3.078 — Le tabelle collegate alle prenotazioni sono logicamente indipendenti
@@ -805,7 +797,7 @@ function __rowsForYearIndependentMirror__(rows, table, year, guestRows){
 
 async function __yearIndependentTableKeys__(name, data, guestRows){
   const table = String(name || '').trim().toLowerCase();
-  const uid = String(__ctxDataUid__() || '').trim();
+  const uid = String(__ctxUid__() || '').trim();
   const suffix = `:tbl:${table}`;
   const prefix = `ctx:${uid}:`;
   const out = new Set([`ctx:${uid}:${__ctxYear__()}:tbl:${table}`]);
@@ -830,7 +822,7 @@ async function __yearIndependentTableKeys__(name, data, guestRows){
 
 function __yearFromYearIndependentKey__(key, table){
   try{
-    const uid = String(__ctxDataUid__() || '').trim();
+    const uid = String(__ctxUid__() || '').trim();
     const prefix = `ctx:${uid}:`;
     const suffix = `:tbl:${String(table || '').trim().toLowerCase()}`;
     const k = String(key || '');
@@ -847,7 +839,7 @@ function __yearFromYearIndependentKey__(key, table){
 async function __writeYearIndependentMirrors__(table, rows, guestRows){
   try{
     const t = String(table || '').trim().toLowerCase();
-    const uid = String(__ctxDataUid__() || '').trim();
+    const uid = String(__ctxUid__() || '').trim();
     const currentYear = String(__ctxYear__() || '').trim();
     const list = Array.isArray(rows) ? rows : [];
     if (!uid || !t) return false;
@@ -906,15 +898,20 @@ async function __repairTableYearFromOtherContexts__(name, year){
     const yy = String(year || __ctxYear__() || '').trim();
     if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti' || __isYearIndependentLocalTable__(table)) return null;
     if (typeof __kvKeys__ !== 'function' || typeof __kvGet__ !== 'function' || typeof __kvSet__ !== 'function') return null;
-    const uid = String(__ctxDataUid__() || '').trim();
+    const uid = String(__ctxUid__() || '').trim();
     const targetKey = `ctx:${uid}:${yy}:tbl:${table}`;
-    const prefix = `ctx:${uid}:`;
-    const keys = await __kvKeys__(prefix);
+    const keys = await __kvKeys__('ctx:');
     let candidates = (Array.isArray(keys) ? keys : []).filter((k)=>{
       const ks = String(k || '');
-      return ks.startsWith(prefix) && ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
+      return ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
     });
-    candidates.sort((a,b)=>String(a).localeCompare(String(b)));
+    candidates.sort((a,b)=>{
+      const au = String(a).split(':')[1] || '';
+      const bu = String(b).split(':')[1] || '';
+      const ap = uid && au === uid ? 0 : 1;
+      const bp = uid && bu === uid ? 0 : 1;
+      return ap - bp || String(a).localeCompare(String(b));
+    });
     for (const k of candidates){
       const val = await __kvGet__(k);
       if (table === 'impostazioni' && (Array.isArray(val) || (val && typeof val === 'object'))){
@@ -933,7 +930,6 @@ async function __repairTableYearFromOtherContexts__(name, year){
 }
 
 async function __tblGet__(name, fallback){
-  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)) return await __readYearIndependentTable__(name, fallback);
   const v = await __kvGet__(__tblKey__(name));
   if (v === null || v === undefined){
@@ -947,7 +943,6 @@ async function __tblGet__(name, fallback){
 }
 
 async function __tblSet__(name, data){
-  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const table = String(name || '').trim().toLowerCase();
@@ -962,7 +957,6 @@ async function __tblSet__(name, data){
 }
 
 async function __tblDel__(name){
-  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const keys = await __yearIndependentTableKeys__(name);
@@ -1492,13 +1486,12 @@ async function __localApiImpostazioni__(method, body){
   if (method === "POST"){
     const now = __nowIso__();
     const upsert = (nextRow) => {
-      const baseKey = String(nextRow?.key || "").trim().toLowerCase();
-      if (!baseKey) return;
-      const key = (typeof __structureScopedSettingKey__ === 'function') ? __structureScopedSettingKey__(baseKey) : baseKey;
+      const key = String(nextRow?.key || "").trim().toLowerCase();
+      if (!key) return;
       const idx = rows.findIndex(r => String(r?.key || r?.Key || "").trim().toLowerCase() === key);
       const prev = idx >= 0 ? rows[idx] : null;
       const merged = Object.assign({}, prev || {}, nextRow || {});
-      merged.key = key;
+      merged.key = nextRow.key;
       merged.createdAt = prev?.createdAt || nextRow.createdAt || now;
       merged.updatedAt = now;
       if (idx >= 0) rows[idx] = merged;
@@ -1518,7 +1511,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json","strutture_catalogo","hotel_location_link"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -2103,62 +2096,14 @@ function __randStr__(n){
   for (let i=0;i<n;i++) s += a[(Math.random()*a.length)|0];
   return s;
 }
-function __fbSafeStructureId__(sid){
-  return String(sid || '').trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80);
-}
-function __fbSyncBasePath__(teamId, forcedStructureId){
-  const tid=String(teamId||'').trim();
-  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
-  if(!sid) return `sync/${tid}`;
-  try{ if(__structureUsesLegacySyncRoot__(sid)) return `sync/${tid}`; }catch(_){ }
-  return `sync/${tid}/structures/${sid}`;
-}
-function __fbTeamPath__(teamId, forcedStructureId){
-  const tid=String(teamId||'').trim();
-  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
-  if(!sid) return `teams/${tid}`;
-  try{ if(__structureUsesLegacySyncRoot__(sid)) return `teams/${tid}`; }catch(_){ }
-  return `teams/${tid}/structures/${sid}`;
-}
-function __fbActiveStructureMeta__(){
-  try{ const a=__structureActive__(); return a ? {id:a.id,nome:a.nome} : null; }catch(_){ return null; }
-}
-function __fbPayloadMatchesActiveStructure__(payload){
-  try{
-    const active=__structureActive__();
-    const meta=payload?.structure;
-    if(!active) return true;
-    if(meta?.id) return String(meta.id)===String(active.id);
-    const list=__structureCatalog__();
-    return !!(list.length && list[0].id===active.id);
-  }catch(_){ return false; }
-}
-async function __structureAdoptFromSyncPayload__(payload){
-  try{
-    const meta=payload?.structure; if(!meta?.id || __structureHasActive__()) return false;
-    const sid=__fbSafeStructureId__(meta.id); if(!sid) return false;
-    const list=__structureCatalog__();
-    if(!list.some(x=>x.id===sid)) __structureWriteLocalCatalog__(list.concat({id:sid,nome:String(meta.nome||'Struttura').trim().slice(0,48)||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
-    __structureSetLegacySyncRoot__(sid,true);
-    await __structureSelect__(sid);
-    return true;
-  }catch(_){ return false; }
-}
 function __qrCodeText__(teamId, teamKey){
-  const active=(typeof __structureActive__==='function') ? __structureActive__() : null;
-  const list=(typeof __structureCatalog__==='function') ? __structureCatalog__() : [];
-  if(active && list.length && list[0].id!==active.id){
-    return `DDAE|${teamId}|${teamKey}|${encodeURIComponent(active.id)}|${encodeURIComponent(active.nome||'Struttura')}`;
-  }
   return `DDAE|${teamId}|${teamKey}`;
 }
 function __parseQr__(txt){
-  const parts=String(txt||'').trim().split('|');
-  if(parts.length<3 || parts.length>5 || String(parts[0]||'').toUpperCase()!=='DDAE' || !parts[1] || !parts[2]) return null;
-  let structureId='', structureName='';
-  try{ structureId=parts[3]?decodeURIComponent(parts[3]):''; }catch(_){ structureId=parts[3]||''; }
-  try{ structureName=parts[4]?decodeURIComponent(parts[4]):''; }catch(_){ structureName=parts[4]||''; }
-  return {teamId:parts[1],teamKey:parts[2],structureId:__fbSafeStructureId__(structureId),structureName:String(structureName||'').slice(0,48)};
+  const s = String(txt||"").trim();
+  const m = s.match(/^DDAE\|([^|]+)\|([^|]+)$/i);
+  if (!m) return null;
+  return { teamId: m[1], teamKey: m[2] };
 }
 
 async function __fbGetIdToken__(){
@@ -2474,7 +2419,7 @@ async function __fbClearAdminChunks__(teamId, maxCount){
   const tasks = [];
   for (let i = 0; i < Math.max(n, 12); i++){
     const id = String(i).padStart(4, "0");
-    tasks.push(__fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`).catch(()=>false));
+    tasks.push(__fsDelete__(`sync/${teamId}/admin_chunks/${id}`).catch(()=>false));
   }
   await Promise.all(tasks);
 }
@@ -2487,13 +2432,13 @@ async function __fbWriteAdminPayload__(payload){
   const nowIso = __nowIso__();
   let previousChunkCount = 0;
   try{
-    const oldDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
+    const oldDoc = await __fsGet__(`sync/${teamId}`);
     const oldData = oldDoc ? __fsDecode__(oldDoc) : {};
     previousChunkCount = parseInt(String(oldData?.admin_chunk_count || oldData?.adminChunks || "0"), 10) || 0;
   }catch(_){}
 
   if (raw.length <= __FB_ADMIN_CHUNK_SIZE__){
-    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
+    await __fsSet__(`sync/${teamId}`, {
       admin_json: raw,
       admin_core_json: "",
       admin_chunked: "false",
@@ -2513,7 +2458,7 @@ async function __fbWriteAdminPayload__(payload){
   }
   for (let i = 0; i < chunks.length; i++){
     const id = String(i).padStart(4, "0");
-    await __fsSet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`, {
+    await __fsSet__(`sync/${teamId}/admin_chunks/${id}`, {
       part: chunks[i],
       index: String(i),
       total: String(chunks.length),
@@ -2523,14 +2468,14 @@ async function __fbWriteAdminPayload__(payload){
   if (previousChunkCount > chunks.length){
     for (let i = chunks.length; i < previousChunkCount; i++){
       const id = String(i).padStart(4, "0");
-      try{ await __fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`); }catch(_){}
+      try{ await __fsDelete__(`sync/${teamId}/admin_chunks/${id}`); }catch(_){}
     }
   }
 
   let coreRaw = "";
   try{
     const ds = (payload && payload.datasets && typeof payload.datasets === "object") ? payload.datasets : {};
-    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets:{} };
+    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), datasets:{} };
     ["impostazioni", "ospiti", "stanze", "servizi"].forEach((t)=>{
       if (ds[t] !== undefined) core.datasets[t] = ds[t];
     });
@@ -2547,7 +2492,7 @@ async function __fbWriteAdminPayload__(payload){
     build: BUILD_VERSION
   };
   if (coreRaw) rootData.admin_core_json = coreRaw;
-  await __fsSet__(`${__fbSyncBasePath__(teamId)}`, rootData);
+  await __fsSet__(`sync/${teamId}`, rootData);
   return true;
 }
 
@@ -2561,7 +2506,7 @@ async function __fbReadAdminPayload__(){
       const s = String(raw || "");
       if (!s) return null;
       const p = JSON.parse(s);
-      return (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) ? p : null;
+      return (p && p.datasets) ? p : null;
     }catch(_){ return null; }
   };
 
@@ -2572,7 +2517,7 @@ async function __fbReadAdminPayload__(){
     const getPart = async (id) => {
       for (let attempt = 0; attempt < 3; attempt++){
         try{
-          const partDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`);
+          const partDoc = await __fsGet__(`sync/${teamId}/admin_chunks/${id}`);
           if (partDoc) return partDoc;
         }catch(_){ }
         try{ await new Promise(r => setTimeout(r, 180 + attempt * 260)); }catch(_){ }
@@ -2591,7 +2536,7 @@ async function __fbReadAdminPayload__(){
 
   const readChunkedByList = async () => {
     try{
-      const docs = await __fsList__(`${__fbSyncBasePath__(teamId)}/admin_chunks`);
+      const docs = await __fsList__(`sync/${teamId}/admin_chunks`);
       if (!Array.isArray(docs) || !docs.length) return null;
       let rows = docs.map((doc)=>{
         const d = __fsDecode__(doc);
@@ -2614,7 +2559,7 @@ async function __fbReadAdminPayload__(){
   };
 
   try{
-    const docAdmin = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
+    const docAdmin = await __fsGet__(`sync/${teamId}`);
     if (!docAdmin) return null;
     const dataA = __fsDecode__(docAdmin);
     const rawA = String(dataA.admin_json || "");
@@ -2684,7 +2629,7 @@ async function __fbEnsureSyncRoot__(opts){
     if (!teamKey && teamData && teamData.key) teamKey = String(teamData.key || "");
   }catch(_){}
   try{
-    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
+    await __fsSet__(`sync/${teamId}`, {
       key: teamKey,
       schema: "dDAE_sync_v2",
       build: BUILD_VERSION,
@@ -2703,7 +2648,7 @@ async function __fbEnsureOperatorRegistry__(operatorName){
   if (!safeName) return false;
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
   try{
-    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${safeName}`, {
+    await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${safeName}`, {
       operator: safeName,
       registeredAt: { __ts: __nowIso__() },
       updatedAt: { __ts: __nowIso__() }
@@ -2717,7 +2662,7 @@ async function __fbEnsureTeamRoster__(){
   if (!__FB_STATE__.teamId) return false;
   const ops = await __fbGetRosterOperators__();
   try{
-    await __fsSet__(__fbTeamPath__(__FB_STATE__.teamId), {
+    await __fsSet__(`teams/${__FB_STATE__.teamId}`, {
       key: __FB_STATE__.teamKey || "",
       operators: ops,
       updatedAt: { __ts: __nowIso__() }
@@ -2848,14 +2793,6 @@ async function __qrScanAndLink__(){
   const data = __fsDecode__(doc);
   if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
 
-  if(parsed.structureId){
-    try{
-      const list=__structureCatalog__();
-      if(!list.some(x=>x.id===parsed.structureId)) __structureWriteLocalCatalog__(list.concat({id:parsed.structureId,nome:parsed.structureName||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
-      __structureSetLegacySyncRoot__(parsed.structureId,false);
-      await __structureSelect__(parsed.structureId);
-    }catch(_){ }
-  }
   __fbSaveLink__(parsed.teamId, parsed.teamKey);
   try{ await __fbEnsureSyncRoot__({ teamId: parsed.teamId, teamKey: parsed.teamKey }); }catch(_){}
   try{ await __fbEnsureOperatorRegistry__(__operatorName__()); }catch(_){}
@@ -2934,13 +2871,12 @@ async function __fbExportSpesaBoard__(opts){
       kind:"DDAE_SPESA_BOARD",
       build: BUILD_VERSION,
       at: __nowIso__(),
-      structure: __fbActiveStructureMeta__(),
       datasets:{
         colazione: Array.isArray(colazione)?colazione:[],
         prodotti_pulizia: Array.isArray(prodotti)?prodotti:[]
       }
     };
-    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`, {
+    await __fsSet__(`sync/${__FB_STATE__.teamId}/boards/spesa`, {
       spesa_json: JSON.stringify(payload),
       updatedAt: { __ts: __nowIso__() }
     });
@@ -2954,13 +2890,13 @@ async function __fbReadSpesaBoardPayload__(){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) return null;
   try{
-    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`);
+    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/boards/spesa`);
     if (!doc) return null;
     const data = __fsDecode__(doc);
     const raw = String(data?.spesa_json || "");
     if (!raw) return null;
     const p = JSON.parse(raw);
-    if (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) return p;
+    if (p && p.datasets) return p;
   }catch(_){}
   return null;
 }
@@ -2969,7 +2905,7 @@ async function __fbBuildAdminPayload__(){
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
-  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
+  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
 }
 
 async function __fbExportAdmin__(opts){
@@ -2998,21 +2934,18 @@ async function __fbImportOperator__(opts){
 let payloads = [];
 try{
   const pA = await __fbReadAdminPayload__();
-  if (pA && pA.datasets){
-    try{ await __structureAdoptFromSyncPayload__(pA); }catch(_){ }
-    if(__fbPayloadMatchesActiveStructure__(pA)) payloads.push(pA);
-  }
+  if (pA && pA.datasets) payloads.push(pA);
 }catch(_){}
 
 try{
-  const docsOps = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
+  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
   (docsOps||[]).forEach(d=>{
     try{
       const dd = __fsDecode__(d);
       const rawO = String(dd.operator_json||"");
       if (!rawO) return;
       const pO = JSON.parse(rawO);
-      if (pO && pO.datasets && __fbPayloadMatchesActiveStructure__(pO)) payloads.push(pO);
+      if (pO && pO.datasets) payloads.push(pO);
     }catch(_){}
   });
 }catch(_){}
@@ -3322,9 +3255,9 @@ async function __fbExportOperator__(opts){
     colazione: await __tblGet__("colazione", []),
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
   };
-  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
+  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
-  await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
+  await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
   try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
@@ -3361,7 +3294,7 @@ async function __fbImportAdmin__(opts){
   // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
   // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
   try{
-    const docsAll = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
+    const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
     const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
     if (!ops.length) ops = fromDocs;
     else {
@@ -3449,13 +3382,13 @@ async function __fbImportAdmin__(opts){
 
   for (const op of ops){
 
-    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${op}`);
+    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/operators/${op}`);
     if (!doc) continue;
     const d = __fsDecode__(doc);
     const raw = String(d.operator_json||"");
     if (!raw) continue;
     let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
-    if (!payload || !payload.datasets || !__fbPayloadMatchesActiveStructure__(payload)) continue;
+    if (!payload || !payload.datasets) continue;
 
     // merge pulizie entries (merge by id or by key data+stanza; max per-col)
     try{
@@ -4417,7 +4350,6 @@ async function __dbImport__(kind){
       }
     }catch(_){ }
 
-    try{ await __structureBackupRestoreAll__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreTopLevelYears__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreMultiYear__(data, allowedTables); }catch(_){ }
     try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
@@ -4624,76 +4556,6 @@ async function __exportRosterOperators__(){
 }
 
 
-
-async function __structureBackupCollectAll__(tables){
-  try{
-    const activeId=__structureActiveId__();
-    if(activeId) __structureCaptureStorageSnapshot__(activeId);
-    const allowed=new Set((Array.isArray(tables)?tables:[]).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
-    const catalog=__structureCatalog__();
-    const out={schemaVersion:1,catalog:catalog.map(x=>({id:x.id,nome:x.nome,createdAt:x.createdAt||'',updatedAt:x.updatedAt||''})),selectedId:activeId||'',structures:{}};
-    for(const item of catalog){
-      const sid=String(item.id||''); if(!sid) continue;
-      const uid=__ctxDataUidForStructure__(sid); const prefix=`ctx:${uid}:`;
-      const keys=await __kvKeys__(prefix); const years={};
-      for(const key of (Array.isArray(keys)?keys:[])){
-        const rest=String(key||'').slice(prefix.length); const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/); if(!m) continue;
-        const table=m[2]; if(!allowed.has(table)) continue;
-        const val=await __kvGet__(key); if(val===undefined || val===null) continue;
-        if(!years[m[1]]) years[m[1]]={}; years[m[1]][table]=val;
-      }
-      const cocktailImages={};
-      try{
-        const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const assetKeys=await __kvKeys__(assetPrefix);
-        for(const assetKey of (Array.isArray(assetKeys)?assetKeys:[])){
-          const slot=String(assetKey||'').slice(assetPrefix.length); if(!slot) continue;
-          const data=await __kvGet__(assetKey); if(typeof data==='string'&&data.startsWith('data:image/')) cocktailImages[slot]=data;
-        }
-      }catch(_){ }
-      out.structures[sid]={id:sid,nome:item.nome||'Struttura',legacySyncRoot:__structureUsesLegacySyncRoot__(sid),storage:__structureReadStorageSnapshot__(sid),assets:{cocktailImages},years};
-    }
-    return out;
-  }catch(_){ return {schemaVersion:1,catalog:[],selectedId:'',structures:{}}; }
-}
-async function __structureBackupRestoreAll__(payload,tables){
-  try{
-    const src=payload?.multiStructure || payload?.meta?.multiStructure;
-    if(!src || typeof src!=='object' || !src.structures || typeof src.structures!=='object') return false;
-    const allowed=new Set((Array.from(tables||[])).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
-    const catalog=__structureNormalizeList__(src.catalog || Object.values(src.structures));
-    if(!catalog.length) return false;
-    __structureWriteLocalCatalog__(catalog);
-    for(const item of catalog){
-      const sid=item.id; const entry=src.structures?.[sid]||{};
-      __structureSetLegacySyncRoot__(sid,entry.legacySyncRoot===undefined ? (catalog[0].id===sid) : !!entry.legacySyncRoot);
-      if(entry.storage && typeof entry.storage==='object'){
-        try{ localStorage.setItem(__structureStorageSnapshotKey__(sid),JSON.stringify(entry.storage)); }catch(_){ }
-      }
-      try{
-        const imgs=entry?.assets?.cocktailImages; if(imgs&&typeof imgs==='object'){
-          const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const oldKeys=await __kvKeys__(assetPrefix);
-          for(const k of (Array.isArray(oldKeys)?oldKeys:[])) await __kvDel__(k);
-          for(const slot of Object.keys(imgs)){ const data=String(imgs[slot]||''); if(data.startsWith('data:image/')) await __kvSet__(assetPrefix+slot,data); }
-        }
-      }catch(_){ }
-      const years=entry.years&&typeof entry.years==='object'?entry.years:{};
-      for(const year of Object.keys(years)){
-        if(!/^[0-9]{4}$/.test(year)) continue;
-        const ds=years[year]&&typeof years[year]==='object'?years[year]:{};
-        for(const table of Object.keys(ds)){
-          if(!allowed.has(table)) continue;
-          await __kvSet__(`ctx:${__ctxDataUidForStructure__(sid)}:${year}:tbl:${table}`,ds[table]);
-        }
-      }
-    }
-    let selected=String(src.selectedId||'').trim(); if(!catalog.some(x=>x.id===selected)) selected=catalog[0].id;
-    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
-    __structureApplyStorageSnapshot__(selected);
-    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
-    return true;
-  }catch(_){ return false; }
-}
-
 async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -4710,7 +4572,6 @@ async function __dbExport__(kind, preopenWin){
         datasets.operatori = datasets.operatori.filter((row) => activeNames.has(String(getCanonicalActiveOperatorName(row?.operatore || row?.nome || '') || '').trim().toLowerCase()));
       }
     }catch(_){ }
-    try{ if(__structureActiveId__()) __structureCaptureStorageSnapshot__(__structureActiveId__()); }catch(_){ }
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
     const cocktailImageAssets = await __collectCocktailImageAssetsForBackup__();
@@ -4732,11 +4593,6 @@ async function __dbExport__(kind, preopenWin){
       const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
       payload.multiYear = __multiYearBackup__;
       payload.meta.multiYear = __multiYearBackup__;
-    }catch(_){ }
-    try{
-      const __multiStructureBackup__ = await __structureBackupCollectAll__(tables);
-      payload.multiStructure = __multiStructureBackup__;
-      payload.meta.multiStructure = __multiStructureBackup__;
     }catch(_){ }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -5686,7 +5542,7 @@ function __statGenReadYearGuestsLocalCache__(year){
   try{
     const yy = String(year || '').trim();
     if (!yy) return [];
-    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '') : '';
+    const currentUid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : '';
     const out = [];
     const seen = new Set();
     const addRows = (rows) => {
@@ -5720,7 +5576,7 @@ function __statGenReadYearGuestsLocalCache__(year){
         const k = localStorage.key(i);
         if (!k) continue;
         const ks = String(k);
-        if (currentUid && ks.startsWith(`${__lsPrefixBase}${currentUid}:${yy}:`) && (ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
+        if (ks.indexOf(`${yy}:ospitiALL|`) >= 0 || (ks.indexOf(`|${yy}|${yy}-01-01|${yy}-12-31`) >= 0 && ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
       }
     }catch(_){ }
 
@@ -5733,48 +5589,83 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
   try{
     const yy = String(year || '').trim();
     if (!/^\d{4}$/.test(yy)) return null;
-    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
-    if (!currentUid) return null;
+    const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
+    const suffix = `:${yy}:tbl:ospiti`;
+    let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').endsWith(suffix));
+    if (!guestKeys.length) return null;
 
-    // dDAE_3.299 — confronto storico rigorosamente della struttura attiva.
-    // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
-    // la presenza di ospiti come prerequisito: un anno può avere sole spese.
-    const readRows = async (table) => {
-      try{
-        const value = await __kvGet__(`ctx:${currentUid}:${yy}:tbl:${String(table || '').trim()}`);
-        return Array.isArray(value) ? value.slice() : [];
-      }catch(_){ return []; }
-    };
+    const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
+    guestKeys.sort((a, b) => {
+      const au = String(a || '').split(':')[1] || '';
+      const bu = String(b || '').split(':')[1] || '';
+      const ap = currentUid && au === currentUid ? 0 : 1;
+      const bp = currentUid && bu === currentUid ? 0 : 1;
+      if (ap !== bp) return ap - bp;
+      if (au === 'anon') return 1;
+      if (bu === 'anon') return -1;
+      return String(a).localeCompare(String(b));
+    });
 
     const fields = [
       'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
       'createdAt','created_at','updatedAt','updated_at'
     ];
-    const guestsRaw = await readRows('ospiti');
-    const speseRaw = await readRows('spese');
-    const serviziRaw = await readRows('servizi');
-    const stanzeRaw = await readRows('stanze');
-    const operatoriRaw = await readRows('operatori');
-    const deletedRaw = await readRows('ospiti_eliminati');
+    const seenGuests = new Set();
+    const seenSpese = new Set();
+    const seenServizi = new Set();
+    const seenStanze = new Set();
+    const guestsOut = [];
+    const speseOut = [];
+    const serviziOut = [];
+    const stanzeOut = [];
 
-    const guests = __guestFilterPreventiviRows__(__filterByExerciseYear__(guestsRaw, yy, fields), false);
-    const spese = __filterByExerciseYear__(speseRaw, yy, ['dataSpesa','data','data_spesa']);
-    const deletedGuests = __filterByExerciseYear__(deletedRaw, yy, fields);
-
-    return {
-      structureId: (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '',
-      uid: currentUid,
-      year: yy,
-      guests: Array.isArray(guests) ? guests.slice() : [],
-      spese: Array.isArray(spese) ? spese.slice() : [],
-      report: buildReportFromSpese(Array.isArray(spese) ? spese : []),
-      servizi: Array.isArray(serviziRaw) ? serviziRaw.slice() : [],
-      stanzeRows: Array.isArray(stanzeRaw) ? stanzeRaw.slice() : [],
-      operatoriRows: Array.isArray(operatoriRaw) ? operatoriRaw.slice() : [],
-      deletedGuests: Array.isArray(deletedGuests) ? deletedGuests.slice() : []
+    const addUnique = (list, rows, seen, keyFn) => {
+      try{
+        (Array.isArray(rows) ? rows : []).forEach((row) => {
+          if (!row || typeof row !== 'object') return;
+          let key = '';
+          try{ key = String(keyFn(row) || ''); }catch(_){ key = ''; }
+          if (!key){
+            try{ key = JSON.stringify(row); }catch(_){ key = String(Math.random()); }
+          }
+          if (seen.has(key)) return;
+          seen.add(key);
+          list.push(row);
+        });
+      }catch(_){ }
     };
-  }catch(_){ return null; }
+
+    for (const key of guestKeys){
+      const parts = String(key || '').split(':');
+      const uid = parts[1] || '';
+      if (!uid) continue;
+      const guestsRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:ospiti`);
+      const filteredGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(Array.isArray(guestsRaw) ? guestsRaw : [], yy, fields), false);
+      addUnique(guestsOut, filteredGuests, seenGuests, (row) => String(row.id || row.guest_id || row.uid || row.booking_id || row.numero_prenotazione || row.numeroPrenotazione || '') || [row.nome || row.name || '', row.check_in || row.checkIn || row.arrivo || '', row.check_out || row.checkOut || row.partenza || '', row.stanza || row.room || row.room_id || ''].join('|'));
+
+      const speseRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:spese`);
+      const spese = __filterByExerciseYear__(Array.isArray(speseRaw) ? speseRaw : [], yy, ['dataSpesa','data','data_spesa']);
+      addUnique(speseOut, spese, seenSpese, (row) => String(row.id || row.spesa_id || row.uid || '') || [row.dataSpesa || row.data || row.data_spesa || '', row.descrizione || row.description || row.nome || '', row.importo || row.amount || row.totale || ''].join('|'));
+
+      const serviziRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:servizi`);
+      addUnique(serviziOut, Array.isArray(serviziRaw) ? serviziRaw : [], seenServizi, (row) => String(row.id || row.servizio_id || row.uid || row.nome || row.name || JSON.stringify(row || {})));
+
+      const stanzeRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:stanze`);
+      addUnique(stanzeOut, Array.isArray(stanzeRaw) ? stanzeRaw : [], seenStanze, (row) => String(row.id || row.stanza_id || row.numero || row.roomNumber || row.nome || row.name || JSON.stringify(row || {})));
+    }
+
+    if (!guestsOut.length && !speseOut.length) return null;
+    return {
+      guests: guestsOut.slice(),
+      spese: speseOut.slice(),
+      report: buildReportFromSpese(Array.isArray(speseOut) ? speseOut : []),
+      servizi: serviziOut.slice(),
+      stanzeRows: stanzeOut.slice()
+    };
+  }catch(_){ }
+  return null;
 }
+
 
 async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
   const targetYear = String(year || '').trim();
@@ -5782,7 +5673,7 @@ async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(targetYear);
-    if (directSnapshot) return directSnapshot;
+    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length) return directSnapshot;
   }catch(_){ }
 
   const backup = {
@@ -5844,7 +5735,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(compareYear);
-    if (directSnapshot){
+    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length){
       if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
       state.statGenCompareGuests = directSnapshot.guests.slice();
       state.statGenCompareSnapshotYear = compareYear;
@@ -5853,11 +5744,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
         spese: Array.isArray(directSnapshot.spese) ? directSnapshot.spese.slice() : [],
         report: directSnapshot.report ? JSON.parse(JSON.stringify(directSnapshot.report)) : null,
         servizi: Array.isArray(directSnapshot.servizi) ? directSnapshot.servizi.slice() : [],
-        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : [],
-        operatoriRows: Array.isArray(directSnapshot.operatoriRows) ? directSnapshot.operatoriRows.slice() : [],
-        deletedGuests: Array.isArray(directSnapshot.deletedGuests) ? directSnapshot.deletedGuests.slice() : [],
-        structureId: String(directSnapshot.structureId || ''),
-        uid: String(directSnapshot.uid || '')
+        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : []
       };
       try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     }
@@ -6047,20 +5934,18 @@ function __setTopserviziCenterLabel__(){
 
 function updateYearPill(){
   const y = String(state.exerciseYear || loadExerciseYear() || "").trim();
-  const yearPill = document.getElementById("yearPill");
-  if (yearPill){
-    yearPill.hidden = !y;
-    if (y) yearPill.textContent = y;
-  }
-  const homePill = document.getElementById("homeYearPill");
-  if (homePill){
-    homePill.hidden = !y;
-    if (y){
-      const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
-      homePill.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
-      homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
+  const pills = [
+    document.getElementById("yearPill"),
+    document.getElementById("homeYearPill")
+  ].filter(Boolean);
+
+  pills.forEach((pill) => {
+    if (!y){ pill.hidden = true; }
+    else{
+      pill.textContent = y;
+      pill.hidden = false;
     }
-  }
+  });
 
   // Topservizi: anno (default) o mese (solo Calendario)
   try{ __setTopserviziCenterLabel__(); }catch(_){ }
@@ -6247,7 +6132,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.292 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.290 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6275,7 +6160,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.292 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.290 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -12053,15 +11938,7 @@ function __parseSettingsRows(rows) {
 
 function getSettingRow(key) {
   const k = __normKey(key);
-  const map = (state.settings && state.settings.byKey) ? state.settings.byKey : null;
-  if (!map) return null;
-  try{
-    if (typeof __structureSettingIsScoped__ === 'function' && __structureSettingIsScoped__(k) && typeof __structureHasActive__ === 'function' && __structureHasActive__()) {
-      const scoped = __structureScopedSettingKey__(k);
-      return map[scoped] || null;
-    }
-  }catch(_){ }
-  return map[k] || null;
+  return (state.settings && state.settings.byKey && state.settings.byKey[k]) ? state.settings.byKey[k] : null;
 }
 
 function getSettingText(key, fallback = "") {
@@ -12126,14 +12003,14 @@ const __LAUNDRY_CATALOG_CACHE_KEY__ = "ddae_laundry_catalog_v1";
 function __persistLaundryCatalogCache__(list){
   try{
     const clean = __sanitizeLaundryCatalogList__(list, { fallbackToDefault: false });
-    localStorage.setItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__), JSON.stringify(clean));
+    localStorage.setItem(__LAUNDRY_CATALOG_CACHE_KEY__, JSON.stringify(clean));
     return clean;
   }catch(_){ return []; }
 }
 
 function __readLaundryCatalogCache__(){
   try{
-    const raw = localStorage.getItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__));
+    const raw = localStorage.getItem(__LAUNDRY_CATALOG_CACHE_KEY__);
     if (!String(raw || '').trim()) return [];
     const parsed = JSON.parse(String(raw || '[]'));
     return __sanitizeLaundryCatalogList__(parsed, { fallbackToDefault: false });
@@ -12532,7 +12409,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
@@ -12547,8 +12424,6 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatistiche: 'beige-4',
   goProdotti: 'gray-3',
   goDbSync: 'white',
-  settingsStructureBtn: 'orange-4',
-  settingsStructureCreateBtn: 'orange-4',
   settingsSaveBtn: 'sky-3',
   settingsDbBtn: 'green-4',
   settingsRoomsBtn: 'yellow-4',
@@ -13471,10 +13346,7 @@ function __pillApplyAll__(){
 
 function __bindPillLongPress__(btn){
   try{
-    if (!btn || !btn.id) return;
-    // Home usa un gestore dedicato: tap breve = selezione struttura, long press reale = Design.
-    if (btn.id === 'homeYearPill') return;
-    if (btn.dataset.pillColorHoldBound === '1') return;
+    if (!btn || !btn.id || btn.dataset.pillColorHoldBound === '1') return;
     btn.dataset.pillColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
@@ -13488,8 +13360,6 @@ function __bindPillLongPress__(btn){
     const openPicker = () => {
       if (!canOpenPicker()) return;
       holdTriggered = true;
-      try{ __pillLongPressSuppress__(btn, 1800); }catch(_){ }
-      try{ btn.__ddaeColorHoldSuppressUntil = Date.now() + 1800; }catch(_){ }
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
         try{
@@ -13528,7 +13398,7 @@ function __bindPillLongPress__(btn){
     }, true);
     btn.addEventListener('contextmenu', (e) => {
       try{ e.preventDefault(); }catch(_){ }
-      if (btn.id !== 'homeYearPill' && canOpenPicker()){
+      if (canOpenPicker()){
         try{ openPicker(); }catch(_){ }
       }
       try{ e.stopPropagation(); }catch(_){ }
@@ -13797,7 +13667,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
@@ -13848,9 +13718,6 @@ function __launcherIconVisualFor__(id){
   if (key === 'settingsGuestMessagesBtn' && !map[key] && map.settingsGuestMessageBtn){
     try{ map[key] = map.settingsGuestMessageBtn; __launcherIconColorMapWrite__(map); }catch(_){ }
   }
-  if ((key === 'settingsStructureCreateBtn' || key === 'settingsStructureBtn') && !map[key] && map.settingsChannelBtn){
-    return __launcherVisualNormalize__(map.settingsChannelBtn, 'orange-4');
-  }
   if (key === 'goDbSync'){
     const raw = map[key];
     if (!raw || typeof raw !== 'object'){
@@ -13885,7 +13752,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsStructureBtn','settingsStructureCreateBtn','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -14445,7 +14312,7 @@ function __canonicalizeChannelCatalogSettingRows__(rows){
   list.forEach((row) => {
     try{
       const key = String(row?.key ?? row?.Key ?? '').trim().toLowerCase();
-      if (!(key === 'channel_catalogo' || key.endsWith(':channel_catalogo'))) return;
+      if (key !== 'channel_catalogo') return;
       const raw = row?.value ?? row?.Value ?? '';
       const parsed = JSON.parse(String(raw || '[]'));
       const clean = __normalizeChannelCatalogList__(Array.isArray(parsed) ? parsed : []);
@@ -14466,7 +14333,7 @@ function __canonicalizeBackupChannelsDeep__(node, seen){
   }
   try{
     const key = String(node?.key ?? node?.Key ?? '').trim().toLowerCase();
-    if (key === 'channel_catalogo' || key.endsWith(':channel_catalogo')) __canonicalizeChannelCatalogSettingRows__([node]);
+    if (key === 'channel_catalogo') __canonicalizeChannelCatalogSettingRows__([node]);
   }catch(_){ }
   try{
     const hasChannelFields = ('channel_id' in node) || ('channelId' in node) || ('channel_nome' in node) || ('channelNome' in node) || ('channel_name' in node) || ('channelName' in node);
@@ -14585,7 +14452,7 @@ async function ensureChannelCatalogGlobalLoaded({ force = false, showLoader = fa
     const all = [];
     (Array.isArray(rows) ? rows : []).forEach((row)=>{
       const key = __normKey(row?.key ?? row?.Key ?? row?.KEY);
-      if (typeof __structureSettingKeyMatches__ === "function" ? !__structureSettingKeyMatches__(key, "channel_catalogo") : key !== "channel_catalogo") return;
+      if (key !== "channel_catalogo") return;
       all.push(__parseChannelCatalogRaw__(row?.value ?? row?.Value ?? row?.val ?? ""));
     });
     const merged = __mergeChannelCatalogLists__(...all, annualFallback);
@@ -14720,9 +14587,7 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     const rows = data?.rows || data?.items || [];
     state.settings.rows = Array.isArray(rows) ? rows : [];
     state.settings.byKey = __parseSettingsRows(state.settings.rows);
-    try{ if (typeof __structureHydrateFromSettings__ === 'function') __structureHydrateFromSettings__(); }catch(_){ }
     try{ __persistLaundryCatalogCache__(getLaundryCatalogFromSettings()); }catch(_){ }
-    try{ if (typeof __structureUpdateUi__ === 'function') __structureUpdateUi__(); }catch(_){ }
     state.settings.loaded = true;
     state.settings.loadedAt = Date.now();
 
@@ -16280,14 +16145,13 @@ function __scheduleRoomCatalogRecoveryToSettings__(catalog){
         const rows0 = await __tblGet__('impostazioni', []);
         const rows = Array.isArray(rows0) ? rows0.slice() : [];
         const keyOf = (row) => String(row?.key || row?.Key || '').trim().toLowerCase();
-        const hasCatalog = rows.some((row) => __structureSettingKeyMatches__(keyOf(row), 'stanze_catalogo') && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
+        const hasCatalog = rows.some((row) => keyOf(row) === 'stanze_catalogo' && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
         if (hasCatalog) return;
         const now = __nowIso__();
         const upsert = (key, value) => {
-          const scopedKey = __structureScopedSettingKey__(key);
-          const idx = rows.findIndex((row) => keyOf(row) === scopedKey);
+          const idx = rows.findIndex((row) => keyOf(row) === key);
           const prev = idx >= 0 ? rows[idx] : {};
-          const next = { ...prev, key:scopedKey, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
+          const next = { ...prev, key, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
           if (idx >= 0) rows[idx] = next; else rows.push(next);
         };
         upsert('stanze_catalogo', JSON.stringify(clean));
@@ -16309,12 +16173,12 @@ function getRoomCatalogFromSettings(){
     const clean = __roomCatalogParseRaw__(raw);
     if (clean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), JSON.stringify(clean)); }catch(_){ }
+      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, JSON.stringify(clean)); }catch(_){ }
       return clean;
     }
   }catch(_){ }
   try{
-    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__)) || '');
+    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__ROOM_CATALOG_STORAGE_KEY__) || '');
     if (localClean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = localClean; }catch(_){ }
       try{ __scheduleRoomCatalogRecoveryToSettings__(localClean); }catch(_){ }
@@ -16349,14 +16213,14 @@ async function saveRoomCatalogToSettings(list){
   const clean = __roomCatalogNormalizeList__(list);
   const raw = JSON.stringify(clean);
   try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-  try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), raw); }catch(_){ }
+  try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, raw); }catch(_){ }
   const ui = __syncRoomCatalogColorsToRoomsUi__(clean);
   await api('impostazioni', { method:'POST', body:{ stanze_catalogo:clean, numero_stanze:clean.length, stanze_ui:JSON.stringify(ui) }, showLoader:true });
   try{
     state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
-    state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
-    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
+    state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
+    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{ __applyRoomsUiConfig__(); }catch(_){ }
@@ -17024,9 +16888,6 @@ function setupImpostazioni() {
   }
   try{ __syncDarkModeButtons__(); }catch(_){ }
 
-  try{ __setupStructureUi__(); }catch(_){ }
-  try{ __structureUpdateUi__(); }catch(_){ }
-
   const settingsYearPill = document.getElementById("settingsYearPill");
   if (settingsYearPill && !settingsYearPill.__boundYearTap){
     settingsYearPill.__boundYearTap = true;
@@ -17045,7 +16906,6 @@ function setupImpostazioni() {
   const __openSettingsDataModal__ = () => {
     try{
       if (!settingsDataModal) return;
-      try{ __structureUpdateUi__(); }catch(_){ }
       __setSettingsDataModalMode__('active');
       settingsDataModal.hidden = false;
       settingsDataModal.setAttribute('aria-hidden','false');
@@ -17059,7 +16919,6 @@ function setupImpostazioni() {
   };
   try{ window.__openSettingsDataModal__ = __openSettingsDataModal__; window.__closeSettingsDataModal__ = __closeSettingsDataModal__; }catch(_){ }
   const __goSettingsDataChild__ = (pageName) => {
-    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
     try{ window.__settingsDataReturnActive = true; }catch(_){ }
     try{ __closeSettingsDataModal__(); }catch(_){ }
     try{ hideLauncher(); }catch(_){ }
@@ -18622,659 +18481,8 @@ function __ctxYear__(){
   return String(new Date().getFullYear());
 }
 
-function __ctxDataUidForStructure__(forcedStructureId){
-  try{
-    const account = encodeURIComponent(String(__ctxUid__() || 'anon'));
-    const sid = String(forcedStructureId || (typeof __structureActiveId__ === 'function' ? __structureActiveId__() : '') || '__none__')
-      .trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80) || '__none__';
-    return `${account}~s~${sid}`;
-  }catch(_){ return `anon~s~__none__`; }
-}
-function __ctxDataUid__(){ return __ctxDataUidForStructure__(''); }
-function __ctxSig__(){ return `${__ctxDataUid__()}|${__ctxYear__()}`; }
+function __ctxSig__(){ return `${__ctxUid__()}|${__ctxYear__()}`; }
 
-
-// dDAE_3.292 — Multi-struttura: ogni struttura è un ambiente dati indipendente.
-const __STRUCTURE_CATALOG_SETTING_KEY__ = 'strutture_catalogo';
-const __STRUCTURE_SELECTED_STORAGE_PREFIX__ = 'dDAE_structure_selected_v1:';
-const __STRUCTURE_LOCAL_CATALOG_PREFIX__ = 'dDAE_structures_v1:';
-const __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ = 'dDAE_structure_storage_v2:';
-const __STRUCTURE_MIGRATION_PREFIX__ = 'dDAE_structure_legacy_migrated_v2:';
-const __STRUCTURE_SYNC_ROOT_PREFIX__ = 'dDAE_structure_sync_legacy_root_v1:';
-const __STRUCTURE_DELETE_PENDING_PREFIX__ = 'dDAE_structure_delete_pending_v1:';
-const __STRUCTURE_SCOPED_SETTING_KEYS__ = new Set([
-  'operatori','operatori_catalogo','tariffa_oraria','costo_benzina',
-  'channel_catalogo','stanze_catalogo','numero_stanze','stanze_ui',
-  'laundry_catalogo','laundry_prices','guest_whatsapp_message_template',
-  'guest_message_templates_json','hotel_location_link'
-]);
-const __STRUCTURE_DATA_BUTTON_IDS__ = [
-  'settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn',
-  'settingsLaundryCatalogBtn','settingsGuestMessagesBtn','settingsHotelLocationBtn'
-];
-function __structureAccountSuffix__(){
-  try{ return encodeURIComponent(String(__ctxUid__() || 'anon')); }catch(_){ return 'anon'; }
-}
-function __structureCatalogStorageKey__(){ return __STRUCTURE_LOCAL_CATALOG_PREFIX__ + __structureAccountSuffix__(); }
-function __structureSelectedStorageKey__(){ return __STRUCTURE_SELECTED_STORAGE_PREFIX__ + __structureAccountSuffix__(); }
-function __structureStorageSnapshotKey__(sid){ return __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
-function __structureMigrationKey__(sid){ return __STRUCTURE_MIGRATION_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
-function __structureSyncRootKey__(sid){ return __STRUCTURE_SYNC_ROOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
-function __structureSetLegacySyncRoot__(sid,yes){ try{ localStorage.setItem(__structureSyncRootKey__(sid),yes?'1':'0'); }catch(_){ } }
-function __structureUsesLegacySyncRoot__(sid){
-  const id=String(sid||'').trim(); if(!id) return true;
-  try{ const raw=localStorage.getItem(__structureSyncRootKey__(id)); if(raw==='1') return true; if(raw==='0') return false; }catch(_){ }
-  try{ const list=__structureCatalog__(); return !!(list.length && list[0].id===id); }catch(_){ return true; }
-}
-function __structureNormalizeList__(input){
-  let rows=input;
-  try{ if (typeof rows === 'string') rows=JSON.parse(rows || '[]'); }catch(_){ rows=[]; }
-  const out=[]; const seen=new Set();
-  (Array.isArray(rows)?rows:[]).forEach((row,idx)=>{
-    const name=String(row?.nome ?? row?.name ?? row?.label ?? '').trim().replace(/\s+/g,' ').slice(0,48);
-    if(!name) return;
-    let id=String(row?.id ?? '').trim().replace(/[^a-zA-Z0-9_-]/g,'').slice(0,64).toLowerCase();
-    if(!id) id='s_'+String(idx+1)+'_'+String(Date.now());
-    if(seen.has(id)) return;
-    seen.add(id);
-    out.push({id,nome:name,createdAt:String(row?.createdAt || ''),updatedAt:String(row?.updatedAt || '')});
-  });
-  return out;
-}
-function __structureReadLocalCatalog__(){
-  try{ return __structureNormalizeList__(localStorage.getItem(__structureCatalogStorageKey__()) || '[]'); }catch(_){ return []; }
-}
-function __structureWriteLocalCatalog__(rows){
-  const clean=__structureNormalizeList__(rows);
-  try{ localStorage.setItem(__structureCatalogStorageKey__(),JSON.stringify(clean)); }catch(_){ }
-  return clean;
-}
-function __structureCatalogFromSettings__(){
-  try{
-    const map=state?.settings?.byKey || {};
-    const row=map[__STRUCTURE_CATALOG_SETTING_KEY__];
-    if(!row) return [];
-    return __structureNormalizeList__(row?.value ?? row?.Value ?? row?.val ?? '[]');
-  }catch(_){ return []; }
-}
-function __structureHydrateFromSettings__(){
-  const local=__structureReadLocalCatalog__();
-  if(local.length) return local;
-  try{
-    const legacy=__structureCatalogFromSettings__();
-    if(legacy.length) return __structureWriteLocalCatalog__(legacy);
-  }catch(_){ }
-  return local;
-}
-function __structureCatalog__(){ return __structureHydrateFromSettings__(); }
-function __structureActiveId__(){
-  try{
-    const id=String(localStorage.getItem(__structureSelectedStorageKey__()) || '').trim();
-    if(!id) return '';
-    return __structureCatalog__().some(x=>x.id===id) ? id : '';
-  }catch(_){ return ''; }
-}
-function __structureActive__(){ const id=__structureActiveId__(); return id ? (__structureCatalog__().find(x=>x.id===id) || null) : null; }
-function __structureHasActive__(){ return !!__structureActiveId__(); }
-function __structureSettingIsScoped__(key){ return __STRUCTURE_SCOPED_SETTING_KEYS__.has(String(key||'').trim().toLowerCase()); }
-function __structureScopedSettingKey__(baseKey, forcedStructureId){
-  const base=String(baseKey||'').trim().toLowerCase();
-  if(!base || !__structureSettingIsScoped__(base)) return base;
-  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
-  return sid ? ('struttura:'+sid+':'+base) : base;
-}
-function __structureSettingKeyMatches__(storedKey, baseKey){
-  const stored=String(storedKey||'').trim().toLowerCase();
-  const base=String(baseKey||'').trim().toLowerCase();
-  if(!__structureSettingIsScoped__(base) || !__structureHasActive__()) return stored===base;
-  return stored===__structureScopedSettingKey__(base);
-}
-function __structureLocalStorageKey__(baseKey, forcedStructureId){
-  const base=String(baseKey||'').trim();
-  if(!base) return base;
-  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
-  if(!sid) return base;
-  return base+':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(sid);
-}
-function __structureAllowsLegacyFallback__(){
-  try{
-    const active=__structureActive__(); const list=__structureCatalog__();
-    return !!(active && list.length && list[0].id===active.id);
-  }catch(_){ return false; }
-}
-function __structureStorageIsAppKey__(key){
-  const k=String(key||''); const l=k.toLowerCase();
-  return k.startsWith('dDAE_') || k.startsWith('ddae_') || k.startsWith('__ddae_') || l.startsWith('ddae:');
-}
-function __structureStorageIsGlobalKey__(key){
-  const k=String(key||''); const l=k.toLowerCase();
-  if(!k) return true;
-  if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__) || k.startsWith(__STRUCTURE_DELETE_PENDING_PREFIX__)) return true;
-  if(k === 'dDAE_structure_option_button_visual_v1') return true;
-  if(l.startsWith('ddae_local_cache_v')) return true;
-  if(k.includes(':structure:')) return true;
-  const exact=new Set([
-    'dDAE_session_v2','dDAE_session','ddae_session','session','auth',
-    'dDAE_user','ddae_user','dDAE_current_user','currentUser','user',
-    'dDAE_user_id','ddae_user_id','dDAE_user_email','ddae_user_email',
-    'dDAE_logged_in','ddae_logged_in','ddae_fb_teamId','ddae_fb_teamKey',
-    'dDAE_pending_build','dDAE_update_attempt_build','dDAE_update_attempt_at','__ddae_restore_state',
-    '__ddae_auth_backup_force_admin_login_v1','__ddae_auth_backup_import_active_v1'
-  ]);
-  return exact.has(k);
-}
-function __structureScopableStorageKeys__(){
-  const keys=[];
-  try{
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i); if(!k) continue;
-      if(!__structureStorageIsAppKey__(k) || __structureStorageIsGlobalKey__(k)) continue;
-      keys.push(k);
-    }
-  }catch(_){ }
-  return keys;
-}
-function __structureCaptureStorageSnapshot__(sid){
-  const id=String(sid||'').trim(); if(!id) return {};
-  const out={};
-  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ out[k]=String(localStorage.getItem(k)??''); }catch(_){ } }); }catch(_){ }
-  try{ localStorage.setItem(__structureStorageSnapshotKey__(id),JSON.stringify(out)); }catch(_){ }
-  return out;
-}
-function __structureReadStorageSnapshot__(sid){
-  try{ const p=JSON.parse(localStorage.getItem(__structureStorageSnapshotKey__(sid))||'{}'); return p&&typeof p==='object'&&!Array.isArray(p)?p:{}; }catch(_){ return {}; }
-}
-function __structureApplyStorageSnapshot__(sid){
-  const id=String(sid||'').trim(); if(!id) return;
-  const snap=__structureReadStorageSnapshot__(id);
-  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }); }catch(_){ }
-  Object.keys(snap).forEach((k)=>{ try{ if(__structureStorageIsAppKey__(k) && !__structureStorageIsGlobalKey__(k)) localStorage.setItem(k,String(snap[k]??'')); }catch(_){ } });
-}
-let __structureMigrationInflight__=null;
-async function __structureEnsureActiveMigrated__(){
-  try{
-    const sid=__structureActiveId__(); if(!sid) return;
-    const list=__structureCatalog__(); if(!list.length || list[0].id!==sid) return;
-    __structureSetLegacySyncRoot__(sid,true);
-    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
-    if(__structureMigrationInflight__) return await __structureMigrationInflight__;
-    __structureMigrationInflight__=Promise.resolve(__structureSeedLegacyForFirst__(sid)).finally(()=>{__structureMigrationInflight__=null;});
-    return await __structureMigrationInflight__;
-  }catch(_){ }
-}
-async function __structureSeedLegacyForFirst__(sid){
-  try{
-    const list=__structureCatalog__();
-    if(!list.length || list[0].id!==sid) return;
-    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
-
-    // Conserva tutte le preferenze correnti come stato iniziale della prima struttura.
-    if(!Object.keys(__structureReadStorageSnapshot__(sid)).length) __structureCaptureStorageSnapshot__(sid);
-
-    // Migra TUTTI i dataset storici dell'account nella prima struttura soltanto.
-    const accountUid=String(__ctxUid__()||'anon');
-    const sourcePrefix=`ctx:${accountUid}:`;
-    const targetUid=__ctxDataUidForStructure__(sid);
-    const keys=await __kvKeys__(sourcePrefix);
-    for(const key of (Array.isArray(keys)?keys:[])){
-      const k=String(key||'');
-      if(!k.startsWith(sourcePrefix)) continue;
-      const rest=k.slice(sourcePrefix.length);
-      const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/);
-      if(!m) continue;
-      const target=`ctx:${targetUid}:${m[1]}:tbl:${m[2]}`;
-      const existing=await __kvGet__(target);
-      if(existing!==undefined && existing!==null) continue;
-      const val=await __kvGet__(k);
-      if(val!==undefined && val!==null) await __kvSet__(target,val);
-    }
-
-    // Duplica le vecchie impostazioni Dati con la chiave struttura prevista dalla UI.
-    const years=new Set([String(__ctxYear__())]);
-    for(const key of (Array.isArray(keys)?keys:[])){
-      const m=String(key||'').slice(sourcePrefix.length).match(/^([0-9]{4}):tbl:impostazioni$/);
-      if(m) years.add(m[1]);
-    }
-    for(const year of years){
-      if(!/^[0-9]{4}$/.test(year)) continue;
-      const targetKey=`ctx:${targetUid}:${year}:tbl:impostazioni`;
-      const rows0=await __kvGet__(targetKey); const rows=Array.isArray(rows0)?rows0.slice():[];
-      const keyOf=r=>String(r?.key||r?.Key||'').trim().toLowerCase();
-      const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString()); let changed=false;
-      __STRUCTURE_SCOPED_SETTING_KEYS__.forEach((base)=>{
-        const target=__structureScopedSettingKey__(base,sid);
-        if(rows.some(r=>keyOf(r)===target)) return;
-        const legacy=rows.find(r=>keyOf(r)===base);
-        if(!legacy) return;
-        rows.push(Object.assign({},legacy,{key:target,createdAt:legacy?.createdAt||now,updatedAt:now})); changed=true;
-      });
-      if(changed) await __kvSet__(targetKey,rows);
-    }
-    // Migra anche le immagini Servizi/Cocktail della vecchia struttura singola.
-    try{
-      const oldAssetKeys=await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
-      const targetPrefix=__cocktailImageAssetContextPrefix__(sid);
-      for(const oldKey of (Array.isArray(oldAssetKeys)?oldAssetKeys:[])){
-        const rest=String(oldKey||'').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
-        if(!rest || rest.includes(':')) continue; // le nuove chiavi hanno namespace:slot
-        const target=targetPrefix+rest;
-        const exists=await __kvGet__(target); if(exists!==undefined && exists!==null) continue;
-        const val=await __kvGet__(oldKey); if(typeof val==='string' && val.startsWith('data:image/')) await __kvSet__(target,val);
-      }
-    }catch(_){ }
-    try{ localStorage.setItem(__structureMigrationKey__(sid),'1'); }catch(_){ }
-  }catch(_){ }
-}
-async function __structureCreate__(rawName){
-  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
-  if(!name) throw new Error('Inserisci il nome della struttura');
-  const list=__structureCatalog__();
-  if(list.some(x=>String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
-  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
-  const item={id:'s_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),nome:name,createdAt:now,updatedAt:now};
-  __structureWriteLocalCatalog__(list.concat(item));
-  __structureSetLegacySyncRoot__(item.id,list.length===0);
-  __structureUpdateUi__();
-  return item;
-}
-async function __structureRename__(sid, rawName){
-  const id=String(sid||'').trim();
-  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
-  if(!id) throw new Error('Seleziona una struttura');
-  if(!name) throw new Error('Inserisci il nome della struttura');
-  const list=__structureCatalog__();
-  const idx=list.findIndex(x=>x.id===id);
-  if(idx<0) throw new Error('Struttura non disponibile');
-  if(list.some((x,i)=>i!==idx && String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
-  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
-  const updated=list.map((x,i)=>i===idx?Object.assign({},x,{nome:name,updatedAt:now}):x);
-  __structureWriteLocalCatalog__(updated);
-  __structureUpdateUi__();
-  return updated[idx];
-}
-
-
-// dDAE_3.299 — Eliminazione definitiva della struttura selezionata.
-function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
-function __structureDeletePendingRead__(){
-  try{
-    const rows=JSON.parse(localStorage.getItem(__structureDeletePendingKey__())||'[]');
-    return Array.isArray(rows)?rows.filter(x=>x&&x.sid&&x.teamId):[];
-  }catch(_){ return []; }
-}
-function __structureDeletePendingWrite__(rows){
-  try{
-    const clean=(Array.isArray(rows)?rows:[]).filter(x=>x&&x.sid&&x.teamId);
-    if(clean.length) localStorage.setItem(__structureDeletePendingKey__(),JSON.stringify(clean));
-    else localStorage.removeItem(__structureDeletePendingKey__());
-  }catch(_){ }
-}
-function __structureDeleteQueueRemote__(job){
-  try{
-    if(!job?.sid || !job?.teamId) return;
-    const rows=__structureDeletePendingRead__();
-    const key=String(job.teamId)+'|'+String(job.sid);
-    const next=rows.filter(x=>(String(x.teamId)+'|'+String(x.sid))!==key);
-    next.push({sid:String(job.sid),teamId:String(job.teamId),legacySyncRoot:!!job.legacySyncRoot,queuedAt:String(job.queuedAt||__nowIso__())});
-    __structureDeletePendingWrite__(next);
-  }catch(_){ }
-}
-function __structureFsRelativePath__(doc){
-  try{
-    const name=String(doc?.name||''); const marker='/documents/'; const i=name.indexOf(marker);
-    return i>=0 ? name.slice(i+marker.length) : '';
-  }catch(_){ return ''; }
-}
-async function __structureDeleteRemoteJob__(job){
-  try{
-    const sid=__fbSafeStructureId__(job?.sid); const teamId=String(job?.teamId||'').trim();
-    if(!sid || !teamId || !FIREBASE_ENABLED || !FIREBASE_CONFIG?.apiKey) return true;
-    const legacy=!!job?.legacySyncRoot;
-    const syncBase=legacy ? `sync/${teamId}` : `sync/${teamId}/structures/${sid}`;
-    for(const collection of ['admin_chunks','operators']){
-      let docs=[]; try{ docs=await __fsList__(`${syncBase}/${collection}`); }catch(_){ docs=[]; }
-      for(const doc of (Array.isArray(docs)?docs:[])){
-        const path=__structureFsRelativePath__(doc); if(path) try{ await __fsDelete__(path); }catch(_){ }
-      }
-    }
-    try{ await __fsDelete__(`${syncBase}/boards/spesa`); }catch(_){ }
-    const rootOk=await __fsDelete__(syncBase).catch(()=>false);
-    if(!legacy){ try{ await __fsDelete__(`teams/${teamId}/structures/${sid}`); }catch(_){ } }
-    return !!rootOk;
-  }catch(_){ return false; }
-}
-async function __structureRetryPendingRemoteDeletes__(){
-  const rows=__structureDeletePendingRead__(); if(!rows.length) return;
-  const keep=[];
-  for(const job of rows){
-    let ok=false; try{ ok=await __structureDeleteRemoteJob__(job); }catch(_){ ok=false; }
-    if(!ok) keep.push(job);
-  }
-  __structureDeletePendingWrite__(keep);
-}
-function __structureRemoveOptionVisual__(sid){
-  try{
-    const safe=String(sid||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64)||'structure';
-    const id='structureSelectOption_'+safe;
-    const raw=localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
-    const map=raw?JSON.parse(raw):{};
-    if(map&&typeof map==='object'&&!Array.isArray(map)&&Object.prototype.hasOwnProperty.call(map,id)){
-      delete map[id]; localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,JSON.stringify(map));
-    }
-  }catch(_){ }
-}
-async function __structureDelete__(sid){
-  const id=String(sid||'').trim();
-  const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
-  if(!item) throw new Error('Struttura non disponibile');
-  const legacy=__structureUsesLegacySyncRoot__(id);
-  const wasActive=(__structureActiveId__()===id);
-  let teamId=''; try{ __fbLoadLink__(); teamId=String(__FB_STATE__?.teamId||'').trim(); }catch(_){ }
-
-  // Cancella tutti i dataset di tutti gli anni e gli asset appartenenti alla struttura.
-  const dataPrefix=`ctx:${__ctxDataUidForStructure__(id)}:`;
-  try{ for(const key of (await __kvKeys__(dataPrefix))) await __kvDel__(key); }catch(_){ }
-  try{ const assetPrefix=__cocktailImageAssetContextPrefix__(id); for(const key of (await __kvKeys__(assetPrefix))) await __kvDel__(key); }catch(_){ }
-
-  // La prima struttura conteneva la migrazione dell'archivio storico pre-multistruttura:
-  // eliminando quella struttura vanno rimossi anche i residui legacy, mai riutilizzati da altre strutture.
-  if(legacy){
-    try{
-      const legacyPrefix=`ctx:${String(__ctxUid__()||'anon')}:`;
-      for(const key of (await __kvKeys__(legacyPrefix))) await __kvDel__(key);
-    }catch(_){ }
-  }
-
-  // Pulisce sia lo snapshot sia le chiavi localStorage specifiche della struttura.
-  if(wasActive){
-    try{ __structureScopableStorageKeys__().forEach(k=>{ try{localStorage.removeItem(k);}catch(_){} }); }catch(_){ }
-  }
-  try{
-    const suffix=':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(id);
-    const remove=[];
-    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&String(k).includes(suffix)) remove.push(k); }
-    remove.forEach(k=>{try{localStorage.removeItem(k);}catch(_){}});
-  }catch(_){ }
-  try{ localStorage.removeItem(__structureStorageSnapshotKey__(id)); }catch(_){ }
-  try{ localStorage.removeItem(__structureMigrationKey__(id)); }catch(_){ }
-  try{ localStorage.removeItem(__structureSyncRootKey__(id)); }catch(_){ }
-  try{ __structureRemoveOptionVisual__(id); }catch(_){ }
-
-  // Nessuna selezione automatica dopo la cancellazione.
-  if(wasActive){ try{ localStorage.removeItem(__structureSelectedStorageKey__()); }catch(_){ } }
-  __structureWriteLocalCatalog__(list.filter(x=>x.id!==id));
-  try{ invalidateApiCache(); }catch(_){ }
-  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
-  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
-  __structureUpdateUi__();
-
-  // La cancellazione cloud è best-effort e viene ritentata automaticamente se il dispositivo è offline.
-  if(teamId){
-    const job={sid:id,teamId,legacySyncRoot:legacy,queuedAt:__nowIso__()};
-    __structureDeleteQueueRemote__(job);
-    try{ if(await __structureDeleteRemoteJob__(job)){ const keep=__structureDeletePendingRead__().filter(x=>!(String(x.sid)===id&&String(x.teamId)===teamId)); __structureDeletePendingWrite__(keep); } }catch(_){ }
-  }
-  return item;
-}
-
-async function __structureSelect__(sid){
-  const id=String(sid||'').trim(); const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
-  if(!item) throw new Error('Struttura non disponibile');
-  const prev=__structureActiveId__();
-  if(prev===id) return item;
-  if(prev) __structureCaptureStorageSnapshot__(prev);
-  await __structureSeedLegacyForFirst__(id);
-  __structureApplyStorageSnapshot__(id);
-  try{ localStorage.setItem(__structureSelectedStorageKey__(),id); }catch(_){ }
-  try{ invalidateApiCache(); }catch(_){ }
-  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
-  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
-  return item;
-}
-function __structureContextLabel__(year){
-  const y=String(year||__ctxYear__()||'').trim(); const a=__structureActive__();
-  return a ? `${a.nome} - ${y}` : `Struttura - ${y}`;
-}
-function __structureUpdateUi__(){
-  const active=__structureActive__();
-  const label=active ? active.nome : 'Seleziona struttura';
-  const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
-  const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
-  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=__structureContextLabel__(y); home.setAttribute('aria-label',active ? ('Struttura '+active.nome+', anno '+y) : ('Seleziona struttura, anno '+y)); }
-  const enabled=!!active;
-  __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
-}
-function __structureOpenSelectModal__(){
-  const modal=document.getElementById('structureSelectModal'); const listEl=document.getElementById('structureSelectList'); const empty=document.getElementById('structureSelectEmpty');
-  if(!modal||!listEl) return;
-  const rows=__structureCatalog__(); const activeId=__structureActiveId__(); listEl.innerHTML='';
-  rows.forEach((item)=>{
-    const btn=document.createElement('button'); btn.type='button'; btn.className='settings-btn settings-btn-channel structure-option-btn';
-    const safeStructureButtonId=String(item.id||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64) || 'structure';
-    btn.id='structureSelectOption_'+safeStructureButtonId;
-    btn.dataset.singleActionKey=btn.id;
-    btn.dataset.structureId=item.id;
-    btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14"></path><path d="M8 21v-5h8v5"></path><path d="M8 9h2"></path><path d="M14 9h2"></path></svg><span class="settings-btn-label"></span><span class="structure-option-check" aria-hidden="true"></span>';
-    const lab=btn.querySelector('.settings-btn-label'); if(lab) lab.textContent=item.nome;
-    if(item.id===activeId){ btn.classList.add('is-selected'); const ck=btn.querySelector('.structure-option-check'); if(ck) ck.textContent='✓'; }
-    const select=async()=>{ try{ const picked=await __structureSelect__(item.id); __structureCloseSelectModal__(); try{toast('Struttura: '+picked.nome,'green');}catch(_){} setTimeout(()=>{try{location.reload();}catch(_){}},180); }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){}} };
-    if(typeof bindFastTap==='function') bindFastTap(btn,select); else btn.addEventListener('click',select);
-    try{ __applySingleActionButtonVisual__(btn); __bindSingleActionButtonColorHold__(btn); }catch(_){ }
-    listEl.appendChild(btn);
-  });
-  if(empty) empty.hidden=rows.length!==0;
-  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
-}
-function __structureCloseSelectModal__(){ const modal=document.getElementById('structureSelectModal'); if(!modal)return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); try{document.body.classList.remove('modal-open');}catch(_){ } }
-function __structureSetEditorMode__(mode){
-  const modal=document.getElementById('structureCreateModal');
-  const input=document.getElementById('structureNameInput');
-  const title=document.getElementById('structureCreateTitle');
-  const newBtn=document.getElementById('structureCreateNewBtn');
-  const deleteBtn=document.getElementById('structureDeleteBtn');
-  const active=__structureActive__();
-  const safeMode=(mode==='edit' && active)?'edit':'create';
-  if(modal) modal.dataset.structureMode=safeMode;
-  if(title) title.textContent=safeMode==='edit'?'Modifica struttura':'Nuova struttura';
-  if(input) input.value=safeMode==='edit'?(active?.nome||''):'';
-  if(newBtn){
-    newBtn.hidden=false;
-    newBtn.disabled=(safeMode==='create');
-    newBtn.setAttribute('aria-disabled', newBtn.disabled ? 'true' : 'false');
-  }
-  if(deleteBtn){
-    deleteBtn.hidden=false;
-    deleteBtn.disabled=(safeMode!=='edit');
-    deleteBtn.setAttribute('aria-disabled', deleteBtn.disabled ? 'true' : 'false');
-  }
-  try{ if(modal) modal.querySelector('[role="dialog"]')?.setAttribute('aria-label',safeMode==='edit'?'Modifica struttura':'Nuova struttura'); }catch(_){ }
-  setTimeout(()=>{try{input?.focus(); if(safeMode==='edit') input?.select();}catch(_){}},80);
-}
-function __structureOpenCreateModal__(){
-  const dataModal=document.getElementById('settingsDataModal'); if(dataModal && dataModal.dataset.dataMode==='inactive') return;
-  try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
-  const modal=document.getElementById('structureCreateModal'); const input=document.getElementById('structureNameInput'); if(!modal||!input)return;
-  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
-  __structureSetEditorMode__(__structureHasActive__()?'edit':'create');
-}
-function __structureCloseCreateModal__(reopenData){
-  const modal=document.getElementById('structureCreateModal'); if(modal){modal.hidden=true; modal.setAttribute('aria-hidden','true'); modal.dataset.structureMode='';}
-  try{document.body.classList.remove('modal-open');}catch(_){ }
-  if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
-}
-// dDAE_3.299 — Home context pill: separazione rigorosa tap / long press su iOS.
-function __bindHomeYearPillInteractions__(){
-  const btn=document.getElementById('homeYearPill');
-  if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
-  btn.dataset.homeContextInteractionBound='1';
-  try{ __pillApplyToButton__(btn); }catch(_){ }
-
-  const HOLD_MS=800;
-  const MOVE_TOLERANCE=12;
-  let timer=null;
-  let holdFired=false;
-  let moved=false;
-  let startX=0,startY=0;
-  let suppressClickUntil=0;
-  let pointerActive=false;
-
-  const clearTimer=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
-  const point=(e)=>{
-    const t=e?.touches?.[0] || e?.changedTouches?.[0] || e;
-    return {x:Number(t?.clientX||0),y:Number(t?.clientY||0)};
-  };
-  const block=(e)=>{
-    try{e?.preventDefault?.();}catch(_){ }
-    try{e?.stopImmediatePropagation?.();}catch(_){ }
-    try{e?.stopPropagation?.();}catch(_){ }
-  };
-  const suppressPrimary=(ms=1600)=>{
-    const until=Date.now()+Math.max(0,Number(ms)||0);
-    suppressClickUntil=Math.max(suppressClickUntil,until);
-    try{ __pillLongPressSuppress__(btn,ms); }catch(_){ }
-    try{ btn.__ddaeColorHoldSuppressUntil=until; }catch(_){ }
-  };
-  const openColor=()=>{
-    if(holdFired || moved || !pointerActive) return;
-    holdFired=true;
-    suppressPrimary(1800);
-    const current=__pillVisualFor__(btn.id);
-    __tagColorPopupOpen__('pill-single-button',current,(payload)=>{
-      try{
-        const nextVisual=__designVisualFromPayload__(current,payload,current.bg||'blue-4');
-        __writePillVisual__(btn.id,nextVisual);
-        if(payload && payload.opacity!=null) __designBgOpacityWrite__(payload.opacity);
-        __pillApplyAll__();
-        try{renderRoomSettingsPage();}catch(_){ }
-      }catch(_){ }
-    },{
-      supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
-      opacity:current.opacity ?? __designBgOpacityRead__(),defaultMode:'bg',
-      fallbackBg:(current.bg||'blue-4'),
-      applyCategory:{message:'Applicare le modifiche a tutti i pulsanti pill?',apply:async(payload,changed)=>{await __applyPillChangesToCategory__(payload,changed);}}
-    });
-  };
-  const start=(e)=>{
-    try{ if(e?.type==='pointerdown' && e.pointerType==='mouse' && e.button!==0) return; }catch(_){ }
-    clearTimer();
-    holdFired=false;
-    moved=false;
-    pointerActive=true;
-    try{ if(e?.type==='pointerdown' && e.pointerId!=null && btn.setPointerCapture) btn.setPointerCapture(e.pointerId); }catch(_){ }
-    const p=point(e); startX=p.x; startY=p.y;
-    timer=setTimeout(openColor,HOLD_MS);
-  };
-  const move=(e)=>{
-    if(!pointerActive || !timer) return;
-    const p=point(e);
-    if(Math.abs(p.x-startX)>MOVE_TOLERANCE || Math.abs(p.y-startY)>MOVE_TOLERANCE){
-      moved=true; clearTimer();
-    }
-  };
-  const finish=(e,cancelled=false)=>{
-    if(!pointerActive) return;
-    pointerActive=false;
-    clearTimer();
-    if(holdFired){
-      suppressPrimary(1800);
-      block(e);
-      holdFired=false;
-      return;
-    }
-    if(cancelled || moved) return;
-    // Il tap breve viene gestito qui, non da bindFastTap: nessun timer Design può sopravvivere al rilascio.
-    suppressClickUntil=Date.now()+700;
-    try{ __sfxTap(); }catch(_){ }
-    try{ __structureOpenSelectModal__(); }catch(_){ }
-  };
-  const click=(e)=>{
-    // Click sintetico successivo a touch/pointerup: sempre assorbito.
-    if(Date.now()<suppressClickUntil){ block(e); return; }
-    // Accessibilità tastiera: click senza una sequenza pointer precedente.
-    try{ __sfxTap(); }catch(_){ }
-    try{ __structureOpenSelectModal__(); }catch(_){ }
-  };
-
-  const usePointer=typeof window!=='undefined' && ('PointerEvent' in window);
-  if(usePointer){
-    btn.addEventListener('pointerdown',start,{passive:true,capture:true});
-    btn.addEventListener('pointermove',move,{passive:true,capture:true});
-    btn.addEventListener('pointerup',(e)=>finish(e,false),{passive:false,capture:true});
-    btn.addEventListener('pointercancel',(e)=>finish(e,true),{passive:false,capture:true});
-    btn.addEventListener('pointerleave',(e)=>{ if(pointerActive && e?.pointerType==='mouse') finish(e,true); },{passive:false,capture:true});
-  }else if(typeof window!=='undefined' && ('ontouchstart' in window)){
-    btn.addEventListener('touchstart',start,{passive:true,capture:true});
-    btn.addEventListener('touchmove',move,{passive:true,capture:true});
-    btn.addEventListener('touchend',(e)=>finish(e,false),{passive:false,capture:true});
-    btn.addEventListener('touchcancel',(e)=>finish(e,true),{passive:false,capture:true});
-  }else{
-    btn.addEventListener('mousedown',start,true);
-    btn.addEventListener('mouseup',(e)=>finish(e,false),true);
-    btn.addEventListener('mouseleave',(e)=>finish(e,true),true);
-  }
-  btn.addEventListener('click',click,true);
-  btn.addEventListener('contextmenu',(e)=>{ block(e); },true);
-  btn.addEventListener('selectstart',(e)=>{ block(e); },true);
-  btn.addEventListener('dragstart',(e)=>{ block(e); },true);
-}
-
-function __setupStructureUi__(){
-  if(window.__ddaeStructureUiBound) { __structureUpdateUi__(); return; }
-  window.__ddaeStructureUiBound=true;
-  const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
-  bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
-  try{ __bindHomeYearPillInteractions__(); }catch(_){ }
-  bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
-  bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
-  bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
-  bind(document.getElementById('structureCreateNewBtn'),()=>__structureSetEditorMode__('create'));
-  bind(document.getElementById('structureDeleteBtn'),async()=>{
-    const active=__structureActive__(); if(!active) return;
-    const ok=await confirmYesNo(`Eliminare definitivamente la struttura “${active.nome}” e tutti i suoi dati? L'operazione non può essere annullata.`);
-    if(!ok) return;
-    const btn=document.getElementById('structureDeleteBtn'); try{ if(btn) btn.disabled=true; }catch(_){}
-    try{
-      const deleted=await __structureDelete__(active.id);
-      __structureCloseCreateModal__(false);
-      try{toast('Struttura eliminata: '+deleted.nome,'green');}catch(_){}
-      setTimeout(()=>{try{location.reload();}catch(_){}},180);
-    }catch(e){ try{ if(btn) btn.disabled=false; }catch(_){} try{toast(e?.message||'Errore eliminazione struttura','orange');}catch(_){} }
-  });
-  bind(document.getElementById('structureCreateSaveBtn'),async()=>{
-    const modal=document.getElementById('structureCreateModal');
-    const input=document.getElementById('structureNameInput');
-    const mode=String(modal?.dataset?.structureMode||'create');
-    try{
-      if(mode==='edit' && __structureHasActive__()){
-        const item=await __structureRename__(__structureActiveId__(),input?.value||'');
-        __structureCloseCreateModal__(true);
-        try{toast('Struttura aggiornata: '+item.nome,'green');}catch(_){}
-      }else{
-        const item=await __structureCreate__(input?.value||'');
-        __structureCloseCreateModal__(true);
-        try{toast('Struttura '+item.nome+' creata. Selezionala nelle Impostazioni.','green');}catch(_){}
-      }
-    }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
-  });
-  ['structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
-  const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
-  const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
-  const homeGrid=document.querySelector('#page-home .home-grid');
-  if(homeGrid && !homeGrid.__ddaeStructureGuard){
-    homeGrid.__ddaeStructureGuard=true;
-    homeGrid.addEventListener('click',(e)=>{
-      if(__structureHasActive__()) return;
-      const btn=e.target?.closest?.('.home-main'); if(!btn) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_){ }
-      try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){ }
-    },true);
-  }
-  __structureUpdateUi__();
-}
-try{ document.addEventListener('DOMContentLoaded',()=>{try{__setupStructureUi__();__structureUpdateUi__();}catch(_){}},{once:true}); }catch(_){ }
-try{ window.addEventListener('pageshow',()=>{try{__structureUpdateUi__();}catch(_){}},{passive:true}); }catch(_){ }
-try{ window.addEventListener('online',()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},{passive:true}); }catch(_){ }
-try{ setTimeout(()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},1400); }catch(_){ }
 
 
 // ===== Year filtering (client-side) =====
@@ -19422,7 +18630,7 @@ function __apiUsesExerciseYear__(action){
   return true;
 }
 
-function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxDataUid__()}:${__ctxYear__()}:`; }
+function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
 
 function __lsClearAll(){
   // cancella TUTTE le cache dell'app (tutti account/anni)
@@ -19579,9 +18787,8 @@ function bindFastTap(el, fn){
     try{ e.stopPropagation(); }catch(_){ }
     try{ e.stopImmediatePropagation(); }catch(_){ }
 
-    // Il popup riaperto tramite Servizi è una copia inattiva: nessun tasto dati esegue azioni.
+    // Il popup riaperto tramite Servizi è una copia inattiva: nessuno dei cinque tasti esegue azioni.
     if (modal && modal.dataset.dataMode === 'inactive') return false;
-    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return false; }
 
     const now = Date.now();
     if (now - lastTap < 450) return false;
@@ -23284,7 +22491,6 @@ const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
 const __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_filter_button_visual_v1';
 const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
-const __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_structure_option_button_visual_v1';
 const __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_tax_page_card_visual_v1';
 const __TAX_PAGE_CARD_TARGET_IDS__ = ['taxTotalRow','taxPayingCard','taxKidsCard','taxReducedCard'];
 
@@ -23854,7 +23060,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -23863,29 +23069,12 @@ function __loadSingleActionButtonVisualMap__(){
   try{
     const raw = localStorage.getItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__);
     const parsed = raw ? JSON.parse(raw) : {};
-    const base = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-    let structure = {};
-    try{
-      const rawStructure = localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
-      const parsedStructure = rawStructure ? JSON.parse(rawStructure) : {};
-      structure = parsedStructure && typeof parsedStructure === 'object' && !Array.isArray(parsedStructure) ? parsedStructure : {};
-    }catch(_){ structure = {}; }
-    return { ...base, ...structure };
+    return parsed && typeof parsed === 'object' ? parsed : {};
   }catch(_){ return {}; }
 }
 
 function __saveSingleActionButtonVisualMap__(map){
-  try{
-    const src = map && typeof map === 'object' && !Array.isArray(map) ? map : {};
-    const base = {};
-    const structure = {};
-    Object.keys(src).forEach((key)=>{
-      if (String(key || '').startsWith('structureSelectOption_')) structure[key] = src[key];
-      else base[key] = src[key];
-    });
-    localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(base));
-    localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(structure));
-  }catch(_){ }
+  try{ localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
 }
 
 function __singleActionButtonSharedKey__(btnOrId){
@@ -23976,10 +23165,6 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsLicenseGeneratorBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     settingsLicenseCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     settingsDataCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
-    structureCreateCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
-    structureCreateNewBtn:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
-    structureDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
-    structureCreateSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     guestMessageSettingsCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
@@ -23987,10 +23172,7 @@ function __defaultSingleActionButtonVisual__(btn){
     calTodayOccupancyBadge:{ bg:'red-5', border:'red-6', fg:'white', opacity:1 },
     calTomorrowCheckoutBadge:{ bg:'sky-5', border:'sky-6', fg:'white', opacity:1 }
   };
-  const structureOptionFallback = String(id || '').startsWith('structureSelectOption_')
-    ? { bg:'orange-4', border:'orange-4', fg:'blue-4', opacity:0.80 }
-    : null;
-  const fallback = structureOptionFallback || defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
+  const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
 }
 
@@ -30446,7 +29628,7 @@ function _guestIdOf(item){
 
 function getConfiguredRoomsCount(fallback = 6){
   try{
-    const n = parseInt(String(getSettingNumber('numero_stanze', fallback)), 10);
+    const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
     if (Number.isFinite(n) && n >= 0) return n;
   }catch(_){ }
   return Math.max(0, parseInt(fallback, 10) || 6);
@@ -30619,12 +29801,12 @@ async function saveRoomsUiConfigToSettings(config, { showToast = false } = {}){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:raw, val:raw, Value:raw };
+    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:raw, val:raw, Value:raw };
     if (catalogClean){
       state.settings.roomCatalogGlobal = catalogClean;
-      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), catalogRaw); }catch(_){ }
-      state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:catalogRaw, val:catalogRaw, Value:catalogRaw };
-      state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
+      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, catalogRaw); }catch(_){ }
+      state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:catalogRaw, val:catalogRaw, Value:catalogRaw };
+      state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
     }
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -31206,7 +30388,6 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
-    __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,
     __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__,
@@ -32416,8 +31597,7 @@ async function saveRoomsCountSetting(nextCount){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    const __roomCountKey = __structureScopedSettingKey__('numero_stanze');
-    state.settings.byKey[__roomCountKey] = { key:__roomCountKey, value:n, val:n, Value:n };
+    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:n, val:n, Value:n };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{
@@ -45837,7 +45017,7 @@ function triggerGuestContactAction(action){
     if (safeAction === 'hotel-location'){
       const raw = __guestPhoneRawForContactAction__();
       const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-      const link = String(localStorage.getItem(__structureLocalStorageKey__('dDAE_hotel_location_link_v1')) || getSettingText('hotel_location_link','') || '').trim();
+      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
       if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
       if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
       const text = __hotelLocationTitleForCurrentGuest__() + ': ' + link;
@@ -47885,7 +47065,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.299';
+  var BUILD_TAG='dDAE_3.290';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48884,18 +48064,29 @@ function syncGuestEmailActionLink(isView){
       try{
         const compareYear = __ensureStatGenCompareYear__();
         let snapshot = state.statGenCompareSnapshot || {};
-        // completa snapshot SOLO dal context della struttura attiva.
+        // completa snapshot con operatori e ospiti eliminati, quando disponibili in IndexedDB/local cache.
         try{
-          const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
-          if (currentUid){
-            if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
-              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:operatori`);
-              snapshot.operatoriRows = Array.isArray(rows) ? rows.slice() : [];
-            }
-            if (!Array.isArray(snapshot.deletedGuests) || !snapshot.deletedGuests.length){
-              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:ospiti_eliminati`);
-              snapshot.deletedGuests = Array.isArray(rows) ? rows.slice() : [];
-            }
+          if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
+            const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
+            const suffixOp = `:${compareYear}:tbl:operatori`;
+            const suffixDel = `:${compareYear}:tbl:ospiti_eliminati`;
+            const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
+            const pickKey = (suffix) => {
+              const arr = keys.filter((k)=>String(k||'').endsWith(suffix));
+              arr.sort((a,b)=>{
+                const au = String(a||'').split(':')[1] || '';
+                const bu = String(b||'').split(':')[1] || '';
+                const ap = currentUid && au === currentUid ? 0 : 1;
+                const bp = currentUid && bu === currentUid ? 0 : 1;
+                if (ap !== bp) return ap-bp;
+                return String(a).localeCompare(String(b));
+              });
+              return arr[0] || '';
+            };
+            const opKey = pickKey(suffixOp);
+            if (opKey){ const rows = await __kvGet__(opKey); if (Array.isArray(rows)) snapshot.operatoriRows = rows.slice(); }
+            const delKey = pickKey(suffixDel);
+            if (delKey){ const rows = await __kvGet__(delKey); if (Array.isArray(rows)) snapshot.deletedGuests = rows.slice(); }
           }
         }catch(_){ }
         state.statGenCompareSnapshot = snapshot;
@@ -49362,24 +48553,34 @@ function syncGuestEmailActionLink(isView){
       const year = compareYear();
       if (!year) return;
       const snap = (state.statGenCompareSnapshot && typeof state.statGenCompareSnapshot === 'object') ? state.statGenCompareSnapshot : {};
-      const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
-      if (!currentUid){ state.statGenCompareSnapshot = snap; return; }
-
+      const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
+      if (!Array.isArray(keys) || !keys.length) { state.statGenCompareSnapshot = snap; return; }
+      const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
+      function pickKey(table){
+        const suffix = ':' + year + ':tbl:' + table;
+        const arr = keys.filter((k)=>String(k || '').endsWith(suffix));
+        arr.sort((a,b)=>{
+          const au = String(a || '').split(':')[1] || '';
+          const bu = String(b || '').split(':')[1] || '';
+          const ap = currentUid && au === currentUid ? 0 : 1;
+          const bp = currentUid && bu === currentUid ? 0 : 1;
+          if (ap !== bp) return ap - bp;
+          return String(a).localeCompare(String(b));
+        });
+        return arr[0] || '';
+      }
       async function fill(prop, table){
         try{
           if (Array.isArray(snap[prop]) && snap[prop].length) return;
-          const rows = (typeof __kvGet__ === 'function') ? await __kvGet__(`ctx:${currentUid}:${year}:tbl:${table}`) : null;
-          let clean = Array.isArray(rows) ? rows.slice() : [];
-          if (table === 'spese') clean = __filterByExerciseYear__(clean, year, ['dataSpesa','data','data_spesa']);
-          else if (table === 'ospiti_eliminati') clean = __filterByExerciseYear__(clean, year, __statGenGuestYearFields__());
-          snap[prop] = clean;
-        }catch(_){ snap[prop] = Array.isArray(snap[prop]) ? snap[prop] : []; }
+          const key = pickKey(table);
+          if (!key || typeof __kvGet__ !== 'function') return;
+          const rows = await __kvGet__(key);
+          if (Array.isArray(rows)) snap[prop] = rows.slice();
+        }catch(_){ }
       }
       await fill('spese', 'spese');
       await fill('operatoriRows', 'operatori');
       await fill('deletedGuests', 'ospiti_eliminati');
-      snap.structureId = (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '';
-      snap.uid = currentUid;
       state.statGenCompareSnapshot = snap;
     }catch(_){ }
   }
@@ -50685,7 +49886,7 @@ try{
 /* dDAE_2.990 — Backup: login da logout + ripristino multi-anno */
 async function __ddaeBackupCollectMultiYear__(tables){
   try{
-    const uid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+    const uid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
     const out = { uid: uid || 'anon', years: {} };
@@ -50728,7 +49929,7 @@ async function __ddaeBackupRestoreTopLevelYears__(payload, tables){
     if (!ds || !Object.keys(ds).length) return false;
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const years = new Set();
@@ -50788,7 +49989,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const activeYear = (typeof __ctxYear__ === 'function') ? String(__ctxYear__() || '').trim() : '';
@@ -51476,20 +50677,20 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       if (typeof __roomCatalogNormalizeList__ === 'function') list = __roomCatalogNormalizeList__(list);
       if (Array.isArray(list) && list.length) return list;
     }catch(_){ }
-    try{ return parseRoomCatalog(localStorage.getItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY)) || '[]'); }catch(_){ return []; }
+    try{ return parseRoomCatalog(localStorage.getItem(ROOM_CATALOG_KEY) || '[]'); }catch(_){ return []; }
   }
 
   function persistLocalCatalog(list){
     try{
       var clean = (typeof __roomCatalogNormalizeList__ === 'function') ? __roomCatalogNormalizeList__(list) : (Array.isArray(list) ? list : []);
       if (!clean.length) return clean;
-      localStorage.setItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY), JSON.stringify(clean));
+      localStorage.setItem(ROOM_CATALOG_KEY, JSON.stringify(clean));
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
       try{
         state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
         var raw = JSON.stringify(clean);
-        state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
-        state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+        state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
+        state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
       }catch(_){ }
       return clean;
     }catch(_){ return Array.isArray(list) ? list : []; }
@@ -52778,7 +51979,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.299',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.290',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53019,8 +52220,7 @@ try{
     const modal = byId('hotelLocationModal');
     const input = byId('hotelLocationLinkInput');
     if (!modal || !input) return;
-    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
-    try{ input.value = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || getSettingText('hotel_location_link','') || ''); }catch(_){ input.value = ''; }
+    try{ input.value = String(localStorage.getItem(STORAGE_KEY) || ''); }catch(_){ input.value = ''; }
     try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
     modal.hidden = false;
     modal.setAttribute('aria-hidden','false');
@@ -53034,8 +52234,7 @@ try{
     if (value){
       try{ new URL(value); }catch(_){ try{ toast('Link posizione non valido', 'orange'); }catch(__){ } return; }
     }
-    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY), value); }catch(_){ }
-    try{ if (typeof api === 'function') api('impostazioni',{method:'POST',body:{hotel_location_link:value},showLoader:false}).catch(()=>{}); }catch(_){ }
+    try{ localStorage.setItem(STORAGE_KEY, value); }catch(_){ }
     closeModal();
     try{ toast(value ? 'Posizione hotel salvata' : 'Posizione hotel rimossa', 'green'); }catch(_){ }
   }
@@ -53982,7 +53181,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.292 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.290 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -54056,13 +53255,13 @@ try{
 
   function storedTemplate(){
     try{
-      const local = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || '').trim();
+      const local = String(localStorage.getItem(STORAGE_KEY) || '').trim();
       if (local) return local;
     }catch(_){ }
     try{
       if (typeof getSettingText === 'function'){
         const value = String(getSettingText(SETTING_KEY, '') || '').trim();
-        if (value){ try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ } return value; }
+        if (value){ try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ } return value; }
       }
     }catch(_){ }
     return '';
@@ -54072,14 +53271,14 @@ try{
     try{
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:false, showLoader:false });
       const value = (typeof getSettingText === 'function') ? String(getSettingText(SETTING_KEY, '') || '').trim() : '';
-      if (value) try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
+      if (value) try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
       return value || storedTemplate();
     }catch(_){ return storedTemplate(); }
   }
 
   function readTranslationPackage(){
     try{
-      const raw = localStorage.getItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY));
+      const raw = localStorage.getItem(TRANSLATIONS_STORAGE_KEY);
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object' || Number(data.schema||0) !== TRANSLATION_SCHEMA) return null;
@@ -54089,11 +53288,11 @@ try{
   }
 
   function writeTranslationPackage(pkg){
-    try{ localStorage.setItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY), JSON.stringify(pkg || {})); }catch(_){ }
+    try{ localStorage.setItem(TRANSLATIONS_STORAGE_KEY, JSON.stringify(pkg || {})); }catch(_){ }
   }
 
   function removeTranslationPackage(){
-    try{ localStorage.removeItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY)); }catch(_){ }
+    try{ localStorage.removeItem(TRANSLATIONS_STORAGE_KEY); }catch(_){ }
   }
 
   function createTranslationPackage(source, previous){
@@ -54403,7 +53602,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.292: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.290: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -54445,7 +53644,7 @@ try{
   }
 
   async function saveMasterTemplate(value){
-    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
+    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
     try{
       if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -54640,9 +53839,9 @@ try{
 })();
 
 
-/* dDAE_3.292 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.292 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.292 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.290 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.290 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.290 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -54669,14 +53868,13 @@ try{
     return { id:String(r.id||safeId()), title:title||'Messaggio', text, translations:tr, updatedAt:String(r.updatedAt||'') };
   }
   function validCatalog(value){ return Array.isArray(value) ? value.map(normalizeRecord).filter(r=>r.text||r.title) : []; }
-  function localCatalogExists(){ try{ return localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY))!==null || localStorage.getItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY))==='1'; }catch(_){ return false; } }
+  function localCatalogExists(){ try{ return localStorage.getItem(CATALOG_STORAGE_KEY)!==null || localStorage.getItem(CATALOG_INITIALIZED_KEY)==='1'; }catch(_){ return false; } }
   function readLocal(){
-    try{ const raw=localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY)); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
+    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
     return [];
   }
   function migrateLegacy(){
     try{
-      if (typeof __structureAllowsLegacyFallback__ === 'function' && !__structureAllowsLegacyFallback__()) return [];
       const text=String(localStorage.getItem(LEGACY_TEMPLATE_KEY)||'').trim();
       if(!text) return [];
       let translations={it:text};
@@ -54689,7 +53887,7 @@ try{
   }
   function writeLocal(rows){
     catalog=validCatalog(rows);
-    try{ localStorage.setItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY),JSON.stringify(catalog)); localStorage.setItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY),'1'); }catch(_){ }
+    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); localStorage.setItem(CATALOG_INITIALIZED_KEY,'1'); }catch(_){ }
     return catalog;
   }
   async function readRemote(){
@@ -55086,7 +54284,7 @@ try{
   }
 
   function init(){
-    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,()=>{ if(!__structureHasActive__()){ try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){} return; } openSettings(); },'openSettingsBound');
+    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,openSettings,'openSettingsBound');
     safeTap($('guestMessagesSettingsCloseBtn'),closeSettings,'closeSettingsBound');
     safeTap($('guestMessageSettingsAddBtn'),()=>openEditor(''),'addSettingsBound'); bindVisual($('guestMessageSettingsAddBtn'));
     safeTap($('guestMessageEditorCancelBtn'),showCatalogView,'editorCancelBound'); bindVisual($('guestMessageEditorCancelBtn'));
