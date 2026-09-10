@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.299";
+const BUILD_VERSION = "3.300";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5736,7 +5736,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.299 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.300 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18894,7 +18894,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.299 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.300 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19102,7 +19102,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.299 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.300 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -25786,8 +25786,8 @@ function __statChannelBucketLabelFromGuest__(guest){
   return 'PMS';
 }
 
-function __statChannelSeriesBundle__(){
-  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+function __statChannelSeriesBundle__(sourceGuests){
+  const guests = Array.isArray(sourceGuests) ? sourceGuests : (Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
   const catalog = getChannelCatalogFromSettings();
   const normalizeChannelName = (value) => {
     try{
@@ -25882,8 +25882,8 @@ function __statChannelSeriesBundle__(){
   return rows;
 }
 
-function __statChannelMonthlySeries__(){
-  return __statChannelSeriesBundle__();
+function __statChannelMonthlySeries__(sourceGuests){
+  return __statChannelSeriesBundle__(sourceGuests);
 }
 
 
@@ -26090,17 +26090,47 @@ function renderStatChannel(){
   if (__statScoreModeActive__()) return renderStatPunteggio();
   try{ state.statChannelViewMode = 'pms'; }catch(_){ }
   try{ const title = document.querySelector('#page-statchannel .stats-title'); if (title) title.textContent = 'PMS'; }catch(_){ }
+
   const rows = __statChannelMonthlySeries__();
   const pmsTotal = rows.reduce((sum, row) => sum + (Number(row?.value || 0) || 0), 0);
+  const compareEnabled = !!__ensureStatGenCompareEnabled__();
+  const compareYear = compareEnabled ? __ensureStatGenCompareYear__() : '';
+  let compareRows = [];
+  let compareReady = false;
+
+  if (compareEnabled){
+    try{
+      const snapshot = state.statGenCompareSnapshot;
+      const sameYear = String(state.statGenCompareSnapshotYear || '') === String(compareYear);
+      const activeStructureId = (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '';
+      const snapshotStructureId = String(snapshot?.structureId || '');
+      const sameStructure = !snapshotStructureId || !activeStructureId || snapshotStructureId === activeStructureId;
+      if (sameYear && snapshot && sameStructure && Array.isArray(snapshot.guests)){
+        compareRows = __statChannelMonthlySeries__(snapshot.guests);
+        compareReady = true;
+      }else if (!state.statGenCompareLoading){
+        try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+
+  const compareTotal = compareRows.reduce((sum, row) => sum + (Number(row?.value || 0) || 0), 0);
+  const compareByKey = new Map(compareRows.map((row) => [String(row?.key || ''), row]));
   const stack = document.getElementById('statPmsRows');
   if (stack){
     stack.innerHTML = rows.map((row) => {
       const shareLabel = __statChannelShareFormat__(row.value, pmsTotal);
+      const compareRow = compareByKey.get(String(row.key || '')) || null;
+      const compareShareLabel = __statChannelShareFormat__(compareRow?.value || 0, compareTotal);
+      const compareValueLabel = euro(compareRow?.value || 0);
+      const compareName = compareEnabled ? `<span class="stat-channel-compare-line stat-channel-compare-year">${escapeHtml(String(compareYear))}</span>` : '';
+      const compareShare = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareShareLabel : '0%')}</span>` : '';
+      const compareValue = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareValueLabel : euro(0))}</span>` : '';
       return `
-      <button class="stat-row" data-stat-scope="pms" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
-        <span class="stat-name">${escapeHtml(row.label || 'PMS')}</span>
-        <span class="stat-channel-share" aria-label="Incidenza ${escapeHtml(shareLabel)}">${escapeHtml(shareLabel)}</span>
-        <span class="stat-val">${euro(row.value || 0)}</span>
+      <button class="stat-row${compareEnabled ? ' has-year-compare' : ''}" data-stat-scope="pms" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
+        <span class="stat-name stat-channel-card-col"><span class="stat-channel-current-line">${escapeHtml(row.label || 'PMS')}</span>${compareName}</span>
+        <span class="stat-channel-share stat-channel-card-col" aria-label="Incidenza ${escapeHtml(shareLabel)}"><span class="stat-channel-current-line">${escapeHtml(shareLabel)}</span>${compareShare}</span>
+        <span class="stat-val stat-channel-card-col"><span class="stat-channel-current-line">${euro(row.value || 0)}</span>${compareValue}</span>
       </button>
     `;
     }).join('');
@@ -47885,7 +47915,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.299';
+  var BUILD_TAG='dDAE_3.300';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48827,6 +48857,7 @@ function syncGuestEmailActionLink(isView){
     __updateStatGenCompareYearButtonUI__();
     if (next){ try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ } }
     redrawAllStatCompareCharts();
+    try{ if (state.page === 'statchannel' && !(typeof __statScoreModeActive__ === 'function' && __statScoreModeActive__())) renderStatChannel(); }catch(_){ }
   };
   try{ __toggleStatGenCompareEnabled__ = window.__toggleStatGenCompareEnabled__; }catch(_){ }
 
@@ -48900,6 +48931,7 @@ function syncGuestEmailActionLink(isView){
         }catch(_){ }
         state.statGenCompareSnapshot = snapshot;
         redrawAllStatCompareCharts();
+        try{ if (state.page === 'statchannel' && !(typeof __statScoreModeActive__ === 'function' && __statScoreModeActive__())) renderStatChannel(); }catch(_){ }
       }catch(_){ }
       return result;
     };
@@ -52778,7 +52810,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.299',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.300',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

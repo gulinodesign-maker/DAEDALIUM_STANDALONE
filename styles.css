@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.299 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.300 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.299 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.300 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.299 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.300 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,11 +35567,11 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.299 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.300 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
 
 
-/* dDAE_3.299 — Home context pill: niente popup Design sul tap breve */
+/* dDAE_3.300 — Home context pill: niente popup Design sul tap breve */
 #page-home #homeYearPill{
   touch-action:manipulation !important;
   -webkit-user-select:none !important;
@@ -35580,7 +35580,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.299 — Modifica struttura: azioni 3x1 iconografiche */
+/* dDAE_3.300 — Modifica struttura: azioni 3x1 iconografiche */
 .structure-modal-actions-grid .structure-icon-action-btn{
   display:flex !important;
   align-items:center !important;
@@ -35605,4 +35605,54 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-modal-actions-grid .structure-icon-action-btn .structure-action-ico *{
   fill:none !important;
   stroke:currentColor !important;
+}
+
+
+/* dDAE_3.300 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
+#page-statchannel .stat-row[data-stat-scope="pms"].has-year-compare{
+  min-height:96px !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-card-col{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  row-gap:5px !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-name.stat-channel-card-col{
+  align-items:flex-start !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-val.stat-channel-card-col{
+  align-items:flex-end !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-share.stat-channel-card-col{
+  align-items:center !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-current-line{
+  display:block !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{
+  display:block !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  font-weight:750 !important;
+  letter-spacing:.05px !important;
+  white-space:nowrap !important;
+  opacity:.68 !important;
+  color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statbg, #2B7CB4))) !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-year{
+  text-transform:none !important;
+}
+#page-statchannel .stat-row[data-stat-scope="pms"].has-year-compare .stat-channel-share{
+  top:50% !important;
+}
+body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{
+  color:var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+  -webkit-text-fill-color:var(--cardtext, var(--mcol, var(--statbg, #6fb7d6))) !important;
+}
+@media (max-width:390px){
+  #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{ font-size:11px !important; }
 }
