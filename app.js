@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.300";
+const BUILD_VERSION = "3.301";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5517,20 +5517,69 @@ function __applyStatGenCompareYearButtonVisual__(){
 function __openStatGenCompareYearButtonColorPicker__(){
   const enabled = __ensureStatGenCompareEnabled__();
   const visuals = __statGenCompareBtnVisualRead__();
-  const stateKey = enabled ? 'on' : 'off';
-  const initial = __tagColorPairFromValue__(visuals[stateKey], visuals[stateKey]?.bg || (enabled ? '#2b7cb4' : '#d6dee8'));
-  __tagColorPopupOpen__('statgen-compare-toggle-btn', initial, (payload) => {
+  const originals = {
+    off: __tagColorPairFromValue__(visuals.off, visuals.off?.bg || '#d6dee8'),
+    on: __tagColorPairFromValue__(visuals.on, visuals.on?.bg || '#2b7cb4')
+  };
+  const drafts = { off:{...originals.off}, on:{...originals.on} };
+  const activeState = enabled ? 'on' : 'off';
+
+  const payloadToVisual = (payload, fallback) => {
+    const base = __tagColorPairFromValue__(fallback || {}, fallback?.bg || '#d6dee8');
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const bg = __parseOperatoreColorSpec__(colors.bg || payload?.spec || base.bg || '#d6dee8').spec;
+    const border = __parseOperatoreColorSpec__(colors.border || base.border || bg).spec;
+    const fg = String(colors.fg || '').trim() ? __parseOperatoreColorSpec__(colors.fg).spec : (base.fg || '');
+    return {
+      bg,
+      border: border || bg,
+      fg: fg || '',
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? base.opacity ?? 0.80)
+    };
+  };
+
+  const applyState = (stateName, payload) => {
+    const key = String(stateName || 'off') === 'on' ? 'on' : 'off';
+    const next = payloadToVisual(payload, drafts[key] || originals[key]);
+    drafts[key] = next;
     const current = __statGenCompareBtnVisualRead__();
-    const pair = __tagColorPairFromValue__(current[stateKey] || initial, initial.bg || '#2b7cb4');
-    const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    pair.bg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || initial.bg || '#2b7cb4').spec;
-    pair.border = __parseOperatoreColorSpec__(payloadColors.border || pair.border || pair.bg || initial.bg || '#2b7cb4').spec;
-    pair.fg = String(payloadColors.fg || '').trim() ? __parseOperatoreColorSpec__(payloadColors.fg).spec : '';
-    pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? initial.opacity ?? 0.80);
-    current[stateKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: pair.opacity };
+    current[key] = next;
     __statGenCompareBtnVisualWrite__(current);
     __applyStatGenCompareYearButtonVisual__();
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial.opacity ?? 0.80), defaultMode:'bg', fallbackBg:initial.bg || (enabled ? '#2b7cb4' : '#d6dee8') });
+  };
+
+  __tagColorPopupOpen__('statgen-compare-toggle-btn', drafts[activeState], null, {
+    supportsBg:true,
+    supportsBorder:true,
+    supportsFg:true,
+    supportsOpacity:true,
+    opacity:__designBgOpacityNormalize__(drafts[activeState].opacity ?? 0.80),
+    defaultMode:'bg',
+    fallbackBg:drafts[activeState].bg || (enabled ? '#2b7cb4' : '#d6dee8'),
+    onPreview:(payload) => {
+      const editor = (typeof __tagColorPopupState__ !== 'undefined') ? __tagColorPopupState__.stateEditor : null;
+      const stateName = editor && editor.activeState === 'on' ? 'on' : 'off';
+      applyState(stateName, payload);
+    },
+    stateEditor:{
+      activeState,
+      drafts,
+      originals,
+      labels:{ off:'OFF', on:'ON' },
+      fallbackBg:drafts[activeState].bg || (enabled ? '#2b7cb4' : '#d6dee8'),
+      onStatePreview:(stateName, payload) => applyState(stateName, payload),
+      onConfirm: async(all) => {
+        const off = payloadToVisual(all?.off || drafts.off, drafts.off || originals.off);
+        const on = payloadToVisual(all?.on || drafts.on, drafts.on || originals.on);
+        __statGenCompareBtnVisualWrite__({ off, on });
+        __applyStatGenCompareYearButtonVisual__();
+      },
+      onRevert:() => {
+        __statGenCompareBtnVisualWrite__({ off:originals.off, on:originals.on });
+        __applyStatGenCompareYearButtonVisual__();
+      }
+    }
+  });
 }
 
 function __toggleStatGenCompareEnabled__(){
@@ -5736,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.300 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.301 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18894,7 +18943,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.300 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.301 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19102,7 +19151,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.300 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.301 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -47915,7 +47964,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.300';
+  var BUILD_TAG='dDAE_3.301';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52810,7 +52859,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.300',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.301',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
