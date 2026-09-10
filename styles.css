@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.298 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.299 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.298 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.299 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.298 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.299 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,14 +35567,42 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.298 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.299 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
 
 
-/* dDAE_3.298 — Home context pill: niente popup Design sul tap breve */
+/* dDAE_3.299 — Home context pill: niente popup Design sul tap breve */
 #page-home #homeYearPill{
   touch-action:manipulation !important;
   -webkit-user-select:none !important;
   user-select:none !important;
   -webkit-touch-callout:none !important;
+}
+
+
+/* dDAE_3.299 — Modifica struttura: azioni 3x1 iconografiche */
+.structure-modal-actions-grid .structure-icon-action-btn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  min-height:68px !important;
+  height:68px !important;
+  line-height:1 !important;
+}
+.structure-modal-actions-grid .structure-icon-action-btn .structure-action-ico{
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  flex:0 0 34px !important;
+  display:block !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+.structure-modal-actions-grid .structure-icon-action-btn .structure-action-ico *{
+  fill:none !important;
+  stroke:currentColor !important;
 }
