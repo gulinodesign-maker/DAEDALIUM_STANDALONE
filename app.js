@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.301";
+const BUILD_VERSION = "3.302";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.301 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.302 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -17353,12 +17353,40 @@ const cfg = document.getElementById("settingsConfigBtn");
   const statMensiliCompareToggleBtn = document.getElementById('statMensiliCompareToggleBtn');
   if (statMensiliCompareToggleBtn && !statMensiliCompareToggleBtn.__boundAdvanced){
     statMensiliCompareToggleBtn.__boundAdvanced = true;
+    let longPressTimer = null;
+    let longPressFired = false;
+    let suppressClickUntil = 0;
+    const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
+    const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } try{ e && e.stopImmediatePropagation && e.stopImmediatePropagation(); }catch(_){ } return false; };
+    const startLong = (e)=>{
+      try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+      longPressFired = false;
+      clearLong();
+      longPressTimer = setTimeout(()=>{
+        longPressFired = true;
+        suppressClickUntil = Date.now() + 900;
+        try{ statMensiliCompareToggleBtn.classList.add('is-pressing'); }catch(_){ }
+        try{ __openStatGenCompareYearButtonColorPicker__(); }catch(_){ }
+      }, 520);
+    };
+    const stopLong = (e)=>{
+      clearLong();
+      if (longPressFired){
+        block(e);
+        setTimeout(()=>{ longPressFired = false; try{ statMensiliCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ } }, 0);
+        return;
+      }
+      try{ statMensiliCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ }
+    };
     statMensiliCompareToggleBtn.addEventListener('click', (e) => {
+      if (longPressFired || Date.now() < suppressClickUntil) return block(e);
       try{ e && e.preventDefault && e.preventDefault(); }catch(_){ }
       try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ }
       __toggleStatGenCompareEnabled__();
-    });
-    try{ statMensiliCompareToggleBtn.addEventListener('contextmenu', (e)=>{ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return false; }, true); }catch(_){ }
+    }, true);
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statMensiliCompareToggleBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statMensiliCompareToggleBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
+    try{ statMensiliCompareToggleBtn.addEventListener('contextmenu', (e)=>block(e), true); }catch(_){ }
   }
   const statMensiliCompareYearBtn = document.getElementById('statMensiliCompareYearBtn');
   if (statMensiliCompareYearBtn && !statMensiliCompareYearBtn.__boundOpen){
@@ -18943,7 +18971,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.301 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.302 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19151,7 +19179,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.301 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.302 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -47964,7 +47992,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.301';
+  var BUILD_TAG='dDAE_3.302';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52859,7 +52887,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.301',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.302',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -53758,10 +53786,31 @@ try{
     const toggle=document.getElementById(COMPARE_TOGGLE_ID);
     if (toggle && !toggle.__boundNationalityCompare){
       toggle.__boundNationalityCompare=true;
-      bindFastTap(toggle,()=>{
+      let timer=null, fired=false, suppressUntil=0;
+      const clear=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+      const block=(e)=>{ try{e?.preventDefault?.();}catch(_){} try{e?.stopPropagation?.();}catch(_){} try{e?.stopImmediatePropagation?.();}catch(_){} return false; };
+      const start=(e)=>{
+        try{ if(e?.type==='pointerdown' && e?.pointerType==='mouse' && e?.button!==0) return; }catch(_){}
+        fired=false; clear();
+        timer=setTimeout(()=>{
+          fired=true; suppressUntil=Date.now()+900;
+          try{toggle.classList.add('is-pressing');}catch(_){}
+          try{ if(typeof __openStatGenCompareYearButtonColorPicker__==='function') __openStatGenCompareYearButtonColorPicker__(); }catch(_){}
+        },520);
+      };
+      const stop=(e)=>{
+        clear();
+        if(fired){ block(e); setTimeout(()=>{fired=false; try{toggle.classList.remove('is-pressing');}catch(_){}},0); return; }
+        try{toggle.classList.remove('is-pressing');}catch(_){}
+      };
+      toggle.addEventListener('click',(e)=>{
+        if(fired || Date.now()<suppressUntil) return block(e);
         try{ if(typeof __toggleStatGenCompareEnabled__==='function') __toggleStatGenCompareEnabled__(); }catch(_){ }
         setTimeout(()=>{ if(String(state?.page||'')===PAGE_KEY) renderStatNationality(); },50);
-      });
+      },true);
+      ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{toggle.addEventListener(evt,start,{passive:true});}catch(_){} });
+      ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{toggle.addEventListener(evt,stop,{passive:false});}catch(_){} });
+      try{toggle.addEventListener('contextmenu',(e)=>block(e),true);}catch(_){}
     }
     const year=document.getElementById(COMPARE_YEAR_ID);
     if (year && !year.__boundNationalityYear){ year.__boundNationalityYear=true; bindFastTap(year,()=>{ try{ if(typeof __openStatGenCompareYearPicker__==='function') __openStatGenCompareYearPicker__(); }catch(_){ } }); }
@@ -55870,3 +55919,225 @@ async function renderStatAnalisi(){
     try{ console.error('Analisi diagnostica',err); }catch(_){ }
   }
 }
+
+
+/* dDAE_3.302 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+(function(){
+  'use strict';
+  const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
+  let applyTimer = 0;
+
+  function compareEnabled(){ try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; } }
+  function compareYear(){ try{ return String(__ensureStatGenCompareYear__() || ''); }catch(_){ return ''; } }
+  function activeStructureId(){ try{ return (typeof __structureActiveId__==='function') ? String(__structureActiveId__() || '') : ''; }catch(_){ return ''; } }
+  function snapshotStrict(){
+    try{
+      const yy=compareYear();
+      const snap=state?.statGenCompareSnapshot;
+      if(!yy || !snap || String(state?.statGenCompareSnapshotYear||'')!==yy) return null;
+      const active=activeStructureId();
+      const sid=String(snap?.structureId||'');
+      if(active && sid!==active) return null;
+      return snap;
+    }catch(_){ return null; }
+  }
+  function ensureSnapshot(){
+    if(!compareEnabled()) return;
+    try{
+      const snap=snapshotStrict();
+      if(!snap && !state?.statGenCompareLoading && typeof __loadStatGenCompareGuests__==='function') __loadStatGenCompareGuests__({force:true});
+    }catch(_){ }
+  }
+  function withSnapshot(snap, fn){
+    if(!snap || typeof fn!=='function') return null;
+    const keys=['exerciseYear','year','statsGuests','guests','spese','speseAll','report','reportAll','servizi','stanzeRows','deletedGuests','statGraficiOperatoriRows'];
+    const backup={}; keys.forEach((k)=>{ backup[k]=state?.[k]; });
+    const yy=compareYear();
+    try{
+      state.exerciseYear=yy;
+      state.year=yy;
+      state.statsGuests=Array.isArray(snap.guests)?snap.guests.slice():[];
+      state.guests=state.statsGuests;
+      state.spese=Array.isArray(snap.spese)?snap.spese.slice():[];
+      state.speseAll=state.spese;
+      state.report=snap.report ? JSON.parse(JSON.stringify(snap.report)) : null;
+      state.reportAll=state.report;
+      state.servizi=Array.isArray(snap.servizi)?snap.servizi.slice():[];
+      state.stanzeRows=Array.isArray(snap.stanzeRows)?snap.stanzeRows.slice():[];
+      state.deletedGuests=Array.isArray(snap.deletedGuests)?snap.deletedGuests.slice():[];
+      state.statGraficiOperatoriRows=Array.isArray(snap.operatoriRows)?snap.operatoriRows.slice():[];
+      return fn();
+    }catch(_){ return null; }
+    finally{ keys.forEach((k)=>{ try{ state[k]=backup[k]; }catch(_){} }); }
+  }
+  function fmtEuro(v){ try{return euro(Number(v||0));}catch(_){return '€0,00';} }
+  function fmtPct(v){ const n=Number(v||0); try{return n.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:1})+'%';}catch(_){return String(Math.round(n*10)/10).replace('.',',')+'%';} }
+  function fmtScore(v){ try{return (typeof __statScoreFormat__==='function')?__statScoreFormat__(v):String(Math.round((Number(v||0))*10)/10).replace('.',',');}catch(_){return '0';} }
+  function fmtHours(v){ try{return (Number(v||0)>0?((typeof __fmtHours_==='function'?__fmtHours_(v):String(v))||'0'):'0')+'h';}catch(_){return '0h';} }
+
+  function mapForPage(page,snap){
+    try{
+      if(page==='statgen'){
+        const s=withSnapshot(snap,()=>computeStatGen())||{};
+        return {'fatturato-totale':fmtEuro(s.fatturatoTotale),'spese-totali':fmtEuro(s.speseTotali),'senza-ricevuta':fmtEuro(s.senzaRicevuta),'con-ricevuta':fmtEuro(s.conRicevuta),'iva-da-versare':fmtEuro(s.ivaDaVersare),'guadagno-totale':fmtEuro(s.guadagnoTotale),'giacenza-in-cassa':fmtEuro(s.giacenzaCassa)};
+      }
+      if(page==='statamministratore'){
+        const s=withSnapshot(snap,()=>computeStatAmministratoreFromGuests())||{};
+        return {'fatturato-ricevute':fmtEuro(s.fatturatoRicevute),'fatturato-senza-ricevuta':fmtEuro(s.fatturatoSenzaRicevuta),'irpef':fmtEuro(s.irpef),'inps':fmtEuro(s.inps),'iva-da-versare':fmtEuro(s.ivaDaVersare),'totale-tasse':fmtEuro(s.totaleTasse),'utile-netto-anno':fmtEuro(s.utileSpendibileNettoAnno),'netto-mensile':fmtEuro(s.nettoMensile)};
+      }
+      if(page==='statspese'){
+        const s=withSnapshot(snap,()=>computeStatSpese())||{};
+        return {'totale-spese':fmtEuro(s.totale),'contanti':fmtEuro(s.contanti),'tassa-soggiorno':fmtEuro(s.tassaSoggiorno),'iva-22':fmtEuro(s.iva22),'iva-10':fmtEuro(s.iva10),'iva-4':fmtEuro(s.iva4)};
+      }
+      if(page==='statprenotazioni'){
+        const s=withSnapshot(snap,()=>computeStatGen())||{};
+        return {'senza-ricevuta':fmtEuro(s.senzaRicevuta),'con-ricevuta':fmtEuro(s.conRicevuta)};
+      }
+      if(page==='statoccupazione'){
+        const rows=(typeof __statOccupazioneRoomSeriesForData__==='function')?__statOccupazioneRoomSeriesForData__(Array.isArray(snap.guests)?snap.guests:[],Array.isArray(snap.stanzeRows)?snap.stanzeRows:[],compareYear()):[];
+        const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{out[String(r?.key||'')]=fmtPct(r?.value||0);}); return out;
+      }
+      if(page==='statpulizie'){
+        const rows=withSnapshot(snap,()=>__statPulizieMonthlySeriesByOperator__(Array.isArray(snap.operatoriRows)?snap.operatoriRows:[]))||[];
+        const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{const total=(Array.isArray(r?.values)?r.values:[]).reduce((a,b)=>a+(Number(b||0)||0),0);out[String(r?.key||'')]=fmtHours(total);}); return out;
+      }
+      if(page==='statcancellazioni'){
+        const deleted=Array.isArray(snap.deletedGuests)?snap.deletedGuests:[];
+        const active=Array.isArray(snap.guests)?snap.guests:[];
+        const canc=deleted.filter((r)=>String(r?.delete_reason||'').toLowerCase()==='cancellazione'||String(r?.delete_reason||'').trim()==='');
+        const total=active.length+canc.length; const pct=total>0?(canc.length/total*100):0;
+        return {'percentuale':fmtPct(pct),'totale':String(total),'cancellate':String(canc.length)};
+      }
+      if(page==='statchannel'){
+        try{
+          if(typeof __statScoreModeActive__==='function' && __statScoreModeActive__()){
+            const rows=(typeof __statScoreSeriesForGuests__==='function')?__statScoreSeriesForGuests__(Array.isArray(snap.guests)?snap.guests:[]):[];
+            const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{out[String(r?.key||'')]=fmtScore(r?.value||0);}); return out;
+          }
+        }catch(_){ }
+        return {};
+      }
+      if(page==='statmensili'){
+        const s=withSnapshot(snap,()=>__computeStatMensiliFromSnapshot__(snap))||{};
+        const out={}; const vals=Array.isArray(s.byMonth)?s.byMonth:[];
+        vals.forEach((v,i)=>{out['month-'+(i+1)]=fmtEuro(v);});
+        out.generale=fmtEuro(vals.reduce((a,b)=>a+(Number(b||0)||0),0));
+        return out;
+      }
+      if(page==='statnazionalita'){
+        const rows=Array.isArray(snap.guests)?snap.guests:[]; const counts=new Map();
+        const norm=(v)=>{try{return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase();}catch(_){return String(v||'').trim().toLowerCase();}};
+        rows.forEach((g)=>{ let opt=null; try{opt=(typeof __readGuestNationalityFromRecord__==='function')?__readGuestNationalityFromRecord__(g||{}):null;}catch(_){} const code=String(opt?.code||g?.nazionalita_code||g?.country_code||'').trim().toUpperCase(); const label=String(opt?.name||g?.nazionalita_nome||g?.country_name||'Non selezionata').trim()||'Non selezionata'; const key=code?'nat:'+code:'nat-name:'+(norm(label)||'non-selezionata'); counts.set(key,(counts.get(key)||0)+1); });
+        const total=rows.length; const out={}; counts.forEach((n,k)=>{out[k]=fmtPct(total>0?(n/total*100):0);}); return out;
+      }
+    }catch(_){ }
+    return {};
+  }
+
+  function clearCompareMarks(root){
+    try{ root?.querySelectorAll?.('.stats-card-compare-line,.stats-month-current-line').forEach((n)=>n.remove()); }catch(_){ }
+    try{ root?.querySelectorAll?.('.has-year-compare').forEach((n)=>{ if(n?.dataset?.statScope!=='pms') n.classList.remove('has-year-compare'); }); }catch(_){ }
+  }
+  function decorateValueNode(node, text, yy){
+    if(!node) return;
+    try{ node.querySelectorAll(':scope > .stats-card-compare-line').forEach((n)=>n.remove()); }catch(_){ }
+    const small=document.createElement('span'); small.className='stats-card-compare-line'; small.textContent=String(yy)+' · '+String(text ?? ''); node.appendChild(small);
+    try{ node.closest('.stat-row,.kpi-card')?.classList.add('has-year-compare'); }catch(_){ }
+  }
+  function decorateStandard(page,map,yy){
+    const root=document.getElementById('page-'+page); if(!root) return;
+    if(page==='statchannel'){
+      // PMS ha già il layout dedicato; Punteggio usa il decoratore standard.
+      const scoreMode=(()=>{try{return typeof __statScoreModeActive__==='function'&&__statScoreModeActive__();}catch(_){return false;}})();
+      if(!scoreMode) return;
+    }
+    root.querySelectorAll('.stat-row[data-stat-card-key]').forEach((card)=>{
+      if(card.dataset.statScope==='pms') return;
+      const key=String(card.dataset.statCardKey||''); if(!Object.prototype.hasOwnProperty.call(map,key)) return;
+      decorateValueNode(card.querySelector('.stat-val'),map[key],yy);
+    });
+    if(page==='statcancellazioni'){
+      root.querySelectorAll('.kpi-card').forEach((card,idx)=>{ const key=['percentuale','totale','cancellate'][idx]; if(key&&Object.prototype.hasOwnProperty.call(map,key)) decorateValueNode(card.querySelector('.kpi-value'),map[key],yy); });
+    }
+  }
+  function decorateMensili(map,yy){
+    const root=document.getElementById('page-statmensili'); if(!root) return;
+    root.querySelectorAll('.month-row[data-stat-card-key]').forEach((card)=>{
+      const key=String(card.dataset.statCardKey||''); if(!Object.prototype.hasOwnProperty.call(map,key)) return;
+      if(card.classList.contains('is-expanded')){
+        const val=card.querySelector('.month-head .month-val'); if(val) decorateValueNode(val,map[key],yy);
+        return;
+      }
+      const label=card.querySelector('.month-button-label'); if(!label) return;
+      label.querySelectorAll('.stats-month-current-line,.stats-card-compare-line').forEach((n)=>n.remove());
+      let current='';
+      try{
+        if(key==='generale') current=fmtEuro((Array.isArray(state?.statMensili?.byMonth)?state.statMensili.byMonth:[]).reduce((a,b)=>a+(Number(b||0)||0),0));
+        else { const m=key.match(/^month-(\d{1,2})$/); if(m) current=fmtEuro(Number(state?.statMensili?.byMonth?.[Number(m[1])-1]||0)); }
+      }catch(_){ }
+      const cur=document.createElement('span'); cur.className='stats-month-current-line'; cur.textContent=current; label.appendChild(cur);
+      const cmp=document.createElement('span'); cmp.className='stats-card-compare-line'; cmp.textContent=String(yy)+' · '+String(map[key]); label.appendChild(cmp);
+      card.classList.add('has-year-compare');
+    });
+  }
+
+  function apply(){
+    clearTimeout(applyTimer); applyTimer=0;
+    const page=String(state?.page||'').trim().toLowerCase();
+    if(!COMPARE_PAGES.has(page)) return;
+    const root=document.getElementById('page-'+page); if(!root) return;
+    if(!compareEnabled()) { clearCompareMarks(root); return; }
+    const snap=snapshotStrict();
+    if(!snap){ clearCompareMarks(root); ensureSnapshot(); return; }
+    const yy=compareYear(); const map=mapForPage(page,snap);
+    if(page==='statmensili') decorateMensili(map,yy); else decorateStandard(page,map,yy);
+  }
+  function schedule(delay){
+    try{ clearTimeout(applyTimer); }catch(_){ }
+    applyTimer=setTimeout(apply,Math.max(0,Number(delay||0)));
+  }
+  window.__applyAllStatsCompareCardLines__=apply;
+  window.__scheduleAllStatsCompareCardLines__=schedule;
+
+  function wrapGlobal(name,afterDelays){
+    try{
+      const old=window[name]; if(typeof old!=='function'||old.__ddae3302CompareCardsWrapped) return;
+      const wrapped=function(){ const result=old.apply(this,arguments); (afterDelays||[0,120]).forEach((d)=>setTimeout(apply,d)); return result; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window[name]=wrapped; try{ eval(name+' = wrapped'); }catch(_){ }
+    }catch(_){ }
+  }
+  ['renderStatGen','renderStatMensili','renderStatOccupazione','renderStatSpese','renderStatRicevute','renderStatChannel','renderStatPunteggio','renderStatPulizie','renderStatCancellazioni','renderStatAmministratore','renderStatNationality'].forEach((name)=>wrapGlobal(name,[0,80,260]));
+
+  try{
+    const oldToggle=window.__toggleStatGenCompareEnabled__ || __toggleStatGenCompareEnabled__;
+    if(typeof oldToggle==='function'&&!oldToggle.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldToggle.apply(this,arguments); [0,90,360].forEach((d)=>setTimeout(apply,d)); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldLoad=window.__loadStatGenCompareGuests__ || __loadStatGenCompareGuests__;
+    if(typeof oldLoad==='function'&&!oldLoad.__ddae3302CompareCardsWrapped){
+      const wrapped=async function(){ const r=await oldLoad.apply(this,arguments); [0,80,260].forEach((d)=>setTimeout(apply,d)); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__loadStatGenCompareGuests__=wrapped; try{__loadStatGenCompareGuests__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldSave=window.__saveStatGenCompareYearModal__ || __saveStatGenCompareYearModal__;
+    if(typeof oldSave==='function'&&!oldSave.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldSave.apply(this,arguments); [80,360,900].forEach((d)=>setTimeout(apply,d)); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__saveStatGenCompareYearModal__=wrapped; try{__saveStatGenCompareYearModal__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldShow=window.showPage || showPage;
+    if(typeof oldShow==='function'&&!oldShow.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldShow.apply(this,arguments); [90,420,1100].forEach((d)=>setTimeout(apply,d)); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.showPage=wrapped; try{showPage=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+
+  const start=()=>{ [0,300,1000].forEach((d)=>setTimeout(apply,d)); };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+  try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
+})();

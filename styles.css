@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.301 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.302 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.301 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.302 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.301 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.302 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,11 +35567,11 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.301 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.302 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
 
 
-/* dDAE_3.301 — Home context pill: niente popup Design sul tap breve */
+/* dDAE_3.302 — Home context pill: niente popup Design sul tap breve */
 #page-home #homeYearPill{
   touch-action:manipulation !important;
   -webkit-user-select:none !important;
@@ -35580,7 +35580,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.301 — Modifica struttura: azioni 3x1 iconografiche */
+/* dDAE_3.302 — Modifica struttura: azioni 3x1 iconografiche */
 .structure-modal-actions-grid .structure-icon-action-btn{
   display:flex !important;
   align-items:center !important;
@@ -35608,7 +35608,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.301 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
+/* dDAE_3.302 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
 #page-statchannel .stat-row[data-stat-scope="pms"].has-year-compare{
   min-height:96px !important;
 }
@@ -35657,4 +35657,81 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
   #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{ font-size:11px !important; }
 }
 
-/* dDAE_3.301 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
+/* dDAE_3.302 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
+
+
+/* dDAE_3.302 — Statistiche: riga anno di confronto dentro tutte le card */
+#page-statgen .stat-row.has-year-compare,
+#page-statamministratore .stat-row.has-year-compare,
+#page-statoccupazione .stat-row.has-year-compare,
+#page-statspese .stat-row.has-year-compare,
+#page-statprenotazioni .stat-row.has-year-compare,
+#page-statpulizie .stat-row.has-year-compare,
+#page-statchannel .stat-row[data-stat-scope="score"].has-year-compare,
+#page-statcancellazioni .kpi-card.has-year-compare,
+#page-statnazionalita .stat-row.has-year-compare{
+  min-height:92px !important;
+}
+#page-statgen .stat-val:has(> .stats-card-compare-line),
+#page-statamministratore .stat-val:has(> .stats-card-compare-line),
+#page-statoccupazione .stat-val:has(> .stats-card-compare-line),
+#page-statspese .stat-val:has(> .stats-card-compare-line),
+#page-statprenotazioni .stat-val:has(> .stats-card-compare-line),
+#page-statpulizie .stat-val:has(> .stats-card-compare-line),
+#page-statchannel .stat-row[data-stat-scope="score"] .stat-val:has(> .stats-card-compare-line),
+#page-statnazionalita .stat-val:has(> .stats-card-compare-line),
+#page-statcancellazioni .kpi-value:has(> .stats-card-compare-line),
+#page-statmensili .month-val:has(> .stats-card-compare-line){
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  row-gap:4px !important;
+  white-space:nowrap !important;
+}
+.stats-card-compare-line{
+  display:block !important;
+  font-size:12px !important;
+  line-height:1.05 !important;
+  font-weight:750 !important;
+  letter-spacing:.02px !important;
+  opacity:.66 !important;
+  color:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  white-space:nowrap !important;
+}
+#page-statcancellazioni .kpi-value:has(> .stats-card-compare-line){ align-items:center !important; }
+#page-statnazionalita .stat-val:has(> .stats-card-compare-line){ align-items:flex-end !important; }
+
+/* Mensili: corrente + riferimento direttamente nella card compatta 3x4 */
+#page-statmensili .month-stack:not(.has-expanded-month) .month-row.has-year-compare{
+  min-height:74px !important;
+}
+#page-statmensili .month-stack:not(.has-expanded-month) .month-row.has-year-compare .month-button-label{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  row-gap:3px !important;
+}
+#page-statmensili .month-stack:not(.has-expanded-month) .stats-month-current-line{
+  display:block !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:850 !important;
+  opacity:.90 !important;
+  color:currentColor !important;
+  -webkit-text-fill-color:currentColor !important;
+  white-space:nowrap !important;
+}
+#page-statmensili .month-stack:not(.has-expanded-month) .stats-card-compare-line{
+  font-size:9.5px !important;
+  line-height:1 !important;
+  font-weight:750 !important;
+  opacity:.64 !important;
+}
+@media (max-width:390px){
+  .stats-card-compare-line{font-size:11px !important;}
+  #page-statmensili .month-stack:not(.has-expanded-month) .stats-month-current-line{font-size:10px !important;}
+  #page-statmensili .month-stack:not(.has-expanded-month) .stats-card-compare-line{font-size:8.5px !important;}
+}
