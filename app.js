@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.319";
+const BUILD_VERSION = "3.320";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.319 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.320 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18999,7 +18999,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.319 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.320 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19207,7 +19207,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.319 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.320 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24646,7 +24646,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.319 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.320 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48063,7 +48063,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.319';
+  var BUILD_TAG='dDAE_3.320';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52963,7 +52963,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.319',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.320',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55997,7 +55997,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.319 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.320 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56178,7 +56178,7 @@ async function renderStatAnalisi(){
   function wrapGlobal(name,afterDelays){
     try{
       const old=window[name]; if(typeof old!=='function'||old.__ddae3302CompareCardsWrapped) return;
-      const wrapped=function(){ const result=old.apply(this,arguments); (afterDelays||[0,120]).forEach((d)=>setTimeout(apply,d)); return result; };
+      const wrapped=function(){ const result=old.apply(this,arguments); try{ requestAnimationFrame(()=>schedule(0)); }catch(_){ schedule(0); } return result; };
       wrapped.__ddae3302CompareCardsWrapped=true; window[name]=wrapped; try{ eval(name+' = wrapped'); }catch(_){ }
     }catch(_){ }
   }
@@ -56187,38 +56187,38 @@ async function renderStatAnalisi(){
   try{
     const oldToggle=window.__toggleStatGenCompareEnabled__ || __toggleStatGenCompareEnabled__;
     if(typeof oldToggle==='function'&&!oldToggle.__ddae3302CompareCardsWrapped){
-      const wrapped=function(){ const r=oldToggle.apply(this,arguments); [0,90,360].forEach((d)=>setTimeout(apply,d)); return r; };
+      const wrapped=function(){ const r=oldToggle.apply(this,arguments); schedule(0); return r; };
       wrapped.__ddae3302CompareCardsWrapped=true; window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){}
     }
   }catch(_){ }
   try{
     const oldLoad=window.__loadStatGenCompareGuests__ || __loadStatGenCompareGuests__;
     if(typeof oldLoad==='function'&&!oldLoad.__ddae3302CompareCardsWrapped){
-      const wrapped=async function(){ const r=await oldLoad.apply(this,arguments); [0,80,260].forEach((d)=>setTimeout(apply,d)); return r; };
+      const wrapped=async function(){ const r=await oldLoad.apply(this,arguments); schedule(0); return r; };
       wrapped.__ddae3302CompareCardsWrapped=true; window.__loadStatGenCompareGuests__=wrapped; try{__loadStatGenCompareGuests__=wrapped;}catch(_){}
     }
   }catch(_){ }
   try{
     const oldSave=window.__saveStatGenCompareYearModal__ || __saveStatGenCompareYearModal__;
     if(typeof oldSave==='function'&&!oldSave.__ddae3302CompareCardsWrapped){
-      const wrapped=function(){ const r=oldSave.apply(this,arguments); [80,360,900].forEach((d)=>setTimeout(apply,d)); return r; };
+      const wrapped=function(){ const r=oldSave.apply(this,arguments); schedule(80); return r; };
       wrapped.__ddae3302CompareCardsWrapped=true; window.__saveStatGenCompareYearModal__=wrapped; try{__saveStatGenCompareYearModal__=wrapped;}catch(_){}
     }
   }catch(_){ }
   try{
     const oldShow=window.showPage || showPage;
     if(typeof oldShow==='function'&&!oldShow.__ddae3302CompareCardsWrapped){
-      const wrapped=function(){ const r=oldShow.apply(this,arguments); [90,420,1100].forEach((d)=>setTimeout(apply,d)); return r; };
+      const wrapped=function(){ const r=oldShow.apply(this,arguments); schedule(90); return r; };
       wrapped.__ddae3302CompareCardsWrapped=true; window.showPage=wrapped; try{showPage=wrapped;}catch(_){}
     }
   }catch(_){ }
 
-  const start=()=>{ [0,300,1000].forEach((d)=>setTimeout(apply,d)); };
+  const start=()=>{ schedule(0); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.319 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.320 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56396,24 +56396,27 @@ async function renderStatAnalisi(){
     PAGE_CONFIGS.forEach((cfg)=>{
       const root=document.getElementById('page-'+cfg.page); if(!root)return;
       root.classList.toggle('stats-compare-off',!on);
+      root.classList.toggle('stats-compare-on',on);
       if(!on){
         try{root.querySelectorAll('.stats-card-compare-line,.stats-month-current-line').forEach((n)=>n.remove());}catch(_){ }
         try{root.querySelectorAll('.has-year-compare').forEach((n)=>n.classList.remove('has-year-compare'));}catch(_){ }
       }
     });
     try{window.__applyAllStatsCompareCardLines__?.();}catch(_){ }
-    try{if(String(state?.page||'')==='statchannel'&&typeof renderStatChannel==='function')renderStatChannel();}catch(_){ }
-    try{if(String(state?.page||'')==='statmensili'&&typeof renderStatMensili==='function')renderStatMensili();}catch(_){ }
-    try{window.__ddaeStatsFixedGraphLayerRefresh__?.();}catch(_){ }
   }
   function syncAll(){ensureGraphButtons();syncCompareVisibility();syncGraphVisibility();}
-  function scheduleAll(){[0,80,260,700].forEach((d)=>setTimeout(syncAll,d));}
+  let __ddae3310SyncFrame=0;
+  function scheduleAll(){
+    try{ if(__ddae3310SyncFrame) cancelAnimationFrame(__ddae3310SyncFrame); }catch(_){ }
+    try{ __ddae3310SyncFrame=requestAnimationFrame(()=>{__ddae3310SyncFrame=0;syncAll();}); }
+    catch(_){ __ddae3310SyncFrame=0; setTimeout(syncAll,0); }
+  }
 
   /* Intercetta il toggle confronto senza cambiarne la logica: aggiorna soltanto visibilità/layout. */
   try{
     const old=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
     if(typeof old==='function'&&!old.__ddae3310VisibilityWrapped){
-      const wrapped=function(){const r=old.apply(this,arguments);scheduleAll();return r;}; wrapped.__ddae3310VisibilityWrapped=true;
+      const wrapped=function(){const r=old.apply(this,arguments);syncCompareVisibility();return r;}; wrapped.__ddae3310VisibilityWrapped=true;
       window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
     }
   }catch(_){ }
@@ -56433,10 +56436,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  document.addEventListener('click',(e)=>{
-    try{if(e?.target?.closest?.('.statgen-compare-toggle-btn'))setTimeout(syncCompareVisibility,0);}catch(_){ }
-  },true);
-  /* dDAE_3.319 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.320 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56468,7 +56468,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.319 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.320 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
@@ -56556,7 +56556,12 @@ async function renderStatAnalisi(){
   }
 
   function applyAll(){ PAGES.forEach(applyOne); }
-  function schedule(){ [0,40,120,320,800].forEach((d)=>setTimeout(applyAll,d)); }
+  let __ddaeStrictCompareFrame=0;
+  function schedule(){
+    try{ if(__ddaeStrictCompareFrame) cancelAnimationFrame(__ddaeStrictCompareFrame); }catch(_){ }
+    try{ __ddaeStrictCompareFrame=requestAnimationFrame(()=>{__ddaeStrictCompareFrame=0;applyAll();}); }
+    catch(_){ __ddaeStrictCompareFrame=0; setTimeout(applyAll,0); }
+  }
   window.__ddaeStrictStatsCompareVisibility__=applyAll;
 
   function wrapRender(name){
@@ -56565,7 +56570,7 @@ async function renderStatAnalisi(){
       if(typeof old!=='function'||old.__ddae3312StrictCompareWrapped) return;
       const wrapped=function(){
         const r=old.apply(this,arguments);
-        try{setTimeout(applyAll,0);setTimeout(applyAll,90);}catch(_){ }
+        schedule();
         return r;
       };
       wrapped.__ddae3312StrictCompareWrapped=true;
@@ -56578,16 +56583,13 @@ async function renderStatAnalisi(){
   try{
     const oldToggle=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
     if(typeof oldToggle==='function'&&!oldToggle.__ddae3312StrictCompareWrapped){
-      const wrapped=function(){const r=oldToggle.apply(this,arguments);schedule();return r;};
+      const wrapped=function(){const r=oldToggle.apply(this,arguments);applyAll();return r;};
       wrapped.__ddae3312StrictCompareWrapped=true;
       window.__toggleStatGenCompareEnabled__=wrapped;
       try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
     }
   }catch(_){ }
 
-  document.addEventListener('click',(e)=>{
-    try{ if(e?.target?.closest?.('.statgen-compare-toggle-btn')) schedule(); }catch(_){ }
-  },true);
   try{window.addEventListener('pageshow',schedule,{passive:true});}catch(_){ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',schedule,{once:true}); else schedule();
 })();
