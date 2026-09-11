@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.306";
+const BUILD_VERSION = "3.307";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.306 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.307 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18971,7 +18971,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.306 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.307 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19179,7 +19179,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.306 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.307 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -22462,6 +22462,7 @@ function resetInserisci(){
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
+  try{ __setupSpeseAlphaSortButton__(); }catch(_){ }
   try{ __bindSpeseDateRangeUi__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
@@ -23929,7 +23930,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
-  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
+  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
   'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
@@ -24035,6 +24036,7 @@ function __defaultSingleActionButtonVisual__(btn){
     spesaCatBtnIva22:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva10:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva4:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.80 },
+    speseFilterAlphaBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
     licenseDateRangeTrigger:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
     licenseGeneratorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     licenseGeneratorConfirm:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -24612,6 +24614,45 @@ function __setupSpeseCategoryFilterButtons__(){
       });
     });
     __syncSpeseCategoryFilterButtons__(state.speseCategoryFilter || '');
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+  }catch(_){ }
+}
+
+// dDAE_3.307 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+function __syncSpeseAlphaSortButton__(){
+  try{
+    const btn=document.getElementById('speseFilterAlphaBtn');
+    if(!btn) return;
+    const on=String(state.speseSort || 'date') === 'motivazione';
+    btn.classList.toggle('is-selected', on);
+    btn.classList.toggle('is-muted', !on);
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.dataset.filterSelected = on ? '1' : '0';
+    try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+  }catch(_){ }
+}
+
+function __setSpeseAlphaSort__(enabled){
+  try{ state.speseSort = enabled ? 'motivazione' : 'date'; }catch(_){ }
+  __syncSpeseAlphaSortButton__();
+  try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
+}
+
+function __setupSpeseAlphaSortButton__(){
+  try{
+    const btn=document.getElementById('speseFilterAlphaBtn');
+    if(!btn) return;
+    if(btn.dataset.speseAlphaSortBound !== '1'){
+      btn.dataset.speseAlphaSortBound='1';
+      bindFastTap(btn,(ev)=>{
+        try{ if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+        try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
+        const on=String(state.speseSort || 'date') === 'motivazione';
+        __setSpeseAlphaSort__(!on);
+      });
+    }
+    __syncSpeseAlphaSortButton__();
     try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   }catch(_){ }
 }
@@ -39808,6 +39849,7 @@ try{
     spSort.value = state.speseSort;
     spSort.addEventListener("change", () => {
       state.speseSort = spSort.value || "date";
+      try{ __syncSpeseAlphaSortButton__(); }catch(_){}
       try { if (state.page === "spese" && state.speseView === "list") renderSpese(); } catch(_){}
     });
   }
@@ -39822,6 +39864,7 @@ try{
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
+  try{ __setupSpeseAlphaSortButton__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -47992,7 +48035,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.306';
+  var BUILD_TAG='dDAE_3.307';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52887,7 +52930,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.306',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.307',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55921,7 +55964,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.306 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.307 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
