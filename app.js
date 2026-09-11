@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.311";
+const BUILD_VERSION = "3.312";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.311 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.312 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18971,7 +18971,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.311 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.312 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19179,7 +19179,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.311 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.312 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24618,7 +24618,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.311 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.312 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48035,7 +48035,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.311';
+  var BUILD_TAG='dDAE_3.312';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52930,7 +52930,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.311',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.312',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55964,7 +55964,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.311 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.312 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56185,7 +56185,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.311 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.312 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56403,7 +56403,7 @@ async function renderStatAnalisi(){
   document.addEventListener('click',(e)=>{
     try{if(e?.target?.closest?.('.statgen-compare-toggle-btn'))setTimeout(syncCompareVisibility,0);}catch(_){ }
   },true);
-  /* dDAE_3.311 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.312 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56433,4 +56433,128 @@ async function renderStatAnalisi(){
   try{window.addEventListener('resize',()=>setTimeout(syncGraphVisibility,80),{passive:true});}catch(_){ }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleAll,{once:true});else scheduleAll();
   setTimeout(scheduleAll,900);
+})();
+
+/* dDAE_3.312 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+(function(){
+  'use strict';
+  const PAGES = [
+    {page:'statgen', compare:'statGenCompareToggleBtn'},
+    {page:'statamministratore', compare:'statAmmCompareToggleBtn'},
+    {page:'statmensili', compare:'statMensiliCompareToggleBtn'},
+    {page:'statoccupazione', compare:'statOccupazioneCompareToggleBtn'},
+    {page:'statspese', compare:'statSpeseCompareToggleBtn'},
+    {page:'statprenotazioni', compare:'statRicevuteCompareToggleBtn'},
+    {page:'statchannel', compare:'statChannelCompareToggleBtn'},
+    {page:'statpulizie', compare:'statPulizieCompareToggleBtn'},
+    {page:'statcancellazioni', compare:'statCancellazioniCompareToggleBtn'},
+    {page:'statnazionalita', compare:'statNationalityCompareToggleBtn'}
+  ];
+
+  function readCompareEnabled(cfg){
+    try{
+      const btn=document.getElementById(cfg?.compare||'');
+      if(btn){
+        const aria=String(btn.getAttribute('aria-pressed')||'').trim().toLowerCase();
+        if(aria==='true') return true;
+        if(aria==='false') return false;
+        const label=String(btn.querySelector('.statgen-compare-toggle-label')?.textContent||btn.textContent||'').trim().toUpperCase();
+        if(/\bOFF\b/.test(label)) return false;
+        if(/\bON\b/.test(label)) return true;
+      }
+    }catch(_){ }
+    try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; }
+  }
+
+  function setForcedHidden(el, hidden){
+    if(!el) return;
+    try{
+      if(hidden){
+        el.dataset.ddaeCompareForcedHidden='1';
+        el.style.setProperty('display','none','important');
+        el.setAttribute('aria-hidden','true');
+      }else if(el.dataset.ddaeCompareForcedHidden==='1'){
+        delete el.dataset.ddaeCompareForcedHidden;
+        el.style.removeProperty('display');
+        el.removeAttribute('aria-hidden');
+      }
+    }catch(_){ }
+  }
+
+  function applyOne(cfg){
+    const root=document.getElementById('page-'+cfg.page); if(!root) return;
+    const on=readCompareEnabled(cfg);
+    root.classList.toggle('stats-compare-off',!on);
+    root.classList.toggle('stats-compare-on',on);
+
+    /* Elementi di confronto nativi o aggiunti dalle card statistiche. */
+    root.querySelectorAll([
+      '.stats-card-compare-line',
+      '.stat-channel-compare-line',
+      '.month-expanded-colhead.is-compare',
+      '.month-expanded-metric.is-compare',
+      '.month-channel-value.is-compare',
+      '[data-compare-only="true"]'
+    ].join(',')).forEach((el)=>setForcedHidden(el,!on));
+
+    /* Il trend Mensili confronta esplicitamente i due anni: con OFF non deve comparire. */
+    root.querySelectorAll('.month-expanded-trend').forEach((el)=>setForcedHidden(el,!on));
+
+    /* Layout Mensili: quando OFF deve restare una sola colonna di dati correnti. */
+    if(cfg.page==='statmensili'){
+      root.querySelectorAll('.month-expanded-grid').forEach((grid)=>{
+        try{
+          if(!on){ grid.dataset.ddaeCompareSingleColumn='1'; grid.style.setProperty('grid-template-columns','minmax(0,1fr)','important'); }
+          else if(grid.dataset.ddaeCompareSingleColumn==='1'){ delete grid.dataset.ddaeCompareSingleColumn; grid.style.removeProperty('grid-template-columns'); }
+        }catch(_){ }
+      });
+      root.querySelectorAll('.month-channel-grid').forEach((grid)=>{
+        try{
+          if(!on){ grid.dataset.ddaeCompareSingleColumn='1'; grid.style.setProperty('grid-template-columns','minmax(82px,1.15fr) minmax(0,1fr)','important'); }
+          else if(grid.dataset.ddaeCompareSingleColumn==='1'){ delete grid.dataset.ddaeCompareSingleColumn; grid.style.removeProperty('grid-template-columns'); }
+        }catch(_){ }
+      });
+    }
+
+    if(!on){
+      /* Classi usate solo per il layout a doppio anno. */
+      try{root.querySelectorAll('.has-year-compare').forEach((el)=>el.classList.remove('has-year-compare'));}catch(_){ }
+    }
+  }
+
+  function applyAll(){ PAGES.forEach(applyOne); }
+  function schedule(){ [0,40,120,320,800].forEach((d)=>setTimeout(applyAll,d)); }
+  window.__ddaeStrictStatsCompareVisibility__=applyAll;
+
+  function wrapRender(name){
+    try{
+      const old=window[name];
+      if(typeof old!=='function'||old.__ddae3312StrictCompareWrapped) return;
+      const wrapped=function(){
+        const r=old.apply(this,arguments);
+        try{setTimeout(applyAll,0);setTimeout(applyAll,90);}catch(_){ }
+        return r;
+      };
+      wrapped.__ddae3312StrictCompareWrapped=true;
+      window[name]=wrapped;
+      try{eval(name+' = wrapped');}catch(_){ }
+    }catch(_){ }
+  }
+  ['renderStatGen','renderStatMensili','renderStatOccupazione','renderStatSpese','renderStatRicevute','renderStatChannel','renderStatPunteggio','renderStatPulizie','renderStatCancellazioni','renderStatAmministratore','renderStatNationality'].forEach(wrapRender);
+
+  try{
+    const oldToggle=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
+    if(typeof oldToggle==='function'&&!oldToggle.__ddae3312StrictCompareWrapped){
+      const wrapped=function(){const r=oldToggle.apply(this,arguments);schedule();return r;};
+      wrapped.__ddae3312StrictCompareWrapped=true;
+      window.__toggleStatGenCompareEnabled__=wrapped;
+      try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
+    }
+  }catch(_){ }
+
+  document.addEventListener('click',(e)=>{
+    try{ if(e?.target?.closest?.('.statgen-compare-toggle-btn')) schedule(); }catch(_){ }
+  },true);
+  try{window.addEventListener('pageshow',schedule,{passive:true});}catch(_){ }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',schedule,{once:true}); else schedule();
 })();
