@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.310";
+const BUILD_VERSION = "3.309";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.310 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.309 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18971,7 +18971,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.310 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.309 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19179,7 +19179,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.310 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.309 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24618,7 +24618,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.310 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.309 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48035,7 +48035,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.310';
+  var BUILD_TAG='dDAE_3.309';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52930,7 +52930,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.310',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.309',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55964,7 +55964,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.310 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.309 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56183,229 +56183,4 @@ async function renderStatAnalisi(){
   const start=()=>{ [0,300,1000].forEach((d)=>setTimeout(apply,d)); };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
-})();
-
-/* dDAE_3.310 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
-(function(){
-  const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
-  const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
-  const PAGE_CONFIGS = [
-    {page:'statgen', compare:'statGenCompareToggleBtn', graph:'statGenGraphToggleBtn'},
-    {page:'statamministratore', compare:'statAmmCompareToggleBtn', graph:'statAmmGraphToggleBtn'},
-    {page:'statmensili', compare:'statMensiliCompareToggleBtn', graph:'statMensiliGraphToggleBtn'},
-    {page:'statoccupazione', compare:'statOccupazioneCompareToggleBtn', graph:'statOccupazioneGraphToggleBtn'},
-    {page:'statspese', compare:'statSpeseCompareToggleBtn', graph:'statSpeseGraphToggleBtn'},
-    {page:'statprenotazioni', compare:'statRicevuteCompareToggleBtn', graph:'statRicevuteGraphToggleBtn'},
-    {page:'statchannel', compare:'statChannelCompareToggleBtn', graph:'statChannelGraphToggleBtn'},
-    {page:'statpulizie', compare:'statPulizieCompareToggleBtn', graph:'statPulizieGraphToggleBtn'},
-    {page:'statcancellazioni', compare:'statCancellazioniCompareToggleBtn', graph:'statCancellazioniGraphToggleBtn'},
-    {page:'statnazionalita', compare:'statNationalityCompareToggleBtn', graph:'statNationalityGraphToggleBtn'}
-  ];
-
-  function graphEnabledRead(){
-    try{
-      const raw=localStorage.getItem(GRAPH_ENABLED_KEY);
-      if(raw===null || raw===undefined || String(raw).trim()==='') return true;
-      const s=String(raw).trim().toLowerCase();
-      return !(s==='0'||s==='false'||s==='off');
-    }catch(_){ return true; }
-  }
-  function graphEnabledWrite(value){
-    const on=!!value;
-    try{localStorage.setItem(GRAPH_ENABLED_KEY,on?'1':'0');}catch(_){ }
-    return on;
-  }
-  function graphVisualDefault(on){
-    return on ? {bg:'#2b7cb4',border:'#2b7cb4',fg:'#ffffff',opacity:0.80} : {bg:'#d6dee8',border:'#d6dee8',fg:'#0f172a',opacity:0.80};
-  }
-  function graphVisualRead(){
-    const fallback={on:graphVisualDefault(true),off:graphVisualDefault(false)};
-    try{
-      const raw=localStorage.getItem(GRAPH_VISUAL_KEY); const parsed=raw?JSON.parse(raw):{};
-      return {
-        on:(typeof __tagColorPairFromValue__==='function')?__tagColorPairFromValue__(parsed?.on||fallback.on,fallback.on.bg):(parsed?.on||fallback.on),
-        off:(typeof __tagColorPairFromValue__==='function')?__tagColorPairFromValue__(parsed?.off||fallback.off,fallback.off.bg):(parsed?.off||fallback.off)
-      };
-    }catch(_){ return fallback; }
-  }
-  function graphVisualWrite(value){
-    const current=graphVisualRead();
-    const normalize=(v,fb)=>{
-      try{return __tagColorPairFromValue__(v||fb,(v&&v.bg)||fb.bg);}catch(_){return Object.assign({},fb,v||{});}
-    };
-    const next={on:normalize(value?.on,current.on),off:normalize(value?.off,current.off)};
-    try{localStorage.setItem(GRAPH_VISUAL_KEY,JSON.stringify(next));}catch(_){ }
-    return next;
-  }
-  function graphButtonLabel(btn,on){
-    if(!btn) return;
-    const lab=btn.querySelector('.stats-graph-toggle-state'); if(lab) lab.textContent=on?'ON':'OFF';
-    btn.setAttribute('aria-label',`Grafico ${on?'ON':'OFF'}`);
-    btn.setAttribute('aria-pressed',on?'true':'false');
-  }
-  function applyGraphVisual(){
-    const on=graphEnabledRead(); const visual=graphVisualRead(); const pair=on?visual.on:visual.off;
-    const opacity=(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(pair?.opacity??0.80):Number(pair?.opacity??0.80);
-    const bg=(()=>{try{return __graphColorValueToHex__(pair?.bg||(on?'#2b7cb4':'#d6dee8'),on?'#2b7cb4':'#d6dee8');}catch(_){return pair?.bg||(on?'#2b7cb4':'#d6dee8');}})();
-    const border=(()=>{try{return __graphColorValueToHex__(pair?.border||pair?.bg||bg,bg);}catch(_){return pair?.border||bg;}})();
-    let fg=pair?.fg||(on?'#ffffff':'#0f172a');
-    try{fg=__graphColorValueToHex__(fg,fg);}catch(_){ }
-    document.querySelectorAll('.stats-graph-toggle-btn').forEach((btn)=>{
-      graphButtonLabel(btn,on);
-      btn.classList.toggle('is-active',on); btn.classList.toggle('is-inactive',!on);
-      try{
-        const rgba=(typeof hexToRgba==='function')?hexToRgba(bg,opacity):bg;
-        btn.style.setProperty('background',rgba,'important');
-        btn.style.setProperty('background-color',rgba,'important');
-        btn.style.setProperty('border',`1px solid ${border}`,'important');
-        btn.style.setProperty('color',fg,'important');
-        btn.style.setProperty('-webkit-text-fill-color',fg,'important');
-        if(typeof __applyVisualTextWeight__==='function') __applyVisualTextWeight__(btn,pair);
-      }catch(_){ }
-    });
-  }
-
-  function payloadToVisual(payload,fallback){
-    let base=fallback||graphVisualDefault(false);
-    try{base=__tagColorPairFromValue__(base,base?.bg||'#d6dee8');}catch(_){ }
-    const colors=(payload&&payload.colors&&typeof payload.colors==='object')?payload.colors:{};
-    function spec(value,fb){ try{return __parseOperatoreColorSpec__(value||fb).spec;}catch(_){return value||fb;} }
-    const bg=spec(colors.bg||payload?.spec||base.bg||'#d6dee8',base.bg||'#d6dee8');
-    const border=spec(colors.border||base.border||bg,base.border||bg);
-    const fg=String(colors.fg||'').trim()?spec(colors.fg,base.fg||''):(base.fg||'');
-    const opacity=(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(payload?.opacity??base.opacity??0.80):(payload?.opacity??base.opacity??0.80);
-    return {bg,border:border||bg,fg:fg||'',opacity};
-  }
-  function openGraphColorPicker(){
-    if(typeof __tagColorPopupOpen__!=='function') return;
-    const enabled=graphEnabledRead(); const visuals=graphVisualRead();
-    const originals={off:Object.assign({},visuals.off),on:Object.assign({},visuals.on)};
-    const drafts={off:Object.assign({},originals.off),on:Object.assign({},originals.on)};
-    const activeState=enabled?'on':'off';
-    const applyState=(stateName,payload)=>{
-      const key=stateName==='on'?'on':'off';
-      drafts[key]=payloadToVisual(payload,drafts[key]||originals[key]);
-      const cur=graphVisualRead(); cur[key]=drafts[key]; graphVisualWrite(cur); applyGraphVisual();
-    };
-    __tagColorPopupOpen__('stats-graph-toggle-btn',drafts[activeState],null,{
-      supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
-      opacity:(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(drafts[activeState].opacity??0.80):(drafts[activeState].opacity??0.80),
-      defaultMode:'bg',fallbackBg:drafts[activeState].bg||(enabled?'#2b7cb4':'#d6dee8'),
-      onPreview:(payload)=>{
-        let stateName=activeState;
-        try{const ed=__tagColorPopupState__?.stateEditor;if(ed?.activeState==='on'||ed?.activeState==='off')stateName=ed.activeState;}catch(_){ }
-        applyState(stateName,payload);
-      },
-      stateEditor:{
-        activeState,drafts,originals,labels:{off:'OFF',on:'ON'},fallbackBg:drafts[activeState].bg||(enabled?'#2b7cb4':'#d6dee8'),
-        onStatePreview:(stateName,payload)=>applyState(stateName,payload),
-        onConfirm:async(all)=>{graphVisualWrite({off:payloadToVisual(all?.off||drafts.off,drafts.off),on:payloadToVisual(all?.on||drafts.on,drafts.on)});applyGraphVisual();},
-        onRevert:()=>{graphVisualWrite(originals);applyGraphVisual();}
-      }
-    });
-  }
-
-  function makeGraphButton(id){
-    const btn=document.createElement('button'); btn.type='button'; btn.id=id;
-    btn.className='piscina-action-btn stats-graph-toggle-btn stats-compare-btn';
-    btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg><span class="stats-graph-toggle-state">ON</span>';
-    graphButtonLabel(btn,graphEnabledRead());
-    return btn;
-  }
-  function blockEvent(e){try{e?.preventDefault?.();}catch(_){ }try{e?.stopPropagation?.();}catch(_){ }try{e?.stopImmediatePropagation?.();}catch(_){ }return false;}
-  function bindGraphButton(btn){
-    if(!btn||btn.__ddae3310GraphBound) return; btn.__ddae3310GraphBound=true;
-    let timer=null,fired=false,suppressUntil=0,startX=0,startY=0;
-    const clear=()=>{if(timer){clearTimeout(timer);timer=null;}};
-    const start=(e)=>{
-      try{if(e?.type==='pointerdown'&&e.pointerType==='mouse'&&e.button!==0)return;}catch(_){ }
-      fired=false; clear(); startX=Number(e?.clientX||e?.touches?.[0]?.clientX||0); startY=Number(e?.clientY||e?.touches?.[0]?.clientY||0);
-      timer=setTimeout(()=>{fired=true;suppressUntil=Date.now()+900;try{btn.classList.add('is-pressing');}catch(_){ }openGraphColorPicker();},560);
-    };
-    const move=(e)=>{const x=Number(e?.clientX||e?.touches?.[0]?.clientX||startX),y=Number(e?.clientY||e?.touches?.[0]?.clientY||startY);if(Math.hypot(x-startX,y-startY)>10)clear();};
-    const end=(e)=>{clear();if(fired){blockEvent(e);setTimeout(()=>{fired=false;try{btn.classList.remove('is-pressing');}catch(_){ }},0);}else try{btn.classList.remove('is-pressing');}catch(_){ }};
-    if('PointerEvent' in window){btn.addEventListener('pointerdown',start,{passive:true});btn.addEventListener('pointermove',move,{passive:true});btn.addEventListener('pointerup',end,{passive:false});btn.addEventListener('pointercancel',end,{passive:false});}
-    else{btn.addEventListener('touchstart',start,{passive:true});btn.addEventListener('touchmove',move,{passive:true});btn.addEventListener('touchend',end,{passive:false});btn.addEventListener('touchcancel',end,{passive:false});btn.addEventListener('mousedown',start,{passive:true});btn.addEventListener('mouseup',end,{passive:false});btn.addEventListener('mouseleave',end,{passive:false});}
-    btn.addEventListener('click',(e)=>{if(fired||Date.now()<suppressUntil)return blockEvent(e);graphEnabledWrite(!graphEnabledRead());syncGraphVisibility();return blockEvent(e);},true);
-    btn.addEventListener('contextmenu',(e)=>blockEvent(e),true);
-  }
-
-  function ensureGraphButtons(){
-    PAGE_CONFIGS.forEach((cfg)=>{
-      try{
-        const compare=document.getElementById(cfg.compare); if(!compare) return;
-        let btn=document.getElementById(cfg.graph);
-        if(!btn){btn=makeGraphButton(cfg.graph);compare.insertAdjacentElement('afterend',btn);}
-        bindGraphButton(btn);
-      }catch(_){ }
-    });
-    applyGraphVisual();
-  }
-  function syncGraphVisibility(){
-    ensureGraphButtons(); const on=graphEnabledRead();
-    PAGE_CONFIGS.forEach((cfg)=>{
-      const root=document.getElementById('page-'+cfg.page); if(!root)return;
-      root.classList.toggle('stats-graph-off',!on);
-      root.querySelectorAll('.statgen-line-chart-wrap').forEach((wrap)=>{
-        try{
-          if(on){wrap.style.removeProperty('display');wrap.removeAttribute('aria-hidden');}
-          else{wrap.style.setProperty('display','none','important');wrap.setAttribute('aria-hidden','true');}
-        }catch(_){ }
-      });
-    });
-    applyGraphVisual();
-    try{window.__ddaeStatsFixedGraphLayerRefresh__?.();}catch(_){ }
-    if(on){try{setTimeout(()=>window.__redrawAllStatCompareCharts__?.(),80);}catch(_){ }}
-  }
-  function compareEnabled(){try{return !!__ensureStatGenCompareEnabled__();}catch(_){return false;}}
-  function syncCompareVisibility(){
-    const on=compareEnabled();
-    PAGE_CONFIGS.forEach((cfg)=>{
-      const root=document.getElementById('page-'+cfg.page); if(!root)return;
-      root.classList.toggle('stats-compare-off',!on);
-      if(!on){
-        try{root.querySelectorAll('.stats-card-compare-line,.stats-month-current-line').forEach((n)=>n.remove());}catch(_){ }
-        try{root.querySelectorAll('.has-year-compare').forEach((n)=>n.classList.remove('has-year-compare'));}catch(_){ }
-      }
-    });
-    try{window.__applyAllStatsCompareCardLines__?.();}catch(_){ }
-    try{if(String(state?.page||'')==='statchannel'&&typeof renderStatChannel==='function')renderStatChannel();}catch(_){ }
-    try{if(String(state?.page||'')==='statmensili'&&typeof renderStatMensili==='function')renderStatMensili();}catch(_){ }
-    try{window.__ddaeStatsFixedGraphLayerRefresh__?.();}catch(_){ }
-  }
-  function syncAll(){ensureGraphButtons();syncCompareVisibility();syncGraphVisibility();}
-  function scheduleAll(){[0,80,260,700].forEach((d)=>setTimeout(syncAll,d));}
-
-  /* Intercetta il toggle confronto senza cambiarne la logica: aggiorna soltanto visibilità/layout. */
-  try{
-    const old=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
-    if(typeof old==='function'&&!old.__ddae3310VisibilityWrapped){
-      const wrapped=function(){const r=old.apply(this,arguments);scheduleAll();return r;}; wrapped.__ddae3310VisibilityWrapped=true;
-      window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
-    }
-  }catch(_){ }
-
-  /* Salva anche i due stati grafici nel Tema, oltre che nel backup generale. */
-  try{
-    const oldAdditional=(typeof __roomSettingsThemeAdditionalStorageKeys__==='function')?__roomSettingsThemeAdditionalStorageKeys__:null;
-    if(oldAdditional&&!oldAdditional.__ddae3310GraphWrapped){
-      const wrapped=function(){const list=oldAdditional.apply(this,arguments)||[];return Array.from(new Set(list.concat([GRAPH_ENABLED_KEY,GRAPH_VISUAL_KEY])));};
-      wrapped.__ddae3310GraphWrapped=true; __roomSettingsThemeAdditionalStorageKeys__=wrapped;
-    }
-  }catch(_){ }
-  try{
-    const oldApply=(typeof __roomSettingsThemeStatsStorageApply__==='function')?__roomSettingsThemeStatsStorageApply__:null;
-    if(oldApply&&!oldApply.__ddae3310GraphWrapped){
-      const wrapped=function(){const r=oldApply.apply(this,arguments);scheduleAll();return r;};wrapped.__ddae3310GraphWrapped=true;__roomSettingsThemeStatsStorageApply__=wrapped;
-    }
-  }catch(_){ }
-
-  document.addEventListener('click',(e)=>{
-    try{if(e?.target?.closest?.('.statgen-compare-toggle-btn'))setTimeout(syncCompareVisibility,0);}catch(_){ }
-  },true);
-  try{new MutationObserver(()=>{ensureGraphButtons();}).observe(document.body,{childList:true,subtree:true});}catch(_){ }
-  try{window.addEventListener('pageshow',scheduleAll,{passive:true});}catch(_){ }
-  try{window.addEventListener('resize',()=>setTimeout(syncGraphVisibility,80),{passive:true});}catch(_){ }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleAll,{once:true});else scheduleAll();
-  setTimeout(scheduleAll,900);
 })();
