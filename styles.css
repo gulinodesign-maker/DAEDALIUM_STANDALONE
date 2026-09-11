@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.312 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.313 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.312 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.313 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.312 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.313 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,11 +35567,11 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.312 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.313 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
 
 
-/* dDAE_3.312 — Home context pill: niente popup Design sul tap breve */
+/* dDAE_3.313 — Home context pill: niente popup Design sul tap breve */
 #page-home #homeYearPill{
   touch-action:manipulation !important;
   -webkit-user-select:none !important;
@@ -35580,7 +35580,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.312 — Modifica struttura: azioni 3x1 iconografiche */
+/* dDAE_3.313 — Modifica struttura: azioni 3x1 iconografiche */
 .structure-modal-actions-grid .structure-icon-action-btn{
   display:flex !important;
   align-items:center !important;
@@ -35608,7 +35608,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.312 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
+/* dDAE_3.313 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
 #page-statchannel .stat-row[data-stat-scope="pms"].has-year-compare{
   min-height:96px !important;
 }
@@ -35657,10 +35657,10 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
   #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{ font-size:11px !important; }
 }
 
-/* dDAE_3.312 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
+/* dDAE_3.313 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
 
 
-/* dDAE_3.312 — Statistiche: riga anno di confronto dentro tutte le card */
+/* dDAE_3.313 — Statistiche: riga anno di confronto dentro tutte le card */
 #page-statgen .stat-row.has-year-compare,
 #page-statamministratore .stat-row.has-year-compare,
 #page-statoccupazione .stat-row.has-year-compare,
@@ -35737,7 +35737,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.312 — Home: 12 categorie in griglia 3x4, stessi tile/icone/spaziatura esistenti */
+/* dDAE_3.313 — Home: 12 categorie in griglia 3x4, stessi tile/icone/spaziatura esistenti */
 #page-home .home-grid{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-auto-flow:row !important;
@@ -35745,7 +35745,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.312 — Numero build solo in Impostazioni, centrato nella zona inferiore */
+/* dDAE_3.313 — Numero build solo in Impostazioni, centrato nella zona inferiore */
 #page-impostazioni #buildText.settings-build{
   position:fixed !important;
   left:max(16px, env(safe-area-inset-left, 0px)) !important;
@@ -35773,7 +35773,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.312 — build visibile in Impostazioni e griglia Home 10px più in alto */
+/* dDAE_3.313 — build visibile in Impostazioni e griglia Home 10px più in alto */
 #page-impostazioni #buildText.settings-build{
   display:block !important;
 }
@@ -35782,7 +35782,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.312 — Spese: sesto filtro A-Z additivo ai filtri fiscali */
+/* dDAE_3.313 — Spese: sesto filtro A-Z additivo ai filtri fiscali */
 #page-spese #speseFilterAlphaBtn{
   min-width:0 !important;
   width:100% !important;
@@ -35797,7 +35797,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
   font-weight:800 !important;
 }
 
-/* dDAE_3.312 — Statistiche: confronto visibile solo con confronto ON; grafico con toggle dedicato */
+/* dDAE_3.313 — Statistiche: confronto visibile solo con confronto ON; grafico con toggle dedicato */
 .stats-graph-toggle-btn{
   width:64px !important;
   min-width:64px !important;
@@ -35868,7 +35868,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
   display:none !important;
 }
 
-/* dDAE_3.312 — Confronto OFF: priorità massima sui blocchi storici nativi di tutte le statistiche. */
+/* dDAE_3.313 — Confronto OFF: priorità massima sui blocchi storici nativi di tutte le statistiche. */
 #page-statmensili.stats-compare-off .month-expanded-colhead.is-compare,
 #page-statmensili.stats-compare-off .month-expanded-metric.is-compare,
 #page-statmensili.stats-compare-off .month-channel-value.is-compare,
@@ -35883,4 +35883,36 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 #page-statmensili.stats-compare-off .month-channel-grid{
   grid-template-columns:minmax(82px,1.15fr) minmax(0,1fr) !important;
+}
+
+/* dDAE_3.313 — Mensili: etichette a sinistra e valori a destra nelle card dati */
+#page-statmensili .month-expanded-metric{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  column-gap:12px !important;
+  text-align:left !important;
+}
+#page-statmensili .month-expanded-metric span{
+  min-width:0 !important;
+  margin:0 !important;
+  text-align:left !important;
+  justify-self:start !important;
+}
+#page-statmensili .month-expanded-metric strong{
+  margin:0 !important;
+  text-align:right !important;
+  justify-self:end !important;
+  white-space:nowrap !important;
+}
+#page-statmensili .month-channel-name{
+  text-align:left !important;
+}
+#page-statmensili .month-channel-value{
+  text-align:right !important;
+}
+@media (max-width:390px){
+  #page-statmensili .month-expanded-metric{
+    column-gap:8px !important;
+  }
 }
