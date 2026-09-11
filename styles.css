@@ -35486,7 +35486,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-new-mode-btn[hidden]{display:none!important;}
 
 
-/* dDAE_3.305 — Struttura: eliminazione definitiva, flat e personalizzabile */
+/* dDAE_3.306 — Struttura: eliminazione definitiva, flat e personalizzabile */
 .structure-delete-btn{
   width:100%!important;
   min-height:54px!important;
@@ -35500,12 +35500,12 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 .structure-delete-btn:disabled{opacity:.55!important;pointer-events:none!important;}
 
 
-/* dDAE_3.305 — Home: +20px tra separatore top bar e pill struttura/anno */
+/* dDAE_3.306 — Home: +20px tra separatore top bar e pill struttura/anno */
 #page-home .home-page{
   padding-top:32px !important;
 }
 
-/* dDAE_3.305 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
+/* dDAE_3.306 — Modifica struttura: X in alto a destra e griglia 3x1 per le azioni */
 .structure-create-hd{
   display:flex !important;
   align-items:center !important;
@@ -35567,11 +35567,11 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.305 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
+/* dDAE_3.306 — Home context pill: tap breve selezione struttura, popup colore solo da long press */
 #page-home #homeYearPill{ touch-action:manipulation; }
 
 
-/* dDAE_3.305 — Home context pill: niente popup Design sul tap breve */
+/* dDAE_3.306 — Home context pill: niente popup Design sul tap breve */
 #page-home #homeYearPill{
   touch-action:manipulation !important;
   -webkit-user-select:none !important;
@@ -35580,7 +35580,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.305 — Modifica struttura: azioni 3x1 iconografiche */
+/* dDAE_3.306 — Modifica struttura: azioni 3x1 iconografiche */
 .structure-modal-actions-grid .structure-icon-action-btn{
   display:flex !important;
   align-items:center !important;
@@ -35608,7 +35608,7 @@ body.ddae-dark .structure-select-empty{ color:#d7e3f0 !important; }
 }
 
 
-/* dDAE_3.305 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
+/* dDAE_3.306 — PMS: dati anno di confronto sotto i valori correnti nelle card CHANNEL */
 #page-statchannel .stat-row[data-stat-scope="pms"].has-year-compare{
   min-height:96px !important;
 }
@@ -35657,10 +35657,10 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
   #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-compare-line{ font-size:11px !important; }
 }
 
-/* dDAE_3.305 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
+/* dDAE_3.306 — Popup colore confronto: selettori stato OFF/ON gestiti dal popup condiviso. */
 
 
-/* dDAE_3.305 — Statistiche: riga anno di confronto dentro tutte le card */
+/* dDAE_3.306 — Statistiche: riga anno di confronto dentro tutte le card */
 #page-statgen .stat-row.has-year-compare,
 #page-statamministratore .stat-row.has-year-compare,
 #page-statoccupazione .stat-row.has-year-compare,
@@ -35737,7 +35737,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.305 — Home: 12 categorie in griglia 3x4, stessi tile/icone/spaziatura esistenti */
+/* dDAE_3.306 — Home: 12 categorie in griglia 3x4, stessi tile/icone/spaziatura esistenti */
 #page-home .home-grid{
   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
   grid-auto-flow:row !important;
@@ -35745,7 +35745,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.305 — Numero build solo in Impostazioni, centrato nella zona inferiore */
+/* dDAE_3.306 — Numero build solo in Impostazioni, centrato nella zona inferiore */
 #page-impostazioni #buildText.settings-build{
   position:fixed !important;
   left:max(16px, env(safe-area-inset-left, 0px)) !important;
@@ -35773,7 +35773,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 
-/* dDAE_3.305 — build visibile in Impostazioni e griglia Home 10px più in alto */
+/* dDAE_3.306 — build visibile in Impostazioni e griglia Home 10px più in alto */
 #page-impostazioni #buildText.settings-build{
   display:block !important;
 }
