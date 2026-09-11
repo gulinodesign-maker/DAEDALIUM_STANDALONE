@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.307";
+const BUILD_VERSION = "3.308";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.307 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.308 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -18971,7 +18971,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.307 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.308 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19179,7 +19179,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.307 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.308 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24618,7 +24618,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.307 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.308 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -26241,7 +26241,7 @@ function renderStatChannel(){
       const compareRow = compareByKey.get(String(row.key || '')) || null;
       const compareShareLabel = __statChannelShareFormat__(compareRow?.value || 0, compareTotal);
       const compareValueLabel = euro(compareRow?.value || 0);
-      const compareName = compareEnabled ? `<span class="stat-channel-compare-line stat-channel-compare-year">${escapeHtml(String(compareYear))}</span>` : '';
+      const compareName = compareEnabled ? `<span class="stat-channel-compare-line stat-channel-compare-year" aria-hidden="true"></span>` : '';
       const compareShare = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareShareLabel : '0%')}</span>` : '';
       const compareValue = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareValueLabel : euro(0))}</span>` : '';
       return `
@@ -28411,13 +28411,13 @@ function __statMensiliTrendHtml__(currentValue, compareValue, compareYear){
   }
   const arrow = up ? '↑' : '↓';
   const labelBase = up ? __statMensiliI18n__('Crescita rispetto a') : __statMensiliI18n__('Diminuzione rispetto a');
-  const yearLabel = compareYear ? String(compareYear) : __statMensiliI18n__('anno confronto');
+  const referenceLabel = __statMensiliI18n__('Anno di riferimento');
   const diffText = `${up ? '+' : ''}${euro(diff)}`;
   return `
     <div class="month-expanded-trend ${up ? 'is-up' : 'is-down'}">
       <div class="month-expanded-trend-arrow" aria-hidden="true">${arrow}</div>
       <div class="month-expanded-trend-copy">
-        <div class="month-expanded-trend-label">${escapeHtml(labelBase)} ${escapeHtml(yearLabel)}</div>
+        <div class="month-expanded-trend-label">${escapeHtml(labelBase)} ${escapeHtml(referenceLabel)}</div>
         <div class="month-expanded-trend-value"><span>${pctText}</span><span>${diffText}</span></div>
       </div>
     </div>
@@ -28507,7 +28507,7 @@ function renderStatMensili(){
         ${__statMensiliTrendHtml__(val, cmpVal, compare.year)}
         <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
           <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-          <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno'))} ${escapeHtml(compareYearLabel)}</div>
+          <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
           <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
           <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
           <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Quota sul totale'))}</span><strong>${occDisp}%</strong></div>
@@ -48035,7 +48035,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.307';
+  var BUILD_TAG='dDAE_3.308';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -49882,7 +49882,7 @@ try{
             ${__statMensiliTrendHtml__(val, cmpVal, compare.year)}
             <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
               <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-              <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))} ${escapeHtml(compareYearLabel)}</div>
+              <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(speseVal)}</strong></div>
@@ -49985,7 +49985,7 @@ try{
               ${__statMensiliTrendHtml__(annualVal, cmpAnnualVal, compare.year)}
               <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati anno'))}">
                 <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-                <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))} ${escapeHtml(compareYearLabel)}</div>
+                <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(annualVal)}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(cmpAnnualVal)}</strong></div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(annualSpese)}</strong></div>
@@ -52930,7 +52930,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.307',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.308',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55964,7 +55964,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.307 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.308 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56084,7 +56084,7 @@ async function renderStatAnalisi(){
   function decorateValueNode(node, text, yy){
     if(!node) return;
     try{ node.querySelectorAll(':scope > .stats-card-compare-line').forEach((n)=>n.remove()); }catch(_){ }
-    const small=document.createElement('span'); small.className='stats-card-compare-line'; small.textContent=String(yy)+' · '+String(text ?? ''); node.appendChild(small);
+    const small=document.createElement('span'); small.className='stats-card-compare-line'; small.textContent=String(text ?? ''); node.appendChild(small);
     try{ node.closest('.stat-row,.kpi-card')?.classList.add('has-year-compare'); }catch(_){ }
   }
   function decorateStandard(page,map,yy){
@@ -56119,7 +56119,7 @@ async function renderStatAnalisi(){
         else { const m=key.match(/^month-(\d{1,2})$/); if(m) current=fmtEuro(Number(state?.statMensili?.byMonth?.[Number(m[1])-1]||0)); }
       }catch(_){ }
       const cur=document.createElement('span'); cur.className='stats-month-current-line'; cur.textContent=current; label.appendChild(cur);
-      const cmp=document.createElement('span'); cmp.className='stats-card-compare-line'; cmp.textContent=String(yy)+' · '+String(map[key]); label.appendChild(cmp);
+      const cmp=document.createElement('span'); cmp.className='stats-card-compare-line'; cmp.textContent=String(map[key]); label.appendChild(cmp);
       card.classList.add('has-year-compare');
     });
   }
