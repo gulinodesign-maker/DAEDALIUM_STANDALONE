@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.315";
+const BUILD_VERSION = "3.316";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.315 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.316 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -6077,12 +6077,26 @@ function __syncTopserviziCenterLayout__(){
 function __setTopserviziCenterLabel__(){
   try{
     const el = document.getElementById("topserviziYear");
+    const homeContext = document.getElementById("homeYearPill");
+    const isHome = !!(state && state.page === "home");
+    const y = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear()).trim();
+    if (homeContext){
+      homeContext.hidden = !isHome;
+      if (isHome){
+        const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
+        homeContext.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
+        homeContext.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
+        try{ __pillApplyToButton__(homeContext); }catch(_){ }
+      }
+    }
     if (!el) return;
+    el.hidden = isHome;
+    if (isHome) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       const d = (a instanceof Date) ? a : new Date(a);
       const month = monthNameIT(d).toUpperCase();
-      const year = (!isNaN(d)) ? String(d.getFullYear()) : String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+      const year = (!isNaN(d)) ? String(d.getFullYear()) : y;
       el.textContent = `${month} ${year}`.trim();
     } else if (state && state.page === "pulizie"){
       const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
@@ -6103,11 +6117,12 @@ function updateYearPill(){
   }
   const homePill = document.getElementById("homeYearPill");
   if (homePill){
-    homePill.hidden = !y;
+    homePill.hidden = !(y && state && state.page === "home");
     if (y){
       const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
       homePill.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
       homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
+      try{ __pillApplyToButton__(homePill); }catch(_){ }
     }
   }
 
@@ -13343,6 +13358,19 @@ function __pillApplyToButton__(btn, previewVisual){
   try{
     if (!btn || !btn.id) return;
     const visual = previewVisual || __pillVisualFor__(btn.id);
+    if (btn.id === 'homeYearPill' && btn.closest && btn.closest('.topservizi')){
+      const accentHex = __operatoreColorHex__(visual.bg || visual.border || 'blue-4');
+      btn.style.setProperty('background', 'transparent', 'important');
+      btn.style.setProperty('background-color', 'transparent', 'important');
+      btn.style.setProperty('border', '0', 'important');
+      btn.style.setProperty('border-width', '0', 'important');
+      btn.style.setProperty('box-shadow', 'none', 'important');
+      btn.style.setProperty('opacity', '1', 'important');
+      btn.style.setProperty('color', accentHex, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', accentHex, 'important');
+      btn.style.setProperty('font-weight', visual && visual.bold ? '800' : '700', 'important');
+      return;
+    }
     if (__isDarkModeRuntime__() && __isProtectedPillButton__(btn)){
       const isLogout = String(btn.id || '').toLowerCase().includes('logout');
       __applyProtectedDarkButtonStyle__(btn, {
@@ -18971,7 +18999,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.315 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.316 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19117,7 +19145,7 @@ function __structureUpdateUi__(){
   const label=active ? active.nome : 'Seleziona struttura';
   const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
   const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
-  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=__structureContextLabel__(y); home.setAttribute('aria-label',active ? ('Struttura '+active.nome+', anno '+y) : ('Seleziona struttura, anno '+y)); }
+  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=__structureContextLabel__(y); home.setAttribute('aria-label',active ? ('Struttura '+active.nome+', anno '+y) : ('Seleziona struttura, anno '+y)); home.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(home);}catch(_){ } }
   const enabled=!!active;
   __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
 }
@@ -19179,7 +19207,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.315 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.316 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24618,7 +24646,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.315 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.316 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48035,7 +48063,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.315';
+  var BUILD_TAG='dDAE_3.316';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52935,7 +52963,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.315',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.316',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -55969,7 +55997,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.315 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.316 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56190,7 +56218,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.315 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.316 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56408,7 +56436,7 @@ async function renderStatAnalisi(){
   document.addEventListener('click',(e)=>{
     try{if(e?.target?.closest?.('.statgen-compare-toggle-btn'))setTimeout(syncCompareVisibility,0);}catch(_){ }
   },true);
-  /* dDAE_3.315 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.316 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56440,7 +56468,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.315 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.316 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
