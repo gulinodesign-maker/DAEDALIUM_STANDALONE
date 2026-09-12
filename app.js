@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.322";
+const BUILD_VERSION = "3.323";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.322 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.323 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -8157,7 +8157,7 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
-// dDAE_3.322 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+// dDAE_3.323 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
 const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
 function __guestPresetMessageSentAtFromRecord__(g){
   try{
@@ -19074,7 +19074,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.322 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.323 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19282,7 +19282,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.322 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.323 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24721,7 +24721,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.322 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.323 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -33648,6 +33648,7 @@ const __GUEST_NATIONALITY_OPTIONS__ = [
   { code:'JP', flag:'🇯🇵', name:'Giappone' },
   { code:'CN', flag:'🇨🇳', name:'Cina' },
   { code:'IN', flag:'🇮🇳', name:'India' },
+  { code:'ID', flag:'🇮🇩', name:'Indonesia' },
   { code:'KR', flag:'🇰🇷', name:'Corea del Sud' },
   { code:'AE', flag:'🇦🇪', name:'Emirati Arabi Uniti' },
   { code:'SA', flag:'🇸🇦', name:'Arabia Saudita' },
@@ -33788,7 +33789,7 @@ const __GUEST_NATIONALITY_PHONE_PREFIX_BY_CODE__ = {
   DK:'45', SE:'46', NO:'47', FI:'358', IS:'354', PL:'48', CZ:'420', SK:'421', HU:'36', RO:'40', BG:'359', HR:'385',
   SI:'386', GR:'30', CY:'357', MT:'356', EE:'372', LV:'371', LT:'370', AL:'355', RS:'381', ME:'382', BA:'387', MK:'389',
   XK:'383', UA:'380', MD:'373', RU:'7', US:'1', CA:'1', MX:'52', GT:'502', CR:'506', BR:'55', AR:'54', AU:'61', NZ:'64', JP:'81',
-  CN:'86', IN:'91', KR:'82', AE:'971', SA:'966', IL:'972', TR:'90', EG:'20', MA:'212', TN:'216', DZ:'213', ZA:'27'
+  CN:'86', IN:'91', ID:'62', KR:'82', AE:'971', SA:'966', IL:'972', TR:'90', EG:'20', MA:'212', TN:'216', DZ:'213', ZA:'27'
 };
 function __guestNationalityPhonePrefix__(code){
   try{
@@ -33830,7 +33831,7 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
     '972','971','966','995','994','502','506','90','81','82','86','91','212','213','216','20','27','1','7',
     '30','31','32','33','34','39','40','41','43','44','45','46','47','48','49','351','352',
     '353','354','358','36','370','371','372','373','380','381','385','386','389','420','421','355','356','52','54',
-    '55','61','64'
+    '55','61','62','64'
   ])).sort(function(a,b){ return b.length - a.length; });
 
   if (s.startsWith('39')) return s;
@@ -33860,7 +33861,7 @@ const __GUEST_NATIONALITY_PHONE_PREFIXES__ = [
   ['90','TR'], ['81','JP'], ['82','KR'], ['86','CN'], ['91','IN'], ['212','MA'], ['213','DZ'], ['216','TN'], ['20','EG'], ['27','ZA'],
   ['1','US'], ['7','RU'], ['30','GR'], ['31','NL'], ['32','BE'], ['33','FR'], ['34','ES'], ['39','IT'], ['40','RO'], ['41','CH'], ['43','AT'], ['44','GB'], ['45','DK'], ['46','SE'], ['47','NO'], ['48','PL'], ['49','DE'],
   ['351','PT'], ['352','LU'], ['353','IE'], ['354','IS'], ['358','FI'], ['36','HU'], ['370','LT'], ['371','LV'], ['372','EE'], ['373','MD'], ['380','UA'], ['381','RS'], ['385','HR'], ['386','SI'], ['389','MK'], ['420','CZ'], ['421','SK'], ['355','AL'], ['356','MT'],
-  ['52','MX'], ['502','GT'], ['54','AR'], ['55','BR'], ['61','AU'], ['64','NZ'], ['506','CR'], ['972','IL']
+  ['52','MX'], ['502','GT'], ['54','AR'], ['55','BR'], ['61','AU'], ['62','ID'], ['64','NZ'], ['506','CR'], ['972','IL']
 ];
 function __detectGuestNationalityFromPhone__(raw){
   try{
@@ -48138,7 +48139,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.322';
+  var BUILD_TAG='dDAE_3.323';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53038,7 +53039,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.322',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.323',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -56077,7 +56078,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.322 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.323 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56298,7 +56299,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.322 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.323 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56516,7 +56517,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.322 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.323 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56548,7 +56549,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.322 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.323 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
