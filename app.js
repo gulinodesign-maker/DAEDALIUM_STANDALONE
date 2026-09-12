@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.323";
+const BUILD_VERSION = "3.324";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.323 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.324 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -6084,10 +6084,17 @@ function __setTopserviziCenterLabel__(){
       homeContext.hidden = !isHome;
       if (isHome){
         const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
-        homeContext.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
-        homeContext.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
+        homeContext.textContent = active ? `${active.nome}` : `Seleziona struttura`;
+        homeContext.setAttribute('aria-label', active ? `Struttura ${active.nome}` : `Seleziona struttura`);
         try{ __pillApplyToButton__(homeContext); }catch(_){ }
       }
+    }
+    const homeYearDisplay = document.getElementById('homeYearDisplayPill');
+    if (homeYearDisplay){
+      homeYearDisplay.hidden = !isHome;
+      homeYearDisplay.textContent = y;
+      homeYearDisplay.setAttribute('aria-label', `Anno selezionato ${y}`);
+      try{ __pillApplyToButton__(homeYearDisplay); }catch(_){ }
     }
     if (!el) return;
     el.hidden = isHome;
@@ -6120,9 +6127,18 @@ function updateYearPill(){
     homePill.hidden = !(y && state && state.page === "home");
     if (y){
       const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
-      homePill.textContent = active ? `${active.nome} - ${y}` : `Struttura - ${y}`;
-      homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}, anno ${y}` : `Seleziona struttura, anno ${y}`);
+      homePill.textContent = active ? `${active.nome}` : `Seleziona struttura`;
+      homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}` : `Seleziona struttura`);
       try{ __pillApplyToButton__(homePill); }catch(_){ }
+    }
+  }
+  const homeYearDisplay = document.getElementById('homeYearDisplayPill');
+  if (homeYearDisplay){
+    homeYearDisplay.hidden = !(y && state && state.page === 'home');
+    if (y){
+      homeYearDisplay.textContent = y;
+      homeYearDisplay.setAttribute('aria-label', `Anno selezionato ${y}`);
+      try{ __pillApplyToButton__(homeYearDisplay); }catch(_){ }
     }
   }
 
@@ -7995,25 +8011,31 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.273 — evidenza verde nel popup schedine PS:
-// una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
+// dDAE_3.324 — evidenza verde nel popup schedine PS:
+// consentita esclusivamente quando l'intero dovuto è saldato in contanti.
+// Qualsiasi pagamento elettronico, anche parziale o misto ai contanti, forza la card standard.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
     if (!g) return false;
-    const inIso = formatISODateLocal(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-    const outIso = formatISODateLocal(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
-    const inDay = _dayNumFromISO(inIso);
-    const outDay = _dayNumFromISO(outIso);
-    if (inDay == null || outDay == null || (outDay - inDay) !== 1) return false;
-
     const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? g?.deposit ?? 0);
     const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? g?.depositType ?? g?.deposit_type ?? '');
     const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
     const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? g?.balanceType ?? g?.balance_type ?? '');
 
-    const hasCash = (dep > 0 && _isCashTypeStr_(depType)) || (saldo > 0 && _isCashTypeStr_(saldoType));
     const hasElectronic = (dep > 0 && _isElectronicTypeStr_(depType)) || (saldo > 0 && _isElectronicTypeStr_(saldoType));
-    return !!(hasCash && !hasElectronic);
+    if (hasElectronic) return false;
+
+    // Ogni importo effettivamente registrato deve essere esplicitamente contante.
+    if (dep > 0 && !_isCashTypeStr_(depType)) return false;
+    if (saldo > 0 && !_isCashTypeStr_(saldoType)) return false;
+
+    const fin = _guestStayFinancials(g);
+    const due = Math.max(0, Number(fin?.total || 0) + Number(fin?.services || 0) - Number(fin?.discount || 0));
+    const paidCash = (dep > 0 ? dep : 0) + (saldo > 0 ? saldo : 0);
+    if (!(due > 0)) return false;
+    if (!(paidCash > 0)) return false;
+    if (Number(fin?.remaining || 0) > 0.0001) return false;
+    return paidCash + 0.0001 >= due;
   }catch(_){ return false; }
 }
 
@@ -8157,7 +8179,7 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
-// dDAE_3.323 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+// dDAE_3.324 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
 const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
 function __guestPresetMessageSentAtFromRecord__(g){
   try{
@@ -8646,7 +8668,6 @@ function openGuestAlertModal(kind){
         if (String(cfg.tag || '').toLowerCase() === 'polizia') {
           const guest = it.guest || {};
           if (__guestPsAlertCashOnlyOneNight__(guest)) card.classList.add('is-one-night-cash-only');
-          else if (__guestPsAlertPrivateChannel__(guest)) card.classList.add('is-private-channel');
         }
       }catch(_){ }
       card.tabIndex = 0;
@@ -12731,7 +12752,8 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   serviziExtraBtn: 'orange-4',
   serviziCocktailAnalcoliciBtn: 'blue-4',
   serviziRicaricaElettricaBtn: 'green-4',
-  homeYearPill: 'sky-4'
+  homeYearPill: 'sky-4',
+  homeYearDisplayPill: 'sky-4'
 };
 
 function __launcherIconColorMapRead__(){
@@ -13303,7 +13325,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','homeYearDisplayPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -19074,7 +19096,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.323 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.324 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19220,7 +19242,8 @@ function __structureUpdateUi__(){
   const label=active ? active.nome : 'Seleziona struttura';
   const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
   const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
-  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=__structureContextLabel__(y); home.setAttribute('aria-label',active ? ('Struttura '+active.nome+', anno '+y) : ('Seleziona struttura, anno '+y)); home.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(home);}catch(_){ } }
+  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=active ? active.nome : 'Seleziona struttura'; home.setAttribute('aria-label',active ? ('Struttura '+active.nome) : 'Seleziona struttura'); home.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(home);}catch(_){ } }
+  const homeYearDisplay=document.getElementById('homeYearDisplayPill'); if(homeYearDisplay){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); homeYearDisplay.textContent=y; homeYearDisplay.setAttribute('aria-label','Anno selezionato '+y); homeYearDisplay.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(homeYearDisplay);}catch(_){ } }
   const enabled=!!active;
   __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
 }
@@ -19282,7 +19305,18 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.323 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.324 — Home context pill: separazione rigorosa tap / long press su iOS.
+function __bindHomeYearDisplayPillInteractions__(){
+  const btn=document.getElementById('homeYearDisplayPill');
+  if(!btn || btn.dataset.homeYearDisplayBound==='1') return;
+  btn.dataset.homeYearDisplayBound='1';
+  const openYear=()=>{
+    try{ if(__pillLongPressSuppressed__(btn)) return; }catch(_){ }
+    try{ __openSettingsYearModal__(); }catch(_){ }
+  };
+  try{ if(typeof bindFastTap==='function') bindFastTap(btn,openYear); else btn.addEventListener('click',openYear); }catch(_){ }
+}
+
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -19404,6 +19438,7 @@ function __setupStructureUi__(){
   const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
   bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
   try{ __bindHomeYearPillInteractions__(); }catch(_){ }
+  try{ __bindHomeYearDisplayPillInteractions__(); }catch(_){ }
   bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
   bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
   bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
@@ -24721,7 +24756,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.323 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.324 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48139,7 +48174,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.323';
+  var BUILD_TAG='dDAE_3.324';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53039,7 +53074,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.323',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.324',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -56078,7 +56113,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.323 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.324 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56299,7 +56334,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.323 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.324 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56517,7 +56552,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.323 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.324 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56549,7 +56584,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.323 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.324 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
