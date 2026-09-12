@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.321";
+const BUILD_VERSION = "3.322";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.321 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.322 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -8157,6 +8157,81 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
+// dDAE_3.322 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
+function __guestPresetMessageSentAtFromRecord__(g){
+  try{
+    return String(g?.guest_preset_message_sent_at ?? g?.preset_message_sent_at ?? g?.messaggio_preimpostato_inviato_at ?? '').trim();
+  }catch(_){ return ''; }
+}
+function __guestPresetMessageLogRead__(){
+  try{
+    const key = (typeof __structureLocalStorageKey__ === 'function') ? __structureLocalStorageKey__(__GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__) : __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__;
+    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  }catch(_){ return {}; }
+}
+function __guestPresetMessageLogWrite__(map){
+  try{
+    const key = (typeof __structureLocalStorageKey__ === 'function') ? __structureLocalStorageKey__(__GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__) : __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__;
+    localStorage.setItem(key, JSON.stringify(map && typeof map === 'object' ? map : {}));
+  }catch(_){ }
+}
+function __guestPresetMessageWasSent__(guest){
+  try{
+    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
+    if (rows.some((g) => !!__guestPresetMessageSentAtFromRecord__(g))) return true;
+    const log = __guestPresetMessageLogRead__();
+    return rows.some((g) => {
+      const id = String(guestIdOf(g) || g?.id || '').trim();
+      return !!(id && log[id] && String(log[id]?.at || log[id] || '').trim());
+    });
+  }catch(_){ return false; }
+}
+async function __guestMarkPresetMessageSent__(meta){
+  const info = meta && typeof meta === 'object' ? meta : {};
+  let item = null;
+  try{ item = (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null) || state?.guestViewItem || state?.guestEditSourceItem || null; }catch(_){ item = state?.guestViewItem || null; }
+  const id = String(guestIdOf(item) || item?.id || '').trim();
+  if (!item || !id) return false;
+
+  const at = new Date().toISOString();
+  const patch = {
+    guest_preset_message_sent_at: at,
+    guest_preset_message_template_id: String(info.templateId || '').trim(),
+    guest_preset_message_channel: String(info.channel || '').trim()
+  };
+  const patchRow = (row) => {
+    if (!row) return;
+    row.guest_preset_message_sent_at = patch.guest_preset_message_sent_at;
+    row.guest_preset_message_template_id = patch.guest_preset_message_template_id;
+    row.guest_preset_message_channel = patch.guest_preset_message_channel;
+  };
+  try{ patchRow(item); }catch(_){ }
+  try{
+    [state?.ospiti, state?.guests, state?.bookings, state?.guestList, state?.statsGuests, state?.guestGroupBookings].forEach((list) => {
+      if (!Array.isArray(list)) return;
+      list.forEach((row) => {
+        try{ if (String(guestIdOf(row) || row?.id || '').trim() === id) patchRow(row); }catch(_){ }
+      });
+    });
+  }catch(_){ }
+  try{
+    const log = __guestPresetMessageLogRead__();
+    log[id] = { at, templateId:patch.guest_preset_message_template_id, channel:patch.guest_preset_message_channel };
+    __guestPresetMessageLogWrite__(log);
+  }catch(_){ }
+  try{
+    const payload = Object.assign({}, item, { id }, patch);
+    await api('ospiti', { method:'PUT', body:payload });
+    try{ invalidateApiCache('ospiti|'); }catch(_){ }
+  }catch(_){
+    // Il log locale strutturato resta valido anche se la sincronizzazione remota è momentaneamente indisponibile.
+  }
+  try{ if (typeof renderGuestCards === 'function' && String(state?.page || '') === 'ospiti') renderGuestCards(); }catch(_){ }
+  return true;
+}
+
 
 // dDAE_3.097 — priorità visiva guest card:
 // 1) checkout odierno con saldo mancante = rosso lampeggiante;
@@ -8178,7 +8253,7 @@ function __guestGroupCheckoutTodayUnpaid__(guest){
 function __guestCardUrgentVisualState__(guest){
   try{
     if (__guestGroupCheckoutTodayUnpaid__(guest)) return 'checkout-unpaid';
-    if (__guestGroupCheckInExpectedToday__(guest)) return 'checkin-unconfirmed';
+    if (__guestGroupCheckInExpectedToday__(guest) && !__guestPresetMessageWasSent__(guest)) return 'checkin-unconfirmed';
   }catch(_){ }
   return '';
 }
@@ -18999,7 +19074,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.321 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.322 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19207,7 +19282,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.321 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.322 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearPillInteractions__(){
   const btn=document.getElementById('homeYearPill');
   if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
@@ -24646,7 +24721,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.321 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.322 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48063,7 +48138,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.321';
+  var BUILD_TAG='dDAE_3.322';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -52963,7 +53038,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.321',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.322',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -54786,6 +54861,7 @@ try{
     }
     const title=configuredMessageGuestTitle(guest,target);
     const message=title ? (title+'\n\n'+translated) : translated;
+    try{ await __guestMarkPresetMessageSent__({ templateId:'legacy-configured', channel:'whatsapp' }); }catch(_){ }
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
     return true;
@@ -55260,9 +55336,11 @@ try{
     let url='https://wa.me/'+encodeURIComponent(wa);
     // Se è stato scelto un titolo, apre la chat con il messaggio memorizzato;
     // se il canale viene premuto direttamente, apre la chat vuota del contatto.
-    if(getRecord(selectedSendId)){
+    const selectedRecord=getRecord(selectedSendId);
+    if(selectedRecord){
       const message=await preparedSelectedMessage(); if(!message)return;
       url+='?text='+encodeURIComponent(message);
+      try{ await __guestMarkPresetMessageSent__({ templateId:String(selectedRecord.id||''), channel:'whatsapp' }); }catch(_){ }
     }
     closeSend(); try{window.location.href=url;}catch(_){try{window.open(url,'_blank','noopener');}catch(__){ }}
   }
@@ -55278,8 +55356,10 @@ try{
     let message='';
     // Stessa logica di WhatsApp: titolo selezionato = testo precompilato;
     // pressione diretta del canale = conversazione SMS/iMessage vuota.
-    if(getRecord(selectedSendId)){
+    const selectedRecord=getRecord(selectedSendId);
+    if(selectedRecord){
       message=await preparedSelectedMessage(); if(!message)return;
+      try{ await __guestMarkPresetMessageSent__({ templateId:String(selectedRecord.id||''), channel:'messenger' }); }catch(_){ }
     }
     const cleanPhone=phone.replace(/[^+\d]/g,'');
     let url='sms:'+encodeURIComponent(cleanPhone||phone);
@@ -55997,7 +56077,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.321 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.322 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56218,7 +56298,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.321 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.322 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56436,7 +56516,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.321 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.322 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56468,7 +56548,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.321 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.322 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
