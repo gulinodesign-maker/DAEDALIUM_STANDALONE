@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.324";
+const BUILD_VERSION = "3.325";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.324 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.325 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -8011,7 +8011,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.324 — evidenza verde nel popup schedine PS:
+// dDAE_3.325 — evidenza verde nel popup schedine PS:
 // consentita esclusivamente quando l'intero dovuto è saldato in contanti.
 // Qualsiasi pagamento elettronico, anche parziale o misto ai contanti, forza la card standard.
 function __guestPsAlertCashOnlyOneNight__(g){
@@ -8179,7 +8179,7 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
-// dDAE_3.324 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+// dDAE_3.325 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
 const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
 function __guestPresetMessageSentAtFromRecord__(g){
   try{
@@ -19096,7 +19096,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.324 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.325 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19305,7 +19305,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.324 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.325 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearDisplayPillInteractions__(){
   const btn=document.getElementById('homeYearDisplayPill');
   if(!btn || btn.dataset.homeYearDisplayBound==='1') return;
@@ -24756,7 +24756,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.324 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.325 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -36727,6 +36727,52 @@ function __guestReportResolveBookings__(guest){
     return String(_guestIdOf(a) || '').localeCompare(String(_guestIdOf(b) || ''));
   });
 }
+function __guestReportNormalizeLanguage__(value){
+  const raw=String(value || '').trim().toLowerCase().replace(/_/g,'-');
+  if(!raw) return '';
+  const aliases={
+    ita:'it',eng:'en',fra:'fr',fre:'fr',deu:'de',ger:'de',spa:'es',por:'pt',nld:'nl',dut:'nl',pol:'pl',ces:'cs',cze:'cs',slk:'sk',hun:'hu',ron:'ro',rum:'ro',bul:'bg',hrv:'hr',slv:'sl',ell:'el',gre:'el',mlt:'mt',est:'et',lav:'lv',lit:'lt',sqi:'sq',alb:'sq',srp:'sr',bos:'bs',mkd:'mk',ukr:'uk',rus:'ru',dan:'da',swe:'sv',nor:'nb',fin:'fi',isl:'is',ind:'id',jpn:'ja',zho:'zh-cn',chi:'zh-cn',hin:'hi',kor:'ko',ara:'ar',heb:'he',tur:'tr'
+  };
+  if(raw==='zh' || raw==='zh-cn' || raw==='zh-sg' || raw==='zh-hans') return 'zh-cn';
+  if(raw==='zh-tw' || raw==='zh-hk' || raw==='zh-hant') return 'zh-tw';
+  if(raw==='pt-br' || raw==='pt-pt') return 'pt';
+  if(raw==='no' || raw==='nn' || raw==='nb-no') return 'nb';
+  const base=raw.split('-')[0];
+  if(aliases[base]) return aliases[base];
+  if(/^[a-z]{2}$/.test(base)) return base;
+  const names=[
+    [/ital/, 'it'],[/english|ingles|anglais|englisch/, 'en'],[/fran/, 'fr'],[/tedesc|german|deutsch/, 'de'],[/spagn|spanish|espa/, 'es'],
+    [/portogh|portugu/, 'pt'],[/oland|dutch|neder/, 'nl'],[/polacc|polish|polski/, 'pl'],[/ceco|czech|cesk/, 'cs'],[/slovacc|slovak/, 'sk'],
+    [/ungher|hungar/, 'hu'],[/rumen|roman|român/, 'ro'],[/bulgar/, 'bg'],[/croat/, 'hr'],[/sloven/, 'sl'],[/grec|greek|ellin/, 'el'],[/malt/, 'mt'],
+    [/eston/, 'et'],[/letton|latv/, 'lv'],[/lituan|lithuan/, 'lt'],[/alban|shqip/, 'sq'],[/serb/, 'sr'],[/bosn/, 'bs'],[/macedon/, 'mk'],
+    [/ucrain|ukrain/, 'uk'],[/russ/, 'ru'],[/danes|danish/, 'da'],[/sved|swedish/, 'sv'],[/norveg|norwegian/, 'nb'],[/finn/, 'fi'],[/island|iceland/, 'is'],
+    [/indones/, 'id'],[/giappon|japan/, 'ja'],[/cines|chinese|mandarin/, 'zh-cn'],[/hindi/, 'hi'],[/corean|korean/, 'ko'],[/arab/, 'ar'],[/ebra|hebrew/, 'he'],[/turc|turkish/, 'tr']
+  ];
+  for(const [re,code] of names) if(re.test(raw)) return code;
+  return '';
+}
+function __guestReportCountryLanguage__(code){
+  const c=String(code || '').trim().toUpperCase();
+  const groups={
+    it:['IT','SM','VA'],fr:['FR','MC','BE','LU'],de:['DE','AT','CH','LI'],en:['GB','UK','US','IE','AU','NZ','CA','SG','ZA','NG','GH','KE','TZ','JM','TT','BB','BS'],
+    es:['ES','MX','AR','CL','CO','PE','UY','VE','EC','BO','CR','PA','DO','GT','HN','NI','SV','CU','PR','PY'],pt:['PT','BR','AO','MZ','CV'],nl:['NL'],
+    pl:['PL'],cs:['CZ'],sk:['SK'],hu:['HU'],ro:['RO','MD'],bg:['BG'],hr:['HR'],sl:['SI'],el:['GR','CY'],mt:['MT'],et:['EE'],lv:['LV'],lt:['LT'],
+    sq:['AL','XK'],sr:['RS','ME'],bs:['BA'],mk:['MK'],uk:['UA'],ru:['RU','BY','KZ'],da:['DK'],sv:['SE'],nb:['NO'],fi:['FI'],is:['IS'],
+    id:['ID'],ja:['JP'],'zh-cn':['CN'],hi:['IN'],ko:['KR'],ar:['AE','SA','EG','MA','TN','DZ','QA','KW','BH','OM','JO','LB','IQ','LY'],he:['IL'],tr:['TR']
+  };
+  for(const [lang,list] of Object.entries(groups)) if(list.includes(c)) return lang;
+  return '';
+}
+function __guestReportCountryCode__(guest){
+  const all=[...__guestReportResolveBookings__(guest), guest].filter(Boolean);
+  for(const item of all){
+    const candidates=[item?.nazionalita_code,item?.nazionalitaCode,item?.country_code,item?.countryCode,item?.nazionalita,item?.nazione,item?.country,item?.paese];
+    for(const value of candidates){ const code=String(value || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }
+    try{ const opt=__readGuestNationalityFromRecord__(item); const code=String(opt?.code || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }catch(_){ }
+  }
+  try{ const code=String(document.getElementById('guestNationality')?.value || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }catch(_){ }
+  return '';
+}
 function __guestReportResolveLanguage__(guest){
   const bookings = __guestReportResolveBookings__(guest);
   const candidates = [];
@@ -36745,62 +36791,93 @@ function __guestReportResolveLanguage__(guest){
   bookings.forEach(pushCandidates);
   pushCandidates(guest);
   try{
-    const domCandidates = [
+    candidates.push(
       document.getElementById('guestLanguage')?.value,
       document.getElementById('guestLingua')?.value,
       document.getElementById('guestPreferredLanguage')?.value,
       document.getElementById('guestLanguageSelect')?.value,
       document.getElementById('guestReportLanguage')?.value
-    ];
-    candidates.push(...domCandidates);
+    );
   }catch(_){ }
-  for (const value of candidates){
-    const raw = String(value || '').trim().toLowerCase();
-    if (!raw) continue;
-    if (raw.startsWith('it') || raw === 'italiano') return 'it';
-    if (raw.startsWith('en') || raw.includes('ingles')) return 'en';
-    if (raw.startsWith('fr') || raw.includes('fran')) return 'fr';
-    if (raw.startsWith('de') || raw.includes('tede') || raw.includes('deut')) return 'de';
-    if (raw.startsWith('es') || raw.includes('spagn') || raw.includes('espa')) return 'es';
-  }
-  try{ return __getAppLanguage__(); }catch(_){ return 'it'; }
+  for (const value of candidates){ const lang=__guestReportNormalizeLanguage__(value); if(lang) return lang; }
+  const inferred=__guestReportCountryLanguage__(__guestReportCountryCode__(guest));
+  if(inferred) return inferred;
+  try{ return __guestReportNormalizeLanguage__(__getAppLanguage__()) || 'it'; }catch(_){ return 'it'; }
 }
-function __guestReportTextMap__(){ return {
-  title:{ it:'REPORT OSPITE', en:'GUEST REPORT', fr:'RAPPORT CLIENT', de:'GASTBERICHT', es:'REPORTE HUÉSPED' },
-  guestFallback:{ it:'Ospite', en:'Guest', fr:'Client', de:'Gast', es:'Huésped' },
-  booking:{ it:'Prenotazione', en:'Booking', fr:'Réservation', de:'Buchung', es:'Reserva' },
-  stay:{ it:'Soggiorno', en:'Stay', fr:'Séjour', de:'Aufenthalt', es:'Estancia' },
-  rooms:{ it:'Stanze', en:'Rooms', fr:'Chambres', de:'Zimmer', es:'Habitaciones' },
-  guests:{ it:'Ospiti', en:'Guests', fr:'Clients', de:'Gäste', es:'Huéspedes' },
-  extraServices:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
-  bookingAmount:{ it:'Importo prenotazione', en:'Booking amount', fr:'Montant réservation', de:'Buchungsbetrag', es:'Importe reserva' },
-  services:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
-  discount:{ it:'Sconto', en:'Discount', fr:'Remise', de:'Rabatt', es:'Descuento' },
-  deposit:{ it:'Acconto', en:'Deposit', fr:'Acompte', de:'Anzahlung', es:'Depósito' },
-  balancePaid:{ it:'Saldo', en:'Paid balance', fr:'Solde payé', de:'Bezahlter Saldo', es:'Saldo pagado' },
-  touristTax:{ it:'Tassa soggiorno', en:'Tourist tax', fr:'Taxe de séjour', de:'Kurtaxe', es:'Tasa turística' },
-  remaining:{ it:'Rimanenza da pagare', en:'Remaining to pay', fr:'Reste à payer', de:'Restbetrag zu zahlen', es:'Pendiente de pago' },
-  noExtraServices:{ it:'Nessun servizio', en:'No services', fr:'Aucun service', de:'Keine Services', es:'Sin servicios' },
-  notes:{ it:'Note', en:'Notes', fr:'Notes', de:'Notizen', es:'Notas' },
-  adults_one:{ it:'adulto', en:'adult', fr:'adulte', de:'Erwachsener', es:'adulto' },
-  adults_other:{ it:'adulti', en:'adults', fr:'adultes', de:'Erwachsene', es:'adultos' },
-  children_one:{ it:'bambino', en:'child', fr:'enfant', de:'Kind', es:'niño' },
-  children_other:{ it:'bambini', en:'children', fr:'enfants', de:'Kinder', es:'niños' },
-  doubleBed_one:{ it:'letto matrimoniale', en:'double bed', fr:'lit double', de:'Doppelbett', es:'cama doble' },
-  doubleBed_other:{ it:'letti matrimoniali', en:'double beds', fr:'lits doubles', de:'Doppelbetten', es:'camas dobles' },
-  singleBed_one:{ it:'letto singolo', en:'single bed', fr:'lit simple', de:'Einzelbett', es:'cama individual' },
-  singleBed_other:{ it:'letti singoli', en:'single beds', fr:'lits simples', de:'Einzelbetten', es:'camas individuales' },
-  crib_one:{ it:'culla', en:'crib', fr:'lit bébé', de:'Kinderbett', es:'cuna' },
-  crib_other:{ it:'culle', en:'cribs', fr:'lits bébé', de:'Kinderbetten', es:'cunas' },
-  none:{ it:'—', en:'—', fr:'—', de:'—', es:'—' },
-  reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
-  reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
-  whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
-  whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
-  room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' },
-  venue:{ it:'Locale', en:'Venue', fr:'Espace', de:'Bereich', es:'Local' },
-  date:{ it:'Data', en:'Date', fr:'Date', de:'Datum', es:'Fecha' }
-}; }
+function __guestReportLocale__(lang){
+  const key=__guestReportNormalizeLanguage__(lang) || 'it';
+  const locales={it:'it-IT',en:'en-GB',fr:'fr-FR',de:'de-DE',es:'es-ES',pt:'pt-PT',nl:'nl-NL',pl:'pl-PL',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',ro:'ro-RO',bg:'bg-BG',hr:'hr-HR',sl:'sl-SI',el:'el-GR',mt:'mt-MT',et:'et-EE',lv:'lv-LV',lt:'lt-LT',sq:'sq-AL',sr:'sr-RS',bs:'bs-BA',mk:'mk-MK',uk:'uk-UA',ru:'ru-RU',da:'da-DK',sv:'sv-SE',nb:'nb-NO',fi:'fi-FI',is:'is-IS',id:'id-ID',ja:'ja-JP','zh-cn':'zh-CN','zh-tw':'zh-TW',hi:'hi-IN',ko:'ko-KR',ar:'ar-SA',he:'he-IL',tr:'tr-TR'};
+  return locales[key] || 'it-IT';
+}
+function __guestReportTextMap__(){
+  const map={
+    title:{ it:'REPORT OSPITE', en:'GUEST REPORT', fr:'RAPPORT CLIENT', de:'GASTBERICHT', es:'REPORTE HUÉSPED' },
+    guestFallback:{ it:'Ospite', en:'Guest', fr:'Client', de:'Gast', es:'Huésped' },
+    booking:{ it:'Prenotazione', en:'Booking', fr:'Réservation', de:'Buchung', es:'Reserva' },
+    stay:{ it:'Soggiorno', en:'Stay', fr:'Séjour', de:'Aufenthalt', es:'Estancia' },
+    rooms:{ it:'Stanze', en:'Rooms', fr:'Chambres', de:'Zimmer', es:'Habitaciones' },
+    guests:{ it:'Ospiti', en:'Guests', fr:'Clients', de:'Gäste', es:'Huéspedes' },
+    extraServices:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
+    bookingAmount:{ it:'Importo prenotazione', en:'Booking amount', fr:'Montant réservation', de:'Buchungsbetrag', es:'Importe reserva' },
+    services:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
+    discount:{ it:'Sconto', en:'Discount', fr:'Remise', de:'Rabatt', es:'Descuento' },
+    deposit:{ it:'Acconto', en:'Deposit', fr:'Acompte', de:'Anzahlung', es:'Depósito' },
+    balancePaid:{ it:'Saldo', en:'Paid balance', fr:'Solde payé', de:'Bezahlter Saldo', es:'Saldo pagado' },
+    touristTax:{ it:'Tassa soggiorno', en:'Tourist tax', fr:'Taxe de séjour', de:'Kurtaxe', es:'Tasa turística' },
+    remaining:{ it:'Rimanenza da pagare', en:'Remaining to pay', fr:'Reste à payer', de:'Restbetrag zu zahlen', es:'Pendiente de pago' },
+    noExtraServices:{ it:'Nessun servizio', en:'No services', fr:'Aucun service', de:'Keine Services', es:'Sin servicios' },
+    notes:{ it:'Note', en:'Notes', fr:'Notes', de:'Notizen', es:'Notas' },
+    adults_one:{ it:'adulto', en:'adult', fr:'adulte', de:'Erwachsener', es:'adulto' }, adults_other:{ it:'adulti', en:'adults', fr:'adultes', de:'Erwachsene', es:'adultos' },
+    children_one:{ it:'bambino', en:'child', fr:'enfant', de:'Kind', es:'niño' }, children_other:{ it:'bambini', en:'children', fr:'enfants', de:'Kinder', es:'niños' },
+    doubleBed_one:{ it:'letto matrimoniale', en:'double bed', fr:'lit double', de:'Doppelbett', es:'cama doble' }, doubleBed_other:{ it:'letti matrimoniali', en:'double beds', fr:'lits doubles', de:'Doppelbetten', es:'camas dobles' },
+    singleBed_one:{ it:'letto singolo', en:'single bed', fr:'lit simple', de:'Einzelbett', es:'cama individual' }, singleBed_other:{ it:'letti singoli', en:'single beds', fr:'lits simples', de:'Einzelbetten', es:'camas individuales' },
+    crib_one:{ it:'culla', en:'crib', fr:'lit bébé', de:'Kinderbett', es:'cuna' }, crib_other:{ it:'culle', en:'cribs', fr:'lits bébé', de:'Kinderbetten', es:'cunas' },
+    none:{ it:'—', en:'—', fr:'—', de:'—', es:'—' },
+    reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
+    reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+    whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+    whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
+    room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' }, venue:{ it:'Locale', en:'Venue', fr:'Espace', de:'Bereich', es:'Local' }, date:{ it:'Data', en:'Date', fr:'Date', de:'Datum', es:'Fecha' }
+  };
+  const extra={
+    pt:{title:'RELATÓRIO DO HÓSPEDE',guestFallback:'Hóspede',booking:'Reserva',stay:'Estadia',rooms:'Quartos',guests:'Hóspedes',extraServices:'Serviços',bookingAmount:'Valor da reserva',services:'Serviços',discount:'Desconto',deposit:'Sinal',balancePaid:'Saldo pago',touristTax:'Taxa turística',remaining:'Restante a pagar',noExtraServices:'Sem serviços',notes:'Notas',adults_one:'adulto',adults_other:'adultos',children_one:'criança',children_other:'crianças',doubleBed_one:'cama de casal',doubleBed_other:'camas de casal',singleBed_one:'cama individual',singleBed_other:'camas individuais',crib_one:'berço',crib_other:'berços',reportReady:'Relatório do hóspede pronto',reportTitle:'Relatório do hóspede',whatsappHint:'Relatório do hóspede',whatsappMissingPhone:'Número do hóspede em falta',room:'Quarto',venue:'Espaço',date:'Data'},
+    nl:{title:'GASTRAPPORT',guestFallback:'Gast',booking:'Boeking',stay:'Verblijf',rooms:'Kamers',guests:'Gasten',extraServices:'Diensten',bookingAmount:'Boekingsbedrag',services:'Diensten',discount:'Korting',deposit:'Aanbetaling',balancePaid:'Betaald saldo',touristTax:'Toeristenbelasting',remaining:'Nog te betalen',noExtraServices:'Geen diensten',notes:'Notities',adults_one:'volwassene',adults_other:'volwassenen',children_one:'kind',children_other:'kinderen',doubleBed_one:'tweepersoonsbed',doubleBed_other:'tweepersoonsbedden',singleBed_one:'eenpersoonsbed',singleBed_other:'eenpersoonsbedden',crib_one:'babybedje',crib_other:'babybedjes',reportReady:'Gastrapport gereed',reportTitle:'Gastrapport',whatsappHint:'Gastrapport',whatsappMissingPhone:'Telefoonnummer gast ontbreekt',room:'Kamer',venue:'Ruimte',date:'Datum'},
+    pl:{title:'RAPORT GOŚCIA',guestFallback:'Gość',booking:'Rezerwacja',stay:'Pobyt',rooms:'Pokoje',guests:'Goście',extraServices:'Usługi',bookingAmount:'Kwota rezerwacji',services:'Usługi',discount:'Rabat',deposit:'Zaliczka',balancePaid:'Zapłacone saldo',touristTax:'Opłata turystyczna',remaining:'Pozostało do zapłaty',noExtraServices:'Brak usług',notes:'Uwagi',adults_one:'dorosły',adults_other:'dorośli',children_one:'dziecko',children_other:'dzieci',doubleBed_one:'łóżko podwójne',doubleBed_other:'łóżka podwójne',singleBed_one:'łóżko pojedyncze',singleBed_other:'łóżka pojedyncze',crib_one:'łóżeczko dziecięce',crib_other:'łóżeczka dziecięce',reportReady:'Raport gościa gotowy',reportTitle:'Raport gościa',whatsappHint:'Raport gościa',whatsappMissingPhone:'Brak numeru telefonu gościa',room:'Pokój',venue:'Obiekt',date:'Data'},
+    cs:{title:'ZPRÁVA HOSTA',guestFallback:'Host',booking:'Rezervace',stay:'Pobyt',rooms:'Pokoje',guests:'Hosté',extraServices:'Služby',bookingAmount:'Částka rezervace',services:'Služby',discount:'Sleva',deposit:'Záloha',balancePaid:'Zaplacený zůstatek',touristTax:'Pobytová taxa',remaining:'Zbývá zaplatit',noExtraServices:'Bez služeb',notes:'Poznámky',adults_one:'dospělý',adults_other:'dospělí',children_one:'dítě',children_other:'děti',doubleBed_one:'manželská postel',doubleBed_other:'manželské postele',singleBed_one:'jednolůžko',singleBed_other:'jednolůžka',crib_one:'dětská postýlka',crib_other:'dětské postýlky',reportReady:'Zpráva hosta připravena',reportTitle:'Zpráva hosta',whatsappHint:'Zpráva hosta',whatsappMissingPhone:'Chybí telefon hosta',room:'Pokoj',venue:'Prostor',date:'Datum'},
+    sk:{title:'SPRÁVA HOSŤA',guestFallback:'Hosť',booking:'Rezervácia',stay:'Pobyt',rooms:'Izby',guests:'Hostia',extraServices:'Služby',bookingAmount:'Suma rezervácie',services:'Služby',discount:'Zľava',deposit:'Záloha',balancePaid:'Zaplatený zostatok',touristTax:'Pobytová daň',remaining:'Zostáva zaplatiť',noExtraServices:'Bez služieb',notes:'Poznámky',adults_one:'dospelý',adults_other:'dospelí',children_one:'dieťa',children_other:'deti',doubleBed_one:'manželská posteľ',doubleBed_other:'manželské postele',singleBed_one:'jednolôžko',singleBed_other:'jednolôžka',crib_one:'detská postieľka',crib_other:'detské postieľky',reportReady:'Správa hosťa pripravená',reportTitle:'Správa hosťa',whatsappHint:'Správa hosťa',whatsappMissingPhone:'Chýba telefón hosťa',room:'Izba',venue:'Priestor',date:'Dátum'},
+    hu:{title:'VENDÉGJELENTÉS',guestFallback:'Vendég',booking:'Foglalás',stay:'Tartózkodás',rooms:'Szobák',guests:'Vendégek',extraServices:'Szolgáltatások',bookingAmount:'Foglalás összege',services:'Szolgáltatások',discount:'Kedvezmény',deposit:'Előleg',balancePaid:'Kifizetett egyenleg',touristTax:'Idegenforgalmi adó',remaining:'Fizetendő összeg',noExtraServices:'Nincs szolgáltatás',notes:'Megjegyzések',adults_one:'felnőtt',adults_other:'felnőtt',children_one:'gyermek',children_other:'gyermek',doubleBed_one:'franciaágy',doubleBed_other:'franciaágy',singleBed_one:'egyszemélyes ágy',singleBed_other:'egyszemélyes ágy',crib_one:'kiságy',crib_other:'kiságy',reportReady:'Vendégjelentés elkészült',reportTitle:'Vendégjelentés',whatsappHint:'Vendégjelentés',whatsappMissingPhone:'Hiányzik a vendég telefonszáma',room:'Szoba',venue:'Helyszín',date:'Dátum'},
+    ro:{title:'RAPORT OASPETE',guestFallback:'Oaspete',booking:'Rezervare',stay:'Sejur',rooms:'Camere',guests:'Oaspeți',extraServices:'Servicii',bookingAmount:'Valoarea rezervării',services:'Servicii',discount:'Reducere',deposit:'Avans',balancePaid:'Sold plătit',touristTax:'Taxă turistică',remaining:'Rămas de plată',noExtraServices:'Fără servicii',notes:'Note',adults_one:'adult',adults_other:'adulți',children_one:'copil',children_other:'copii',doubleBed_one:'pat dublu',doubleBed_other:'paturi duble',singleBed_one:'pat de o persoană',singleBed_other:'paturi de o persoană',crib_one:'pătuț',crib_other:'pătuțuri',reportReady:'Raportul oaspetelui este gata',reportTitle:'Raport oaspete',whatsappHint:'Raport oaspete',whatsappMissingPhone:'Lipsește numărul oaspetelui',room:'Cameră',venue:'Spațiu',date:'Dată'},
+    bg:{title:'ОТЧЕТ ЗА ГОСТ',guestFallback:'Гост',booking:'Резервация',stay:'Престой',rooms:'Стаи',guests:'Гости',extraServices:'Услуги',bookingAmount:'Сума на резервацията',services:'Услуги',discount:'Отстъпка',deposit:'Депозит',balancePaid:'Платен баланс',touristTax:'Туристическа такса',remaining:'Остава за плащане',noExtraServices:'Няма услуги',notes:'Бележки',adults_one:'възрастен',adults_other:'възрастни',children_one:'дете',children_other:'деца',doubleBed_one:'двойно легло',doubleBed_other:'двойни легла',singleBed_one:'единично легло',singleBed_other:'единични легла',crib_one:'бебешко легло',crib_other:'бебешки легла',reportReady:'Отчетът за госта е готов',reportTitle:'Отчет за гост',whatsappHint:'Отчет за гост',whatsappMissingPhone:'Липсва телефон на госта',room:'Стая',venue:'Място',date:'Дата'},
+    hr:{title:'IZVJEŠĆE GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Boravak',rooms:'Sobe',guests:'Gosti',extraServices:'Usluge',bookingAmount:'Iznos rezervacije',services:'Usluge',discount:'Popust',deposit:'Polog',balancePaid:'Plaćeni saldo',touristTax:'Boravišna pristojba',remaining:'Preostalo za platiti',noExtraServices:'Nema usluga',notes:'Napomene',adults_one:'odrasla osoba',adults_other:'odrasle osobe',children_one:'dijete',children_other:'djeca',doubleBed_one:'bračni krevet',doubleBed_other:'bračni kreveti',singleBed_one:'krevet za jednu osobu',singleBed_other:'kreveti za jednu osobu',crib_one:'dječji krevetić',crib_other:'dječji krevetići',reportReady:'Izvješće gosta je spremno',reportTitle:'Izvješće gosta',whatsappHint:'Izvješće gosta',whatsappMissingPhone:'Nedostaje telefon gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    sl:{title:'POROČILO GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Bivanje',rooms:'Sobe',guests:'Gostje',extraServices:'Storitve',bookingAmount:'Znesek rezervacije',services:'Storitve',discount:'Popust',deposit:'Polog',balancePaid:'Plačano stanje',touristTax:'Turistična taksa',remaining:'Preostalo za plačilo',noExtraServices:'Brez storitev',notes:'Opombe',adults_one:'odrasla oseba',adults_other:'odrasli',children_one:'otrok',children_other:'otroci',doubleBed_one:'zakonska postelja',doubleBed_other:'zakonske postelje',singleBed_one:'enojna postelja',singleBed_other:'enojne postelje',crib_one:'otroška posteljica',crib_other:'otroške posteljice',reportReady:'Poročilo gosta je pripravljeno',reportTitle:'Poročilo gosta',whatsappHint:'Poročilo gosta',whatsappMissingPhone:'Manjka telefonska številka gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    el:{title:'ΑΝΑΦΟΡΑ ΕΠΙΣΚΕΠΤΗ',guestFallback:'Επισκέπτης',booking:'Κράτηση',stay:'Διαμονή',rooms:'Δωμάτια',guests:'Επισκέπτες',extraServices:'Υπηρεσίες',bookingAmount:'Ποσό κράτησης',services:'Υπηρεσίες',discount:'Έκπτωση',deposit:'Προκαταβολή',balancePaid:'Πληρωμένο υπόλοιπο',touristTax:'Τουριστικός φόρος',remaining:'Υπόλοιπο προς πληρωμή',noExtraServices:'Χωρίς υπηρεσίες',notes:'Σημειώσεις',adults_one:'ενήλικας',adults_other:'ενήλικες',children_one:'παιδί',children_other:'παιδιά',doubleBed_one:'διπλό κρεβάτι',doubleBed_other:'διπλά κρεβάτια',singleBed_one:'μονό κρεβάτι',singleBed_other:'μονά κρεβάτια',crib_one:'βρεφική κούνια',crib_other:'βρεφικές κούνιες',reportReady:'Η αναφορά επισκέπτη είναι έτοιμη',reportTitle:'Αναφορά επισκέπτη',whatsappHint:'Αναφορά επισκέπτη',whatsappMissingPhone:'Λείπει το τηλέφωνο επισκέπτη',room:'Δωμάτιο',venue:'Χώρος',date:'Ημερομηνία'},
+    mt:{title:'RAPPORT TAL-MISTIEDEN',guestFallback:'Mistieden',booking:'Prenotazzjoni',stay:'Żjara',rooms:'Kmamar',guests:'Mistednin',extraServices:'Servizzi',bookingAmount:'Ammont tal-prenotazzjoni',services:'Servizzi',discount:'Skont',deposit:'Depożitu',balancePaid:'Bilanċ imħallas',touristTax:'Taxxa turistika',remaining:'Fadal biex jitħallas',noExtraServices:'L-ebda servizz',notes:'Noti',adults_one:'adult',adults_other:'adulti',children_one:'tifel',children_other:'tfal',doubleBed_one:'sodda doppja',doubleBed_other:'sodod doppji',singleBed_one:'sodda waħda',singleBed_other:'sodod singoli',crib_one:'kerrikot',crib_other:'kerrikots',reportReady:'Ir-rapport tal-mistieden lest',reportTitle:'Rapport tal-mistieden',whatsappHint:'Rapport tal-mistieden',whatsappMissingPhone:'Numru tal-mistieden nieqes',room:'Kamra',venue:'Spazju',date:'Data'},
+    et:{title:'KÜLALISE ARUANNE',guestFallback:'Külaline',booking:'Broneering',stay:'Peatumine',rooms:'Toad',guests:'Külalised',extraServices:'Teenused',bookingAmount:'Broneeringu summa',services:'Teenused',discount:'Soodustus',deposit:'Ettemaks',balancePaid:'Makstud saldo',touristTax:'Turismimaks',remaining:'Tasuda jääb',noExtraServices:'Teenuseid pole',notes:'Märkused',adults_one:'täiskasvanu',adults_other:'täiskasvanut',children_one:'laps',children_other:'last',doubleBed_one:'kaheinimesevoodi',doubleBed_other:'kaheinimesevoodit',singleBed_one:'üheinimesevoodi',singleBed_other:'üheinimesevoodit',crib_one:'beebivoodi',crib_other:'beebivoodit',reportReady:'Külalise aruanne valmis',reportTitle:'Külalise aruanne',whatsappHint:'Külalise aruanne',whatsappMissingPhone:'Külalise telefon puudub',room:'Tuba',venue:'Koht',date:'Kuupäev'},
+    lv:{title:'VIESA ATSKAITE',guestFallback:'Viesis',booking:'Rezervācija',stay:'Uzturēšanās',rooms:'Numuri',guests:'Viesi',extraServices:'Pakalpojumi',bookingAmount:'Rezervācijas summa',services:'Pakalpojumi',discount:'Atlaide',deposit:'Avanss',balancePaid:'Apmaksātais atlikums',touristTax:'Tūrisma nodeva',remaining:'Atlicis samaksāt',noExtraServices:'Nav pakalpojumu',notes:'Piezīmes',adults_one:'pieaugušais',adults_other:'pieaugušie',children_one:'bērns',children_other:'bērni',doubleBed_one:'divguļamā gulta',doubleBed_other:'divguļamās gultas',singleBed_one:'vienguļamā gulta',singleBed_other:'vienguļamās gultas',crib_one:'bērnu gultiņa',crib_other:'bērnu gultiņas',reportReady:'Viesa atskaite gatava',reportTitle:'Viesa atskaite',whatsappHint:'Viesa atskaite',whatsappMissingPhone:'Trūkst viesa tālruņa',room:'Numurs',venue:'Vieta',date:'Datums'},
+    lt:{title:'SVEČIO ATASKAITA',guestFallback:'Svečias',booking:'Rezervacija',stay:'Viešnagė',rooms:'Kambariai',guests:'Svečiai',extraServices:'Paslaugos',bookingAmount:'Rezervacijos suma',services:'Paslaugos',discount:'Nuolaida',deposit:'Avansas',balancePaid:'Sumokėtas likutis',touristTax:'Turisto mokestis',remaining:'Liko sumokėti',noExtraServices:'Paslaugų nėra',notes:'Pastabos',adults_one:'suaugęs',adults_other:'suaugę',children_one:'vaikas',children_other:'vaikai',doubleBed_one:'dvigulė lova',doubleBed_other:'dvigulės lovos',singleBed_one:'viengulė lova',singleBed_other:'viengulės lovos',crib_one:'vaikiška lovelė',crib_other:'vaikiškos lovelės',reportReady:'Svečio ataskaita paruošta',reportTitle:'Svečio ataskaita',whatsappHint:'Svečio ataskaita',whatsappMissingPhone:'Trūksta svečio telefono',room:'Kambarys',venue:'Vieta',date:'Data'},
+    sq:{title:'RAPORTI I MYSAFIRIT',guestFallback:'Mysafir',booking:'Rezervimi',stay:'Qëndrimi',rooms:'Dhomat',guests:'Mysafirët',extraServices:'Shërbime',bookingAmount:'Shuma e rezervimit',services:'Shërbime',discount:'Zbritje',deposit:'Paradhënie',balancePaid:'Bilanci i paguar',touristTax:'Taksa turistike',remaining:'Mbetet për t’u paguar',noExtraServices:'Pa shërbime',notes:'Shënime',adults_one:'i rritur',adults_other:'të rritur',children_one:'fëmijë',children_other:'fëmijë',doubleBed_one:'krevat dopio',doubleBed_other:'krevate dopio',singleBed_one:'krevat tek',singleBed_other:'krevate teke',crib_one:'krevat fëmije',crib_other:'krevate fëmijësh',reportReady:'Raporti i mysafirit është gati',reportTitle:'Raporti i mysafirit',whatsappHint:'Raporti i mysafirit',whatsappMissingPhone:'Mungon numri i mysafirit',room:'Dhomë',venue:'Hapësirë',date:'Data'},
+    sr:{title:'ИЗВЕШТАЈ ГОСТА',guestFallback:'Гост',booking:'Резервација',stay:'Боравак',rooms:'Собе',guests:'Гости',extraServices:'Услуге',bookingAmount:'Износ резервације',services:'Услуге',discount:'Попуст',deposit:'Аванс',balancePaid:'Плаћени салдо',touristTax:'Боравишна такса',remaining:'Преостало за плаћање',noExtraServices:'Нема услуга',notes:'Напомене',adults_one:'одрасла особа',adults_other:'одрасле особе',children_one:'дете',children_other:'деца',doubleBed_one:'брачни кревет',doubleBed_other:'брачни кревети',singleBed_one:'кревет за једну особу',singleBed_other:'кревети за једну особу',crib_one:'дечји креветац',crib_other:'дечји кревеци',reportReady:'Извештај госта је спреман',reportTitle:'Извештај госта',whatsappHint:'Извештај госта',whatsappMissingPhone:'Недостаје телефон госта',room:'Соба',venue:'Простор',date:'Датум'},
+    bs:{title:'IZVJEŠTAJ GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Boravak',rooms:'Sobe',guests:'Gosti',extraServices:'Usluge',bookingAmount:'Iznos rezervacije',services:'Usluge',discount:'Popust',deposit:'Avans',balancePaid:'Plaćeni saldo',touristTax:'Boravišna taksa',remaining:'Preostalo za platiti',noExtraServices:'Nema usluga',notes:'Napomene',adults_one:'odrasla osoba',adults_other:'odrasle osobe',children_one:'dijete',children_other:'djeca',doubleBed_one:'bračni krevet',doubleBed_other:'bračni kreveti',singleBed_one:'krevet za jednu osobu',singleBed_other:'kreveti za jednu osobu',crib_one:'dječji krevetić',crib_other:'dječji krevetići',reportReady:'Izvještaj gosta je spreman',reportTitle:'Izvještaj gosta',whatsappHint:'Izvještaj gosta',whatsappMissingPhone:'Nedostaje telefon gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    mk:{title:'ИЗВЕШТАЈ ЗА ГОСТ',guestFallback:'Гост',booking:'Резервација',stay:'Престој',rooms:'Соби',guests:'Гости',extraServices:'Услуги',bookingAmount:'Износ на резервација',services:'Услуги',discount:'Попуст',deposit:'Аванс',balancePaid:'Платено салдо',touristTax:'Туристичка такса',remaining:'Преостанува за плаќање',noExtraServices:'Нема услуги',notes:'Белешки',adults_one:'возрасен',adults_other:'возрасни',children_one:'дете',children_other:'деца',doubleBed_one:'двоен кревет',doubleBed_other:'двојни кревети',singleBed_one:'единечен кревет',singleBed_other:'единечни кревети',crib_one:'детско креветче',crib_other:'детски креветчиња',reportReady:'Извештајот за гост е подготвен',reportTitle:'Извештај за гост',whatsappHint:'Извештај за гост',whatsappMissingPhone:'Недостасува телефон на гостот',room:'Соба',venue:'Простор',date:'Датум'},
+    uk:{title:'ЗВІТ ГОСТЯ',guestFallback:'Гість',booking:'Бронювання',stay:'Перебування',rooms:'Кімнати',guests:'Гості',extraServices:'Послуги',bookingAmount:'Сума бронювання',services:'Послуги',discount:'Знижка',deposit:'Передплата',balancePaid:'Сплачений баланс',touristTax:'Туристичний збір',remaining:'Залишок до сплати',noExtraServices:'Без послуг',notes:'Примітки',adults_one:'дорослий',adults_other:'дорослі',children_one:'дитина',children_other:'діти',doubleBed_one:'двоспальне ліжко',doubleBed_other:'двоспальні ліжка',singleBed_one:'односпальне ліжко',singleBed_other:'односпальні ліжка',crib_one:'дитяче ліжечко',crib_other:'дитячі ліжечка',reportReady:'Звіт гостя готовий',reportTitle:'Звіт гостя',whatsappHint:'Звіт гостя',whatsappMissingPhone:'Відсутній телефон гостя',room:'Кімната',venue:'Приміщення',date:'Дата'},
+    ru:{title:'ОТЧЁТ ГОСТЯ',guestFallback:'Гость',booking:'Бронирование',stay:'Проживание',rooms:'Номера',guests:'Гости',extraServices:'Услуги',bookingAmount:'Сумма бронирования',services:'Услуги',discount:'Скидка',deposit:'Предоплата',balancePaid:'Оплаченный баланс',touristTax:'Туристический сбор',remaining:'Осталось оплатить',noExtraServices:'Нет услуг',notes:'Примечания',adults_one:'взрослый',adults_other:'взрослые',children_one:'ребёнок',children_other:'дети',doubleBed_one:'двуспальная кровать',doubleBed_other:'двуспальные кровати',singleBed_one:'односпальная кровать',singleBed_other:'односпальные кровати',crib_one:'детская кроватка',crib_other:'детские кроватки',reportReady:'Отчёт гостя готов',reportTitle:'Отчёт гостя',whatsappHint:'Отчёт гостя',whatsappMissingPhone:'Отсутствует телефон гостя',room:'Номер',venue:'Помещение',date:'Дата'},
+    da:{title:'GÆSTERAPPORT',guestFallback:'Gæst',booking:'Reservation',stay:'Ophold',rooms:'Værelser',guests:'Gæster',extraServices:'Tjenester',bookingAmount:'Reservationsbeløb',services:'Tjenester',discount:'Rabat',deposit:'Depositum',balancePaid:'Betalt saldo',touristTax:'Turistskat',remaining:'Restbeløb',noExtraServices:'Ingen tjenester',notes:'Noter',adults_one:'voksen',adults_other:'voksne',children_one:'barn',children_other:'børn',doubleBed_one:'dobbeltseng',doubleBed_other:'dobbeltsenge',singleBed_one:'enkeltseng',singleBed_other:'enkeltsenge',crib_one:'barneseng',crib_other:'barnesenge',reportReady:'Gæsterapport klar',reportTitle:'Gæsterapport',whatsappHint:'Gæsterapport',whatsappMissingPhone:'Gæstens telefonnummer mangler',room:'Værelse',venue:'Sted',date:'Dato'},
+    sv:{title:'GÄSTRAPPORT',guestFallback:'Gäst',booking:'Bokning',stay:'Vistelse',rooms:'Rum',guests:'Gäster',extraServices:'Tjänster',bookingAmount:'Bokningsbelopp',services:'Tjänster',discount:'Rabatt',deposit:'Handpenning',balancePaid:'Betalt saldo',touristTax:'Turistskatt',remaining:'Återstår att betala',noExtraServices:'Inga tjänster',notes:'Anteckningar',adults_one:'vuxen',adults_other:'vuxna',children_one:'barn',children_other:'barn',doubleBed_one:'dubbelsäng',doubleBed_other:'dubbelsängar',singleBed_one:'enkelsäng',singleBed_other:'enkelsängar',crib_one:'spjälsäng',crib_other:'spjälsängar',reportReady:'Gästrapport klar',reportTitle:'Gästrapport',whatsappHint:'Gästrapport',whatsappMissingPhone:'Gästens telefonnummer saknas',room:'Rum',venue:'Plats',date:'Datum'},
+    nb:{title:'GJESTERAPPORT',guestFallback:'Gjest',booking:'Bestilling',stay:'Opphold',rooms:'Rom',guests:'Gjester',extraServices:'Tjenester',bookingAmount:'Bestillingsbeløp',services:'Tjenester',discount:'Rabatt',deposit:'Depositum',balancePaid:'Betalt saldo',touristTax:'Turistskatt',remaining:'Gjenstår å betale',noExtraServices:'Ingen tjenester',notes:'Notater',adults_one:'voksen',adults_other:'voksne',children_one:'barn',children_other:'barn',doubleBed_one:'dobbeltseng',doubleBed_other:'dobbeltsenger',singleBed_one:'enkeltseng',singleBed_other:'enkeltsenger',crib_one:'barneseng',crib_other:'barnesenger',reportReady:'Gjesterapport klar',reportTitle:'Gjesterapport',whatsappHint:'Gjesterapport',whatsappMissingPhone:'Gjestens telefonnummer mangler',room:'Rom',venue:'Sted',date:'Dato'},
+    fi:{title:'VIERASRAPORTTI',guestFallback:'Vieras',booking:'Varaus',stay:'Majoitus',rooms:'Huoneet',guests:'Vieraat',extraServices:'Palvelut',bookingAmount:'Varauksen summa',services:'Palvelut',discount:'Alennus',deposit:'Ennakkomaksu',balancePaid:'Maksettu saldo',touristTax:'Matkailuvero',remaining:'Maksettavaa jäljellä',noExtraServices:'Ei palveluja',notes:'Huomautukset',adults_one:'aikuinen',adults_other:'aikuista',children_one:'lapsi',children_other:'lasta',doubleBed_one:'parivuode',doubleBed_other:'parivuodetta',singleBed_one:'yhden hengen vuode',singleBed_other:'yhden hengen vuodetta',crib_one:'vauvansänky',crib_other:'vauvansänkyä',reportReady:'Vierasraportti valmis',reportTitle:'Vierasraportti',whatsappHint:'Vierasraportti',whatsappMissingPhone:'Vieraan puhelinnumero puuttuu',room:'Huone',venue:'Tila',date:'Päiväys'},
+    is:{title:'GESTASKÝRSLA',guestFallback:'Gestur',booking:'Bókun',stay:'Dvöl',rooms:'Herbergi',guests:'Gestir',extraServices:'Þjónusta',bookingAmount:'Bókunarupphæð',services:'Þjónusta',discount:'Afsláttur',deposit:'Innborgun',balancePaid:'Greidd staða',touristTax:'Ferðamannaskattur',remaining:'Eftirstöðvar',noExtraServices:'Engin þjónusta',notes:'Athugasemdir',adults_one:'fullorðinn',adults_other:'fullorðnir',children_one:'barn',children_other:'börn',doubleBed_one:'hjónarúm',doubleBed_other:'hjónarúm',singleBed_one:'einstaklingsrúm',singleBed_other:'einstaklingsrúm',crib_one:'barnarúm',crib_other:'barnarúm',reportReady:'Gestaskýrsla tilbúin',reportTitle:'Gestaskýrsla',whatsappHint:'Gestaskýrsla',whatsappMissingPhone:'Símanúmer gests vantar',room:'Herbergi',venue:'Rými',date:'Dagsetning'},
+    id:{title:'LAPORAN TAMU',guestFallback:'Tamu',booking:'Reservasi',stay:'Masa inap',rooms:'Kamar',guests:'Tamu',extraServices:'Layanan',bookingAmount:'Jumlah reservasi',services:'Layanan',discount:'Diskon',deposit:'Uang muka',balancePaid:'Saldo dibayar',touristTax:'Pajak wisata',remaining:'Sisa pembayaran',noExtraServices:'Tidak ada layanan',notes:'Catatan',adults_one:'dewasa',adults_other:'dewasa',children_one:'anak',children_other:'anak',doubleBed_one:'tempat tidur ganda',doubleBed_other:'tempat tidur ganda',singleBed_one:'tempat tidur tunggal',singleBed_other:'tempat tidur tunggal',crib_one:'ranjang bayi',crib_other:'ranjang bayi',reportReady:'Laporan tamu siap',reportTitle:'Laporan tamu',whatsappHint:'Laporan tamu',whatsappMissingPhone:'Nomor telepon tamu tidak ada',room:'Kamar',venue:'Tempat',date:'Tanggal'},
+    ja:{title:'ゲストレポート',guestFallback:'ゲスト',booking:'予約',stay:'滞在',rooms:'客室',guests:'宿泊者',extraServices:'サービス',bookingAmount:'予約金額',services:'サービス',discount:'割引',deposit:'前金',balancePaid:'支払済み残高',touristTax:'宿泊税',remaining:'残額',noExtraServices:'サービスなし',notes:'メモ',adults_one:'大人',adults_other:'大人',children_one:'子供',children_other:'子供',doubleBed_one:'ダブルベッド',doubleBed_other:'ダブルベッド',singleBed_one:'シングルベッド',singleBed_other:'シングルベッド',crib_one:'ベビーベッド',crib_other:'ベビーベッド',reportReady:'ゲストレポートの準備ができました',reportTitle:'ゲストレポート',whatsappHint:'ゲストレポート',whatsappMissingPhone:'ゲストの電話番号がありません',room:'客室',venue:'スペース',date:'日付'},
+    'zh-cn':{title:'客人报告',guestFallback:'客人',booking:'预订',stay:'住宿',rooms:'房间',guests:'客人',extraServices:'服务',bookingAmount:'预订金额',services:'服务',discount:'折扣',deposit:'订金',balancePaid:'已付余额',touristTax:'旅游税',remaining:'待支付',noExtraServices:'无服务',notes:'备注',adults_one:'成人',adults_other:'成人',children_one:'儿童',children_other:'儿童',doubleBed_one:'双人床',doubleBed_other:'双人床',singleBed_one:'单人床',singleBed_other:'单人床',crib_one:'婴儿床',crib_other:'婴儿床',reportReady:'客人报告已准备好',reportTitle:'客人报告',whatsappHint:'客人报告',whatsappMissingPhone:'缺少客人电话号码',room:'房间',venue:'场地',date:'日期'},
+    hi:{title:'अतिथि रिपोर्ट',guestFallback:'अतिथि',booking:'बुकिंग',stay:'ठहराव',rooms:'कमरे',guests:'अतिथि',extraServices:'सेवाएँ',bookingAmount:'बुकिंग राशि',services:'सेवाएँ',discount:'छूट',deposit:'अग्रिम',balancePaid:'भुगतान शेष',touristTax:'पर्यटक कर',remaining:'भुगतान बाकी',noExtraServices:'कोई सेवा नहीं',notes:'टिप्पणियाँ',adults_one:'वयस्क',adults_other:'वयस्क',children_one:'बच्चा',children_other:'बच्चे',doubleBed_one:'डबल बेड',doubleBed_other:'डबल बेड',singleBed_one:'सिंगल बेड',singleBed_other:'सिंगल बेड',crib_one:'शिशु पालना',crib_other:'शिशु पालने',reportReady:'अतिथि रिपोर्ट तैयार है',reportTitle:'अतिथि रिपोर्ट',whatsappHint:'अतिथि रिपोर्ट',whatsappMissingPhone:'अतिथि का फोन नंबर नहीं है',room:'कमरा',venue:'स्थान',date:'तारीख'},
+    ko:{title:'고객 보고서',guestFallback:'고객',booking:'예약',stay:'숙박',rooms:'객실',guests:'투숙객',extraServices:'서비스',bookingAmount:'예약 금액',services:'서비스',discount:'할인',deposit:'예약금',balancePaid:'결제된 잔액',touristTax:'관광세',remaining:'남은 결제액',noExtraServices:'서비스 없음',notes:'메모',adults_one:'성인',adults_other:'성인',children_one:'어린이',children_other:'어린이',doubleBed_one:'더블 침대',doubleBed_other:'더블 침대',singleBed_one:'싱글 침대',singleBed_other:'싱글 침대',crib_one:'아기 침대',crib_other:'아기 침대',reportReady:'고객 보고서가 준비되었습니다',reportTitle:'고객 보고서',whatsappHint:'고객 보고서',whatsappMissingPhone:'고객 전화번호가 없습니다',room:'객실',venue:'공간',date:'날짜'},
+    ar:{title:'تقرير الضيف',guestFallback:'الضيف',booking:'الحجز',stay:'الإقامة',rooms:'الغرف',guests:'الضيوف',extraServices:'الخدمات',bookingAmount:'مبلغ الحجز',services:'الخدمات',discount:'الخصم',deposit:'العربون',balancePaid:'الرصيد المدفوع',touristTax:'الضريبة السياحية',remaining:'المتبقي للدفع',noExtraServices:'لا توجد خدمات',notes:'ملاحظات',adults_one:'بالغ',adults_other:'بالغون',children_one:'طفل',children_other:'أطفال',doubleBed_one:'سرير مزدوج',doubleBed_other:'أسرة مزدوجة',singleBed_one:'سرير مفرد',singleBed_other:'أسرة مفردة',crib_one:'سرير طفل',crib_other:'أسرة أطفال',reportReady:'تقرير الضيف جاهز',reportTitle:'تقرير الضيف',whatsappHint:'تقرير الضيف',whatsappMissingPhone:'رقم هاتف الضيف غير موجود',room:'غرفة',venue:'مساحة',date:'التاريخ'},
+    he:{title:'דוח אורח',guestFallback:'אורח',booking:'הזמנה',stay:'שהייה',rooms:'חדרים',guests:'אורחים',extraServices:'שירותים',bookingAmount:'סכום ההזמנה',services:'שירותים',discount:'הנחה',deposit:'מקדמה',balancePaid:'יתרה ששולמה',touristTax:'מס תיירות',remaining:'נותר לתשלום',noExtraServices:'ללא שירותים',notes:'הערות',adults_one:'מבוגר',adults_other:'מבוגרים',children_one:'ילד',children_other:'ילדים',doubleBed_one:'מיטה זוגית',doubleBed_other:'מיטות זוגיות',singleBed_one:'מיטת יחיד',singleBed_other:'מיטות יחיד',crib_one:'מיטת תינוק',crib_other:'מיטות תינוק',reportReady:'דוח האורח מוכן',reportTitle:'דוח אורח',whatsappHint:'דוח אורח',whatsappMissingPhone:'מספר הטלפון של האורח חסר',room:'חדר',venue:'מרחב',date:'תאריך'},
+    tr:{title:'MİSAFİR RAPORU',guestFallback:'Misafir',booking:'Rezervasyon',stay:'Konaklama',rooms:'Odalar',guests:'Misafirler',extraServices:'Hizmetler',bookingAmount:'Rezervasyon tutarı',services:'Hizmetler',discount:'İndirim',deposit:'Kapora',balancePaid:'Ödenen bakiye',touristTax:'Turizm vergisi',remaining:'Kalan ödeme',noExtraServices:'Hizmet yok',notes:'Notlar',adults_one:'yetişkin',adults_other:'yetişkin',children_one:'çocuk',children_other:'çocuk',doubleBed_one:'çift kişilik yatak',doubleBed_other:'çift kişilik yatak',singleBed_one:'tek kişilik yatak',singleBed_other:'tek kişilik yatak',crib_one:'bebek yatağı',crib_other:'bebek yatağı',reportReady:'Misafir raporu hazır',reportTitle:'Misafir raporu',whatsappHint:'Misafir raporu',whatsappMissingPhone:'Misafir telefon numarası eksik',room:'Oda',venue:'Alan',date:'Tarih'}
+  };
+  for(const [lang,dict] of Object.entries(extra)) for(const [key,value] of Object.entries(dict)){ if(!map[key]) map[key]={it:key}; map[key][lang]=value; }
+  return map;
+}
 function __guestReportT__(lang, key){ const map=__guestReportTextMap__(); const row=map[key] || {}; return String(row[lang] || row.it || key || ''); }
 function __guestReportPlural__(lang, count, oneKey, otherKey){
   if (lang === 'it'){
@@ -36812,7 +36889,7 @@ function __guestReportPlural__(lang, count, oneKey, otherKey){
 function __guestReportFormatRange__(lang, checkInValue, checkOutValue){
   const ciIso = formatISODateLocal(checkInValue); const coIso = formatISODateLocal(checkOutValue);
   if (!ciIso || !/^\d{4}-\d{2}-\d{2}$/.test(ciIso)) return '';
-  const locale = __I18N_LOCALES__[lang] || 'it-IT';
+  const locale = __guestReportLocale__(lang);
   if (!coIso){
     const single = new Date(ciIso + 'T00:00:00');
     if (isNaN(single)) return '';
@@ -36862,19 +36939,20 @@ function __guestReportGuestsLabel__(lang, guest){
   return `${__guestReportPlural__(lang, totals.adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, totals.children, 'children_one', 'children_other')}`;
 }
 function __guestReportGuestPhone__(guest){ return String(guest?.telefono ?? guest?.tel ?? guest?.phone ?? document.getElementById('guestPhone')?.value ?? '').trim(); }
-function __guestReportAccountName__(){
+function __guestReportStructureName__(guest){
   try{
-    const s = state?.session || {};
-    const raw = String(
-      s.account_name || s.accountName || s.nome_account || s.nomeAccount ||
-      s.username || s.user || s.nome || s.name || s.email ||
-      document.getElementById('settingsAccountName')?.textContent ||
-      document.getElementById('opSettingsAccountName')?.textContent ||
-      ''
-    ).trim();
-    return raw && raw !== '—' ? raw : 'Daedalium';
-  }catch(_){ return 'Daedalium'; }
+    const active=(typeof __structureActive__==='function') ? __structureActive__() : null;
+    const activeName=String(active?.nome || active?.name || '').trim();
+    if(activeName) return activeName;
+    const all=[...__guestReportResolveBookings__(guest || __guestReportResolveGuest__() || {}), guest || __guestReportResolveGuest__() || {}].filter(Boolean);
+    for(const item of all){
+      const raw=String(item?.struttura_nome ?? item?.strutturaNome ?? item?.structure_name ?? item?.structureName ?? item?.hotel_name ?? item?.hotelName ?? '').trim();
+      if(raw) return raw;
+    }
+  }catch(_){ }
+  return 'Daedalium';
 }
+function __guestReportAccountName__(){ return __guestReportStructureName__(__guestReportResolveGuest__()); }
 function __guestReportNotesValue__(guest){
   try{
     const values=[];
@@ -36920,6 +36998,14 @@ function __guestReportResolveStayRanges__(lang, guest){
     .filter(Boolean);
   return Array.from(new Set(list));
 }
+function __guestReportLocalizedRoomName__(lang, roomName, displayNumber, isLocale){
+  const raw=String(roomName || '').trim();
+  const num=String(displayNumber ?? '').trim();
+  if(!raw) return `${__guestReportT__(lang, isLocale ? 'venue' : 'room')} ${num}`.trim();
+  if(isLocale && /^Locale\s+\S+/i.test(raw)) return raw.replace(/^Locale/i, __guestReportT__(lang, 'venue'));
+  if(!isLocale && /^Stanza\s+\S+/i.test(raw)) return raw.replace(/^Stanza/i, __guestReportT__(lang, 'room'));
+  return raw;
+}
 function __guestReportResolveRoomCards__(lang, guest){
   const bookings = __guestReportResolveBookings__(guest);
   const cards = [];
@@ -36933,7 +37019,7 @@ function __guestReportResolveRoomCards__(lang, guest){
       const range = __guestReportFormatRange__(lang, booking?.check_in ?? booking?.checkIn ?? '', booking?.check_out ?? booking?.checkOut ?? '');
       const beds = isLocale ? '' : __guestReportRoomBedsValue__(lang, info);
       const displayNumber = getRoomDisplayLabel(n) || n;
-      const roomName = getRoomNameLabel(n) || String(displayNumber);
+      const roomName = __guestReportLocalizedRoomName__(lang, getRoomNameLabel(n) || String(displayNumber), displayNumber, isLocale);
       cards.push({
         kind:'roomCard',
         label:`${displayNumber} - ${roomName}`,
@@ -36992,10 +37078,10 @@ function __guestReportWhatsappText__(guest){
   if (!safeGuest) return '';
   const payload = __guestReportResolveRows__(safeGuest);
   const lang = payload.lang || __guestReportResolveLanguage__(safeGuest);
-  const locale = __I18N_LOCALES__[lang] || 'it-IT';
+  const locale = __guestReportLocale__(lang);
   const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(locale, { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
   const lines = [
-    __guestReportAccountName__(),
+    __guestReportStructureName__(safeGuest),
     String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback'),
     __guestReportGuestPhone__(safeGuest)
   ];
@@ -37069,7 +37155,7 @@ function __guestReportResolveRows__(guest){
 function __guestReportCanvas__(guest){
   const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null;
   const payload=__guestReportResolveRows__(safeGuest); const lang=payload.lang || __guestReportResolveLanguage__(safeGuest); const rows=payload.rows || [];
-  const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__I18N_LOCALES__[lang] || 'it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
+  const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__guestReportLocale__(lang), { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
   const width=1320, cardH=212, gap=26, outerTop=156, topPad=66, footerH=112;
   const serviceRowHeight=(row)=>{
     const count = row && row.kind === 'servicesList' && Array.isArray(row.serviceItems) ? row.serviceItems.length : 0;
@@ -37089,7 +37175,7 @@ function __guestReportCanvas__(guest){
   const wrapText=(value,maxChars,maxLines=2)=>{ const txt=String(value || '').trim(); if(!txt) return [__guestReportT__(lang, 'none')]; if(txt.length<=maxChars) return [txt]; const parts=[]; let rest=txt; while(rest.length && parts.length<maxLines){ if(rest.length<=maxChars){ parts.push(rest); break; } let chunk=rest.slice(0,maxChars+1); let cut=Math.max(chunk.lastIndexOf(' '), chunk.lastIndexOf('+'), chunk.lastIndexOf(',')); if(cut<Math.floor(maxChars*0.5)) cut=maxChars; parts.push(rest.slice(0,cut).trim()); rest=rest.slice(cut).trim(); } if(rest.length && parts.length){ const last=parts[parts.length-1] || ''; parts[parts.length-1]=(last.slice(0,Math.max(0,maxChars-1)) + '…').trim(); } return parts.filter(Boolean); };
   ctx.fillStyle='#edf3f8'; ctx.fillRect(0,0,width,height);
 
-  const accountName=__guestReportAccountName__();
+  const accountName=__guestReportStructureName__(safeGuest);
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
   const guestPhone=__guestReportHeaderPhone;
   const fitFont=(text, startSize, minSize, maxWidth, weight='900')=>{
@@ -37211,7 +37297,7 @@ function __guestReportCanvas__(guest){
     else { const lines=wrapText(val, 28, 2); ctx.textAlign='right'; ctx.font='900 52px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),width-134,y+96); if(lines[1]){ ctx.font='900 38px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],width-134,y+150); } }
     ctx.textAlign='left'; y += rowH + gap;
   });
-  ctx.fillStyle='#60738a'; ctx.font='700 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',92,height-90); return canvas;
+  ctx.fillStyle='#60738a'; ctx.font='700 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(accountName,92,height-90); return canvas;
 }
 function __guestReportBase64ToBytes__(base64){ const bin=atob(base64); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) bytes[i]=bin.charCodeAt(i); return bytes; }
 function __guestReportPdfFromJpegDataUrl__(jpegDataUrl, imgWidth, imgHeight){
@@ -48174,7 +48260,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.324';
+  var BUILD_TAG='dDAE_3.325';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53074,7 +53160,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.324',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.325',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -56113,7 +56199,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.324 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.325 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56334,7 +56420,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.324 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.325 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56552,7 +56638,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.324 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.325 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56584,7 +56670,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.324 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.325 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
