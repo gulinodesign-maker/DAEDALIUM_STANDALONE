@@ -36474,44 +36474,65 @@ body.ddae-dark #guestAlertModal .guest-alert-card.is-private-channel{
 }
 .guest-fiscal-doc-options{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:12px;
 }
-.guest-fiscal-doc-option,
-.guest-fiscal-doc-clear{
+.guest-fiscal-doc-options.has-null-option{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.guest-fiscal-doc-option{
+  min-width:0;
   min-height:64px;
+  padding:0;
   border-radius:18px;
   border:1px solid rgba(148,163,184,.55);
   background:rgba(241,245,249,.94);
   color:#0f172a;
-  font-size:19px;
-  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:none;
+}
+.guest-fiscal-doc-option[hidden]{display:none !important;}
+.guest-fiscal-doc-option .ui-ico{
+  width:30px;
+  height:30px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
 }
 .guest-fiscal-doc-option.is-selected{
   outline:3px solid rgba(14,165,233,.32);
   border-color:#38bdf8;
 }
-.guest-fiscal-doc-clear{
-  display:block;
-  width:100%;
-  min-height:48px;
-  margin-top:12px;
-  font-size:15px;
-  font-weight:750;
-}
-.guest-fiscal-doc-clear[hidden]{display:none !important;}
 .guest-fiscal-doc-close{
   position:absolute;
   top:14px;
   right:14px;
   width:46px;
   height:46px;
+  padding:0;
   border-radius:50%;
   border:1px solid rgba(148,163,184,.45);
   background:rgba(255,255,255,.92);
   color:#334155;
-  font-size:30px;
-  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:none;
+}
+.guest-fiscal-doc-close .ui-ico{
+  width:24px;
+  height:24px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
 }
 body.ddae-dark .guest-fiscal-doc-card{
   background:rgba(17,24,39,.98) !important;
@@ -36519,7 +36540,6 @@ body.ddae-dark .guest-fiscal-doc-card{
 body.ddae-dark .guest-fiscal-doc-title{color:#f8fafc;}
 body.ddae-dark .guest-fiscal-doc-subtitle{color:#cbd5e1;}
 body.ddae-dark .guest-fiscal-doc-option,
-body.ddae-dark .guest-fiscal-doc-clear,
 body.ddae-dark .guest-fiscal-doc-close{
   background:rgba(30,41,59,.96);
   color:#f8fafc;
@@ -36528,7 +36548,8 @@ body.ddae-dark .guest-fiscal-doc-close{
 @media (max-width:390px){
   .guest-fiscal-doc-card{padding:22px 16px 18px !important;}
   .guest-fiscal-doc-options{gap:10px;}
-  .guest-fiscal-doc-option{min-height:58px;font-size:17px;}
+  .guest-fiscal-doc-option{min-height:58px;}
+  .guest-fiscal-doc-option .ui-ico{width:27px;height:27px;}
 }
 
 

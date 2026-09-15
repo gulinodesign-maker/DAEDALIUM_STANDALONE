@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.331";
+const BUILD_VERSION = "3.332";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6898,6 +6898,7 @@ function __normalizeGuestFiscalDoc__(value){
   try{
     const v = String(value ?? '').trim().toLowerCase();
     if (!v) return '';
+    if (v === 'nullo' || v === 'null' || v === 'none' || v === 'nessuno' || v === 'nessuna') return 'nullo';
     if (v.includes('fattur') || v.includes('invoice')) return 'fattura';
     if (v.includes('scontr') || v.includes('ricev') || v.includes('receipt')) return 'scontrino';
   }catch(_){ }
@@ -6936,9 +6937,11 @@ function __setPayFiscalDocUi__(containerId, doc){
     btn.dataset.fiscalDoc = d;
     btn.classList.toggle('is-fattura', d === 'fattura');
     btn.classList.toggle('is-scontrino', d === 'scontrino');
-    const label = d === 'fattura' ? 'Fattura' : (d === 'scontrino' ? 'Scontrino' : 'Documento fiscale');
-    btn.setAttribute('title', label);
-    btn.setAttribute('aria-label', label);
+    btn.classList.toggle('is-nullo', d === 'nullo');
+    const label = d === 'fattura' ? 'Fattura' : (d === 'scontrino' ? 'Scontrino' : (d === 'nullo' ? 'Nullo' : 'Documento fiscale'));
+    const translated = (typeof __translateExactText__ === 'function') ? __translateExactText__(label) : label;
+    btn.setAttribute('title', translated);
+    btn.setAttribute('aria-label', translated);
   }catch(_){ }
 }
 function __guestFiscalDocPayloadFields__(kind, doc){
@@ -6976,12 +6979,13 @@ async function __persistGuestFiscalDoc__(kind, doc){
     const record = __guestActiveFiscalRecord__();
     const id = String(guestIdOf(record || {}) || record?.id || state.guestEditId || state.guestGroupActiveId || '').trim();
     if (!id) return;
-    const active = !!__normalizeGuestFiscalDoc__(doc);
+    const isSaldo = String(kind || '').toLowerCase() === 'saldo';
+    const receiptDone = isSaldo ? !!state.guestSaldoReceipt : !!state.guestDepositReceipt;
     const patch = Object.assign({ id }, __guestFiscalDocPayloadFields__(kind, doc));
-    if (String(kind || '').toLowerCase() === 'saldo'){
-      patch.saldo_ricevuta = active; patch.saldo_ricevutain = active;
+    if (isSaldo){
+      patch.saldo_ricevuta = receiptDone; patch.saldo_ricevutain = receiptDone;
     }else{
-      patch.acconto_ricevuta = active; patch.acconto_ricevutain = active;
+      patch.acconto_ricevuta = receiptDone; patch.acconto_ricevutain = receiptDone;
     }
     __patchGuestFiscalDocLocally__(id, patch);
     await api('ospiti', { method:'PUT', body:patch, showLoader:false });
@@ -7000,14 +7004,14 @@ function __ensureGuestFiscalDocModal__(){
     modal.setAttribute('aria-hidden','true');
     modal.innerHTML = `
       <div class="modal-card guest-fiscal-doc-card" role="dialog" aria-modal="true" aria-labelledby="guestFiscalDocTitle">
-        <button type="button" id="guestFiscalDocClose" class="guest-fiscal-doc-close" aria-label="Chiudi">×</button>
+        <button type="button" id="guestFiscalDocClose" class="guest-fiscal-doc-close" aria-label="Chiudi" title="Chiudi"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
         <div id="guestFiscalDocTitle" class="guest-fiscal-doc-title">Documento fiscale</div>
         <div class="guest-fiscal-doc-subtitle">Seleziona il documento emesso</div>
-        <div class="guest-fiscal-doc-options">
-          <button type="button" id="guestFiscalDocScontrino" class="guest-fiscal-doc-option" data-fiscal-doc="scontrino">Scontrino</button>
-          <button type="button" id="guestFiscalDocFattura" class="guest-fiscal-doc-option" data-fiscal-doc="fattura">Fattura</button>
+        <div class="guest-fiscal-doc-options" id="guestFiscalDocOptions">
+          <button type="button" id="guestFiscalDocScontrino" class="guest-fiscal-doc-option" data-fiscal-doc="scontrino" aria-label="Scontrino" title="Scontrino"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg></button>
+          <button type="button" id="guestFiscalDocFattura" class="guest-fiscal-doc-option" data-fiscal-doc="fattura" aria-label="Fattura" title="Fattura"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M15 3v4h4"></path><path d="M9 10h6"></path><path d="M9 14h6"></path><path d="M9 18h4"></path></svg></button>
+          <button type="button" id="guestFiscalDocNull" class="guest-fiscal-doc-option guest-fiscal-doc-null" data-fiscal-doc="nullo" aria-label="Nullo" title="Nullo"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M6.5 6.5l11 11"></path></svg></button>
         </div>
-        <button type="button" id="guestFiscalDocClear" class="guest-fiscal-doc-clear" hidden>Rimuovi selezione</button>
       </div>`;
     document.body.appendChild(modal);
     const close = ()=>__closeGuestFiscalDocModal__();
@@ -7017,31 +7021,36 @@ function __ensureGuestFiscalDocModal__(){
       bindFastTap(btn, ()=>__selectGuestFiscalDoc__(btn.dataset.fiscalDoc || ''));
       try{ __applySingleActionButtonVisual__(btn); __bindSingleActionButtonColorHold__(btn); }catch(_){ }
     });
-    const clearBtn = document.getElementById('guestFiscalDocClear');
-    bindFastTap(clearBtn, ()=>__selectGuestFiscalDoc__(''));
-    try{ __applySingleActionButtonVisual__(clearBtn); __bindSingleActionButtonColorHold__(clearBtn); }catch(_){ }
     try{ __applySingleActionButtonVisual__(document.getElementById('guestFiscalDocClose')); __bindSingleActionButtonColorHold__(document.getElementById('guestFiscalDocClose')); }catch(_){ }
+    try{ if (typeof __translateTree__ === 'function') __translateTree__(modal); }catch(_){ }
   }catch(_){ }
   return modal;
 }
-function __openGuestFiscalDocModal__(kind, containerId){
+function __openGuestFiscalDocModal__(kind, containerId, paymentType){
   try{
     const modal = __ensureGuestFiscalDocModal__();
     if (!modal) return;
     const k = String(kind || '').toLowerCase() === 'saldo' ? 'saldo' : 'deposit';
+    const payType = String(paymentType || (k === 'saldo' ? state.guestSaldoType : state.guestDepositType) || '').trim().toLowerCase();
     const doc = k === 'saldo' ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc);
-    state.guestFiscalDocTarget = { kind:k, containerId:String(containerId || (k === 'saldo' ? 'saldoType' : 'depositType')) };
+    state.guestFiscalDocTarget = { kind:k, containerId:String(containerId || (k === 'saldo' ? 'saldoType' : 'depositType')), paymentType:payType };
     modal.querySelectorAll('[data-fiscal-doc]').forEach((btn)=>{
       const on = String(btn.dataset.fiscalDoc || '') === doc;
       btn.classList.toggle('is-selected', on);
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
     });
-    const clearBtn = document.getElementById('guestFiscalDocClear');
-    if (clearBtn) clearBtn.hidden = !doc;
+    const nullBtn = document.getElementById('guestFiscalDocNull');
+    const allowNull = _isCashTypeStr_(payType);
+    if (nullBtn) nullBtn.hidden = !allowNull;
+    const options = document.getElementById('guestFiscalDocOptions');
+    if (options) options.classList.toggle('has-null-option', allowNull);
+    try{ __applySingleActionButtonVisual__(document.getElementById('guestFiscalDocClose')); }catch(_){ }
     modal.hidden = false;
     modal.setAttribute('aria-hidden','false');
     modal.classList.add('is-open');
     document.body.classList.add('modal-open');
+    try{ if (typeof __translateTree__ === 'function') __translateTree__(modal); }catch(_){ }
   }catch(_){ }
 }
 function __closeGuestFiscalDocModal__(){
@@ -7060,21 +7069,24 @@ function __selectGuestFiscalDoc__(doc){
     const target = state.guestFiscalDocTarget || {};
     const kind = target.kind === 'saldo' ? 'saldo' : 'deposit';
     const containerId = target.containerId || (kind === 'saldo' ? 'saldoType' : 'depositType');
-    const d = __normalizeGuestFiscalDoc__(doc);
+    const paymentType = String(target.paymentType || (kind === 'saldo' ? state.guestSaldoType : state.guestDepositType) || '').trim().toLowerCase();
+    let d = __normalizeGuestFiscalDoc__(doc);
+    if (!_isCashTypeStr_(paymentType) && d === 'nullo') d = '';
     if (kind === 'saldo'){
       state.guestSaldoFiscalDoc = d;
-      state.guestSaldoReceipt = !!d;
-      setPayReceipt(containerId, !!d);
+      state.guestSaldoReceipt = false;
+      setPayReceipt(containerId, false);
       __setPayFiscalDocUi__(containerId, d);
     }else{
       state.guestDepositFiscalDoc = d;
-      state.guestDepositReceipt = !!d;
-      setPayReceipt(containerId, !!d);
+      state.guestDepositReceipt = false;
+      setPayReceipt(containerId, false);
       __setPayFiscalDocUi__(containerId, d);
     }
-    if (d){ try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ } }
+    if (d === 'scontrino' || d === 'fattura'){ try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ } }
     __closeGuestFiscalDocModal__();
-    // In una scheda esistente la scelta è operativa e viene salvata subito.
+    // La scelta indica quale documento deve essere emesso; il tag ricevuta resta spento
+    // finché l'utente non lo marca esplicitamente come completato.
     if (String(state.guestMode || '').toLowerCase() !== 'create'){
       Promise.resolve(__persistGuestFiscalDoc__(kind === 'saldo' ? 'saldo' : 'acconto', d));
     }else{
@@ -8480,12 +8492,14 @@ function _guestCashReceiptMissingNow(g){
   const missing = [];
   const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? 0);
   const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? '');
-  if (dep > 0 && _isCashTypeStr_(depType) && !_isRicevutaFlag(g, 'acconto')) {
+  const depFiscalDoc = __guestFiscalDocFromRecord__(g, 'acconto');
+  if (dep > 0 && _isCashTypeStr_(depType) && depFiscalDoc !== 'nullo' && !_isRicevutaFlag(g, 'acconto')) {
     missing.push(`Acconto contante senza ricevuta — Acconto incassato: ${euro(dep)}`);
   }
   const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
   const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? '');
-  if (saldo > 0 && _isCashTypeStr_(saldoType) && !_isRicevutaFlag(g, 'saldo')) {
+  const saldoFiscalDoc = __guestFiscalDocFromRecord__(g, 'saldo');
+  if (saldo > 0 && _isCashTypeStr_(saldoType) && saldoFiscalDoc !== 'nullo' && !_isRicevutaFlag(g, 'saldo')) {
     missing.push(`Saldo contante senza ricevuta — Saldo incassato: ${euro(saldo)}`);
   }
   return missing;
@@ -9013,24 +9027,38 @@ function updateTopGuestAlertLeds(){
     }
   }catch(_){ }
 }
-// dDAE_3.331 — Etichetta documento fiscale negli alert ricevute.
+// dDAE_3.332 — Etichetta documento fiscale negli alert ricevute.
 // Se la scheda richiede fattura mostra FATTURA; in ogni altro caso SCONTRINO.
 // La dicitura viene risolta ogni volta nella lingua attiva delle Impostazioni.
-function __guestAlertFiscalDocKind__(g){
+function __guestAlertFiscalDocKind__(g, alertTag){
   try{
+    const tag = String(alertTag || '').trim().toLowerCase();
+    const pending = [];
+    const collect = (kind, amount, payType) => {
+      if (!(Number(amount || 0) > 0)) return;
+      if (_isRicevutaFlag(g, kind)) return;
+      if ((tag === 'ricevuta') && !_isElectronicTypeStr_(payType)) return;
+      if ((tag === 'contanti' || tag === 'contante') && !_isCashTypeStr_(payType)) return;
+      const doc = (typeof __guestFiscalDocFromRecord__ === 'function') ? __guestFiscalDocFromRecord__(g, kind) : '';
+      if (doc && doc !== 'nullo') pending.push(String(doc).toLowerCase());
+    };
+    collect('acconto', _num(g?.acconto_importo ?? g?.accontoImporto ?? 0), g?.acconto_tipo ?? g?.accontoTipo ?? '');
+    collect('saldo', _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0), g?.saldo_tipo ?? g?.saldoTipo ?? '');
+    if (pending.includes('fattura')) return 'fattura';
+    if (pending.includes('scontrino')) return 'scontrino';
     const docs = [
       (typeof __guestFiscalDocFromRecord__ === 'function' ? __guestFiscalDocFromRecord__(g, 'acconto') : ''),
       (typeof __guestFiscalDocFromRecord__ === 'function' ? __guestFiscalDocFromRecord__(g, 'saldo') : '')
-    ].map(x => String(x || '').trim().toLowerCase()).filter(Boolean);
+    ].map(x => String(x || '').trim().toLowerCase()).filter(x => x && x !== 'nullo');
     if (docs.includes('fattura')) return 'fattura';
     if (docs.includes('scontrino')) return 'scontrino';
     if (typeof __guestInvoiceRequested__ === 'function' && __guestInvoiceRequested__(g)) return 'fattura';
   }catch(_){ }
   return 'scontrino';
 }
-function __guestAlertFiscalDocLabel__(g){
+function __guestAlertFiscalDocLabel__(g, alertTag){
   try{
-    const source = __guestAlertFiscalDocKind__(g) === 'fattura' ? 'Fattura' : 'Scontrino';
+    const source = __guestAlertFiscalDocKind__(g, alertTag) === 'fattura' ? 'Fattura' : 'Scontrino';
     const translated = (typeof __translateExactText__ === 'function') ? __translateExactText__(source) : source;
     const locale = (typeof __I18N_LOCALES__ === 'object' && typeof __getAppLanguage__ === 'function') ? (__I18N_LOCALES__[__getAppLanguage__()] || undefined) : undefined;
     return String(translated || source).toLocaleUpperCase(locale);
@@ -9043,7 +9071,7 @@ function __guestAlertDisplayName__(row, cfg){
     const fiscalAlert = !!(it && (it.receiptMissingAlert || it.cashReceiptAlert));
     const tag = String(cfg?.tag || '').trim().toLowerCase();
     const fiscalModal = tag === 'ricevuta' || tag === 'contanti' || tag === 'contante' || (!tag && cfg?.side === 'right');
-    if (fiscalAlert && fiscalModal) return `${base} - ${__guestAlertFiscalDocLabel__(it.guest || {})}`;
+    if (fiscalAlert && fiscalModal) return `${base} - ${__guestAlertFiscalDocLabel__(it.guest || {}, tag)}`;
     return base;
   }catch(_){ return String(row?.item?.name || row?.name || 'Prenotazione'); }
 }
@@ -10915,6 +10943,24 @@ const __I18N_PHRASES__ = {
     "fr": "Facture",
     "de": "Rechnung",
     "es": "Factura"
+  },
+  "Nullo": {
+    "en": "None",
+    "fr": "Aucun",
+    "de": "Keine",
+    "es": "Ninguno"
+  },
+  "Documento fiscale": {
+    "en": "Fiscal document",
+    "fr": "Document fiscal",
+    "de": "Steuerbeleg",
+    "es": "Documento fiscal"
+  },
+  "Seleziona il documento emesso": {
+    "en": "Select the document to issue",
+    "fr": "Sélectionnez le document à émettre",
+    "de": "Auszustellenden Beleg auswählen",
+    "es": "Selecciona el documento que se emitirá"
   },
   "Tipo acconto": {
     "en": "Deposit type",
@@ -24628,6 +24674,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
   'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
+  'guestFiscalDocScontrino','guestFiscalDocFattura','guestFiscalDocNull','guestFiscalDocClose',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
 
@@ -24725,6 +24772,10 @@ function __defaultSingleActionButtonVisual__(btn){
     guestHdInvoiceBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.90 },
     guestHdEditBtn:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.90 },
     guestHdDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    guestFiscalDocScontrino:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
+    guestFiscalDocFattura:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    guestFiscalDocNull:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.90 },
+    guestFiscalDocClose:{ bg:'gray-1', border:'gray-3', fg:'blue-6', opacity:0.92 },
     speseBudgetModeToggle:{ bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 },
     spesaCatBtnContanti:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     spesaCatBtnTassa:{ bg:'sand-4', border:'sand-4', fg:'white', opacity:0.80 },
@@ -36767,9 +36818,26 @@ function setupOspite(){
           setPayType(containerId, "");
           return;
         }
-        if (kind === "deposit") state.guestDepositType = t;
-        if (kind === "saldo") state.guestSaldoType = t;
+        if (kind === "deposit") {
+          state.guestDepositType = t;
+          if (_isElectronicTypeStr_(t) && __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) === 'nullo') {
+            state.guestDepositFiscalDoc = '';
+            state.guestDepositReceipt = false;
+            setPayReceipt(containerId, false);
+            __setPayFiscalDocUi__(containerId, '');
+          }
+        }
+        if (kind === "saldo") {
+          state.guestSaldoType = t;
+          if (_isElectronicTypeStr_(t) && __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) === 'nullo') {
+            state.guestSaldoFiscalDoc = '';
+            state.guestSaldoReceipt = false;
+            setPayReceipt(containerId, false);
+            __setPayFiscalDocUi__(containerId, '');
+          }
+        }
         setPayType(containerId, t);
+        __openGuestFiscalDocModal__(kind, containerId, t);
         return;
       }
 
@@ -36781,7 +36849,29 @@ function setupOspite(){
           __setPayFiscalDocUi__(containerId, '');
           return;
         }
-        __openGuestFiscalDocModal__(kind, containerId);
+        let next = false;
+        let doc = '';
+        if (kind === "deposit") {
+          next = !state.guestDepositReceipt;
+          doc = __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc);
+          if (next && (!doc || doc === 'nullo')) doc = 'scontrino';
+          state.guestDepositReceipt = next;
+          state.guestDepositFiscalDoc = doc;
+        }
+        if (kind === "saldo") {
+          next = !state.guestSaldoReceipt;
+          doc = __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc);
+          if (next && (!doc || doc === 'nullo')) doc = 'scontrino';
+          state.guestSaldoReceipt = next;
+          state.guestSaldoFiscalDoc = doc;
+        }
+        setPayReceipt(containerId, next);
+        __setPayFiscalDocUi__(containerId, doc);
+        if (String(state.guestMode || '').toLowerCase() !== 'create'){
+          Promise.resolve(__persistGuestFiscalDoc__(kind === 'saldo' ? 'saldo' : 'acconto', doc));
+        }else{
+          try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+        }
         return;
       }
     });
@@ -48831,7 +48921,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.331';
+  var BUILD_TAG='dDAE_3.332';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53732,7 +53822,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.331',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.332',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
