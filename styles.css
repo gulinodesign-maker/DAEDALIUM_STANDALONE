@@ -36746,3 +36746,29 @@ body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
   text-align:center !important;
   line-height:1.1 !important;
 }
+
+/* dDAE_3.335 — Ora di arrivo: stessa forma arrotondata di Uomini/Donne su iOS */
+#page-ospite .guest-form-card.is-view #guestSexCountRow > .subfield{
+  border-radius:14px !important;
+  overflow:hidden !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow > .subfield > input,
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime{
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  border-radius:14px !important;
+  background-image:none !important;
+  background-clip:padding-box !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+}
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime::-webkit-datetime-edit,
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime::-webkit-datetime-edit-fields-wrapper,
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime::-webkit-datetime-edit-hour-field,
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime::-webkit-datetime-edit-minute-field,
+#page-ospite .guest-form-card.is-view #guestSexCountRow #guestArrivalTime::-webkit-datetime-edit-text{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
