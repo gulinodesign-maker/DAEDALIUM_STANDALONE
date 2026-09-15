@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.290";
+const BUILD_VERSION = "3.325";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -478,7 +478,13 @@ async function __kvDel__(k){
 
 // dDAE_3.243 — Immagini Record/Servizi fuori da localStorage (iOS-safe)
 const __COCKTAIL_IMAGE_ASSET_PREFIX__ = "asset:cocktail-image:";
-function __cocktailImageAssetKey__(slot){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + String(slot || "").trim(); }
+function __cocktailImageAssetContextPrefix__(forcedStructureId){
+  try{
+    const uid = forcedStructureId ? __ctxDataUidForStructure__(forcedStructureId) : __ctxDataUid__();
+    return __COCKTAIL_IMAGE_ASSET_PREFIX__ + encodeURIComponent(String(uid||'anon~s~__none__')) + ':';
+  }catch(_){ return __COCKTAIL_IMAGE_ASSET_PREFIX__ + 'anon~s~__none__:'; }
+}
+function __cocktailImageAssetKey__(slot){ return __cocktailImageAssetContextPrefix__() + String(slot || "").trim(); }
 async function __cocktailImageAssetGet__(slot){
   try{ return await __kvGet__(__cocktailImageAssetKey__(slot)); }catch(_){ return null; }
 }
@@ -495,9 +501,10 @@ async function __cocktailImageAssetDel__(slot){
 async function __collectCocktailImageAssetsForBackup__(){
   const out = {};
   try{
-    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    const contextPrefix = __cocktailImageAssetContextPrefix__();
+    const keys = await __kvKeys__(contextPrefix);
     for (const key of (Array.isArray(keys) ? keys : [])){
-      const slot = String(key || '').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
+      const slot = String(key || '').slice(contextPrefix.length);
       if (!slot) continue;
       const data = await __kvGet__(key);
       if (typeof data === 'string' && data.startsWith('data:image/')) out[slot] = data;
@@ -521,7 +528,8 @@ async function __restoreCocktailImageAssetsFromBackup__(payload){
       ? payload.assets.cocktailImages
       : ((payload?.meta?.cocktailImageAssets && typeof payload.meta.cocktailImageAssets === 'object') ? payload.meta.cocktailImageAssets : null);
     if (!src) return false;
-    const keys = await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+    const contextPrefix = __cocktailImageAssetContextPrefix__();
+    const keys = await __kvKeys__(contextPrefix);
     for (const key of (Array.isArray(keys) ? keys : [])) await __kvDel__(key);
     for (const slot of Object.keys(src)){
       const data = String(src[slot] || '');
@@ -557,7 +565,7 @@ async function __kvKeys__(prefix){
 function __tblKey__(name){
   // "utenti" deve essere globale sul dispositivo (serve per login dopo logout)
   try{ if (String(name||"").trim().toLowerCase() === "utenti") return `global:tbl:utenti`; }catch(_){ }
-  return `ctx:${__ctxUid__()}:${__ctxYear__()}:tbl:${name}`;
+  return `ctx:${__ctxDataUid__()}:${__ctxYear__()}:tbl:${name}`;
 }
 
 // dDAE_3.078 — Le tabelle collegate alle prenotazioni sono logicamente indipendenti
@@ -797,7 +805,7 @@ function __rowsForYearIndependentMirror__(rows, table, year, guestRows){
 
 async function __yearIndependentTableKeys__(name, data, guestRows){
   const table = String(name || '').trim().toLowerCase();
-  const uid = String(__ctxUid__() || '').trim();
+  const uid = String(__ctxDataUid__() || '').trim();
   const suffix = `:tbl:${table}`;
   const prefix = `ctx:${uid}:`;
   const out = new Set([`ctx:${uid}:${__ctxYear__()}:tbl:${table}`]);
@@ -822,7 +830,7 @@ async function __yearIndependentTableKeys__(name, data, guestRows){
 
 function __yearFromYearIndependentKey__(key, table){
   try{
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const prefix = `ctx:${uid}:`;
     const suffix = `:tbl:${String(table || '').trim().toLowerCase()}`;
     const k = String(key || '');
@@ -839,7 +847,7 @@ function __yearFromYearIndependentKey__(key, table){
 async function __writeYearIndependentMirrors__(table, rows, guestRows){
   try{
     const t = String(table || '').trim().toLowerCase();
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const currentYear = String(__ctxYear__() || '').trim();
     const list = Array.isArray(rows) ? rows : [];
     if (!uid || !t) return false;
@@ -898,20 +906,15 @@ async function __repairTableYearFromOtherContexts__(name, year){
     const yy = String(year || __ctxYear__() || '').trim();
     if (!table || !/^[0-9]{4}$/.test(yy) || table === 'utenti' || __isYearIndependentLocalTable__(table)) return null;
     if (typeof __kvKeys__ !== 'function' || typeof __kvGet__ !== 'function' || typeof __kvSet__ !== 'function') return null;
-    const uid = String(__ctxUid__() || '').trim();
+    const uid = String(__ctxDataUid__() || '').trim();
     const targetKey = `ctx:${uid}:${yy}:tbl:${table}`;
-    const keys = await __kvKeys__('ctx:');
+    const prefix = `ctx:${uid}:`;
+    const keys = await __kvKeys__(prefix);
     let candidates = (Array.isArray(keys) ? keys : []).filter((k)=>{
       const ks = String(k || '');
-      return ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
+      return ks.startsWith(prefix) && ks.endsWith(`:tbl:${table}`) && ks !== targetKey;
     });
-    candidates.sort((a,b)=>{
-      const au = String(a).split(':')[1] || '';
-      const bu = String(b).split(':')[1] || '';
-      const ap = uid && au === uid ? 0 : 1;
-      const bp = uid && bu === uid ? 0 : 1;
-      return ap - bp || String(a).localeCompare(String(b));
-    });
+    candidates.sort((a,b)=>String(a).localeCompare(String(b)));
     for (const k of candidates){
       const val = await __kvGet__(k);
       if (table === 'impostazioni' && (Array.isArray(val) || (val && typeof val === 'object'))){
@@ -930,6 +933,7 @@ async function __repairTableYearFromOtherContexts__(name, year){
 }
 
 async function __tblGet__(name, fallback){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)) return await __readYearIndependentTable__(name, fallback);
   const v = await __kvGet__(__tblKey__(name));
   if (v === null || v === undefined){
@@ -943,6 +947,7 @@ async function __tblGet__(name, fallback){
 }
 
 async function __tblSet__(name, data){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const table = String(name || '').trim().toLowerCase();
@@ -957,6 +962,7 @@ async function __tblSet__(name, data){
 }
 
 async function __tblDel__(name){
+  try{ if(String(name||'').trim().toLowerCase()!=='utenti' && typeof __structureEnsureActiveMigrated__==='function') await __structureEnsureActiveMigrated__(); }catch(_){ }
   if (__isYearIndependentLocalTable__(name)){
     try{
       const keys = await __yearIndependentTableKeys__(name);
@@ -1486,12 +1492,13 @@ async function __localApiImpostazioni__(method, body){
   if (method === "POST"){
     const now = __nowIso__();
     const upsert = (nextRow) => {
-      const key = String(nextRow?.key || "").trim().toLowerCase();
-      if (!key) return;
+      const baseKey = String(nextRow?.key || "").trim().toLowerCase();
+      if (!baseKey) return;
+      const key = (typeof __structureScopedSettingKey__ === 'function') ? __structureScopedSettingKey__(baseKey) : baseKey;
       const idx = rows.findIndex(r => String(r?.key || r?.Key || "").trim().toLowerCase() === key);
       const prev = idx >= 0 ? rows[idx] : null;
       const merged = Object.assign({}, prev || {}, nextRow || {});
-      merged.key = nextRow.key;
+      merged.key = key;
       merged.createdAt = prev?.createdAt || nextRow.createdAt || now;
       merged.updatedAt = now;
       if (idx >= 0) rows[idx] = merged;
@@ -1511,7 +1518,7 @@ async function __localApiImpostazioni__(method, body){
       }
     }catch(_){}
 
-    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json"];
+    const valueKeys = ["tariffa_oraria","costo_benzina","tassa_soggiorno","tassa_soggiorno_max_notti","numero_stanze","app_language","stanze_ui","guest_whatsapp_message_template","guest_message_templates_json","strutture_catalogo","hotel_location_link"];
     valueKeys.forEach((k)=>{
       if (!body || body[k] === undefined) return;
       upsert({ key:k, value: String(body[k] ?? "").trim(), createdAt: now });
@@ -2096,14 +2103,62 @@ function __randStr__(n){
   for (let i=0;i<n;i++) s += a[(Math.random()*a.length)|0];
   return s;
 }
+function __fbSafeStructureId__(sid){
+  return String(sid || '').trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80);
+}
+function __fbSyncBasePath__(teamId, forcedStructureId){
+  const tid=String(teamId||'').trim();
+  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
+  if(!sid) return `sync/${tid}`;
+  try{ if(__structureUsesLegacySyncRoot__(sid)) return `sync/${tid}`; }catch(_){ }
+  return `sync/${tid}/structures/${sid}`;
+}
+function __fbTeamPath__(teamId, forcedStructureId){
+  const tid=String(teamId||'').trim();
+  const sid=__fbSafeStructureId__(forcedStructureId !== undefined ? forcedStructureId : (typeof __structureActiveId__==='function' ? __structureActiveId__() : ''));
+  if(!sid) return `teams/${tid}`;
+  try{ if(__structureUsesLegacySyncRoot__(sid)) return `teams/${tid}`; }catch(_){ }
+  return `teams/${tid}/structures/${sid}`;
+}
+function __fbActiveStructureMeta__(){
+  try{ const a=__structureActive__(); return a ? {id:a.id,nome:a.nome} : null; }catch(_){ return null; }
+}
+function __fbPayloadMatchesActiveStructure__(payload){
+  try{
+    const active=__structureActive__();
+    const meta=payload?.structure;
+    if(!active) return true;
+    if(meta?.id) return String(meta.id)===String(active.id);
+    const list=__structureCatalog__();
+    return !!(list.length && list[0].id===active.id);
+  }catch(_){ return false; }
+}
+async function __structureAdoptFromSyncPayload__(payload){
+  try{
+    const meta=payload?.structure; if(!meta?.id || __structureHasActive__()) return false;
+    const sid=__fbSafeStructureId__(meta.id); if(!sid) return false;
+    const list=__structureCatalog__();
+    if(!list.some(x=>x.id===sid)) __structureWriteLocalCatalog__(list.concat({id:sid,nome:String(meta.nome||'Struttura').trim().slice(0,48)||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
+    __structureSetLegacySyncRoot__(sid,true);
+    await __structureSelect__(sid);
+    return true;
+  }catch(_){ return false; }
+}
 function __qrCodeText__(teamId, teamKey){
+  const active=(typeof __structureActive__==='function') ? __structureActive__() : null;
+  const list=(typeof __structureCatalog__==='function') ? __structureCatalog__() : [];
+  if(active && list.length && list[0].id!==active.id){
+    return `DDAE|${teamId}|${teamKey}|${encodeURIComponent(active.id)}|${encodeURIComponent(active.nome||'Struttura')}`;
+  }
   return `DDAE|${teamId}|${teamKey}`;
 }
 function __parseQr__(txt){
-  const s = String(txt||"").trim();
-  const m = s.match(/^DDAE\|([^|]+)\|([^|]+)$/i);
-  if (!m) return null;
-  return { teamId: m[1], teamKey: m[2] };
+  const parts=String(txt||'').trim().split('|');
+  if(parts.length<3 || parts.length>5 || String(parts[0]||'').toUpperCase()!=='DDAE' || !parts[1] || !parts[2]) return null;
+  let structureId='', structureName='';
+  try{ structureId=parts[3]?decodeURIComponent(parts[3]):''; }catch(_){ structureId=parts[3]||''; }
+  try{ structureName=parts[4]?decodeURIComponent(parts[4]):''; }catch(_){ structureName=parts[4]||''; }
+  return {teamId:parts[1],teamKey:parts[2],structureId:__fbSafeStructureId__(structureId),structureName:String(structureName||'').slice(0,48)};
 }
 
 async function __fbGetIdToken__(){
@@ -2419,7 +2474,7 @@ async function __fbClearAdminChunks__(teamId, maxCount){
   const tasks = [];
   for (let i = 0; i < Math.max(n, 12); i++){
     const id = String(i).padStart(4, "0");
-    tasks.push(__fsDelete__(`sync/${teamId}/admin_chunks/${id}`).catch(()=>false));
+    tasks.push(__fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`).catch(()=>false));
   }
   await Promise.all(tasks);
 }
@@ -2432,13 +2487,13 @@ async function __fbWriteAdminPayload__(payload){
   const nowIso = __nowIso__();
   let previousChunkCount = 0;
   try{
-    const oldDoc = await __fsGet__(`sync/${teamId}`);
+    const oldDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
     const oldData = oldDoc ? __fsDecode__(oldDoc) : {};
     previousChunkCount = parseInt(String(oldData?.admin_chunk_count || oldData?.adminChunks || "0"), 10) || 0;
   }catch(_){}
 
   if (raw.length <= __FB_ADMIN_CHUNK_SIZE__){
-    await __fsSet__(`sync/${teamId}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
       admin_json: raw,
       admin_core_json: "",
       admin_chunked: "false",
@@ -2458,7 +2513,7 @@ async function __fbWriteAdminPayload__(payload){
   }
   for (let i = 0; i < chunks.length; i++){
     const id = String(i).padStart(4, "0");
-    await __fsSet__(`sync/${teamId}/admin_chunks/${id}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`, {
       part: chunks[i],
       index: String(i),
       total: String(chunks.length),
@@ -2468,14 +2523,14 @@ async function __fbWriteAdminPayload__(payload){
   if (previousChunkCount > chunks.length){
     for (let i = chunks.length; i < previousChunkCount; i++){
       const id = String(i).padStart(4, "0");
-      try{ await __fsDelete__(`sync/${teamId}/admin_chunks/${id}`); }catch(_){}
+      try{ await __fsDelete__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`); }catch(_){}
     }
   }
 
   let coreRaw = "";
   try{
     const ds = (payload && payload.datasets && typeof payload.datasets === "object") ? payload.datasets : {};
-    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), datasets:{} };
+    const core = { kind:"DDAE_SYNC_ADMIN_CORE", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets:{} };
     ["impostazioni", "ospiti", "stanze", "servizi"].forEach((t)=>{
       if (ds[t] !== undefined) core.datasets[t] = ds[t];
     });
@@ -2492,7 +2547,7 @@ async function __fbWriteAdminPayload__(payload){
     build: BUILD_VERSION
   };
   if (coreRaw) rootData.admin_core_json = coreRaw;
-  await __fsSet__(`sync/${teamId}`, rootData);
+  await __fsSet__(`${__fbSyncBasePath__(teamId)}`, rootData);
   return true;
 }
 
@@ -2506,7 +2561,7 @@ async function __fbReadAdminPayload__(){
       const s = String(raw || "");
       if (!s) return null;
       const p = JSON.parse(s);
-      return (p && p.datasets) ? p : null;
+      return (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) ? p : null;
     }catch(_){ return null; }
   };
 
@@ -2517,7 +2572,7 @@ async function __fbReadAdminPayload__(){
     const getPart = async (id) => {
       for (let attempt = 0; attempt < 3; attempt++){
         try{
-          const partDoc = await __fsGet__(`sync/${teamId}/admin_chunks/${id}`);
+          const partDoc = await __fsGet__(`${__fbSyncBasePath__(teamId)}/admin_chunks/${id}`);
           if (partDoc) return partDoc;
         }catch(_){ }
         try{ await new Promise(r => setTimeout(r, 180 + attempt * 260)); }catch(_){ }
@@ -2536,7 +2591,7 @@ async function __fbReadAdminPayload__(){
 
   const readChunkedByList = async () => {
     try{
-      const docs = await __fsList__(`sync/${teamId}/admin_chunks`);
+      const docs = await __fsList__(`${__fbSyncBasePath__(teamId)}/admin_chunks`);
       if (!Array.isArray(docs) || !docs.length) return null;
       let rows = docs.map((doc)=>{
         const d = __fsDecode__(doc);
@@ -2559,7 +2614,7 @@ async function __fbReadAdminPayload__(){
   };
 
   try{
-    const docAdmin = await __fsGet__(`sync/${teamId}`);
+    const docAdmin = await __fsGet__(`${__fbSyncBasePath__(teamId)}`);
     if (!docAdmin) return null;
     const dataA = __fsDecode__(docAdmin);
     const rawA = String(dataA.admin_json || "");
@@ -2629,7 +2684,7 @@ async function __fbEnsureSyncRoot__(opts){
     if (!teamKey && teamData && teamData.key) teamKey = String(teamData.key || "");
   }catch(_){}
   try{
-    await __fsSet__(`sync/${teamId}`, {
+    await __fsSet__(`${__fbSyncBasePath__(teamId)}`, {
       key: teamKey,
       schema: "dDAE_sync_v2",
       build: BUILD_VERSION,
@@ -2648,7 +2703,7 @@ async function __fbEnsureOperatorRegistry__(operatorName){
   if (!safeName) return false;
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
   try{
-    await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${safeName}`, {
+    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${safeName}`, {
       operator: safeName,
       registeredAt: { __ts: __nowIso__() },
       updatedAt: { __ts: __nowIso__() }
@@ -2662,7 +2717,7 @@ async function __fbEnsureTeamRoster__(){
   if (!__FB_STATE__.teamId) return false;
   const ops = await __fbGetRosterOperators__();
   try{
-    await __fsSet__(`teams/${__FB_STATE__.teamId}`, {
+    await __fsSet__(__fbTeamPath__(__FB_STATE__.teamId), {
       key: __FB_STATE__.teamKey || "",
       operators: ops,
       updatedAt: { __ts: __nowIso__() }
@@ -2793,6 +2848,14 @@ async function __qrScanAndLink__(){
   const data = __fsDecode__(doc);
   if (String(data.key||"") !== String(parsed.teamKey||"")){ try{ toast("Codice non valido", "orange"); }catch(_){ } return; }
 
+  if(parsed.structureId){
+    try{
+      const list=__structureCatalog__();
+      if(!list.some(x=>x.id===parsed.structureId)) __structureWriteLocalCatalog__(list.concat({id:parsed.structureId,nome:parsed.structureName||'Struttura',createdAt:__nowIso__(),updatedAt:__nowIso__()}));
+      __structureSetLegacySyncRoot__(parsed.structureId,false);
+      await __structureSelect__(parsed.structureId);
+    }catch(_){ }
+  }
   __fbSaveLink__(parsed.teamId, parsed.teamKey);
   try{ await __fbEnsureSyncRoot__({ teamId: parsed.teamId, teamKey: parsed.teamKey }); }catch(_){}
   try{ await __fbEnsureOperatorRegistry__(__operatorName__()); }catch(_){}
@@ -2871,12 +2934,13 @@ async function __fbExportSpesaBoard__(opts){
       kind:"DDAE_SPESA_BOARD",
       build: BUILD_VERSION,
       at: __nowIso__(),
+      structure: __fbActiveStructureMeta__(),
       datasets:{
         colazione: Array.isArray(colazione)?colazione:[],
         prodotti_pulizia: Array.isArray(prodotti)?prodotti:[]
       }
     };
-    await __fsSet__(`sync/${__FB_STATE__.teamId}/boards/spesa`, {
+    await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`, {
       spesa_json: JSON.stringify(payload),
       updatedAt: { __ts: __nowIso__() }
     });
@@ -2890,13 +2954,13 @@ async function __fbReadSpesaBoardPayload__(){
   __fbLoadLink__();
   if (!__FB_STATE__.teamId) return null;
   try{
-    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/boards/spesa`);
+    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/boards/spesa`);
     if (!doc) return null;
     const data = __fsDecode__(doc);
     const raw = String(data?.spesa_json || "");
     if (!raw) return null;
     const p = JSON.parse(raw);
-    if (p && p.datasets) return p;
+    if (p && p.datasets && __fbPayloadMatchesActiveStructure__(p)) return p;
   }catch(_){}
   return null;
 }
@@ -2905,7 +2969,7 @@ async function __fbBuildAdminPayload__(){
   const tables = __OP_TABLES__.filter(t => t !== 'utenti');
   const datasets = {};
   for (const t of tables){ datasets[t] = await __tblGet__(t, (t==="impostazioni"?[]:[])); }
-  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), datasets };
+  return { kind:"DDAE_SYNC_ADMIN", build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
 }
 
 async function __fbExportAdmin__(opts){
@@ -2934,18 +2998,21 @@ async function __fbImportOperator__(opts){
 let payloads = [];
 try{
   const pA = await __fbReadAdminPayload__();
-  if (pA && pA.datasets) payloads.push(pA);
+  if (pA && pA.datasets){
+    try{ await __structureAdoptFromSyncPayload__(pA); }catch(_){ }
+    if(__fbPayloadMatchesActiveStructure__(pA)) payloads.push(pA);
+  }
 }catch(_){}
 
 try{
-  const docsOps = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+  const docsOps = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
   (docsOps||[]).forEach(d=>{
     try{
       const dd = __fsDecode__(d);
       const rawO = String(dd.operator_json||"");
       if (!rawO) return;
       const pO = JSON.parse(rawO);
-      if (pO && pO.datasets) payloads.push(pO);
+      if (pO && pO.datasets && __fbPayloadMatchesActiveStructure__(pO)) payloads.push(pO);
     }catch(_){}
   });
 }catch(_){}
@@ -3255,9 +3322,9 @@ async function __fbExportOperator__(opts){
     colazione: await __tblGet__("colazione", []),
     prodotti_pulizia: await __tblGet__("prodotti_pulizia", [])
   };
-  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), datasets };
+  const payload = { kind:"DDAE_SYNC_OPERATOR", operator:name, build: BUILD_VERSION, at: __nowIso__(), structure:__fbActiveStructureMeta__(), datasets };
   try{ await __fbEnsureSyncRoot__(); }catch(_){}
-  await __fsSet__(`sync/${__FB_STATE__.teamId}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
+  await __fsSet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${name}`, { operator_json: JSON.stringify(payload), operator:name, updatedAt:{ __ts: __nowIso__() } });
   try{ await __fbExportSpesaBoard__({ silent:true }); }catch(_){ }
   try{ if(!opts?.silent) toast("Operazione completata", "blue"); }catch(_){}
   return true;
@@ -3294,7 +3361,7 @@ async function __fbImportAdmin__(opts){
   // Sempre includi TUTTI i documenti presenti nella collection operators (non dipendere solo dal roster/settings)
   // per evitare che un operatore venga "saltato" e che l'admin esporti solo un sottoinsieme dei dati.
   try{
-    const docsAll = await __fsList__(`sync/${__FB_STATE__.teamId}/operators`);
+    const docsAll = await __fsList__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators`);
     const fromDocs = (docsAll||[]).map(d => String(d.name||"").split("/").pop()).map(x=>String(x||"").trim()).filter(Boolean);
     if (!ops.length) ops = fromDocs;
     else {
@@ -3382,13 +3449,13 @@ async function __fbImportAdmin__(opts){
 
   for (const op of ops){
 
-    const doc = await __fsGet__(`sync/${__FB_STATE__.teamId}/operators/${op}`);
+    const doc = await __fsGet__(`${__fbSyncBasePath__(__FB_STATE__.teamId)}/operators/${op}`);
     if (!doc) continue;
     const d = __fsDecode__(doc);
     const raw = String(d.operator_json||"");
     if (!raw) continue;
     let payload=null; try{ payload=JSON.parse(raw); }catch(_){ payload=null; }
-    if (!payload || !payload.datasets) continue;
+    if (!payload || !payload.datasets || !__fbPayloadMatchesActiveStructure__(payload)) continue;
 
     // merge pulizie entries (merge by id or by key data+stanza; max per-col)
     try{
@@ -4350,6 +4417,7 @@ async function __dbImport__(kind){
       }
     }catch(_){ }
 
+    try{ await __structureBackupRestoreAll__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreTopLevelYears__(data, allowedTables); }catch(_){ }
     try{ await __ddaeBackupRestoreMultiYear__(data, allowedTables); }catch(_){ }
     try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
@@ -4556,6 +4624,76 @@ async function __exportRosterOperators__(){
 }
 
 
+
+async function __structureBackupCollectAll__(tables){
+  try{
+    const activeId=__structureActiveId__();
+    if(activeId) __structureCaptureStorageSnapshot__(activeId);
+    const allowed=new Set((Array.isArray(tables)?tables:[]).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
+    const catalog=__structureCatalog__();
+    const out={schemaVersion:1,catalog:catalog.map(x=>({id:x.id,nome:x.nome,createdAt:x.createdAt||'',updatedAt:x.updatedAt||''})),selectedId:activeId||'',structures:{}};
+    for(const item of catalog){
+      const sid=String(item.id||''); if(!sid) continue;
+      const uid=__ctxDataUidForStructure__(sid); const prefix=`ctx:${uid}:`;
+      const keys=await __kvKeys__(prefix); const years={};
+      for(const key of (Array.isArray(keys)?keys:[])){
+        const rest=String(key||'').slice(prefix.length); const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/); if(!m) continue;
+        const table=m[2]; if(!allowed.has(table)) continue;
+        const val=await __kvGet__(key); if(val===undefined || val===null) continue;
+        if(!years[m[1]]) years[m[1]]={}; years[m[1]][table]=val;
+      }
+      const cocktailImages={};
+      try{
+        const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const assetKeys=await __kvKeys__(assetPrefix);
+        for(const assetKey of (Array.isArray(assetKeys)?assetKeys:[])){
+          const slot=String(assetKey||'').slice(assetPrefix.length); if(!slot) continue;
+          const data=await __kvGet__(assetKey); if(typeof data==='string'&&data.startsWith('data:image/')) cocktailImages[slot]=data;
+        }
+      }catch(_){ }
+      out.structures[sid]={id:sid,nome:item.nome||'Struttura',legacySyncRoot:__structureUsesLegacySyncRoot__(sid),storage:__structureReadStorageSnapshot__(sid),assets:{cocktailImages},years};
+    }
+    return out;
+  }catch(_){ return {schemaVersion:1,catalog:[],selectedId:'',structures:{}}; }
+}
+async function __structureBackupRestoreAll__(payload,tables){
+  try{
+    const src=payload?.multiStructure || payload?.meta?.multiStructure;
+    if(!src || typeof src!=='object' || !src.structures || typeof src.structures!=='object') return false;
+    const allowed=new Set((Array.from(tables||[])).map(x=>String(x||'')).filter(x=>x && x!=='utenti'));
+    const catalog=__structureNormalizeList__(src.catalog || Object.values(src.structures));
+    if(!catalog.length) return false;
+    __structureWriteLocalCatalog__(catalog);
+    for(const item of catalog){
+      const sid=item.id; const entry=src.structures?.[sid]||{};
+      __structureSetLegacySyncRoot__(sid,entry.legacySyncRoot===undefined ? (catalog[0].id===sid) : !!entry.legacySyncRoot);
+      if(entry.storage && typeof entry.storage==='object'){
+        try{ localStorage.setItem(__structureStorageSnapshotKey__(sid),JSON.stringify(entry.storage)); }catch(_){ }
+      }
+      try{
+        const imgs=entry?.assets?.cocktailImages; if(imgs&&typeof imgs==='object'){
+          const assetPrefix=__cocktailImageAssetContextPrefix__(sid); const oldKeys=await __kvKeys__(assetPrefix);
+          for(const k of (Array.isArray(oldKeys)?oldKeys:[])) await __kvDel__(k);
+          for(const slot of Object.keys(imgs)){ const data=String(imgs[slot]||''); if(data.startsWith('data:image/')) await __kvSet__(assetPrefix+slot,data); }
+        }
+      }catch(_){ }
+      const years=entry.years&&typeof entry.years==='object'?entry.years:{};
+      for(const year of Object.keys(years)){
+        if(!/^[0-9]{4}$/.test(year)) continue;
+        const ds=years[year]&&typeof years[year]==='object'?years[year]:{};
+        for(const table of Object.keys(ds)){
+          if(!allowed.has(table)) continue;
+          await __kvSet__(`ctx:${__ctxDataUidForStructure__(sid)}:${year}:tbl:${table}`,ds[table]);
+        }
+      }
+    }
+    let selected=String(src.selectedId||'').trim(); if(!catalog.some(x=>x.id===selected)) selected=catalog[0].id;
+    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
+    __structureApplyStorageSnapshot__(selected);
+    try{ localStorage.setItem(__structureSelectedStorageKey__(),selected); }catch(_){ }
+    return true;
+  }catch(_){ return false; }
+}
+
 async function __dbExport__(kind, preopenWin){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -4572,6 +4710,7 @@ async function __dbExport__(kind, preopenWin){
         datasets.operatori = datasets.operatori.filter((row) => activeNames.has(String(getCanonicalActiveOperatorName(row?.operatore || row?.nome || '') || '').trim().toLowerCase()));
       }
     }catch(_){ }
+    try{ if(__structureActiveId__()) __structureCaptureStorageSnapshot__(__structureActiveId__()); }catch(_){ }
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
     const cocktailImageAssets = await __collectCocktailImageAssetsForBackup__();
@@ -4593,6 +4732,11 @@ async function __dbExport__(kind, preopenWin){
       const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
       payload.multiYear = __multiYearBackup__;
       payload.meta.multiYear = __multiYearBackup__;
+    }catch(_){ }
+    try{
+      const __multiStructureBackup__ = await __structureBackupCollectAll__(tables);
+      payload.multiStructure = __multiStructureBackup__;
+      payload.meta.multiStructure = __multiStructureBackup__;
     }catch(_){ }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -5373,20 +5517,69 @@ function __applyStatGenCompareYearButtonVisual__(){
 function __openStatGenCompareYearButtonColorPicker__(){
   const enabled = __ensureStatGenCompareEnabled__();
   const visuals = __statGenCompareBtnVisualRead__();
-  const stateKey = enabled ? 'on' : 'off';
-  const initial = __tagColorPairFromValue__(visuals[stateKey], visuals[stateKey]?.bg || (enabled ? '#2b7cb4' : '#d6dee8'));
-  __tagColorPopupOpen__('statgen-compare-toggle-btn', initial, (payload) => {
+  const originals = {
+    off: __tagColorPairFromValue__(visuals.off, visuals.off?.bg || '#d6dee8'),
+    on: __tagColorPairFromValue__(visuals.on, visuals.on?.bg || '#2b7cb4')
+  };
+  const drafts = { off:{...originals.off}, on:{...originals.on} };
+  const activeState = enabled ? 'on' : 'off';
+
+  const payloadToVisual = (payload, fallback) => {
+    const base = __tagColorPairFromValue__(fallback || {}, fallback?.bg || '#d6dee8');
+    const colors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
+    const bg = __parseOperatoreColorSpec__(colors.bg || payload?.spec || base.bg || '#d6dee8').spec;
+    const border = __parseOperatoreColorSpec__(colors.border || base.border || bg).spec;
+    const fg = String(colors.fg || '').trim() ? __parseOperatoreColorSpec__(colors.fg).spec : (base.fg || '');
+    return {
+      bg,
+      border: border || bg,
+      fg: fg || '',
+      opacity: __designBgOpacityNormalize__(payload?.opacity ?? base.opacity ?? 0.80)
+    };
+  };
+
+  const applyState = (stateName, payload) => {
+    const key = String(stateName || 'off') === 'on' ? 'on' : 'off';
+    const next = payloadToVisual(payload, drafts[key] || originals[key]);
+    drafts[key] = next;
     const current = __statGenCompareBtnVisualRead__();
-    const pair = __tagColorPairFromValue__(current[stateKey] || initial, initial.bg || '#2b7cb4');
-    const payloadColors = (payload && payload.colors && typeof payload.colors === 'object') ? payload.colors : {};
-    pair.bg = __parseOperatoreColorSpec__(payloadColors.bg || pair.bg || initial.bg || '#2b7cb4').spec;
-    pair.border = __parseOperatoreColorSpec__(payloadColors.border || pair.border || pair.bg || initial.bg || '#2b7cb4').spec;
-    pair.fg = String(payloadColors.fg || '').trim() ? __parseOperatoreColorSpec__(payloadColors.fg).spec : '';
-    pair.opacity = __designBgOpacityNormalize__(payload?.opacity ?? pair.opacity ?? initial.opacity ?? 0.80);
-    current[stateKey] = { bg: pair.bg, border: pair.border || pair.bg, fg: pair.fg || '', opacity: pair.opacity };
+    current[key] = next;
     __statGenCompareBtnVisualWrite__(current);
     __applyStatGenCompareYearButtonVisual__();
-  }, { supportsBg:true, supportsBorder:true, supportsFg:true, supportsOpacity:true, opacity:__designBgOpacityNormalize__(initial.opacity ?? 0.80), defaultMode:'bg', fallbackBg:initial.bg || (enabled ? '#2b7cb4' : '#d6dee8') });
+  };
+
+  __tagColorPopupOpen__('statgen-compare-toggle-btn', drafts[activeState], null, {
+    supportsBg:true,
+    supportsBorder:true,
+    supportsFg:true,
+    supportsOpacity:true,
+    opacity:__designBgOpacityNormalize__(drafts[activeState].opacity ?? 0.80),
+    defaultMode:'bg',
+    fallbackBg:drafts[activeState].bg || (enabled ? '#2b7cb4' : '#d6dee8'),
+    onPreview:(payload) => {
+      const editor = (typeof __tagColorPopupState__ !== 'undefined') ? __tagColorPopupState__.stateEditor : null;
+      const stateName = editor && editor.activeState === 'on' ? 'on' : 'off';
+      applyState(stateName, payload);
+    },
+    stateEditor:{
+      activeState,
+      drafts,
+      originals,
+      labels:{ off:'OFF', on:'ON' },
+      fallbackBg:drafts[activeState].bg || (enabled ? '#2b7cb4' : '#d6dee8'),
+      onStatePreview:(stateName, payload) => applyState(stateName, payload),
+      onConfirm: async(all) => {
+        const off = payloadToVisual(all?.off || drafts.off, drafts.off || originals.off);
+        const on = payloadToVisual(all?.on || drafts.on, drafts.on || originals.on);
+        __statGenCompareBtnVisualWrite__({ off, on });
+        __applyStatGenCompareYearButtonVisual__();
+      },
+      onRevert:() => {
+        __statGenCompareBtnVisualWrite__({ off:originals.off, on:originals.on });
+        __applyStatGenCompareYearButtonVisual__();
+      }
+    }
+  });
 }
 
 function __toggleStatGenCompareEnabled__(){
@@ -5542,7 +5735,7 @@ function __statGenReadYearGuestsLocalCache__(year){
   try{
     const yy = String(year || '').trim();
     if (!yy) return [];
-    const currentUid = (state && state.session && state.session.user_id) ? String(state.session.user_id) : '';
+    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '') : '';
     const out = [];
     const seen = new Set();
     const addRows = (rows) => {
@@ -5576,7 +5769,7 @@ function __statGenReadYearGuestsLocalCache__(year){
         const k = localStorage.key(i);
         if (!k) continue;
         const ks = String(k);
-        if (ks.indexOf(`${yy}:ospitiALL|`) >= 0 || (ks.indexOf(`|${yy}|${yy}-01-01|${yy}-12-31`) >= 0 && ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
+        if (currentUid && ks.startsWith(`${__lsPrefixBase}${currentUid}:${yy}:`) && (ks.indexOf('ospitiALL') >= 0)) tryKey(ks);
       }
     }catch(_){ }
 
@@ -5589,83 +5782,48 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
   try{
     const yy = String(year || '').trim();
     if (!/^\d{4}$/.test(yy)) return null;
-    const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
-    const suffix = `:${yy}:tbl:ospiti`;
-    let guestKeys = (Array.isArray(keys) ? keys : []).filter((k) => String(k || '').endsWith(suffix));
-    if (!guestKeys.length) return null;
+    const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+    if (!currentUid) return null;
 
-    const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-    guestKeys.sort((a, b) => {
-      const au = String(a || '').split(':')[1] || '';
-      const bu = String(b || '').split(':')[1] || '';
-      const ap = currentUid && au === currentUid ? 0 : 1;
-      const bp = currentUid && bu === currentUid ? 0 : 1;
-      if (ap !== bp) return ap - bp;
-      if (au === 'anon') return 1;
-      if (bu === 'anon') return -1;
-      return String(a).localeCompare(String(b));
-    });
+    // dDAE_3.325 — confronto storico rigorosamente della struttura attiva.
+    // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
+    // la presenza di ospiti come prerequisito: un anno può avere sole spese.
+    const readRows = async (table) => {
+      try{
+        const value = await __kvGet__(`ctx:${currentUid}:${yy}:tbl:${String(table || '').trim()}`);
+        return Array.isArray(value) ? value.slice() : [];
+      }catch(_){ return []; }
+    };
 
     const fields = [
       'check_in','checkIn','arrivo','dataArrivo','check_out','checkOut','partenza','dataPartenza',
       'createdAt','created_at','updatedAt','updated_at'
     ];
-    const seenGuests = new Set();
-    const seenSpese = new Set();
-    const seenServizi = new Set();
-    const seenStanze = new Set();
-    const guestsOut = [];
-    const speseOut = [];
-    const serviziOut = [];
-    const stanzeOut = [];
+    const guestsRaw = await readRows('ospiti');
+    const speseRaw = await readRows('spese');
+    const serviziRaw = await readRows('servizi');
+    const stanzeRaw = await readRows('stanze');
+    const operatoriRaw = await readRows('operatori');
+    const deletedRaw = await readRows('ospiti_eliminati');
 
-    const addUnique = (list, rows, seen, keyFn) => {
-      try{
-        (Array.isArray(rows) ? rows : []).forEach((row) => {
-          if (!row || typeof row !== 'object') return;
-          let key = '';
-          try{ key = String(keyFn(row) || ''); }catch(_){ key = ''; }
-          if (!key){
-            try{ key = JSON.stringify(row); }catch(_){ key = String(Math.random()); }
-          }
-          if (seen.has(key)) return;
-          seen.add(key);
-          list.push(row);
-        });
-      }catch(_){ }
-    };
+    const guests = __guestFilterPreventiviRows__(__filterByExerciseYear__(guestsRaw, yy, fields), false);
+    const spese = __filterByExerciseYear__(speseRaw, yy, ['dataSpesa','data','data_spesa']);
+    const deletedGuests = __filterByExerciseYear__(deletedRaw, yy, fields);
 
-    for (const key of guestKeys){
-      const parts = String(key || '').split(':');
-      const uid = parts[1] || '';
-      if (!uid) continue;
-      const guestsRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:ospiti`);
-      const filteredGuests = __guestFilterPreventiviRows__(__filterByExerciseYear__(Array.isArray(guestsRaw) ? guestsRaw : [], yy, fields), false);
-      addUnique(guestsOut, filteredGuests, seenGuests, (row) => String(row.id || row.guest_id || row.uid || row.booking_id || row.numero_prenotazione || row.numeroPrenotazione || '') || [row.nome || row.name || '', row.check_in || row.checkIn || row.arrivo || '', row.check_out || row.checkOut || row.partenza || '', row.stanza || row.room || row.room_id || ''].join('|'));
-
-      const speseRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:spese`);
-      const spese = __filterByExerciseYear__(Array.isArray(speseRaw) ? speseRaw : [], yy, ['dataSpesa','data','data_spesa']);
-      addUnique(speseOut, spese, seenSpese, (row) => String(row.id || row.spesa_id || row.uid || '') || [row.dataSpesa || row.data || row.data_spesa || '', row.descrizione || row.description || row.nome || '', row.importo || row.amount || row.totale || ''].join('|'));
-
-      const serviziRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:servizi`);
-      addUnique(serviziOut, Array.isArray(serviziRaw) ? serviziRaw : [], seenServizi, (row) => String(row.id || row.servizio_id || row.uid || row.nome || row.name || JSON.stringify(row || {})));
-
-      const stanzeRaw = await __kvGet__(`ctx:${uid}:${yy}:tbl:stanze`);
-      addUnique(stanzeOut, Array.isArray(stanzeRaw) ? stanzeRaw : [], seenStanze, (row) => String(row.id || row.stanza_id || row.numero || row.roomNumber || row.nome || row.name || JSON.stringify(row || {})));
-    }
-
-    if (!guestsOut.length && !speseOut.length) return null;
     return {
-      guests: guestsOut.slice(),
-      spese: speseOut.slice(),
-      report: buildReportFromSpese(Array.isArray(speseOut) ? speseOut : []),
-      servizi: serviziOut.slice(),
-      stanzeRows: stanzeOut.slice()
+      structureId: (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '',
+      uid: currentUid,
+      year: yy,
+      guests: Array.isArray(guests) ? guests.slice() : [],
+      spese: Array.isArray(spese) ? spese.slice() : [],
+      report: buildReportFromSpese(Array.isArray(spese) ? spese : []),
+      servizi: Array.isArray(serviziRaw) ? serviziRaw.slice() : [],
+      stanzeRows: Array.isArray(stanzeRaw) ? stanzeRaw.slice() : [],
+      operatoriRows: Array.isArray(operatoriRaw) ? operatoriRaw.slice() : [],
+      deletedGuests: Array.isArray(deletedGuests) ? deletedGuests.slice() : []
     };
-  }catch(_){ }
-  return null;
+  }catch(_){ return null; }
 }
-
 
 async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
   const targetYear = String(year || '').trim();
@@ -5673,7 +5831,7 @@ async function __statGenLoadGuestsThroughPrimaryPipeline__(year, opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(targetYear);
-    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length) return directSnapshot;
+    if (directSnapshot) return directSnapshot;
   }catch(_){ }
 
   const backup = {
@@ -5735,7 +5893,7 @@ async function __loadStatGenCompareGuests__(opts = {}){
 
   try{
     const directSnapshot = await __statGenReadYearSnapshotFromIndexedDb__(compareYear);
-    if (directSnapshot && Array.isArray(directSnapshot.guests) && directSnapshot.guests.length){
+    if (directSnapshot){
       if (__ensureStatGenCompareYear__() !== compareYear) return Array.isArray(state.statGenCompareGuests) ? state.statGenCompareGuests : [];
       state.statGenCompareGuests = directSnapshot.guests.slice();
       state.statGenCompareSnapshotYear = compareYear;
@@ -5744,7 +5902,11 @@ async function __loadStatGenCompareGuests__(opts = {}){
         spese: Array.isArray(directSnapshot.spese) ? directSnapshot.spese.slice() : [],
         report: directSnapshot.report ? JSON.parse(JSON.stringify(directSnapshot.report)) : null,
         servizi: Array.isArray(directSnapshot.servizi) ? directSnapshot.servizi.slice() : [],
-        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : []
+        stanzeRows: Array.isArray(directSnapshot.stanzeRows) ? directSnapshot.stanzeRows.slice() : [],
+        operatoriRows: Array.isArray(directSnapshot.operatoriRows) ? directSnapshot.operatoriRows.slice() : [],
+        deletedGuests: Array.isArray(directSnapshot.deletedGuests) ? directSnapshot.deletedGuests.slice() : [],
+        structureId: String(directSnapshot.structureId || ''),
+        uid: String(directSnapshot.uid || '')
       };
       try{ if (state.page === 'statgen') drawStatGenRegistrationsLineChart('statGenRegChart'); if (state.page === 'statmensili') drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); if (state.page === 'statoccupazione') drawStatOccupazioneLineChart('statOccupazioneLineChart'); if (state.page === 'statamministratore') drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
     }
@@ -5915,12 +6077,33 @@ function __syncTopserviziCenterLayout__(){
 function __setTopserviziCenterLabel__(){
   try{
     const el = document.getElementById("topserviziYear");
+    const homeContext = document.getElementById("homeYearPill");
+    const isHome = !!(state && state.page === "home");
+    const y = String(state?.exerciseYear || loadExerciseYear?.() || new Date().getFullYear()).trim();
+    if (homeContext){
+      homeContext.hidden = !isHome;
+      if (isHome){
+        const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
+        homeContext.textContent = active ? `${active.nome}` : `Seleziona struttura`;
+        homeContext.setAttribute('aria-label', active ? `Struttura ${active.nome}` : `Seleziona struttura`);
+        try{ __pillApplyToButton__(homeContext); }catch(_){ }
+      }
+    }
+    const homeYearDisplay = document.getElementById('homeYearDisplayPill');
+    if (homeYearDisplay){
+      homeYearDisplay.hidden = !isHome;
+      homeYearDisplay.textContent = y;
+      homeYearDisplay.setAttribute('aria-label', `Anno selezionato ${y}`);
+      try{ __pillApplyToButton__(homeYearDisplay); }catch(_){ }
+    }
     if (!el) return;
+    el.hidden = isHome;
+    if (isHome) return;
     if (state && state.page === "calendario"){
       const a = (state.calendar && state.calendar.anchor) ? state.calendar.anchor : new Date();
       const d = (a instanceof Date) ? a : new Date(a);
       const month = monthNameIT(d).toUpperCase();
-      const year = (!isNaN(d)) ? String(d.getFullYear()) : String(state.exerciseYear || loadExerciseYear() || new Date().getFullYear());
+      const year = (!isNaN(d)) ? String(d.getFullYear()) : y;
       el.textContent = `${month} ${year}`.trim();
     } else if (state && state.page === "pulizie"){
       const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
@@ -5934,18 +6117,30 @@ function __setTopserviziCenterLabel__(){
 
 function updateYearPill(){
   const y = String(state.exerciseYear || loadExerciseYear() || "").trim();
-  const pills = [
-    document.getElementById("yearPill"),
-    document.getElementById("homeYearPill")
-  ].filter(Boolean);
-
-  pills.forEach((pill) => {
-    if (!y){ pill.hidden = true; }
-    else{
-      pill.textContent = y;
-      pill.hidden = false;
+  const yearPill = document.getElementById("yearPill");
+  if (yearPill){
+    yearPill.hidden = !y;
+    if (y) yearPill.textContent = y;
+  }
+  const homePill = document.getElementById("homeYearPill");
+  if (homePill){
+    homePill.hidden = !(y && state && state.page === "home");
+    if (y){
+      const active = (typeof __structureActive__ === 'function') ? __structureActive__() : null;
+      homePill.textContent = active ? `${active.nome}` : `Seleziona struttura`;
+      homePill.setAttribute('aria-label', active ? `Struttura ${active.nome}` : `Seleziona struttura`);
+      try{ __pillApplyToButton__(homePill); }catch(_){ }
     }
-  });
+  }
+  const homeYearDisplay = document.getElementById('homeYearDisplayPill');
+  if (homeYearDisplay){
+    homeYearDisplay.hidden = !(y && state && state.page === 'home');
+    if (y){
+      homeYearDisplay.textContent = y;
+      homeYearDisplay.setAttribute('aria-label', `Anno selezionato ${y}`);
+      try{ __pillApplyToButton__(homeYearDisplay); }catch(_){ }
+    }
+  }
 
   // Topservizi: anno (default) o mese (solo Calendario)
   try{ __setTopserviziCenterLabel__(); }catch(_){ }
@@ -6132,7 +6327,7 @@ function __writeHashPage(page){
 }
 
 function __readRestoreState(){
-  // dDAE_3.290 — ogni nuova apertura/riapertura parte sempre dalla HOME.
+  // dDAE_3.292 — ogni nuova apertura/riapertura parte sempre dalla HOME.
   // Gli stati di pagina salvati dalle build precedenti vengono eliminati e non ripristinati.
   try { sessionStorage.removeItem(__RESTORE_KEY); } catch(_) {}
   try { localStorage.removeItem(__RESTORE_KEY); } catch(_) {}
@@ -6160,7 +6355,7 @@ function __writeRestoreState(obj){
 
 function __rememberPage(page){
   const p = __sanitizePage(page) || "home";
-  // dDAE_3.290 — nessuna memoria persistente dell’ultima schermata.
+  // dDAE_3.292 — nessuna memoria persistente dell’ultima schermata.
   try { localStorage.removeItem(__LAST_PAGE_KEY); } catch(_) {}
   __writeHashPage(p);
 }
@@ -7816,25 +8011,31 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.273 — evidenza verde nel popup schedine PS:
-// una sola notte + almeno un pagamento in contanti + nessun pagamento elettronico.
+// dDAE_3.325 — evidenza verde nel popup schedine PS:
+// consentita esclusivamente quando l'intero dovuto è saldato in contanti.
+// Qualsiasi pagamento elettronico, anche parziale o misto ai contanti, forza la card standard.
 function __guestPsAlertCashOnlyOneNight__(g){
   try{
     if (!g) return false;
-    const inIso = formatISODateLocal(g?.check_in ?? g?.checkIn ?? g?.arrivo ?? g?.dataArrivo ?? '');
-    const outIso = formatISODateLocal(g?.check_out ?? g?.checkOut ?? g?.checkout ?? g?.data_check_out ?? '');
-    const inDay = _dayNumFromISO(inIso);
-    const outDay = _dayNumFromISO(outIso);
-    if (inDay == null || outDay == null || (outDay - inDay) !== 1) return false;
-
     const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? g?.deposit ?? 0);
     const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? g?.depositType ?? g?.deposit_type ?? '');
     const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
     const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? g?.balanceType ?? g?.balance_type ?? '');
 
-    const hasCash = (dep > 0 && _isCashTypeStr_(depType)) || (saldo > 0 && _isCashTypeStr_(saldoType));
     const hasElectronic = (dep > 0 && _isElectronicTypeStr_(depType)) || (saldo > 0 && _isElectronicTypeStr_(saldoType));
-    return !!(hasCash && !hasElectronic);
+    if (hasElectronic) return false;
+
+    // Ogni importo effettivamente registrato deve essere esplicitamente contante.
+    if (dep > 0 && !_isCashTypeStr_(depType)) return false;
+    if (saldo > 0 && !_isCashTypeStr_(saldoType)) return false;
+
+    const fin = _guestStayFinancials(g);
+    const due = Math.max(0, Number(fin?.total || 0) + Number(fin?.services || 0) - Number(fin?.discount || 0));
+    const paidCash = (dep > 0 ? dep : 0) + (saldo > 0 ? saldo : 0);
+    if (!(due > 0)) return false;
+    if (!(paidCash > 0)) return false;
+    if (Number(fin?.remaining || 0) > 0.0001) return false;
+    return paidCash + 0.0001 >= due;
   }catch(_){ return false; }
 }
 
@@ -7978,6 +8179,81 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
+// dDAE_3.325 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
+function __guestPresetMessageSentAtFromRecord__(g){
+  try{
+    return String(g?.guest_preset_message_sent_at ?? g?.preset_message_sent_at ?? g?.messaggio_preimpostato_inviato_at ?? '').trim();
+  }catch(_){ return ''; }
+}
+function __guestPresetMessageLogRead__(){
+  try{
+    const key = (typeof __structureLocalStorageKey__ === 'function') ? __structureLocalStorageKey__(__GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__) : __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__;
+    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  }catch(_){ return {}; }
+}
+function __guestPresetMessageLogWrite__(map){
+  try{
+    const key = (typeof __structureLocalStorageKey__ === 'function') ? __structureLocalStorageKey__(__GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__) : __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__;
+    localStorage.setItem(key, JSON.stringify(map && typeof map === 'object' ? map : {}));
+  }catch(_){ }
+}
+function __guestPresetMessageWasSent__(guest){
+  try{
+    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length) ? guest._groupBookings : (guest ? [guest] : []);
+    if (rows.some((g) => !!__guestPresetMessageSentAtFromRecord__(g))) return true;
+    const log = __guestPresetMessageLogRead__();
+    return rows.some((g) => {
+      const id = String(guestIdOf(g) || g?.id || '').trim();
+      return !!(id && log[id] && String(log[id]?.at || log[id] || '').trim());
+    });
+  }catch(_){ return false; }
+}
+async function __guestMarkPresetMessageSent__(meta){
+  const info = meta && typeof meta === 'object' ? meta : {};
+  let item = null;
+  try{ item = (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null) || state?.guestViewItem || state?.guestEditSourceItem || null; }catch(_){ item = state?.guestViewItem || null; }
+  const id = String(guestIdOf(item) || item?.id || '').trim();
+  if (!item || !id) return false;
+
+  const at = new Date().toISOString();
+  const patch = {
+    guest_preset_message_sent_at: at,
+    guest_preset_message_template_id: String(info.templateId || '').trim(),
+    guest_preset_message_channel: String(info.channel || '').trim()
+  };
+  const patchRow = (row) => {
+    if (!row) return;
+    row.guest_preset_message_sent_at = patch.guest_preset_message_sent_at;
+    row.guest_preset_message_template_id = patch.guest_preset_message_template_id;
+    row.guest_preset_message_channel = patch.guest_preset_message_channel;
+  };
+  try{ patchRow(item); }catch(_){ }
+  try{
+    [state?.ospiti, state?.guests, state?.bookings, state?.guestList, state?.statsGuests, state?.guestGroupBookings].forEach((list) => {
+      if (!Array.isArray(list)) return;
+      list.forEach((row) => {
+        try{ if (String(guestIdOf(row) || row?.id || '').trim() === id) patchRow(row); }catch(_){ }
+      });
+    });
+  }catch(_){ }
+  try{
+    const log = __guestPresetMessageLogRead__();
+    log[id] = { at, templateId:patch.guest_preset_message_template_id, channel:patch.guest_preset_message_channel };
+    __guestPresetMessageLogWrite__(log);
+  }catch(_){ }
+  try{
+    const payload = Object.assign({}, item, { id }, patch);
+    await api('ospiti', { method:'PUT', body:payload });
+    try{ invalidateApiCache('ospiti|'); }catch(_){ }
+  }catch(_){
+    // Il log locale strutturato resta valido anche se la sincronizzazione remota è momentaneamente indisponibile.
+  }
+  try{ if (typeof renderGuestCards === 'function' && String(state?.page || '') === 'ospiti') renderGuestCards(); }catch(_){ }
+  return true;
+}
+
 
 // dDAE_3.097 — priorità visiva guest card:
 // 1) checkout odierno con saldo mancante = rosso lampeggiante;
@@ -7999,7 +8275,7 @@ function __guestGroupCheckoutTodayUnpaid__(guest){
 function __guestCardUrgentVisualState__(guest){
   try{
     if (__guestGroupCheckoutTodayUnpaid__(guest)) return 'checkout-unpaid';
-    if (__guestGroupCheckInExpectedToday__(guest)) return 'checkin-unconfirmed';
+    if (__guestGroupCheckInExpectedToday__(guest) && !__guestPresetMessageWasSent__(guest)) return 'checkin-unconfirmed';
   }catch(_){ }
   return '';
 }
@@ -8392,7 +8668,6 @@ function openGuestAlertModal(kind){
         if (String(cfg.tag || '').toLowerCase() === 'polizia') {
           const guest = it.guest || {};
           if (__guestPsAlertCashOnlyOneNight__(guest)) card.classList.add('is-one-night-cash-only');
-          else if (__guestPsAlertPrivateChannel__(guest)) card.classList.add('is-private-channel');
         }
       }catch(_){ }
       card.tabIndex = 0;
@@ -11938,7 +12213,15 @@ function __parseSettingsRows(rows) {
 
 function getSettingRow(key) {
   const k = __normKey(key);
-  return (state.settings && state.settings.byKey && state.settings.byKey[k]) ? state.settings.byKey[k] : null;
+  const map = (state.settings && state.settings.byKey) ? state.settings.byKey : null;
+  if (!map) return null;
+  try{
+    if (typeof __structureSettingIsScoped__ === 'function' && __structureSettingIsScoped__(k) && typeof __structureHasActive__ === 'function' && __structureHasActive__()) {
+      const scoped = __structureScopedSettingKey__(k);
+      return map[scoped] || null;
+    }
+  }catch(_){ }
+  return map[k] || null;
 }
 
 function getSettingText(key, fallback = "") {
@@ -12003,14 +12286,14 @@ const __LAUNDRY_CATALOG_CACHE_KEY__ = "ddae_laundry_catalog_v1";
 function __persistLaundryCatalogCache__(list){
   try{
     const clean = __sanitizeLaundryCatalogList__(list, { fallbackToDefault: false });
-    localStorage.setItem(__LAUNDRY_CATALOG_CACHE_KEY__, JSON.stringify(clean));
+    localStorage.setItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__), JSON.stringify(clean));
     return clean;
   }catch(_){ return []; }
 }
 
 function __readLaundryCatalogCache__(){
   try{
-    const raw = localStorage.getItem(__LAUNDRY_CATALOG_CACHE_KEY__);
+    const raw = localStorage.getItem(__structureLocalStorageKey__(__LAUNDRY_CATALOG_CACHE_KEY__));
     if (!String(raw || '').trim()) return [];
     const parsed = JSON.parse(String(raw || '[]'));
     return __sanitizeLaundryCatalogList__(parsed, { fallbackToDefault: false });
@@ -12409,7 +12692,7 @@ const __LAUNCHER_ICON_COLOR_STORAGE_KEY__ = 'dDAE_launcher_icon_colors_v2';
 const __LAUNCHER_ICON_LONGPRESS_DELAY__ = 500;
 const __LAUNCHER_ICON_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
+  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn',
   'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
@@ -12424,6 +12707,8 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   goStatistiche: 'beige-4',
   goProdotti: 'gray-3',
   goDbSync: 'white',
+  settingsStructureBtn: 'orange-4',
+  settingsStructureCreateBtn: 'orange-4',
   settingsSaveBtn: 'sky-3',
   settingsDbBtn: 'green-4',
   settingsRoomsBtn: 'yellow-4',
@@ -12467,7 +12752,8 @@ const __LAUNCHER_ICON_DEFAULT_SPECS__ = {
   serviziExtraBtn: 'orange-4',
   serviziCocktailAnalcoliciBtn: 'blue-4',
   serviziRicaricaElettricaBtn: 'green-4',
-  homeYearPill: 'sky-4'
+  homeYearPill: 'sky-4',
+  homeYearDisplayPill: 'sky-4'
 };
 
 function __launcherIconColorMapRead__(){
@@ -13039,7 +13325,7 @@ function __openHeaderActionThemePicker__(){
 
 const __PILL_THEME_STORAGE_KEY__ = 'dDAE_pill_theme_v1';
 const __PILL_COLOR_STORAGE_KEY__ = 'dDAE_pill_colors_v1';
-const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
+const __PILL_THEME_TARGET_IDS__ = ['opSettingsYearPill','opSettingsLogoutBtn','homeYearPill','homeYearDisplayPill','taxYearBtn','taxEstimateBtn','setTassaFieldPill','setTassaMaxNottiBtn','settingsConfigCancelBtn','settingsConfigSaveBtn'];
 const __PILL_LONGPRESS_SUPPRESS_UNTIL__ = Object.create(null);
 
 function __pillLongPressKey__(btnOrId){
@@ -13169,6 +13455,19 @@ function __pillApplyToButton__(btn, previewVisual){
   try{
     if (!btn || !btn.id) return;
     const visual = previewVisual || __pillVisualFor__(btn.id);
+    if (btn.id === 'homeYearPill' && btn.closest && btn.closest('.topservizi')){
+      const accentHex = __operatoreColorHex__(visual.bg || visual.border || 'blue-4');
+      btn.style.setProperty('background', 'transparent', 'important');
+      btn.style.setProperty('background-color', 'transparent', 'important');
+      btn.style.setProperty('border', '0', 'important');
+      btn.style.setProperty('border-width', '0', 'important');
+      btn.style.setProperty('box-shadow', 'none', 'important');
+      btn.style.setProperty('opacity', '1', 'important');
+      btn.style.setProperty('color', accentHex, 'important');
+      btn.style.setProperty('-webkit-text-fill-color', accentHex, 'important');
+      btn.style.setProperty('font-weight', visual && visual.bold ? '800' : '700', 'important');
+      return;
+    }
     if (__isDarkModeRuntime__() && __isProtectedPillButton__(btn)){
       const isLogout = String(btn.id || '').toLowerCase().includes('logout');
       __applyProtectedDarkButtonStyle__(btn, {
@@ -13346,7 +13645,10 @@ function __pillApplyAll__(){
 
 function __bindPillLongPress__(btn){
   try{
-    if (!btn || !btn.id || btn.dataset.pillColorHoldBound === '1') return;
+    if (!btn || !btn.id) return;
+    // Home usa un gestore dedicato: tap breve = selezione struttura, long press reale = Design.
+    if (btn.id === 'homeYearPill') return;
+    if (btn.dataset.pillColorHoldBound === '1') return;
     btn.dataset.pillColorHoldBound = '1';
     let holdTimer = null;
     let holdTriggered = false;
@@ -13360,6 +13662,8 @@ function __bindPillLongPress__(btn){
     const openPicker = () => {
       if (!canOpenPicker()) return;
       holdTriggered = true;
+      try{ __pillLongPressSuppress__(btn, 1800); }catch(_){ }
+      try{ btn.__ddaeColorHoldSuppressUntil = Date.now() + 1800; }catch(_){ }
       const current = __pillVisualFor__(btn.id);
       __tagColorPopupOpen__('pill-single-button', current, (payload) => {
         try{
@@ -13398,7 +13702,7 @@ function __bindPillLongPress__(btn){
     }, true);
     btn.addEventListener('contextmenu', (e) => {
       try{ e.preventDefault(); }catch(_){ }
-      if (canOpenPicker()){
+      if (btn.id !== 'homeYearPill' && canOpenPicker()){
         try{ openPicker(); }catch(_){ }
       }
       try{ e.stopPropagation(); }catch(_){ }
@@ -13667,7 +13971,7 @@ function __launcherGridThemeButtonStyle__(){
 
 const __LAUNCHER_GRID_THEME_TARGET_IDS__ = [
   'goOspite','goCalendario','openLauncher','goTassaSoggiorno','goPulizie','goLavanderia','goOrePuliziaHome','goStatistiche','goProdotti',
-  'settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
+  'settingsStructureBtn','settingsStructureCreateBtn','settingsYearPill','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill',
   'goStatGen','goStatMensili','goStatSpese','goStatRicevute','goStatChannel','goStatNazionalita','goStatPunteggio','goStatPulizie','goStatPiscina','goStatPiscinaReport','goStatCancellazioni','goStatAmministratore','goStatOccupazione','goStatAnalisi','serviziCocktailBtn','serviziVinoBtn','serviziBirraBtn','serviziAnalcoliciBtn','serviziExtraBtn','serviziCocktailAnalcoliciBtn','serviziRicaricaElettricaBtn','serviziRicaricaElettricaBtn'
 ];
 
@@ -13718,6 +14022,9 @@ function __launcherIconVisualFor__(id){
   if (key === 'settingsGuestMessagesBtn' && !map[key] && map.settingsGuestMessageBtn){
     try{ map[key] = map.settingsGuestMessageBtn; __launcherIconColorMapWrite__(map); }catch(_){ }
   }
+  if ((key === 'settingsStructureCreateBtn' || key === 'settingsStructureBtn') && !map[key] && map.settingsChannelBtn){
+    return __launcherVisualNormalize__(map.settingsChannelBtn, 'orange-4');
+  }
   if (key === 'goDbSync'){
     const raw = map[key];
     if (!raw || typeof raw !== 'object'){
@@ -13752,7 +14059,7 @@ function __launcherIconResolveHex__(id, fallbackHex){
 function __applySettingsLauncherIconColors__(){
   try{
     [
-      'settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
+      'settingsStructureBtn','settingsStructureCreateBtn','settingsSaveBtn','settingsDbBtn','settingsRoomsBtn','settingsDataBtn','settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn','settingsLaundryCatalogBtn','settingsHotelLocationBtn','settingsGuestMessagesBtn','settingsConfigBtn','settingsExportRosterBtn','settingsLanguageBtn','settingsAccountBtn','settingsLogoutBtn','settingsMasterBtn','settingsYearPill',
       'opSettingsLanguageBtn','opSettingsAccountBtn','opSettingsCodeBtn','opSettingsLogoutBtn','opSettingsYearPill'
     ].forEach((id) => {
       const btn = document.getElementById(id);
@@ -14312,7 +14619,7 @@ function __canonicalizeChannelCatalogSettingRows__(rows){
   list.forEach((row) => {
     try{
       const key = String(row?.key ?? row?.Key ?? '').trim().toLowerCase();
-      if (key !== 'channel_catalogo') return;
+      if (!(key === 'channel_catalogo' || key.endsWith(':channel_catalogo'))) return;
       const raw = row?.value ?? row?.Value ?? '';
       const parsed = JSON.parse(String(raw || '[]'));
       const clean = __normalizeChannelCatalogList__(Array.isArray(parsed) ? parsed : []);
@@ -14333,7 +14640,7 @@ function __canonicalizeBackupChannelsDeep__(node, seen){
   }
   try{
     const key = String(node?.key ?? node?.Key ?? '').trim().toLowerCase();
-    if (key === 'channel_catalogo') __canonicalizeChannelCatalogSettingRows__([node]);
+    if (key === 'channel_catalogo' || key.endsWith(':channel_catalogo')) __canonicalizeChannelCatalogSettingRows__([node]);
   }catch(_){ }
   try{
     const hasChannelFields = ('channel_id' in node) || ('channelId' in node) || ('channel_nome' in node) || ('channelNome' in node) || ('channel_name' in node) || ('channelName' in node);
@@ -14452,7 +14759,7 @@ async function ensureChannelCatalogGlobalLoaded({ force = false, showLoader = fa
     const all = [];
     (Array.isArray(rows) ? rows : []).forEach((row)=>{
       const key = __normKey(row?.key ?? row?.Key ?? row?.KEY);
-      if (key !== "channel_catalogo") return;
+      if (typeof __structureSettingKeyMatches__ === "function" ? !__structureSettingKeyMatches__(key, "channel_catalogo") : key !== "channel_catalogo") return;
       all.push(__parseChannelCatalogRaw__(row?.value ?? row?.Value ?? row?.val ?? ""));
     });
     const merged = __mergeChannelCatalogLists__(...all, annualFallback);
@@ -14587,7 +14894,9 @@ async function ensureSettingsLoaded({ force = false, showLoader = false } = {}) 
     const rows = data?.rows || data?.items || [];
     state.settings.rows = Array.isArray(rows) ? rows : [];
     state.settings.byKey = __parseSettingsRows(state.settings.rows);
+    try{ if (typeof __structureHydrateFromSettings__ === 'function') __structureHydrateFromSettings__(); }catch(_){ }
     try{ __persistLaundryCatalogCache__(getLaundryCatalogFromSettings()); }catch(_){ }
+    try{ if (typeof __structureUpdateUi__ === 'function') __structureUpdateUi__(); }catch(_){ }
     state.settings.loaded = true;
     state.settings.loadedAt = Date.now();
 
@@ -16145,13 +16454,14 @@ function __scheduleRoomCatalogRecoveryToSettings__(catalog){
         const rows0 = await __tblGet__('impostazioni', []);
         const rows = Array.isArray(rows0) ? rows0.slice() : [];
         const keyOf = (row) => String(row?.key || row?.Key || '').trim().toLowerCase();
-        const hasCatalog = rows.some((row) => keyOf(row) === 'stanze_catalogo' && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
+        const hasCatalog = rows.some((row) => __structureSettingKeyMatches__(keyOf(row), 'stanze_catalogo') && __roomCatalogParseRaw__(row?.value ?? row?.Value ?? row?.val ?? '').length);
         if (hasCatalog) return;
         const now = __nowIso__();
         const upsert = (key, value) => {
-          const idx = rows.findIndex((row) => keyOf(row) === key);
+          const scopedKey = __structureScopedSettingKey__(key);
+          const idx = rows.findIndex((row) => keyOf(row) === scopedKey);
           const prev = idx >= 0 ? rows[idx] : {};
-          const next = { ...prev, key, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
+          const next = { ...prev, key:scopedKey, value:String(value), createdAt:prev?.createdAt || now, updatedAt:now };
           if (idx >= 0) rows[idx] = next; else rows.push(next);
         };
         upsert('stanze_catalogo', JSON.stringify(clean));
@@ -16173,12 +16483,12 @@ function getRoomCatalogFromSettings(){
     const clean = __roomCatalogParseRaw__(raw);
     if (clean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, JSON.stringify(clean)); }catch(_){ }
+      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), JSON.stringify(clean)); }catch(_){ }
       return clean;
     }
   }catch(_){ }
   try{
-    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__ROOM_CATALOG_STORAGE_KEY__) || '');
+    const localClean = __roomCatalogParseRaw__(localStorage.getItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__)) || '');
     if (localClean.length){
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = localClean; }catch(_){ }
       try{ __scheduleRoomCatalogRecoveryToSettings__(localClean); }catch(_){ }
@@ -16213,14 +16523,14 @@ async function saveRoomCatalogToSettings(list){
   const clean = __roomCatalogNormalizeList__(list);
   const raw = JSON.stringify(clean);
   try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
-  try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, raw); }catch(_){ }
+  try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), raw); }catch(_){ }
   const ui = __syncRoomCatalogColorsToRoomsUi__(clean);
   await api('impostazioni', { method:'POST', body:{ stanze_catalogo:clean, numero_stanze:clean.length, stanze_ui:JSON.stringify(ui) }, showLoader:true });
   try{
     state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
-    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
-    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
+    state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:JSON.stringify(ui), val:JSON.stringify(ui), Value:JSON.stringify(ui) };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{ __applyRoomsUiConfig__(); }catch(_){ }
@@ -16888,6 +17198,9 @@ function setupImpostazioni() {
   }
   try{ __syncDarkModeButtons__(); }catch(_){ }
 
+  try{ __setupStructureUi__(); }catch(_){ }
+  try{ __structureUpdateUi__(); }catch(_){ }
+
   const settingsYearPill = document.getElementById("settingsYearPill");
   if (settingsYearPill && !settingsYearPill.__boundYearTap){
     settingsYearPill.__boundYearTap = true;
@@ -16906,6 +17219,7 @@ function setupImpostazioni() {
   const __openSettingsDataModal__ = () => {
     try{
       if (!settingsDataModal) return;
+      try{ __structureUpdateUi__(); }catch(_){ }
       __setSettingsDataModalMode__('active');
       settingsDataModal.hidden = false;
       settingsDataModal.setAttribute('aria-hidden','false');
@@ -16919,6 +17233,7 @@ function setupImpostazioni() {
   };
   try{ window.__openSettingsDataModal__ = __openSettingsDataModal__; window.__closeSettingsDataModal__ = __closeSettingsDataModal__; }catch(_){ }
   const __goSettingsDataChild__ = (pageName) => {
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
     try{ window.__settingsDataReturnActive = true; }catch(_){ }
     try{ __closeSettingsDataModal__(); }catch(_){ }
     try{ hideLauncher(); }catch(_){ }
@@ -17163,12 +17478,40 @@ const cfg = document.getElementById("settingsConfigBtn");
   const statMensiliCompareToggleBtn = document.getElementById('statMensiliCompareToggleBtn');
   if (statMensiliCompareToggleBtn && !statMensiliCompareToggleBtn.__boundAdvanced){
     statMensiliCompareToggleBtn.__boundAdvanced = true;
+    let longPressTimer = null;
+    let longPressFired = false;
+    let suppressClickUntil = 0;
+    const clearLong = ()=>{ if (longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } };
+    const block = (e)=>{ try{ e && e.preventDefault && e.preventDefault(); }catch(_){ } try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ } try{ e && e.stopImmediatePropagation && e.stopImmediatePropagation(); }catch(_){ } return false; };
+    const startLong = (e)=>{
+      try{ if (e && e.type === 'pointerdown' && e.pointerType === 'mouse' && e.button !== 0) return; }catch(_){ }
+      longPressFired = false;
+      clearLong();
+      longPressTimer = setTimeout(()=>{
+        longPressFired = true;
+        suppressClickUntil = Date.now() + 900;
+        try{ statMensiliCompareToggleBtn.classList.add('is-pressing'); }catch(_){ }
+        try{ __openStatGenCompareYearButtonColorPicker__(); }catch(_){ }
+      }, 520);
+    };
+    const stopLong = (e)=>{
+      clearLong();
+      if (longPressFired){
+        block(e);
+        setTimeout(()=>{ longPressFired = false; try{ statMensiliCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ } }, 0);
+        return;
+      }
+      try{ statMensiliCompareToggleBtn.classList.remove('is-pressing'); }catch(_){ }
+    };
     statMensiliCompareToggleBtn.addEventListener('click', (e) => {
+      if (longPressFired || Date.now() < suppressClickUntil) return block(e);
       try{ e && e.preventDefault && e.preventDefault(); }catch(_){ }
       try{ e && e.stopPropagation && e.stopPropagation(); }catch(_){ }
       __toggleStatGenCompareEnabled__();
-    });
-    try{ statMensiliCompareToggleBtn.addEventListener('contextmenu', (e)=>{ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } return false; }, true); }catch(_){ }
+    }, true);
+    ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{ statMensiliCompareToggleBtn.addEventListener(evt, startLong, { passive:true }); }catch(_){ } });
+    ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{ statMensiliCompareToggleBtn.addEventListener(evt, stopLong, { passive:false }); }catch(_){ } });
+    try{ statMensiliCompareToggleBtn.addEventListener('contextmenu', (e)=>block(e), true); }catch(_){ }
   }
   const statMensiliCompareYearBtn = document.getElementById('statMensiliCompareYearBtn');
   if (statMensiliCompareYearBtn && !statMensiliCompareYearBtn.__boundOpen){
@@ -18481,8 +18824,672 @@ function __ctxYear__(){
   return String(new Date().getFullYear());
 }
 
-function __ctxSig__(){ return `${__ctxUid__()}|${__ctxYear__()}`; }
+function __ctxDataUidForStructure__(forcedStructureId){
+  try{
+    const account = encodeURIComponent(String(__ctxUid__() || 'anon'));
+    const sid = String(forcedStructureId || (typeof __structureActiveId__ === 'function' ? __structureActiveId__() : '') || '__none__')
+      .trim().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80) || '__none__';
+    return `${account}~s~${sid}`;
+  }catch(_){ return `anon~s~__none__`; }
+}
+function __ctxDataUid__(){ return __ctxDataUidForStructure__(''); }
+function __ctxSig__(){ return `${__ctxDataUid__()}|${__ctxYear__()}`; }
 
+
+// dDAE_3.292 — Multi-struttura: ogni struttura è un ambiente dati indipendente.
+const __STRUCTURE_CATALOG_SETTING_KEY__ = 'strutture_catalogo';
+const __STRUCTURE_SELECTED_STORAGE_PREFIX__ = 'dDAE_structure_selected_v1:';
+const __STRUCTURE_LOCAL_CATALOG_PREFIX__ = 'dDAE_structures_v1:';
+const __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ = 'dDAE_structure_storage_v2:';
+const __STRUCTURE_MIGRATION_PREFIX__ = 'dDAE_structure_legacy_migrated_v2:';
+const __STRUCTURE_SYNC_ROOT_PREFIX__ = 'dDAE_structure_sync_legacy_root_v1:';
+const __STRUCTURE_DELETE_PENDING_PREFIX__ = 'dDAE_structure_delete_pending_v1:';
+const __STRUCTURE_SCOPED_SETTING_KEYS__ = new Set([
+  'operatori','operatori_catalogo','tariffa_oraria','costo_benzina',
+  'channel_catalogo','stanze_catalogo','numero_stanze','stanze_ui',
+  'laundry_catalogo','laundry_prices','guest_whatsapp_message_template',
+  'guest_message_templates_json','hotel_location_link'
+]);
+const __STRUCTURE_DATA_BUTTON_IDS__ = [
+  'settingsOperatoriBtn','settingsChannelBtn','settingsRoomCatalogBtn',
+  'settingsLaundryCatalogBtn','settingsGuestMessagesBtn','settingsHotelLocationBtn'
+];
+function __structureAccountSuffix__(){
+  try{ return encodeURIComponent(String(__ctxUid__() || 'anon')); }catch(_){ return 'anon'; }
+}
+function __structureCatalogStorageKey__(){ return __STRUCTURE_LOCAL_CATALOG_PREFIX__ + __structureAccountSuffix__(); }
+function __structureSelectedStorageKey__(){ return __STRUCTURE_SELECTED_STORAGE_PREFIX__ + __structureAccountSuffix__(); }
+function __structureStorageSnapshotKey__(sid){ return __STRUCTURE_STORAGE_SNAPSHOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureMigrationKey__(sid){ return __STRUCTURE_MIGRATION_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureSyncRootKey__(sid){ return __STRUCTURE_SYNC_ROOT_PREFIX__ + __structureAccountSuffix__() + ':' + encodeURIComponent(String(sid||'')); }
+function __structureSetLegacySyncRoot__(sid,yes){ try{ localStorage.setItem(__structureSyncRootKey__(sid),yes?'1':'0'); }catch(_){ } }
+function __structureUsesLegacySyncRoot__(sid){
+  const id=String(sid||'').trim(); if(!id) return true;
+  try{ const raw=localStorage.getItem(__structureSyncRootKey__(id)); if(raw==='1') return true; if(raw==='0') return false; }catch(_){ }
+  try{ const list=__structureCatalog__(); return !!(list.length && list[0].id===id); }catch(_){ return true; }
+}
+function __structureNormalizeList__(input){
+  let rows=input;
+  try{ if (typeof rows === 'string') rows=JSON.parse(rows || '[]'); }catch(_){ rows=[]; }
+  const out=[]; const seen=new Set();
+  (Array.isArray(rows)?rows:[]).forEach((row,idx)=>{
+    const name=String(row?.nome ?? row?.name ?? row?.label ?? '').trim().replace(/\s+/g,' ').slice(0,48);
+    if(!name) return;
+    let id=String(row?.id ?? '').trim().replace(/[^a-zA-Z0-9_-]/g,'').slice(0,64).toLowerCase();
+    if(!id) id='s_'+String(idx+1)+'_'+String(Date.now());
+    if(seen.has(id)) return;
+    seen.add(id);
+    out.push({id,nome:name,createdAt:String(row?.createdAt || ''),updatedAt:String(row?.updatedAt || '')});
+  });
+  return out;
+}
+function __structureReadLocalCatalog__(){
+  try{ return __structureNormalizeList__(localStorage.getItem(__structureCatalogStorageKey__()) || '[]'); }catch(_){ return []; }
+}
+function __structureWriteLocalCatalog__(rows){
+  const clean=__structureNormalizeList__(rows);
+  try{ localStorage.setItem(__structureCatalogStorageKey__(),JSON.stringify(clean)); }catch(_){ }
+  return clean;
+}
+function __structureCatalogFromSettings__(){
+  try{
+    const map=state?.settings?.byKey || {};
+    const row=map[__STRUCTURE_CATALOG_SETTING_KEY__];
+    if(!row) return [];
+    return __structureNormalizeList__(row?.value ?? row?.Value ?? row?.val ?? '[]');
+  }catch(_){ return []; }
+}
+function __structureHydrateFromSettings__(){
+  const local=__structureReadLocalCatalog__();
+  if(local.length) return local;
+  try{
+    const legacy=__structureCatalogFromSettings__();
+    if(legacy.length) return __structureWriteLocalCatalog__(legacy);
+  }catch(_){ }
+  return local;
+}
+function __structureCatalog__(){ return __structureHydrateFromSettings__(); }
+function __structureActiveId__(){
+  try{
+    const id=String(localStorage.getItem(__structureSelectedStorageKey__()) || '').trim();
+    if(!id) return '';
+    return __structureCatalog__().some(x=>x.id===id) ? id : '';
+  }catch(_){ return ''; }
+}
+function __structureActive__(){ const id=__structureActiveId__(); return id ? (__structureCatalog__().find(x=>x.id===id) || null) : null; }
+function __structureHasActive__(){ return !!__structureActiveId__(); }
+function __structureSettingIsScoped__(key){ return __STRUCTURE_SCOPED_SETTING_KEYS__.has(String(key||'').trim().toLowerCase()); }
+function __structureScopedSettingKey__(baseKey, forcedStructureId){
+  const base=String(baseKey||'').trim().toLowerCase();
+  if(!base || !__structureSettingIsScoped__(base)) return base;
+  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
+  return sid ? ('struttura:'+sid+':'+base) : base;
+}
+function __structureSettingKeyMatches__(storedKey, baseKey){
+  const stored=String(storedKey||'').trim().toLowerCase();
+  const base=String(baseKey||'').trim().toLowerCase();
+  if(!__structureSettingIsScoped__(base) || !__structureHasActive__()) return stored===base;
+  return stored===__structureScopedSettingKey__(base);
+}
+function __structureLocalStorageKey__(baseKey, forcedStructureId){
+  const base=String(baseKey||'').trim();
+  if(!base) return base;
+  const sid=String(forcedStructureId || __structureActiveId__() || '').trim();
+  if(!sid) return base;
+  return base+':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(sid);
+}
+function __structureAllowsLegacyFallback__(){
+  try{
+    const active=__structureActive__(); const list=__structureCatalog__();
+    return !!(active && list.length && list[0].id===active.id);
+  }catch(_){ return false; }
+}
+function __structureStorageIsAppKey__(key){
+  const k=String(key||''); const l=k.toLowerCase();
+  return k.startsWith('dDAE_') || k.startsWith('ddae_') || k.startsWith('__ddae_') || l.startsWith('ddae:');
+}
+function __structureStorageIsGlobalKey__(key){
+  const k=String(key||''); const l=k.toLowerCase();
+  if(!k) return true;
+  if(k.startsWith(__STRUCTURE_SELECTED_STORAGE_PREFIX__) || k.startsWith(__STRUCTURE_LOCAL_CATALOG_PREFIX__) || k.startsWith(__STRUCTURE_STORAGE_SNAPSHOT_PREFIX__) || k.startsWith(__STRUCTURE_MIGRATION_PREFIX__) || k.startsWith(__STRUCTURE_SYNC_ROOT_PREFIX__) || k.startsWith(__STRUCTURE_DELETE_PENDING_PREFIX__)) return true;
+  if(k === 'dDAE_structure_option_button_visual_v1') return true;
+  if(l.startsWith('ddae_local_cache_v')) return true;
+  if(k.includes(':structure:')) return true;
+  const exact=new Set([
+    'dDAE_session_v2','dDAE_session','ddae_session','session','auth',
+    'dDAE_user','ddae_user','dDAE_current_user','currentUser','user',
+    'dDAE_user_id','ddae_user_id','dDAE_user_email','ddae_user_email',
+    'dDAE_logged_in','ddae_logged_in','ddae_fb_teamId','ddae_fb_teamKey',
+    'dDAE_pending_build','dDAE_update_attempt_build','dDAE_update_attempt_at','__ddae_restore_state',
+    '__ddae_auth_backup_force_admin_login_v1','__ddae_auth_backup_import_active_v1'
+  ]);
+  return exact.has(k);
+}
+function __structureScopableStorageKeys__(){
+  const keys=[];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i); if(!k) continue;
+      if(!__structureStorageIsAppKey__(k) || __structureStorageIsGlobalKey__(k)) continue;
+      keys.push(k);
+    }
+  }catch(_){ }
+  return keys;
+}
+function __structureCaptureStorageSnapshot__(sid){
+  const id=String(sid||'').trim(); if(!id) return {};
+  const out={};
+  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ out[k]=String(localStorage.getItem(k)??''); }catch(_){ } }); }catch(_){ }
+  try{ localStorage.setItem(__structureStorageSnapshotKey__(id),JSON.stringify(out)); }catch(_){ }
+  return out;
+}
+function __structureReadStorageSnapshot__(sid){
+  try{ const p=JSON.parse(localStorage.getItem(__structureStorageSnapshotKey__(sid))||'{}'); return p&&typeof p==='object'&&!Array.isArray(p)?p:{}; }catch(_){ return {}; }
+}
+function __structureApplyStorageSnapshot__(sid){
+  const id=String(sid||'').trim(); if(!id) return;
+  const snap=__structureReadStorageSnapshot__(id);
+  try{ __structureScopableStorageKeys__().forEach((k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }); }catch(_){ }
+  Object.keys(snap).forEach((k)=>{ try{ if(__structureStorageIsAppKey__(k) && !__structureStorageIsGlobalKey__(k)) localStorage.setItem(k,String(snap[k]??'')); }catch(_){ } });
+}
+let __structureMigrationInflight__=null;
+async function __structureEnsureActiveMigrated__(){
+  try{
+    const sid=__structureActiveId__(); if(!sid) return;
+    const list=__structureCatalog__(); if(!list.length || list[0].id!==sid) return;
+    __structureSetLegacySyncRoot__(sid,true);
+    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
+    if(__structureMigrationInflight__) return await __structureMigrationInflight__;
+    __structureMigrationInflight__=Promise.resolve(__structureSeedLegacyForFirst__(sid)).finally(()=>{__structureMigrationInflight__=null;});
+    return await __structureMigrationInflight__;
+  }catch(_){ }
+}
+async function __structureSeedLegacyForFirst__(sid){
+  try{
+    const list=__structureCatalog__();
+    if(!list.length || list[0].id!==sid) return;
+    if(localStorage.getItem(__structureMigrationKey__(sid))==='1') return;
+
+    // Conserva tutte le preferenze correnti come stato iniziale della prima struttura.
+    if(!Object.keys(__structureReadStorageSnapshot__(sid)).length) __structureCaptureStorageSnapshot__(sid);
+
+    // Migra TUTTI i dataset storici dell'account nella prima struttura soltanto.
+    const accountUid=String(__ctxUid__()||'anon');
+    const sourcePrefix=`ctx:${accountUid}:`;
+    const targetUid=__ctxDataUidForStructure__(sid);
+    const keys=await __kvKeys__(sourcePrefix);
+    for(const key of (Array.isArray(keys)?keys:[])){
+      const k=String(key||'');
+      if(!k.startsWith(sourcePrefix)) continue;
+      const rest=k.slice(sourcePrefix.length);
+      const m=rest.match(/^([0-9]{4}):tbl:([^:]+)$/);
+      if(!m) continue;
+      const target=`ctx:${targetUid}:${m[1]}:tbl:${m[2]}`;
+      const existing=await __kvGet__(target);
+      if(existing!==undefined && existing!==null) continue;
+      const val=await __kvGet__(k);
+      if(val!==undefined && val!==null) await __kvSet__(target,val);
+    }
+
+    // Duplica le vecchie impostazioni Dati con la chiave struttura prevista dalla UI.
+    const years=new Set([String(__ctxYear__())]);
+    for(const key of (Array.isArray(keys)?keys:[])){
+      const m=String(key||'').slice(sourcePrefix.length).match(/^([0-9]{4}):tbl:impostazioni$/);
+      if(m) years.add(m[1]);
+    }
+    for(const year of years){
+      if(!/^[0-9]{4}$/.test(year)) continue;
+      const targetKey=`ctx:${targetUid}:${year}:tbl:impostazioni`;
+      const rows0=await __kvGet__(targetKey); const rows=Array.isArray(rows0)?rows0.slice():[];
+      const keyOf=r=>String(r?.key||r?.Key||'').trim().toLowerCase();
+      const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString()); let changed=false;
+      __STRUCTURE_SCOPED_SETTING_KEYS__.forEach((base)=>{
+        const target=__structureScopedSettingKey__(base,sid);
+        if(rows.some(r=>keyOf(r)===target)) return;
+        const legacy=rows.find(r=>keyOf(r)===base);
+        if(!legacy) return;
+        rows.push(Object.assign({},legacy,{key:target,createdAt:legacy?.createdAt||now,updatedAt:now})); changed=true;
+      });
+      if(changed) await __kvSet__(targetKey,rows);
+    }
+    // Migra anche le immagini Servizi/Cocktail della vecchia struttura singola.
+    try{
+      const oldAssetKeys=await __kvKeys__(__COCKTAIL_IMAGE_ASSET_PREFIX__);
+      const targetPrefix=__cocktailImageAssetContextPrefix__(sid);
+      for(const oldKey of (Array.isArray(oldAssetKeys)?oldAssetKeys:[])){
+        const rest=String(oldKey||'').slice(__COCKTAIL_IMAGE_ASSET_PREFIX__.length);
+        if(!rest || rest.includes(':')) continue; // le nuove chiavi hanno namespace:slot
+        const target=targetPrefix+rest;
+        const exists=await __kvGet__(target); if(exists!==undefined && exists!==null) continue;
+        const val=await __kvGet__(oldKey); if(typeof val==='string' && val.startsWith('data:image/')) await __kvSet__(target,val);
+      }
+    }catch(_){ }
+    try{ localStorage.setItem(__structureMigrationKey__(sid),'1'); }catch(_){ }
+  }catch(_){ }
+}
+async function __structureCreate__(rawName){
+  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
+  if(!name) throw new Error('Inserisci il nome della struttura');
+  const list=__structureCatalog__();
+  if(list.some(x=>String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
+  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
+  const item={id:'s_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),nome:name,createdAt:now,updatedAt:now};
+  __structureWriteLocalCatalog__(list.concat(item));
+  __structureSetLegacySyncRoot__(item.id,list.length===0);
+  __structureUpdateUi__();
+  return item;
+}
+async function __structureRename__(sid, rawName){
+  const id=String(sid||'').trim();
+  const name=String(rawName||'').trim().replace(/\s+/g,' ').slice(0,48);
+  if(!id) throw new Error('Seleziona una struttura');
+  if(!name) throw new Error('Inserisci il nome della struttura');
+  const list=__structureCatalog__();
+  const idx=list.findIndex(x=>x.id===id);
+  if(idx<0) throw new Error('Struttura non disponibile');
+  if(list.some((x,i)=>i!==idx && String(x.nome||'').trim().toLowerCase()===name.toLowerCase())) throw new Error('Struttura già presente');
+  const now=(typeof __nowIso__==='function'?__nowIso__():new Date().toISOString());
+  const updated=list.map((x,i)=>i===idx?Object.assign({},x,{nome:name,updatedAt:now}):x);
+  __structureWriteLocalCatalog__(updated);
+  __structureUpdateUi__();
+  return updated[idx];
+}
+
+
+// dDAE_3.325 — Eliminazione definitiva della struttura selezionata.
+function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
+function __structureDeletePendingRead__(){
+  try{
+    const rows=JSON.parse(localStorage.getItem(__structureDeletePendingKey__())||'[]');
+    return Array.isArray(rows)?rows.filter(x=>x&&x.sid&&x.teamId):[];
+  }catch(_){ return []; }
+}
+function __structureDeletePendingWrite__(rows){
+  try{
+    const clean=(Array.isArray(rows)?rows:[]).filter(x=>x&&x.sid&&x.teamId);
+    if(clean.length) localStorage.setItem(__structureDeletePendingKey__(),JSON.stringify(clean));
+    else localStorage.removeItem(__structureDeletePendingKey__());
+  }catch(_){ }
+}
+function __structureDeleteQueueRemote__(job){
+  try{
+    if(!job?.sid || !job?.teamId) return;
+    const rows=__structureDeletePendingRead__();
+    const key=String(job.teamId)+'|'+String(job.sid);
+    const next=rows.filter(x=>(String(x.teamId)+'|'+String(x.sid))!==key);
+    next.push({sid:String(job.sid),teamId:String(job.teamId),legacySyncRoot:!!job.legacySyncRoot,queuedAt:String(job.queuedAt||__nowIso__())});
+    __structureDeletePendingWrite__(next);
+  }catch(_){ }
+}
+function __structureFsRelativePath__(doc){
+  try{
+    const name=String(doc?.name||''); const marker='/documents/'; const i=name.indexOf(marker);
+    return i>=0 ? name.slice(i+marker.length) : '';
+  }catch(_){ return ''; }
+}
+async function __structureDeleteRemoteJob__(job){
+  try{
+    const sid=__fbSafeStructureId__(job?.sid); const teamId=String(job?.teamId||'').trim();
+    if(!sid || !teamId || !FIREBASE_ENABLED || !FIREBASE_CONFIG?.apiKey) return true;
+    const legacy=!!job?.legacySyncRoot;
+    const syncBase=legacy ? `sync/${teamId}` : `sync/${teamId}/structures/${sid}`;
+    for(const collection of ['admin_chunks','operators']){
+      let docs=[]; try{ docs=await __fsList__(`${syncBase}/${collection}`); }catch(_){ docs=[]; }
+      for(const doc of (Array.isArray(docs)?docs:[])){
+        const path=__structureFsRelativePath__(doc); if(path) try{ await __fsDelete__(path); }catch(_){ }
+      }
+    }
+    try{ await __fsDelete__(`${syncBase}/boards/spesa`); }catch(_){ }
+    const rootOk=await __fsDelete__(syncBase).catch(()=>false);
+    if(!legacy){ try{ await __fsDelete__(`teams/${teamId}/structures/${sid}`); }catch(_){ } }
+    return !!rootOk;
+  }catch(_){ return false; }
+}
+async function __structureRetryPendingRemoteDeletes__(){
+  const rows=__structureDeletePendingRead__(); if(!rows.length) return;
+  const keep=[];
+  for(const job of rows){
+    let ok=false; try{ ok=await __structureDeleteRemoteJob__(job); }catch(_){ ok=false; }
+    if(!ok) keep.push(job);
+  }
+  __structureDeletePendingWrite__(keep);
+}
+function __structureRemoveOptionVisual__(sid){
+  try{
+    const safe=String(sid||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64)||'structure';
+    const id='structureSelectOption_'+safe;
+    const raw=localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
+    const map=raw?JSON.parse(raw):{};
+    if(map&&typeof map==='object'&&!Array.isArray(map)&&Object.prototype.hasOwnProperty.call(map,id)){
+      delete map[id]; localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,JSON.stringify(map));
+    }
+  }catch(_){ }
+}
+async function __structureDelete__(sid){
+  const id=String(sid||'').trim();
+  const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
+  if(!item) throw new Error('Struttura non disponibile');
+  const legacy=__structureUsesLegacySyncRoot__(id);
+  const wasActive=(__structureActiveId__()===id);
+  let teamId=''; try{ __fbLoadLink__(); teamId=String(__FB_STATE__?.teamId||'').trim(); }catch(_){ }
+
+  // Cancella tutti i dataset di tutti gli anni e gli asset appartenenti alla struttura.
+  const dataPrefix=`ctx:${__ctxDataUidForStructure__(id)}:`;
+  try{ for(const key of (await __kvKeys__(dataPrefix))) await __kvDel__(key); }catch(_){ }
+  try{ const assetPrefix=__cocktailImageAssetContextPrefix__(id); for(const key of (await __kvKeys__(assetPrefix))) await __kvDel__(key); }catch(_){ }
+
+  // La prima struttura conteneva la migrazione dell'archivio storico pre-multistruttura:
+  // eliminando quella struttura vanno rimossi anche i residui legacy, mai riutilizzati da altre strutture.
+  if(legacy){
+    try{
+      const legacyPrefix=`ctx:${String(__ctxUid__()||'anon')}:`;
+      for(const key of (await __kvKeys__(legacyPrefix))) await __kvDel__(key);
+    }catch(_){ }
+  }
+
+  // Pulisce sia lo snapshot sia le chiavi localStorage specifiche della struttura.
+  if(wasActive){
+    try{ __structureScopableStorageKeys__().forEach(k=>{ try{localStorage.removeItem(k);}catch(_){} }); }catch(_){ }
+  }
+  try{
+    const suffix=':structure:'+__structureAccountSuffix__()+':'+encodeURIComponent(id);
+    const remove=[];
+    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&String(k).includes(suffix)) remove.push(k); }
+    remove.forEach(k=>{try{localStorage.removeItem(k);}catch(_){}});
+  }catch(_){ }
+  try{ localStorage.removeItem(__structureStorageSnapshotKey__(id)); }catch(_){ }
+  try{ localStorage.removeItem(__structureMigrationKey__(id)); }catch(_){ }
+  try{ localStorage.removeItem(__structureSyncRootKey__(id)); }catch(_){ }
+  try{ __structureRemoveOptionVisual__(id); }catch(_){ }
+
+  // Nessuna selezione automatica dopo la cancellazione.
+  if(wasActive){ try{ localStorage.removeItem(__structureSelectedStorageKey__()); }catch(_){ } }
+  __structureWriteLocalCatalog__(list.filter(x=>x.id!==id));
+  try{ invalidateApiCache(); }catch(_){ }
+  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
+  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
+  __structureUpdateUi__();
+
+  // La cancellazione cloud è best-effort e viene ritentata automaticamente se il dispositivo è offline.
+  if(teamId){
+    const job={sid:id,teamId,legacySyncRoot:legacy,queuedAt:__nowIso__()};
+    __structureDeleteQueueRemote__(job);
+    try{ if(await __structureDeleteRemoteJob__(job)){ const keep=__structureDeletePendingRead__().filter(x=>!(String(x.sid)===id&&String(x.teamId)===teamId)); __structureDeletePendingWrite__(keep); } }catch(_){ }
+  }
+  return item;
+}
+
+async function __structureSelect__(sid){
+  const id=String(sid||'').trim(); const list=__structureCatalog__(); const item=list.find(x=>x.id===id);
+  if(!item) throw new Error('Struttura non disponibile');
+  const prev=__structureActiveId__();
+  if(prev===id) return item;
+  if(prev) __structureCaptureStorageSnapshot__(prev);
+  await __structureSeedLegacyForFirst__(id);
+  __structureApplyStorageSnapshot__(id);
+  try{ localStorage.setItem(__structureSelectedStorageKey__(),id); }catch(_){ }
+  try{ invalidateApiCache(); }catch(_){ }
+  try{ if(typeof __apiCache!=='undefined'&&__apiCache?.clear)__apiCache.clear(); }catch(_){ }
+  try{ state.settings.loaded=false; state.settings.roomCatalogGlobal=null; state.settings.channelCatalogGlobal=null; }catch(_){ }
+  return item;
+}
+function __structureContextLabel__(year){
+  const y=String(year||__ctxYear__()||'').trim(); const a=__structureActive__();
+  return a ? `${a.nome} - ${y}` : `Struttura - ${y}`;
+}
+function __structureUpdateUi__(){
+  const active=__structureActive__();
+  const label=active ? active.nome : 'Seleziona struttura';
+  const settingsLabel=document.getElementById('settingsStructureLabel'); if(settingsLabel) settingsLabel.textContent=label;
+  const settingsBtn=document.getElementById('settingsStructureBtn'); if(settingsBtn) settingsBtn.setAttribute('aria-label',active ? ('Struttura selezionata '+active.nome) : 'Seleziona struttura');
+  const home=document.getElementById('homeYearPill'); if(home){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); home.textContent=active ? active.nome : 'Seleziona struttura'; home.setAttribute('aria-label',active ? ('Struttura '+active.nome) : 'Seleziona struttura'); home.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(home);}catch(_){ } }
+  const homeYearDisplay=document.getElementById('homeYearDisplayPill'); if(homeYearDisplay){ const y=String(state?.exerciseYear||loadExerciseYear?.()||new Date().getFullYear()); homeYearDisplay.textContent=y; homeYearDisplay.setAttribute('aria-label','Anno selezionato '+y); homeYearDisplay.hidden=!(state && state.page==='home'); try{__pillApplyToButton__(homeYearDisplay);}catch(_){ } }
+  const enabled=!!active;
+  __STRUCTURE_DATA_BUTTON_IDS__.forEach((id)=>{ const btn=document.getElementById(id); if(!btn)return; btn.classList.toggle('is-structure-disabled',!enabled); btn.setAttribute('aria-disabled',enabled?'false':'true'); });
+}
+function __structureOpenSelectModal__(){
+  const modal=document.getElementById('structureSelectModal'); const listEl=document.getElementById('structureSelectList'); const empty=document.getElementById('structureSelectEmpty');
+  if(!modal||!listEl) return;
+  const rows=__structureCatalog__(); const activeId=__structureActiveId__(); listEl.innerHTML='';
+  rows.forEach((item)=>{
+    const btn=document.createElement('button'); btn.type='button'; btn.className='settings-btn settings-btn-channel structure-option-btn';
+    const safeStructureButtonId=String(item.id||'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64) || 'structure';
+    btn.id='structureSelectOption_'+safeStructureButtonId;
+    btn.dataset.singleActionKey=btn.id;
+    btn.dataset.structureId=item.id;
+    btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14"></path><path d="M8 21v-5h8v5"></path><path d="M8 9h2"></path><path d="M14 9h2"></path></svg><span class="settings-btn-label"></span><span class="structure-option-check" aria-hidden="true"></span>';
+    const lab=btn.querySelector('.settings-btn-label'); if(lab) lab.textContent=item.nome;
+    if(item.id===activeId){ btn.classList.add('is-selected'); const ck=btn.querySelector('.structure-option-check'); if(ck) ck.textContent='✓'; }
+    const select=async()=>{ try{ const picked=await __structureSelect__(item.id); __structureCloseSelectModal__(); try{toast('Struttura: '+picked.nome,'green');}catch(_){} setTimeout(()=>{try{location.reload();}catch(_){}},180); }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){}} };
+    if(typeof bindFastTap==='function') bindFastTap(btn,select); else btn.addEventListener('click',select);
+    try{ __applySingleActionButtonVisual__(btn); __bindSingleActionButtonColorHold__(btn); }catch(_){ }
+    listEl.appendChild(btn);
+  });
+  if(empty) empty.hidden=rows.length!==0;
+  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
+}
+function __structureCloseSelectModal__(){ const modal=document.getElementById('structureSelectModal'); if(!modal)return; modal.hidden=true; modal.setAttribute('aria-hidden','true'); try{document.body.classList.remove('modal-open');}catch(_){ } }
+function __structureSetEditorMode__(mode){
+  const modal=document.getElementById('structureCreateModal');
+  const input=document.getElementById('structureNameInput');
+  const title=document.getElementById('structureCreateTitle');
+  const newBtn=document.getElementById('structureCreateNewBtn');
+  const deleteBtn=document.getElementById('structureDeleteBtn');
+  const active=__structureActive__();
+  const safeMode=(mode==='edit' && active)?'edit':'create';
+  if(modal) modal.dataset.structureMode=safeMode;
+  if(title) title.textContent=safeMode==='edit'?'Modifica struttura':'Nuova struttura';
+  if(input) input.value=safeMode==='edit'?(active?.nome||''):'';
+  if(newBtn){
+    newBtn.hidden=false;
+    newBtn.disabled=(safeMode==='create');
+    newBtn.setAttribute('aria-disabled', newBtn.disabled ? 'true' : 'false');
+  }
+  if(deleteBtn){
+    deleteBtn.hidden=false;
+    deleteBtn.disabled=(safeMode!=='edit');
+    deleteBtn.setAttribute('aria-disabled', deleteBtn.disabled ? 'true' : 'false');
+  }
+  try{ if(modal) modal.querySelector('[role="dialog"]')?.setAttribute('aria-label',safeMode==='edit'?'Modifica struttura':'Nuova struttura'); }catch(_){ }
+  setTimeout(()=>{try{input?.focus(); if(safeMode==='edit') input?.select();}catch(_){}},80);
+}
+function __structureOpenCreateModal__(){
+  const dataModal=document.getElementById('settingsDataModal'); if(dataModal && dataModal.dataset.dataMode==='inactive') return;
+  try{ if(window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
+  const modal=document.getElementById('structureCreateModal'); const input=document.getElementById('structureNameInput'); if(!modal||!input)return;
+  modal.hidden=false; modal.setAttribute('aria-hidden','false'); try{document.body.classList.add('modal-open');}catch(_){ }
+  __structureSetEditorMode__(__structureHasActive__()?'edit':'create');
+}
+function __structureCloseCreateModal__(reopenData){
+  const modal=document.getElementById('structureCreateModal'); if(modal){modal.hidden=true; modal.setAttribute('aria-hidden','true'); modal.dataset.structureMode='';}
+  try{document.body.classList.remove('modal-open');}catch(_){ }
+  if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
+}
+// dDAE_3.325 — Home context pill: separazione rigorosa tap / long press su iOS.
+function __bindHomeYearDisplayPillInteractions__(){
+  const btn=document.getElementById('homeYearDisplayPill');
+  if(!btn || btn.dataset.homeYearDisplayBound==='1') return;
+  btn.dataset.homeYearDisplayBound='1';
+  const openYear=()=>{
+    try{ if(__pillLongPressSuppressed__(btn)) return; }catch(_){ }
+    try{ __openSettingsYearModal__(); }catch(_){ }
+  };
+  try{ if(typeof bindFastTap==='function') bindFastTap(btn,openYear); else btn.addEventListener('click',openYear); }catch(_){ }
+}
+
+function __bindHomeYearPillInteractions__(){
+  const btn=document.getElementById('homeYearPill');
+  if(!btn || btn.dataset.homeContextInteractionBound==='1') return;
+  btn.dataset.homeContextInteractionBound='1';
+  try{ __pillApplyToButton__(btn); }catch(_){ }
+
+  const HOLD_MS=800;
+  const MOVE_TOLERANCE=12;
+  let timer=null;
+  let holdFired=false;
+  let moved=false;
+  let startX=0,startY=0;
+  let suppressClickUntil=0;
+  let pointerActive=false;
+
+  const clearTimer=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+  const point=(e)=>{
+    const t=e?.touches?.[0] || e?.changedTouches?.[0] || e;
+    return {x:Number(t?.clientX||0),y:Number(t?.clientY||0)};
+  };
+  const block=(e)=>{
+    try{e?.preventDefault?.();}catch(_){ }
+    try{e?.stopImmediatePropagation?.();}catch(_){ }
+    try{e?.stopPropagation?.();}catch(_){ }
+  };
+  const suppressPrimary=(ms=1600)=>{
+    const until=Date.now()+Math.max(0,Number(ms)||0);
+    suppressClickUntil=Math.max(suppressClickUntil,until);
+    try{ __pillLongPressSuppress__(btn,ms); }catch(_){ }
+    try{ btn.__ddaeColorHoldSuppressUntil=until; }catch(_){ }
+  };
+  const openColor=()=>{
+    if(holdFired || moved || !pointerActive) return;
+    holdFired=true;
+    suppressPrimary(1800);
+    const current=__pillVisualFor__(btn.id);
+    __tagColorPopupOpen__('pill-single-button',current,(payload)=>{
+      try{
+        const nextVisual=__designVisualFromPayload__(current,payload,current.bg||'blue-4');
+        __writePillVisual__(btn.id,nextVisual);
+        if(payload && payload.opacity!=null) __designBgOpacityWrite__(payload.opacity);
+        __pillApplyAll__();
+        try{renderRoomSettingsPage();}catch(_){ }
+      }catch(_){ }
+    },{
+      supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
+      opacity:current.opacity ?? __designBgOpacityRead__(),defaultMode:'bg',
+      fallbackBg:(current.bg||'blue-4'),
+      applyCategory:{message:'Applicare le modifiche a tutti i pulsanti pill?',apply:async(payload,changed)=>{await __applyPillChangesToCategory__(payload,changed);}}
+    });
+  };
+  const start=(e)=>{
+    try{ if(e?.type==='pointerdown' && e.pointerType==='mouse' && e.button!==0) return; }catch(_){ }
+    clearTimer();
+    holdFired=false;
+    moved=false;
+    pointerActive=true;
+    try{ if(e?.type==='pointerdown' && e.pointerId!=null && btn.setPointerCapture) btn.setPointerCapture(e.pointerId); }catch(_){ }
+    const p=point(e); startX=p.x; startY=p.y;
+    timer=setTimeout(openColor,HOLD_MS);
+  };
+  const move=(e)=>{
+    if(!pointerActive || !timer) return;
+    const p=point(e);
+    if(Math.abs(p.x-startX)>MOVE_TOLERANCE || Math.abs(p.y-startY)>MOVE_TOLERANCE){
+      moved=true; clearTimer();
+    }
+  };
+  const finish=(e,cancelled=false)=>{
+    if(!pointerActive) return;
+    pointerActive=false;
+    clearTimer();
+    if(holdFired){
+      suppressPrimary(1800);
+      block(e);
+      holdFired=false;
+      return;
+    }
+    if(cancelled || moved) return;
+    // Il tap breve viene gestito qui, non da bindFastTap: nessun timer Design può sopravvivere al rilascio.
+    suppressClickUntil=Date.now()+700;
+    try{ __sfxTap(); }catch(_){ }
+    try{ __structureOpenSelectModal__(); }catch(_){ }
+  };
+  const click=(e)=>{
+    // Click sintetico successivo a touch/pointerup: sempre assorbito.
+    if(Date.now()<suppressClickUntil){ block(e); return; }
+    // Accessibilità tastiera: click senza una sequenza pointer precedente.
+    try{ __sfxTap(); }catch(_){ }
+    try{ __structureOpenSelectModal__(); }catch(_){ }
+  };
+
+  const usePointer=typeof window!=='undefined' && ('PointerEvent' in window);
+  if(usePointer){
+    btn.addEventListener('pointerdown',start,{passive:true,capture:true});
+    btn.addEventListener('pointermove',move,{passive:true,capture:true});
+    btn.addEventListener('pointerup',(e)=>finish(e,false),{passive:false,capture:true});
+    btn.addEventListener('pointercancel',(e)=>finish(e,true),{passive:false,capture:true});
+    btn.addEventListener('pointerleave',(e)=>{ if(pointerActive && e?.pointerType==='mouse') finish(e,true); },{passive:false,capture:true});
+  }else if(typeof window!=='undefined' && ('ontouchstart' in window)){
+    btn.addEventListener('touchstart',start,{passive:true,capture:true});
+    btn.addEventListener('touchmove',move,{passive:true,capture:true});
+    btn.addEventListener('touchend',(e)=>finish(e,false),{passive:false,capture:true});
+    btn.addEventListener('touchcancel',(e)=>finish(e,true),{passive:false,capture:true});
+  }else{
+    btn.addEventListener('mousedown',start,true);
+    btn.addEventListener('mouseup',(e)=>finish(e,false),true);
+    btn.addEventListener('mouseleave',(e)=>finish(e,true),true);
+  }
+  btn.addEventListener('click',click,true);
+  btn.addEventListener('contextmenu',(e)=>{ block(e); },true);
+  btn.addEventListener('selectstart',(e)=>{ block(e); },true);
+  btn.addEventListener('dragstart',(e)=>{ block(e); },true);
+}
+
+function __setupStructureUi__(){
+  if(window.__ddaeStructureUiBound) { __structureUpdateUi__(); return; }
+  window.__ddaeStructureUiBound=true;
+  const bind=(el,fn)=>{ if(!el)return; if(typeof bindFastTap==='function') bindFastTap(el,fn); else el.addEventListener('click',fn); };
+  bind(document.getElementById('settingsStructureBtn'),__structureOpenSelectModal__);
+  try{ __bindHomeYearPillInteractions__(); }catch(_){ }
+  try{ __bindHomeYearDisplayPillInteractions__(); }catch(_){ }
+  bind(document.getElementById('settingsStructureCreateBtn'),__structureOpenCreateModal__);
+  bind(document.getElementById('structureSelectCloseBtn'),__structureCloseSelectModal__);
+  bind(document.getElementById('structureCreateCloseBtn'),()=>__structureCloseCreateModal__(true));
+  bind(document.getElementById('structureCreateNewBtn'),()=>__structureSetEditorMode__('create'));
+  bind(document.getElementById('structureDeleteBtn'),async()=>{
+    const active=__structureActive__(); if(!active) return;
+    const ok=await confirmYesNo(`Eliminare definitivamente la struttura “${active.nome}” e tutti i suoi dati? L'operazione non può essere annullata.`);
+    if(!ok) return;
+    const btn=document.getElementById('structureDeleteBtn'); try{ if(btn) btn.disabled=true; }catch(_){}
+    try{
+      const deleted=await __structureDelete__(active.id);
+      __structureCloseCreateModal__(false);
+      try{toast('Struttura eliminata: '+deleted.nome,'green');}catch(_){}
+      setTimeout(()=>{try{location.reload();}catch(_){}},180);
+    }catch(e){ try{ if(btn) btn.disabled=false; }catch(_){} try{toast(e?.message||'Errore eliminazione struttura','orange');}catch(_){} }
+  });
+  bind(document.getElementById('structureCreateSaveBtn'),async()=>{
+    const modal=document.getElementById('structureCreateModal');
+    const input=document.getElementById('structureNameInput');
+    const mode=String(modal?.dataset?.structureMode||'create');
+    try{
+      if(mode==='edit' && __structureHasActive__()){
+        const item=await __structureRename__(__structureActiveId__(),input?.value||'');
+        __structureCloseCreateModal__(true);
+        try{toast('Struttura aggiornata: '+item.nome,'green');}catch(_){}
+      }else{
+        const item=await __structureCreate__(input?.value||'');
+        __structureCloseCreateModal__(true);
+        try{toast('Struttura '+item.nome+' creata. Selezionala nelle Impostazioni.','green');}catch(_){}
+      }
+    }catch(e){try{toast(e?.message||'Errore struttura','orange');}catch(_){} }
+  });
+  ['structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn'].forEach(id=>{const btn=document.getElementById(id); try{__applySingleActionButtonVisual__(btn);__bindSingleActionButtonColorHold__(btn);}catch(_){} });
+  const sm=document.getElementById('structureSelectModal'); if(sm) sm.addEventListener('click',(e)=>{if(e.target===sm)__structureCloseSelectModal__();});
+  const cm=document.getElementById('structureCreateModal'); if(cm) cm.addEventListener('click',(e)=>{if(e.target===cm)__structureCloseCreateModal__(true);});
+  const homeGrid=document.querySelector('#page-home .home-grid');
+  if(homeGrid && !homeGrid.__ddaeStructureGuard){
+    homeGrid.__ddaeStructureGuard=true;
+    homeGrid.addEventListener('click',(e)=>{
+      if(__structureHasActive__()) return;
+      const btn=e.target?.closest?.('.home-main'); if(!btn) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_){ }
+      try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){ }
+    },true);
+  }
+  __structureUpdateUi__();
+}
+try{ document.addEventListener('DOMContentLoaded',()=>{try{__setupStructureUi__();__structureUpdateUi__();}catch(_){}},{once:true}); }catch(_){ }
+try{ window.addEventListener('pageshow',()=>{try{__structureUpdateUi__();}catch(_){}},{passive:true}); }catch(_){ }
+try{ window.addEventListener('online',()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},{passive:true}); }catch(_){ }
+try{ setTimeout(()=>{try{__structureRetryPendingRemoteDeletes__();}catch(_){}},1400); }catch(_){ }
 
 
 // ===== Year filtering (client-side) =====
@@ -18630,7 +19637,7 @@ function __apiUsesExerciseYear__(action){
   return true;
 }
 
-function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxUid__()}:${__ctxYear__()}:`; }
+function __lsPrefixNow__(){ return `${__lsPrefixBase}${__ctxDataUid__()}:${__ctxYear__()}:`; }
 
 function __lsClearAll(){
   // cancella TUTTE le cache dell'app (tutti account/anni)
@@ -18787,8 +19794,9 @@ function bindFastTap(el, fn){
     try{ e.stopPropagation(); }catch(_){ }
     try{ e.stopImmediatePropagation(); }catch(_){ }
 
-    // Il popup riaperto tramite Servizi è una copia inattiva: nessuno dei cinque tasti esegue azioni.
+    // Il popup riaperto tramite Servizi è una copia inattiva: nessun tasto dati esegue azioni.
     if (modal && modal.dataset.dataMode === 'inactive') return false;
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return false; }
 
     const now = Date.now();
     if (now - lastTap < 450) return false;
@@ -21592,6 +22600,7 @@ function resetInserisci(){
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
+  try{ __setupSpeseAlphaSortButton__(); }catch(_){ }
   try{ __bindSpeseDateRangeUi__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
@@ -22491,6 +23500,7 @@ const __SPESA_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_spese_card_visual_v1';
 const __TAX_QUARTER_VISUAL_STORAGE_KEY__ = 'dDAE_tax_quarter_visual_v1';
 const __GUEST_FILTER_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_guest_filter_button_visual_v1';
 const __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_single_action_button_visual_v1';
+const __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__ = 'dDAE_structure_option_button_visual_v1';
 const __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__ = 'dDAE_tax_page_card_visual_v1';
 const __TAX_PAGE_CARD_TARGET_IDS__ = ['taxTotalRow','taxPayingCard','taxKidsCard','taxReducedCard'];
 
@@ -23058,9 +24068,9 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
-  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterCatBtnFuoriBudget',
+  'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
-  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
+  'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
   'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
@@ -23069,12 +24079,29 @@ function __loadSingleActionButtonVisualMap__(){
   try{
     const raw = localStorage.getItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__);
     const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    const base = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    let structure = {};
+    try{
+      const rawStructure = localStorage.getItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__);
+      const parsedStructure = rawStructure ? JSON.parse(rawStructure) : {};
+      structure = parsedStructure && typeof parsedStructure === 'object' && !Array.isArray(parsedStructure) ? parsedStructure : {};
+    }catch(_){ structure = {}; }
+    return { ...base, ...structure };
   }catch(_){ return {}; }
 }
 
 function __saveSingleActionButtonVisualMap__(map){
-  try{ localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(map || {})); }catch(_){ }
+  try{
+    const src = map && typeof map === 'object' && !Array.isArray(map) ? map : {};
+    const base = {};
+    const structure = {};
+    Object.keys(src).forEach((key)=>{
+      if (String(key || '').startsWith('structureSelectOption_')) structure[key] = src[key];
+      else base[key] = src[key];
+    });
+    localStorage.setItem(__SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(base));
+    localStorage.setItem(__STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__, JSON.stringify(structure));
+  }catch(_){ }
 }
 
 function __singleActionButtonSharedKey__(btnOrId){
@@ -23147,6 +24174,7 @@ function __defaultSingleActionButtonVisual__(btn){
     spesaCatBtnIva22:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva10:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     spesaCatBtnIva4:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.80 },
+    speseFilterAlphaBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.80 },
     licenseDateRangeTrigger:{ bg:'azure-4', border:'azure-4', fg:'white', opacity:0.80 },
     licenseGeneratorCancel:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     licenseGeneratorConfirm:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
@@ -23165,6 +24193,10 @@ function __defaultSingleActionButtonVisual__(btn){
     settingsLicenseGeneratorBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.80 },
     settingsLicenseCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     settingsDataCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    structureCreateCloseBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
+    structureCreateNewBtn:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
+    structureDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    structureCreateSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountSaveBtn:{ bg:'green-4', border:'green-4', fg:'white', opacity:0.80 },
     settingsAccountCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
     guestMessageSettingsCancelBtn:{ bg:'gray-4', border:'gray-4', fg:'white', opacity:0.80 },
@@ -23172,7 +24204,10 @@ function __defaultSingleActionButtonVisual__(btn){
     calTodayOccupancyBadge:{ bg:'red-5', border:'red-6', fg:'white', opacity:1 },
     calTomorrowCheckoutBadge:{ bg:'sky-5', border:'sky-6', fg:'white', opacity:1 }
   };
-  const fallback = defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
+  const structureOptionFallback = String(id || '').startsWith('structureSelectOption_')
+    ? { bg:'orange-4', border:'orange-4', fg:'blue-4', opacity:0.80 }
+    : null;
+  const fallback = structureOptionFallback || defaults[id] || { bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 };
   return __launcherVisualNormalize__(fallback, fallback.bg || 'blue-4');
 }
 
@@ -23717,6 +24752,45 @@ function __setupSpeseCategoryFilterButtons__(){
       });
     });
     __syncSpeseCategoryFilterButtons__(state.speseCategoryFilter || '');
+    try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
+  }catch(_){ }
+}
+
+// dDAE_3.325 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+function __syncSpeseAlphaSortButton__(){
+  try{
+    const btn=document.getElementById('speseFilterAlphaBtn');
+    if(!btn) return;
+    const on=String(state.speseSort || 'date') === 'motivazione';
+    btn.classList.toggle('is-selected', on);
+    btn.classList.toggle('is-muted', !on);
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.dataset.filterSelected = on ? '1' : '0';
+    try{ __applySingleActionButtonVisual__(btn); }catch(_){ }
+  }catch(_){ }
+}
+
+function __setSpeseAlphaSort__(enabled){
+  try{ state.speseSort = enabled ? 'motivazione' : 'date'; }catch(_){ }
+  __syncSpeseAlphaSortButton__();
+  try{ if (state.page === 'spese' && state.speseView === 'list') renderSpese(); }catch(_){ }
+}
+
+function __setupSpeseAlphaSortButton__(){
+  try{
+    const btn=document.getElementById('speseFilterAlphaBtn');
+    if(!btn) return;
+    if(btn.dataset.speseAlphaSortBound !== '1'){
+      btn.dataset.speseAlphaSortBound='1';
+      bindFastTap(btn,(ev)=>{
+        try{ if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+        try{ ev && ev.preventDefault && ev.preventDefault(); }catch(_){ }
+        const on=String(state.speseSort || 'date') === 'motivazione';
+        __setSpeseAlphaSort__(!on);
+      });
+    }
+    __syncSpeseAlphaSortButton__();
     try{ __setupSingleActionButtonPaletteBindings__(); }catch(_){ }
   }catch(_){ }
 }
@@ -24968,8 +26042,8 @@ function __statChannelBucketLabelFromGuest__(guest){
   return 'PMS';
 }
 
-function __statChannelSeriesBundle__(){
-  const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
+function __statChannelSeriesBundle__(sourceGuests){
+  const guests = Array.isArray(sourceGuests) ? sourceGuests : (Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []));
   const catalog = getChannelCatalogFromSettings();
   const normalizeChannelName = (value) => {
     try{
@@ -25064,8 +26138,8 @@ function __statChannelSeriesBundle__(){
   return rows;
 }
 
-function __statChannelMonthlySeries__(){
-  return __statChannelSeriesBundle__();
+function __statChannelMonthlySeries__(sourceGuests){
+  return __statChannelSeriesBundle__(sourceGuests);
 }
 
 
@@ -25272,17 +26346,47 @@ function renderStatChannel(){
   if (__statScoreModeActive__()) return renderStatPunteggio();
   try{ state.statChannelViewMode = 'pms'; }catch(_){ }
   try{ const title = document.querySelector('#page-statchannel .stats-title'); if (title) title.textContent = 'PMS'; }catch(_){ }
+
   const rows = __statChannelMonthlySeries__();
   const pmsTotal = rows.reduce((sum, row) => sum + (Number(row?.value || 0) || 0), 0);
+  const compareEnabled = !!__ensureStatGenCompareEnabled__();
+  const compareYear = compareEnabled ? __ensureStatGenCompareYear__() : '';
+  let compareRows = [];
+  let compareReady = false;
+
+  if (compareEnabled){
+    try{
+      const snapshot = state.statGenCompareSnapshot;
+      const sameYear = String(state.statGenCompareSnapshotYear || '') === String(compareYear);
+      const activeStructureId = (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '';
+      const snapshotStructureId = String(snapshot?.structureId || '');
+      const sameStructure = !snapshotStructureId || !activeStructureId || snapshotStructureId === activeStructureId;
+      if (sameYear && snapshot && sameStructure && Array.isArray(snapshot.guests)){
+        compareRows = __statChannelMonthlySeries__(snapshot.guests);
+        compareReady = true;
+      }else if (!state.statGenCompareLoading){
+        try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ }
+      }
+    }catch(_){ }
+  }
+
+  const compareTotal = compareRows.reduce((sum, row) => sum + (Number(row?.value || 0) || 0), 0);
+  const compareByKey = new Map(compareRows.map((row) => [String(row?.key || ''), row]));
   const stack = document.getElementById('statPmsRows');
   if (stack){
     stack.innerHTML = rows.map((row) => {
       const shareLabel = __statChannelShareFormat__(row.value, pmsTotal);
+      const compareRow = compareByKey.get(String(row.key || '')) || null;
+      const compareShareLabel = __statChannelShareFormat__(compareRow?.value || 0, compareTotal);
+      const compareValueLabel = euro(compareRow?.value || 0);
+      const compareName = compareEnabled ? `<span class="stat-channel-compare-line stat-channel-compare-year" aria-hidden="true"></span>` : '';
+      const compareShare = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareShareLabel : '0%')}</span>` : '';
+      const compareValue = compareEnabled ? `<span class="stat-channel-compare-line">${escapeHtml(compareReady ? compareValueLabel : euro(0))}</span>` : '';
       return `
-      <button class="stat-row" data-stat-scope="pms" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
-        <span class="stat-name">${escapeHtml(row.label || 'PMS')}</span>
-        <span class="stat-channel-share" aria-label="Incidenza ${escapeHtml(shareLabel)}">${escapeHtml(shareLabel)}</span>
-        <span class="stat-val">${euro(row.value || 0)}</span>
+      <button class="stat-row${compareEnabled ? ' has-year-compare' : ''}" data-stat-scope="pms" data-stat-card-key="${String(row.key || '').replace(/"/g, '&quot;')}" type="button">
+        <span class="stat-name stat-channel-card-col"><span class="stat-channel-current-line">${escapeHtml(row.label || 'PMS')}</span>${compareName}</span>
+        <span class="stat-channel-share stat-channel-card-col" aria-label="Incidenza ${escapeHtml(shareLabel)}"><span class="stat-channel-current-line">${escapeHtml(shareLabel)}</span>${compareShare}</span>
+        <span class="stat-val stat-channel-card-col"><span class="stat-channel-current-line">${euro(row.value || 0)}</span>${compareValue}</span>
       </button>
     `;
     }).join('');
@@ -27445,13 +28549,13 @@ function __statMensiliTrendHtml__(currentValue, compareValue, compareYear){
   }
   const arrow = up ? '↑' : '↓';
   const labelBase = up ? __statMensiliI18n__('Crescita rispetto a') : __statMensiliI18n__('Diminuzione rispetto a');
-  const yearLabel = compareYear ? String(compareYear) : __statMensiliI18n__('anno confronto');
+  const referenceLabel = __statMensiliI18n__('Anno di riferimento');
   const diffText = `${up ? '+' : ''}${euro(diff)}`;
   return `
     <div class="month-expanded-trend ${up ? 'is-up' : 'is-down'}">
       <div class="month-expanded-trend-arrow" aria-hidden="true">${arrow}</div>
       <div class="month-expanded-trend-copy">
-        <div class="month-expanded-trend-label">${escapeHtml(labelBase)} ${escapeHtml(yearLabel)}</div>
+        <div class="month-expanded-trend-label">${escapeHtml(labelBase)} ${escapeHtml(referenceLabel)}</div>
         <div class="month-expanded-trend-value"><span>${pctText}</span><span>${diffText}</span></div>
       </div>
     </div>
@@ -27541,7 +28645,7 @@ function renderStatMensili(){
         ${__statMensiliTrendHtml__(val, cmpVal, compare.year)}
         <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
           <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-          <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno'))} ${escapeHtml(compareYearLabel)}</div>
+          <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
           <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
           <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
           <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Quota sul totale'))}</span><strong>${occDisp}%</strong></div>
@@ -29628,7 +30732,7 @@ function _guestIdOf(item){
 
 function getConfiguredRoomsCount(fallback = 6){
   try{
-    const n = parseInt(String(state?.settings?.byKey?.numero_stanze?.value ?? state?.settings?.byKey?.numero_stanze?.Value ?? state?.settings?.byKey?.numero_stanze?.val ?? fallback), 10);
+    const n = parseInt(String(getSettingNumber('numero_stanze', fallback)), 10);
     if (Number.isFinite(n) && n >= 0) return n;
   }catch(_){ }
   return Math.max(0, parseInt(fallback, 10) || 6);
@@ -29801,12 +30905,12 @@ async function saveRoomsUiConfigToSettings(config, { showToast = false } = {}){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.stanze_ui = { key:'stanze_ui', value:raw, val:raw, Value:raw };
+    state.settings.byKey[__structureScopedSettingKey__('stanze_ui')] = { key:__structureScopedSettingKey__('stanze_ui'), value:raw, val:raw, Value:raw };
     if (catalogClean){
       state.settings.roomCatalogGlobal = catalogClean;
-      try{ localStorage.setItem(__ROOM_CATALOG_STORAGE_KEY__, catalogRaw); }catch(_){ }
-      state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:catalogRaw, val:catalogRaw, Value:catalogRaw };
-      state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
+      try{ localStorage.setItem(__structureLocalStorageKey__(__ROOM_CATALOG_STORAGE_KEY__), catalogRaw); }catch(_){ }
+      state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:catalogRaw, val:catalogRaw, Value:catalogRaw };
+      state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(catalogClean.length), val:String(catalogClean.length), Value:String(catalogClean.length) };
     }
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -30388,6 +31492,7 @@ function __roomSettingsThemeAdditionalStorageKeys__(){
     __TAX_QUARTER_VISUAL_STORAGE_KEY__,
     __TAX_PAGE_CARD_VISUAL_STORAGE_KEY__,
     __SINGLE_ACTION_BUTTON_VISUAL_STORAGE_KEY__,
+    __STRUCTURE_OPTION_BUTTON_VISUAL_STORAGE_KEY__,
     __GUEST_LIST_CARD_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_THEME_BUTTON_VISUAL_STORAGE_KEY__,
     __ROOM_SETTINGS_CARD_THEME_STORAGE_KEY__,
@@ -31597,7 +32702,8 @@ async function saveRoomsCountSetting(nextCount){
   try{
     state.settings = state.settings || {};
     state.settings.byKey = state.settings.byKey || {};
-    state.settings.byKey.numero_stanze = { key:'numero_stanze', value:n, val:n, Value:n };
+    const __roomCountKey = __structureScopedSettingKey__('numero_stanze');
+    state.settings.byKey[__roomCountKey] = { key:__roomCountKey, value:n, val:n, Value:n };
   }catch(_){ }
   await ensureSettingsLoaded({ force:true, showLoader:false });
   try{
@@ -32577,6 +33683,7 @@ const __GUEST_NATIONALITY_OPTIONS__ = [
   { code:'JP', flag:'🇯🇵', name:'Giappone' },
   { code:'CN', flag:'🇨🇳', name:'Cina' },
   { code:'IN', flag:'🇮🇳', name:'India' },
+  { code:'ID', flag:'🇮🇩', name:'Indonesia' },
   { code:'KR', flag:'🇰🇷', name:'Corea del Sud' },
   { code:'AE', flag:'🇦🇪', name:'Emirati Arabi Uniti' },
   { code:'SA', flag:'🇸🇦', name:'Arabia Saudita' },
@@ -32717,7 +33824,7 @@ const __GUEST_NATIONALITY_PHONE_PREFIX_BY_CODE__ = {
   DK:'45', SE:'46', NO:'47', FI:'358', IS:'354', PL:'48', CZ:'420', SK:'421', HU:'36', RO:'40', BG:'359', HR:'385',
   SI:'386', GR:'30', CY:'357', MT:'356', EE:'372', LV:'371', LT:'370', AL:'355', RS:'381', ME:'382', BA:'387', MK:'389',
   XK:'383', UA:'380', MD:'373', RU:'7', US:'1', CA:'1', MX:'52', GT:'502', CR:'506', BR:'55', AR:'54', AU:'61', NZ:'64', JP:'81',
-  CN:'86', IN:'91', KR:'82', AE:'971', SA:'966', IL:'972', TR:'90', EG:'20', MA:'212', TN:'216', DZ:'213', ZA:'27'
+  CN:'86', IN:'91', ID:'62', KR:'82', AE:'971', SA:'966', IL:'972', TR:'90', EG:'20', MA:'212', TN:'216', DZ:'213', ZA:'27'
 };
 function __guestNationalityPhonePrefix__(code){
   try{
@@ -32759,7 +33866,7 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
     '972','971','966','995','994','502','506','90','81','82','86','91','212','213','216','20','27','1','7',
     '30','31','32','33','34','39','40','41','43','44','45','46','47','48','49','351','352',
     '353','354','358','36','370','371','372','373','380','381','385','386','389','420','421','355','356','52','54',
-    '55','61','64'
+    '55','61','62','64'
   ])).sort(function(a,b){ return b.length - a.length; });
 
   if (s.startsWith('39')) return s;
@@ -32789,7 +33896,7 @@ const __GUEST_NATIONALITY_PHONE_PREFIXES__ = [
   ['90','TR'], ['81','JP'], ['82','KR'], ['86','CN'], ['91','IN'], ['212','MA'], ['213','DZ'], ['216','TN'], ['20','EG'], ['27','ZA'],
   ['1','US'], ['7','RU'], ['30','GR'], ['31','NL'], ['32','BE'], ['33','FR'], ['34','ES'], ['39','IT'], ['40','RO'], ['41','CH'], ['43','AT'], ['44','GB'], ['45','DK'], ['46','SE'], ['47','NO'], ['48','PL'], ['49','DE'],
   ['351','PT'], ['352','LU'], ['353','IE'], ['354','IS'], ['358','FI'], ['36','HU'], ['370','LT'], ['371','LV'], ['372','EE'], ['373','MD'], ['380','UA'], ['381','RS'], ['385','HR'], ['386','SI'], ['389','MK'], ['420','CZ'], ['421','SK'], ['355','AL'], ['356','MT'],
-  ['52','MX'], ['502','GT'], ['54','AR'], ['55','BR'], ['61','AU'], ['64','NZ'], ['506','CR'], ['972','IL']
+  ['52','MX'], ['502','GT'], ['54','AR'], ['55','BR'], ['61','AU'], ['62','ID'], ['64','NZ'], ['506','CR'], ['972','IL']
 ];
 function __detectGuestNationalityFromPhone__(raw){
   try{
@@ -35620,6 +36727,52 @@ function __guestReportResolveBookings__(guest){
     return String(_guestIdOf(a) || '').localeCompare(String(_guestIdOf(b) || ''));
   });
 }
+function __guestReportNormalizeLanguage__(value){
+  const raw=String(value || '').trim().toLowerCase().replace(/_/g,'-');
+  if(!raw) return '';
+  const aliases={
+    ita:'it',eng:'en',fra:'fr',fre:'fr',deu:'de',ger:'de',spa:'es',por:'pt',nld:'nl',dut:'nl',pol:'pl',ces:'cs',cze:'cs',slk:'sk',hun:'hu',ron:'ro',rum:'ro',bul:'bg',hrv:'hr',slv:'sl',ell:'el',gre:'el',mlt:'mt',est:'et',lav:'lv',lit:'lt',sqi:'sq',alb:'sq',srp:'sr',bos:'bs',mkd:'mk',ukr:'uk',rus:'ru',dan:'da',swe:'sv',nor:'nb',fin:'fi',isl:'is',ind:'id',jpn:'ja',zho:'zh-cn',chi:'zh-cn',hin:'hi',kor:'ko',ara:'ar',heb:'he',tur:'tr'
+  };
+  if(raw==='zh' || raw==='zh-cn' || raw==='zh-sg' || raw==='zh-hans') return 'zh-cn';
+  if(raw==='zh-tw' || raw==='zh-hk' || raw==='zh-hant') return 'zh-tw';
+  if(raw==='pt-br' || raw==='pt-pt') return 'pt';
+  if(raw==='no' || raw==='nn' || raw==='nb-no') return 'nb';
+  const base=raw.split('-')[0];
+  if(aliases[base]) return aliases[base];
+  if(/^[a-z]{2}$/.test(base)) return base;
+  const names=[
+    [/ital/, 'it'],[/english|ingles|anglais|englisch/, 'en'],[/fran/, 'fr'],[/tedesc|german|deutsch/, 'de'],[/spagn|spanish|espa/, 'es'],
+    [/portogh|portugu/, 'pt'],[/oland|dutch|neder/, 'nl'],[/polacc|polish|polski/, 'pl'],[/ceco|czech|cesk/, 'cs'],[/slovacc|slovak/, 'sk'],
+    [/ungher|hungar/, 'hu'],[/rumen|roman|român/, 'ro'],[/bulgar/, 'bg'],[/croat/, 'hr'],[/sloven/, 'sl'],[/grec|greek|ellin/, 'el'],[/malt/, 'mt'],
+    [/eston/, 'et'],[/letton|latv/, 'lv'],[/lituan|lithuan/, 'lt'],[/alban|shqip/, 'sq'],[/serb/, 'sr'],[/bosn/, 'bs'],[/macedon/, 'mk'],
+    [/ucrain|ukrain/, 'uk'],[/russ/, 'ru'],[/danes|danish/, 'da'],[/sved|swedish/, 'sv'],[/norveg|norwegian/, 'nb'],[/finn/, 'fi'],[/island|iceland/, 'is'],
+    [/indones/, 'id'],[/giappon|japan/, 'ja'],[/cines|chinese|mandarin/, 'zh-cn'],[/hindi/, 'hi'],[/corean|korean/, 'ko'],[/arab/, 'ar'],[/ebra|hebrew/, 'he'],[/turc|turkish/, 'tr']
+  ];
+  for(const [re,code] of names) if(re.test(raw)) return code;
+  return '';
+}
+function __guestReportCountryLanguage__(code){
+  const c=String(code || '').trim().toUpperCase();
+  const groups={
+    it:['IT','SM','VA'],fr:['FR','MC','BE','LU'],de:['DE','AT','CH','LI'],en:['GB','UK','US','IE','AU','NZ','CA','SG','ZA','NG','GH','KE','TZ','JM','TT','BB','BS'],
+    es:['ES','MX','AR','CL','CO','PE','UY','VE','EC','BO','CR','PA','DO','GT','HN','NI','SV','CU','PR','PY'],pt:['PT','BR','AO','MZ','CV'],nl:['NL'],
+    pl:['PL'],cs:['CZ'],sk:['SK'],hu:['HU'],ro:['RO','MD'],bg:['BG'],hr:['HR'],sl:['SI'],el:['GR','CY'],mt:['MT'],et:['EE'],lv:['LV'],lt:['LT'],
+    sq:['AL','XK'],sr:['RS','ME'],bs:['BA'],mk:['MK'],uk:['UA'],ru:['RU','BY','KZ'],da:['DK'],sv:['SE'],nb:['NO'],fi:['FI'],is:['IS'],
+    id:['ID'],ja:['JP'],'zh-cn':['CN'],hi:['IN'],ko:['KR'],ar:['AE','SA','EG','MA','TN','DZ','QA','KW','BH','OM','JO','LB','IQ','LY'],he:['IL'],tr:['TR']
+  };
+  for(const [lang,list] of Object.entries(groups)) if(list.includes(c)) return lang;
+  return '';
+}
+function __guestReportCountryCode__(guest){
+  const all=[...__guestReportResolveBookings__(guest), guest].filter(Boolean);
+  for(const item of all){
+    const candidates=[item?.nazionalita_code,item?.nazionalitaCode,item?.country_code,item?.countryCode,item?.nazionalita,item?.nazione,item?.country,item?.paese];
+    for(const value of candidates){ const code=String(value || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }
+    try{ const opt=__readGuestNationalityFromRecord__(item); const code=String(opt?.code || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }catch(_){ }
+  }
+  try{ const code=String(document.getElementById('guestNationality')?.value || '').trim().toUpperCase(); if(/^[A-Z]{2}$/.test(code)) return code; }catch(_){ }
+  return '';
+}
 function __guestReportResolveLanguage__(guest){
   const bookings = __guestReportResolveBookings__(guest);
   const candidates = [];
@@ -35638,62 +36791,93 @@ function __guestReportResolveLanguage__(guest){
   bookings.forEach(pushCandidates);
   pushCandidates(guest);
   try{
-    const domCandidates = [
+    candidates.push(
       document.getElementById('guestLanguage')?.value,
       document.getElementById('guestLingua')?.value,
       document.getElementById('guestPreferredLanguage')?.value,
       document.getElementById('guestLanguageSelect')?.value,
       document.getElementById('guestReportLanguage')?.value
-    ];
-    candidates.push(...domCandidates);
+    );
   }catch(_){ }
-  for (const value of candidates){
-    const raw = String(value || '').trim().toLowerCase();
-    if (!raw) continue;
-    if (raw.startsWith('it') || raw === 'italiano') return 'it';
-    if (raw.startsWith('en') || raw.includes('ingles')) return 'en';
-    if (raw.startsWith('fr') || raw.includes('fran')) return 'fr';
-    if (raw.startsWith('de') || raw.includes('tede') || raw.includes('deut')) return 'de';
-    if (raw.startsWith('es') || raw.includes('spagn') || raw.includes('espa')) return 'es';
-  }
-  try{ return __getAppLanguage__(); }catch(_){ return 'it'; }
+  for (const value of candidates){ const lang=__guestReportNormalizeLanguage__(value); if(lang) return lang; }
+  const inferred=__guestReportCountryLanguage__(__guestReportCountryCode__(guest));
+  if(inferred) return inferred;
+  try{ return __guestReportNormalizeLanguage__(__getAppLanguage__()) || 'it'; }catch(_){ return 'it'; }
 }
-function __guestReportTextMap__(){ return {
-  title:{ it:'REPORT OSPITE', en:'GUEST REPORT', fr:'RAPPORT CLIENT', de:'GASTBERICHT', es:'REPORTE HUÉSPED' },
-  guestFallback:{ it:'Ospite', en:'Guest', fr:'Client', de:'Gast', es:'Huésped' },
-  booking:{ it:'Prenotazione', en:'Booking', fr:'Réservation', de:'Buchung', es:'Reserva' },
-  stay:{ it:'Soggiorno', en:'Stay', fr:'Séjour', de:'Aufenthalt', es:'Estancia' },
-  rooms:{ it:'Stanze', en:'Rooms', fr:'Chambres', de:'Zimmer', es:'Habitaciones' },
-  guests:{ it:'Ospiti', en:'Guests', fr:'Clients', de:'Gäste', es:'Huéspedes' },
-  extraServices:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
-  bookingAmount:{ it:'Importo prenotazione', en:'Booking amount', fr:'Montant réservation', de:'Buchungsbetrag', es:'Importe reserva' },
-  services:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
-  discount:{ it:'Sconto', en:'Discount', fr:'Remise', de:'Rabatt', es:'Descuento' },
-  deposit:{ it:'Acconto', en:'Deposit', fr:'Acompte', de:'Anzahlung', es:'Depósito' },
-  balancePaid:{ it:'Saldo', en:'Paid balance', fr:'Solde payé', de:'Bezahlter Saldo', es:'Saldo pagado' },
-  touristTax:{ it:'Tassa soggiorno', en:'Tourist tax', fr:'Taxe de séjour', de:'Kurtaxe', es:'Tasa turística' },
-  remaining:{ it:'Rimanenza da pagare', en:'Remaining to pay', fr:'Reste à payer', de:'Restbetrag zu zahlen', es:'Pendiente de pago' },
-  noExtraServices:{ it:'Nessun servizio', en:'No services', fr:'Aucun service', de:'Keine Services', es:'Sin servicios' },
-  notes:{ it:'Note', en:'Notes', fr:'Notes', de:'Notizen', es:'Notas' },
-  adults_one:{ it:'adulto', en:'adult', fr:'adulte', de:'Erwachsener', es:'adulto' },
-  adults_other:{ it:'adulti', en:'adults', fr:'adultes', de:'Erwachsene', es:'adultos' },
-  children_one:{ it:'bambino', en:'child', fr:'enfant', de:'Kind', es:'niño' },
-  children_other:{ it:'bambini', en:'children', fr:'enfants', de:'Kinder', es:'niños' },
-  doubleBed_one:{ it:'letto matrimoniale', en:'double bed', fr:'lit double', de:'Doppelbett', es:'cama doble' },
-  doubleBed_other:{ it:'letti matrimoniali', en:'double beds', fr:'lits doubles', de:'Doppelbetten', es:'camas dobles' },
-  singleBed_one:{ it:'letto singolo', en:'single bed', fr:'lit simple', de:'Einzelbett', es:'cama individual' },
-  singleBed_other:{ it:'letti singoli', en:'single beds', fr:'lits simples', de:'Einzelbetten', es:'camas individuales' },
-  crib_one:{ it:'culla', en:'crib', fr:'lit bébé', de:'Kinderbett', es:'cuna' },
-  crib_other:{ it:'culle', en:'cribs', fr:'lits bébé', de:'Kinderbetten', es:'cunas' },
-  none:{ it:'—', en:'—', fr:'—', de:'—', es:'—' },
-  reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
-  reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
-  whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
-  whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
-  room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' },
-  venue:{ it:'Locale', en:'Venue', fr:'Espace', de:'Bereich', es:'Local' },
-  date:{ it:'Data', en:'Date', fr:'Date', de:'Datum', es:'Fecha' }
-}; }
+function __guestReportLocale__(lang){
+  const key=__guestReportNormalizeLanguage__(lang) || 'it';
+  const locales={it:'it-IT',en:'en-GB',fr:'fr-FR',de:'de-DE',es:'es-ES',pt:'pt-PT',nl:'nl-NL',pl:'pl-PL',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',ro:'ro-RO',bg:'bg-BG',hr:'hr-HR',sl:'sl-SI',el:'el-GR',mt:'mt-MT',et:'et-EE',lv:'lv-LV',lt:'lt-LT',sq:'sq-AL',sr:'sr-RS',bs:'bs-BA',mk:'mk-MK',uk:'uk-UA',ru:'ru-RU',da:'da-DK',sv:'sv-SE',nb:'nb-NO',fi:'fi-FI',is:'is-IS',id:'id-ID',ja:'ja-JP','zh-cn':'zh-CN','zh-tw':'zh-TW',hi:'hi-IN',ko:'ko-KR',ar:'ar-SA',he:'he-IL',tr:'tr-TR'};
+  return locales[key] || 'it-IT';
+}
+function __guestReportTextMap__(){
+  const map={
+    title:{ it:'REPORT OSPITE', en:'GUEST REPORT', fr:'RAPPORT CLIENT', de:'GASTBERICHT', es:'REPORTE HUÉSPED' },
+    guestFallback:{ it:'Ospite', en:'Guest', fr:'Client', de:'Gast', es:'Huésped' },
+    booking:{ it:'Prenotazione', en:'Booking', fr:'Réservation', de:'Buchung', es:'Reserva' },
+    stay:{ it:'Soggiorno', en:'Stay', fr:'Séjour', de:'Aufenthalt', es:'Estancia' },
+    rooms:{ it:'Stanze', en:'Rooms', fr:'Chambres', de:'Zimmer', es:'Habitaciones' },
+    guests:{ it:'Ospiti', en:'Guests', fr:'Clients', de:'Gäste', es:'Huéspedes' },
+    extraServices:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
+    bookingAmount:{ it:'Importo prenotazione', en:'Booking amount', fr:'Montant réservation', de:'Buchungsbetrag', es:'Importe reserva' },
+    services:{ it:'Servizi', en:'Services', fr:'Services', de:'Services', es:'Servicios' },
+    discount:{ it:'Sconto', en:'Discount', fr:'Remise', de:'Rabatt', es:'Descuento' },
+    deposit:{ it:'Acconto', en:'Deposit', fr:'Acompte', de:'Anzahlung', es:'Depósito' },
+    balancePaid:{ it:'Saldo', en:'Paid balance', fr:'Solde payé', de:'Bezahlter Saldo', es:'Saldo pagado' },
+    touristTax:{ it:'Tassa soggiorno', en:'Tourist tax', fr:'Taxe de séjour', de:'Kurtaxe', es:'Tasa turística' },
+    remaining:{ it:'Rimanenza da pagare', en:'Remaining to pay', fr:'Reste à payer', de:'Restbetrag zu zahlen', es:'Pendiente de pago' },
+    noExtraServices:{ it:'Nessun servizio', en:'No services', fr:'Aucun service', de:'Keine Services', es:'Sin servicios' },
+    notes:{ it:'Note', en:'Notes', fr:'Notes', de:'Notizen', es:'Notas' },
+    adults_one:{ it:'adulto', en:'adult', fr:'adulte', de:'Erwachsener', es:'adulto' }, adults_other:{ it:'adulti', en:'adults', fr:'adultes', de:'Erwachsene', es:'adultos' },
+    children_one:{ it:'bambino', en:'child', fr:'enfant', de:'Kind', es:'niño' }, children_other:{ it:'bambini', en:'children', fr:'enfants', de:'Kinder', es:'niños' },
+    doubleBed_one:{ it:'letto matrimoniale', en:'double bed', fr:'lit double', de:'Doppelbett', es:'cama doble' }, doubleBed_other:{ it:'letti matrimoniali', en:'double beds', fr:'lits doubles', de:'Doppelbetten', es:'camas dobles' },
+    singleBed_one:{ it:'letto singolo', en:'single bed', fr:'lit simple', de:'Einzelbett', es:'cama individual' }, singleBed_other:{ it:'letti singoli', en:'single beds', fr:'lits simples', de:'Einzelbetten', es:'camas individuales' },
+    crib_one:{ it:'culla', en:'crib', fr:'lit bébé', de:'Kinderbett', es:'cuna' }, crib_other:{ it:'culle', en:'cribs', fr:'lits bébé', de:'Kinderbetten', es:'cunas' },
+    none:{ it:'—', en:'—', fr:'—', de:'—', es:'—' },
+    reportReady:{ it:'Report ospite pronto', en:'Guest report ready', fr:'Rapport client prêt', de:'Gastbericht bereit', es:'Reporte huésped listo' },
+    reportTitle:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+    whatsappHint:{ it:'Report ospite', en:'Guest report', fr:'Rapport client', de:'Gastbericht', es:'Reporte huésped' },
+    whatsappMissingPhone:{ it:'Numero ospite assente', en:'Guest phone number missing', fr:'Numéro du client absent', de:'Telefonnummer des Gastes fehlt', es:'Falta el número del huésped' },
+    room:{ it:'Stanza', en:'Room', fr:'Chambre', de:'Zimmer', es:'Habitación' }, venue:{ it:'Locale', en:'Venue', fr:'Espace', de:'Bereich', es:'Local' }, date:{ it:'Data', en:'Date', fr:'Date', de:'Datum', es:'Fecha' }
+  };
+  const extra={
+    pt:{title:'RELATÓRIO DO HÓSPEDE',guestFallback:'Hóspede',booking:'Reserva',stay:'Estadia',rooms:'Quartos',guests:'Hóspedes',extraServices:'Serviços',bookingAmount:'Valor da reserva',services:'Serviços',discount:'Desconto',deposit:'Sinal',balancePaid:'Saldo pago',touristTax:'Taxa turística',remaining:'Restante a pagar',noExtraServices:'Sem serviços',notes:'Notas',adults_one:'adulto',adults_other:'adultos',children_one:'criança',children_other:'crianças',doubleBed_one:'cama de casal',doubleBed_other:'camas de casal',singleBed_one:'cama individual',singleBed_other:'camas individuais',crib_one:'berço',crib_other:'berços',reportReady:'Relatório do hóspede pronto',reportTitle:'Relatório do hóspede',whatsappHint:'Relatório do hóspede',whatsappMissingPhone:'Número do hóspede em falta',room:'Quarto',venue:'Espaço',date:'Data'},
+    nl:{title:'GASTRAPPORT',guestFallback:'Gast',booking:'Boeking',stay:'Verblijf',rooms:'Kamers',guests:'Gasten',extraServices:'Diensten',bookingAmount:'Boekingsbedrag',services:'Diensten',discount:'Korting',deposit:'Aanbetaling',balancePaid:'Betaald saldo',touristTax:'Toeristenbelasting',remaining:'Nog te betalen',noExtraServices:'Geen diensten',notes:'Notities',adults_one:'volwassene',adults_other:'volwassenen',children_one:'kind',children_other:'kinderen',doubleBed_one:'tweepersoonsbed',doubleBed_other:'tweepersoonsbedden',singleBed_one:'eenpersoonsbed',singleBed_other:'eenpersoonsbedden',crib_one:'babybedje',crib_other:'babybedjes',reportReady:'Gastrapport gereed',reportTitle:'Gastrapport',whatsappHint:'Gastrapport',whatsappMissingPhone:'Telefoonnummer gast ontbreekt',room:'Kamer',venue:'Ruimte',date:'Datum'},
+    pl:{title:'RAPORT GOŚCIA',guestFallback:'Gość',booking:'Rezerwacja',stay:'Pobyt',rooms:'Pokoje',guests:'Goście',extraServices:'Usługi',bookingAmount:'Kwota rezerwacji',services:'Usługi',discount:'Rabat',deposit:'Zaliczka',balancePaid:'Zapłacone saldo',touristTax:'Opłata turystyczna',remaining:'Pozostało do zapłaty',noExtraServices:'Brak usług',notes:'Uwagi',adults_one:'dorosły',adults_other:'dorośli',children_one:'dziecko',children_other:'dzieci',doubleBed_one:'łóżko podwójne',doubleBed_other:'łóżka podwójne',singleBed_one:'łóżko pojedyncze',singleBed_other:'łóżka pojedyncze',crib_one:'łóżeczko dziecięce',crib_other:'łóżeczka dziecięce',reportReady:'Raport gościa gotowy',reportTitle:'Raport gościa',whatsappHint:'Raport gościa',whatsappMissingPhone:'Brak numeru telefonu gościa',room:'Pokój',venue:'Obiekt',date:'Data'},
+    cs:{title:'ZPRÁVA HOSTA',guestFallback:'Host',booking:'Rezervace',stay:'Pobyt',rooms:'Pokoje',guests:'Hosté',extraServices:'Služby',bookingAmount:'Částka rezervace',services:'Služby',discount:'Sleva',deposit:'Záloha',balancePaid:'Zaplacený zůstatek',touristTax:'Pobytová taxa',remaining:'Zbývá zaplatit',noExtraServices:'Bez služeb',notes:'Poznámky',adults_one:'dospělý',adults_other:'dospělí',children_one:'dítě',children_other:'děti',doubleBed_one:'manželská postel',doubleBed_other:'manželské postele',singleBed_one:'jednolůžko',singleBed_other:'jednolůžka',crib_one:'dětská postýlka',crib_other:'dětské postýlky',reportReady:'Zpráva hosta připravena',reportTitle:'Zpráva hosta',whatsappHint:'Zpráva hosta',whatsappMissingPhone:'Chybí telefon hosta',room:'Pokoj',venue:'Prostor',date:'Datum'},
+    sk:{title:'SPRÁVA HOSŤA',guestFallback:'Hosť',booking:'Rezervácia',stay:'Pobyt',rooms:'Izby',guests:'Hostia',extraServices:'Služby',bookingAmount:'Suma rezervácie',services:'Služby',discount:'Zľava',deposit:'Záloha',balancePaid:'Zaplatený zostatok',touristTax:'Pobytová daň',remaining:'Zostáva zaplatiť',noExtraServices:'Bez služieb',notes:'Poznámky',adults_one:'dospelý',adults_other:'dospelí',children_one:'dieťa',children_other:'deti',doubleBed_one:'manželská posteľ',doubleBed_other:'manželské postele',singleBed_one:'jednolôžko',singleBed_other:'jednolôžka',crib_one:'detská postieľka',crib_other:'detské postieľky',reportReady:'Správa hosťa pripravená',reportTitle:'Správa hosťa',whatsappHint:'Správa hosťa',whatsappMissingPhone:'Chýba telefón hosťa',room:'Izba',venue:'Priestor',date:'Dátum'},
+    hu:{title:'VENDÉGJELENTÉS',guestFallback:'Vendég',booking:'Foglalás',stay:'Tartózkodás',rooms:'Szobák',guests:'Vendégek',extraServices:'Szolgáltatások',bookingAmount:'Foglalás összege',services:'Szolgáltatások',discount:'Kedvezmény',deposit:'Előleg',balancePaid:'Kifizetett egyenleg',touristTax:'Idegenforgalmi adó',remaining:'Fizetendő összeg',noExtraServices:'Nincs szolgáltatás',notes:'Megjegyzések',adults_one:'felnőtt',adults_other:'felnőtt',children_one:'gyermek',children_other:'gyermek',doubleBed_one:'franciaágy',doubleBed_other:'franciaágy',singleBed_one:'egyszemélyes ágy',singleBed_other:'egyszemélyes ágy',crib_one:'kiságy',crib_other:'kiságy',reportReady:'Vendégjelentés elkészült',reportTitle:'Vendégjelentés',whatsappHint:'Vendégjelentés',whatsappMissingPhone:'Hiányzik a vendég telefonszáma',room:'Szoba',venue:'Helyszín',date:'Dátum'},
+    ro:{title:'RAPORT OASPETE',guestFallback:'Oaspete',booking:'Rezervare',stay:'Sejur',rooms:'Camere',guests:'Oaspeți',extraServices:'Servicii',bookingAmount:'Valoarea rezervării',services:'Servicii',discount:'Reducere',deposit:'Avans',balancePaid:'Sold plătit',touristTax:'Taxă turistică',remaining:'Rămas de plată',noExtraServices:'Fără servicii',notes:'Note',adults_one:'adult',adults_other:'adulți',children_one:'copil',children_other:'copii',doubleBed_one:'pat dublu',doubleBed_other:'paturi duble',singleBed_one:'pat de o persoană',singleBed_other:'paturi de o persoană',crib_one:'pătuț',crib_other:'pătuțuri',reportReady:'Raportul oaspetelui este gata',reportTitle:'Raport oaspete',whatsappHint:'Raport oaspete',whatsappMissingPhone:'Lipsește numărul oaspetelui',room:'Cameră',venue:'Spațiu',date:'Dată'},
+    bg:{title:'ОТЧЕТ ЗА ГОСТ',guestFallback:'Гост',booking:'Резервация',stay:'Престой',rooms:'Стаи',guests:'Гости',extraServices:'Услуги',bookingAmount:'Сума на резервацията',services:'Услуги',discount:'Отстъпка',deposit:'Депозит',balancePaid:'Платен баланс',touristTax:'Туристическа такса',remaining:'Остава за плащане',noExtraServices:'Няма услуги',notes:'Бележки',adults_one:'възрастен',adults_other:'възрастни',children_one:'дете',children_other:'деца',doubleBed_one:'двойно легло',doubleBed_other:'двойни легла',singleBed_one:'единично легло',singleBed_other:'единични легла',crib_one:'бебешко легло',crib_other:'бебешки легла',reportReady:'Отчетът за госта е готов',reportTitle:'Отчет за гост',whatsappHint:'Отчет за гост',whatsappMissingPhone:'Липсва телефон на госта',room:'Стая',venue:'Място',date:'Дата'},
+    hr:{title:'IZVJEŠĆE GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Boravak',rooms:'Sobe',guests:'Gosti',extraServices:'Usluge',bookingAmount:'Iznos rezervacije',services:'Usluge',discount:'Popust',deposit:'Polog',balancePaid:'Plaćeni saldo',touristTax:'Boravišna pristojba',remaining:'Preostalo za platiti',noExtraServices:'Nema usluga',notes:'Napomene',adults_one:'odrasla osoba',adults_other:'odrasle osobe',children_one:'dijete',children_other:'djeca',doubleBed_one:'bračni krevet',doubleBed_other:'bračni kreveti',singleBed_one:'krevet za jednu osobu',singleBed_other:'kreveti za jednu osobu',crib_one:'dječji krevetić',crib_other:'dječji krevetići',reportReady:'Izvješće gosta je spremno',reportTitle:'Izvješće gosta',whatsappHint:'Izvješće gosta',whatsappMissingPhone:'Nedostaje telefon gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    sl:{title:'POROČILO GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Bivanje',rooms:'Sobe',guests:'Gostje',extraServices:'Storitve',bookingAmount:'Znesek rezervacije',services:'Storitve',discount:'Popust',deposit:'Polog',balancePaid:'Plačano stanje',touristTax:'Turistična taksa',remaining:'Preostalo za plačilo',noExtraServices:'Brez storitev',notes:'Opombe',adults_one:'odrasla oseba',adults_other:'odrasli',children_one:'otrok',children_other:'otroci',doubleBed_one:'zakonska postelja',doubleBed_other:'zakonske postelje',singleBed_one:'enojna postelja',singleBed_other:'enojne postelje',crib_one:'otroška posteljica',crib_other:'otroške posteljice',reportReady:'Poročilo gosta je pripravljeno',reportTitle:'Poročilo gosta',whatsappHint:'Poročilo gosta',whatsappMissingPhone:'Manjka telefonska številka gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    el:{title:'ΑΝΑΦΟΡΑ ΕΠΙΣΚΕΠΤΗ',guestFallback:'Επισκέπτης',booking:'Κράτηση',stay:'Διαμονή',rooms:'Δωμάτια',guests:'Επισκέπτες',extraServices:'Υπηρεσίες',bookingAmount:'Ποσό κράτησης',services:'Υπηρεσίες',discount:'Έκπτωση',deposit:'Προκαταβολή',balancePaid:'Πληρωμένο υπόλοιπο',touristTax:'Τουριστικός φόρος',remaining:'Υπόλοιπο προς πληρωμή',noExtraServices:'Χωρίς υπηρεσίες',notes:'Σημειώσεις',adults_one:'ενήλικας',adults_other:'ενήλικες',children_one:'παιδί',children_other:'παιδιά',doubleBed_one:'διπλό κρεβάτι',doubleBed_other:'διπλά κρεβάτια',singleBed_one:'μονό κρεβάτι',singleBed_other:'μονά κρεβάτια',crib_one:'βρεφική κούνια',crib_other:'βρεφικές κούνιες',reportReady:'Η αναφορά επισκέπτη είναι έτοιμη',reportTitle:'Αναφορά επισκέπτη',whatsappHint:'Αναφορά επισκέπτη',whatsappMissingPhone:'Λείπει το τηλέφωνο επισκέπτη',room:'Δωμάτιο',venue:'Χώρος',date:'Ημερομηνία'},
+    mt:{title:'RAPPORT TAL-MISTIEDEN',guestFallback:'Mistieden',booking:'Prenotazzjoni',stay:'Żjara',rooms:'Kmamar',guests:'Mistednin',extraServices:'Servizzi',bookingAmount:'Ammont tal-prenotazzjoni',services:'Servizzi',discount:'Skont',deposit:'Depożitu',balancePaid:'Bilanċ imħallas',touristTax:'Taxxa turistika',remaining:'Fadal biex jitħallas',noExtraServices:'L-ebda servizz',notes:'Noti',adults_one:'adult',adults_other:'adulti',children_one:'tifel',children_other:'tfal',doubleBed_one:'sodda doppja',doubleBed_other:'sodod doppji',singleBed_one:'sodda waħda',singleBed_other:'sodod singoli',crib_one:'kerrikot',crib_other:'kerrikots',reportReady:'Ir-rapport tal-mistieden lest',reportTitle:'Rapport tal-mistieden',whatsappHint:'Rapport tal-mistieden',whatsappMissingPhone:'Numru tal-mistieden nieqes',room:'Kamra',venue:'Spazju',date:'Data'},
+    et:{title:'KÜLALISE ARUANNE',guestFallback:'Külaline',booking:'Broneering',stay:'Peatumine',rooms:'Toad',guests:'Külalised',extraServices:'Teenused',bookingAmount:'Broneeringu summa',services:'Teenused',discount:'Soodustus',deposit:'Ettemaks',balancePaid:'Makstud saldo',touristTax:'Turismimaks',remaining:'Tasuda jääb',noExtraServices:'Teenuseid pole',notes:'Märkused',adults_one:'täiskasvanu',adults_other:'täiskasvanut',children_one:'laps',children_other:'last',doubleBed_one:'kaheinimesevoodi',doubleBed_other:'kaheinimesevoodit',singleBed_one:'üheinimesevoodi',singleBed_other:'üheinimesevoodit',crib_one:'beebivoodi',crib_other:'beebivoodit',reportReady:'Külalise aruanne valmis',reportTitle:'Külalise aruanne',whatsappHint:'Külalise aruanne',whatsappMissingPhone:'Külalise telefon puudub',room:'Tuba',venue:'Koht',date:'Kuupäev'},
+    lv:{title:'VIESA ATSKAITE',guestFallback:'Viesis',booking:'Rezervācija',stay:'Uzturēšanās',rooms:'Numuri',guests:'Viesi',extraServices:'Pakalpojumi',bookingAmount:'Rezervācijas summa',services:'Pakalpojumi',discount:'Atlaide',deposit:'Avanss',balancePaid:'Apmaksātais atlikums',touristTax:'Tūrisma nodeva',remaining:'Atlicis samaksāt',noExtraServices:'Nav pakalpojumu',notes:'Piezīmes',adults_one:'pieaugušais',adults_other:'pieaugušie',children_one:'bērns',children_other:'bērni',doubleBed_one:'divguļamā gulta',doubleBed_other:'divguļamās gultas',singleBed_one:'vienguļamā gulta',singleBed_other:'vienguļamās gultas',crib_one:'bērnu gultiņa',crib_other:'bērnu gultiņas',reportReady:'Viesa atskaite gatava',reportTitle:'Viesa atskaite',whatsappHint:'Viesa atskaite',whatsappMissingPhone:'Trūkst viesa tālruņa',room:'Numurs',venue:'Vieta',date:'Datums'},
+    lt:{title:'SVEČIO ATASKAITA',guestFallback:'Svečias',booking:'Rezervacija',stay:'Viešnagė',rooms:'Kambariai',guests:'Svečiai',extraServices:'Paslaugos',bookingAmount:'Rezervacijos suma',services:'Paslaugos',discount:'Nuolaida',deposit:'Avansas',balancePaid:'Sumokėtas likutis',touristTax:'Turisto mokestis',remaining:'Liko sumokėti',noExtraServices:'Paslaugų nėra',notes:'Pastabos',adults_one:'suaugęs',adults_other:'suaugę',children_one:'vaikas',children_other:'vaikai',doubleBed_one:'dvigulė lova',doubleBed_other:'dvigulės lovos',singleBed_one:'viengulė lova',singleBed_other:'viengulės lovos',crib_one:'vaikiška lovelė',crib_other:'vaikiškos lovelės',reportReady:'Svečio ataskaita paruošta',reportTitle:'Svečio ataskaita',whatsappHint:'Svečio ataskaita',whatsappMissingPhone:'Trūksta svečio telefono',room:'Kambarys',venue:'Vieta',date:'Data'},
+    sq:{title:'RAPORTI I MYSAFIRIT',guestFallback:'Mysafir',booking:'Rezervimi',stay:'Qëndrimi',rooms:'Dhomat',guests:'Mysafirët',extraServices:'Shërbime',bookingAmount:'Shuma e rezervimit',services:'Shërbime',discount:'Zbritje',deposit:'Paradhënie',balancePaid:'Bilanci i paguar',touristTax:'Taksa turistike',remaining:'Mbetet për t’u paguar',noExtraServices:'Pa shërbime',notes:'Shënime',adults_one:'i rritur',adults_other:'të rritur',children_one:'fëmijë',children_other:'fëmijë',doubleBed_one:'krevat dopio',doubleBed_other:'krevate dopio',singleBed_one:'krevat tek',singleBed_other:'krevate teke',crib_one:'krevat fëmije',crib_other:'krevate fëmijësh',reportReady:'Raporti i mysafirit është gati',reportTitle:'Raporti i mysafirit',whatsappHint:'Raporti i mysafirit',whatsappMissingPhone:'Mungon numri i mysafirit',room:'Dhomë',venue:'Hapësirë',date:'Data'},
+    sr:{title:'ИЗВЕШТАЈ ГОСТА',guestFallback:'Гост',booking:'Резервација',stay:'Боравак',rooms:'Собе',guests:'Гости',extraServices:'Услуге',bookingAmount:'Износ резервације',services:'Услуге',discount:'Попуст',deposit:'Аванс',balancePaid:'Плаћени салдо',touristTax:'Боравишна такса',remaining:'Преостало за плаћање',noExtraServices:'Нема услуга',notes:'Напомене',adults_one:'одрасла особа',adults_other:'одрасле особе',children_one:'дете',children_other:'деца',doubleBed_one:'брачни кревет',doubleBed_other:'брачни кревети',singleBed_one:'кревет за једну особу',singleBed_other:'кревети за једну особу',crib_one:'дечји креветац',crib_other:'дечји кревеци',reportReady:'Извештај госта је спреман',reportTitle:'Извештај госта',whatsappHint:'Извештај госта',whatsappMissingPhone:'Недостаје телефон госта',room:'Соба',venue:'Простор',date:'Датум'},
+    bs:{title:'IZVJEŠTAJ GOSTA',guestFallback:'Gost',booking:'Rezervacija',stay:'Boravak',rooms:'Sobe',guests:'Gosti',extraServices:'Usluge',bookingAmount:'Iznos rezervacije',services:'Usluge',discount:'Popust',deposit:'Avans',balancePaid:'Plaćeni saldo',touristTax:'Boravišna taksa',remaining:'Preostalo za platiti',noExtraServices:'Nema usluga',notes:'Napomene',adults_one:'odrasla osoba',adults_other:'odrasle osobe',children_one:'dijete',children_other:'djeca',doubleBed_one:'bračni krevet',doubleBed_other:'bračni kreveti',singleBed_one:'krevet za jednu osobu',singleBed_other:'kreveti za jednu osobu',crib_one:'dječji krevetić',crib_other:'dječji krevetići',reportReady:'Izvještaj gosta je spreman',reportTitle:'Izvještaj gosta',whatsappHint:'Izvještaj gosta',whatsappMissingPhone:'Nedostaje telefon gosta',room:'Soba',venue:'Prostor',date:'Datum'},
+    mk:{title:'ИЗВЕШТАЈ ЗА ГОСТ',guestFallback:'Гост',booking:'Резервација',stay:'Престој',rooms:'Соби',guests:'Гости',extraServices:'Услуги',bookingAmount:'Износ на резервација',services:'Услуги',discount:'Попуст',deposit:'Аванс',balancePaid:'Платено салдо',touristTax:'Туристичка такса',remaining:'Преостанува за плаќање',noExtraServices:'Нема услуги',notes:'Белешки',adults_one:'возрасен',adults_other:'возрасни',children_one:'дете',children_other:'деца',doubleBed_one:'двоен кревет',doubleBed_other:'двојни кревети',singleBed_one:'единечен кревет',singleBed_other:'единечни кревети',crib_one:'детско креветче',crib_other:'детски креветчиња',reportReady:'Извештајот за гост е подготвен',reportTitle:'Извештај за гост',whatsappHint:'Извештај за гост',whatsappMissingPhone:'Недостасува телефон на гостот',room:'Соба',venue:'Простор',date:'Датум'},
+    uk:{title:'ЗВІТ ГОСТЯ',guestFallback:'Гість',booking:'Бронювання',stay:'Перебування',rooms:'Кімнати',guests:'Гості',extraServices:'Послуги',bookingAmount:'Сума бронювання',services:'Послуги',discount:'Знижка',deposit:'Передплата',balancePaid:'Сплачений баланс',touristTax:'Туристичний збір',remaining:'Залишок до сплати',noExtraServices:'Без послуг',notes:'Примітки',adults_one:'дорослий',adults_other:'дорослі',children_one:'дитина',children_other:'діти',doubleBed_one:'двоспальне ліжко',doubleBed_other:'двоспальні ліжка',singleBed_one:'односпальне ліжко',singleBed_other:'односпальні ліжка',crib_one:'дитяче ліжечко',crib_other:'дитячі ліжечка',reportReady:'Звіт гостя готовий',reportTitle:'Звіт гостя',whatsappHint:'Звіт гостя',whatsappMissingPhone:'Відсутній телефон гостя',room:'Кімната',venue:'Приміщення',date:'Дата'},
+    ru:{title:'ОТЧЁТ ГОСТЯ',guestFallback:'Гость',booking:'Бронирование',stay:'Проживание',rooms:'Номера',guests:'Гости',extraServices:'Услуги',bookingAmount:'Сумма бронирования',services:'Услуги',discount:'Скидка',deposit:'Предоплата',balancePaid:'Оплаченный баланс',touristTax:'Туристический сбор',remaining:'Осталось оплатить',noExtraServices:'Нет услуг',notes:'Примечания',adults_one:'взрослый',adults_other:'взрослые',children_one:'ребёнок',children_other:'дети',doubleBed_one:'двуспальная кровать',doubleBed_other:'двуспальные кровати',singleBed_one:'односпальная кровать',singleBed_other:'односпальные кровати',crib_one:'детская кроватка',crib_other:'детские кроватки',reportReady:'Отчёт гостя готов',reportTitle:'Отчёт гостя',whatsappHint:'Отчёт гостя',whatsappMissingPhone:'Отсутствует телефон гостя',room:'Номер',venue:'Помещение',date:'Дата'},
+    da:{title:'GÆSTERAPPORT',guestFallback:'Gæst',booking:'Reservation',stay:'Ophold',rooms:'Værelser',guests:'Gæster',extraServices:'Tjenester',bookingAmount:'Reservationsbeløb',services:'Tjenester',discount:'Rabat',deposit:'Depositum',balancePaid:'Betalt saldo',touristTax:'Turistskat',remaining:'Restbeløb',noExtraServices:'Ingen tjenester',notes:'Noter',adults_one:'voksen',adults_other:'voksne',children_one:'barn',children_other:'børn',doubleBed_one:'dobbeltseng',doubleBed_other:'dobbeltsenge',singleBed_one:'enkeltseng',singleBed_other:'enkeltsenge',crib_one:'barneseng',crib_other:'barnesenge',reportReady:'Gæsterapport klar',reportTitle:'Gæsterapport',whatsappHint:'Gæsterapport',whatsappMissingPhone:'Gæstens telefonnummer mangler',room:'Værelse',venue:'Sted',date:'Dato'},
+    sv:{title:'GÄSTRAPPORT',guestFallback:'Gäst',booking:'Bokning',stay:'Vistelse',rooms:'Rum',guests:'Gäster',extraServices:'Tjänster',bookingAmount:'Bokningsbelopp',services:'Tjänster',discount:'Rabatt',deposit:'Handpenning',balancePaid:'Betalt saldo',touristTax:'Turistskatt',remaining:'Återstår att betala',noExtraServices:'Inga tjänster',notes:'Anteckningar',adults_one:'vuxen',adults_other:'vuxna',children_one:'barn',children_other:'barn',doubleBed_one:'dubbelsäng',doubleBed_other:'dubbelsängar',singleBed_one:'enkelsäng',singleBed_other:'enkelsängar',crib_one:'spjälsäng',crib_other:'spjälsängar',reportReady:'Gästrapport klar',reportTitle:'Gästrapport',whatsappHint:'Gästrapport',whatsappMissingPhone:'Gästens telefonnummer saknas',room:'Rum',venue:'Plats',date:'Datum'},
+    nb:{title:'GJESTERAPPORT',guestFallback:'Gjest',booking:'Bestilling',stay:'Opphold',rooms:'Rom',guests:'Gjester',extraServices:'Tjenester',bookingAmount:'Bestillingsbeløp',services:'Tjenester',discount:'Rabatt',deposit:'Depositum',balancePaid:'Betalt saldo',touristTax:'Turistskatt',remaining:'Gjenstår å betale',noExtraServices:'Ingen tjenester',notes:'Notater',adults_one:'voksen',adults_other:'voksne',children_one:'barn',children_other:'barn',doubleBed_one:'dobbeltseng',doubleBed_other:'dobbeltsenger',singleBed_one:'enkeltseng',singleBed_other:'enkeltsenger',crib_one:'barneseng',crib_other:'barnesenger',reportReady:'Gjesterapport klar',reportTitle:'Gjesterapport',whatsappHint:'Gjesterapport',whatsappMissingPhone:'Gjestens telefonnummer mangler',room:'Rom',venue:'Sted',date:'Dato'},
+    fi:{title:'VIERASRAPORTTI',guestFallback:'Vieras',booking:'Varaus',stay:'Majoitus',rooms:'Huoneet',guests:'Vieraat',extraServices:'Palvelut',bookingAmount:'Varauksen summa',services:'Palvelut',discount:'Alennus',deposit:'Ennakkomaksu',balancePaid:'Maksettu saldo',touristTax:'Matkailuvero',remaining:'Maksettavaa jäljellä',noExtraServices:'Ei palveluja',notes:'Huomautukset',adults_one:'aikuinen',adults_other:'aikuista',children_one:'lapsi',children_other:'lasta',doubleBed_one:'parivuode',doubleBed_other:'parivuodetta',singleBed_one:'yhden hengen vuode',singleBed_other:'yhden hengen vuodetta',crib_one:'vauvansänky',crib_other:'vauvansänkyä',reportReady:'Vierasraportti valmis',reportTitle:'Vierasraportti',whatsappHint:'Vierasraportti',whatsappMissingPhone:'Vieraan puhelinnumero puuttuu',room:'Huone',venue:'Tila',date:'Päiväys'},
+    is:{title:'GESTASKÝRSLA',guestFallback:'Gestur',booking:'Bókun',stay:'Dvöl',rooms:'Herbergi',guests:'Gestir',extraServices:'Þjónusta',bookingAmount:'Bókunarupphæð',services:'Þjónusta',discount:'Afsláttur',deposit:'Innborgun',balancePaid:'Greidd staða',touristTax:'Ferðamannaskattur',remaining:'Eftirstöðvar',noExtraServices:'Engin þjónusta',notes:'Athugasemdir',adults_one:'fullorðinn',adults_other:'fullorðnir',children_one:'barn',children_other:'börn',doubleBed_one:'hjónarúm',doubleBed_other:'hjónarúm',singleBed_one:'einstaklingsrúm',singleBed_other:'einstaklingsrúm',crib_one:'barnarúm',crib_other:'barnarúm',reportReady:'Gestaskýrsla tilbúin',reportTitle:'Gestaskýrsla',whatsappHint:'Gestaskýrsla',whatsappMissingPhone:'Símanúmer gests vantar',room:'Herbergi',venue:'Rými',date:'Dagsetning'},
+    id:{title:'LAPORAN TAMU',guestFallback:'Tamu',booking:'Reservasi',stay:'Masa inap',rooms:'Kamar',guests:'Tamu',extraServices:'Layanan',bookingAmount:'Jumlah reservasi',services:'Layanan',discount:'Diskon',deposit:'Uang muka',balancePaid:'Saldo dibayar',touristTax:'Pajak wisata',remaining:'Sisa pembayaran',noExtraServices:'Tidak ada layanan',notes:'Catatan',adults_one:'dewasa',adults_other:'dewasa',children_one:'anak',children_other:'anak',doubleBed_one:'tempat tidur ganda',doubleBed_other:'tempat tidur ganda',singleBed_one:'tempat tidur tunggal',singleBed_other:'tempat tidur tunggal',crib_one:'ranjang bayi',crib_other:'ranjang bayi',reportReady:'Laporan tamu siap',reportTitle:'Laporan tamu',whatsappHint:'Laporan tamu',whatsappMissingPhone:'Nomor telepon tamu tidak ada',room:'Kamar',venue:'Tempat',date:'Tanggal'},
+    ja:{title:'ゲストレポート',guestFallback:'ゲスト',booking:'予約',stay:'滞在',rooms:'客室',guests:'宿泊者',extraServices:'サービス',bookingAmount:'予約金額',services:'サービス',discount:'割引',deposit:'前金',balancePaid:'支払済み残高',touristTax:'宿泊税',remaining:'残額',noExtraServices:'サービスなし',notes:'メモ',adults_one:'大人',adults_other:'大人',children_one:'子供',children_other:'子供',doubleBed_one:'ダブルベッド',doubleBed_other:'ダブルベッド',singleBed_one:'シングルベッド',singleBed_other:'シングルベッド',crib_one:'ベビーベッド',crib_other:'ベビーベッド',reportReady:'ゲストレポートの準備ができました',reportTitle:'ゲストレポート',whatsappHint:'ゲストレポート',whatsappMissingPhone:'ゲストの電話番号がありません',room:'客室',venue:'スペース',date:'日付'},
+    'zh-cn':{title:'客人报告',guestFallback:'客人',booking:'预订',stay:'住宿',rooms:'房间',guests:'客人',extraServices:'服务',bookingAmount:'预订金额',services:'服务',discount:'折扣',deposit:'订金',balancePaid:'已付余额',touristTax:'旅游税',remaining:'待支付',noExtraServices:'无服务',notes:'备注',adults_one:'成人',adults_other:'成人',children_one:'儿童',children_other:'儿童',doubleBed_one:'双人床',doubleBed_other:'双人床',singleBed_one:'单人床',singleBed_other:'单人床',crib_one:'婴儿床',crib_other:'婴儿床',reportReady:'客人报告已准备好',reportTitle:'客人报告',whatsappHint:'客人报告',whatsappMissingPhone:'缺少客人电话号码',room:'房间',venue:'场地',date:'日期'},
+    hi:{title:'अतिथि रिपोर्ट',guestFallback:'अतिथि',booking:'बुकिंग',stay:'ठहराव',rooms:'कमरे',guests:'अतिथि',extraServices:'सेवाएँ',bookingAmount:'बुकिंग राशि',services:'सेवाएँ',discount:'छूट',deposit:'अग्रिम',balancePaid:'भुगतान शेष',touristTax:'पर्यटक कर',remaining:'भुगतान बाकी',noExtraServices:'कोई सेवा नहीं',notes:'टिप्पणियाँ',adults_one:'वयस्क',adults_other:'वयस्क',children_one:'बच्चा',children_other:'बच्चे',doubleBed_one:'डबल बेड',doubleBed_other:'डबल बेड',singleBed_one:'सिंगल बेड',singleBed_other:'सिंगल बेड',crib_one:'शिशु पालना',crib_other:'शिशु पालने',reportReady:'अतिथि रिपोर्ट तैयार है',reportTitle:'अतिथि रिपोर्ट',whatsappHint:'अतिथि रिपोर्ट',whatsappMissingPhone:'अतिथि का फोन नंबर नहीं है',room:'कमरा',venue:'स्थान',date:'तारीख'},
+    ko:{title:'고객 보고서',guestFallback:'고객',booking:'예약',stay:'숙박',rooms:'객실',guests:'투숙객',extraServices:'서비스',bookingAmount:'예약 금액',services:'서비스',discount:'할인',deposit:'예약금',balancePaid:'결제된 잔액',touristTax:'관광세',remaining:'남은 결제액',noExtraServices:'서비스 없음',notes:'메모',adults_one:'성인',adults_other:'성인',children_one:'어린이',children_other:'어린이',doubleBed_one:'더블 침대',doubleBed_other:'더블 침대',singleBed_one:'싱글 침대',singleBed_other:'싱글 침대',crib_one:'아기 침대',crib_other:'아기 침대',reportReady:'고객 보고서가 준비되었습니다',reportTitle:'고객 보고서',whatsappHint:'고객 보고서',whatsappMissingPhone:'고객 전화번호가 없습니다',room:'객실',venue:'공간',date:'날짜'},
+    ar:{title:'تقرير الضيف',guestFallback:'الضيف',booking:'الحجز',stay:'الإقامة',rooms:'الغرف',guests:'الضيوف',extraServices:'الخدمات',bookingAmount:'مبلغ الحجز',services:'الخدمات',discount:'الخصم',deposit:'العربون',balancePaid:'الرصيد المدفوع',touristTax:'الضريبة السياحية',remaining:'المتبقي للدفع',noExtraServices:'لا توجد خدمات',notes:'ملاحظات',adults_one:'بالغ',adults_other:'بالغون',children_one:'طفل',children_other:'أطفال',doubleBed_one:'سرير مزدوج',doubleBed_other:'أسرة مزدوجة',singleBed_one:'سرير مفرد',singleBed_other:'أسرة مفردة',crib_one:'سرير طفل',crib_other:'أسرة أطفال',reportReady:'تقرير الضيف جاهز',reportTitle:'تقرير الضيف',whatsappHint:'تقرير الضيف',whatsappMissingPhone:'رقم هاتف الضيف غير موجود',room:'غرفة',venue:'مساحة',date:'التاريخ'},
+    he:{title:'דוח אורח',guestFallback:'אורח',booking:'הזמנה',stay:'שהייה',rooms:'חדרים',guests:'אורחים',extraServices:'שירותים',bookingAmount:'סכום ההזמנה',services:'שירותים',discount:'הנחה',deposit:'מקדמה',balancePaid:'יתרה ששולמה',touristTax:'מס תיירות',remaining:'נותר לתשלום',noExtraServices:'ללא שירותים',notes:'הערות',adults_one:'מבוגר',adults_other:'מבוגרים',children_one:'ילד',children_other:'ילדים',doubleBed_one:'מיטה זוגית',doubleBed_other:'מיטות זוגיות',singleBed_one:'מיטת יחיד',singleBed_other:'מיטות יחיד',crib_one:'מיטת תינוק',crib_other:'מיטות תינוק',reportReady:'דוח האורח מוכן',reportTitle:'דוח אורח',whatsappHint:'דוח אורח',whatsappMissingPhone:'מספר הטלפון של האורח חסר',room:'חדר',venue:'מרחב',date:'תאריך'},
+    tr:{title:'MİSAFİR RAPORU',guestFallback:'Misafir',booking:'Rezervasyon',stay:'Konaklama',rooms:'Odalar',guests:'Misafirler',extraServices:'Hizmetler',bookingAmount:'Rezervasyon tutarı',services:'Hizmetler',discount:'İndirim',deposit:'Kapora',balancePaid:'Ödenen bakiye',touristTax:'Turizm vergisi',remaining:'Kalan ödeme',noExtraServices:'Hizmet yok',notes:'Notlar',adults_one:'yetişkin',adults_other:'yetişkin',children_one:'çocuk',children_other:'çocuk',doubleBed_one:'çift kişilik yatak',doubleBed_other:'çift kişilik yatak',singleBed_one:'tek kişilik yatak',singleBed_other:'tek kişilik yatak',crib_one:'bebek yatağı',crib_other:'bebek yatağı',reportReady:'Misafir raporu hazır',reportTitle:'Misafir raporu',whatsappHint:'Misafir raporu',whatsappMissingPhone:'Misafir telefon numarası eksik',room:'Oda',venue:'Alan',date:'Tarih'}
+  };
+  for(const [lang,dict] of Object.entries(extra)) for(const [key,value] of Object.entries(dict)){ if(!map[key]) map[key]={it:key}; map[key][lang]=value; }
+  return map;
+}
 function __guestReportT__(lang, key){ const map=__guestReportTextMap__(); const row=map[key] || {}; return String(row[lang] || row.it || key || ''); }
 function __guestReportPlural__(lang, count, oneKey, otherKey){
   if (lang === 'it'){
@@ -35705,7 +36889,7 @@ function __guestReportPlural__(lang, count, oneKey, otherKey){
 function __guestReportFormatRange__(lang, checkInValue, checkOutValue){
   const ciIso = formatISODateLocal(checkInValue); const coIso = formatISODateLocal(checkOutValue);
   if (!ciIso || !/^\d{4}-\d{2}-\d{2}$/.test(ciIso)) return '';
-  const locale = __I18N_LOCALES__[lang] || 'it-IT';
+  const locale = __guestReportLocale__(lang);
   if (!coIso){
     const single = new Date(ciIso + 'T00:00:00');
     if (isNaN(single)) return '';
@@ -35755,19 +36939,20 @@ function __guestReportGuestsLabel__(lang, guest){
   return `${__guestReportPlural__(lang, totals.adults, 'adults_one', 'adults_other')} · ${__guestReportPlural__(lang, totals.children, 'children_one', 'children_other')}`;
 }
 function __guestReportGuestPhone__(guest){ return String(guest?.telefono ?? guest?.tel ?? guest?.phone ?? document.getElementById('guestPhone')?.value ?? '').trim(); }
-function __guestReportAccountName__(){
+function __guestReportStructureName__(guest){
   try{
-    const s = state?.session || {};
-    const raw = String(
-      s.account_name || s.accountName || s.nome_account || s.nomeAccount ||
-      s.username || s.user || s.nome || s.name || s.email ||
-      document.getElementById('settingsAccountName')?.textContent ||
-      document.getElementById('opSettingsAccountName')?.textContent ||
-      ''
-    ).trim();
-    return raw && raw !== '—' ? raw : 'Daedalium';
-  }catch(_){ return 'Daedalium'; }
+    const active=(typeof __structureActive__==='function') ? __structureActive__() : null;
+    const activeName=String(active?.nome || active?.name || '').trim();
+    if(activeName) return activeName;
+    const all=[...__guestReportResolveBookings__(guest || __guestReportResolveGuest__() || {}), guest || __guestReportResolveGuest__() || {}].filter(Boolean);
+    for(const item of all){
+      const raw=String(item?.struttura_nome ?? item?.strutturaNome ?? item?.structure_name ?? item?.structureName ?? item?.hotel_name ?? item?.hotelName ?? '').trim();
+      if(raw) return raw;
+    }
+  }catch(_){ }
+  return 'Daedalium';
 }
+function __guestReportAccountName__(){ return __guestReportStructureName__(__guestReportResolveGuest__()); }
 function __guestReportNotesValue__(guest){
   try{
     const values=[];
@@ -35813,6 +36998,14 @@ function __guestReportResolveStayRanges__(lang, guest){
     .filter(Boolean);
   return Array.from(new Set(list));
 }
+function __guestReportLocalizedRoomName__(lang, roomName, displayNumber, isLocale){
+  const raw=String(roomName || '').trim();
+  const num=String(displayNumber ?? '').trim();
+  if(!raw) return `${__guestReportT__(lang, isLocale ? 'venue' : 'room')} ${num}`.trim();
+  if(isLocale && /^Locale\s+\S+/i.test(raw)) return raw.replace(/^Locale/i, __guestReportT__(lang, 'venue'));
+  if(!isLocale && /^Stanza\s+\S+/i.test(raw)) return raw.replace(/^Stanza/i, __guestReportT__(lang, 'room'));
+  return raw;
+}
 function __guestReportResolveRoomCards__(lang, guest){
   const bookings = __guestReportResolveBookings__(guest);
   const cards = [];
@@ -35826,7 +37019,7 @@ function __guestReportResolveRoomCards__(lang, guest){
       const range = __guestReportFormatRange__(lang, booking?.check_in ?? booking?.checkIn ?? '', booking?.check_out ?? booking?.checkOut ?? '');
       const beds = isLocale ? '' : __guestReportRoomBedsValue__(lang, info);
       const displayNumber = getRoomDisplayLabel(n) || n;
-      const roomName = getRoomNameLabel(n) || String(displayNumber);
+      const roomName = __guestReportLocalizedRoomName__(lang, getRoomNameLabel(n) || String(displayNumber), displayNumber, isLocale);
       cards.push({
         kind:'roomCard',
         label:`${displayNumber} - ${roomName}`,
@@ -35885,10 +37078,10 @@ function __guestReportWhatsappText__(guest){
   if (!safeGuest) return '';
   const payload = __guestReportResolveRows__(safeGuest);
   const lang = payload.lang || __guestReportResolveLanguage__(safeGuest);
-  const locale = __I18N_LOCALES__[lang] || 'it-IT';
+  const locale = __guestReportLocale__(lang);
   const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(locale, { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
   const lines = [
-    __guestReportAccountName__(),
+    __guestReportStructureName__(safeGuest),
     String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback'),
     __guestReportGuestPhone__(safeGuest)
   ];
@@ -35962,7 +37155,7 @@ function __guestReportResolveRows__(guest){
 function __guestReportCanvas__(guest){
   const safeGuest=guest || __guestReportResolveGuest__(); if(!safeGuest) return null;
   const payload=__guestReportResolveRows__(safeGuest); const lang=payload.lang || __guestReportResolveLanguage__(safeGuest); const rows=payload.rows || [];
-  const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__I18N_LOCALES__[lang] || 'it-IT', { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
+  const moneyFmt=(v)=>{ try{ return (Number(v)||0).toLocaleString(__guestReportLocale__(lang), { style:'currency', currency:'EUR' }); }catch(_){ return euro(v||0); } };
   const width=1320, cardH=212, gap=26, outerTop=156, topPad=66, footerH=112;
   const serviceRowHeight=(row)=>{
     const count = row && row.kind === 'servicesList' && Array.isArray(row.serviceItems) ? row.serviceItems.length : 0;
@@ -35982,7 +37175,7 @@ function __guestReportCanvas__(guest){
   const wrapText=(value,maxChars,maxLines=2)=>{ const txt=String(value || '').trim(); if(!txt) return [__guestReportT__(lang, 'none')]; if(txt.length<=maxChars) return [txt]; const parts=[]; let rest=txt; while(rest.length && parts.length<maxLines){ if(rest.length<=maxChars){ parts.push(rest); break; } let chunk=rest.slice(0,maxChars+1); let cut=Math.max(chunk.lastIndexOf(' '), chunk.lastIndexOf('+'), chunk.lastIndexOf(',')); if(cut<Math.floor(maxChars*0.5)) cut=maxChars; parts.push(rest.slice(0,cut).trim()); rest=rest.slice(cut).trim(); } if(rest.length && parts.length){ const last=parts[parts.length-1] || ''; parts[parts.length-1]=(last.slice(0,Math.max(0,maxChars-1)) + '…').trim(); } return parts.filter(Boolean); };
   ctx.fillStyle='#edf3f8'; ctx.fillRect(0,0,width,height);
 
-  const accountName=__guestReportAccountName__();
+  const accountName=__guestReportStructureName__(safeGuest);
   const guestName=String(safeGuest?.nome || safeGuest?.name || __guestReportT__(lang, 'guestFallback')).trim() || __guestReportT__(lang, 'guestFallback');
   const guestPhone=__guestReportHeaderPhone;
   const fitFont=(text, startSize, minSize, maxWidth, weight='900')=>{
@@ -36104,7 +37297,7 @@ function __guestReportCanvas__(guest){
     else { const lines=wrapText(val, 28, 2); ctx.textAlign='right'; ctx.font='900 52px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[0] || __guestReportT__(lang, 'none'),width-134,y+96); if(lines[1]){ ctx.font='900 38px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(lines[1],width-134,y+150); } }
     ctx.textAlign='left'; y += rowH + gap;
   });
-  ctx.fillStyle='#60738a'; ctx.font='700 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText('Daedalium',92,height-90); return canvas;
+  ctx.fillStyle='#60738a'; ctx.font='700 28px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif'; ctx.fillText(accountName,92,height-90); return canvas;
 }
 function __guestReportBase64ToBytes__(base64){ const bin=atob(base64); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i+=1) bytes[i]=bin.charCodeAt(i); return bytes; }
 function __guestReportPdfFromJpegDataUrl__(jpegDataUrl, imgWidth, imgHeight){
@@ -38881,6 +40074,7 @@ try{
     spSort.value = state.speseSort;
     spSort.addEventListener("change", () => {
       state.speseSort = spSort.value || "date";
+      try{ __syncSpeseAlphaSortButton__(); }catch(_){}
       try { if (state.page === "spese" && state.speseView === "list") renderSpese(); } catch(_){}
     });
   }
@@ -38895,6 +40089,7 @@ try{
   $("#spesaData").value = todayISO();
   try{ __setupSpesaCategoryButtons__(); }catch(_){ }
   try{ __setupSpeseCategoryFilterButtons__(); }catch(_){ }
+  try{ __setupSpeseAlphaSortButton__(); }catch(_){ }
 
   // Motivazione: se l'utente scrive una variante già esistente, usa la versione canonica
   const mot = $("#spesaMotivazione");
@@ -45017,7 +46212,7 @@ function triggerGuestContactAction(action){
     if (safeAction === 'hotel-location'){
       const raw = __guestPhoneRawForContactAction__();
       const wa = normalizeWhatsAppPhone(raw, __currentGuestNationalityCodeForPhone__());
-      const link = String(localStorage.getItem('dDAE_hotel_location_link_v1') || '').trim();
+      const link = String(localStorage.getItem(__structureLocalStorageKey__('dDAE_hotel_location_link_v1')) || getSettingText('hotel_location_link','') || '').trim();
       if (!wa){ try{ toast('Numero WhatsApp ospite mancante', 'orange'); }catch(_){ } return; }
       if (!link){ try{ toast('Inserisci il link della posizione hotel nelle Impostazioni', 'orange'); }catch(_){ } return; }
       const text = __hotelLocationTitleForCurrentGuest__() + ': ' + link;
@@ -47065,7 +48260,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.290';
+  var BUILD_TAG='dDAE_3.325';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -48007,6 +49202,7 @@ function syncGuestEmailActionLink(isView){
     __updateStatGenCompareYearButtonUI__();
     if (next){ try{ __loadStatGenCompareGuests__({ force:true }); }catch(_){ } }
     redrawAllStatCompareCharts();
+    try{ if (state.page === 'statchannel' && !(typeof __statScoreModeActive__ === 'function' && __statScoreModeActive__())) renderStatChannel(); }catch(_){ }
   };
   try{ __toggleStatGenCompareEnabled__ = window.__toggleStatGenCompareEnabled__; }catch(_){ }
 
@@ -48064,33 +49260,23 @@ function syncGuestEmailActionLink(isView){
       try{
         const compareYear = __ensureStatGenCompareYear__();
         let snapshot = state.statGenCompareSnapshot || {};
-        // completa snapshot con operatori e ospiti eliminati, quando disponibili in IndexedDB/local cache.
+        // completa snapshot SOLO dal context della struttura attiva.
         try{
-          if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
-            const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
-            const suffixOp = `:${compareYear}:tbl:operatori`;
-            const suffixDel = `:${compareYear}:tbl:ospiti_eliminati`;
-            const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-            const pickKey = (suffix) => {
-              const arr = keys.filter((k)=>String(k||'').endsWith(suffix));
-              arr.sort((a,b)=>{
-                const au = String(a||'').split(':')[1] || '';
-                const bu = String(b||'').split(':')[1] || '';
-                const ap = currentUid && au === currentUid ? 0 : 1;
-                const bp = currentUid && bu === currentUid ? 0 : 1;
-                if (ap !== bp) return ap-bp;
-                return String(a).localeCompare(String(b));
-              });
-              return arr[0] || '';
-            };
-            const opKey = pickKey(suffixOp);
-            if (opKey){ const rows = await __kvGet__(opKey); if (Array.isArray(rows)) snapshot.operatoriRows = rows.slice(); }
-            const delKey = pickKey(suffixDel);
-            if (delKey){ const rows = await __kvGet__(delKey); if (Array.isArray(rows)) snapshot.deletedGuests = rows.slice(); }
+          const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+          if (currentUid){
+            if (!Array.isArray(snapshot.operatoriRows) || !snapshot.operatoriRows.length){
+              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:operatori`);
+              snapshot.operatoriRows = Array.isArray(rows) ? rows.slice() : [];
+            }
+            if (!Array.isArray(snapshot.deletedGuests) || !snapshot.deletedGuests.length){
+              const rows = await __kvGet__(`ctx:${currentUid}:${compareYear}:tbl:ospiti_eliminati`);
+              snapshot.deletedGuests = Array.isArray(rows) ? rows.slice() : [];
+            }
           }
         }catch(_){ }
         state.statGenCompareSnapshot = snapshot;
         redrawAllStatCompareCharts();
+        try{ if (state.page === 'statchannel' && !(typeof __statScoreModeActive__ === 'function' && __statScoreModeActive__())) renderStatChannel(); }catch(_){ }
       }catch(_){ }
       return result;
     };
@@ -48553,34 +49739,24 @@ function syncGuestEmailActionLink(isView){
       const year = compareYear();
       if (!year) return;
       const snap = (state.statGenCompareSnapshot && typeof state.statGenCompareSnapshot === 'object') ? state.statGenCompareSnapshot : {};
-      const keys = (typeof __kvKeys__ === 'function') ? await __kvKeys__('ctx:') : [];
-      if (!Array.isArray(keys) || !keys.length) { state.statGenCompareSnapshot = snap; return; }
-      const currentUid = String((state && state.session && (state.session.user_id || state.session.id || state.session.username)) || '').trim();
-      function pickKey(table){
-        const suffix = ':' + year + ':tbl:' + table;
-        const arr = keys.filter((k)=>String(k || '').endsWith(suffix));
-        arr.sort((a,b)=>{
-          const au = String(a || '').split(':')[1] || '';
-          const bu = String(b || '').split(':')[1] || '';
-          const ap = currentUid && au === currentUid ? 0 : 1;
-          const bp = currentUid && bu === currentUid ? 0 : 1;
-          if (ap !== bp) return ap - bp;
-          return String(a).localeCompare(String(b));
-        });
-        return arr[0] || '';
-      }
+      const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
+      if (!currentUid){ state.statGenCompareSnapshot = snap; return; }
+
       async function fill(prop, table){
         try{
           if (Array.isArray(snap[prop]) && snap[prop].length) return;
-          const key = pickKey(table);
-          if (!key || typeof __kvGet__ !== 'function') return;
-          const rows = await __kvGet__(key);
-          if (Array.isArray(rows)) snap[prop] = rows.slice();
-        }catch(_){ }
+          const rows = (typeof __kvGet__ === 'function') ? await __kvGet__(`ctx:${currentUid}:${year}:tbl:${table}`) : null;
+          let clean = Array.isArray(rows) ? rows.slice() : [];
+          if (table === 'spese') clean = __filterByExerciseYear__(clean, year, ['dataSpesa','data','data_spesa']);
+          else if (table === 'ospiti_eliminati') clean = __filterByExerciseYear__(clean, year, __statGenGuestYearFields__());
+          snap[prop] = clean;
+        }catch(_){ snap[prop] = Array.isArray(snap[prop]) ? snap[prop] : []; }
       }
       await fill('spese', 'spese');
       await fill('operatoriRows', 'operatori');
       await fill('deletedGuests', 'ospiti_eliminati');
+      snap.structureId = (typeof __structureActiveId__ === 'function') ? String(__structureActiveId__() || '') : '';
+      snap.uid = currentUid;
       state.statGenCompareSnapshot = snap;
     }catch(_){ }
   }
@@ -48834,11 +50010,16 @@ try{
       return `
         <div class="month-channel-block" aria-label="${escapeHtml(label)}">
           <div class="month-channel-title">${escapeHtml(label)}</div>
-          <div class="month-channel-grid">
+          <div class="month-channel-grid month-channel-grid-split">
             ${rows.map((row)=>`
-              <div class="month-channel-name">${escapeHtml(row.label || 'PMS')}</div>
-              <div class="month-channel-value is-current">${euro(row.current)}</div>
-              <div class="month-channel-value is-compare">${euro(row.compare)}</div>
+              <div class="month-expanded-metric month-channel-metric is-current">
+                <span>${escapeHtml(row.label || 'PMS')}</span>
+                <strong>${euro(row.current)}</strong>
+              </div>
+              <div class="month-expanded-metric month-channel-metric is-compare" data-compare-only="true">
+                <span>${escapeHtml(row.label || 'PMS')}</span>
+                <strong>${euro(row.compare)}</strong>
+              </div>
             `).join('')}
           </div>
         </div>`;
@@ -48931,7 +50112,7 @@ try{
             ${__statMensiliTrendHtml__(val, cmpVal, compare.year)}
             <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
               <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-              <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))} ${escapeHtml(compareYearLabel)}</div>
+              <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(speseVal)}</strong></div>
@@ -49034,7 +50215,7 @@ try{
               ${__statMensiliTrendHtml__(annualVal, cmpAnnualVal, compare.year)}
               <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati anno'))}">
                 <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
-                <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))} ${escapeHtml(compareYearLabel)}</div>
+                <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(annualVal)}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(cmpAnnualVal)}</strong></div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(annualSpese)}</strong></div>
@@ -49886,7 +51067,7 @@ try{
 /* dDAE_2.990 — Backup: login da logout + ripristino multi-anno */
 async function __ddaeBackupCollectMultiYear__(tables){
   try{
-    const uid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const uid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
     const out = { uid: uid || 'anon', years: {} };
@@ -49929,7 +51110,7 @@ async function __ddaeBackupRestoreTopLevelYears__(payload, tables){
     if (!ds || !Object.keys(ds).length) return false;
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const years = new Set();
@@ -49989,7 +51170,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
 
     const list = Array.isArray(tables) ? tables : Array.from(tables || []);
     const allowed = new Set(list.map(t => String(t || '').trim()).filter(Boolean));
-    const targetUid = (typeof __ctxUid__ === 'function') ? String(__ctxUid__() || '').trim() : '';
+    const targetUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!targetUid) return false;
 
     const activeYear = (typeof __ctxYear__ === 'function') ? String(__ctxYear__() || '').trim() : '';
@@ -50677,20 +51858,20 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       if (typeof __roomCatalogNormalizeList__ === 'function') list = __roomCatalogNormalizeList__(list);
       if (Array.isArray(list) && list.length) return list;
     }catch(_){ }
-    try{ return parseRoomCatalog(localStorage.getItem(ROOM_CATALOG_KEY) || '[]'); }catch(_){ return []; }
+    try{ return parseRoomCatalog(localStorage.getItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY)) || '[]'); }catch(_){ return []; }
   }
 
   function persistLocalCatalog(list){
     try{
       var clean = (typeof __roomCatalogNormalizeList__ === 'function') ? __roomCatalogNormalizeList__(list) : (Array.isArray(list) ? list : []);
       if (!clean.length) return clean;
-      localStorage.setItem(ROOM_CATALOG_KEY, JSON.stringify(clean));
+      localStorage.setItem(__structureLocalStorageKey__(ROOM_CATALOG_KEY), JSON.stringify(clean));
       try{ state.settings = state.settings || {}; state.settings.roomCatalogGlobal = clean; }catch(_){ }
       try{
         state.settings = state.settings || {}; state.settings.byKey = state.settings.byKey || {};
         var raw = JSON.stringify(clean);
-        state.settings.byKey.stanze_catalogo = { key:'stanze_catalogo', value:raw, val:raw, Value:raw };
-        state.settings.byKey.numero_stanze = { key:'numero_stanze', value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
+        state.settings.byKey[__structureScopedSettingKey__('stanze_catalogo')] = { key:__structureScopedSettingKey__('stanze_catalogo'), value:raw, val:raw, Value:raw };
+        state.settings.byKey[__structureScopedSettingKey__('numero_stanze')] = { key:__structureScopedSettingKey__('numero_stanze'), value:String(clean.length), val:String(clean.length), Value:String(clean.length) };
       }catch(_){ }
       return clean;
     }catch(_){ return Array.isArray(list) ? list : []; }
@@ -51979,7 +53160,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.290',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.325',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -52220,7 +53401,8 @@ try{
     const modal = byId('hotelLocationModal');
     const input = byId('hotelLocationLinkInput');
     if (!modal || !input) return;
-    try{ input.value = String(localStorage.getItem(STORAGE_KEY) || ''); }catch(_){ input.value = ''; }
+    if (!__structureHasActive__()){ try{ toast('Crea e seleziona una struttura nelle Impostazioni', 'orange'); }catch(_){ } return; }
+    try{ input.value = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || getSettingText('hotel_location_link','') || ''); }catch(_){ input.value = ''; }
     try{ if (window.__closeSettingsDataModal__) window.__closeSettingsDataModal__(); }catch(_){ }
     modal.hidden = false;
     modal.setAttribute('aria-hidden','false');
@@ -52234,7 +53416,8 @@ try{
     if (value){
       try{ new URL(value); }catch(_){ try{ toast('Link posizione non valido', 'orange'); }catch(__){ } return; }
     }
-    try{ localStorage.setItem(STORAGE_KEY, value); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY), value); }catch(_){ }
+    try{ if (typeof api === 'function') api('impostazioni',{method:'POST',body:{hotel_location_link:value},showLoader:false}).catch(()=>{}); }catch(_){ }
     closeModal();
     try{ toast(value ? 'Posizione hotel salvata' : 'Posizione hotel rimossa', 'green'); }catch(_){ }
   }
@@ -52876,10 +54059,31 @@ try{
     const toggle=document.getElementById(COMPARE_TOGGLE_ID);
     if (toggle && !toggle.__boundNationalityCompare){
       toggle.__boundNationalityCompare=true;
-      bindFastTap(toggle,()=>{
+      let timer=null, fired=false, suppressUntil=0;
+      const clear=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+      const block=(e)=>{ try{e?.preventDefault?.();}catch(_){} try{e?.stopPropagation?.();}catch(_){} try{e?.stopImmediatePropagation?.();}catch(_){} return false; };
+      const start=(e)=>{
+        try{ if(e?.type==='pointerdown' && e?.pointerType==='mouse' && e?.button!==0) return; }catch(_){}
+        fired=false; clear();
+        timer=setTimeout(()=>{
+          fired=true; suppressUntil=Date.now()+900;
+          try{toggle.classList.add('is-pressing');}catch(_){}
+          try{ if(typeof __openStatGenCompareYearButtonColorPicker__==='function') __openStatGenCompareYearButtonColorPicker__(); }catch(_){}
+        },520);
+      };
+      const stop=(e)=>{
+        clear();
+        if(fired){ block(e); setTimeout(()=>{fired=false; try{toggle.classList.remove('is-pressing');}catch(_){}},0); return; }
+        try{toggle.classList.remove('is-pressing');}catch(_){}
+      };
+      toggle.addEventListener('click',(e)=>{
+        if(fired || Date.now()<suppressUntil) return block(e);
         try{ if(typeof __toggleStatGenCompareEnabled__==='function') __toggleStatGenCompareEnabled__(); }catch(_){ }
         setTimeout(()=>{ if(String(state?.page||'')===PAGE_KEY) renderStatNationality(); },50);
-      });
+      },true);
+      ['pointerdown','touchstart','mousedown'].forEach((evt)=>{ try{toggle.addEventListener(evt,start,{passive:true});}catch(_){} });
+      ['pointerup','pointerleave','pointercancel','touchend','touchcancel','mouseup','mouseleave','dragstart'].forEach((evt)=>{ try{toggle.addEventListener(evt,stop,{passive:false});}catch(_){} });
+      try{toggle.addEventListener('contextmenu',(e)=>block(e),true);}catch(_){}
     }
     const year=document.getElementById(COMPARE_YEAR_ID);
     if (year && !year.__boundNationalityYear){ year.__boundNationalityYear=true; bindFastTap(year,()=>{ try{ if(typeof __openStatGenCompareYearPicker__==='function') __openStatGenCompareYearPicker__(); }catch(_){ } }); }
@@ -53181,7 +54385,7 @@ try{
   let backendDisabledUntil = 0;
   const providerDisabledUntil = Object.create(null);
 
-  // dDAE_3.290 — i cooldown dei traduttori sono separati per lingua.
+  // dDAE_3.292 — i cooldown dei traduttori sono separati per lingua.
   // Un errore su una lingua non deve bloccare tutte le lingue del messaggio successivo.
   function providerCooldownKey(provider,target){
     return String(provider||'')+'|'+String(normalizeProviderLang(target)||target||'').toLowerCase();
@@ -53255,13 +54459,13 @@ try{
 
   function storedTemplate(){
     try{
-      const local = String(localStorage.getItem(STORAGE_KEY) || '').trim();
+      const local = String(localStorage.getItem(__structureLocalStorageKey__(STORAGE_KEY)) || '').trim();
       if (local) return local;
     }catch(_){ }
     try{
       if (typeof getSettingText === 'function'){
         const value = String(getSettingText(SETTING_KEY, '') || '').trim();
-        if (value){ try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ } return value; }
+        if (value){ try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ } return value; }
       }
     }catch(_){ }
     return '';
@@ -53271,14 +54475,14 @@ try{
     try{
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:false, showLoader:false });
       const value = (typeof getSettingText === 'function') ? String(getSettingText(SETTING_KEY, '') || '').trim() : '';
-      if (value) try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+      if (value) try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
       return value || storedTemplate();
     }catch(_){ return storedTemplate(); }
   }
 
   function readTranslationPackage(){
     try{
-      const raw = localStorage.getItem(TRANSLATIONS_STORAGE_KEY);
+      const raw = localStorage.getItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY));
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object' || Number(data.schema||0) !== TRANSLATION_SCHEMA) return null;
@@ -53288,11 +54492,11 @@ try{
   }
 
   function writeTranslationPackage(pkg){
-    try{ localStorage.setItem(TRANSLATIONS_STORAGE_KEY, JSON.stringify(pkg || {})); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY), JSON.stringify(pkg || {})); }catch(_){ }
   }
 
   function removeTranslationPackage(){
-    try{ localStorage.removeItem(TRANSLATIONS_STORAGE_KEY); }catch(_){ }
+    try{ localStorage.removeItem(__structureLocalStorageKey__(TRANSLATIONS_STORAGE_KEY)); }catch(_){ }
   }
 
   function createTranslationPackage(source, previous){
@@ -53602,7 +54806,7 @@ try{
     if (!source || !target) return '';
     if (target==='it' || target==='it-it') return source;
 
-    // dDAE_3.290: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
+    // dDAE_3.292: traduzione esclusivamente al salvataggio, con provider indipendenti dal messaggio.
     // Google usa POST e backoff; l'endpoint Dictionary e MyMemory/Libre/Lingva sono fallback. L'invio resta sempre locale.
     const providers=[translateViaGoogle,translateViaGoogleDictionary,translateViaMyMemory,translateViaLibreTranslate,translateViaLingva,translateViaConfiguredBackend];
     for(const provider of providers){
@@ -53644,7 +54848,7 @@ try{
   }
 
   async function saveMasterTemplate(value){
-    try{ localStorage.setItem(STORAGE_KEY,value); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(STORAGE_KEY),value); }catch(_){ }
     try{
       if (typeof api === 'function') await api('impostazioni',{ method:'POST', body:{ [SETTING_KEY]:value }, showLoader:false });
       if (typeof ensureSettingsLoaded === 'function') await ensureSettingsLoaded({ force:true, showLoader:false });
@@ -53779,6 +54983,7 @@ try{
     }
     const title=configuredMessageGuestTitle(guest,target);
     const message=title ? (title+'\n\n'+translated) : translated;
+    try{ await __guestMarkPresetMessageSent__({ templateId:'legacy-configured', channel:'whatsapp' }); }catch(_){ }
     const url='https://wa.me/'+encodeURIComponent(wa)+'?text='+encodeURIComponent(message);
     try{ window.location.href=url; }catch(_){ try{window.open(url,'_blank','noopener');}catch(__){} }
     return true;
@@ -53839,9 +55044,9 @@ try{
 })();
 
 
-/* dDAE_3.290 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
-/* dDAE_3.290 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
-/* dDAE_3.290 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
+/* dDAE_3.292 — Messaggi multipli: traduzioni isolate per record, serializzate e salvate progressivamente. */
+/* dDAE_3.292 — Messenger diretto + tasti canale OFF/ON editabili nel popup colore. */
+/* dDAE_3.292 — Catalogo messaggi ospite: titoli, più messaggi, selezione unica e invio WhatsApp/Messenger. */
 (function __setupGuestMessageCatalog3275__(){
   'use strict';
   const CATALOG_STORAGE_KEY='dDAE_guest_message_catalog_v1';
@@ -53868,13 +55073,14 @@ try{
     return { id:String(r.id||safeId()), title:title||'Messaggio', text, translations:tr, updatedAt:String(r.updatedAt||'') };
   }
   function validCatalog(value){ return Array.isArray(value) ? value.map(normalizeRecord).filter(r=>r.text||r.title) : []; }
-  function localCatalogExists(){ try{ return localStorage.getItem(CATALOG_STORAGE_KEY)!==null || localStorage.getItem(CATALOG_INITIALIZED_KEY)==='1'; }catch(_){ return false; } }
+  function localCatalogExists(){ try{ return localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY))!==null || localStorage.getItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY))==='1'; }catch(_){ return false; } }
   function readLocal(){
-    try{ const raw=localStorage.getItem(CATALOG_STORAGE_KEY); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
+    try{ const raw=localStorage.getItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY)); if(raw!==null){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) return validCatalog(parsed); } }catch(_){ }
     return [];
   }
   function migrateLegacy(){
     try{
+      if (typeof __structureAllowsLegacyFallback__ === 'function' && !__structureAllowsLegacyFallback__()) return [];
       const text=String(localStorage.getItem(LEGACY_TEMPLATE_KEY)||'').trim();
       if(!text) return [];
       let translations={it:text};
@@ -53887,7 +55093,7 @@ try{
   }
   function writeLocal(rows){
     catalog=validCatalog(rows);
-    try{ localStorage.setItem(CATALOG_STORAGE_KEY,JSON.stringify(catalog)); localStorage.setItem(CATALOG_INITIALIZED_KEY,'1'); }catch(_){ }
+    try{ localStorage.setItem(__structureLocalStorageKey__(CATALOG_STORAGE_KEY),JSON.stringify(catalog)); localStorage.setItem(__structureLocalStorageKey__(CATALOG_INITIALIZED_KEY),'1'); }catch(_){ }
     return catalog;
   }
   async function readRemote(){
@@ -54252,9 +55458,11 @@ try{
     let url='https://wa.me/'+encodeURIComponent(wa);
     // Se è stato scelto un titolo, apre la chat con il messaggio memorizzato;
     // se il canale viene premuto direttamente, apre la chat vuota del contatto.
-    if(getRecord(selectedSendId)){
+    const selectedRecord=getRecord(selectedSendId);
+    if(selectedRecord){
       const message=await preparedSelectedMessage(); if(!message)return;
       url+='?text='+encodeURIComponent(message);
+      try{ await __guestMarkPresetMessageSent__({ templateId:String(selectedRecord.id||''), channel:'whatsapp' }); }catch(_){ }
     }
     closeSend(); try{window.location.href=url;}catch(_){try{window.open(url,'_blank','noopener');}catch(__){ }}
   }
@@ -54270,8 +55478,10 @@ try{
     let message='';
     // Stessa logica di WhatsApp: titolo selezionato = testo precompilato;
     // pressione diretta del canale = conversazione SMS/iMessage vuota.
-    if(getRecord(selectedSendId)){
+    const selectedRecord=getRecord(selectedSendId);
+    if(selectedRecord){
       message=await preparedSelectedMessage(); if(!message)return;
+      try{ await __guestMarkPresetMessageSent__({ templateId:String(selectedRecord.id||''), channel:'messenger' }); }catch(_){ }
     }
     const cleanPhone=phone.replace(/[^+\d]/g,'');
     let url='sms:'+encodeURIComponent(cleanPhone||phone);
@@ -54284,7 +55494,7 @@ try{
   }
 
   function init(){
-    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,openSettings,'openSettingsBound');
+    const settingsBtn=$('settingsGuestMessagesBtn'); safeTap(settingsBtn,()=>{ if(!__structureHasActive__()){ try{toast('Crea e seleziona una struttura nelle Impostazioni','orange');}catch(_){} return; } openSettings(); },'openSettingsBound');
     safeTap($('guestMessagesSettingsCloseBtn'),closeSettings,'closeSettingsBound');
     safeTap($('guestMessageSettingsAddBtn'),()=>openEditor(''),'addSettingsBound'); bindVisual($('guestMessageSettingsAddBtn'));
     safeTap($('guestMessageEditorCancelBtn'),showCatalogView,'editorCancelBound'); bindVisual($('guestMessageEditorCancelBtn'));
@@ -54987,3 +56197,601 @@ async function renderStatAnalisi(){
     try{ console.error('Analisi diagnostica',err); }catch(_){ }
   }
 }
+
+
+/* dDAE_3.325 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+(function(){
+  'use strict';
+  const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
+  let applyTimer = 0;
+
+  function compareEnabled(){ try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; } }
+  function compareYear(){ try{ return String(__ensureStatGenCompareYear__() || ''); }catch(_){ return ''; } }
+  function activeStructureId(){ try{ return (typeof __structureActiveId__==='function') ? String(__structureActiveId__() || '') : ''; }catch(_){ return ''; } }
+  function snapshotStrict(){
+    try{
+      const yy=compareYear();
+      const snap=state?.statGenCompareSnapshot;
+      if(!yy || !snap || String(state?.statGenCompareSnapshotYear||'')!==yy) return null;
+      const active=activeStructureId();
+      const sid=String(snap?.structureId||'');
+      if(active && sid!==active) return null;
+      return snap;
+    }catch(_){ return null; }
+  }
+  function ensureSnapshot(){
+    if(!compareEnabled()) return;
+    try{
+      const snap=snapshotStrict();
+      if(!snap && !state?.statGenCompareLoading && typeof __loadStatGenCompareGuests__==='function') __loadStatGenCompareGuests__({force:true});
+    }catch(_){ }
+  }
+  function withSnapshot(snap, fn){
+    if(!snap || typeof fn!=='function') return null;
+    const keys=['exerciseYear','year','statsGuests','guests','spese','speseAll','report','reportAll','servizi','stanzeRows','deletedGuests','statGraficiOperatoriRows'];
+    const backup={}; keys.forEach((k)=>{ backup[k]=state?.[k]; });
+    const yy=compareYear();
+    try{
+      state.exerciseYear=yy;
+      state.year=yy;
+      state.statsGuests=Array.isArray(snap.guests)?snap.guests.slice():[];
+      state.guests=state.statsGuests;
+      state.spese=Array.isArray(snap.spese)?snap.spese.slice():[];
+      state.speseAll=state.spese;
+      state.report=snap.report ? JSON.parse(JSON.stringify(snap.report)) : null;
+      state.reportAll=state.report;
+      state.servizi=Array.isArray(snap.servizi)?snap.servizi.slice():[];
+      state.stanzeRows=Array.isArray(snap.stanzeRows)?snap.stanzeRows.slice():[];
+      state.deletedGuests=Array.isArray(snap.deletedGuests)?snap.deletedGuests.slice():[];
+      state.statGraficiOperatoriRows=Array.isArray(snap.operatoriRows)?snap.operatoriRows.slice():[];
+      return fn();
+    }catch(_){ return null; }
+    finally{ keys.forEach((k)=>{ try{ state[k]=backup[k]; }catch(_){} }); }
+  }
+  function fmtEuro(v){ try{return euro(Number(v||0));}catch(_){return '€0,00';} }
+  function fmtPct(v){ const n=Number(v||0); try{return n.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:1})+'%';}catch(_){return String(Math.round(n*10)/10).replace('.',',')+'%';} }
+  function fmtScore(v){ try{return (typeof __statScoreFormat__==='function')?__statScoreFormat__(v):String(Math.round((Number(v||0))*10)/10).replace('.',',');}catch(_){return '0';} }
+  function fmtHours(v){ try{return (Number(v||0)>0?((typeof __fmtHours_==='function'?__fmtHours_(v):String(v))||'0'):'0')+'h';}catch(_){return '0h';} }
+
+  function mapForPage(page,snap){
+    try{
+      if(page==='statgen'){
+        const s=withSnapshot(snap,()=>computeStatGen())||{};
+        return {'fatturato-totale':fmtEuro(s.fatturatoTotale),'spese-totali':fmtEuro(s.speseTotali),'senza-ricevuta':fmtEuro(s.senzaRicevuta),'con-ricevuta':fmtEuro(s.conRicevuta),'iva-da-versare':fmtEuro(s.ivaDaVersare),'guadagno-totale':fmtEuro(s.guadagnoTotale),'giacenza-in-cassa':fmtEuro(s.giacenzaCassa)};
+      }
+      if(page==='statamministratore'){
+        const s=withSnapshot(snap,()=>computeStatAmministratoreFromGuests())||{};
+        return {'fatturato-ricevute':fmtEuro(s.fatturatoRicevute),'fatturato-senza-ricevuta':fmtEuro(s.fatturatoSenzaRicevuta),'irpef':fmtEuro(s.irpef),'inps':fmtEuro(s.inps),'iva-da-versare':fmtEuro(s.ivaDaVersare),'totale-tasse':fmtEuro(s.totaleTasse),'utile-netto-anno':fmtEuro(s.utileSpendibileNettoAnno),'netto-mensile':fmtEuro(s.nettoMensile)};
+      }
+      if(page==='statspese'){
+        const s=withSnapshot(snap,()=>computeStatSpese())||{};
+        return {'totale-spese':fmtEuro(s.totale),'contanti':fmtEuro(s.contanti),'tassa-soggiorno':fmtEuro(s.tassaSoggiorno),'iva-22':fmtEuro(s.iva22),'iva-10':fmtEuro(s.iva10),'iva-4':fmtEuro(s.iva4)};
+      }
+      if(page==='statprenotazioni'){
+        const s=withSnapshot(snap,()=>computeStatGen())||{};
+        return {'senza-ricevuta':fmtEuro(s.senzaRicevuta),'con-ricevuta':fmtEuro(s.conRicevuta)};
+      }
+      if(page==='statoccupazione'){
+        const rows=(typeof __statOccupazioneRoomSeriesForData__==='function')?__statOccupazioneRoomSeriesForData__(Array.isArray(snap.guests)?snap.guests:[],Array.isArray(snap.stanzeRows)?snap.stanzeRows:[],compareYear()):[];
+        const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{out[String(r?.key||'')]=fmtPct(r?.value||0);}); return out;
+      }
+      if(page==='statpulizie'){
+        const rows=withSnapshot(snap,()=>__statPulizieMonthlySeriesByOperator__(Array.isArray(snap.operatoriRows)?snap.operatoriRows:[]))||[];
+        const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{const total=(Array.isArray(r?.values)?r.values:[]).reduce((a,b)=>a+(Number(b||0)||0),0);out[String(r?.key||'')]=fmtHours(total);}); return out;
+      }
+      if(page==='statcancellazioni'){
+        const deleted=Array.isArray(snap.deletedGuests)?snap.deletedGuests:[];
+        const active=Array.isArray(snap.guests)?snap.guests:[];
+        const canc=deleted.filter((r)=>String(r?.delete_reason||'').toLowerCase()==='cancellazione'||String(r?.delete_reason||'').trim()==='');
+        const total=active.length+canc.length; const pct=total>0?(canc.length/total*100):0;
+        return {'percentuale':fmtPct(pct),'totale':String(total),'cancellate':String(canc.length)};
+      }
+      if(page==='statchannel'){
+        try{
+          if(typeof __statScoreModeActive__==='function' && __statScoreModeActive__()){
+            const rows=(typeof __statScoreSeriesForGuests__==='function')?__statScoreSeriesForGuests__(Array.isArray(snap.guests)?snap.guests:[]):[];
+            const out={}; (Array.isArray(rows)?rows:[]).forEach((r)=>{out[String(r?.key||'')]=fmtScore(r?.value||0);}); return out;
+          }
+        }catch(_){ }
+        return {};
+      }
+      if(page==='statmensili'){
+        const s=withSnapshot(snap,()=>__computeStatMensiliFromSnapshot__(snap))||{};
+        const out={}; const vals=Array.isArray(s.byMonth)?s.byMonth:[];
+        vals.forEach((v,i)=>{out['month-'+(i+1)]=fmtEuro(v);});
+        out.generale=fmtEuro(vals.reduce((a,b)=>a+(Number(b||0)||0),0));
+        return out;
+      }
+      if(page==='statnazionalita'){
+        const rows=Array.isArray(snap.guests)?snap.guests:[]; const counts=new Map();
+        const norm=(v)=>{try{return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase();}catch(_){return String(v||'').trim().toLowerCase();}};
+        rows.forEach((g)=>{ let opt=null; try{opt=(typeof __readGuestNationalityFromRecord__==='function')?__readGuestNationalityFromRecord__(g||{}):null;}catch(_){} const code=String(opt?.code||g?.nazionalita_code||g?.country_code||'').trim().toUpperCase(); const label=String(opt?.name||g?.nazionalita_nome||g?.country_name||'Non selezionata').trim()||'Non selezionata'; const key=code?'nat:'+code:'nat-name:'+(norm(label)||'non-selezionata'); counts.set(key,(counts.get(key)||0)+1); });
+        const total=rows.length; const out={}; counts.forEach((n,k)=>{out[k]=fmtPct(total>0?(n/total*100):0);}); return out;
+      }
+    }catch(_){ }
+    return {};
+  }
+
+  function clearCompareMarks(root){
+    try{ root?.querySelectorAll?.('.stats-card-compare-line,.stats-month-current-line').forEach((n)=>n.remove()); }catch(_){ }
+    try{ root?.querySelectorAll?.('.has-year-compare').forEach((n)=>{ if(n?.dataset?.statScope!=='pms') n.classList.remove('has-year-compare'); }); }catch(_){ }
+  }
+  function decorateValueNode(node, text, yy){
+    if(!node) return;
+    try{ node.querySelectorAll(':scope > .stats-card-compare-line').forEach((n)=>n.remove()); }catch(_){ }
+    const small=document.createElement('span'); small.className='stats-card-compare-line'; small.textContent=String(text ?? ''); node.appendChild(small);
+    try{ node.closest('.stat-row,.kpi-card')?.classList.add('has-year-compare'); }catch(_){ }
+  }
+  function decorateStandard(page,map,yy){
+    const root=document.getElementById('page-'+page); if(!root) return;
+    if(page==='statchannel'){
+      // PMS ha già il layout dedicato; Punteggio usa il decoratore standard.
+      const scoreMode=(()=>{try{return typeof __statScoreModeActive__==='function'&&__statScoreModeActive__();}catch(_){return false;}})();
+      if(!scoreMode) return;
+    }
+    root.querySelectorAll('.stat-row[data-stat-card-key]').forEach((card)=>{
+      if(card.dataset.statScope==='pms') return;
+      const key=String(card.dataset.statCardKey||''); if(!Object.prototype.hasOwnProperty.call(map,key)) return;
+      decorateValueNode(card.querySelector('.stat-val'),map[key],yy);
+    });
+    if(page==='statcancellazioni'){
+      root.querySelectorAll('.kpi-card').forEach((card,idx)=>{ const key=['percentuale','totale','cancellate'][idx]; if(key&&Object.prototype.hasOwnProperty.call(map,key)) decorateValueNode(card.querySelector('.kpi-value'),map[key],yy); });
+    }
+  }
+  function decorateMensili(map,yy){
+    const root=document.getElementById('page-statmensili'); if(!root) return;
+    root.querySelectorAll('.month-row[data-stat-card-key]').forEach((card)=>{
+      const key=String(card.dataset.statCardKey||''); if(!Object.prototype.hasOwnProperty.call(map,key)) return;
+      if(card.classList.contains('is-expanded')){
+        const val=card.querySelector('.month-head .month-val'); if(val) decorateValueNode(val,map[key],yy);
+        return;
+      }
+      const label=card.querySelector('.month-button-label'); if(!label) return;
+      label.querySelectorAll('.stats-month-current-line,.stats-card-compare-line').forEach((n)=>n.remove());
+      let current='';
+      try{
+        if(key==='generale') current=fmtEuro((Array.isArray(state?.statMensili?.byMonth)?state.statMensili.byMonth:[]).reduce((a,b)=>a+(Number(b||0)||0),0));
+        else { const m=key.match(/^month-(\d{1,2})$/); if(m) current=fmtEuro(Number(state?.statMensili?.byMonth?.[Number(m[1])-1]||0)); }
+      }catch(_){ }
+      const cur=document.createElement('span'); cur.className='stats-month-current-line'; cur.textContent=current; label.appendChild(cur);
+      const cmp=document.createElement('span'); cmp.className='stats-card-compare-line'; cmp.textContent=String(map[key]); label.appendChild(cmp);
+      card.classList.add('has-year-compare');
+    });
+  }
+
+  function apply(){
+    clearTimeout(applyTimer); applyTimer=0;
+    const page=String(state?.page||'').trim().toLowerCase();
+    if(!COMPARE_PAGES.has(page)) return;
+    const root=document.getElementById('page-'+page); if(!root) return;
+    if(!compareEnabled()) { clearCompareMarks(root); return; }
+    const snap=snapshotStrict();
+    if(!snap){ clearCompareMarks(root); ensureSnapshot(); return; }
+    const yy=compareYear(); const map=mapForPage(page,snap);
+    if(page==='statmensili') decorateMensili(map,yy); else decorateStandard(page,map,yy);
+  }
+  function schedule(delay){
+    try{ clearTimeout(applyTimer); }catch(_){ }
+    applyTimer=setTimeout(apply,Math.max(0,Number(delay||0)));
+  }
+  window.__applyAllStatsCompareCardLines__=apply;
+  window.__scheduleAllStatsCompareCardLines__=schedule;
+
+  function wrapGlobal(name,afterDelays){
+    try{
+      const old=window[name]; if(typeof old!=='function'||old.__ddae3302CompareCardsWrapped) return;
+      const wrapped=function(){ const result=old.apply(this,arguments); try{ requestAnimationFrame(()=>schedule(0)); }catch(_){ schedule(0); } return result; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window[name]=wrapped; try{ eval(name+' = wrapped'); }catch(_){ }
+    }catch(_){ }
+  }
+  ['renderStatGen','renderStatMensili','renderStatOccupazione','renderStatSpese','renderStatRicevute','renderStatChannel','renderStatPunteggio','renderStatPulizie','renderStatCancellazioni','renderStatAmministratore','renderStatNationality'].forEach((name)=>wrapGlobal(name,[0,80,260]));
+
+  try{
+    const oldToggle=window.__toggleStatGenCompareEnabled__ || __toggleStatGenCompareEnabled__;
+    if(typeof oldToggle==='function'&&!oldToggle.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldToggle.apply(this,arguments); schedule(0); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldLoad=window.__loadStatGenCompareGuests__ || __loadStatGenCompareGuests__;
+    if(typeof oldLoad==='function'&&!oldLoad.__ddae3302CompareCardsWrapped){
+      const wrapped=async function(){ const r=await oldLoad.apply(this,arguments); schedule(0); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__loadStatGenCompareGuests__=wrapped; try{__loadStatGenCompareGuests__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldSave=window.__saveStatGenCompareYearModal__ || __saveStatGenCompareYearModal__;
+    if(typeof oldSave==='function'&&!oldSave.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldSave.apply(this,arguments); schedule(80); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.__saveStatGenCompareYearModal__=wrapped; try{__saveStatGenCompareYearModal__=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+  try{
+    const oldShow=window.showPage || showPage;
+    if(typeof oldShow==='function'&&!oldShow.__ddae3302CompareCardsWrapped){
+      const wrapped=function(){ const r=oldShow.apply(this,arguments); schedule(90); return r; };
+      wrapped.__ddae3302CompareCardsWrapped=true; window.showPage=wrapped; try{showPage=wrapped;}catch(_){}
+    }
+  }catch(_){ }
+
+  const start=()=>{ schedule(0); };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+  try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
+})();
+
+/* dDAE_3.325 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+(function(){
+  const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
+  const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
+  const PAGE_CONFIGS = [
+    {page:'statgen', compare:'statGenCompareToggleBtn', graph:'statGenGraphToggleBtn'},
+    {page:'statamministratore', compare:'statAmmCompareToggleBtn', graph:'statAmmGraphToggleBtn'},
+    {page:'statmensili', compare:'statMensiliCompareToggleBtn', graph:'statMensiliGraphToggleBtn'},
+    {page:'statoccupazione', compare:'statOccupazioneCompareToggleBtn', graph:'statOccupazioneGraphToggleBtn'},
+    {page:'statspese', compare:'statSpeseCompareToggleBtn', graph:'statSpeseGraphToggleBtn'},
+    {page:'statprenotazioni', compare:'statRicevuteCompareToggleBtn', graph:'statRicevuteGraphToggleBtn'},
+    {page:'statchannel', compare:'statChannelCompareToggleBtn', graph:'statChannelGraphToggleBtn'},
+    {page:'statpulizie', compare:'statPulizieCompareToggleBtn', graph:'statPulizieGraphToggleBtn'},
+    {page:'statcancellazioni', compare:'statCancellazioniCompareToggleBtn', graph:'statCancellazioniGraphToggleBtn'},
+    {page:'statnazionalita', compare:'statNationalityCompareToggleBtn', graph:'statNationalityGraphToggleBtn'}
+  ];
+
+  function graphEnabledRead(){
+    try{
+      const raw=localStorage.getItem(GRAPH_ENABLED_KEY);
+      if(raw===null || raw===undefined || String(raw).trim()==='') return true;
+      const s=String(raw).trim().toLowerCase();
+      return !(s==='0'||s==='false'||s==='off');
+    }catch(_){ return true; }
+  }
+  function graphEnabledWrite(value){
+    const on=!!value;
+    try{localStorage.setItem(GRAPH_ENABLED_KEY,on?'1':'0');}catch(_){ }
+    return on;
+  }
+  function graphVisualDefault(on){
+    return on ? {bg:'#2b7cb4',border:'#2b7cb4',fg:'#ffffff',opacity:0.80} : {bg:'#d6dee8',border:'#d6dee8',fg:'#0f172a',opacity:0.80};
+  }
+  function graphVisualRead(){
+    const fallback={on:graphVisualDefault(true),off:graphVisualDefault(false)};
+    try{
+      const raw=localStorage.getItem(GRAPH_VISUAL_KEY); const parsed=raw?JSON.parse(raw):{};
+      return {
+        on:(typeof __tagColorPairFromValue__==='function')?__tagColorPairFromValue__(parsed?.on||fallback.on,fallback.on.bg):(parsed?.on||fallback.on),
+        off:(typeof __tagColorPairFromValue__==='function')?__tagColorPairFromValue__(parsed?.off||fallback.off,fallback.off.bg):(parsed?.off||fallback.off)
+      };
+    }catch(_){ return fallback; }
+  }
+  function graphVisualWrite(value){
+    const current=graphVisualRead();
+    const normalize=(v,fb)=>{
+      try{return __tagColorPairFromValue__(v||fb,(v&&v.bg)||fb.bg);}catch(_){return Object.assign({},fb,v||{});}
+    };
+    const next={on:normalize(value?.on,current.on),off:normalize(value?.off,current.off)};
+    try{localStorage.setItem(GRAPH_VISUAL_KEY,JSON.stringify(next));}catch(_){ }
+    return next;
+  }
+  function graphButtonLabel(btn,on){
+    if(!btn) return;
+    const lab=btn.querySelector('.stats-graph-toggle-state'); if(lab) lab.textContent=on?'ON':'OFF';
+    btn.setAttribute('aria-label',`Grafico ${on?'ON':'OFF'}`);
+    btn.setAttribute('aria-pressed',on?'true':'false');
+  }
+  function applyGraphVisual(){
+    const on=graphEnabledRead(); const visual=graphVisualRead(); const pair=on?visual.on:visual.off;
+    const opacity=(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(pair?.opacity??0.80):Number(pair?.opacity??0.80);
+    const bg=(()=>{try{return __graphColorValueToHex__(pair?.bg||(on?'#2b7cb4':'#d6dee8'),on?'#2b7cb4':'#d6dee8');}catch(_){return pair?.bg||(on?'#2b7cb4':'#d6dee8');}})();
+    const border=(()=>{try{return __graphColorValueToHex__(pair?.border||pair?.bg||bg,bg);}catch(_){return pair?.border||bg;}})();
+    let fg=pair?.fg||(on?'#ffffff':'#0f172a');
+    try{fg=__graphColorValueToHex__(fg,fg);}catch(_){ }
+    document.querySelectorAll('.stats-graph-toggle-btn').forEach((btn)=>{
+      graphButtonLabel(btn,on);
+      btn.classList.toggle('is-active',on); btn.classList.toggle('is-inactive',!on);
+      try{
+        const rgba=(typeof hexToRgba==='function')?hexToRgba(bg,opacity):bg;
+        btn.style.setProperty('background',rgba,'important');
+        btn.style.setProperty('background-color',rgba,'important');
+        btn.style.setProperty('border',`1px solid ${border}`,'important');
+        btn.style.setProperty('color',fg,'important');
+        btn.style.setProperty('-webkit-text-fill-color',fg,'important');
+        if(typeof __applyVisualTextWeight__==='function') __applyVisualTextWeight__(btn,pair);
+      }catch(_){ }
+    });
+  }
+
+  function payloadToVisual(payload,fallback){
+    let base=fallback||graphVisualDefault(false);
+    try{base=__tagColorPairFromValue__(base,base?.bg||'#d6dee8');}catch(_){ }
+    const colors=(payload&&payload.colors&&typeof payload.colors==='object')?payload.colors:{};
+    function spec(value,fb){ try{return __parseOperatoreColorSpec__(value||fb).spec;}catch(_){return value||fb;} }
+    const bg=spec(colors.bg||payload?.spec||base.bg||'#d6dee8',base.bg||'#d6dee8');
+    const border=spec(colors.border||base.border||bg,base.border||bg);
+    const fg=String(colors.fg||'').trim()?spec(colors.fg,base.fg||''):(base.fg||'');
+    const opacity=(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(payload?.opacity??base.opacity??0.80):(payload?.opacity??base.opacity??0.80);
+    return {bg,border:border||bg,fg:fg||'',opacity};
+  }
+  function openGraphColorPicker(){
+    if(typeof __tagColorPopupOpen__!=='function') return;
+    const enabled=graphEnabledRead(); const visuals=graphVisualRead();
+    const originals={off:Object.assign({},visuals.off),on:Object.assign({},visuals.on)};
+    const drafts={off:Object.assign({},originals.off),on:Object.assign({},originals.on)};
+    const activeState=enabled?'on':'off';
+    const applyState=(stateName,payload)=>{
+      const key=stateName==='on'?'on':'off';
+      drafts[key]=payloadToVisual(payload,drafts[key]||originals[key]);
+      const cur=graphVisualRead(); cur[key]=drafts[key]; graphVisualWrite(cur); applyGraphVisual();
+    };
+    __tagColorPopupOpen__('stats-graph-toggle-btn',drafts[activeState],null,{
+      supportsBg:true,supportsBorder:true,supportsFg:true,supportsOpacity:true,
+      opacity:(typeof __designBgOpacityNormalize__==='function')?__designBgOpacityNormalize__(drafts[activeState].opacity??0.80):(drafts[activeState].opacity??0.80),
+      defaultMode:'bg',fallbackBg:drafts[activeState].bg||(enabled?'#2b7cb4':'#d6dee8'),
+      onPreview:(payload)=>{
+        let stateName=activeState;
+        try{const ed=__tagColorPopupState__?.stateEditor;if(ed?.activeState==='on'||ed?.activeState==='off')stateName=ed.activeState;}catch(_){ }
+        applyState(stateName,payload);
+      },
+      stateEditor:{
+        activeState,drafts,originals,labels:{off:'OFF',on:'ON'},fallbackBg:drafts[activeState].bg||(enabled?'#2b7cb4':'#d6dee8'),
+        onStatePreview:(stateName,payload)=>applyState(stateName,payload),
+        onConfirm:async(all)=>{graphVisualWrite({off:payloadToVisual(all?.off||drafts.off,drafts.off),on:payloadToVisual(all?.on||drafts.on,drafts.on)});applyGraphVisual();},
+        onRevert:()=>{graphVisualWrite(originals);applyGraphVisual();}
+      }
+    });
+  }
+
+  function makeGraphButton(id){
+    const btn=document.createElement('button'); btn.type='button'; btn.id=id;
+    btn.className='piscina-action-btn stats-graph-toggle-btn stats-compare-btn';
+    btn.innerHTML='<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg><span class="stats-graph-toggle-state">ON</span>';
+    graphButtonLabel(btn,graphEnabledRead());
+    return btn;
+  }
+  function blockEvent(e){try{e?.preventDefault?.();}catch(_){ }try{e?.stopPropagation?.();}catch(_){ }try{e?.stopImmediatePropagation?.();}catch(_){ }return false;}
+  function bindGraphButton(btn){
+    if(!btn||btn.__ddae3310GraphBound) return; btn.__ddae3310GraphBound=true;
+    let timer=null,fired=false,suppressUntil=0,startX=0,startY=0;
+    const clear=()=>{if(timer){clearTimeout(timer);timer=null;}};
+    const start=(e)=>{
+      try{if(e?.type==='pointerdown'&&e.pointerType==='mouse'&&e.button!==0)return;}catch(_){ }
+      fired=false; clear(); startX=Number(e?.clientX||e?.touches?.[0]?.clientX||0); startY=Number(e?.clientY||e?.touches?.[0]?.clientY||0);
+      timer=setTimeout(()=>{fired=true;suppressUntil=Date.now()+900;try{btn.classList.add('is-pressing');}catch(_){ }openGraphColorPicker();},560);
+    };
+    const move=(e)=>{const x=Number(e?.clientX||e?.touches?.[0]?.clientX||startX),y=Number(e?.clientY||e?.touches?.[0]?.clientY||startY);if(Math.hypot(x-startX,y-startY)>10)clear();};
+    const end=(e)=>{clear();if(fired){blockEvent(e);setTimeout(()=>{fired=false;try{btn.classList.remove('is-pressing');}catch(_){ }},0);}else try{btn.classList.remove('is-pressing');}catch(_){ }};
+    if('PointerEvent' in window){btn.addEventListener('pointerdown',start,{passive:true});btn.addEventListener('pointermove',move,{passive:true});btn.addEventListener('pointerup',end,{passive:false});btn.addEventListener('pointercancel',end,{passive:false});}
+    else{btn.addEventListener('touchstart',start,{passive:true});btn.addEventListener('touchmove',move,{passive:true});btn.addEventListener('touchend',end,{passive:false});btn.addEventListener('touchcancel',end,{passive:false});btn.addEventListener('mousedown',start,{passive:true});btn.addEventListener('mouseup',end,{passive:false});btn.addEventListener('mouseleave',end,{passive:false});}
+    btn.addEventListener('click',(e)=>{if(fired||Date.now()<suppressUntil)return blockEvent(e);graphEnabledWrite(!graphEnabledRead());syncGraphVisibility();return blockEvent(e);},true);
+    btn.addEventListener('contextmenu',(e)=>blockEvent(e),true);
+  }
+
+  function ensureGraphButtons(){
+    PAGE_CONFIGS.forEach((cfg)=>{
+      try{
+        const compare=document.getElementById(cfg.compare); if(!compare) return;
+        let btn=document.getElementById(cfg.graph);
+        if(!btn){btn=makeGraphButton(cfg.graph);compare.insertAdjacentElement('afterend',btn);}
+        bindGraphButton(btn);
+      }catch(_){ }
+    });
+    applyGraphVisual();
+  }
+  function syncGraphVisibility(){
+    ensureGraphButtons(); const on=graphEnabledRead();
+    PAGE_CONFIGS.forEach((cfg)=>{
+      const root=document.getElementById('page-'+cfg.page); if(!root)return;
+      root.classList.toggle('stats-graph-off',!on);
+      root.querySelectorAll('.statgen-line-chart-wrap').forEach((wrap)=>{
+        try{
+          if(on){wrap.style.removeProperty('display');wrap.removeAttribute('aria-hidden');}
+          else{wrap.style.setProperty('display','none','important');wrap.setAttribute('aria-hidden','true');}
+        }catch(_){ }
+      });
+    });
+    applyGraphVisual();
+    try{window.__ddaeStatsFixedGraphLayerRefresh__?.();}catch(_){ }
+    if(on){try{setTimeout(()=>window.__redrawAllStatCompareCharts__?.(),80);}catch(_){ }}
+  }
+  function compareEnabled(){try{return !!__ensureStatGenCompareEnabled__();}catch(_){return false;}}
+  function syncCompareVisibility(){
+    const on=compareEnabled();
+    PAGE_CONFIGS.forEach((cfg)=>{
+      const root=document.getElementById('page-'+cfg.page); if(!root)return;
+      root.classList.toggle('stats-compare-off',!on);
+      root.classList.toggle('stats-compare-on',on);
+      if(!on){
+        try{root.querySelectorAll('.stats-card-compare-line,.stats-month-current-line').forEach((n)=>n.remove());}catch(_){ }
+        try{root.querySelectorAll('.has-year-compare').forEach((n)=>n.classList.remove('has-year-compare'));}catch(_){ }
+      }
+    });
+    try{window.__applyAllStatsCompareCardLines__?.();}catch(_){ }
+  }
+  function syncAll(){ensureGraphButtons();syncCompareVisibility();syncGraphVisibility();}
+  let __ddae3310SyncFrame=0;
+  function scheduleAll(){
+    try{ if(__ddae3310SyncFrame) cancelAnimationFrame(__ddae3310SyncFrame); }catch(_){ }
+    try{ __ddae3310SyncFrame=requestAnimationFrame(()=>{__ddae3310SyncFrame=0;syncAll();}); }
+    catch(_){ __ddae3310SyncFrame=0; setTimeout(syncAll,0); }
+  }
+
+  /* Intercetta il toggle confronto senza cambiarne la logica: aggiorna soltanto visibilità/layout. */
+  try{
+    const old=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
+    if(typeof old==='function'&&!old.__ddae3310VisibilityWrapped){
+      const wrapped=function(){const r=old.apply(this,arguments);syncCompareVisibility();return r;}; wrapped.__ddae3310VisibilityWrapped=true;
+      window.__toggleStatGenCompareEnabled__=wrapped; try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
+    }
+  }catch(_){ }
+
+  /* Salva anche i due stati grafici nel Tema, oltre che nel backup generale. */
+  try{
+    const oldAdditional=(typeof __roomSettingsThemeAdditionalStorageKeys__==='function')?__roomSettingsThemeAdditionalStorageKeys__:null;
+    if(oldAdditional&&!oldAdditional.__ddae3310GraphWrapped){
+      const wrapped=function(){const list=oldAdditional.apply(this,arguments)||[];return Array.from(new Set(list.concat([GRAPH_ENABLED_KEY,GRAPH_VISUAL_KEY])));};
+      wrapped.__ddae3310GraphWrapped=true; __roomSettingsThemeAdditionalStorageKeys__=wrapped;
+    }
+  }catch(_){ }
+  try{
+    const oldApply=(typeof __roomSettingsThemeStatsStorageApply__==='function')?__roomSettingsThemeStatsStorageApply__:null;
+    if(oldApply&&!oldApply.__ddae3310GraphWrapped){
+      const wrapped=function(){const r=oldApply.apply(this,arguments);scheduleAll();return r;};wrapped.__ddae3310GraphWrapped=true;__roomSettingsThemeStatsStorageApply__=wrapped;
+    }
+  }catch(_){ }
+
+  /* dDAE_3.325 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  try{
+    const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
+    let graphObserverQueued=false;
+    const observer=new MutationObserver((records)=>{
+      let needsEnsure=false;
+      outer: for(const record of (records||[])){
+        for(const node of (record.addedNodes||[])){
+          if(!node || node.nodeType!==1) continue;
+          try{
+            if(node.id && compareIds.has(node.id)){ needsEnsure=true; break outer; }
+            for(const id of compareIds){
+              if(node.querySelector?.('#'+id)){ needsEnsure=true; break outer; }
+            }
+          }catch(_){ }
+        }
+      }
+      if(!needsEnsure || graphObserverQueued) return;
+      graphObserverQueued=true;
+      setTimeout(()=>{
+        graphObserverQueued=false;
+        try{ ensureGraphButtons(); }catch(_){ }
+      },0);
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+  }catch(_){ }
+  try{window.addEventListener('pageshow',scheduleAll,{passive:true});}catch(_){ }
+  try{window.addEventListener('resize',()=>setTimeout(syncGraphVisibility,80),{passive:true});}catch(_){ }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleAll,{once:true});else scheduleAll();
+  setTimeout(scheduleAll,900);
+})();
+
+/* dDAE_3.325 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+(function(){
+  'use strict';
+  const PAGES = [
+    {page:'statgen', compare:'statGenCompareToggleBtn'},
+    {page:'statamministratore', compare:'statAmmCompareToggleBtn'},
+    {page:'statmensili', compare:'statMensiliCompareToggleBtn'},
+    {page:'statoccupazione', compare:'statOccupazioneCompareToggleBtn'},
+    {page:'statspese', compare:'statSpeseCompareToggleBtn'},
+    {page:'statprenotazioni', compare:'statRicevuteCompareToggleBtn'},
+    {page:'statchannel', compare:'statChannelCompareToggleBtn'},
+    {page:'statpulizie', compare:'statPulizieCompareToggleBtn'},
+    {page:'statcancellazioni', compare:'statCancellazioniCompareToggleBtn'},
+    {page:'statnazionalita', compare:'statNationalityCompareToggleBtn'}
+  ];
+
+  function readCompareEnabled(cfg){
+    try{
+      const btn=document.getElementById(cfg?.compare||'');
+      if(btn){
+        const aria=String(btn.getAttribute('aria-pressed')||'').trim().toLowerCase();
+        if(aria==='true') return true;
+        if(aria==='false') return false;
+        const label=String(btn.querySelector('.statgen-compare-toggle-label')?.textContent||btn.textContent||'').trim().toUpperCase();
+        if(/\bOFF\b/.test(label)) return false;
+        if(/\bON\b/.test(label)) return true;
+      }
+    }catch(_){ }
+    try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; }
+  }
+
+  function setForcedHidden(el, hidden){
+    if(!el) return;
+    try{
+      if(hidden){
+        el.dataset.ddaeCompareForcedHidden='1';
+        el.style.setProperty('display','none','important');
+        el.setAttribute('aria-hidden','true');
+      }else if(el.dataset.ddaeCompareForcedHidden==='1'){
+        delete el.dataset.ddaeCompareForcedHidden;
+        el.style.removeProperty('display');
+        el.removeAttribute('aria-hidden');
+      }
+    }catch(_){ }
+  }
+
+  function applyOne(cfg){
+    const root=document.getElementById('page-'+cfg.page); if(!root) return;
+    const on=readCompareEnabled(cfg);
+    root.classList.toggle('stats-compare-off',!on);
+    root.classList.toggle('stats-compare-on',on);
+
+    /* Elementi di confronto nativi o aggiunti dalle card statistiche. */
+    root.querySelectorAll([
+      '.stats-card-compare-line',
+      '.stat-channel-compare-line',
+      '.month-expanded-colhead.is-compare',
+      '.month-expanded-metric.is-compare',
+      '.month-channel-value.is-compare',
+      '[data-compare-only="true"]'
+    ].join(',')).forEach((el)=>setForcedHidden(el,!on));
+
+    /* Il trend Mensili confronta esplicitamente i due anni: con OFF non deve comparire. */
+    root.querySelectorAll('.month-expanded-trend').forEach((el)=>setForcedHidden(el,!on));
+
+    /* Layout Mensili: quando OFF deve restare una sola colonna di dati correnti. */
+    if(cfg.page==='statmensili'){
+      root.querySelectorAll('.month-expanded-grid').forEach((grid)=>{
+        try{
+          if(!on){ grid.dataset.ddaeCompareSingleColumn='1'; grid.style.setProperty('grid-template-columns','minmax(0,1fr)','important'); }
+          else if(grid.dataset.ddaeCompareSingleColumn==='1'){ delete grid.dataset.ddaeCompareSingleColumn; grid.style.removeProperty('grid-template-columns'); }
+        }catch(_){ }
+      });
+      root.querySelectorAll('.month-channel-grid').forEach((grid)=>{
+        try{
+          if(!on){ grid.dataset.ddaeCompareSingleColumn='1'; grid.style.setProperty('grid-template-columns','minmax(0,1fr)','important'); }
+          else if(grid.dataset.ddaeCompareSingleColumn==='1'){ delete grid.dataset.ddaeCompareSingleColumn; grid.style.removeProperty('grid-template-columns'); }
+        }catch(_){ }
+      });
+    }
+
+    if(!on){
+      /* Classi usate solo per il layout a doppio anno. */
+      try{root.querySelectorAll('.has-year-compare').forEach((el)=>el.classList.remove('has-year-compare'));}catch(_){ }
+    }
+  }
+
+  function applyAll(){ PAGES.forEach(applyOne); }
+  let __ddaeStrictCompareFrame=0;
+  function schedule(){
+    try{ if(__ddaeStrictCompareFrame) cancelAnimationFrame(__ddaeStrictCompareFrame); }catch(_){ }
+    try{ __ddaeStrictCompareFrame=requestAnimationFrame(()=>{__ddaeStrictCompareFrame=0;applyAll();}); }
+    catch(_){ __ddaeStrictCompareFrame=0; setTimeout(applyAll,0); }
+  }
+  window.__ddaeStrictStatsCompareVisibility__=applyAll;
+
+  function wrapRender(name){
+    try{
+      const old=window[name];
+      if(typeof old!=='function'||old.__ddae3312StrictCompareWrapped) return;
+      const wrapped=function(){
+        const r=old.apply(this,arguments);
+        schedule();
+        return r;
+      };
+      wrapped.__ddae3312StrictCompareWrapped=true;
+      window[name]=wrapped;
+      try{eval(name+' = wrapped');}catch(_){ }
+    }catch(_){ }
+  }
+  ['renderStatGen','renderStatMensili','renderStatOccupazione','renderStatSpese','renderStatRicevute','renderStatChannel','renderStatPunteggio','renderStatPulizie','renderStatCancellazioni','renderStatAmministratore','renderStatNationality'].forEach(wrapRender);
+
+  try{
+    const oldToggle=window.__toggleStatGenCompareEnabled__||__toggleStatGenCompareEnabled__;
+    if(typeof oldToggle==='function'&&!oldToggle.__ddae3312StrictCompareWrapped){
+      const wrapped=function(){const r=oldToggle.apply(this,arguments);applyAll();return r;};
+      wrapped.__ddae3312StrictCompareWrapped=true;
+      window.__toggleStatGenCompareEnabled__=wrapped;
+      try{__toggleStatGenCompareEnabled__=wrapped;}catch(_){ }
+    }
+  }catch(_){ }
+
+  try{window.addEventListener('pageshow',schedule,{passive:true});}catch(_){ }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',schedule,{once:true}); else schedule();
+})();
