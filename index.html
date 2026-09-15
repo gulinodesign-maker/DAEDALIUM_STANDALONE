@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.330" rel="stylesheet"/>
-<link href="./manifest.json?v=3.330" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.330" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.330" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.330" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.330" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.330" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.330" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.331" rel="stylesheet"/>
+<link href="./manifest.json?v=3.331" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.331" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.331" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.331" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.331" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.331" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.331" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.330";
+window.APP_VERSION = "3.331";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.330";
+  const LOCAL_BUILD = "dDAE_3.331";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.330";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.330")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.330")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.331")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.331")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -303,7 +303,7 @@ window.APP_VERSION = "3.330";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.330"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.331"/>
 </div>
 <!-- MENU account -->
 <div class="auth-menu" id="authMenu">
@@ -1371,7 +1371,7 @@ window.APP_VERSION = "3.330";
 <span class="settings-btn-label">Logout</span>
 </button>
 </div>
-<div class="settings-build build" id="buildText">dDAE_3.330</div>
+<div class="settings-build build" id="buildText">dDAE_3.331</div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" data-ddae-modal-allow-through="1" id="dbFileInput" style="display:none" type="file"/>
 </div></section>
@@ -1864,6 +1864,14 @@ window.APP_VERSION = "3.330";
 <div aria-label="Totale tassa di soggiorno" class="pay-pill pay-pill-text guest-tax-pill" hidden="" id="guestTaxTotal"><span class="guest-tax-pill-label">Tassa soggiorno</span><span id="guestTaxTotalVal">€0,00</span></div>
 </div>
 </div>
+</div>
+<div aria-label="Documento fiscale" class="guest-fiscal-choice-row" id="guestFiscalChoiceRow" role="group">
+<button aria-label="Fattura" aria-pressed="false" class="guest-fiscal-choice-btn" data-fiscal-choice="fattura" data-single-action-key="guestFiscalFatturaBtn" id="guestFiscalFatturaBtn" title="Fattura" type="button">
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg><span>Fattura</span>
+</button>
+<button aria-label="Scontrino" aria-pressed="true" class="guest-fiscal-choice-btn is-selected is-on" data-fiscal-choice="scontrino" data-single-action-key="guestFiscalScontrinoBtn" id="guestFiscalScontrinoBtn" title="Scontrino" type="button">
+<svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M7 3h10v18l-2-1-3 1-3-1-2 1z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg><span>Scontrino</span>
+</button>
 </div>
 <div class="services-list-wrap" hidden="" id="servicesListWrap">
 <div class="services-list-card">
@@ -3274,7 +3282,7 @@ window.APP_VERSION = "3.330";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.330"></script>
-<script defer="" src="./app.js?v=3.330"></script>
+<script defer="" src="./config.js?v=3.331"></script>
+<script defer="" src="./app.js?v=3.331"></script>
 </body>
 </html>

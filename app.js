@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.330";
+const BUILD_VERSION = "3.331";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6717,6 +6717,7 @@ function __captureUiState(){
       saldoType: state.guestSaldoType || "",
       depositReceipt: !!state.guestDepositReceipt,
       saldoReceipt: !!state.guestSaldoReceipt,
+      fiscalDocumentType: __guestFiscalChoiceCurrent__(),
       invoiceRequested: !!state.guestInvoiceRequested,
       score: __guestScoreIsAssignedState__() ? __guestScoreNormalize__(state.guestScore) : null,
       scoreAssigned: __guestScoreIsAssignedState__(),
@@ -6775,6 +6776,7 @@ function __applyUiState(restore){
       state.guestSaldoType = restore.guest.saldoType || state.guestSaldoType;
       state.guestDepositReceipt = !!restore.guest.depositReceipt;
       state.guestSaldoReceipt = !!restore.guest.saldoReceipt;
+      state.guestFiscalDocumentType = __normalizeGuestFiscalDoc__(restore.guest.fiscalDocumentType) || 'scontrino';
       state.guestInvoiceRequested = !!restore.guest.invoiceRequested;
       {
         const restoredScore = __guestScoreNormalize__(restore.guest.score);
@@ -6825,6 +6827,7 @@ function __applyUiState(restore){
       try { setPayType("saldoType", state.guestSaldoType); } catch (_) {}
       try { setPayReceipt("depositType", state.guestDepositReceipt); } catch (_) {}
       try { setPayReceipt("saldoType", state.guestSaldoReceipt); } catch (_) {}
+      try { __syncGuestFiscalChoiceButtons__(state.guestFiscalDocumentType); } catch (_) {}
       try { __syncGuestInvoiceButton__(); } catch (_) {}
       try { __syncGuestScoreButton__(); } catch (_) {}
       try { setMarriage(state.guestMarriage);
@@ -6936,7 +6939,7 @@ function __setPayFiscalDocUi__(containerId, doc){
     btn.dataset.fiscalDoc = d;
     btn.classList.toggle('is-fattura', d === 'fattura');
     btn.classList.toggle('is-scontrino', d === 'scontrino');
-    const label = d === 'fattura' ? 'Fattura' : (d === 'scontrino' ? 'Scontrino' : 'Documento fiscale');
+    const label = 'Ricevuta';
     btn.setAttribute('title', label);
     btn.setAttribute('aria-label', label);
   }catch(_){ }
@@ -6952,6 +6955,121 @@ function __guestFiscalDocPayloadFields__(kind, doc){
     acconto_fiscal_doc:d, accontoFiscalDoc:d
   };
 }
+function __guestBookingFiscalDocFromRecord__(g){
+  try{
+    if (!g || typeof g !== 'object') return 'scontrino';
+    const direct = [
+      g?.documento_fiscale, g?.documentoFiscale,
+      g?.tipo_documento_fiscale, g?.tipoDocumentoFiscale,
+      g?.fiscal_document, g?.fiscalDocument,
+      g?.document_type, g?.documentType
+    ];
+    for (const raw of direct){
+      const d = __normalizeGuestFiscalDoc__(raw);
+      if (d) return d;
+    }
+    const dep = __guestFiscalDocFromRecord__(g, 'acconto');
+    const sal = __guestFiscalDocFromRecord__(g, 'saldo');
+    if (dep === 'fattura' || sal === 'fattura') return 'fattura';
+    if (dep === 'scontrino' || sal === 'scontrino') return 'scontrino';
+  }catch(_){ }
+  return 'scontrino';
+}
+function __guestFiscalChoiceCurrent__(){
+  return __normalizeGuestFiscalDoc__(state.guestFiscalDocumentType) || 'scontrino';
+}
+function __guestFiscalChoicePayloadFields__(doc){
+  const d = __normalizeGuestFiscalDoc__(doc) || 'scontrino';
+  return {
+    documento_fiscale:d, documentoFiscale:d,
+    tipo_documento_fiscale:d, tipoDocumentoFiscale:d,
+    fiscal_document:d, fiscalDocument:d,
+    document_type:d, documentType:d
+  };
+}
+function __syncGuestFiscalChoiceButtons__(doc){
+  try{
+    const d = __normalizeGuestFiscalDoc__(doc) || 'scontrino';
+    state.guestFiscalDocumentType = d;
+    const pairs = [
+      ['guestFiscalFatturaBtn','fattura'],
+      ['guestFiscalScontrinoBtn','scontrino']
+    ];
+    pairs.forEach(([id,value])=>{
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const on = d === value;
+      btn.classList.toggle('is-selected', on);
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try{ __applySingleActionButtonVisual__(btn, on ? 'on' : 'off'); }catch(_){ }
+    });
+  }catch(_){ }
+}
+async function __persistGuestFiscalChoice__(doc){
+  try{
+    const d = __normalizeGuestFiscalDoc__(doc) || 'scontrino';
+    const record = __guestActiveFiscalRecord__();
+    const id = String(guestIdOf(record || {}) || record?.id || state.guestEditId || state.guestGroupActiveId || '').trim();
+    if (!id) return;
+    const patch = Object.assign({ id }, __guestFiscalChoicePayloadFields__(d),
+      __guestFiscalDocPayloadFields__('acconto', d), __guestFiscalDocPayloadFields__('saldo', d));
+    // La selezione Fattura/Scontrino non equivale a documento già emesso.
+    patch.acconto_ricevuta = !!state.guestDepositReceipt;
+    patch.acconto_ricevutain = !!state.guestDepositReceipt;
+    patch.saldo_ricevuta = !!state.guestSaldoReceipt;
+    patch.saldo_ricevutain = !!state.guestSaldoReceipt;
+    __patchGuestFiscalDocLocally__(id, patch);
+    await api('ospiti', { method:'PUT', body:patch, showLoader:false });
+    try{ await refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+    try{ renderOspiti && renderOspiti(); }catch(_){ }
+  }catch(_){ }
+}
+function __selectGuestFiscalChoice__(doc){
+  try{
+    const d = __normalizeGuestFiscalDoc__(doc) || 'scontrino';
+    state.guestFiscalDocumentType = d;
+    if (__guestPaymentAmountForKind__('deposit') > 0) state.guestDepositFiscalDoc = d;
+    if (__guestPaymentAmountForKind__('saldo') > 0) state.guestSaldoFiscalDoc = d;
+    __syncGuestFiscalChoiceButtons__(d);
+    __setPayFiscalDocUi__('depositType', state.guestDepositFiscalDoc || '');
+    __setPayFiscalDocUi__('saldoType', state.guestSaldoFiscalDoc || '');
+    if (String(state.guestMode || '').toLowerCase() !== 'create'){
+      Promise.resolve(__persistGuestFiscalChoice__(d));
+    }else{
+      try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+    }
+  }catch(_){ }
+}
+async function __persistGuestReceiptState__(kind, on){
+  try{
+    const record = __guestActiveFiscalRecord__();
+    const id = String(guestIdOf(record || {}) || record?.id || state.guestEditId || state.guestGroupActiveId || '').trim();
+    if (!id) return;
+    const active = !!on;
+    const d = __guestFiscalChoiceCurrent__();
+    const isSaldo = String(kind || '').toLowerCase() === 'saldo';
+    const patch = Object.assign({ id }, __guestFiscalChoicePayloadFields__(d), __guestFiscalDocPayloadFields__(isSaldo ? 'saldo' : 'acconto', d));
+    if (isSaldo){
+      patch.saldo_ricevuta = active; patch.saldo_ricevutain = active;
+    }else{
+      patch.acconto_ricevuta = active; patch.acconto_ricevutain = active;
+    }
+    __patchGuestFiscalDocLocally__(id, patch);
+    await api('ospiti', { method:'PUT', body:patch, showLoader:false });
+    try{ await refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+    try{ renderOspiti && renderOspiti(); }catch(_){ }
+  }catch(_){ }
+}
+function __guestFiscalAlertLabel__(g){
+  try{
+    const d = __guestBookingFiscalDocFromRecord__(g);
+    const base = d === 'fattura' ? 'Fattura' : 'Scontrino';
+    const txt = (typeof __translateText__ === 'function') ? __translateText__(base) : base;
+    return String(txt || base).toLocaleUpperCase();
+  }catch(_){ return 'SCONTRINO'; }
+}
+
 function __guestActiveFiscalRecord__(){
   try{
     return (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null)
@@ -9157,9 +9275,12 @@ function openGuestAlertModal(kind){
       const tagsHtml = (row.tags || []).map(tag => `<span class="guest-alert-tag ${escapeHtml(tag.cls || '')}">${escapeHtml(tag.label || '')}</span>`).join('');
       const details = (row.details || []).map(x => escapeHtml(x)).join(' · ');
       const range = formatRangeCompactIT(it.guest?.check_in ?? it.guest?.checkIn ?? '', it.guest?.check_out ?? it.guest?.checkOut ?? '');
+      const isReceiptAlertCard = String(cfg.tag || '').trim().toLowerCase() === 'ricevuta';
+      const receiptGuestName = String(it.name || '').trim().toLocaleUpperCase();
+      const displayName = isReceiptAlertCard ? `${receiptGuestName} - ${__guestFiscalAlertLabel__(it.guest || {})}` : String(it.name || '');
       const channelBadge = getGuestChannelBadgeData(it.guest || {});
       const channelDotHtml = `<span class="guest-alert-channel-dot color-${escapeHtml(channelBadge.color || 'orange')}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="Channel: ${escapeHtml(channelBadge.name || channelBadge.initial || 'Channel')}" title="${escapeHtml(channelBadge.name || 'Channel')}"><span>${escapeHtml(channelBadge.initial || 'C')}</span></span>`;
-      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(it.name)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>${channelDotHtml}`;
+      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(displayName)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>${channelDotHtml}`;
       const openGuestFromCard = () => __openGuestFromAlertCard__(it.guest || null);
       bindFastTap(card, openGuestFromCard);
       card.addEventListener('keydown', (ev) => {
@@ -11253,6 +11374,9 @@ const __I18N_WORD_MAPS__ = {
 };
 
 Object.assign(__I18N_PHRASES__, {
+  "Fattura": { "en":"Invoice", "fr":"Facture", "de":"Rechnung", "es":"Factura" },
+  "Scontrino": { "en":"Receipt", "fr":"Ticket de caisse", "de":"Kassenbon", "es":"Ticket" },
+  "Documento fiscale": { "en":"Fiscal document", "fr":"Document fiscal", "de":"Steuerbeleg", "es":"Documento fiscal" },
   "Telefono": { "en":"Phone", "fr":"Téléphone", "de":"Telefon", "es":"Teléfono" },
   "Email": { "en":"Email", "fr":"E-mail", "de":"E-Mail", "es":"Correo electrónico" },
   "Numero prenotazione": { "en":"Booking number", "fr":"Numéro de réservation", "de":"Buchungsnummer", "es":"Número de reserva" },
@@ -24567,7 +24691,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
   'licenseDateRangeTrigger','licenseGeneratorCancel','licenseGeneratorConfirm','licenseDateRangePrev','licenseDateRangeNext','licenseDateRangeCancel','licenseDateRangeApply','licenseRequestEmailBtn','licenseRequestDoneBtn','licenseUnlockCancel','licenseUnlockConfirm','settingsLicenseUnlockBtn','settingsLicensePayBtn','settingsLicenseRequestBtn','settingsLicenseOperatorCodeBtn','settingsLicenseGeneratorBtn','settingsLicenseCloseBtn',
   'themeTransferImport','themeTransferExport','themeTransferCancel','settingsDataCloseBtn','structureSelectCloseBtn','structureCreateCloseBtn','structureCreateNewBtn','structureDeleteBtn','structureCreateSaveBtn','settingsAccountSaveBtn','settingsAccountCancelBtn','hotelLocationCancelBtn','hotelLocationSaveBtn','guestMessageSettingsCancelBtn','guestMessageSettingsSaveBtn',
-  'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn',
+  'calTodayOccupancyBadge','calTomorrowCheckoutBadge','createGuestBookingBtn','createGuestEstimateBtn','guestFiscalFatturaBtn','guestFiscalScontrinoBtn',
   'cocktailImagePickerBtn','cocktailImportBtn','cocktailExportBtn','cocktailDeleteBtn','cocktailSaveBtn'
 ];
 
@@ -24665,6 +24789,8 @@ function __defaultSingleActionButtonVisual__(btn){
     guestHdInvoiceBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.90 },
     guestHdEditBtn:{ bg:'yellow-4', border:'yellow-4', fg:'white', opacity:0.90 },
     guestHdDeleteBtn:{ bg:'red-5', border:'red-5', fg:'white', opacity:0.90 },
+    guestFiscalFatturaBtn:{ bg:'violet-5', border:'violet-5', fg:'white', opacity:0.88 },
+    guestFiscalScontrinoBtn:{ bg:'orange-4', border:'orange-4', fg:'white', opacity:0.88 },
     speseBudgetModeToggle:{ bg:'gray-2', border:'gray-3', fg:'sky-6', opacity:0.72 },
     spesaCatBtnContanti:{ bg:'blue-4', border:'blue-4', fg:'white', opacity:0.80 },
     spesaCatBtnTassa:{ bg:'sand-4', border:'sand-4', fg:'white', opacity:0.80 },
@@ -24711,7 +24837,7 @@ function __defaultSingleActionButtonVisual__(btn){
 function __singleActionButtonSupportsDualState__(btn){
   try{
     const sharedKey = __singleActionButtonSharedKey__(btn);
-    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.classList.contains('guest-fiscal-choice-btn') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
   }catch(_){ return false; }
 }
 
@@ -24719,6 +24845,8 @@ function __defaultSingleActionButtonStateVisuals__(btn){
   const base = __defaultSingleActionButtonVisual__(btn);
   try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
+  try{ if (btn && btn.id === 'guestFiscalFatturaBtn') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'blue-5', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.94 } }; }catch(_){}
+  try{ if (btn && btn.id === 'guestFiscalScontrinoBtn') return { off:{ ...base, bg:'gray-2', border:'gray-3', fg:'blue-5', opacity:0.48 }, on:{ ...base, bg:'orange-4', border:'orange-5', fg:'white', opacity:0.94 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
   try{ if (btn && btn.id === 'channelEditorVisibilityToggle') return { off:{ ...base, bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 }, on:{ ...base, bg:'indigo-5', border:'indigo-6', fg:'white', opacity:0.94 } }; }catch(_){}
   try{ if (__singleActionButtonSharedKey__(btn) === 'guestMessageSendWhatsAppChannel') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.94 } }; }catch(_){}
@@ -29418,14 +29546,15 @@ function _isRicevutaFlag(g, kind){
     };
 
     if (kind === "acconto"){
-      if (__guestFiscalDocFromRecord__(g, 'acconto')) return true;
-      // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
-      // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
+      // dDAE_3.331 — il tipo di documento (fattura/scontrino) è indipendente dallo stato emesso/non emesso.
+      // La spunta Ricevuta è autorevole quando il campo esplicito esiste.
       const explicit = firstExplicit([
         "acconto_ricevuta", "accontoRicevuta", "ricevuta_acconto", "ricevutaAcconto",
         "acconto_ricevutain", "accontoRicevutaIn", "ricevutaAccontoIn"
       ]);
       if (explicit !== null) return explicit;
+      // Compatibilità legacy: vecchie schede senza flag esplicito ma con documento fiscale valorizzato.
+      if (__guestFiscalDocFromRecord__(g, 'acconto')) return true;
 
       const values = [
         g?.numero_ricevuta_acconto, g?.numeroRicevutaAcconto, g?.acconto_numero_ricevuta,
@@ -29438,14 +29567,14 @@ function _isRicevutaFlag(g, kind){
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
     } else {
-      if (__guestFiscalDocFromRecord__(g, 'saldo')) return true;
-      // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
-      // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
+      // dDAE_3.331 — come per l'acconto, il tipo documento non accende da solo la Ricevuta.
       const explicit = firstExplicit([
         "saldo_ricevuta", "saldoRicevuta", "ricevuta_saldo", "ricevutaSaldo",
         "saldo_ricevutain", "saldoRicevutaIn", "ricevutaSaldoIn"
       ]);
       if (explicit !== null) return explicit;
+      // Compatibilità legacy per record senza flag esplicito.
+      if (__guestFiscalDocFromRecord__(g, 'saldo')) return true;
 
       const values = [
         g?.numero_ricevuta_saldo, g?.numeroRicevutaSaldo, g?.saldo_numero_ricevuta,
@@ -30947,6 +31076,7 @@ function enterGuestCreateMode(){
   state.guestSaldoReceipt = false;
   state.guestDepositFiscalDoc = '';
   state.guestSaldoFiscalDoc = '';
+  state.guestFiscalDocumentType = 'scontrino';
   state.guestInvoiceRequested = false;
 
   setPayType("depositType", state.guestDepositType);
@@ -30955,6 +31085,7 @@ function enterGuestCreateMode(){
   setPayReceipt("saldoType", state.guestSaldoReceipt);
   __setPayFiscalDocUi__("depositType", '');
   __setPayFiscalDocUi__("saldoType", '');
+  try{ __syncGuestFiscalChoiceButtons__('scontrino'); }catch(_){ }
   try{ __syncGuestInvoiceButton__(); }catch(_){ }
 
 
@@ -31123,13 +31254,15 @@ refreshFloatingLabels();
   const saldoRec = (__saldoAmountNow > 0) && _isRicevutaFlag(ospite, 'saldo');
   state.guestDepositReceipt = depRec;
   state.guestSaldoReceipt = saldoRec;
-  state.guestDepositFiscalDoc = (__depAmountNow > 0) ? __guestFiscalDocFromRecord__(ospite, 'acconto') : '';
-  state.guestSaldoFiscalDoc = (__saldoAmountNow > 0) ? __guestFiscalDocFromRecord__(ospite, 'saldo') : '';
+  state.guestFiscalDocumentType = __guestBookingFiscalDocFromRecord__(ospite);
+  state.guestDepositFiscalDoc = (__depAmountNow > 0) ? state.guestFiscalDocumentType : '';
+  state.guestSaldoFiscalDoc = (__saldoAmountNow > 0) ? state.guestFiscalDocumentType : '';
   state.guestInvoiceRequested = __guestInvoiceAlertNow__(ospite);
   setPayReceipt("depositType", depRec);
   setPayReceipt("saldoType", saldoRec);
   __setPayFiscalDocUi__("depositType", state.guestDepositFiscalDoc);
   __setPayFiscalDocUi__("saldoType", state.guestSaldoFiscalDoc);
+  try{ __syncGuestFiscalChoiceButtons__(state.guestFiscalDocumentType); }catch(_){ }
   try{ __syncGuestInvoiceButton__(); }catch(_){ }
   try{ __syncPaymentLedsWithAmounts__(); }catch(_){ }
 
@@ -33518,10 +33651,12 @@ function __populateGuestGroupInfoFromBooking__(ospite){
     try{ setPayType('saldoType', saldoType); }catch(_){ }
     state.guestDepositReceipt = !!(depAmount > 0 && _isRicevutaFlag(ospite, 'acconto'));
     state.guestSaldoReceipt = !!(saldoAmount > 0 && _isRicevutaFlag(ospite, 'saldo'));
-    state.guestDepositFiscalDoc = (depAmount > 0) ? __guestFiscalDocFromRecord__(ospite, 'acconto') : '';
-    state.guestSaldoFiscalDoc = (saldoAmount > 0) ? __guestFiscalDocFromRecord__(ospite, 'saldo') : '';
+    state.guestFiscalDocumentType = __guestBookingFiscalDocFromRecord__(ospite);
+    state.guestDepositFiscalDoc = (depAmount > 0) ? state.guestFiscalDocumentType : '';
+    state.guestSaldoFiscalDoc = (saldoAmount > 0) ? state.guestFiscalDocumentType : '';
     try{ setPayReceipt('depositType', state.guestDepositReceipt); __setPayFiscalDocUi__('depositType', state.guestDepositFiscalDoc); }catch(_){ }
     try{ setPayReceipt('saldoType', state.guestSaldoReceipt); __setPayFiscalDocUi__('saldoType', state.guestSaldoFiscalDoc); }catch(_){ }
+    try{ __syncGuestFiscalChoiceButtons__(state.guestFiscalDocumentType); }catch(_){ }
     state.guestInvoiceRequested = __guestInvoiceAlertNow__(ospite);
     try{ __syncGuestInvoiceButton__(); }catch(_){ }
 
@@ -35573,14 +35708,22 @@ if (!name) return toast("Inserisci il nome");
     saldo_tipo: saldoTipo,
     acconto_ricevuta: !!(deposit > 0 && state.guestDepositReceipt),
     acconto_ricevutain: !!(deposit > 0 && state.guestDepositReceipt),
-    acconto_documento_fiscale: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
-    accontoDocumentoFiscale: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
-    acconto_fiscal_doc: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
+    acconto_documento_fiscale: deposit > 0 ? __guestFiscalChoiceCurrent__() : '',
+    accontoDocumentoFiscale: deposit > 0 ? __guestFiscalChoiceCurrent__() : '',
+    acconto_fiscal_doc: deposit > 0 ? __guestFiscalChoiceCurrent__() : '',
     saldo_ricevuta: !!(saldoPagato > 0 && state.guestSaldoReceipt),
     saldo_ricevutain: !!(saldoPagato > 0 && state.guestSaldoReceipt),
-    saldo_documento_fiscale: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
-    saldoDocumentoFiscale: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
-    saldo_fiscal_doc: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
+    saldo_documento_fiscale: saldoPagato > 0 ? __guestFiscalChoiceCurrent__() : '',
+    saldoDocumentoFiscale: saldoPagato > 0 ? __guestFiscalChoiceCurrent__() : '',
+    saldo_fiscal_doc: saldoPagato > 0 ? __guestFiscalChoiceCurrent__() : '',
+    documento_fiscale: __guestFiscalChoiceCurrent__(),
+    documentoFiscale: __guestFiscalChoiceCurrent__(),
+    tipo_documento_fiscale: __guestFiscalChoiceCurrent__(),
+    tipoDocumentoFiscale: __guestFiscalChoiceCurrent__(),
+    fiscal_document: __guestFiscalChoiceCurrent__(),
+    fiscalDocument: __guestFiscalChoiceCurrent__(),
+    document_type: __guestFiscalChoiceCurrent__(),
+    documentType: __guestFiscalChoiceCurrent__(),
     richiesta_fattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
     richiestaFattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
     fattura_richiesta: state.guestInvoiceRequested ? "1" : "",
@@ -36721,7 +36864,26 @@ function setupOspite(){
           __setPayFiscalDocUi__(containerId, '');
           return;
         }
-        __openGuestFiscalDocModal__(kind, containerId);
+        const d = __guestFiscalChoiceCurrent__();
+        let next = false;
+        if (kind === "deposit") {
+          next = !state.guestDepositReceipt;
+          state.guestDepositReceipt = next;
+          state.guestDepositFiscalDoc = d;
+        }
+        if (kind === "saldo") {
+          next = !state.guestSaldoReceipt;
+          state.guestSaldoReceipt = next;
+          state.guestSaldoFiscalDoc = d;
+        }
+        setPayReceipt(containerId, next);
+        __setPayFiscalDocUi__(containerId, d);
+        if (next){ try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ } }
+        if (String(state.guestMode || '').toLowerCase() !== 'create') {
+          Promise.resolve(__persistGuestReceiptState__(kind === 'saldo' ? 'saldo' : 'acconto', next));
+        } else {
+          try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+        }
         return;
       }
     });
@@ -36729,6 +36891,19 @@ function setupOspite(){
 
   bindPayPill("depositType", "deposit");
   bindPayPill("saldoType", "saldo");
+  try{
+    ['guestFiscalFatturaBtn','guestFiscalScontrinoBtn'].forEach((id)=>{
+      const b = document.getElementById(id);
+      if (!b || b.dataset.fiscalChoiceBound === '1') return;
+      b.dataset.fiscalChoiceBound = '1';
+      b.addEventListener('click', (e)=>{
+        try{ if ((b.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return; }catch(_){ }
+        const doc = b.getAttribute('data-fiscal-choice') || '';
+        __selectGuestFiscalChoice__(doc);
+      });
+    });
+    __syncGuestFiscalChoiceButtons__(state.guestFiscalDocumentType || 'scontrino');
+  }catch(_){ }
   try{
     document.getElementById("guestDeposit")?.addEventListener("input", __syncPaymentLedsWithAmounts__);
     document.getElementById("guestSaldo")?.addEventListener("input", __syncPaymentLedsWithAmounts__);
@@ -48771,7 +48946,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.330';
+  var BUILD_TAG='dDAE_3.331';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53672,7 +53847,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.330',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.331',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
