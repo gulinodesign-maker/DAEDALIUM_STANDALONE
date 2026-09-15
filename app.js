@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.325";
+const BUILD_VERSION = "3.327";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5785,7 +5785,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.325 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.327 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -6607,6 +6607,196 @@ function setPayReceipt(containerId, on){
   btn.setAttribute("aria-pressed", active ? "true" : "false");
 }
 
+// dDAE_3.327 — documento fiscale per Acconto/Saldo: scontrino oppure fattura.
+function __normalizeGuestFiscalDoc__(value){
+  try{
+    const v = String(value ?? '').trim().toLowerCase();
+    if (!v) return '';
+    if (v.includes('fattur') || v.includes('invoice')) return 'fattura';
+    if (v.includes('scontr') || v.includes('ricev') || v.includes('receipt')) return 'scontrino';
+  }catch(_){ }
+  return '';
+}
+function __guestFiscalDocFromRecord__(g, kind){
+  try{
+    if (!g || typeof g !== 'object') return '';
+    const isSaldo = String(kind || '').toLowerCase() === 'saldo';
+    const values = isSaldo ? [
+      g?.saldo_documento_fiscale, g?.saldoDocumentoFiscale,
+      g?.saldo_fiscal_doc, g?.saldoFiscalDoc,
+      g?.saldo_documento, g?.saldoDocumento
+    ] : [
+      g?.acconto_documento_fiscale, g?.accontoDocumentoFiscale,
+      g?.acconto_fiscal_doc, g?.accontoFiscalDoc,
+      g?.acconto_documento, g?.accontoDocumento
+    ];
+    for (const raw of values){
+      const doc = __normalizeGuestFiscalDoc__(raw);
+      if (doc) return doc;
+    }
+    // Compatibilità con le schede precedenti: una ricevuta già selezionata equivale a scontrino.
+    const legacy = isSaldo
+      ? (g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? g?.saldo_ricevutain)
+      : (g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? g?.acconto_ricevutain);
+    return truthy(legacy) ? 'scontrino' : '';
+  }catch(_){ return ''; }
+}
+function __setPayFiscalDocUi__(containerId, doc){
+  try{
+    const wrap = document.getElementById(containerId);
+    const btn = wrap?.querySelector('.pay-dot[data-receipt]');
+    if (!btn) return;
+    const d = __normalizeGuestFiscalDoc__(doc);
+    btn.dataset.fiscalDoc = d;
+    btn.classList.toggle('is-fattura', d === 'fattura');
+    btn.classList.toggle('is-scontrino', d === 'scontrino');
+    const label = d === 'fattura' ? 'Fattura' : (d === 'scontrino' ? 'Scontrino' : 'Documento fiscale');
+    btn.setAttribute('title', label);
+    btn.setAttribute('aria-label', label);
+  }catch(_){ }
+}
+function __guestFiscalDocPayloadFields__(kind, doc){
+  const d = __normalizeGuestFiscalDoc__(doc);
+  if (String(kind || '').toLowerCase() === 'saldo') return {
+    saldo_documento_fiscale:d, saldoDocumentoFiscale:d,
+    saldo_fiscal_doc:d, saldoFiscalDoc:d
+  };
+  return {
+    acconto_documento_fiscale:d, accontoDocumentoFiscale:d,
+    acconto_fiscal_doc:d, accontoFiscalDoc:d
+  };
+}
+function __guestActiveFiscalRecord__(){
+  try{
+    return (typeof __guestActiveBookingForAction__ === 'function' ? __guestActiveBookingForAction__() : null)
+      || state.guestViewItem || state.guestEditSourceItem || null;
+  }catch(_){ return state.guestViewItem || state.guestEditSourceItem || null; }
+}
+function __patchGuestFiscalDocLocally__(id, patch){
+  try{
+    const sid = String(id || '').trim();
+    if (!sid) return;
+    const apply = (row)=>{
+      try{ if (row && String(guestIdOf(row) || row?.id || '').trim() === sid) Object.assign(row, patch); }catch(_){ }
+    };
+    [state.guestViewItem, state.guestEditSourceItem].forEach(apply);
+    [state.ospiti, state.guests, state.bookings, state.guestList, state.statsGuests, state.guestGroupBookings].forEach((list)=>{
+      if (Array.isArray(list)) list.forEach(apply);
+    });
+  }catch(_){ }
+}
+async function __persistGuestFiscalDoc__(kind, doc){
+  try{
+    const record = __guestActiveFiscalRecord__();
+    const id = String(guestIdOf(record || {}) || record?.id || state.guestEditId || state.guestGroupActiveId || '').trim();
+    if (!id) return;
+    const active = !!__normalizeGuestFiscalDoc__(doc);
+    const patch = Object.assign({ id }, __guestFiscalDocPayloadFields__(kind, doc));
+    if (String(kind || '').toLowerCase() === 'saldo'){
+      patch.saldo_ricevuta = active; patch.saldo_ricevutain = active;
+    }else{
+      patch.acconto_ricevuta = active; patch.acconto_ricevutain = active;
+    }
+    __patchGuestFiscalDocLocally__(id, patch);
+    await api('ospiti', { method:'PUT', body:patch, showLoader:false });
+    try{ await refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+    try{ renderOspiti && renderOspiti(); }catch(_){ }
+  }catch(_){ }
+}
+function __ensureGuestFiscalDocModal__(){
+  let modal = document.getElementById('guestFiscalDocModal');
+  if (modal) return modal;
+  try{
+    modal = document.createElement('div');
+    modal.id = 'guestFiscalDocModal';
+    modal.className = 'modal modal-center guest-fiscal-doc-modal';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML = `
+      <div class="modal-card guest-fiscal-doc-card" role="dialog" aria-modal="true" aria-labelledby="guestFiscalDocTitle">
+        <button type="button" id="guestFiscalDocClose" class="guest-fiscal-doc-close" aria-label="Chiudi">×</button>
+        <div id="guestFiscalDocTitle" class="guest-fiscal-doc-title">Documento fiscale</div>
+        <div class="guest-fiscal-doc-subtitle">Seleziona il documento emesso</div>
+        <div class="guest-fiscal-doc-options">
+          <button type="button" id="guestFiscalDocScontrino" class="guest-fiscal-doc-option" data-fiscal-doc="scontrino">Scontrino</button>
+          <button type="button" id="guestFiscalDocFattura" class="guest-fiscal-doc-option" data-fiscal-doc="fattura">Fattura</button>
+        </div>
+        <button type="button" id="guestFiscalDocClear" class="guest-fiscal-doc-clear" hidden>Rimuovi selezione</button>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = ()=>__closeGuestFiscalDocModal__();
+    bindFastTap(document.getElementById('guestFiscalDocClose'), close);
+    modal.addEventListener('click', (e)=>{ if (e.target === modal) close(); });
+    modal.querySelectorAll('[data-fiscal-doc]').forEach((btn)=>{
+      bindFastTap(btn, ()=>__selectGuestFiscalDoc__(btn.dataset.fiscalDoc || ''));
+      try{ __applySingleActionButtonVisual__(btn); __bindSingleActionButtonColorHold__(btn); }catch(_){ }
+    });
+    const clearBtn = document.getElementById('guestFiscalDocClear');
+    bindFastTap(clearBtn, ()=>__selectGuestFiscalDoc__(''));
+    try{ __applySingleActionButtonVisual__(clearBtn); __bindSingleActionButtonColorHold__(clearBtn); }catch(_){ }
+    try{ __applySingleActionButtonVisual__(document.getElementById('guestFiscalDocClose')); __bindSingleActionButtonColorHold__(document.getElementById('guestFiscalDocClose')); }catch(_){ }
+  }catch(_){ }
+  return modal;
+}
+function __openGuestFiscalDocModal__(kind, containerId){
+  try{
+    const modal = __ensureGuestFiscalDocModal__();
+    if (!modal) return;
+    const k = String(kind || '').toLowerCase() === 'saldo' ? 'saldo' : 'deposit';
+    const doc = k === 'saldo' ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc);
+    state.guestFiscalDocTarget = { kind:k, containerId:String(containerId || (k === 'saldo' ? 'saldoType' : 'depositType')) };
+    modal.querySelectorAll('[data-fiscal-doc]').forEach((btn)=>{
+      const on = String(btn.dataset.fiscalDoc || '') === doc;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    const clearBtn = document.getElementById('guestFiscalDocClear');
+    if (clearBtn) clearBtn.hidden = !doc;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden','false');
+    modal.classList.add('is-open');
+    document.body.classList.add('modal-open');
+  }catch(_){ }
+}
+function __closeGuestFiscalDocModal__(){
+  try{
+    const modal = document.getElementById('guestFiscalDocModal');
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden','true');
+    state.guestFiscalDocTarget = null;
+    if (!document.querySelector('.modal.is-open:not([hidden])')) document.body.classList.remove('modal-open');
+  }catch(_){ }
+}
+function __selectGuestFiscalDoc__(doc){
+  try{
+    const target = state.guestFiscalDocTarget || {};
+    const kind = target.kind === 'saldo' ? 'saldo' : 'deposit';
+    const containerId = target.containerId || (kind === 'saldo' ? 'saldoType' : 'depositType');
+    const d = __normalizeGuestFiscalDoc__(doc);
+    if (kind === 'saldo'){
+      state.guestSaldoFiscalDoc = d;
+      state.guestSaldoReceipt = !!d;
+      setPayReceipt(containerId, !!d);
+      __setPayFiscalDocUi__(containerId, d);
+    }else{
+      state.guestDepositFiscalDoc = d;
+      state.guestDepositReceipt = !!d;
+      setPayReceipt(containerId, !!d);
+      __setPayFiscalDocUi__(containerId, d);
+    }
+    if (d){ try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ } }
+    __closeGuestFiscalDocModal__();
+    // In una scheda esistente la scelta è operativa e viene salvata subito.
+    if (String(state.guestMode || '').toLowerCase() !== 'create'){
+      Promise.resolve(__persistGuestFiscalDoc__(kind === 'saldo' ? 'saldo' : 'acconto', d));
+    }else{
+      try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
+    }
+  }catch(_){ }
+}
+
 function __guestPaymentAmountForKind__(kind){
   try{
     const id = (String(kind || '').toLowerCase() === 'saldo') ? 'guestSaldo' : 'guestDeposit';
@@ -6621,14 +6811,18 @@ function __syncPaymentLedsWithAmounts__(){
     if (__guestPaymentAmountForKind__('deposit') <= 0){
       state.guestDepositType = '';
       state.guestDepositReceipt = false;
+      state.guestDepositFiscalDoc = '';
       setPayType('depositType', '');
       setPayReceipt('depositType', false);
+      __setPayFiscalDocUi__('depositType', '');
     }
     if (__guestPaymentAmountForKind__('saldo') <= 0){
       state.guestSaldoType = '';
       state.guestSaldoReceipt = false;
+      state.guestSaldoFiscalDoc = '';
       setPayType('saldoType', '');
       setPayReceipt('saldoType', false);
+      __setPayFiscalDocUi__('saldoType', '');
     }
   }catch(_){ }
 }
@@ -8011,7 +8205,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.325 — evidenza verde nel popup schedine PS:
+// dDAE_3.327 — evidenza verde nel popup schedine PS:
 // consentita esclusivamente quando l'intero dovuto è saldato in contanti.
 // Qualsiasi pagamento elettronico, anche parziale o misto ai contanti, forza la card standard.
 function __guestPsAlertCashOnlyOneNight__(g){
@@ -8179,7 +8373,7 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
-// dDAE_3.325 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+// dDAE_3.327 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
 const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
 function __guestPresetMessageSentAtFromRecord__(g){
   try{
@@ -15122,8 +15316,11 @@ function __settingsBackupModalGhostTapActive__(){
 function __settingsBackupModalSwallowGhostTap__(ev){
   try{
     if (!__settingsBackupModalGhostTapActive__()) return;
+    const target = ev && ev.target;
+    // Il picker JSON del backup deve poter aprirsi subito dopo la chiusura del popup.
+    if (target && target.getAttribute && target.getAttribute("data-ddae-modal-allow-through") === "1") return;
     const modal = document.getElementById("settingsBackupModal");
-    const insideModal = !!(modal && !modal.hidden && ev && ev.target && modal.contains(ev.target));
+    const insideModal = !!(modal && !modal.hidden && target && modal.contains(target));
     if (insideModal) return;
     try{ ev.preventDefault(); }catch(_){ }
     try{ ev.stopPropagation(); }catch(_){ }
@@ -17593,6 +17790,9 @@ const cfg = document.getElementById("settingsConfigBtn");
   if (backupImport) bindFastTap(backupImport, async () => {
     try{
       __closeSettingsBackupModal__();
+      // L'import deve mantenere il gesto utente valido su iOS: non bloccare il file picker
+      // con la protezione anti ghost-tap attivata dalla chiusura del popup.
+      __settingsBackupModalSuppressUntil__ = 0;
       await __dbImport__("admin");
     }catch(e){
       try{ toast("Errore backup", "orange"); }catch(_){ }
@@ -17954,6 +18154,7 @@ function setupAuth(){
     try{ if (credsWrap) credsWrap.hidden = false; }catch(_ ){}
     try{ if (uLabel) uLabel.textContent = "User"; }catch(_ ){}
     try{ if (pLabel) pLabel.textContent = "Password"; }catch(_ ){}
+    try{ if (p) p.setAttribute("autocomplete","current-password"); }catch(_ ){}
 
     clearFields();
 
@@ -17961,6 +18162,15 @@ function setupAuth(){
       try{ if (btnSubmit) btnSubmit.textContent = "crea account"; }catch(_ ){}
       try{ if (createRoleWrap) createRoleWrap.hidden = false; }catch(_ ){}
       try{ if (p2Wrap) p2Wrap.hidden = false; }catch(_ ){}
+      try{
+        if (u){
+          u.readOnly = false;
+          u.removeAttribute("readonly");
+          u.setAttribute("aria-readonly","false");
+          u.setAttribute("autocomplete","username");
+        }
+        if (p) p.setAttribute("autocomplete","new-password");
+      }catch(_ ){}
       try{ syncCreateTag(); }catch(_ ){}
       try{ u && u.focus(); }catch(_ ){}
       return;
@@ -18148,8 +18358,9 @@ function setupAuth(){
     finishLicensedLogin
   };
 
-  // dDAE_3.192: nella pagina login non si creano e non si modificano account.
-  // Le modifiche restano disponibili esclusivamente da Impostazioni > Account.
+  // dDAE_3.327: dalla pagina iniziale è nuovamente possibile creare un nuovo account.
+  // Login admin/operatore continuano a passare dalla selezione degli account esistenti.
+  if (btnCreate) bindFastTap(btnCreate, ()=>{ try{ closeAccountPicker(); }catch(_ ){} setMode("create"); });
   if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>{ openAccountPicker("admin"); });
   if (btnLoginOperator) bindFastTap(btnLoginOperator, ()=>{ openAccountPicker("operatore"); });
   if (accountPickerCancel) bindFastTap(accountPickerCancel, closeAccountPicker);
@@ -19096,7 +19307,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.325 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.327 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19305,7 +19516,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.325 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.327 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearDisplayPillInteractions__(){
   const btn=document.getElementById('homeYearDisplayPill');
   if(!btn || btn.dataset.homeYearDisplayBound==='1') return;
@@ -24756,7 +24967,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.325 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.327 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -28921,6 +29132,7 @@ function _isRicevutaFlag(g, kind){
     };
 
     if (kind === "acconto"){
+      if (__guestFiscalDocFromRecord__(g, 'acconto')) return true;
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
       const explicit = firstExplicit([
@@ -28940,6 +29152,7 @@ function _isRicevutaFlag(g, kind){
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
     } else {
+      if (__guestFiscalDocFromRecord__(g, 'saldo')) return true;
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
       const explicit = firstExplicit([
@@ -28986,11 +29199,11 @@ function computePendingReceipts(guests){
 
     const dep = _num(g?.acconto_importo ?? g?.accontoImporto ?? 0);
     const depType = (g?.acconto_tipo ?? g?.accontoTipo ?? "");
-    const depRec = truthy(g?.acconto_ricevuta ?? g?.accontoRicevuta ?? g?.ricevuta_acconto ?? g?.ricevutaAcconto ?? false);
+    const depRec = _isRicevutaFlag(g, 'acconto');
 
     const saldo = _num(g?.saldo_pagato ?? g?.saldoPagato ?? g?.saldo ?? 0);
     const saldoType = (g?.saldo_tipo ?? g?.saldoTipo ?? "");
-    const saldoRec = truthy(g?.saldo_ricevuta ?? g?.saldoRicevuta ?? g?.ricevuta_saldo ?? g?.ricevutaSaldo ?? false);
+    const saldoRec = _isRicevutaFlag(g, 'saldo');
 
     const missing = [];
     if (dep > 0 && _isElectronicTypeStr_(depType) && !depRec) missing.push("Acconto");
@@ -30446,12 +30659,16 @@ function enterGuestCreateMode(){
   state.guestSaldoType = "";
   state.guestDepositReceipt = false;
   state.guestSaldoReceipt = false;
+  state.guestDepositFiscalDoc = '';
+  state.guestSaldoFiscalDoc = '';
   state.guestInvoiceRequested = false;
 
   setPayType("depositType", state.guestDepositType);
   setPayType("saldoType", state.guestSaldoType);
   setPayReceipt("depositType", state.guestDepositReceipt);
   setPayReceipt("saldoType", state.guestSaldoReceipt);
+  __setPayFiscalDocUi__("depositType", '');
+  __setPayFiscalDocUi__("saldoType", '');
   try{ __syncGuestInvoiceButton__(); }catch(_){ }
 
 
@@ -30616,13 +30833,17 @@ refreshFloatingLabels();
   setPayType("saldoType", st);
 
   // ricevuta fiscale (toggle indipendente). Retroattivo: spenta se il relativo importo è zero.
-  const depRec = (__depAmountNow > 0) && truthy(ospite.acconto_ricevuta ?? ospite.accontoRicevuta ?? ospite.ricevuta_acconto ?? ospite.ricevutaAcconto ?? ospite.acconto_ricevutain);
-  const saldoRec = (__saldoAmountNow > 0) && truthy(ospite.saldo_ricevuta ?? ospite.saldoRicevuta ?? ospite.ricevuta_saldo ?? ospite.ricevutaSaldo ?? ospite.saldo_ricevutain);
+  const depRec = (__depAmountNow > 0) && _isRicevutaFlag(ospite, 'acconto');
+  const saldoRec = (__saldoAmountNow > 0) && _isRicevutaFlag(ospite, 'saldo');
   state.guestDepositReceipt = depRec;
   state.guestSaldoReceipt = saldoRec;
+  state.guestDepositFiscalDoc = (__depAmountNow > 0) ? __guestFiscalDocFromRecord__(ospite, 'acconto') : '';
+  state.guestSaldoFiscalDoc = (__saldoAmountNow > 0) ? __guestFiscalDocFromRecord__(ospite, 'saldo') : '';
   state.guestInvoiceRequested = __guestInvoiceAlertNow__(ospite);
   setPayReceipt("depositType", depRec);
   setPayReceipt("saldoType", saldoRec);
+  __setPayFiscalDocUi__("depositType", state.guestDepositFiscalDoc);
+  __setPayFiscalDocUi__("saldoType", state.guestSaldoFiscalDoc);
   try{ __syncGuestInvoiceButton__(); }catch(_){ }
   try{ __syncPaymentLedsWithAmounts__(); }catch(_){ }
 
@@ -33009,10 +33230,12 @@ function __populateGuestGroupInfoFromBooking__(ospite){
     state.guestSaldoType = saldoType;
     try{ setPayType('depositType', depType); }catch(_){ }
     try{ setPayType('saldoType', saldoType); }catch(_){ }
-    state.guestDepositReceipt = !!(depAmount > 0 && truthy(ospite.acconto_ricevuta ?? ospite.accontoRicevuta ?? ospite.ricevuta_acconto ?? ospite.ricevutaAcconto ?? ospite.acconto_ricevutain));
-    state.guestSaldoReceipt = !!(saldoAmount > 0 && truthy(ospite.saldo_ricevuta ?? ospite.saldoRicevuta ?? ospite.ricevuta_saldo ?? ospite.ricevutaSaldo ?? ospite.saldo_ricevutain));
-    try{ setPayReceipt('depositType', state.guestDepositReceipt); }catch(_){ }
-    try{ setPayReceipt('saldoType', state.guestSaldoReceipt); }catch(_){ }
+    state.guestDepositReceipt = !!(depAmount > 0 && _isRicevutaFlag(ospite, 'acconto'));
+    state.guestSaldoReceipt = !!(saldoAmount > 0 && _isRicevutaFlag(ospite, 'saldo'));
+    state.guestDepositFiscalDoc = (depAmount > 0) ? __guestFiscalDocFromRecord__(ospite, 'acconto') : '';
+    state.guestSaldoFiscalDoc = (saldoAmount > 0) ? __guestFiscalDocFromRecord__(ospite, 'saldo') : '';
+    try{ setPayReceipt('depositType', state.guestDepositReceipt); __setPayFiscalDocUi__('depositType', state.guestDepositFiscalDoc); }catch(_){ }
+    try{ setPayReceipt('saldoType', state.guestSaldoReceipt); __setPayFiscalDocUi__('saldoType', state.guestSaldoFiscalDoc); }catch(_){ }
     state.guestInvoiceRequested = __guestInvoiceAlertNow__(ospite);
     try{ __syncGuestInvoiceButton__(); }catch(_){ }
 
@@ -35064,8 +35287,14 @@ if (!name) return toast("Inserisci il nome");
     saldo_tipo: saldoTipo,
     acconto_ricevuta: !!(deposit > 0 && state.guestDepositReceipt),
     acconto_ricevutain: !!(deposit > 0 && state.guestDepositReceipt),
+    acconto_documento_fiscale: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
+    accontoDocumentoFiscale: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
+    acconto_fiscal_doc: deposit > 0 ? __normalizeGuestFiscalDoc__(state.guestDepositFiscalDoc) : '',
     saldo_ricevuta: !!(saldoPagato > 0 && state.guestSaldoReceipt),
     saldo_ricevutain: !!(saldoPagato > 0 && state.guestSaldoReceipt),
+    saldo_documento_fiscale: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
+    saldoDocumentoFiscale: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
+    saldo_fiscal_doc: saldoPagato > 0 ? __normalizeGuestFiscalDoc__(state.guestSaldoFiscalDoc) : '',
     richiesta_fattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
     richiestaFattura: state.guestInvoiceRequested ? (typeof __guestGenericAlertText__ === 'function' ? (__guestGenericAlertText__(state.guestEditSourceItem || state.guestViewItem || {}) || "Alert generico") : "Alert generico") : "",
     fattura_richiesta: state.guestInvoiceRequested ? "1" : "",
@@ -36200,17 +36429,13 @@ function setupOspite(){
 
       if (btn.hasAttribute("data-receipt")) {
         if (__guestPaymentAmountForKind__(kind) <= 0){
-          if (kind === "deposit") state.guestDepositReceipt = false;
-          if (kind === "saldo") state.guestSaldoReceipt = false;
+          if (kind === "deposit") { state.guestDepositReceipt = false; state.guestDepositFiscalDoc = ''; }
+          if (kind === "saldo") { state.guestSaldoReceipt = false; state.guestSaldoFiscalDoc = ''; }
           setPayReceipt(containerId, false);
+          __setPayFiscalDocUi__(containerId, '');
           return;
         }
-        if (kind === "deposit") state.guestDepositReceipt = !state.guestDepositReceipt;
-        if (kind === "saldo") state.guestSaldoReceipt = !state.guestSaldoReceipt;
-        try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ }
-        setPayReceipt(containerId, kind === "deposit" ? state.guestDepositReceipt : state.guestSaldoReceipt);
-        try{ refreshTopGuestAlerts({ force:true, keepModal:true }); }catch(_){ }
-        try{ renderOspiti && renderOspiti(); }catch(_){ }
+        __openGuestFiscalDocModal__(kind, containerId);
         return;
       }
     });
@@ -48260,7 +48485,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.325';
+  var BUILD_TAG='dDAE_3.327';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53160,7 +53385,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.325',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.327',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -56199,7 +56424,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.325 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.327 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56420,7 +56645,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.325 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.327 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56638,7 +56863,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.325 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.327 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56670,7 +56895,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.325 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.327 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
