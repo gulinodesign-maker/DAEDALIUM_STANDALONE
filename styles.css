@@ -36541,3 +36541,31 @@ body.ddae-dark .guest-fiscal-doc-close{
   padding:16px 10px !important;
   font-size:16px !important;
 }
+
+
+/* dDAE_3.329 — Login: amministratore, operatore e nuovo account in griglia 3x1 */
+#page-auth #authMenu .auth-grid-3{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
+  margin-top:14px !important;
+}
+#page-auth #authMenu .auth-grid-3 .auth-btn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:58px !important;
+  height:58px !important;
+  margin:0 !important;
+  padding:10px 4px !important;
+  font-size:clamp(10px,3vw,13px) !important;
+  line-height:1.05 !important;
+  letter-spacing:0 !important;
+  white-space:nowrap !important;
+}
+#page-auth #authMenu .auth-grid-3 .auth-btn-create-account{
+  display:block !important;
+  width:100% !important;
+  min-height:58px !important;
+  height:58px !important;
+  margin:0 !important;
+  padding:10px 4px !important;
+}
