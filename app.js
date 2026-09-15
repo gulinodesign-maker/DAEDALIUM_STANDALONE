@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.327";
+const BUILD_VERSION = "3.328";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -4226,6 +4226,272 @@ function __pickDbImportFile__(){
   });
 }
 
+
+/* dDAE_3.328 — Ripristino account completo dalla schermata iniziale.
+   Il restore AUTH usa un flusso dedicato: individua l'account proprietario del backup,
+   ricrea il registro globale utenti, imposta il contesto account prima dei dataset e
+   ripristina strutture/anni senza dipendere da un account già esistente. */
+function __authBackupNormToken__(value){
+  try{
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+  }catch(_){ return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g,''); }
+}
+
+function __authBackupDatasets__(payload){
+  try{
+    const root = (payload && typeof payload === 'object') ? payload : {};
+    if (root.datasets && typeof root.datasets === 'object') return root.datasets;
+    const out = {};
+    const source = (root.data && typeof root.data === 'object') ? root.data : root;
+    for (const table of __ADMIN_TABLES__){
+      if (source && Object.prototype.hasOwnProperty.call(source, table)) out[table] = source[table];
+    }
+    return out;
+  }catch(_){ return {}; }
+}
+
+function __authBackupIdentityHints__(payload){
+  try{
+    const root = (payload && typeof payload === 'object') ? payload : {};
+    const meta = (root.meta && typeof root.meta === 'object') ? root.meta : {};
+    const candidates = [
+      meta.account, meta.accountIdentity, meta.currentAccount, meta.session,
+      root.account, root.accountIdentity, root.currentAccount, root.session, root.user, root.utente
+    ];
+    const out = [];
+    for (const item of candidates){
+      if (!item || typeof item !== 'object') continue;
+      const id = String(item.user_id || item.userId || item.id || item.uid || '').trim();
+      const username = String(item.username || item.user || item.email || '').trim();
+      const accountName = String(item.accountName || item.account_name || item.nomeAccount || item.nome_account || item.name || item.nome || '').trim();
+      if (id || username || accountName) out.push({ id, username, accountName });
+    }
+    const direct = {
+      id: String(meta.accountUserId || meta.user_id || meta.userId || '').trim(),
+      username: String(meta.accountUsername || meta.username || '').trim(),
+      accountName: String(meta.accountName || meta.account_name || '').trim()
+    };
+    if (direct.id || direct.username || direct.accountName) out.push(direct);
+    return out;
+  }catch(_){ return []; }
+}
+
+function __authBackupIsOperatorRow__(row){
+  try{
+    const role = String(row?.ruolo || row?.role || row?.tipo || '').trim().toLowerCase();
+    if (role) return role.startsWith('op');
+    return row?.isOperatore === true || String(row?.isOperatore || row?.is_operatore || '').trim() === '1';
+  }catch(_){ return false; }
+}
+
+function __authBackupResolveAdminRow__(payload, fileName, users){
+  try{
+    const list = (Array.isArray(users) ? users : []).filter((u)=>u && typeof u === 'object');
+    const admins = list.filter((u)=>!__authBackupIsOperatorRow__(u));
+    const pool = admins.length ? admins : list;
+    if (!pool.length) return null;
+
+    const hints = __authBackupIdentityHints__(payload);
+    for (const hint of hints){
+      const hid = String(hint.id || '').trim();
+      const hun = String(hint.username || '').trim().toLowerCase();
+      const han = __authBackupNormToken__(hint.accountName || '');
+      const hit = pool.find((u)=>{
+        const uid = String(u?.id || u?.user_id || u?.userId || u?.uid || '').trim();
+        const un = String(u?.username || u?.user || u?.email || '').trim().toLowerCase();
+        const an = __authBackupNormToken__(u?.accountName || u?.account_name || u?.nomeAccount || u?.nome_account || u?.name || u?.nome || '');
+        return (hid && uid === hid) || (hun && un === hun) || (han && an === han);
+      });
+      if (hit) return hit;
+    }
+
+    // I backup precedenti alla 3.328 non avevano l'identità nel payload, ma il
+    // nome account era nel filename: dd-mm-yyyy_nome_account.json.
+    const stem = __authBackupNormToken__(String(fileName || '').replace(/\.json$/i,''));
+    if (stem){
+      let best = null, bestScore = 0;
+      for (const u of pool){
+        const values = [u?.accountName,u?.account_name,u?.nomeAccount,u?.nome_account,u?.name,u?.nome,u?.username,u?.user,u?.email];
+        for (const v of values){
+          const token = __authBackupNormToken__(v);
+          if (token && token.length >= 3 && stem.includes(token) && token.length > bestScore){ best = u; bestScore = token.length; }
+        }
+      }
+      if (best) return best;
+    }
+
+    if (admins.length === 1) return admins[0];
+    return admins[0] || pool[0] || null;
+  }catch(_){ return null; }
+}
+
+function __authBackupMergeUsersPreferIncoming__(existing, incoming){
+  try{
+    const out = Array.isArray(existing) ? existing.slice() : [];
+    for (const row of (Array.isArray(incoming) ? incoming : [])){
+      if (!row || typeof row !== 'object') continue;
+      const rid = String(row.id || row.user_id || row.userId || row.uid || '').trim();
+      const run = String(row.username || row.user || row.email || '').trim().toLowerCase();
+      const idx = out.findIndex((old)=>{
+        const oid = String(old?.id || old?.user_id || old?.userId || old?.uid || '').trim();
+        const oun = String(old?.username || old?.user || old?.email || '').trim().toLowerCase();
+        return (rid && oid && rid === oid) || (run && oun && run === oun);
+      });
+      if (idx >= 0) out[idx] = Object.assign({}, out[idx] || {}, row);
+      else out.push(row);
+    }
+    return out;
+  }catch(_){ return Array.isArray(incoming) ? incoming.slice() : []; }
+}
+
+function __pickAuthBackupFile__(){
+  return new Promise((resolve)=>{
+    try{
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json,.json';
+      input.dataset.ddaeSkipAutoBackupLogin = '1';
+      input.style.position='fixed'; input.style.left='0'; input.style.top='0'; input.style.width='1px'; input.style.height='1px'; input.style.opacity='0'; input.style.pointerEvents='none';
+      document.body.appendChild(input);
+      let done = false;
+      const finish = (file)=>{
+        if (done) return; done = true;
+        try{ input.onchange = null; input.oncancel = null; input.remove(); }catch(_){ }
+        resolve(file || null);
+      };
+      input.onchange = ()=>finish(input.files && input.files[0] ? input.files[0] : null);
+      try{ input.oncancel = ()=>finish(null); }catch(_){ }
+      try{ if (typeof input.showPicker === 'function') input.showPicker(); else input.click(); }
+      catch(_){ try{ input.click(); }catch(__){ finish(null); } }
+      setTimeout(()=>{ if (!done && (!input.files || !input.files.length)) finish(null); },120000);
+    }catch(_){ resolve(null); }
+  });
+}
+
+async function __authRestoreBackupFromEntry__(){
+  const file = await __pickAuthBackupFile__();
+  if (!file) return false;
+  let data = null;
+  try{ data = JSON.parse(await file.text()); }
+  catch(_){ try{ toast('JSON non valido','orange'); }catch(__){ } return false; }
+
+  try{
+    const ds = __authBackupDatasets__(data);
+    const hasDatasets = ds && typeof ds === 'object' && Object.keys(ds).length > 0;
+    if (!hasDatasets){ try{ toast('File backup non compatibile','orange'); }catch(_){ } return false; }
+
+    try{ __canonicalizeBackupChannelsDeep__(data); }catch(_){ }
+
+    const incomingUsers = Array.isArray(ds.utenti) ? ds.utenti.slice() : (Array.isArray(data?.utenti) ? data.utenti.slice() : []);
+    let accountRow = __authBackupResolveAdminRow__(data, file.name || '', incomingUsers);
+
+    // Compatibilità con backup legacy che conservavano l'account fuori da datasets.utenti.
+    if (!accountRow){
+      const hints = __authBackupIdentityHints__(data);
+      const h = hints[0] || null;
+      const legacy = (data?.account && typeof data.account === 'object') ? data.account : ((data?.user && typeof data.user === 'object') ? data.user : null);
+      if (h && (h.username || h.accountName)){
+        const username = String(h.username || h.accountName || 'Amministratore').trim() || 'Amministratore';
+        accountRow = {
+          id: String(h.id || legacy?.id || legacy?.user_id || legacy?.uid || username).trim(),
+          username,
+          password: String(legacy?.password || legacy?.pass || legacy?.pwd || ''),
+          accountName: String(h.accountName || legacy?.accountName || legacy?.name || username).trim(),
+          ruolo:'admin', role:'admin', isOperatore:false
+        };
+        incomingUsers.push(accountRow);
+      }
+    }
+
+    if (!accountRow){
+      try{ toast('Backup senza account amministratore','orange'); }catch(_){ }
+      return false;
+    }
+
+    accountRow = Object.assign({}, accountRow, {
+      id: String(accountRow.id || accountRow.user_id || accountRow.userId || accountRow.uid || accountRow.username || ('u_backup_' + Date.now())).trim(),
+      username: String(accountRow.username || accountRow.user || accountRow.email || accountRow.name || accountRow.nome || 'Amministratore').trim() || 'Amministratore',
+      ruolo:'admin', role:'admin', isOperatore:false
+    });
+    if (!String(accountRow.accountName || accountRow.account_name || '').trim()){
+      accountRow.accountName = String(accountRow.name || accountRow.nome || accountRow.username || '').trim();
+    }
+
+    // Ricrea/aggiorna il registro globale degli account senza eliminare gli altri account locali.
+    const currentGlobal = await __kvGet__('global:tbl:utenti');
+    const mergedUsers = __authBackupMergeUsersPreferIncoming__(Array.isArray(currentGlobal) ? currentGlobal : [], incomingUsers.length ? incomingUsers : [accountRow]);
+    const targetId = String(accountRow.id || '').trim();
+    const targetUsername = String(accountRow.username || '').trim().toLowerCase();
+    const targetIdx = mergedUsers.findIndex((u)=>{
+      const uid = String(u?.id || u?.user_id || u?.userId || u?.uid || '').trim();
+      const un = String(u?.username || u?.user || u?.email || '').trim().toLowerCase();
+      return (targetId && uid === targetId) || (targetUsername && un === targetUsername);
+    });
+    if (targetIdx >= 0) mergedUsers[targetIdx] = Object.assign({}, mergedUsers[targetIdx] || {}, accountRow);
+    else mergedUsers.push(accountRow);
+    await __kvSet__('global:tbl:utenti', mergedUsers);
+
+    const session = __sessionFromUserRow__(accountRow) || {
+      user_id: accountRow.id,
+      username: accountRow.username,
+      ruolo:'admin',
+      accountName: String(accountRow.accountName || accountRow.name || accountRow.username || '').trim()
+    };
+    state.session = session;
+    saveSession(session);
+
+    const backupLocalStorage = (data && data.localStorage && typeof data.localStorage === 'object')
+      ? data.localStorage
+      : ((data?.meta?.localStorage && typeof data.meta.localStorage === 'object') ? data.meta.localStorage : null);
+    try{ __restoreBackupLocalStorage__(backupLocalStorage); }catch(_){ }
+
+    const y = String(
+      backupLocalStorage?.dDAE_exerciseYear || data?.meta?.exerciseYear || data?.exerciseYear || data?.anno || data?.year || loadExerciseYear()
+    ).trim();
+    if (/^\d{4}$/.test(y)){ state.exerciseYear = y; saveExerciseYear(y); }
+
+    const allowedTables = new Set(__ADMIN_TABLES__);
+    // Prima ricostruiamo il catalogo strutture: in questo modo i dataset base
+    // vengono scritti nel contesto corretto della struttura selezionata.
+    try{ await __structureBackupRestoreAll__(data, allowedTables); }catch(_){ }
+
+    for (const table of Object.keys(ds)){
+      if (table === 'utenti' || !allowedTables.has(table)) continue;
+      try{ await __tblSet__(table, ds[table]); }catch(_){ }
+    }
+
+    try{ await __ddaeBackupRestoreTopLevelYears__(data, allowedTables); }catch(_){ }
+    try{ await __ddaeBackupRestoreMultiYear__(data, allowedTables); }catch(_){ }
+    try{ await __restoreCocktailImageAssetsFromBackup__(data); }catch(_){ }
+    try{ __restoreBackupThemeSlots__(data?.meta?.themeSlots || null); }catch(_){ }
+    try{ __purgeBackupLocalDataCaches__(); }catch(_){ }
+
+    // Rileggi l'account dal registro appena ripristinato, così password/licenza/nome
+    // restano esattamente quelli contenuti nel backup.
+    try{
+      const refreshed = await __findUserRowByIdentity__(session);
+      if (refreshed){
+        const freshSession = __sessionFromUserRow__(refreshed);
+        if (freshSession){ state.session = freshSession; saveSession(freshSession); }
+      }
+    }catch(_){ }
+
+    try{ await __kvSet__('auth:lastImportedAccount',{at:__nowIso__(),username:state.session?.username||accountRow.username||'',role:'admin',source:'entry-restore-3.328',fileName:file.name||''}); }catch(_){ }
+    try{ localStorage.removeItem(__AUTH_BACKUP_FORCE_ADMIN_KEY); localStorage.removeItem(__AUTH_BACKUP_IMPORT_ACTIVE_KEY); }catch(_){ }
+    try{ __writeRestoreState({page:'home'}); }catch(_){ }
+    try{ toast('Backup ripristinato: account disponibile','green'); }catch(_){ }
+
+    setTimeout(()=>{
+      try{ location.reload(); }
+      catch(_){ try{ showPage('home'); }catch(__){ } }
+    },180);
+    return true;
+  }catch(e){
+    try{ toast('Errore ripristino backup','orange'); }catch(_){ }
+    return false;
+  }
+}
+
 async function __dbImport__(kind){
   try{
     const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
@@ -4714,6 +4980,24 @@ async function __dbExport__(kind, preopenWin){
     const backupLocalStorage = __collectBackupLocalStorage__();
     const backupThemeSlots = __collectBackupThemeSlots__();
     const cocktailImageAssets = await __collectCocktailImageAssetsForBackup__();
+    let __backupAccountIdentity__ = null;
+    try{
+      const sess = state?.session || loadSession();
+      const uid = String(sess?.user_id || sess?.id || '').trim();
+      const uname = String(sess?.username || sess?.user || '').trim();
+      const rows = Array.isArray(datasets.utenti) ? datasets.utenti : [];
+      const row = rows.find((u)=>{
+        const rid = String(u?.id || u?.user_id || u?.userId || '').trim();
+        const run = String(u?.username || u?.user || '').trim();
+        return (uid && rid === uid) || (uname && run === uname);
+      }) || null;
+      __backupAccountIdentity__ = {
+        user_id: String(row?.id || row?.user_id || row?.userId || uid || '').trim(),
+        username: String(row?.username || row?.user || uname || '').trim(),
+        accountName: String(row?.accountName || row?.account_name || row?.nomeAccount || row?.nome_account || row?.name || row?.nome || sess?.accountName || sess?.account_name || sess?.name || uname || '').trim(),
+        role: 'admin'
+      };
+    }catch(_){ __backupAccountIdentity__ = null; }
     const payload = {
       kind: __DB_EXPORT_KIND__,
       schemaVersion: __DB_SCHEMA_VERSION__,
@@ -4721,10 +5005,12 @@ async function __dbExport__(kind, preopenWin){
       datasets,
       localStorage: backupLocalStorage,
       assets: { cocktailImages: cocktailImageAssets },
+      account: __backupAccountIdentity__,
       meta: {
         localStorage: backupLocalStorage,
         themeSlots: backupThemeSlots,
-        cocktailImageAssets: cocktailImageAssets
+        cocktailImageAssets: cocktailImageAssets,
+        account: __backupAccountIdentity__
       }
     };
 
@@ -5785,7 +6071,7 @@ async function __statGenReadYearSnapshotFromIndexedDb__(year){
     const currentUid = (typeof __ctxDataUid__ === 'function') ? String(__ctxDataUid__() || '').trim() : '';
     if (!currentUid) return null;
 
-    // dDAE_3.327 — confronto storico rigorosamente della struttura attiva.
+    // dDAE_3.328 — confronto storico rigorosamente della struttura attiva.
     // Non cercare mai tabelle appartenenti ad altri context/structure e non usare
     // la presenza di ospiti come prerequisito: un anno può avere sole spese.
     const readRows = async (table) => {
@@ -6607,7 +6893,7 @@ function setPayReceipt(containerId, on){
   btn.setAttribute("aria-pressed", active ? "true" : "false");
 }
 
-// dDAE_3.327 — documento fiscale per Acconto/Saldo: scontrino oppure fattura.
+// dDAE_3.328 — documento fiscale per Acconto/Saldo: scontrino oppure fattura.
 function __normalizeGuestFiscalDoc__(value){
   try{
     const v = String(value ?? '').trim().toLowerCase();
@@ -8205,7 +8491,7 @@ function _guestCashReceiptMissingNow(g){
   return missing;
 }
 
-// dDAE_3.327 — evidenza verde nel popup schedine PS:
+// dDAE_3.328 — evidenza verde nel popup schedine PS:
 // consentita esclusivamente quando l'intero dovuto è saldato in contanti.
 // Qualsiasi pagamento elettronico, anche parziale o misto ai contanti, forza la card standard.
 function __guestPsAlertCashOnlyOneNight__(g){
@@ -8373,7 +8659,7 @@ function __guestGroupCheckInExpectedToday__(guest){
   }catch(_){ return false; }
 }
 
-// dDAE_3.327 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
+// dDAE_3.328 — un messaggio preimpostato inviato disattiva il lampeggio verde del check-in.
 const __GUEST_PRESET_MESSAGE_SENT_STORAGE_KEY__ = 'dDAE_guest_preset_message_sent_v1';
 function __guestPresetMessageSentAtFromRecord__(g){
   try{
@@ -18358,7 +18644,7 @@ function setupAuth(){
     finishLicensedLogin
   };
 
-  // dDAE_3.327: dalla pagina iniziale è nuovamente possibile creare un nuovo account.
+  // dDAE_3.328: dalla pagina iniziale è nuovamente possibile creare un nuovo account.
   // Login admin/operatore continuano a passare dalla selezione degli account esistenti.
   if (btnCreate) bindFastTap(btnCreate, ()=>{ try{ closeAccountPicker(); }catch(_ ){} setMode("create"); });
   if (btnLoginAdmin) bindFastTap(btnLoginAdmin, ()=>{ openAccountPicker("admin"); });
@@ -19307,7 +19593,7 @@ async function __structureRename__(sid, rawName){
 }
 
 
-// dDAE_3.327 — Eliminazione definitiva della struttura selezionata.
+// dDAE_3.328 — Eliminazione definitiva della struttura selezionata.
 function __structureDeletePendingKey__(){ return __STRUCTURE_DELETE_PENDING_PREFIX__ + __structureAccountSuffix__(); }
 function __structureDeletePendingRead__(){
   try{
@@ -19516,7 +19802,7 @@ function __structureCloseCreateModal__(reopenData){
   try{document.body.classList.remove('modal-open');}catch(_){ }
   if(reopenData){ setTimeout(()=>{try{window.__openSettingsDataModal__?.();}catch(_){}},60); }
 }
-// dDAE_3.327 — Home context pill: separazione rigorosa tap / long press su iOS.
+// dDAE_3.328 — Home context pill: separazione rigorosa tap / long press su iOS.
 function __bindHomeYearDisplayPillInteractions__(){
   const btn=document.getElementById('homeYearDisplayPill');
   if(!btn || btn.dataset.homeYearDisplayBound==='1') return;
@@ -21056,9 +21342,8 @@ function setupHeader(){
 
   const authImportTop = document.getElementById("authImportBackupTop");
   if (authImportTop) bindFastTap(authImportTop, async () => {
-    try{ localStorage.setItem(__AUTH_BACKUP_IMPORT_ACTIVE_KEY, "1"); }catch(_){ }
-    try{ localStorage.setItem(__AUTH_BACKUP_FORCE_ADMIN_KEY, "1"); }catch(_){ }
-    try{ await __dbImport__("admin"); }catch(e){ try{ toast("Errore import", "orange"); }catch(_){ } }
+    try{ await __authRestoreBackupFromEntry__(); }
+    catch(e){ try{ toast("Errore ripristino backup", "orange"); }catch(_){ } }
   });
 
   const opImpRoster = document.getElementById("opImportRosterTop");
@@ -24967,7 +25252,7 @@ function __setupSpeseCategoryFilterButtons__(){
   }catch(_){ }
 }
 
-// dDAE_3.327 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
+// dDAE_3.328 — Spese: ordinamento alfabetico A-Z additivo ai filtri categoria.
 function __syncSpeseAlphaSortButton__(){
   try{
     const btn=document.getElementById('speseFilterAlphaBtn');
@@ -48485,7 +48770,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.327';
+  var BUILD_TAG='dDAE_3.328';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51511,6 +51796,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       const input = ev.target;
       if (!input || input.type !== 'file') return;
+      if (input.dataset && input.dataset.ddaeSkipAutoBackupLogin === '1') return;
       if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       const marker = String(input.id || input.name || input.className || input.accept || '').toLowerCase();
       if (marker.indexOf('backup') < 0 && marker.indexOf('json') < 0 && marker.indexOf('dbfileinput') < 0) return;
@@ -53385,7 +53671,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.327',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.328',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -56424,7 +56710,7 @@ async function renderStatAnalisi(){
 }
 
 
-/* dDAE_3.327 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
+/* dDAE_3.328 — Statistiche: confronto anno nelle card di tutte le pagine con confronto */
 (function(){
   'use strict';
   const COMPARE_PAGES = new Set(['statgen','statmensili','statoccupazione','statspese','statprenotazioni','statchannel','statpulizie','statcancellazioni','statamministratore','statnazionalita']);
@@ -56645,7 +56931,7 @@ async function renderStatAnalisi(){
   try{window.addEventListener('pageshow',()=>schedule(120),{passive:true});}catch(_){}
 })();
 
-/* dDAE_3.327 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
+/* dDAE_3.328 — Statistiche: dati confronto solo con ON + toggle Grafico indipendente a due stati */
 (function(){
   const GRAPH_ENABLED_KEY = 'dDAE_stats_graph_enabled_v1';
   const GRAPH_VISUAL_KEY = 'dDAE_stats_graph_toggle_visual_v1';
@@ -56863,7 +57149,7 @@ async function renderStatAnalisi(){
     }
   }catch(_){ }
 
-  /* dDAE_3.327 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
+  /* dDAE_3.328 — evita loop MutationObserver: reagisce solo a nuovi elementi che introducono controlli confronto. */
   try{
     const compareIds=new Set(PAGE_CONFIGS.map((cfg)=>cfg.compare));
     let graphObserverQueued=false;
@@ -56895,7 +57181,7 @@ async function renderStatAnalisi(){
   setTimeout(scheduleAll,900);
 })();
 
-/* dDAE_3.327 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
+/* dDAE_3.328 — Statistiche: nascondi in modo deterministico ogni dato storico quando Confronto è OFF. */
 (function(){
   'use strict';
   const PAGES = [
