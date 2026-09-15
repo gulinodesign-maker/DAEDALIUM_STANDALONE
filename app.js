@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.333";
+const BUILD_VERSION = "3.334";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -34696,6 +34696,7 @@ async function __saveGuestArrivalTimeFromView__(value){
       });
     }catch(_){ }
     try{ invalidateApiCache('ospiti|'); }catch(_){ }
+    try{ if (state && state.page === 'ospiti' && typeof renderGuestCards === 'function') renderGuestCards(); }catch(_){ }
   }catch(e){ try{ toast(e?.message || 'Errore salvataggio ora di arrivo'); }catch(_){ } }
 }
 
@@ -34739,6 +34740,29 @@ function __guestCardArrivalTime__(guest){
       if (time) return time;
     }
     return '';
+  }catch(_){ return ''; }
+}
+
+
+/* dDAE_3.334 — Guest list: i check-in odierni con ora compilata seguono l'ordine cronologico dell'ora di arrivo. */
+function __guestTodayArrivalTimeForSort__(guest, todayIso){
+  try{
+    const today = String(todayIso || todayISO() || '').slice(0,10);
+    if (!today) return '';
+    const rows = (Array.isArray(guest?._groupBookings) && guest._groupBookings.length)
+      ? guest._groupBookings
+      : ((Array.isArray(guest?.bookings) && guest.bookings.length) ? guest.bookings : (guest ? [guest] : []));
+    const times = [];
+    for (const row of rows){
+      const inRaw = row?.check_in ?? row?.checkIn ?? row?.arrivo ?? row?.dataArrivo ?? row?.arrival ?? row?.guestCheckIn ?? '';
+      const inIso = __parseDateFlexibleToISO(inRaw);
+      const day = inIso ? inIso.slice(0,10) : String(inRaw || '').trim().slice(0,10);
+      if (day !== today) continue;
+      const time = __readGuestArrivalTime__(row);
+      if (time) times.push(time);
+    }
+    times.sort();
+    return times[0] || '';
   }catch(_){ return ''; }
 }
 
@@ -37438,12 +37462,13 @@ function sortGuestGroups(groups){
       guest.__sortMeta3222 = {
         checkoutDone: checkoutCompleted ? 0 : 1,
         arrival,
+        todayArrivalTime: __guestTodayArrivalTimeForSort__(guest, today),
         checkoutToday: hasCheckoutToday ? 0 : 1,
         checkIn: rows.some((row) => __guestCheckInDone__(row)) ? 0 : 1,
         name: normalizeGuestNameKey(guest?.nome)
       };
     }catch(_){
-      guest.__sortMeta3222 = { checkoutDone:1, arrival:'', checkoutToday:1, checkIn:1, name:normalizeGuestNameKey(guest?.nome) };
+      guest.__sortMeta3222 = { checkoutDone:1, arrival:'', todayArrivalTime:'', checkoutToday:1, checkIn:1, name:normalizeGuestNameKey(guest?.nome) };
     }
   }
 
@@ -37463,6 +37488,16 @@ function sortGuestGroups(groups){
     if (arrivalA && arrivalB && arrivalA !== arrivalB) return arrivalA.localeCompare(arrivalB);
     if (!arrivalA && arrivalB) return 1;
     if (arrivalA && !arrivalB) return -1;
+
+    // dDAE_3.334 — Se entrambe le card hanno check-in oggi, l'ora di arrivo
+    // compilata diventa il criterio cronologico successivo alla data.
+    if (arrivalA === today && arrivalB === today){
+      const timeA = String(ma.todayArrivalTime || '');
+      const timeB = String(mb.todayArrivalTime || '');
+      if (timeA && timeB && timeA !== timeB) return timeA.localeCompare(timeB);
+      if (timeA && !timeB) return -1;
+      if (!timeA && timeB) return 1;
+    }
 
     if ((ma.checkIn ?? 1) !== (mb.checkIn ?? 1)) return (ma.checkIn ?? 1) - (mb.checkIn ?? 1);
 
@@ -49039,7 +49074,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.333';
+  var BUILD_TAG='dDAE_3.334';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53940,7 +53975,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.333',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.334',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
