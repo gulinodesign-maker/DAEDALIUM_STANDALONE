@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.330";
+const BUILD_VERSION = "3.331";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -9013,6 +9013,41 @@ function updateTopGuestAlertLeds(){
     }
   }catch(_){ }
 }
+// dDAE_3.331 — Etichetta documento fiscale negli alert ricevute.
+// Se la scheda richiede fattura mostra FATTURA; in ogni altro caso SCONTRINO.
+// La dicitura viene risolta ogni volta nella lingua attiva delle Impostazioni.
+function __guestAlertFiscalDocKind__(g){
+  try{
+    const docs = [
+      (typeof __guestFiscalDocFromRecord__ === 'function' ? __guestFiscalDocFromRecord__(g, 'acconto') : ''),
+      (typeof __guestFiscalDocFromRecord__ === 'function' ? __guestFiscalDocFromRecord__(g, 'saldo') : '')
+    ].map(x => String(x || '').trim().toLowerCase()).filter(Boolean);
+    if (docs.includes('fattura')) return 'fattura';
+    if (docs.includes('scontrino')) return 'scontrino';
+    if (typeof __guestInvoiceRequested__ === 'function' && __guestInvoiceRequested__(g)) return 'fattura';
+  }catch(_){ }
+  return 'scontrino';
+}
+function __guestAlertFiscalDocLabel__(g){
+  try{
+    const source = __guestAlertFiscalDocKind__(g) === 'fattura' ? 'Fattura' : 'Scontrino';
+    const translated = (typeof __translateExactText__ === 'function') ? __translateExactText__(source) : source;
+    const locale = (typeof __I18N_LOCALES__ === 'object' && typeof __getAppLanguage__ === 'function') ? (__I18N_LOCALES__[__getAppLanguage__()] || undefined) : undefined;
+    return String(translated || source).toLocaleUpperCase(locale);
+  }catch(_){ return 'SCONTRINO'; }
+}
+function __guestAlertDisplayName__(row, cfg){
+  try{
+    const it = row && row.item ? row.item : row;
+    const base = String(it?.name || '').trim() || 'Prenotazione';
+    const fiscalAlert = !!(it && (it.receiptMissingAlert || it.cashReceiptAlert));
+    const tag = String(cfg?.tag || '').trim().toLowerCase();
+    const fiscalModal = tag === 'ricevuta' || tag === 'contanti' || tag === 'contante' || (!tag && cfg?.side === 'right');
+    if (fiscalAlert && fiscalModal) return `${base} - ${__guestAlertFiscalDocLabel__(it.guest || {})}`;
+    return base;
+  }catch(_){ return String(row?.item?.name || row?.name || 'Prenotazione'); }
+}
+
 function __guestAlertLedConfig__(kind){
   const k = String(kind || '').trim();
   if (k === 'istat') return { side:'left', title:'Alert ISTAT', tag:'ISTAT', tagCls:'tag-sky', detailNeedle:'ISTAT', empty:'Nessun alert ISTAT.' };
@@ -9156,10 +9191,11 @@ function openGuestAlertModal(kind){
       try{ card.dataset.guestId = String(it.id || guestIdOf(it.guest) || ''); }catch(_){ }
       const tagsHtml = (row.tags || []).map(tag => `<span class="guest-alert-tag ${escapeHtml(tag.cls || '')}">${escapeHtml(tag.label || '')}</span>`).join('');
       const details = (row.details || []).map(x => escapeHtml(x)).join(' · ');
+      const displayName = __guestAlertDisplayName__(row, cfg);
       const range = formatRangeCompactIT(it.guest?.check_in ?? it.guest?.checkIn ?? '', it.guest?.check_out ?? it.guest?.checkOut ?? '');
       const channelBadge = getGuestChannelBadgeData(it.guest || {});
       const channelDotHtml = `<span class="guest-alert-channel-dot color-${escapeHtml(channelBadge.color || 'orange')}" style="${escapeHtml(channelBadge.style || __tagColorInlineStyle__(channelBadge.color || 'orange', channelBadge.textColor || '', { opacity:0.80, borderOpacity:1, preferWhiteText:false }))}" aria-label="Channel: ${escapeHtml(channelBadge.name || channelBadge.initial || 'Channel')}" title="${escapeHtml(channelBadge.name || 'Channel')}"><span>${escapeHtml(channelBadge.initial || 'C')}</span></span>`;
-      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name">${escapeHtml(it.name)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>${channelDotHtml}`;
+      card.innerHTML = `<div class="guest-alert-copy"><div class="guest-alert-name" data-no-i18n="1">${escapeHtml(displayName)}</div><div class="guest-alert-meta">${details || 'Alert attivo'}</div>${range ? `<div class="guest-alert-meta">${escapeHtml(range)}</div>` : ''}<div class="guest-alert-tags">${tagsHtml}</div></div><button type="button" class="guest-alert-dismiss" aria-label="Nascondi alert ospite">✕</button>${channelDotHtml}`;
       const openGuestFromCard = () => __openGuestFromAlertCard__(it.guest || null);
       bindFastTap(card, openGuestFromCard);
       card.addEventListener('keydown', (ev) => {
@@ -9222,6 +9258,18 @@ function openGuestAlertModal(kind){
     }
   } catch(_) {}
 }
+try{
+  if (typeof window !== 'undefined' && !window.__ddae3331GuestAlertLanguageBound){
+    window.__ddae3331GuestAlertLanguageBound = true;
+    window.addEventListener('ddae:language-change', ()=>{
+      try{
+        const modal = document.getElementById('guestAlertModal');
+        if (modal && !modal.hidden) openGuestAlertModal(state.guestAlertModalKind || state.guestAlertModalSide || 'left');
+      }catch(_){ }
+    });
+  }
+}catch(_){ }
+
 function closeGuestAlertModal(){
   const modal = document.getElementById('guestAlertModal');
   if (!modal) return;
@@ -10855,6 +10903,18 @@ const __I18N_PHRASES__ = {
     "fr": "Reçu",
     "de": "Beleg",
     "es": "Recibo"
+  },
+  "Scontrino": {
+    "en": "Receipt",
+    "fr": "Ticket de caisse",
+    "de": "Kassenbon",
+    "es": "Ticket"
+  },
+  "Fattura": {
+    "en": "Invoice",
+    "fr": "Facture",
+    "de": "Rechnung",
+    "es": "Factura"
   },
   "Tipo acconto": {
     "en": "Deposit type",
@@ -48771,7 +48831,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.330';
+  var BUILD_TAG='dDAE_3.331';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53672,7 +53732,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.330',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.331',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
