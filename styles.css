@@ -36569,3 +36569,24 @@ body.ddae-dark .guest-fiscal-doc-close{
   margin:0 !important;
   padding:10px 4px !important;
 }
+
+
+/* dDAE_3.330 — Login: icone al posto dei testi + tre tasti editabili dal popup colore */
+#page-auth #authMenu .auth-grid-3 .auth-icon-btn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:8px !important;
+  text-transform:none !important;
+}
+#page-auth #authMenu .auth-grid-3 .auth-icon-btn .auth-menu-ico{
+  width:30px !important;
+  height:30px !important;
+  flex:0 0 30px !important;
+  stroke:currentColor !important;
+  fill:none !important;
+}
+#page-auth #authMenu .auth-grid-3 .auth-icon-btn .auth-menu-ico *{
+  stroke:currentColor !important;
+  fill:none !important;
+}

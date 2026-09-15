@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.329" rel="stylesheet"/>
-<link href="./manifest.json?v=3.329" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.329" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.329" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.329" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.329" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.329" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.329" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.330" rel="stylesheet"/>
+<link href="./manifest.json?v=3.330" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.330" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.330" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.330" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.330" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.330" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.330" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.329";
+window.APP_VERSION = "3.330";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.329";
+  const LOCAL_BUILD = "dDAE_3.330";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.329";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.329")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.329")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.330")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.330")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -303,14 +303,14 @@ window.APP_VERSION = "3.329";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.329"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.330"/>
 </div>
 <!-- MENU account -->
 <div class="auth-menu" id="authMenu">
 <div class="auth-grid auth-grid-3">
-<button class="auth-btn auth-btn-orange" id="btnMenuLoginAdmin" type="button">amministratore</button>
-<button class="auth-btn auth-btn-green" id="btnMenuLoginOperator" type="button">operatore</button>
-<button class="auth-btn auth-btn-violet auth-btn-create-account" id="btnMenuCreate" type="button">nuovo account</button>
+<button aria-label="Amministratore" class="auth-btn auth-btn-orange auth-icon-btn" id="btnMenuLoginAdmin" type="button"><svg aria-hidden="true" class="ui-ico auth-menu-ico" viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 5-3.5 8.3-7 10-3.5-1.7-7-5-7-10V6z"></path><circle cx="12" cy="10" r="2.2"></circle><path d="M8.5 16c.8-1.8 2-2.7 3.5-2.7s2.7.9 3.5 2.7"></path></svg></button>
+<button aria-label="Operatore" class="auth-btn auth-btn-green auth-icon-btn" id="btnMenuLoginOperator" type="button"><svg aria-hidden="true" class="ui-ico auth-menu-ico" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"></path><path d="M2 15h20"></path><path d="M9 4.7V9"></path><path d="M15 4.7V9"></path><path d="M7 19h10"></path></svg></button>
+<button aria-label="Nuovo account" class="auth-btn auth-btn-violet auth-btn-create-account auth-icon-btn" id="btnMenuCreate" type="button"><svg aria-hidden="true" class="ui-ico auth-menu-ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 20c.5-4 2.4-6 5.5-6 2 0 3.5.8 4.5 2.3"></path><path d="M18 11v6"></path><path d="M15 14h6"></path></svg></button>
 </div>
 </div>
 <!-- FORM -->
@@ -1371,7 +1371,7 @@ window.APP_VERSION = "3.329";
 <span class="settings-btn-label">Logout</span>
 </button>
 </div>
-<div class="settings-build build" id="buildText">dDAE_3.329</div>
+<div class="settings-build build" id="buildText">dDAE_3.330</div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" data-ddae-modal-allow-through="1" id="dbFileInput" style="display:none" type="file"/>
 </div></section>
@@ -3274,7 +3274,7 @@ window.APP_VERSION = "3.329";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.329"></script>
-<script defer="" src="./app.js?v=3.329"></script>
+<script defer="" src="./config.js?v=3.330"></script>
+<script defer="" src="./app.js?v=3.330"></script>
 </body>
 </html>
