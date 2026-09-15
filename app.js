@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.332";
+const BUILD_VERSION = "3.333";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11366,6 +11366,7 @@ Object.assign(__I18N_PHRASES__, {
   "Seleziona date": { "en":"Select dates", "fr":"Sélectionnez les dates", "de":"Daten auswählen", "es":"Selecciona las fechas" },
   "Seleziona il range di pernottamento nello stesso calendario": { "en":"Select the stay range in the same calendar", "fr":"Sélectionnez la plage de séjour dans le même calendrier", "de":"Wählen Sie den Aufenthaltszeitraum im selben Kalender", "es":"Selecciona el rango de estancia en el mismo calendario" },
   "Arrivo": { "en":"Check-in", "fr":"Check-in", "de":"Check-in", "es":"Check-in" },
+  "Ora di arrivo": { "en":"Arrival time", "fr":"Heure d\'arrivée", "de":"Ankunftszeit", "es":"Hora de llegada" },
   "Partenza": { "en":"Departure", "fr":"Départ", "de":"Abreise", "es":"Salida" },
   "Conferma": { "en":"Confirm", "fr":"Confirmer", "de":"Bestätigen", "es":"Confirmar" },
   "Mese precedente": { "en":"Previous month", "fr":"Mois précédent", "de":"Vorheriger Monat", "es":"Mes anterior" },
@@ -31026,7 +31027,7 @@ function enterGuestCreateMode(){
 
 
   // reset fields
-  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestResidenceCity","guestBookingNumber","guestMen","guestWomen","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
+  const fields = ["guestName","guestPhone","guestNationality","guestEmail","guestResidenceCity","guestBookingNumber","guestMen","guestWomen","guestArrivalTime","guestAdults","guestKidsU10","guestCheckOut","guestTotal","guestChannel","guestChannelCommission","guestBooking","guestServices","guestDiscount","guestDeposit","guestSaldo","guestRemaining","guestNotes"];
   fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   try{ __applyGuestNameUppercase__(document.getElementById("guestName")); }catch(_){ }
   // reset servizi state
@@ -31182,6 +31183,7 @@ state.guestEditCreatedAt = (ospite?.created_at ?? ospite?.createdAt ?? null);
   try{ const cityEl = document.getElementById("guestResidenceCity"); if (cityEl) cityEl.value = __guestResidenceCityValue__(ospite); }catch(_){ }
   try{ document.getElementById("guestMen").value = __readGuestPeopleCount__(ospite, 'men'); }catch(_){ }
   try{ document.getElementById("guestWomen").value = __readGuestPeopleCount__(ospite, 'women'); }catch(_){ }
+  try{ const arrivalTimeEl = document.getElementById("guestArrivalTime"); if (arrivalTimeEl) arrivalTimeEl.value = __readGuestArrivalTime__(ospite); }catch(_){ }
   try{ state.guestGender = __readGuestGender__(ospite); __syncGuestGenderTabs__(); }catch(_){ }
   document.getElementById("guestBookingNumber").value = ospite.numero_prenotazione ?? ospite.numeroPrenotazione ?? ospite.prenotazione_numero ?? ospite.prenotazioneNumero ?? ospite.booking_number ?? ospite.bookingNumber ?? ospite.reservation_number ?? ospite.reservationNumber ?? ospite.id_prenotazione ?? ospite.idPrenotazione ?? ospite.id_booking ?? ospite.idBooking ?? "";
   document.getElementById("guestAdults").value = ospite.adulti ?? ospite.adults ?? 0;
@@ -34638,6 +34640,108 @@ function __readGuestGender__(ospite){
   }catch(_){ return ""; }
 }
 
+function __normalizeGuestArrivalTime__(value){
+  try{
+    const raw = String(value ?? '').trim();
+    if (!raw) return '';
+    const isoMatch = raw.match(/T(\d{1,2}):(\d{2})/);
+    const timeMatch = isoMatch || raw.match(/(?:^|\s)(\d{1,2})[:.](\d{2})(?::\d{2})?(?:\s|$)/) || raw.match(/^(\d{1,2})(\d{2})$/);
+    if (!timeMatch) return '';
+    const h = parseInt(timeMatch[1], 10);
+    const m = parseInt(timeMatch[2], 10);
+    if (!Number.isFinite(h) || !Number.isFinite(m) || h < 0 || h > 23 || m < 0 || m > 59) return '';
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }catch(_){ return ''; }
+}
+
+function __readGuestArrivalTime__(ospite){
+  try{
+    const raw = ospite?.ora_arrivo ?? ospite?.oraArrivo ?? ospite?.arrival_time ?? ospite?.arrivalTime ?? ospite?.checkin_time ?? ospite?.checkInTime ?? ospite?.check_in_time ?? ospite?.checkInHour ?? ospite?.arrival_hour ?? ospite?.arrivalHour ?? '';
+    const direct = __normalizeGuestArrivalTime__(raw);
+    if (direct) return direct;
+    const checkInRaw = String(ospite?.check_in ?? ospite?.checkIn ?? ospite?.arrivo ?? ospite?.dataArrivo ?? ospite?.arrival ?? ospite?.guestCheckIn ?? '').trim();
+    if (checkInRaw.includes('T')) {
+      const fromDateTime = __normalizeGuestArrivalTime__(checkInRaw);
+      if (fromDateTime && fromDateTime !== '00:00') return fromDateTime;
+    }
+    return '';
+  }catch(_){ return ''; }
+}
+
+function __guestArrivalTimeFields__(value){
+  const time = __normalizeGuestArrivalTime__(value);
+  return {
+    ora_arrivo: time,
+    oraArrivo: time,
+    arrival_time: time,
+    arrivalTime: time
+  };
+}
+
+async function __saveGuestArrivalTimeFromView__(value){
+  try{
+    const base = state.guestViewItem || state.guestEditSourceItem || null;
+    const id = guestIdOf(base) || base?.id || state.guestEditId || '';
+    if (!id) return;
+    const time = __normalizeGuestArrivalTime__(value);
+    const patch = __guestArrivalTimeFields__(time);
+    await api('ospiti', { method:'PUT', body:Object.assign({ id:String(id) }, patch), showLoader:false });
+    try{
+      if (state.guestViewItem) Object.assign(state.guestViewItem, patch);
+      if (state.guestEditSourceItem) Object.assign(state.guestEditSourceItem, patch);
+      const gid = String(id || '').trim();
+      [state.ospiti, state.guests, state.bookings, state.guestList, state.statsGuests, state.guestGroupBookings].forEach((list)=>{
+        if (!Array.isArray(list)) return;
+        list.forEach((row)=>{ try{ if (String(guestIdOf(row) || row?.id || '').trim() === gid) Object.assign(row, patch); }catch(_){ } });
+      });
+    }catch(_){ }
+    try{ invalidateApiCache('ospiti|'); }catch(_){ }
+  }catch(e){ try{ toast(e?.message || 'Errore salvataggio ora di arrivo'); }catch(_){ } }
+}
+
+function __setupGuestArrivalTimeInputInView__(){
+  try{
+    const el = document.getElementById('guestArrivalTime');
+    if (!el) return;
+    el.readOnly = false;
+    try{ el.removeAttribute('readonly'); }catch(_){ }
+    try{ el.tabIndex = 0; }catch(_){ }
+    el.__guestArrivalTimeLastSaved = __normalizeGuestArrivalTime__(el.value);
+    if (el.__guestArrivalTimeBound) return;
+    el.__guestArrivalTimeBound = true;
+    const save = ()=>{
+      try{
+        if (!(state && state.page === 'ospite' && state.guestMode === 'view')) return;
+        const next = __normalizeGuestArrivalTime__(el.value);
+        if (next !== String(el.value || '')) el.value = next;
+        if (String(el.__guestArrivalTimeLastSaved ?? '') === next) return;
+        el.__guestArrivalTimeLastSaved = next;
+        __saveGuestArrivalTimeFromView__(next);
+      }catch(_){ }
+    };
+    el.addEventListener('change', save);
+    el.addEventListener('blur', save);
+  }catch(_){ }
+}
+
+function __guestCardArrivalTime__(guest){
+  try{
+    const direct = __readGuestArrivalTime__(guest);
+    if (direct) return direct;
+    const rows = Array.isArray(guest?._groupBookings) ? guest._groupBookings.slice() : [];
+    rows.sort((a,b)=>{
+      const ta = parseDateTs(a?.check_in ?? a?.checkIn ?? a?.arrivo ?? a?.dataArrivo ?? a?.arrival ?? a?.guestCheckIn);
+      const tb = parseDateTs(b?.check_in ?? b?.checkIn ?? b?.arrivo ?? b?.dataArrivo ?? b?.arrival ?? b?.guestCheckIn);
+      return (ta == null ? 1e18 : ta) - (tb == null ? 1e18 : tb);
+    });
+    for (const row of rows){
+      const time = __readGuestArrivalTime__(row);
+      if (time) return time;
+    }
+    return '';
+  }catch(_){ return ''; }
+}
+
 function __readGuestPeopleCount__(ospite, kind){
   try{
     const isWomen = String(kind || '').toLowerCase() === 'women';
@@ -34662,6 +34766,13 @@ function __syncGuestSexCountInputsReadonly__(isView){
       try{ el.classList.add('tap-counter'); }catch(_){ }
       try{ el.tabIndex = isView ? 0 : -1; }catch(_){ }
     });
+    const arrivalTimeEl = document.getElementById('guestArrivalTime');
+    if (arrivalTimeEl){
+      arrivalTimeEl.readOnly = false;
+      try{ arrivalTimeEl.removeAttribute('readonly'); }catch(_){ }
+      try{ arrivalTimeEl.tabIndex = isView ? 0 : -1; }catch(_){ }
+      if (isView) __setupGuestArrivalTimeInputInView__();
+    }
     if (isView) __setupGuestSexCountTapCounters__();
   }catch(_){ }
 }
@@ -35582,6 +35693,7 @@ async function saveGuest(opts = {}){
   const residenceCity = (String(state.guestMode || '').toLowerCase() === 'edit' && !residenceCityFieldVisible) ? __guestResidenceCityValue__(state.guestEditSourceItem || {}) : residenceCityRaw;
   const menCount = parseInt(document.getElementById("guestMen")?.value || "0", 10) || 0;
   const womenCount = parseInt(document.getElementById("guestWomen")?.value || "0", 10) || 0;
+  const arrivalTime = __normalizeGuestArrivalTime__(document.getElementById("guestArrivalTime")?.value || "");
   const bookingNumber = (document.getElementById("guestBookingNumber")?.value || "").trim();
   const adults = parseInt(document.getElementById("guestAdults")?.value || "0", 10) || 0;
   const kidsU10 = parseInt(document.getElementById("guestKidsU10")?.value || "0", 10) || 0;
@@ -35651,6 +35763,10 @@ if (!name) return toast("Inserisci il nome");
     women: womenCount,
     women_count: womenCount,
     womenCount: womenCount,
+    ora_arrivo: arrivalTime,
+    oraArrivo: arrivalTime,
+    arrival_time: arrivalTime,
+    arrivalTime: arrivalTime,
     numero_prenotazione: bookingNumber,
     numeroPrenotazione: bookingNumber,
     prenotazione_numero: bookingNumber,
@@ -38407,6 +38523,7 @@ function renderGuestCards(){
     const stayNights = calcStayNights(first);
 
     const arrivoText = __guestCardStayRangeLabel__(first) || formatArrivalDayIT(first.check_in || first.checkIn || "") || "—";
+    const arrivalTimeText = escapeHtml(__guestCardArrivalTime__(first));
 
     const roomsLabel = escapeHtml(__guestCardRoomsLabel__(first));
     const channelBadge = getGuestChannelBadgeData(first);
@@ -38430,6 +38547,7 @@ function renderGuestCards(){
 
     card.innerHTML = `
       <div class="guest-row guest-row-compact">
+        ${arrivalTimeText ? `<span class="guest-arrival-time-card" aria-label="${escapeHtml(__translateExactText__('Ora di arrivo') || 'Ora di arrivo')}: ${arrivalTimeText}" title="${escapeHtml(__translateExactText__('Ora di arrivo') || 'Ora di arrivo')}: ${arrivalTimeText}"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg><span>${arrivalTimeText}</span></span>` : ``}
         <div class="guest-main">
           ${insNo ? `<span class="guest-insno ${__guestBookingStatusForGroup__(first) ? 'is-ready' : 'is-missing'}${hasNotes ? ` has-notes` : ``}${insNoDigitsClass}" aria-label="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}" title="${__guestBookingStatusForGroup__(first) ? 'Numero prenotazione inserito' : 'Numero prenotazione mancante'}"${hasNotes ? ` data-has-notes="1"` : ``}>${insNo}</span>` : ``}
           <span class="guest-nationality-dot" aria-label="Nazionalità: ${nationalityName}" title="${nationalityName}"><span class="guest-nationality-flag" aria-hidden="true">${nationalityFlag}</span></span>
@@ -48921,7 +49039,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.332';
+  var BUILD_TAG='dDAE_3.333';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53822,7 +53940,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.332',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.333',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -36611,3 +36611,78 @@ body.ddae-dark .guest-fiscal-doc-close{
   stroke:currentColor !important;
   fill:none !important;
 }
+
+
+/* dDAE_3.333 — Ora di arrivo: terza cella accanto a Uomini/Donne + visualizzazione guest list */
+#page-ospite .guest-form-card.is-view #guestSexCountRow{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:10px !important;
+  align-items:stretch !important;
+}
+#page-ospite #guestSexCountRow .guest-arrival-time-field{
+  min-width:0 !important;
+  min-height:56px !important;
+}
+#page-ospite #guestSexCountRow .guest-arrival-time-field > label{
+  transform:translateY(-12px) scale(0.86) !important;
+  transform-origin:left top !important;
+}
+#page-ospite #guestSexCountRow #guestArrivalTime{
+  width:100% !important;
+  min-width:0 !important;
+  height:56px !important;
+  min-height:56px !important;
+  padding:26px 8px 8px !important;
+  box-sizing:border-box !important;
+  font-weight:900 !important;
+  font-size:18px !important;
+  line-height:1.1 !important;
+  text-align:center !important;
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  opacity:1 !important;
+  -webkit-text-fill-color:currentColor !important;
+}
+#page-ospite #guestSexCountRow #guestArrivalTime::-webkit-date-and-time-value{
+  text-align:center !important;
+  min-height:20px !important;
+}
+#page-ospiti .guest-card .guest-arrival-time-card{
+  position:absolute !important;
+  left:14px !important;
+  bottom:10px !important;
+  z-index:2 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:4px !important;
+  max-width:86px !important;
+  min-height:18px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:var(--guest-list-card-subtext, inherit) !important;
+  -webkit-text-fill-color:var(--guest-list-card-subtext, currentColor) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  font-variant-numeric:tabular-nums !important;
+  white-space:nowrap !important;
+  pointer-events:none !important;
+}
+#page-ospiti .guest-card .guest-arrival-time-card svg{
+  width:14px !important;
+  height:14px !important;
+  flex:0 0 14px !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
+  color:var(--guest-list-card-subtext, #dbe7f4) !important;
+  -webkit-text-fill-color:var(--guest-list-card-subtext, #dbe7f4) !important;
+}
