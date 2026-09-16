@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.337";
+const BUILD_VERSION = "3.338";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7073,12 +7073,12 @@ function __selectGuestFiscalDoc__(doc){
     let d = __normalizeGuestFiscalDoc__(doc);
     if (!_isCashTypeStr_(paymentType) && d === 'nullo') d = '';
     if (kind === 'saldo'){
-      // dDAE_3.337 — il popup sceglie solo il documento DA EMETTERE:
+      // dDAE_3.338 — il popup sceglie solo il documento DA EMETTERE:
       // non modifica lo stato del tasto che certifica il documento già emesso.
       state.guestSaldoFiscalDoc = d;
       __setPayFiscalDocUi__(containerId, d);
     }else{
-      // dDAE_3.337 — stessa separazione tra intenzione fiscale ed emissione reale.
+      // dDAE_3.338 — stessa separazione tra intenzione fiscale ed emissione reale.
       state.guestDepositFiscalDoc = d;
       __setPayFiscalDocUi__(containerId, d);
     }
@@ -29529,7 +29529,7 @@ function _isRicevutaFlag(g, kind){
     };
 
     if (kind === "acconto"){
-      // dDAE_3.337 — il tipo di documento fiscale (scontrino/fattura) indica solo
+      // dDAE_3.338 — il tipo di documento fiscale (scontrino/fattura) indica solo
       // cosa deve essere emesso. Solo la spunta ricevuta/documento emesso chiude l'alert.
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
@@ -29550,7 +29550,7 @@ function _isRicevutaFlag(g, kind){
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
     } else {
-      // dDAE_3.337 — anche per il saldo il documento fiscale scelto è un
+      // dDAE_3.338 — anche per il saldo il documento fiscale scelto è un
       // promemoria del documento da emettere, non una conferma di emissione.
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
@@ -49160,7 +49160,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.337';
+  var BUILD_TAG='dDAE_3.338';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -54061,7 +54061,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.337',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.338',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

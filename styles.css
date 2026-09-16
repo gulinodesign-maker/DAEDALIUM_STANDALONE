@@ -36119,7 +36119,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
 }
 
 /* dDAE_3.328 — Wide compact landscape: ottimizzazione form-factor iPhone Duo aperto */
-@media (orientation: landscape) and (min-width: 680px) and (max-height: 700px){
+@media (orientation: landscape) and (min-width: 680px) and (max-width: 1400px){
   :root{
     --ddae-wide-landscape-gutter: max(18px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   }
@@ -36420,7 +36420,7 @@ body.ddae-dark #page-statchannel .stat-row[data-stat-scope="pms"] .stat-channel-
     font-size:15px !important;
   }
 }
-@media (orientation: landscape) and (min-width:680px) and (max-height:700px){
+@media (orientation: landscape) and (min-width:680px) and (max-width:1400px){
   .topservizi-center #homeYearPill.topservizi-context-label{
     font-size:16px !important;
     max-width:min(54vw,520px) !important;
@@ -36779,4 +36779,155 @@ body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
 #statSpeseList .spesa-motivo,
 #statSpeseList .spesa-cat {
   text-transform: uppercase;
+}
+
+
+/* dDAE_3.338 — iPad landscape: stessa ottimizzazione wide dei layout landscape,
+   con proporzioni tablet e spazio riservato alla barra alert inferiore. */
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 701px) and (max-width: 1400px){
+  :root{
+    --ddae-wide-landscape-gutter: max(26px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  }
+
+  .brand{
+    --topservizi-left-reserve:118px !important;
+    --topservizi-right-reserve:188px !important;
+    --topservizi-center-width:calc(100% - 346px) !important;
+  }
+  .topservizi-year{
+    font-size:20px !important;
+  }
+  .topservizi-center #homeYearPill.topservizi-context-label{
+    font-size:16px !important;
+    max-width:min(56vw, 650px) !important;
+  }
+
+  #page-home .home-page,
+  body.page-lock-vertical #page-home .home-page{
+    min-height:calc(100dvh - var(--app-topservizi-offset, 68px)) !important;
+    padding:22px var(--ddae-wide-landscape-gutter)
+      calc(var(--ddae-bottom-led-safe-space, 76px) + 26px + var(--safe-bottom, 0px)) !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    overflow:hidden !important;
+  }
+  #page-home #homeYearDisplayPill.home-year-display-pill{
+    flex:0 0 38px !important;
+    height:38px !important;
+    min-height:38px !important;
+    min-width:94px !important;
+    margin:0 auto 10px !important;
+    font-size:15px !important;
+  }
+  #page-home .home-context-placeholder{
+    flex:0 0 8px !important;
+    height:8px !important;
+    min-height:8px !important;
+  }
+  #page-home .home-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+    width:min(1180px, 100%) !important;
+    max-width:1180px !important;
+    gap:24px 22px !important;
+    padding:8px 0 14px !important;
+    margin:0 auto !important;
+    align-content:start !important;
+    justify-items:center !important;
+    transform:none !important;
+  }
+  #page-home .home-main{
+    width:100% !important;
+    max-width:170px !important;
+    min-width:0 !important;
+    gap:7px !important;
+  }
+  #page-home .home-main-glyph{
+    width:clamp(96px, 8.4vw, 116px) !important;
+    height:clamp(96px, 8.4vw, 116px) !important;
+    border-radius:30px !important;
+  }
+  #page-home .home-main-glyph .ui-ico{
+    width:clamp(48px, 4.3vw, 58px) !important;
+    height:clamp(48px, 4.3vw, 58px) !important;
+  }
+  #page-home .home-main-label,
+  #page-home .home-main-label.small{
+    font-size:15px !important;
+    line-height:1.1 !important;
+    min-height:17px !important;
+    white-space:nowrap !important;
+  }
+
+  #page-statistiche .stats-page{
+    min-height:calc(100dvh - var(--app-topservizi-offset, 68px)) !important;
+    padding:18px var(--ddae-wide-landscape-gutter)
+      calc(var(--ddae-bottom-led-safe-space, 76px) + 24px + var(--safe-bottom, 0px)) !important;
+    overflow:hidden !important;
+  }
+  #page-statistiche .stats-title,
+  #page-statistiche .stats-divider,
+  #page-statistiche .home-grid{
+    width:min(1140px,100%) !important;
+    max-width:1140px !important;
+  }
+  #page-statistiche .home-grid{
+    grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+    gap:22px 24px !important;
+    padding:16px 0 !important;
+    justify-items:center !important;
+    transform:none !important;
+  }
+  #page-statistiche .home-main{
+    max-width:180px !important;
+  }
+  #page-statistiche .home-main-glyph{
+    width:104px !important;
+    height:104px !important;
+    border-radius:28px !important;
+  }
+  #page-statistiche .home-main-glyph .ui-ico{
+    width:52px !important;
+    height:52px !important;
+  }
+  #page-statistiche .home-main-label,
+  #page-statistiche .home-main-label.small{
+    font-size:15px !important;
+    line-height:1.1 !important;
+  }
+
+  #page-impostazioni .settings-actions.settings-actions-reference{
+    width:min(1120px,100%) !important;
+    max-width:1120px !important;
+    gap:16px 18px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn,
+  #page-impostazioni #settingsStructureBtn.settings-btn{
+    height:96px !important;
+    min-height:96px !important;
+    border-radius:20px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn .ui-ico,
+  #page-impostazioni #settingsStructureBtn .ui-ico{
+    width:32px !important;
+    height:32px !important;
+    min-width:32px !important;
+    flex-basis:32px !important;
+  }
+  #page-impostazioni .settings-actions.settings-actions-reference .settings-btn-label,
+  #page-impostazioni #settingsStructureBtn .settings-btn-label{
+    font-size:13px !important;
+  }
+
+  #page-statmensili .month-stack:not(.has-expanded-month){
+    gap:12px 14px !important;
+  }
+  #page-spese #speseCategoryFilterButtons.spesa-category-row{
+    gap:10px !important;
+  }
+
+  .modal-card,
+  .structure-select-card,
+  .structure-create-card{
+    max-width:min(820px, calc(100vw - 2 * var(--ddae-wide-landscape-gutter))) !important;
+  }
 }
