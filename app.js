@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.336";
+const BUILD_VERSION = "3.337";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -7006,7 +7006,7 @@ function __ensureGuestFiscalDocModal__(){
       <div class="modal-card guest-fiscal-doc-card" role="dialog" aria-modal="true" aria-labelledby="guestFiscalDocTitle">
         <button type="button" id="guestFiscalDocClose" class="guest-fiscal-doc-close" aria-label="Chiudi" title="Chiudi"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
         <div id="guestFiscalDocTitle" class="guest-fiscal-doc-title">Documento fiscale</div>
-        <div class="guest-fiscal-doc-subtitle">Seleziona il documento emesso</div>
+        <div class="guest-fiscal-doc-subtitle">Seleziona il documento da emettere</div>
         <div class="guest-fiscal-doc-options" id="guestFiscalDocOptions">
           <button type="button" id="guestFiscalDocScontrino" class="guest-fiscal-doc-option" data-fiscal-doc="scontrino" aria-label="Scontrino" title="Scontrino"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg></button>
           <button type="button" id="guestFiscalDocFattura" class="guest-fiscal-doc-option" data-fiscal-doc="fattura" aria-label="Fattura" title="Fattura"><svg aria-hidden="true" class="ui-ico" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M15 3v4h4"></path><path d="M9 10h6"></path><path d="M9 14h6"></path><path d="M9 18h4"></path></svg></button>
@@ -7073,20 +7073,19 @@ function __selectGuestFiscalDoc__(doc){
     let d = __normalizeGuestFiscalDoc__(doc);
     if (!_isCashTypeStr_(paymentType) && d === 'nullo') d = '';
     if (kind === 'saldo'){
+      // dDAE_3.337 — il popup sceglie solo il documento DA EMETTERE:
+      // non modifica lo stato del tasto che certifica il documento già emesso.
       state.guestSaldoFiscalDoc = d;
-      state.guestSaldoReceipt = false;
-      setPayReceipt(containerId, false);
       __setPayFiscalDocUi__(containerId, d);
     }else{
+      // dDAE_3.337 — stessa separazione tra intenzione fiscale ed emissione reale.
       state.guestDepositFiscalDoc = d;
-      state.guestDepositReceipt = false;
-      setPayReceipt(containerId, false);
       __setPayFiscalDocUi__(containerId, d);
     }
     if (d === 'scontrino' || d === 'fattura'){ try{ __clearGuestInvoiceRequestIfReceipted__(); }catch(_){ } }
     __closeGuestFiscalDocModal__();
-    // La scelta indica quale documento deve essere emesso; il tag ricevuta resta spento
-    // finché l'utente non lo marca esplicitamente come completato.
+    // La scelta indica soltanto quale documento deve essere emesso; lo stato del
+    // tasto che certifica l'emissione reale non viene modificato da questo popup.
     if (String(state.guestMode || '').toLowerCase() !== 'create'){
       Promise.resolve(__persistGuestFiscalDoc__(kind === 'saldo' ? 'saldo' : 'acconto', d));
     }else{
@@ -10956,7 +10955,7 @@ const __I18N_PHRASES__ = {
     "de": "Steuerbeleg",
     "es": "Documento fiscal"
   },
-  "Seleziona il documento emesso": {
+  "Seleziona il documento da emettere": {
     "en": "Select the document to issue",
     "fr": "Sélectionnez le document à émettre",
     "de": "Auszustellenden Beleg auswählen",
@@ -29530,7 +29529,8 @@ function _isRicevutaFlag(g, kind){
     };
 
     if (kind === "acconto"){
-      if (__guestFiscalDocFromRecord__(g, 'acconto')) return true;
+      // dDAE_3.337 — il tipo di documento fiscale (scontrino/fattura) indica solo
+      // cosa deve essere emesso. Solo la spunta ricevuta/documento emesso chiude l'alert.
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
       const explicit = firstExplicit([
@@ -29550,7 +29550,8 @@ function _isRicevutaFlag(g, kind){
       if (t.includes("ricev")) return true;
       if (t.includes("contant")) return false;
     } else {
-      if (__guestFiscalDocFromRecord__(g, 'saldo')) return true;
+      // dDAE_3.337 — anche per il saldo il documento fiscale scelto è un
+      // promemoria del documento da emettere, non una conferma di emissione.
       // La spunta della scheda ospite è il dato autorevole: se esiste ed è OFF,
       // eventuali campi legacy/numero/file ricevuta non devono più conteggiare la ricevuta.
       const explicit = firstExplicit([
@@ -49159,7 +49160,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.336';
+  var BUILD_TAG='dDAE_3.337';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -54060,7 +54061,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.336',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.337',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
