@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.335";
+const BUILD_VERSION = "3.336";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -23213,8 +23213,7 @@ function resetInserisci(){
       const v = collapseSpaces((mot.value || "").trim());
       if (!v) return;
       const canonical = findCanonicalMotivazione(v);
-      if (canonical) mot.value = canonical;
-      else mot.value = v; // pulizia spazi multipli
+      mot.value = collapseSpaces(canonical || v).toLocaleUpperCase();
     });
   } // lascia oggi
 }
@@ -23278,7 +23277,7 @@ function __enterSpesaEditMode__(row){
   try{ state.spesaEditingId = String(row?.id || '').trim(); }catch(_){ }
   __setSpesaEditorUiMode__('edit');
   try{ $("#spesaImporto").value = String(Number(row?.importoLordo || row?.importo_lordo || row?.importo || 0) || ''); }catch(_){ }
-  try{ $("#spesaMotivazione").value = String(row?.motivazione || row?.motivo || '').trim(); }catch(_){ }
+  try{ $("#spesaMotivazione").value = collapseSpaces(String(row?.motivazione || row?.motivo || '').trim()).toLocaleUpperCase(); }catch(_){ }
   try{ __setSpeseBudgetMode__(__isFuoriBudgetSpesa__(row) ? 'fuori' : 'budget', { render:false }); }catch(_){ }
   try{
     const rawCat = String(row?.categoria || row?.cat || '').trim();
@@ -23297,7 +23296,7 @@ async function saveSpesa(opts){
   const dataSpesa = $("#spesaData").value;
   const categoria = $("#spesaCategoria").value;
   const importoLordo = Number($("#spesaImporto").value);
-  const motivazione = ($("#spesaMotivazione").value || "").trim();
+  let motivazione = collapseSpaces(($("#spesaMotivazione").value || "").trim()).toLocaleUpperCase();
   const editingId = String(state?.spesaEditingId || '').trim();
 
   if (!isFinite(importoLordo) || importoLordo <= 0) return toast("Importo non valido");
@@ -23309,7 +23308,8 @@ async function saveSpesa(opts){
   const canonical = findCanonicalMotivazione(motivazione);
   // Se esiste già (spazi/case/accenti diversi), non salvare duplicati
   if (canonical) {
-    $("#spesaMotivazione").value = canonical; // versione canonica
+    motivazione = collapseSpaces(canonical).toLocaleUpperCase();
+    $("#spesaMotivazione").value = motivazione;
   } else {
     try {
       await api("motivazioni", { method:"POST", body:{ motivazione }, showLoader:false });
@@ -23403,7 +23403,7 @@ function renderSpese(){
 
     const importo = Number(s.importoLordo || 0);
     const data = formatShortDateIT(s.dataSpesa || s.data || s.data_spesa || "");
-    const motivo = escapeHtml((s.motivazione || s.motivo || "").toString());
+    const motivo = escapeHtml(collapseSpaces((s.motivazione || s.motivo || "").toString()).toLocaleUpperCase());
 
     el.innerHTML = `
       <div class="spesa-card-content">
@@ -30753,9 +30753,9 @@ function renderStatSpese(){
 
         const importo = Number(sp.importoLordo || 0);
         const data = formatShortDateIT(sp.dataSpesa || sp.data || sp.data_spesa || "");
-        const motivoTxt = (sp.motivazione || sp.motivo || "").toString();
+        const motivoTxt = collapseSpaces((sp.motivazione || sp.motivo || "").toString()).toLocaleUpperCase();
         const motivo = escapeHtml(motivoTxt);
-        const categoria = escapeHtml(__spesaCategoriaDisplay__(sp));
+        const categoria = escapeHtml(String(__spesaCategoriaDisplay__(sp) || "").toLocaleUpperCase());
 
         el.innerHTML = `
           <div class="item-top" style="align-items:center;">
@@ -40912,8 +40912,7 @@ try{
       const v = collapseSpaces((mot.value || "").trim());
       if (!v) return;
       const canonical = findCanonicalMotivazione(v);
-      if (canonical) mot.value = canonical;
-      else mot.value = v; // pulizia spazi multipli
+      mot.value = collapseSpaces(canonical || v).toLocaleUpperCase();
     });
   }
 
@@ -45411,14 +45410,100 @@ async function __applySpeseDateRangeModal__(){
     await onPeriodChanged({ showLoader:false });
   }catch(_){ }
 }
+function __openSpeseDateRangeTriggerColorPicker__(btn){
+  try{
+    if (!btn) return;
+    const current = __headerActionVisualFor__(btn.id);
+    __tagColorPopupOpen__('header-action-button', current, (payload) => {
+      const nextVisual = __designVisualFromPayload__(__headerActionVisualFor__(btn.id), payload, current.bg || 'white');
+      __writeHeaderActionVisual__(btn.id, nextVisual);
+      if (payload && payload.opacity != null) __designBgOpacityWrite__(payload.opacity);
+      __headerActionApplyAll__();
+    }, {
+      supportsBg:true,
+      supportsBorder:true,
+      supportsFg:true,
+      supportsOpacity:true,
+      supportsBold:false,
+      opacity:current.opacity ?? __designBgOpacityRead__(),
+      defaultMode:'bg',
+      fallbackBg:(current.bg || 'white'),
+      onPreview:(payload) => { __previewHeaderActionVisual__(btn.id, payload); },
+      onRevert:() => { __headerActionApplyToButton__(btn); },
+      applyCategory:{
+        message:'Applicare le modifiche a tutti i tasti della top servizi?',
+        confirmYesLabel:'Sì',
+        confirmNoLabel:'No',
+        apply: async(payload, changed) => { await __applyHeaderActionChangesToCategory__(payload, changed); }
+      }
+    });
+  }catch(_){ }
+}
+
+function __prepareSpeseDateRangeTrigger__(){
+  try{
+    let trigger = document.getElementById('speseDateRangeTrigger');
+    if (!trigger) return null;
+    if (trigger.dataset.speseRangeDedicated !== '1'){
+      const clean = trigger.cloneNode(true);
+      clean.dataset.speseRangeDedicated = '1';
+      // Impedisce al binder generico della top bar di aggiungere un secondo
+      // riconoscitore di pressione lunga sul calendario delle spese.
+      clean.dataset.headerColorHoldBound = '1';
+      trigger.replaceWith(clean);
+      trigger = clean;
+    }
+    if (trigger.dataset.speseRangeGestureBound !== '1'){
+      trigger.dataset.speseRangeGestureBound = '1';
+      let timer = null;
+      let longPress = false;
+      const clear = () => { if (timer){ clearTimeout(timer); timer = null; } };
+      const block = (ev) => {
+        try{ ev.preventDefault(); }catch(_){ }
+        try{ ev.stopPropagation(); }catch(_){ }
+        try{ ev.stopImmediatePropagation(); }catch(_){ }
+      };
+      trigger.addEventListener('pointerdown', (ev) => {
+        try{ if (ev.pointerType === 'mouse' && ev.button !== 0) return; }catch(_){ }
+        clear();
+        longPress = false;
+        timer = setTimeout(() => {
+          longPress = true;
+          try{ trigger.__speseRangeSuppressTapUntil = Date.now() + 1000; }catch(_){ }
+          __openSpeseDateRangeTriggerColorPicker__(trigger);
+        }, 520);
+      }, { passive:true });
+      ['pointerup','pointercancel','pointerleave'].forEach((evt) => {
+        trigger.addEventListener(evt, (ev) => {
+          clear();
+          if (longPress){
+            try{ trigger.__speseRangeSuppressTapUntil = Date.now() + 1000; }catch(_){ }
+            block(ev);
+            setTimeout(() => { longPress = false; }, 0);
+          }
+        }, { passive:false, capture:true });
+      });
+      trigger.addEventListener('click', (ev) => {
+        try{
+          if (longPress || (trigger.__speseRangeSuppressTapUntil || 0) > Date.now()){
+            block(ev);
+            longPress = false;
+            return;
+          }
+        }catch(_){ }
+        try{ __openSpeseDateRangeModal__(); }catch(_){ }
+      });
+      trigger.addEventListener('contextmenu', (ev) => { block(ev); });
+    }
+    try{ __headerActionApplyToButton__(trigger); }catch(_){ }
+    return trigger;
+  }catch(_){ return document.getElementById('speseDateRangeTrigger'); }
+}
+
 function __bindSpeseDateRangeUi__(){
   try{
-    const trigger = document.getElementById('speseDateRangeTrigger');
+    const trigger = __prepareSpeseDateRangeTrigger__();
     const modal = document.getElementById('speseDateRangeModal');
-    if (trigger && !trigger.__boundSpeseRangeModal){
-      trigger.__boundSpeseRangeModal = true;
-      bindFastTap(trigger, () => { try{ __openSpeseDateRangeModal__(); }catch(_){ } });
-    }
     if (modal && !modal.__boundSpeseRangeModal){
       modal.__boundSpeseRangeModal = true;
       const closeModal = () => { try{ __closeSpeseDateRangeModal__(true); }catch(_){ } };
@@ -45823,7 +45908,7 @@ function renderSpese(){
     __applySpesaCardColor__(el, s);
 
     const importo = Number(s.importoLordo || 0);
-    const motivoTxt = (s.motivazione || s.motivo || "").toString();
+    const motivoTxt = collapseSpaces((s.motivazione || s.motivo || "").toString()).toLocaleUpperCase();
     const motivo = escapeHtml(motivoTxt);
 
     el.innerHTML = `
@@ -49074,7 +49159,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.335';
+  var BUILD_TAG='dDAE_3.336';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53975,7 +54060,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.335',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.336',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

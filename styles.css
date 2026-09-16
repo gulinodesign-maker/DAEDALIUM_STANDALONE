@@ -36772,3 +36772,11 @@ body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
   border-radius:0 !important;
   box-shadow:none !important;
 }
+
+/* dDAE_3.336 — Spese: motivazioni sempre in stampatello maiuscolo */
+#spesaMotivazione,
+#speseList .spesa-motivo,
+#statSpeseList .spesa-motivo,
+#statSpeseList .spesa-cat {
+  text-transform: uppercase;
+}
