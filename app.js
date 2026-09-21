@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.339";
+const BUILD_VERSION = "3.340";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -28884,7 +28884,7 @@ function computeStatMensili(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
   const servizi = Array.isArray(state.servizi) ? state.servizi : [];
   const byMonth = new Array(12).fill(0);
-  // dDAE_3.339 — importi già incassati (acconto + saldo) associati al mese del soggiorno.
+  // dDAE_3.340 — importi già incassati (acconto + saldo) associati al mese del soggiorno.
   const incassatoByMonth = new Array(12).fill(0);
 
   const money = (v) => {
@@ -49174,7 +49174,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.339';
+  var BUILD_TAG='dDAE_3.340';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51121,6 +51121,11 @@ try{
           }catch(_){ return []; }
         };
         const annualVal = totalMensile;
+        const annualIncassato = Math.max(0, sumList(incassatoMonths));
+        const annualTotalDisplay = compareEnabled
+          ? euro(annualVal)
+          : `${__ddae3339EuroPairPart__(annualVal)} / ${__ddae3339EuroPairPart__(annualIncassato)}`;
+        const annualTotalStrongClass = compareEnabled ? '' : ' class="month-total-pair"';
         const annualSpese = sumList(speseMonths);
         const annualRooms = Math.max(0, Math.round(sumList(occupiedRooms)));
         const annualOccPct = weightedOcc(occupiedRooms, occPctByMonth);
@@ -51145,7 +51150,7 @@ try{
               <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati anno'))}">
                 <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
                 <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
-                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(annualVal)}</strong></div>
+                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong${annualTotalStrongClass}>${annualTotalDisplay}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(cmpAnnualVal)}</strong></div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(annualSpese)}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(cmpAnnualSpese)}</strong></div>
@@ -54090,7 +54095,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.339',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.340',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
