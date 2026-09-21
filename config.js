@@ -1,6 +1,4 @@
-/* dDAE_3.313 - Firebase frontend config + traduzione al salvataggio + endpoint opzionale */
-const DDAE_LICENSE_PAYMENT_URL = "";
-
+/* dDAE_3.341 - Firebase frontend config + traduzione al salvataggio + endpoint opzionale */
 // Endpoint di traduzione opzionale usato solo come fallback durante il salvataggio delle traduzioni.
 // Se la funzione serverless viene distribuita insieme al progetto, lasciare vuoto usa ./api/translate.
 // Se resta su dominio esterno (es. Vercel), inserire qui l'URL HTTPS completo.

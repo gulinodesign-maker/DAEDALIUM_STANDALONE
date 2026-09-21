@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=3.340" rel="stylesheet"/>
-<link href="./manifest.json?v=3.340" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.340" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=3.340" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=3.340" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=3.340" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.340" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.340" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=3.341" rel="stylesheet"/>
+<link href="./manifest.json?v=3.341" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.341" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=3.341" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=3.341" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=3.341" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=3.341" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=3.341" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Daedalium" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "3.340";
+window.APP_VERSION = "3.341";
 (function(){
-  const LOCAL_BUILD = "dDAE_3.340";
+  const LOCAL_BUILD = "dDAE_3.341";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "3.340";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.340")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.340")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=3.341")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=3.341")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -303,7 +303,7 @@ window.APP_VERSION = "3.340";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.340"/>
+<img alt="Daedalium" class="auth-logo" src="./assets/logo.jpg?v=3.341"/>
 </div>
 <!-- MENU account -->
 <div class="auth-menu" id="authMenu">
@@ -390,19 +390,6 @@ window.APP_VERSION = "3.340";
 <div class="auth-action-row">
 <button class="auth-btn auth-btn-gray" id="btnAuthBack" type="button">indietro</button>
 <button class="auth-btn auth-btn-orange" id="btnAuthSubmit" type="button">continua</button>
-</div>
-</div>
-<div class="auth-activation" hidden="" id="authActivation">
-<div class="auth-activation-title" id="authActivationTitle">Attivazione account</div>
-<div class="auth-activation-user" id="authActivationUser">—</div>
-<div class="auth-activation-text" id="authActivationText">Accedi e gestisci la licenza da Impostazioni → Licenza.</div>
-<div class="auth-grid auth-grid-2 auth-activation-grid">
-<button class="auth-btn auth-btn-azure" id="btnAuthRequestCode" type="button">licenza</button>
-<button class="auth-btn auth-btn-green" id="btnAuthUnlockCode" type="button">accedi</button>
-</div>
-<div aria-live="polite" class="auth-hint auth-activation-hint" id="authActivationHint"></div>
-<div class="auth-action-row auth-activation-actions">
-<button class="auth-btn auth-btn-gray" id="btnAuthActivationBack" type="button">indietro</button>
 </div>
 </div>
 </div>
@@ -1362,16 +1349,23 @@ window.APP_VERSION = "3.340";
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M15 17h4"></path><path d="M17 15v4"></path></svg>
 <span class="settings-btn-label">Account</span>
 </button>
-<button aria-label="Licenze" class="settings-btn settings-btn-roster settings-btn-master" id="settingsMasterBtn" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4"></path><path d="M9 12l2 2 4-4"></path></svg>
-<span class="settings-btn-label">Licenza</span>
+<button aria-label="Codice operatore" class="settings-btn settings-btn-roster settings-btn-master settings-btn-opcode" id="settingsMasterBtn" type="button">
+<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24">
+<path d="M4 4h6v6H4z"></path>
+<path d="M14 4h6v6h-6z"></path>
+<path d="M4 14h6v6H4z"></path>
+<path d="M14 14h2"></path>
+<path d="M14 18h6"></path>
+<path d="M18 14v6"></path>
+</svg>
+<span class="settings-btn-label">Codice Operatore</span>
 </button>
 <button aria-label="Logout" class="settings-btn settings-btn-logout" id="settingsLogoutBtn" type="button">
 <svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
 <span class="settings-btn-label">Logout</span>
 </button>
 </div>
-<div class="settings-build build" id="buildText">dDAE_3.340</div>
+<div class="settings-build build" id="buildText">dDAE_3.341</div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept="application/json,.json" data-ddae-modal-allow-through="1" id="dbFileInput" style="display:none" type="file"/>
 </div></section>
@@ -2975,87 +2969,6 @@ window.APP_VERSION = "3.340";
 </div>
 </div>
 </div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseRequestModal">
-<div aria-label="Codice richiesta" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title" id="licenseRequestModalTitle">CODICE RICHIESTA</div>
-<button aria-label="Chiudi" class="icon-btn" id="licenseRequestClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
-</button>
-</div>
-<div class="db-menu-body" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px">
-<div class="code-box" id="licenseRequestCodeText" style="width:100%;max-width:360px;text-align:center;word-break:break-all">—</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-azure" id="licenseRequestEmailBtn" type="button">email</button>
-<button class="auth-btn auth-btn-gray" id="licenseRequestDoneBtn" type="button">chiudi</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseUnlockModal">
-<div aria-label="Inserisci codice sblocco" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title" id="licenseUnlockModalTitle">CODICE SBLOCCO</div>
-<button aria-label="Chiudi" class="icon-btn" id="licenseUnlockClose" type="button">
-<svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
-</button>
-</div>
-<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
-<div class="field float">
-<input autocapitalize="characters" autocomplete="off" id="licenseUnlockInput" placeholder=" " spellcheck="false" type="text"/>
-<label for="licenseUnlockInput">Codice</label>
-</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-gray" id="licenseUnlockCancel" type="button">annulla</button>
-<button class="auth-btn auth-btn-green" id="licenseUnlockConfirm" type="button">ok</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center" hidden="" id="licenseGeneratorModal">
-<div aria-label="Key generator" aria-modal="true" class="modal-card" role="dialog">
-<div class="db-menu-head">
-<div class="db-menu-title">KEY GENERATOR</div>
-</div>
-<div class="db-menu-body" style="padding:14px;display:flex;flex-direction:column;gap:10px">
-<div class="field float">
-<input autocapitalize="characters" autocomplete="off" id="licenseRequestInput" placeholder=" " spellcheck="false" type="text"/>
-<label for="licenseRequestInput">Codice richiesta</label>
-</div>
-<input id="licenseStartDate" type="hidden"/>
-<input id="licenseEndDate" type="hidden"/>
-<div class="field float guest-date-range-field license-date-range-field" id="licenseDateRangeField">
-<button aria-label="Seleziona periodo attivazione" class="guest-date-range-trigger license-date-range-trigger auth-btn auth-btn-azure" data-single-action-key="licenseDateRangeTrigger" id="licenseDateRangeTrigger" type="button">
-<span class="guest-date-range-value" id="licenseDateRangeValue">Seleziona date</span>
-</button>
-</div>
-<div class="auth-action-row" style="width:100%;margin-top:4px;">
-<button class="auth-btn auth-btn-gray" data-single-action-key="licenseGeneratorCancel" id="licenseGeneratorCancel" type="button">annulla</button>
-<button class="auth-btn auth-btn-green" data-single-action-key="licenseGeneratorConfirm" id="licenseGeneratorConfirm" type="button">genera</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="modal modal-center guest-date-range-modal" hidden="" id="licenseDateRangeModal">
-<div aria-labelledby="licenseDateRangeModalTitle" aria-modal="true" class="modal-card guest-date-range-modal-card" role="dialog">
-<div class="operatori-editor-hd guest-date-range-modal-hd">
-<div class="operatori-editor-title guest-date-range-modal-range-title" id="licenseDateRangeModalTitle"> </div>
-</div>
-<div class="operatori-editor-body guest-date-range-modal-body">
-<div class="guest-date-range-monthservizi">
-<button aria-label="Mese precedente" class="guest-date-range-nav" data-single-action-key="licenseDateRangePrev" id="licenseDateRangePrev" type="button">‹</button>
-<div class="guest-date-range-monthtitle" id="licenseDateRangeMonthTitle"> </div>
-<button aria-label="Mese successivo" class="guest-date-range-nav" data-single-action-key="licenseDateRangeNext" id="licenseDateRangeNext" type="button">›</button>
-</div>
-<div class="guest-date-range-weekdays" id="licenseDateRangeWeekdays"></div>
-<div class="guest-date-range-grid" id="licenseDateRangeGrid"></div>
-<div class="guest-date-range-actions">
-<button class="btn ghost" data-single-action-key="licenseDateRangeCancel" id="licenseDateRangeCancel" type="button">Annulla</button>
-<button class="btn primary" data-single-action-key="licenseDateRangeApply" id="licenseDateRangeApply" type="button">Fine</button>
-</div>
-</div>
-</div>
-</div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="themeTransferModal">
 <div aria-label="Importa o esporta tema" aria-modal="true" class="modal-card settings-license-card" role="dialog">
 <div class="db-menu-head theme-transfer-head">
@@ -3069,21 +2982,6 @@ window.APP_VERSION = "3.340";
 </div>
 </div>
 <!-- YES/NO CONFIRM MODAL -->
-<div aria-hidden="true" class="modal modal-center" hidden="" id="settingsLicenseModal">
-<div aria-label="Licenza" aria-modal="true" class="modal-card settings-license-card" role="dialog">
-<div class="db-menu-title" id="settingsLicenseTitle">LICENZA</div>
-<div class="settings-license-status" id="settingsLicenseStatus">Licenza non attiva</div>
-<div class="settings-license-actions">
-<button class="auth-btn auth-btn-green" id="settingsLicenseUnlockBtn" type="button">inserisci codice</button>
-<button class="auth-btn auth-btn-azure" id="settingsLicensePayBtn" type="button">abbonati</button>
-<button class="auth-btn auth-btn-orange" id="settingsLicenseRequestBtn" type="button">genera codice richiesta</button>
-<button class="auth-btn auth-btn-violet" id="settingsLicenseOperatorCodeBtn" type="button">codice operatore</button>
-<button class="auth-btn auth-btn-orange" hidden="" id="settingsLicenseGeneratorBtn" type="button">key generator</button>
-<button class="auth-btn auth-btn-gray" id="settingsLicenseCloseBtn" type="button">annulla</button>
-</div>
-<div class="settings-license-hint" id="settingsLicenseHint"></div>
-</div>
-</div>
 <div aria-hidden="true" class="modal modal-center" hidden="" id="settingsAccountModal">
 <div aria-label="Account e password" aria-modal="true" class="modal-card settings-account-modal-card" role="dialog">
 <div class="db-menu-title settings-account-modal-title">ACCOUNT</div>
@@ -3278,7 +3176,7 @@ window.APP_VERSION = "3.340";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=3.340"></script>
-<script defer="" src="./app.js?v=3.340"></script>
+<script defer="" src="./config.js?v=3.341"></script>
+<script defer="" src="./app.js?v=3.341"></script>
 </body>
 </html>
