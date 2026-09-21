@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.338";
+const BUILD_VERSION = "3.339";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -5877,6 +5877,9 @@ function __toggleStatGenCompareEnabled__(){
   }
   try{ drawStatGenRegistrationsLineChart('statGenRegChart'); }catch(_){ }
   try{ drawStatMensiliOccupazioneLineChart('statMensiliLineChart'); }catch(_){ }
+  try{
+    if (state && state.page === 'statmensili' && typeof renderStatMensili === 'function') renderStatMensili();
+  }catch(_){ }
   try{ drawStatAmministratoreLineChart('statAmmRegChart'); }catch(_){ }
 }
 
@@ -28881,6 +28884,8 @@ function computeStatMensili(){
   const guests = Array.isArray(state.statsGuests) ? state.statsGuests : (Array.isArray(state.guests) ? state.guests : []);
   const servizi = Array.isArray(state.servizi) ? state.servizi : [];
   const byMonth = new Array(12).fill(0);
+  // dDAE_3.339 — importi già incassati (acconto + saldo) associati al mese del soggiorno.
+  const incassatoByMonth = new Array(12).fill(0);
 
   const money = (v) => {
     if (v === null || v === undefined) return 0;
@@ -28929,6 +28934,13 @@ function computeStatMensili(){
     // Base: importo prenotazione
     const pren = money(gg?.importo_prenotazione ?? gg?.importo_prenota ?? gg?.importoPrenotazione ?? gg?.importoPrenota ?? 0);
     if (isFinite(pren) && pren !== 0) byMonth[mm - 1] += pren;
+
+    // "Incassato" indica esclusivamente denaro già registrato come acconto/saldo pagato.
+    // Non dipende dallo stato della ricevuta/fattura e non modifica alcuna logica contabile.
+    const acconto = money(gg?.acconto_importo ?? gg?.accontoImporto ?? gg?.acconto_pagato ?? gg?.accontoPagato ?? gg?.deposit ?? gg?.deposito ?? 0);
+    const saldo = money(gg?.saldo_pagato ?? gg?.saldoPagato ?? gg?.saldo ?? 0);
+    const incassato = Math.max(0, Number(acconto || 0) || 0) + Math.max(0, Number(saldo || 0) || 0);
+    if (isFinite(incassato) && incassato !== 0) incassatoByMonth[mm - 1] += incassato;
   }
 
   // Aggiungi servizi al mese dell'ospite (ospite_id -> mese)
@@ -28954,6 +28966,8 @@ function computeStatMensili(){
   for (let i = 0; i < byMonth.length; i++){
     const v = byMonth[i];
     byMonth[i] = isFinite(v) ? (Math.round(v * 100) / 100) : 0;
+    const paid = incassatoByMonth[i];
+    incassatoByMonth[i] = isFinite(paid) ? (Math.round(paid * 100) / 100) : 0;
   }
 
   
@@ -29103,7 +29117,7 @@ function computeStatMensili(){
     }
   }catch(_){ }
 
-  return { byMonth, occPctByMonth, occupiedRoomsByMonth, speseByMonth };
+  return { byMonth, incassatoByMonth, occPctByMonth, occupiedRoomsByMonth, speseByMonth };
 
 }
 
@@ -49160,7 +49174,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.338';
+  var BUILD_TAG='dDAE_3.339';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50934,7 +50948,17 @@ try{
       try{ if (typeof __loadStatGenCompareGuests__ === 'function') __loadStatGenCompareGuests__({ force:false }); }catch(_){ }
 
       const months = Array.isArray(s.byMonth) ? s.byMonth : new Array(12).fill(0);
+      const incassatoMonths = Array.isArray(s.incassatoByMonth) ? s.incassatoByMonth : new Array(12).fill(0);
       const speseMonths = Array.isArray(s.speseByMonth) ? s.speseByMonth : new Array(12).fill(0);
+      const compareEnabled = (() => { try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; } })();
+      const __ddae3339EuroPairPart__ = (value) => {
+        const n = Number(value || 0) || 0;
+        const rounded = Math.round(n * 100) / 100;
+        const hasCents = Math.abs(rounded - Math.round(rounded)) > 0.0001;
+        try{
+          return new Intl.NumberFormat('it-IT', { minimumFractionDigits:hasCents ? 2 : 0, maximumFractionDigits:2 }).format(rounded) + ' €';
+        }catch(_){ return euro(rounded); }
+      };
       const max = Math.max(0, ...months.map(v => Number(v || 0)));
       const totalMensile = months.reduce((sum, v) => sum + (Number(v || 0) || 0), 0);
       const colors = __mensiliPalette12();
@@ -50994,6 +51018,11 @@ try{
         const avgRoomPrice = occRoomsDisp > 0 ? (val / occRoomsDisp) : 0;
         const realOccPct = Math.max(0, Math.min(100, Number(occPctByMonth[i] || 0) || 0));
         const speseVal = Number((speseMonths || [])[i] || 0) || 0;
+        const incassatoVal = Math.max(0, Number((incassatoMonths || [])[i] || 0) || 0);
+        const totaleMeseDisplay = compareEnabled
+          ? euro(val)
+          : `${__ddae3339EuroPairPart__(val)} / ${__ddae3339EuroPairPart__(incassatoVal)}`;
+        const totaleMeseStrongClass = compareEnabled ? '' : ' class="month-total-pair"';
         const cmpSpeseVal = Number((compare.speseByMonth || [])[i] || 0) || 0;
         const rendimentoVal = val > 0 ? Math.max(-999, Math.min(999, ((val - speseVal) / val) * 100)) : 0;
         const cmpVal = Number((compare.byMonth || [])[i] || 0) || 0;
@@ -51013,7 +51042,7 @@ try{
             <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
               <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
               <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
-              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
+              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong${totaleMeseStrongClass}>${totaleMeseDisplay}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(speseVal)}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(cmpSpeseVal)}</strong></div>
@@ -54061,7 +54090,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.338',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.339',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

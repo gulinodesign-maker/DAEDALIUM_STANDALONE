@@ -36931,3 +36931,14 @@ body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
     max-width:min(820px, calc(100vw - 2 * var(--ddae-wide-landscape-gutter))) !important;
   }
 }
+
+
+/* dDAE_3.339 — Mensili senza confronto: totale prenotazioni / già incassato sulla stessa riga. */
+#page-statmensili .month-expanded-metric strong.month-total-pair{
+  white-space:nowrap !important;
+  font-size:clamp(14px, 3.8vw, 21px) !important;
+  letter-spacing:-0.02em !important;
+}
+@media (max-width:380px){
+  #page-statmensili .month-expanded-metric strong.month-total-pair{ font-size:clamp(12.5px, 3.65vw, 18px) !important; }
+}
