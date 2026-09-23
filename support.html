@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>Assistenza Daedalium</title>
+  <meta name="description" content="Pagina ufficiale di assistenza per Daedalium.">
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#667085;
+      --line:#dfe3e8;
+      --accent:#111827;
+      --accentText:#ffffff;
+      --focus:#2563eb;
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .wrap{
+      width:min(720px,calc(100% - 32px));
+      margin:0 auto;
+      padding:max(28px,env(safe-area-inset-top)) 0 max(36px,env(safe-area-inset-bottom));
+    }
+    .brand{margin-bottom:20px}
+    .brand h1{
+      margin:0 0 6px;
+      font-size:clamp(30px,7vw,44px);
+      letter-spacing:-.03em;
+    }
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:22px;
+    }
+    .intro{margin:0 0 20px;font-size:16px}
+    form{display:grid;gap:16px}
+    .field{display:grid;gap:7px}
+    label{font-weight:650;font-size:14px}
+    input, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:13px 14px;
+      font:inherit;
+      color:var(--text);
+      background:#fff;
+      outline:none;
+    }
+    input:focus, textarea:focus{
+      border-color:var(--focus);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+    textarea{min-height:160px;resize:vertical}
+    button{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      min-height:50px;
+      padding:0 18px;
+      font:inherit;
+      font-weight:700;
+      background:var(--accent);
+      color:var(--accentText);
+      cursor:pointer;
+    }
+    button:active{transform:translateY(1px)}
+    .note{
+      margin:16px 0 0;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .mail{
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      font-size:14px;
+      color:var(--muted);
+    }
+    .mail a{
+      color:var(--text);
+      font-weight:650;
+      text-decoration:none;
+    }
+    footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:18px;
+    }
+    @media (max-width:520px){
+      .wrap{width:min(100% - 22px,720px)}
+      .card{padding:18px;border-radius:16px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand">
+      <h1>Daedalium</h1>
+      <p>Assistenza</p>
+    </header>
+
+    <section class="card" aria-labelledby="support-title">
+      <p id="support-title" class="intro">
+        Hai bisogno di assistenza? Compila il modulo. La richiesta verrà inviata al supporto Daedalium e potremo risponderti direttamente all’indirizzo email indicato.
+      </p>
+
+      <form action="https://formsubmit.co/Gulinodesign@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="Richiesta assistenza Daedalium">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_autoresponse" value="Abbiamo ricevuto la tua richiesta di assistenza per Daedalium. Ti risponderemo appena possibile.">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+        <div class="field">
+          <label for="name">Nome</label>
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="subject">Oggetto</label>
+          <input id="subject" name="oggetto" type="text" required>
+        </div>
+
+        <div class="field">
+          <label for="message">Messaggio</label>
+          <textarea id="message" name="messaggio" required></textarea>
+        </div>
+
+        <button type="submit">Invia richiesta</button>
+      </form>
+
+      <p class="note">
+        L’invio del modulo è gestito tramite FormSubmit. I dati inseriti vengono trasmessi per consentire la gestione della richiesta di assistenza.
+      </p>
+
+      <div class="mail">
+        In alternativa puoi scrivere direttamente a
+        <a href="mailto:Gulinodesign@gmail.com">Gulinodesign@gmail.com</a>.
+      </div>
+    </section>
+
+    <footer>© Daedalium</footer>
+  </main>
+</body>
+</html>
