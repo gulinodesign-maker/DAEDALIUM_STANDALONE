@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.343";
+const BUILD_VERSION = "3.344";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -33915,14 +33915,14 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
 }
 
 
-// dDAE_3.343 — apertura WhatsApp diretta e neutra rispetto a Messenger/Business.
-// Evita wa.me: su iOS può passare dal web e proporre l'installazione di WhatsApp Messenger
-// anche quando sul dispositivo è già presente WhatsApp Business.
-function __buildWhatsAppDirectUrl__(phone, text){
+// dDAE_3.344 — iOS/TestFlight: WhatsApp Business prioritario, Messenger solo come fallback.
+// Usa gli schemi distinti delle due app per evitare l'ambiguita dello schema generico whatsapp://.
+function __buildWhatsAppDirectUrl__(phone, text, scheme){
   try{
     const normalized = String(phone || '').replace(/\D/g, '');
     if (!normalized) return '';
-    let url = 'whatsapp://send?phone=' + encodeURIComponent(normalized);
+    const safeScheme = String(scheme || 'whatsapp-smb').replace(/[^a-z0-9-]/gi, '') || 'whatsapp-smb';
+    let url = safeScheme + '://send?phone=' + encodeURIComponent(normalized);
     const message = String(text ?? '');
     if (message) url += '&text=' + encodeURIComponent(message);
     return url;
@@ -33930,9 +33930,39 @@ function __buildWhatsAppDirectUrl__(phone, text){
 }
 function __openWhatsAppDirect__(phone, text){
   try{
-    const url = __buildWhatsAppDirectUrl__(phone, text);
-    if (!url) return false;
-    window.location.href = url;
+    const businessUrl = __buildWhatsAppDirectUrl__(phone, text, 'whatsapp-smb');
+    const messengerUrl = __buildWhatsAppDirectUrl__(phone, text, 'whatsapp-consumer');
+    if (!businessUrl || !messengerUrl) return false;
+
+    let fallbackTimer = 0;
+    let externalOpened = false;
+    const cleanup = () => {
+      try{ if (fallbackTimer) clearTimeout(fallbackTimer); }catch(_){}
+      fallbackTimer = 0;
+      try{ document.removeEventListener('visibilitychange', onVisibilityChange, true); }catch(_){}
+      try{ window.removeEventListener('pagehide', onPageHide, true); }catch(_){}
+    };
+    const markExternalOpened = () => {
+      externalOpened = true;
+      cleanup();
+    };
+    const onVisibilityChange = () => {
+      try{ if (document.hidden) markExternalOpened(); }catch(_){}
+    };
+    const onPageHide = () => markExternalOpened();
+
+    try{ document.addEventListener('visibilitychange', onVisibilityChange, true); }catch(_){}
+    try{ window.addEventListener('pagehide', onPageHide, true); }catch(_){}
+
+    fallbackTimer = setTimeout(() => {
+      try{
+        if (externalOpened || document.hidden) return;
+        cleanup();
+        window.location.href = messengerUrl;
+      }catch(_){ cleanup(); }
+    }, 1400);
+
+    window.location.href = businessUrl;
     return true;
   }catch(_){ return false; }
 }
@@ -48575,7 +48605,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.343';
+  var BUILD_TAG='dDAE_3.344';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53496,7 +53526,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.343',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.344',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});

@@ -1,4 +1,4 @@
-/* dDAE_3.343 - Firebase frontend config + traduzione al salvataggio + endpoint opzionale */
+/* dDAE_3.344 - Firebase frontend config + traduzione al salvataggio + endpoint opzionale */
 // Endpoint di traduzione opzionale usato solo come fallback durante il salvataggio delle traduzioni.
 // Se la funzione serverless viene distribuita insieme al progetto, lasciare vuoto usa ./api/translate.
 // Se resta su dominio esterno (es. Vercel), inserire qui l'URL HTTPS completo.
