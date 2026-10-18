@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.344";
+const BUILD_VERSION = "3.345";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -3784,6 +3784,104 @@ function __openDbMenuModal__(){
 const __DB_EXPORT_KIND__ = "dDAE_export";
 const __DB_SCHEMA_VERSION__ = 2;
 
+/* dDAE_3.345 — Unico contratto per backup integrali (modello export 17/10/2026).
+   Controlla prima di qualsiasi scrittura, sia da login sia da Impostazioni.
+   Non impone numeri di record, anni o strutture predefiniti: anche liste vuote
+   sono complete se tutte le sezioni del formato sono presenti e coerenti. */
+function __validateFullBackupPayload__(payload){
+  const fail = (why) => ({ ok:false, reason:why });
+  const obj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
+  try{
+    if (!obj(payload) || payload.kind !== __DB_EXPORT_KIND__ || payload.schemaVersion !== __DB_SCHEMA_VERSION__)
+      return fail('formato o versione non validi');
+    if (typeof payload.exportedAt !== 'string' || !Number.isFinite(Date.parse(payload.exportedAt)))
+      return fail('data export assente');
+
+    const ds = payload.datasets;
+    if (!obj(ds)) return fail('dataset mancanti');
+    for (const table of __ADMIN_TABLES__){
+      if (!Object.prototype.hasOwnProperty.call(ds,table) || !Array.isArray(ds[table]))
+        return fail('dataset mancante: ' + table);
+      if (!ds[table].every(row => obj(row)))
+        return fail('dataset non valido: ' + table);
+    }
+    if (!ds.utenti.length || !ds.utenti.some(u => !__authBackupIsOperatorRow__(u)))
+      return fail('account amministratore mancante');
+
+    const account = payload.account;
+    if (!obj(account) || !String(account.user_id||'').trim() ||
+        !String(account.username||'').trim() || !String(account.accountName||'').trim() ||
+        String(account.role||'').toLowerCase() !== 'admin')
+      return fail('identità account incompleta');
+    if (!ds.utenti.some(u => !__authBackupIsOperatorRow__(u) &&
+          (String(u.id||u.user_id||u.userId||'').trim() === String(account.user_id).trim() ||
+           String(u.username||'').trim().toLowerCase() === String(account.username).trim().toLowerCase())))
+      return fail('account non presente tra gli utenti');
+
+    if (!obj(payload.localStorage)) return fail('impostazioni locali mancanti');
+    if (!obj(payload.assets) || !obj(payload.assets.cocktailImages))
+      return fail('sezione immagini mancante');
+    for (const image of Object.values(payload.assets.cocktailImages)){
+      if (typeof image !== 'string' || !image.startsWith('data:image/'))
+        return fail('immagine non valida');
+    }
+
+    const my = payload.multiYear;
+    if (!obj(my) || typeof my.uid !== 'string' || !my.uid.trim() || !obj(my.years) || !Object.keys(my.years).length)
+      return fail('archivio multianno mancante');
+    const checkYears = (years) => {
+      if (!obj(years)) return false;
+      for (const [year,tables] of Object.entries(years)){
+        if (!/^\d{4}$/.test(year) || !obj(tables)) return false;
+        for (const [table,rows] of Object.entries(tables)){
+          if (!__ADMIN_TABLES__.includes(table) || !(Array.isArray(rows) || obj(rows))) return false;
+        }
+      }
+      return true;
+    };
+    if (!checkYears(my.years)) return fail('archivio multianno non valido');
+
+    const ms = payload.multiStructure;
+    if (!obj(ms) || ms.schemaVersion !== 1 || !Array.isArray(ms.catalog) ||
+        typeof ms.selectedId !== 'string' || !obj(ms.structures))
+      return fail('archivio multistruttura mancante');
+    const ids = new Set();
+    for (const st of ms.catalog){
+      if (!obj(st) || !String(st.id||'').trim() || ids.has(String(st.id)))
+        return fail('catalogo strutture non valido');
+      ids.add(String(st.id));
+      const entry = ms.structures[st.id];
+      if (!obj(entry) || String(entry.id||'') !== String(st.id) ||
+          !obj(entry.storage) || !obj(entry.assets) || !obj(entry.assets.cocktailImages) ||
+          !checkYears(entry.years))
+        return fail('dati struttura incompleti');
+    }
+    if (Object.keys(ms.structures).length !== ids.size ||
+        (ids.size > 0 && !ids.has(ms.selectedId)) ||
+        (ids.size === 0 && ms.selectedId !== ''))
+      return fail('selezione strutture incoerente');
+
+    const meta = payload.meta;
+    if (!obj(meta) || !obj(meta.localStorage) || !obj(meta.themeSlots) ||
+        !obj(meta.themeSlots.slots) || typeof meta.themeSlots.activeSlot !== 'string' ||
+        !Array.isArray(meta.themeSlots.roomCatalog) ||
+        !obj(meta.cocktailImageAssets) || !obj(meta.account) ||
+        !obj(meta.multiYear) || !obj(meta.multiStructure))
+      return fail('Tema o sezioni complete di sicurezza mancanti');
+    // Le copie in meta devono corrispondere alle sezioni principali, così il
+    // ripristino non deve decidere tra due backup contraddittori.
+    const sameKeys = (a,b) => Object.keys(a).length === Object.keys(b).length &&
+      Object.keys(a).every(k => Object.prototype.hasOwnProperty.call(b,k));
+    if (!sameKeys(payload.localStorage,meta.localStorage) ||
+        !sameKeys(payload.assets.cocktailImages,meta.cocktailImageAssets) ||
+        !sameKeys(my.years,meta.multiYear.years || {}) ||
+        !sameKeys(ms.structures,meta.multiStructure.structures || {}) ||
+        String(meta.account.user_id||'') !== String(account.user_id||''))
+      return fail('copie di sicurezza incoerenti');
+    return {ok:true,reason:''};
+  }catch(_){ return fail('struttura incompleta o illeggibile'); }
+}
+
 function __dbTablesForKind__(kind){
   const k = String(kind || "").toLowerCase();
   return (k.startsWith("admin") ? __ADMIN_TABLES__ : __OP_TABLES__);
@@ -3871,10 +3969,11 @@ function __collectBackupThemeSlots__(){
   try{
     return {
       slots: (typeof __roomSettingsThemeSlotsRead__ === 'function') ? __roomSettingsThemeSlotsRead__() : {},
-      activeSlot: (typeof localStorage !== 'undefined') ? String(localStorage.getItem('dDAE_roomsettings_theme_active_slot_v1') || '') : ''
+      activeSlot: (typeof localStorage !== 'undefined') ? String(localStorage.getItem('dDAE_roomsettings_theme_active_slot_v1') || '') : '',
+      roomCatalog: (typeof getRoomCatalogFromSettings === 'function') ? getRoomCatalogFromSettings() : []
     };
   }catch(_){
-    return { slots:{}, activeSlot:'' };
+    return { slots:{}, activeSlot:'', roomCatalog:[] };
   }
 }
 
@@ -4249,9 +4348,12 @@ async function __authRestoreBackupFromEntry__(){
   catch(_){ try{ toast('JSON non valido','orange'); }catch(__){ } return false; }
 
   try{
-    const ds = __authBackupDatasets__(data);
-    const hasDatasets = ds && typeof ds === 'object' && Object.keys(ds).length > 0;
-    if (!hasDatasets){ try{ toast('File backup non compatibile','orange'); }catch(_){ } return false; }
+    const validation = __validateFullBackupPayload__(data);
+    if (!validation.ok){
+      try{ toast('Backup completo richiesto: ' + validation.reason, 'orange'); }catch(_){ }
+      return false;
+    }
+    const ds = data.datasets;
 
     try{ __canonicalizeBackupChannelsDeep__(data); }catch(_){ }
 
@@ -4386,11 +4488,6 @@ async function __dbImport__(kind){
       }catch(_){ return false; }
     })();
 
-    if (__isAuthEntryBackupImport__){
-      try{ localStorage.setItem(__AUTH_BACKUP_FORCE_ADMIN_KEY, "1"); }catch(_){ }
-      try{ localStorage.setItem(__AUTH_BACKUP_IMPORT_ACTIVE_KEY, "1"); }catch(_){ }
-    }
-
     const text = await file.text();
     let data = null;
     try{ data = JSON.parse(text); }catch(e){
@@ -4398,14 +4495,14 @@ async function __dbImport__(kind){
       return;
     }
 
-    const kindOk = String(data?.kind || "").trim() === __DB_EXPORT_KIND__;
-    const sv = data?.schemaVersion;
-    const svNum = (typeof sv === "number") ? sv : parseInt(String(sv||"").trim(), 10);
-    const hasDatasets = data && typeof data === "object" && data.datasets && typeof data.datasets === "object";
-
-    if (!kindOk || !hasDatasets || !(svNum >= 1)){
-      try{ toast("File non compatibile", "orange"); }catch(_){}
+    const validation = __validateFullBackupPayload__(data);
+    if (!validation.ok){
+      try{ toast('Backup completo richiesto: ' + validation.reason, 'orange'); }catch(_){ }
       return;
+    }
+    if (__isAuthEntryBackupImport__){
+      try{ localStorage.setItem(__AUTH_BACKUP_FORCE_ADMIN_KEY, "1"); }catch(_){ }
+      try{ localStorage.setItem(__AUTH_BACKUP_IMPORT_ACTIVE_KEY, "1"); }catch(_){ }
     }
 
     // dDAE_3.238: unifica i riferimenti storici MANUALE nel CHANNEL PRIVATO prima di scrivere il backup.
@@ -4835,8 +4932,13 @@ async function __structureBackupRestoreAll__(payload,tables){
 
 async function __dbExport__(kind, preopenWin){
   try{
-    const label = (String(kind||"").toLowerCase().startsWith("admin")) ? "DB Amministratore" : "DB Operatore";
-    const tables = __dbTablesForKind__(kind);
+    if (!String(kind||'').toLowerCase().startsWith('admin')){
+      try{ if (preopenWin && !preopenWin.closed) preopenWin.close(); }catch(_){ }
+      try{ toast('Backup completo disponibile solo per amministratore', 'orange'); }catch(_){ }
+      return;
+    }
+    const label = "DB Amministratore";
+    const tables = __ADMIN_TABLES__;
     const datasets = {};
     for (const t of tables){
       datasets[t] = await __tblGet__(t, (t==="impostazioni" ? {} : []));
@@ -4887,16 +4989,29 @@ async function __dbExport__(kind, preopenWin){
       }
     };
 
-    try{
-      const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
-      payload.multiYear = __multiYearBackup__;
-      payload.meta.multiYear = __multiYearBackup__;
-    }catch(_){ }
-    try{
-      const __multiStructureBackup__ = await __structureBackupCollectAll__(tables);
-      payload.multiStructure = __multiStructureBackup__;
-      payload.meta.multiStructure = __multiStructureBackup__;
-    }catch(_){ }
+    // Se la raccolta fallisce non creare un backup parziale spacciandolo per completo.
+    const __multiYearBackup__ = await __ddaeBackupCollectMultiYear__(tables);
+    payload.multiYear = __multiYearBackup__;
+    payload.meta.multiYear = __multiYearBackup__;
+    const __multiStructureBackup__ = await __structureBackupCollectAll__(tables);
+    payload.multiStructure = __multiStructureBackup__;
+    payload.meta.multiStructure = __multiStructureBackup__;
+    // Non accettare uno snapshot multistruttura vuoto creato da un errore
+    // silenzioso se in realtà esistono strutture configurate nell'app.
+    const expectedStructureIds = (typeof __structureCatalog__ === 'function')
+      ? __structureCatalog__().map(v => String(v?.id || '')).filter(Boolean) : [];
+    if (expectedStructureIds.some(id => !__multiStructureBackup__?.structures?.[id])){
+      try{ if (preopenWin && !preopenWin.closed) preopenWin.close(); }catch(_){ }
+      try{ toast('Backup non creato: archivio strutture incompleto', 'orange'); }catch(_){ }
+      return;
+    }
+
+    const check = __validateFullBackupPayload__(payload);
+    if (!check.ok){
+      try{ if (preopenWin && !preopenWin.closed) preopenWin.close(); }catch(_){ }
+      try{ toast('Backup non creato: ' + check.reason, 'orange'); }catch(_){ }
+      return;
+    }
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -33915,7 +34030,7 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
 }
 
 
-// dDAE_3.344 — iOS/TestFlight: WhatsApp Business prioritario, Messenger solo come fallback.
+// dDAE_3.345 — iOS/TestFlight: WhatsApp Business prioritario, Messenger solo come fallback.
 // Usa gli schemi distinti delle due app per evitare l'ambiguita dello schema generico whatsapp://.
 function __buildWhatsAppDirectUrl__(phone, text, scheme){
   try{
@@ -48605,7 +48720,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.344';
+  var BUILD_TAG='dDAE_3.345';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53526,7 +53641,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.344',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.345',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
