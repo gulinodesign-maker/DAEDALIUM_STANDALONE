@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.345";
+const BUILD_VERSION = "3.346";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -3784,7 +3784,7 @@ function __openDbMenuModal__(){
 const __DB_EXPORT_KIND__ = "dDAE_export";
 const __DB_SCHEMA_VERSION__ = 2;
 
-/* dDAE_3.345 — Unico contratto per backup integrali (modello export 17/10/2026).
+/* dDAE_3.346 — Unico contratto per backup integrali (modello export 17/10/2026).
    Controlla prima di qualsiasi scrittura, sia da login sia da Impostazioni.
    Non impone numeri di record, anni o strutture predefiniti: anche liste vuote
    sono complete se tutte le sezioni del formato sono presenti e coerenti. */
@@ -3880,6 +3880,48 @@ function __validateFullBackupPayload__(payload){
       return fail('copie di sicurezza incoerenti');
     return {ok:true,reason:''};
   }catch(_){ return fail('struttura incompleta o illeggibile'); }
+}
+
+/* dDAE_3.346 — Backup integrale compresso senza perdita di dati.
+   gzip è solo un contenitore: il contenuto JSON è identico al contratto
+   completo della 3.346. I vecchi backup .json restano leggibili. */
+const __DB_BACKUP_FILE_ACCEPT__ = '.json,.json.gz,.gz,application/json,application/gzip,application/x-gzip';
+
+async function __ddaeReadFullBackupFile__(file){
+  if (!file || typeof file.slice !== 'function') throw new Error('File backup illeggibile');
+  const magic = new Uint8Array(await file.slice(0, 2).arrayBuffer());
+  const gzip = magic.length === 2 && magic[0] === 0x1f && magic[1] === 0x8b;
+  if (!gzip && /\.gz$/i.test(String(file.name || '')))
+    throw new Error('Archivio compresso non valido');
+  let jsonText;
+  if (gzip){
+    if (typeof DecompressionStream !== 'function' || typeof file.stream !== 'function')
+      throw new Error('iOS non supporta questo backup compresso: aggiorna iOS');
+    try{
+      jsonText = await new Response(file.stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    }catch(_){
+      throw new Error('Archivio compresso danneggiato o illeggibile');
+    }
+  }else{
+    try{ jsonText = await file.text(); }
+    catch(_){ throw new Error('File backup illeggibile'); }
+  }
+  try{ return JSON.parse(jsonText); }
+  catch(_){ throw new Error('JSON del backup non valido'); }
+}
+
+async function __ddaePackFullBackup__(payload){
+  // Serializzare tutto il payload, comprese le copie di sicurezza: nessuna
+  // rimozione di dati, nessuna modifica a Tema, account o archivi annuali.
+  const fullJson = JSON.stringify(payload);
+  if (typeof CompressionStream === 'function' && typeof DecompressionStream === 'function'){
+    try{
+      const source = new Blob([fullJson], { type:'application/json' });
+      const blob = await new Response(source.stream().pipeThrough(new CompressionStream('gzip'))).blob();
+      if (blob.size > 0) return { blob:new Blob([blob], { type:'application/gzip' }), extension:'.json.gz', compressed:true };
+    }catch(_){ /* mantenere un export completo anche su browser non compatibili */ }
+  }
+  return { blob:new Blob([fullJson], { type:'application/json' }), extension:'.json', compressed:false };
 }
 
 function __dbTablesForKind__(kind){
@@ -4154,8 +4196,9 @@ function __pickDbImportFile__(){
       if (!input){
         input = document.createElement("input");
         input.type = "file";
-        input.accept = "application/json,.json";
+        input.accept = __DB_BACKUP_FILE_ACCEPT__;
         input.id = "dbFileInput";
+        input.dataset.ddaeHandledFullBackup = "1";
         input.style.position = "fixed";
         input.style.left = "0";
         input.style.top = "0";
@@ -4167,8 +4210,9 @@ function __pickDbImportFile__(){
         document.body.appendChild(input);
         created = true
       }
-      try{ input.setAttribute("accept", "application/json,.json"); }catch(_){ }
+      try{ input.setAttribute("accept", __DB_BACKUP_FILE_ACCEPT__); }catch(_){ }
       try{ input.setAttribute("data-ddae-modal-allow-through", "1"); }catch(_){ }
+      try{ input.dataset.ddaeHandledFullBackup = "1"; }catch(_){ }
       try{ input.style.display = "block"; }catch(_){ }
       try{ input.style.position = "fixed"; input.style.left = "0"; input.style.top = "0"; input.style.width = "1px"; input.style.height = "1px"; input.style.opacity = "0"; input.style.pointerEvents = "none"; input.style.zIndex = "-1"; }catch(_){ }
       try{ input.value = ""; }catch(_){ }
@@ -4279,7 +4323,7 @@ function __authBackupResolveAdminRow__(payload, fileName, users){
 
     // I backup precedenti alla 3.328 non avevano l'identità nel payload, ma il
     // nome account era nel filename: dd-mm-yyyy_nome_account.json.
-    const stem = __authBackupNormToken__(String(fileName || '').replace(/\.json$/i,''));
+    const stem = __authBackupNormToken__(String(fileName || '').replace(/\.json(?:\.gz)?$/i,''));
     if (stem){
       let best = null, bestScore = 0;
       for (const u of pool){
@@ -4321,8 +4365,9 @@ function __pickAuthBackupFile__(){
     try{
       const input = document.createElement('input');
       input.type = 'file';
-      input.accept = 'application/json,.json';
+      input.accept = __DB_BACKUP_FILE_ACCEPT__;
       input.dataset.ddaeSkipAutoBackupLogin = '1';
+      input.dataset.ddaeHandledFullBackup = '1';
       input.style.position='fixed'; input.style.left='0'; input.style.top='0'; input.style.width='1px'; input.style.height='1px'; input.style.opacity='0'; input.style.pointerEvents='none';
       document.body.appendChild(input);
       let done = false;
@@ -4344,8 +4389,8 @@ async function __authRestoreBackupFromEntry__(){
   const file = await __pickAuthBackupFile__();
   if (!file) return false;
   let data = null;
-  try{ data = JSON.parse(await file.text()); }
-  catch(_){ try{ toast('JSON non valido','orange'); }catch(__){ } return false; }
+  try{ data = await __ddaeReadFullBackupFile__(file); }
+  catch(e){ try{ toast(e.message || 'Backup non valido','orange'); }catch(__){ } return false; }
 
   try{
     const validation = __validateFullBackupPayload__(data);
@@ -4488,10 +4533,9 @@ async function __dbImport__(kind){
       }catch(_){ return false; }
     })();
 
-    const text = await file.text();
     let data = null;
-    try{ data = JSON.parse(text); }catch(e){
-      try{ toast("JSON non valido", "orange"); }catch(_){}
+    try{ data = await __ddaeReadFullBackupFile__(file); }catch(e){
+      try{ toast(e.message || 'Backup non valido', 'orange'); }catch(_){}
       return;
     }
 
@@ -5013,7 +5057,11 @@ async function __dbExport__(kind, preopenWin){
       return;
     }
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const packedBackup = await __ddaePackFullBackup__(payload);
+    const blob = packedBackup.blob;
+    if (!packedBackup.compressed){
+      try{ toast('Compressione non disponibile: backup completo JSON', 'orange'); }catch(_){ }
+    }
     const url = URL.createObjectURL(blob);
     // Nome file export: dd-mm-yyyy_nome_account.json
     const dtObj = new Date();
@@ -5044,7 +5092,7 @@ async function __dbExport__(kind, preopenWin){
       }catch(_){ accountName = ""; }
     }
     const accountTag = __safeFileName__(accountName || "nome_account");
-    const filename = `${dt}_${accountTag}.json`;
+    const filename = `${dt}_${accountTag}${packedBackup.extension}`;
 
     let usedPreopenDownload = false;
 
@@ -34030,7 +34078,7 @@ function normalizeWhatsAppPhone(raw, nationalityCode){
 }
 
 
-// dDAE_3.345 — iOS/TestFlight: WhatsApp Business prioritario, Messenger solo come fallback.
+// dDAE_3.346 — iOS/TestFlight: WhatsApp Business prioritario, Messenger solo come fallback.
 // Usa gli schemi distinti delle due app per evitare l'ambiguita dello schema generico whatsapp://.
 function __buildWhatsAppDirectUrl__(phone, text, scheme){
   try{
@@ -48720,7 +48768,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.345';
+  var BUILD_TAG='dDAE_3.346';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -51509,6 +51557,7 @@ try{
     try{
       var input=ev.target;
       if(!input||input.type!=='file') return;
+      if(input.dataset.ddaeHandledFullBackup==='1') return;
       if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       var mark=String(input.id||input.name||input.className||input.accept||'').toLowerCase();
       if(mark.indexOf('backup')<0 && mark.indexOf('json')<0) return;
@@ -51766,7 +51815,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
     try{
       const input = ev.target;
       if (!input || input.type !== 'file') return;
-      if (input.dataset && input.dataset.ddaeSkipAutoBackupLogin === '1') return;
+      if (input.dataset && (input.dataset.ddaeSkipAutoBackupLogin === '1' || input.dataset.ddaeHandledFullBackup === '1')) return;
       if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       const marker = String(input.id || input.name || input.className || input.accept || '').toLowerCase();
       if (marker.indexOf('backup') < 0 && marker.indexOf('json') < 0 && marker.indexOf('dbfileinput') < 0) return;
@@ -51997,7 +52046,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
       // Il selettore backup principale (__dbImport__) gestisce già lettura, parsing e messaggi.
       // Evita una seconda FileReader concorrente: su Safari iOS, con backup grandi,
       // può fallire dopo un import riuscito e mostrare erroneamente "Backup non valido".
-      if(input.id==='dbFileInput'||input.id==='themeTransferFileInput'||input.dataset.ddaeThemeFile==='1') return;
+      if(input.dataset.ddaeHandledFullBackup==='1'||input.id==='dbFileInput'||input.id==='themeTransferFileInput'||input.dataset.ddaeThemeFile==='1') return;
       if(input.id==='cocktailImageInput'||input.dataset.ddaeCocktailImage==='1'||input.getAttribute('data-ddae-cocktail-image')==='1'||String(input.accept||'').toLowerCase().indexOf('image/')>=0) return;
       var mark=String(input.id||input.name||input.className||input.accept||input.getAttribute('aria-label')||'').toLowerCase();
       var topRight = false;
@@ -52034,7 +52083,7 @@ async function __ddaeBackupRestoreMultiYear__(payload, tables){
           var inputs=document.querySelectorAll('input[type="file"]');
           Array.prototype.forEach.call(inputs,function(inp){
             try{
-              if(inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
+              if(inp.dataset.ddaeHandledFullBackup==='1'||inp.id==='dbFileInput'||inp.id==='themeTransferFileInput'||inp.dataset.ddaeThemeFile==='1') return;
               // dDAE_3.243 — Non scandire mai gli input immagine nel fallback backup ritardato.
               if(inp.id==='cocktailImageInput'||inp.dataset.ddaeCocktailImage==='1'||inp.getAttribute('data-ddae-cocktail-image')==='1'||String(inp.accept||'').toLowerCase().indexOf('image/')>=0) return;
               if(inp.files && inp.files[0]) handleFile(inp.files[0]);
@@ -53641,7 +53690,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.345',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.346',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
