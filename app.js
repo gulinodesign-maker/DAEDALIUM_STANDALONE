@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.346";
+const BUILD_VERSION = "3.347";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -11572,6 +11572,8 @@ function __statMensiliI18n__(text){
         "Anno corrente": "Current year",
         "Anno": "Year",
         "Totale mese": "Monthly total",
+        "Incassato": "Collected",
+        "Da incassare": "Outstanding",
         "Spese mese": "Monthly expenses",
         "Rendimento": "Yield",
         "Anno di riferimento": "Reference year",
@@ -11588,6 +11590,8 @@ function __statMensiliI18n__(text){
         "Anno corrente": "Année courante",
         "Anno": "Année",
         "Totale mese": "Total du mois",
+        "Incassato": "Encaissé",
+        "Da incassare": "À encaisser",
         "Spese mese": "Dépenses du mois",
         "Rendimento": "Rendement",
         "Anno di riferimento": "Année de référence",
@@ -11604,6 +11608,8 @@ function __statMensiliI18n__(text){
         "Anno corrente": "Aktuelles Jahr",
         "Anno": "Jahr",
         "Totale mese": "Monatssumme",
+        "Incassato": "Eingenommen",
+        "Da incassare": "Noch offen",
         "Spese mese": "Monatliche Ausgaben",
         "Rendimento": "Rendite",
         "Anno di riferimento": "Referenzjahr",
@@ -11620,6 +11626,8 @@ function __statMensiliI18n__(text){
         "Anno corrente": "Año actual",
         "Anno": "Año",
         "Totale mese": "Total del mes",
+        "Incassato": "Cobrado",
+        "Da incassare": "Pendiente de cobro",
         "Spese mese": "Gastos del mes",
         "Rendimento": "Rendimiento",
         "Anno di riferimento": "Año de referencia",
@@ -27843,7 +27851,7 @@ function __computeStatMensiliFromSnapshot__(snapshot){
     if (Array.isArray(snapshot && snapshot.stanzeRows)) state.stanzeRows = snapshot.stanzeRows.slice();
     return computeStatMensili();
   }catch(_){
-    return { byMonth:new Array(12).fill(0), occPctByMonth:new Array(12).fill(0), occupiedRoomsByMonth:new Array(12).fill(0) };
+    return { byMonth:new Array(12).fill(0), incassatoByMonth:new Array(12).fill(0), occPctByMonth:new Array(12).fill(0), occupiedRoomsByMonth:new Array(12).fill(0), speseByMonth:new Array(12).fill(0) };
   }finally{
     state.statsGuests = backup.statsGuests;
     state.guests = backup.guests;
@@ -28682,13 +28690,14 @@ function __statMensiliCompareValuesForExpanded__(){
     return {
       year,
       byMonth: Array.isArray(compareStats && compareStats.byMonth) ? compareStats.byMonth : new Array(12).fill(0),
+      incassatoByMonth: Array.isArray(compareStats && compareStats.incassatoByMonth) ? compareStats.incassatoByMonth : new Array(12).fill(0),
       occPctByMonth: Array.isArray(compareStats && compareStats.occPctByMonth) ? compareStats.occPctByMonth : new Array(12).fill(0),
       occupiedRoomsByMonth: Array.isArray(compareStats && compareStats.occupiedRoomsByMonth) ? compareStats.occupiedRoomsByMonth : new Array(12).fill(0),
       speseByMonth: Array.isArray(compareStats && compareStats.speseByMonth) ? compareStats.speseByMonth : new Array(12).fill(0),
       loading: !!state.statGenCompareLoading
     };
   }catch(_){
-    return { year:'', byMonth:new Array(12).fill(0), occPctByMonth:new Array(12).fill(0), occupiedRoomsByMonth:new Array(12).fill(0), speseByMonth:new Array(12).fill(0), loading:false };
+    return { year:'', byMonth:new Array(12).fill(0), incassatoByMonth:new Array(12).fill(0), occPctByMonth:new Array(12).fill(0), occupiedRoomsByMonth:new Array(12).fill(0), speseByMonth:new Array(12).fill(0), loading:false };
   }
 }
 
@@ -48768,7 +48777,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.346';
+  var BUILD_TAG='dDAE_3.347';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -50544,14 +50553,12 @@ try{
       const months = Array.isArray(s.byMonth) ? s.byMonth : new Array(12).fill(0);
       const incassatoMonths = Array.isArray(s.incassatoByMonth) ? s.incassatoByMonth : new Array(12).fill(0);
       const speseMonths = Array.isArray(s.speseByMonth) ? s.speseByMonth : new Array(12).fill(0);
-      const compareEnabled = (() => { try{ return !!__ensureStatGenCompareEnabled__(); }catch(_){ return false; } })();
-      const __ddae3339EuroPairPart__ = (value) => {
-        const n = Number(value || 0) || 0;
-        const rounded = Math.round(n * 100) / 100;
-        const hasCents = Math.abs(rounded - Math.round(rounded)) > 0.0001;
-        try{
-          return new Intl.NumberFormat('it-IT', { minimumFractionDigits:hasCents ? 2 : 0, maximumFractionDigits:2 }).format(rounded) + ' €';
-        }catch(_){ return euro(rounded); }
+      // Residuo non negativo, calcolato in centesimi per evitare artefatti floating point.
+      // Mantiene gli stessi criteri dell'incassato esistente (acconti + saldi).
+      const __ddae3347DaIncassare__ = (fatturato, incassato) => {
+        const dovutoCents = Math.round((Number(fatturato) || 0) * 100);
+        const pagatoCents = Math.round((Number(incassato) || 0) * 100);
+        return Math.max(0, dovutoCents - pagatoCents) / 100;
       };
       const max = Math.max(0, ...months.map(v => Number(v || 0)));
       const totalMensile = months.reduce((sum, v) => sum + (Number(v || 0) || 0), 0);
@@ -50613,10 +50620,9 @@ try{
         const realOccPct = Math.max(0, Math.min(100, Number(occPctByMonth[i] || 0) || 0));
         const speseVal = Number((speseMonths || [])[i] || 0) || 0;
         const incassatoVal = Math.max(0, Number((incassatoMonths || [])[i] || 0) || 0);
-        const totaleMeseDisplay = compareEnabled
-          ? euro(val)
-          : `${__ddae3339EuroPairPart__(val)} / ${__ddae3339EuroPairPart__(incassatoVal)}`;
-        const totaleMeseStrongClass = compareEnabled ? '' : ' class="month-total-pair"';
+        const daIncassareVal = __ddae3347DaIncassare__(val, incassatoVal);
+        const cmpIncassatoVal = Math.max(0, Number((compare.incassatoByMonth || [])[i] || 0) || 0);
+        const cmpDaIncassareVal = __ddae3347DaIncassare__(Number((compare.byMonth || [])[i] || 0), cmpIncassatoVal);
         const cmpSpeseVal = Number((compare.speseByMonth || [])[i] || 0) || 0;
         const rendimentoVal = val > 0 ? Math.max(-999, Math.min(999, ((val - speseVal) / val) * 100)) : 0;
         const cmpVal = Number((compare.byMonth || [])[i] || 0) || 0;
@@ -50636,8 +50642,12 @@ try{
             <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati mese'))} ${escapeHtml(monthName)}">
               <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
               <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
-              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong${totaleMeseStrongClass}>${totaleMeseDisplay}</strong></div>
+              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(val)}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale mese'))}</span><strong>${euro(cmpVal)}</strong></div>
+              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Incassato'))}</span><strong>${euro(incassatoVal)}</strong></div>
+              <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Incassato'))}</span><strong>${euro(cmpIncassatoVal)}</strong></div>
+              <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Da incassare'))}</span><strong>${euro(daIncassareVal)}</strong></div>
+              <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Da incassare'))}</span><strong>${euro(cmpDaIncassareVal)}</strong></div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(speseVal)}</strong></div>
               <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Spese mese'))}</span><strong>${euro(cmpSpeseVal)}</strong></div>
               <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Rendimento'))}</span><strong>${rendimentoText}</strong></div>
@@ -50716,10 +50726,9 @@ try{
         };
         const annualVal = totalMensile;
         const annualIncassato = Math.max(0, sumList(incassatoMonths));
-        const annualTotalDisplay = compareEnabled
-          ? euro(annualVal)
-          : `${__ddae3339EuroPairPart__(annualVal)} / ${__ddae3339EuroPairPart__(annualIncassato)}`;
-        const annualTotalStrongClass = compareEnabled ? '' : ' class="month-total-pair"';
+        const annualDaIncassare = __ddae3347DaIncassare__(annualVal, annualIncassato);
+        const cmpAnnualIncassato = Math.max(0, sumList(compare.incassatoByMonth));
+        const cmpAnnualDaIncassare = __ddae3347DaIncassare__(sumList(compare.byMonth), cmpAnnualIncassato);
         const annualSpese = sumList(speseMonths);
         const annualRooms = Math.max(0, Math.round(sumList(occupiedRooms)));
         const annualOccPct = weightedOcc(occupiedRooms, occPctByMonth);
@@ -50744,8 +50753,12 @@ try{
               <div class="month-expanded-grid" aria-label="${escapeHtml(__statMensiliI18n__('Confronto dati anno'))}">
                 <div class="month-expanded-colhead is-current">${escapeHtml(__statMensiliI18n__('Anno corrente'))}</div>
                 <div class="month-expanded-colhead is-compare">${escapeHtml(__statMensiliI18n__('Anno di riferimento'))}</div>
-                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong${annualTotalStrongClass}>${annualTotalDisplay}</strong></div>
+                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(annualVal)}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Totale anno'))}</span><strong>${euro(cmpAnnualVal)}</strong></div>
+                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Incassato'))}</span><strong>${euro(annualIncassato)}</strong></div>
+                <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Incassato'))}</span><strong>${euro(cmpAnnualIncassato)}</strong></div>
+                <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Da incassare'))}</span><strong>${euro(annualDaIncassare)}</strong></div>
+                <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Da incassare'))}</span><strong>${euro(cmpAnnualDaIncassare)}</strong></div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(annualSpese)}</strong></div>
                 <div class="month-expanded-metric is-compare"><span>${escapeHtml(__statMensiliI18n__('Spese anno'))}</span><strong>${euro(cmpAnnualSpese)}</strong></div>
                 <div class="month-expanded-metric is-current"><span>${escapeHtml(__statMensiliI18n__('Rendimento'))}</span><strong>${Math.round(annualRendimento)}%</strong></div>
@@ -53690,7 +53703,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.346',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.347',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
