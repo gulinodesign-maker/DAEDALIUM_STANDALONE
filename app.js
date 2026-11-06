@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "2.349";
+const BUILD_VERSION = "2.350";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -24370,13 +24370,14 @@ function __defaultSingleActionButtonVisual__(btn){
 function __singleActionButtonSupportsDualState__(btn){
   try{
     const sharedKey = __singleActionButtonSharedKey__(btn);
-    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
+    return !!(btn && btn.classList && (sharedKey === 'speseBudgetModeToggle' || sharedKey === 'guestMessageSendWhatsAppChannel' || sharedKey === 'guestMessageSendMessengerChannel' || btn.id === 'guestDocumentScanBtn' || btn.id === 'channelEditorVisibilityToggle' || btn.classList.contains('spesa-category-btn') || btn.classList.contains('operatori-saldo-toggle') || btn.classList.contains('guest-gender-tab') || btn.id === 'guestHdInvoiceBtn' || btn.id === 'roomCatalogEditorLocale' || btn.hasAttribute('data-guest-invoice')));
   }catch(_){ return false; }
 }
 
 function __defaultSingleActionButtonStateVisuals__(btn){
   const base = __defaultSingleActionButtonVisual__(btn);
   try{ if (btn && btn.id === 'operatoriEditorSaldoBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.72 }, on:{ ...base, bg:'green-5', border:'green-5', fg:'white', opacity:0.90 } }; }catch(_){}
+  try{ if (btn && btn.id === 'guestDocumentScanBtn') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.78 }, on:{ ...base, bg:'blue-5', border:'blue-5', fg:'white', opacity:1 } }; }catch(_){}
   try{ if (btn && btn.id === 'guestHdInvoiceBtn') return { off:{ ...base, bg:'gray-3', border:'gray-4', fg:'gray-6', opacity:0.48 }, on:{ ...base, bg:'violet-5', border:'violet-6', fg:'white', opacity:0.95 } }; }catch(_){}
   try{ if (btn && btn.id === 'roomCatalogEditorLocale') return { off:{ ...base, bg:'gray-4', border:'gray-4', fg:'white', opacity:0.58 }, on:{ ...base, bg:'orange-5', border:'orange-5', fg:'white', opacity:0.92 } }; }catch(_){}
   try{ if (btn && btn.id === 'channelEditorVisibilityToggle') return { off:{ ...base, bg:'sky-4', border:'sky-5', fg:'white', opacity:0.82 }, on:{ ...base, bg:'indigo-5', border:'indigo-6', fg:'white', opacity:0.94 } }; }catch(_){}
@@ -24397,6 +24398,13 @@ function __singleActionButtonVisualStateMapFor__(btn){
   if (!__singleActionButtonSupportsDualState__(btn)){
     const single = __launcherVisualNormalize__(raw || defaults.off, defaults.off.bg || 'blue-4');
     return { off: single, on: single };
+  }
+  if (btn && btn.id === 'guestDocumentScanBtn' && !raw){
+    return { off: __launcherVisualNormalize__(defaults.off, defaults.off.bg), on: __launcherVisualNormalize__(defaults.on, defaults.on.bg) };
+  }
+  // Migrazione dal colore unico della build 349: preserva il colore attivo e crea uno stato OFF distinto.
+  if (btn && btn.id === 'guestDocumentScanBtn' && raw && typeof raw === 'object' && !raw.off && !raw.on){
+    return { off: __launcherVisualNormalize__(defaults.off, defaults.off.bg), on: __launcherVisualNormalize__(raw, defaults.on.bg) };
   }
   if (raw && typeof raw === 'object' && (raw.off || raw.on)){
     const off = __launcherVisualNormalize__(raw.off || defaults.off, defaults.off.bg || 'blue-4');
@@ -33596,7 +33604,7 @@ function updateOspiteHdActions(){
   const btnReport = hdActions.querySelector("[data-guest-report]");
   const btnInvoice = hdActions.querySelector("[data-guest-invoice]");
   const btnBack = hdActions.querySelector("[data-guest-back]");
-  const btnEdit = hdActions.querySelector("[data-guest-edit]");
+  const btnEdit = document.querySelector("#page-ospite [data-guest-edit]");
   const btnDel  = hdActions.querySelector("[data-guest-del]");
 
   const mode = state.guestMode; // "create" | "edit" | "view"
@@ -33629,7 +33637,7 @@ function updateOspiteHdActions(){
   if (btnEdit){
     btnEdit.hidden = (mode !== "view");
     const hasActiveGroup = !!String(state.guestGroupActiveId || '').trim();
-    btnEdit.disabled = (mode === "view" && !hasActiveGroup);
+    btnEdit.disabled = false; // Sempre visibile e personalizzabile, anche senza card attiva.
     btnEdit.classList.toggle('is-disabled', mode === "view" && !hasActiveGroup);
     btnEdit.setAttribute('aria-disabled', (mode === "view" && !hasActiveGroup) ? 'true' : 'false');
     btnEdit.setAttribute('title', (mode === "view" && !hasActiveGroup) ? 'Seleziona prima un gruppo stanze' : 'Modifica gruppo stanze');
@@ -35813,9 +35821,11 @@ function setupOspite(){
   const hdActions = document.getElementById("ospiteHdActions");
   if (hdActions && !hdActions.__bound){
     hdActions.__bound = true;
-    hdActions.addEventListener("click", async (e) => {
+    const page = document.getElementById('page-ospite');
+    (page || hdActions).addEventListener("click", async (e) => {
       const btn = e.target.closest("button");
-      if (!btn || !hdActions.contains(btn) || btn.hidden) return;
+      if (!btn || !(hdActions.contains(btn) || btn.id === 'guestHdEditBtn') || btn.hidden) return;
+      if ((btn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
 
       if (btn.hasAttribute("data-guest-checkin")){
         if (Date.now() < Number(btn.__suppressCheckInClickUntil || 0)) return;
@@ -48780,7 +48790,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='2.349';
+  var BUILD_TAG='2.350';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53706,7 +53716,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'2.349',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'2.350',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -57341,82 +57351,228 @@ async function renderStatAnalisi(){
 })();
 
 
-/* B&B Smart dDAE_2.349 — Scanner documenti ospite (ponte iOS; nessuna variazione Firebase). */
+/* B&B Smart dDAE_2.350 — Scanner iOS nativo / acquisizione PDF web (nessuna modifica Firebase). */
 (function(){
   'use strict';
-  var docBtn = null;
-  function selected(){
-    try {
-      if (!state || state.page !== 'ospite' || state.guestMode !== 'view') return null;
-      var page = document.getElementById('page-ospite');
-      if (!page || page.hidden) return null;
-      var card = page.querySelector('.guest-form-card');
-      if (!card || !card.classList.contains('guest-group-info-open')) return null;
-      var id = String(state.guestGroupActiveId || '').trim();
-      if (!id || typeof __guestBookingById__ !== 'function') return null;
-      var record = __guestBookingById__(id);
-      if (!record) return null;
-      var ci = record.check_in ?? record.checkIn ?? record.checkin ?? record.arrivo ?? record.dataArrivo ?? record.arrival ?? record.guestCheckIn ?? '';
-      var date = typeof formatISODateLocal === 'function' ? formatISODateLocal(ci) : String(ci || '');
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
-      var name = String(record.nome || record.name || (state.guestViewItem && (state.guestViewItem.nome || state.guestViewItem.name)) || '').trim();
-      if (!name) return null;
-      var structure = '';
-      try { structure = String(state?.session?.structureId || state?.session?.structure_id || state?.activeStructureId || '').trim(); }catch(_){ }
-      return { bookingId: id, guestName: name, arrivalISO: date, structureKey: structure };
-    }catch(_){ return null; }
-  }
-  function sync(){
-    try {
-      docBtn = docBtn || document.getElementById('guestDocumentScanBtn');
-      if (!docBtn) return;
-      var show = !!selected();
-      docBtn.hidden = !show;
-      docBtn.setAttribute('aria-hidden', show ? 'false' : 'true');
-      if (show && typeof __applySingleActionButtonVisual__ === 'function') __applySingleActionButtonVisual__(docBtn);
-      if (typeof __bindSingleActionButtonColorHold__ === 'function') __bindSingleActionButtonColorHold__(docBtn);
-    }catch(_){ }
-  }
-  function showMessage(text, severity){
-    try { if (typeof toast === 'function') { toast(text, severity || 'blue'); return; } }catch(_){ }
+  var docBtn, fileInput, overlay, pending=null, busy=false;
+  var webParentDirectory=null, webParentBookingKey='';
+  var STORAGE='dDAE_guest_document_web_counter_v1';
+  var $=id=>document.getElementById(id);
+  function alertUser(text,level){
+    try{ if(typeof toast==='function'){ toast(text,level||'blue');return; } }catch(_){}
     window.alert(text);
   }
+  function selected(){
+    try{
+      if (!state || state.page!=='ospite' || state.guestMode!=='view') return null;
+      var page=$('page-ospite');
+      if (!page || page.hidden || !page.querySelector('.guest-form-card.guest-group-info-open')) return null;
+      var id=String(state.guestGroupActiveId||'').trim();
+      if (!id || typeof __guestBookingById__!=='function') return null;
+      var row=__guestBookingById__(id);
+      if (!row) return null;
+      var raw=row.check_in??row.checkIn??row.checkin??row.arrivo??row.dataArrivo??row.arrival??row.guestCheckIn??'';
+      var iso=typeof formatISODateLocal==='function'?formatISODateLocal(raw):String(raw||'');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+      var name=String(row.nome||row.name||(state.guestViewItem&&(state.guestViewItem.nome||state.guestViewItem.name))||'').trim();
+      if (!name) return null;
+      var structure=String(state?.session?.structureId||state?.session?.structure_id||state?.activeStructureId||'').trim();
+      return {bookingId:id,guestName:name,arrivalISO:iso,structureKey:structure};
+    }catch(_){return null;}
+  }
+  function sync(){
+    try{
+      docBtn=docBtn||$('guestDocumentScanBtn');
+      if(!docBtn)return;
+      var active=!!selected();
+      // Riserva sempre la quinta posizione; non togliere mai il tasto dal gruppo.
+      docBtn.hidden=false;
+      docBtn.disabled=false; // Il long-press dei colori deve funzionare anche in stato OFF.
+      docBtn.classList.toggle('is-selected',active);
+      docBtn.classList.toggle('is-on',active);
+      docBtn.setAttribute('aria-disabled',active?'false':'true');
+      docBtn.setAttribute('aria-label',active?'Scansiona documento per prenotazione selezionata':'Scanner disattivato: seleziona una prenotazione');
+      docBtn.title=active?'Scansiona documento':'Seleziona prima la prenotazione';
+      if(typeof __applySingleActionButtonVisual__==='function') __applySingleActionButtonVisual__(docBtn);
+      if(typeof __bindSingleActionButtonColorHold__==='function') __bindSingleActionButtonColorHold__(docBtn);
+    }catch(_){}
+  }
+  function keyFor(b){return [b.structureKey,b.bookingId,b.arrivalISO].join('|');}
+  function folderFor(b){
+    var normalized=String(b.guestName).normalize('NFKC').toLocaleUpperCase('it-IT')
+      .replace(/[\\/:*?"<>|\x00-\x1f]/g,' ').replace(/\s+/g,' ').trim().slice(0,90);
+    return String(parseInt(b.arrivalISO.slice(8,10),10))+' - '+normalized;
+  }
+  function nextSequence(b){
+    try{var map=JSON.parse(localStorage.getItem(STORAGE)||'{}');return Math.max(0,Math.min(9999,Number(map[keyFor(b)]||0)))+1;}catch(_){return 1;}
+  }
+  function bumpSequence(b,seq){
+    try{var map=JSON.parse(localStorage.getItem(STORAGE)||'{}');map[keyFor(b)]=seq;localStorage.setItem(STORAGE,JSON.stringify(map));}catch(_){}
+  }
+  // PDF 1.4 minimale: JPEG reale, senza API esterne e senza trasferimento di immagini a server.
+  function buildPDF(pages){
+    if(!pages.length)throw Error('Nessuna pagina acquisita');
+    var enc=new TextEncoder(), pieces=[],offsets=[0],length=0;
+    function write(data){var b=typeof data==='string'?enc.encode(data):data;pieces.push(b);length+=b.length;}
+    function obj(n,data){offsets[n]=length;write(n+' 0 obj\n');write(data);write('\nendobj\n');}
+    write('%PDF-1.4\n%\xC3\xA2\xC3\xA3\xC3\x8F\xC3\x93\n');
+    var count=2+pages.length*3;
+    obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+    var refs=pages.map((_,i)=>(3+i*3)+' 0 R').join(' ');
+    obj(2,'<< /Type /Pages /Count '+pages.length+' /Kids [ '+refs+' ] >>');
+    pages.forEach((p,i)=>{
+      var pageId=3+i*3, imageId=pageId+1, streamId=pageId+2;
+      var w=595,h=842,margin=20;
+      var scale=Math.min((w-2*margin)/p.width,(h-2*margin)/p.height);
+      var dw=p.width*scale,dh=p.height*scale,x=(w-dw)/2,y=(h-dh)/2;
+      obj(pageId,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+w+' '+h+'] /Resources << /XObject << /Im0 '+imageId+' 0 R >> >> /Contents '+streamId+' 0 R >>');
+      offsets[imageId]=length;write(imageId+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+p.width+' /Height '+p.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+p.data.length+' >>\nstream\n');
+      write(p.data);write('\nendstream\nendobj\n');
+      var content='q\n'+dw.toFixed(3)+' 0 0 '+dh.toFixed(3)+' '+x.toFixed(3)+' '+y.toFixed(3)+' cm\n/Im0 Do\nQ\n';
+      obj(streamId,'<< /Length '+enc.encode(content).length+' >>\nstream\n'+content+'endstream');
+    });
+    var xref=length;
+    write('xref\n0 '+(count+1)+'\n0000000000 65535 f \n');
+    for(var n=1;n<=count;n++)write(String(offsets[n]||0).padStart(10,'0')+' 00000 n \n');
+    write('trailer\n<< /Size '+(count+1)+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
+    return new Blob(pieces,{type:'application/pdf'});
+  }
+  function loadPhoto(file){
+    return new Promise((resolve,reject)=>{
+      if(!file || !String(file.type||'').startsWith('image/')){reject(Error('Seleziona una fotografia valida.'));return;}
+      var url=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){
+        try{
+          var w=im.naturalWidth,h=im.naturalHeight;
+          if(!w||!h)throw Error('Immagine vuota');
+          var factor=Math.min(1,2000/Math.max(w,h));
+          var canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*factor));canvas.height=Math.max(1,Math.round(h*factor));
+          var cx=canvas.getContext('2d');if(!cx)throw Error('Canvas non disponibile');
+          cx.fillStyle='#ffffff';cx.fillRect(0,0,canvas.width,canvas.height);
+          cx.drawImage(im,0,0,canvas.width,canvas.height);
+          var base64=canvas.toDataURL('image/jpeg',0.84).split(',')[1];
+          var raw=atob(base64),bytes=new Uint8Array(raw.length);
+          for(var i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+          resolve({width:canvas.width,height:canvas.height,data:bytes});
+        }catch(e){reject(e);}finally{URL.revokeObjectURL(url);}
+      };
+      im.onerror=function(){URL.revokeObjectURL(url);reject(Error('Impossibile leggere la fotografia.'));};
+      im.src=url;
+    });
+  }
+  function showPanel(){
+    overlay=overlay||$('guestWebDocumentOverlay');if(!overlay||!pending)return;
+    var n=pending.pages.length,folder=folderFor(pending.booking);
+    $('guestWebScanInfo').textContent=folder+' · '+n+' '+(n===1?'pagina':'pagine');
+    $('guestWebScanHelp').textContent=('Per salvare in File, scegli «Salva in File» e seleziona o crea la cartella «'+folder+'». Safari non permette di impostare automaticamente la cartella nelle scansioni successive.');
+    overlay.hidden=false;overlay.setAttribute('aria-hidden','false');
+  }
+  function closePanel(){
+    overlay=overlay||$('guestWebDocumentOverlay');if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');}
+  }
+  function reset(){pending=null;busy=false;closePanel();if(fileInput)fileInput.value='';}
+  function shoot(){
+    fileInput=fileInput||$('guestWebDocumentCamera');
+    if(!fileInput){alertUser('Fotocamera non disponibile','orange');return;}
+    fileInput.value='';
+    try{fileInput.click();}catch(_){alertUser('Fotocamera non disponibile su questo browser.','orange');}
+  }
+  function onPhoto(){
+    var f=fileInput&&fileInput.files&&fileInput.files[0];if(!f)return;
+    if(!pending || !selected() || keyFor(pending.booking)!==keyFor(selected())){
+      reset();alertUser('La prenotazione attiva è cambiata. Ripeti la scansione.','orange');return;
+    }
+    busy=true;
+    loadPhoto(f).then(page=>{if(!pending)return;pending.pages.push(page);busy=false;showPanel();})
+      .catch(err=>{busy=false;alertUser('Acquisizione non riuscita: '+err.message,'orange');if(!pending.pages.length)reset();});
+  }
+  function makePDFFile(){
+    if(!pending||!pending.pages.length)throw Error('Nessuna scansione disponibile');
+    var seq=pending.sequence;
+    return new File([buildPDF(pending.pages)],folderFor(pending.booking)+' - Documento_'+String(seq).padStart(3,'0')+'.pdf',{type:'application/pdf'});
+  }
+  function finish(){if(pending)bumpSequence(pending.booking,pending.sequence);reset();alertUser('PDF pronto. Verifica la destinazione nell’app File.','green');}
+  function download(){
+    if(!pending||busy)return;
+    try{
+      var file=makePDFFile(),url=URL.createObjectURL(file),a=document.createElement('a');
+      a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      finish();
+    }catch(e){alertUser('Impossibile scaricare il PDF: '+e.message,'orange');}
+  }
+  async function shareOrSave(){
+    if(!pending||busy)return;
+    var file;
+    try{file=makePDFFile();}catch(e){alertUser(e.message,'orange');return;}
+    // Browser desktop compatibili: scelta della directory, cartella dedicata e salvataggio automatico.
+    if(typeof window.showDirectoryPicker==='function'){
+      try{
+        var currentKey=keyFor(pending.booking);
+        var parent=(webParentDirectory && webParentBookingKey===currentKey)
+          ? webParentDirectory : await window.showDirectoryPicker({mode:'readwrite'});
+        var dir=await parent.getDirectoryHandle(folderFor(pending.booking),{create:true});
+        var n=pending.sequence,filename='',exists=null;
+        do{
+          filename='Documento_'+String(n).padStart(3,'0')+'.pdf';
+          exists=await dir.getFileHandle(filename,{create:false}).catch(()=>null);
+          if(exists)n++;
+        }while(exists && n<=9999);
+        if(exists)throw Error('Numero massimo di documenti raggiunto.');
+        var out=await dir.getFileHandle(filename,{create:true});
+        var writer=await out.createWritable();await writer.write(file);await writer.close();
+        pending.sequence=n;
+        webParentDirectory=parent;webParentBookingKey=currentKey;
+        finish();return;
+      }catch(e){
+        if(e&&e.name==='AbortError')return;
+        webParentDirectory=null;webParentBookingKey='';
+        // Se la cartella viene revocata, il browser può comunque condividere il PDF.
+      }
+    }
+    // Su Safari/PWA iOS l'utente sceglie ogni volta la cartella nell'interfaccia di sistema.
+    try{
+      if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+        await navigator.share({files:[file]});finish();return;
+      }
+    }catch(e){if(e && e.name==='AbortError')return;alertUser('Condivisione non riuscita: '+(e.message||'')+'. Prova Scarica PDF.','orange');return;}
+    download();
+  }
   function scan(){
-    var booking = selected();
-    if (!booking){ showMessage('Seleziona prima la card della prenotazione.', 'orange'); return; }
-    var handler = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.guestDocumentScanner;
-    if (!handler || typeof handler.postMessage !== 'function'){
-      showMessage('La scansione automatica e il salvataggio nelle cartelle File sono disponibili nell’app B&B Smart installata da App Store.', 'orange');
+    if((docBtn.__singleActionButtonSuppressTapUntil||0)>Date.now())return;
+    var booking=selected();
+    if(!booking){alertUser('Seleziona prima la card della prenotazione.','orange');return;}
+    var handler=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.guestDocumentScanner;
+    if(handler && typeof handler.postMessage==='function'){
+      try{handler.postMessage(booking);}catch(_){alertUser('Impossibile aprire lo scanner iOS.','orange');}
       return;
     }
-    try { handler.postMessage(booking); }
-    catch(_){ showMessage('Impossibile aprire lo scanner iOS.', 'orange'); }
+    if(!pending || keyFor(pending.booking)!==keyFor(booking))pending={booking:booking,sequence:nextSequence(booking),pages:[]};
+    shoot();
   }
   function setup(){
-    docBtn = document.getElementById('guestDocumentScanBtn');
-    if (!docBtn) return;
-    if (!docBtn.dataset.guestScanBound){
-      docBtn.dataset.guestScanBound = '1';
-      var tap = function(ev){
-        if ((docBtn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
-        try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
+    docBtn=$('guestDocumentScanBtn');fileInput=$('guestWebDocumentCamera');overlay=$('guestWebDocumentOverlay');
+    if(!docBtn)return;
+    if(!docBtn.dataset.guestScanBound){
+      docBtn.dataset.guestScanBound='1';
+      var tap=function(ev){
+        if((docBtn.__singleActionButtonSuppressTapUntil||0)>Date.now())return;
+        try{ev.preventDefault();ev.stopPropagation();}catch(_){}
         scan();
       };
-      if (typeof bindFastTap === 'function') bindFastTap(docBtn, tap);
-      else docBtn.addEventListener('click', tap);
+      if(typeof bindFastTap==='function')bindFastTap(docBtn,tap);else docBtn.addEventListener('click',tap);
     }
+    if(fileInput&&!fileInput.dataset.guestScanBound){fileInput.dataset.guestScanBound='1';fileInput.addEventListener('change',onPhoto);}
+    var actions={guestWebScanAddPage:()=>{closePanel();shoot();},guestWebScanSaveFile:shareOrSave,guestWebScanDownload:download,guestWebScanCancel:reset};
+    Object.keys(actions).forEach(id=>{var b=$(id);if(b&&!b.dataset.guestScanBound){b.dataset.guestScanBound='1';b.addEventListener('click',actions[id]);}});
     sync();
   }
-  window.__syncGuestDocumentScanButton__ = sync;
-  window.addEventListener('bbsmart:guest-document-scan', function(ev){
-    try{
-      var detail = ev && ev.detail || {};
-      if (detail.status === 'saved') showMessage('Documento salvato in File: ' + String(detail.folderName || ''), 'green');
-      else if (detail.status === 'error') showMessage(String(detail.message || 'Salvataggio documento non riuscito.'), 'orange');
-      else if (detail.status === 'cancelled' && detail.message) showMessage(detail.message, 'orange');
-    }catch(_){ }
+  window.__syncGuestDocumentScanButton__=sync;
+  window.addEventListener('bbsmart:guest-document-scan',function(ev){
+    try{var d=ev&&ev.detail||{};if(d.status==='saved')alertUser('Documento salvato in File: '+String(d.folderName||''),'green');
+      else if(d.status==='error')alertUser(String(d.message||'Salvataggio documento non riuscito.'),'orange');
+      else if(d.status==='cancelled'&&d.message)alertUser(d.message,'orange');}catch(_){}
   });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup, {once:true});
-  else setup();
-  window.addEventListener('pageshow', sync);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+  window.addEventListener('pageshow',sync);
 })();

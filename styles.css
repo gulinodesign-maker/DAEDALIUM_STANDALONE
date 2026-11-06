@@ -37004,3 +37004,111 @@ body.ddae-dark #page-ospiti .guest-card .guest-arrival-time-card{
     max-height:54px !important;
   }
 }
+
+/* dDAE_2.350 — cinque azioni ospite circolari: gruppo fisso e centrato, stato scanner nel Tema. */
+#guestContactActionDock[hidden]{display:none !important;}
+#guestContactActionDock{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px)) !important;
+  transform:translateX(-50%) !important;
+  z-index:4600 !important;
+  width:min(410px,calc(100vw - 20px)) !important;
+  max-width:calc(100vw - 20px) !important;
+  padding:0 !important;
+  margin:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:clamp(6px,2.3vw,13px) !important;
+  flex-wrap:nowrap !important;
+  pointer-events:none !important;
+}
+#guestContactActionDock .guest-contact-action-btn,
+#guestContactActionDock #guestDocumentScanBtn,
+#guestContactActionDock #guestHdEditBtn{
+  position:static !important;
+  inset:auto !important;
+  transform:none;
+  flex:0 0 min(64px,calc((100vw - 64px)/5)) !important;
+  width:min(64px,calc((100vw - 64px)/5)) !important;
+  height:min(64px,calc((100vw - 64px)/5)) !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:64px !important;
+  max-height:64px !important;
+  aspect-ratio:1/1 !important;
+  border-radius:50% !important;
+  box-shadow:none !important;
+  filter:none !important;
+  background-image:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  align-items:center !important;
+  justify-content:center !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+#guestContactActionDock .guest-contact-action-btn .ui-ico,
+#guestContactActionDock #guestHdEditBtn .tl-ico,
+#guestContactActionDock #guestDocumentScanBtn .ui-ico{
+  width:46% !important;
+  height:46% !important;
+  max-width:30px !important;
+  max-height:30px !important;
+  flex:0 0 auto !important;
+}
+#guestContactActionDock #guestHdEditBtn{
+  display:inline-flex !important;
+  border-width:1px !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+#guestContactActionDock #guestHdEditBtn[hidden]{display:none !important;}
+#guestContactActionDock #guestDocumentScanBtn[hidden]{display:inline-flex !important;}
+#guestContactActionDock #guestDocumentScanBtn[aria-disabled="true"]{cursor:default !important;}
+#page-ospite .guest-form-card.is-view #guestContactActionDock button{
+  pointer-events:auto !important;
+}
+.guest-web-camera-input{
+  position:fixed !important;left:-50px !important;top:-50px !important;
+  width:1px !important;height:1px !important;opacity:0 !important;
+}
+.guest-web-scan-overlay[hidden]{display:none !important;}
+.guest-web-scan-overlay{
+  position:fixed;inset:0;z-index:22000;
+  background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));
+}
+.guest-web-scan-panel{
+  background:#fff;color:#19253a;border:1px solid #cbd5e1;border-radius:20px;
+  width:min(440px,100%);max-height:100%;overflow:auto;padding:20px;
+  box-shadow:none;display:flex;flex-direction:column;gap:12px;
+}
+.guest-web-scan-panel h2{font-size:21px;line-height:1.2;margin:0;font-weight:750;color:inherit;}
+.guest-web-scan-panel p{font-size:15px;line-height:1.4;margin:0;overflow-wrap:anywhere;}
+.guest-web-scan-panel .guest-web-scan-help{color:#475569;}
+.guest-web-scan-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px;}
+.guest-web-scan-choices button{
+  min-width:0;min-height:48px;border-radius:12px;border:1px solid #cbd5e1;
+  font-size:14px;font-weight:750;padding:10px 8px;background:#eef3f7;color:#182b44;
+  box-shadow:none;filter:none;touch-action:manipulation;
+}
+.guest-web-scan-choices #guestWebScanSaveFile{background:#187bcb;color:white;border-color:#187bcb;}
+body.ddae-dark .guest-web-scan-panel,body.dark-mode .guest-web-scan-panel{
+  background:#172234;color:#f8fafc;border-color:#64748b;
+}
+body.ddae-dark .guest-web-scan-panel .guest-web-scan-help,
+body.dark-mode .guest-web-scan-panel .guest-web-scan-help{color:#cbd5e1;}
+@media(max-width:350px){
+  #guestContactActionDock{width:calc(100vw - 14px) !important;gap:6px !important;}
+  #guestContactActionDock .guest-contact-action-btn,
+  #guestContactActionDock #guestHdEditBtn,
+  #guestContactActionDock #guestDocumentScanBtn{
+    flex-basis:calc((100vw - 55px)/5) !important;
+    width:calc((100vw - 55px)/5) !important;
+    height:calc((100vw - 55px)/5) !important;
+  }
+}
