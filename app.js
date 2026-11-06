@@ -24214,7 +24214,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestDocumentScanBtn','guestWebScanAddPage','guestWebScanSaveFile','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestDocumentScanBtn','guestWebScanAddPage','guestWebScanSaveFile','guestWebCameraCapture','guestWebCameraUseIOS','guestWebCropRetake','guestWebCropApply','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
@@ -24314,6 +24314,10 @@ function __defaultSingleActionButtonVisual__(btn){
     guestDocumentScanBtn:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.90 },
     guestWebScanAddPage:{ bg:'gray-2', border:'gray-3', fg:'blue-6', opacity:1 },
     guestWebScanSaveFile:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:1 },
+    guestWebCameraCapture:{ bg:'gray-1', border:'gray-1', fg:'blue-6', opacity:1 },
+    guestWebCameraUseIOS:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:1 },
+    guestWebCropRetake:{ bg:'gray-3', border:'gray-4', fg:'blue-6', opacity:1 },
+    guestWebCropApply:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:1 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
     guestHdCheckinBtn:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
@@ -57353,7 +57357,7 @@ async function renderStatAnalisi(){
 })();
 
 
-/* B&B Smart dDAE_2.351 — Scanner iOS nativo / documento PDF PWA e cartella copiata (nessuna modifica Firebase). */
+/* B&B Smart dDAE_2.352 — Scanner iOS nativo / documento PDF PWA e cartella copiata (nessuna modifica Firebase). */
 (function(){
   'use strict';
   var docBtn, fileInput, overlay, pending=null, busy=false;
@@ -57361,6 +57365,7 @@ async function renderStatAnalisi(){
   var STORAGE='dDAE_guest_document_web_counter_v1';
   var FOLDERS='dDAE_guest_document_folder_names_v1';
   var liveStream=null,webCamera=null,webVideo=null;
+  var cropSource=null,cropCorners=null,cropEditorActive=false,cropDragIndex=-1,cropDetectionSerial=0;
   function rememberFolder(b){
     var name=folderFor(b);
     try{
@@ -57507,7 +57512,7 @@ async function renderStatAnalisi(){
     webCamera=webCamera||$('guestWebCameraStage');
     if(webCamera){webCamera.hidden=true;webCamera.setAttribute('aria-hidden','true');}
   }
-  function reset(){pending=null;busy=false;stopCamera();closePanel();if(fileInput)fileInput.value='';}
+  function reset(){cropDetectionSerial++;cropSource=null;cropCorners=null;cropDragIndex=-1;setCropMode(false);pending=null;busy=false;stopCamera();closePanel();if(fileInput)fileInput.value='';}
   function fallbackCamera(){
     stopCamera();
     fileInput=fileInput||$('guestWebDocumentCamera');
@@ -57515,7 +57520,127 @@ async function renderStatAnalisi(){
     fileInput.value='';
     try{fileInput.click();}catch(_){alertUser('Fotocamera non disponibile su questo browser.','orange');}
   }
+  function setCropMode(active){
+    cropEditorActive=!!active;
+    var stage=webCamera||$('guestWebCameraStage'),video=webVideo||$('guestWebCameraVideo');
+    var frame=$('guestWebCropFrame'),actions=$('guestWebCropActions');
+    var shutter=$('guestWebCameraCapture'),fallback=$('guestWebCameraUseIOS'),guide=stage&&stage.querySelector('.guest-web-camera-guide');
+    if(stage)stage.classList.toggle('is-cropping',!!active);
+    if(video)video.hidden=!!active;
+    if(guide)guide.hidden=!!active;
+    if(frame)frame.hidden=!active;
+    if(actions)actions.hidden=!active;
+    if(shutter)shutter.hidden=!!active;
+    if(fallback)fallback.hidden=!!active;
+    var caption=$('guestWebCameraCaption');
+    if(caption)caption.textContent=active?'Controlla e trascina i quattro angoli':'Inquadra il documento';
+  }
+  function renderCropCorners(){
+    var svg=$('guestWebCropOverlay'),poly=$('guestWebCropPolygon');if(!svg||!poly||!cropCorners)return;
+    poly.setAttribute('points',cropCorners.map(p=>(p.x*1000).toFixed(2)+','+(p.y*1000).toFixed(2)).join(' '));
+    Array.prototype.forEach.call(svg.querySelectorAll('[data-corner]'),function(c){
+      var idx=Number(c.getAttribute('data-corner')),p=cropCorners[idx];if(!p)return;
+      c.setAttribute('cx',(p.x*1000).toFixed(2));c.setAttribute('cy',(p.y*1000).toFixed(2));
+    });
+  }
+  function fitCropFrame(){
+    var view=$('guestWebCameraStage')&&$('guestWebCameraStage').querySelector('.guest-web-camera-view');
+    var frame=$('guestWebCropFrame');if(!view||!frame||!cropSource)return;
+    var maxW=Math.max(120,view.clientWidth-22),maxH=Math.max(120,view.clientHeight-24),scale=Math.min(maxW/cropSource.width,maxH/cropSource.height);
+    frame.style.width=Math.round(cropSource.width*scale)+'px';
+    frame.style.height=Math.round(cropSource.height*scale)+'px';
+    renderCropCorners();
+  }
+  function openCropEditor(source){
+    if(!pending||!source)return;
+    stopCamera();
+    cropSource=source;cropCorners=(window.BBSmartDocumentScanner&&window.BBSmartDocumentScanner.fallback())||[
+      {x:.07,y:.19},{x:.93,y:.19},{x:.93,y:.81},{x:.07,y:.81}];
+    cropDetectionSerial++;
+    webCamera=webCamera||$('guestWebCameraStage');if(!webCamera)return;
+    webCamera.hidden=false;webCamera.setAttribute('aria-hidden','false');
+    setCropMode(true);
+    var canvas=$('guestWebCropCanvas');if(!canvas)return;
+    canvas.width=source.width;canvas.height=source.height;
+    var ctx=canvas.getContext('2d');if(ctx)ctx.drawImage(source,0,0);
+    fitCropFrame();
+    var serial=cropDetectionSerial;
+    // Una scansione fotografica rimane correggibile anche se il rilevamento automatico non riesce.
+    setTimeout(function(){
+      if(!cropEditorActive||serial!==cropDetectionSerial||cropSource!==source)return;
+      try{
+        var scanner=window.BBSmartDocumentScanner;
+        if(scanner){var found=scanner.detect(source);if(found&&found.corners){cropCorners=found.corners;renderCropCorners();}}
+      }catch(_){ }
+    },70);
+  }
+  function onCropPointerDown(ev){
+    var node=ev.target;if(!node||!node.getAttribute)return;
+    var idx=node.getAttribute('data-corner');if(idx===null||!cropEditorActive)return;
+    cropDragIndex=Number(idx);
+    try{ev.currentTarget.setPointerCapture(ev.pointerId);}catch(_){ }
+    ev.preventDefault();onCropPointerMove(ev);
+  }
+  function onCropPointerMove(ev){
+    if(!cropEditorActive||cropDragIndex<0||!cropCorners)return;
+    var rect=ev.currentTarget.getBoundingClientRect();if(rect.width<1||rect.height<1)return;
+    var x=Math.max(.008,Math.min(.992,(ev.clientX-rect.left)/rect.width));
+    var y=Math.max(.008,Math.min(.992,(ev.clientY-rect.top)/rect.height));
+    cropCorners[cropDragIndex]={x:x,y:y};renderCropCorners();ev.preventDefault();
+  }
+  function onCropPointerUp(ev){if(cropDragIndex>=0){onCropPointerMove(ev);cropDragIndex=-1;}}
+  function retakeCrop(){
+    if(busy)return;
+    cropDetectionSerial++;cropSource=null;cropCorners=null;setCropMode(false);
+    shoot();
+  }
+  function confirmCrop(){
+    if(!pending||busy||!cropEditorActive||!cropSource||!cropCorners)return;
+    if(!selected()||keyFor(pending.booking)!==keyFor(selected())){
+      reset();alertUser('La prenotazione attiva è cambiata. Ripeti la scansione.','orange');return;
+    }
+    busy=true;
+    var btn=$('guestWebCropApply'),caption=$('guestWebCameraCaption');
+    if(btn)btn.disabled=true;if(caption)caption.textContent='Elaborazione documento…';
+    var source=cropSource,corners=cropCorners.map(p=>({x:p.x,y:p.y}));
+    setTimeout(function(){
+      try{
+        var scanner=window.BBSmartDocumentScanner;
+        if(!scanner)throw Error('Modulo ritaglio non disponibile');
+        var pageCanvas=scanner.warp(source,corners);
+        pageCanvas.toBlob(function(blob){
+          if(!pending){busy=false;if(btn)btn.disabled=false;return;}
+          if(!blob){busy=false;if(btn)btn.disabled=false;alertUser('Elaborazione non riuscita. Riprova.','orange');return;}
+          loadPhoto(new File([blob],'Documento_corretto.jpg',{type:'image/jpeg'})).then(function(page){
+            if(pending){pending.pages.push(page);cropSource=null;cropCorners=null;cropDetectionSerial++;
+              setCropMode(false);stopCamera();showPanel();}
+            busy=false;if(btn)btn.disabled=false;
+          }).catch(function(err){busy=false;if(btn)btn.disabled=false;alertUser('Impossibile elaborare la pagina: '+err.message,'orange');});
+        },'image/jpeg',.90);
+      }catch(e){busy=false;if(btn)btn.disabled=false;alertUser('Ritaglio non riuscito: '+e.message,'orange');}
+    },50);
+  }
+  function photoCanvas(file){
+    return new Promise(function(resolve,reject){
+      if(!file||!String(file.type||'').startsWith('image/'))return reject(Error('Fotografia non valida'));
+      var url=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){
+        try{
+          var w=im.naturalWidth,h=im.naturalHeight;
+          if(!w||!h)throw Error('Immagine vuota');
+          var factor=Math.min(1,2400/Math.max(w,h));
+          var canvas=document.createElement('canvas');
+          canvas.width=Math.round(w*factor);canvas.height=Math.round(h*factor);
+          var context=canvas.getContext('2d');if(!context)throw Error('Canvas non disponibile');
+          context.drawImage(im,0,0,canvas.width,canvas.height);resolve(canvas);
+        }catch(e){reject(e);}finally{URL.revokeObjectURL(url);}
+      };
+      im.onerror=function(){URL.revokeObjectURL(url);reject(Error('Impossibile leggere la foto'));};
+      im.src=url;
+    });
+  }
   function shoot(){
+    setCropMode(false);
     // Lo scanner iOS nativo è richiamato via bridge in scan(); qui l'alternativa web.
     webCamera=webCamera||$('guestWebCameraStage');webVideo=webVideo||$('guestWebCameraVideo');
     if(!webCamera || !webVideo || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
@@ -57543,28 +57668,15 @@ async function renderStatAnalisi(){
     }
     busy=true;
     try{
-      // Il riquadro di inquadratura diventa il ritaglio della scansione.
-      var view=$('guestWebCameraStage').querySelector('.guest-web-camera-view');
-      var guide=$('guestWebCameraStage').querySelector('.guest-web-camera-guide');
+      // Acquisisci il fotogramma INTERO. Gli angoli saranno identificati e regolati in seguito.
       var vw=webVideo.videoWidth,vh=webVideo.videoHeight;
-      var r=view.getBoundingClientRect(),g=guide.getBoundingClientRect();
-      var scale=Math.max(r.width/vw,r.height/vh);
-      var ox=(vw*scale-r.width)/2,oy=(vh*scale-r.height)/2;
-      var sx=Math.max(0,(g.left-r.left+ox)/scale),sy=Math.max(0,(g.top-r.top+oy)/scale);
-      var sw=Math.min(vw-sx,g.width/scale),sh=Math.min(vh-sy,g.height/scale);
-      if(!(sw>50&&sh>50))throw Error('Inquadratura non valida');
-      var factor=Math.min(1,2000/Math.max(sw,sh));
+      if(vw<100||vh<100)throw Error('Fotocamera non pronta');
+      var factor=Math.min(1,2400/Math.max(vw,vh));
       var canvas=document.createElement('canvas');
-      canvas.width=Math.max(1,Math.round(sw*factor));canvas.height=Math.max(1,Math.round(sh*factor));
+      canvas.width=Math.max(1,Math.round(vw*factor));canvas.height=Math.max(1,Math.round(vh*factor));
       var cx=canvas.getContext('2d');if(!cx)throw Error('Fotocamera non disponibile');
-      cx.drawImage(webVideo,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-      canvas.toBlob(blob=>{
-        if(!blob){busy=false;alertUser('Impossibile acquisire il documento.','orange');return;}
-        loadPhoto(new File([blob],'Scansione.jpg',{type:'image/jpeg'})).then(page=>{
-          if(pending){pending.pages.push(page);stopCamera();showPanel();}
-          busy=false;
-        }).catch(e=>{busy=false;alertUser('Scansione non riuscita: '+e.message,'orange');});
-      },'image/jpeg',0.92);
+      cx.drawImage(webVideo,0,0,canvas.width,canvas.height);
+      busy=false;openCropEditor(canvas);
     }catch(e){busy=false;alertUser('Scansione non riuscita: '+e.message,'orange');}
   }
   function onPhoto(){
@@ -57573,8 +57685,13 @@ async function renderStatAnalisi(){
       reset();alertUser('La prenotazione attiva è cambiata. Ripeti la scansione.','orange');return;
     }
     busy=true;
-    loadPhoto(f).then(page=>{if(!pending)return;pending.pages.push(page);busy=false;stopCamera();showPanel();})
-      .catch(err=>{busy=false;alertUser('Acquisizione non riuscita: '+err.message,'orange');if(!pending.pages.length)reset();});
+    photoCanvas(f).then(function(canvas){
+      busy=false;if(pending)openCropEditor(canvas);
+    }).catch(function(err){
+      busy=false;alertUser('Acquisizione non riuscita: '+err.message,'orange');
+      if(pending&&!pending.pages.length)reset();
+    });
+    if(fileInput)fileInput.value='';
   }
   function makePDFFile(){
     if(!pending||!pending.pages.length)throw Error('Nessuna scansione disponibile');
@@ -57657,19 +57774,28 @@ async function renderStatAnalisi(){
       if(typeof bindFastTap==='function')bindFastTap(docBtn,tap);else docBtn.addEventListener('click',tap);
     }
     if(fileInput&&!fileInput.dataset.guestScanBound){fileInput.dataset.guestScanBound='1';fileInput.addEventListener('change',onPhoto);}
-    var actions={guestWebScanAddPage:()=>{closePanel();shoot();},guestWebScanSaveFile:shareOrSave,guestWebScanCancel:reset,guestWebCameraClose:reset,guestWebCameraCapture:captureWebFrame,guestWebCameraUseIOS:fallbackCamera};
+    var actions={guestWebScanAddPage:()=>{closePanel();shoot();},guestWebScanSaveFile:shareOrSave,guestWebScanCancel:reset,guestWebCameraClose:reset,guestWebCameraCapture:captureWebFrame,guestWebCameraUseIOS:fallbackCamera,guestWebCropRetake:retakeCrop,guestWebCropApply:confirmCrop};
     Object.keys(actions).forEach(id=>{var b=$(id);if(b&&!b.dataset.guestScanBound){b.dataset.guestScanBound='1';b.addEventListener('click',ev=>{
       if((b.__singleActionButtonSuppressTapUntil||0)>Date.now())return;
       actions[id]();
     });}});
     // Due soli comandi del popup, modificabili con il popup colore esistente;
     // Theme e backup già salvano dDAE_single_action_button_visual_v1.
-    ['guestWebScanAddPage','guestWebScanSaveFile'].forEach(id=>{
+    ['guestWebScanAddPage','guestWebScanSaveFile','guestWebCameraCapture','guestWebCameraUseIOS','guestWebCropRetake','guestWebCropApply'].forEach(id=>{
       var btn=$(id);
       if(!btn)return;
       try{if(typeof __applySingleActionButtonVisual__==='function')__applySingleActionButtonVisual__(btn);}catch(_){ }
       try{if(typeof __bindSingleActionButtonColorHold__==='function')__bindSingleActionButtonColorHold__(btn);}catch(_){ }
     });
+    var svg=$('guestWebCropOverlay');
+    if(svg&&!svg.dataset.guestCropBound){
+      svg.dataset.guestCropBound='1';
+      svg.addEventListener('pointerdown',onCropPointerDown,{passive:false});
+      svg.addEventListener('pointermove',onCropPointerMove,{passive:false});
+      svg.addEventListener('pointerup',onCropPointerUp,{passive:false});
+      svg.addEventListener('pointercancel',()=>{cropDragIndex=-1;});
+    }
+    window.addEventListener('resize',()=>{if(cropEditorActive)fitCropFrame();},{passive:true});
     sync();
   }
   window.__syncGuestDocumentScanButton__=sync;

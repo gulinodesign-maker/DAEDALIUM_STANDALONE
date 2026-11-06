@@ -37271,3 +37271,41 @@ body.dark-mode .guest-web-scan-panel .guest-web-scan-help{color:#cbd5e1;}
   box-shadow:none !important;
 }
 @media(max-height:620px){.guest-web-camera-foot{min-height:112px !important;padding:8px !important;gap:7px !important}.guest-web-camera-view{margin-top:46px !important}.guest-web-camera-capture{width:54px !important;height:54px !important}}
+
+
+/* dDAE_2.352: revisione documenti web con quadrilatero adattativo e correzione prospettica.
+   Pannello risultati e dock inferiore della scheda ospite restano invariati. */
+.guest-web-camera-view video[hidden], .guest-web-camera-view .guest-web-camera-guide[hidden],
+.guest-web-crop-frame[hidden], .guest-web-crop-actions[hidden],
+.guest-web-camera-capture[hidden], .guest-web-camera-fallback[hidden]{display:none !important;}
+.guest-web-crop-frame{
+  position:relative !important; flex:none !important; overflow:visible !important;
+  max-width:calc(100% - 20px) !important;max-height:calc(100% - 20px) !important;
+  background:#17202f !important;touch-action:none !important;
+}
+.guest-web-crop-frame canvas{width:100% !important;height:100% !important;display:block !important;object-fit:fill !important;}
+.guest-web-crop-frame svg{
+  position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;
+  overflow:visible !important;touch-action:none !important;user-select:none !important;
+  -webkit-user-select:none !important;
+}
+.guest-web-crop-frame svg circle{
+  cursor:grab;pointer-events:all;touch-action:none;paint-order:stroke;stroke-width:6px;
+}
+.guest-web-crop-frame svg circle:active{cursor:grabbing;}
+.guest-web-crop-actions{
+  display:flex !important; flex-direction:row !important;align-items:center !important;
+  justify-content:center !important;gap:12px !important;
+  width:100% !important;max-width:440px !important;
+}
+.guest-web-crop-actions button{
+  flex:1 1 0 !important;min-width:0 !important;min-height:48px !important;
+  border:1px solid #aab6c7;border-radius:12px !important;
+  background:#263653;color:#fff;padding:9px 10px !important;
+  font-size:14px;font-weight:750;text-align:center;
+  box-shadow:none !important;filter:none !important;background-image:none !important;
+}
+.guest-web-crop-actions #guestWebCropApply{background:#1c87cb;color:#fff;border-color:#1c87cb;}
+.guest-web-camera-stage.is-cropping .guest-web-camera-foot{gap:12px !important;min-height:120px !important;}
+.guest-web-camera-stage.is-cropping .guest-web-camera-caption{text-align:center;max-width:94% !important;}
+@media(max-height:620px){.guest-web-camera-stage.is-cropping .guest-web-camera-foot{min-height:100px !important;}}
