@@ -1,4 +1,4 @@
-/* B&B Smart 2.352: scanner documentale web offline, analisi locale senza upload o dipendenze esterne.
+/* B&B Smart 2.353: scanner documentale web offline, analisi locale senza upload o dipendenze esterne.
    Il bridge WKWebView/VisionKit dell'app iOS nativa resta indipendente. */
 (function(root){
   'use strict';
@@ -117,6 +117,227 @@
     return {corners:result.corners.map(function(p){return {x:clamp(p.x/w,0,1),y:clamp(p.y/h,0,1)};}),
       confidence:result.confidence,coverage:result.area};
   }
+  // 2.353: ricerca di quattro lati indipendenti, anche obliqui/non paralleli.
+  // In 2.353 erano ammessi essenzialmente lati quasi orizzontali/verticali:
+  // in una foto prospettica veniva quindi usato il rettangolo di fallback.
+  function detectFlexible(gray,w,h){
+    if(w<100||h<100)return null;
+    var n=w*h, smooth=new Uint8Array(n), strength=new Uint16Array(n),orientation=new Uint8Array(n);
+    for(var y=1;y<h-1;y++)for(var x=1;x<w-1;x++){
+      var i=y*w+x;
+      smooth[i]=(gray[i-w-1]+gray[i-w]+gray[i-w+1]+gray[i-1]+gray[i]+gray[i+1]+gray[i+w-1]+gray[i+w]+gray[i+w+1])/9|0;
+    }
+    var histogram=new Uint32Array(1024),edges=0;
+    for(y=3;y<h-3;y++)for(x=3;x<w-3;x++){
+      var k=y*w+x;
+      var gx=smooth[k-w+1]+2*smooth[k+1]+smooth[k+w+1]-smooth[k-w-1]-2*smooth[k-1]-smooth[k+w-1];
+      var gy=smooth[k+w-1]+2*smooth[k+w]+smooth[k+w+1]-smooth[k-w-1]-2*smooth[k-w]-smooth[k-w+1];
+      var m=Math.min(1023,Math.round(Math.hypot(gx,gy)));
+      strength[k]=m;
+      if(m<25)continue;
+      var a=Math.atan2(gy,gx)*180/PI;
+      if(a<0)a+=180;
+      orientation[k]=Math.round(a)%180;
+      histogram[m]++;edges++;
+    }
+    if(edges<Math.min(300,n*.004))return null;
+    var counted=0,threshold=60;
+    for(var v=1023;v>=45;v--){counted+=histogram[v];if(counted>=edges*.32){threshold=v;break;}}
+    threshold=Math.max(60,threshold);
+    var R=Math.ceil(Math.hypot(w,h))+3,len=R*2+1,acc=new Uint16Array(len*180);
+    var cosine=new Float32Array(180),sine=new Float32Array(180);
+    for(var t=0;t<180;t++){cosine[t]=Math.cos(t*PI/180);sine[t]=Math.sin(t*PI/180);}
+    for(y=4;y<h-4;y+=2)for(x=4;x<w-4;x+=2){
+      k=y*w+x;
+      if(strength[k]<threshold)continue;
+      var theta=orientation[k];
+      for(var delta=-3;delta<=3;delta++){
+        t=(theta+delta+180)%180;
+        var rho=Math.round(x*cosine[t]+y*sine[t])+R;
+        var index=t*len+rho;
+        if(acc[index]<65500)acc[index]+=delta===0?4:delta===-1||delta===1?2:1;
+      }
+    }
+    var peaks=[],peakMin=Math.max(17,Math.min(w,h)*.055);
+    for(t=0;t<180;t++){
+      var start=t*len;
+      for(var r=R-Math.ceil(w+h);r<R+Math.ceil(w+h);r++){
+        if(r<4||r>=len-4)continue;
+        var votes=acc[start+r];if(votes<peakMin)continue;
+        if(votes<acc[start+r-2]||votes<acc[start+r+2]||votes<acc[start+r-1]||votes<acc[start+r+1])continue;
+        peaks.push({c:cosine[t],s:sine[t],r:r-R,a:t,v:votes});
+      }
+    }
+    peaks.sort(function(a,b){return b.v-a.v;});
+    var lines=[];
+    for(var q=0;q<peaks.length&&lines.length<85;q++){
+      var p=peaks[q],duplicate=false;
+      for(var z=0;z<lines.length;z++){
+        var other=lines[z],diff=Math.abs(p.a-other.a),same=Math.abs(p.r-other.r)<9&&diff<7,
+          wrap=Math.abs(p.r+other.r)<9&&diff>173;
+        if(same||wrap){duplicate=true;break;}
+      }
+      if(!duplicate)lines.push(p);
+    }
+    if(lines.length<4)return null;
+    var bases=[];
+    for(q=0;q<Math.min(55,lines.length);q++){
+      p=lines[q];
+      if(bases.every(function(a){var d=Math.abs(a-p.a)%90;return Math.min(d,90-d)>10;}))bases.push(p.a);
+      if(bases.length>=9)break;
+    }
+    var cx=w/2,cy=h/2,candidates=[];
+    function family(base){
+      var negative=[],positive=[];
+      for(var i=0;i<lines.length;i++){
+        var line=lines[i],difference=line.a-base;
+        var angular=Math.abs(((difference+270)%180)-90);
+        if(angular>27)continue;
+        var sign=Math.cos(difference*PI/180)<0?-1:1;
+        var pos=(line.r-cx*line.c-cy*line.s)*sign;
+        var adjusted={c:line.c,s:line.s,r:line.r,v:line.v,pos:pos,a:line.a};
+        if(pos< -Math.min(w,h)*.10)negative.push(adjusted);
+        else if(pos>Math.min(w,h)*.10)positive.push(adjusted);
+      }
+      function top(list){
+        list.sort(function(a,b){return b.v-a.v;});
+        var kept=[];
+        for(var j=0;j<list.length;j++){
+          var candidate=list[j];
+          if(kept.every(function(b){return Math.abs(b.pos-candidate.pos)>Math.min(w,h)*.065;}))kept.push(candidate);
+          if(kept.length===6)break;
+        }
+        return kept;
+      }
+      return [top(negative),top(positive)];
+    }
+    function ordered(vertices){
+      var centerX=0,centerY=0;
+      vertices.forEach(function(p){centerX+=p.x;centerY+=p.y;});centerX/=4;centerY/=4;
+      vertices.sort(function(a,b){return Math.atan2(a.y-centerY,a.x-centerX)-Math.atan2(b.y-centerY,b.x-centerX);});
+      var index=0,minimum=Infinity;
+      vertices.forEach(function(p,i){var sum=p.x+p.y;if(sum<minimum){minimum=sum;index=i;}});
+      var result=[];for(var i=0;i<4;i++)result.push(vertices[(index+i)%4]);
+      // TL, TR, BR, BL (clockwise in image coordinates)
+      if(result[1].x<result[3].x)result=[result[0],result[3],result[2],result[1]];
+      return result;
+    }
+    function validQuad(v){
+      for(var i=0;i<4;i++){
+        if(!v[i]||!isFinite(v[i].x)||!isFinite(v[i].y))return false;
+        if(v[i].x < -w*.018||v[i].x > w*1.018||v[i].y < -h*.018||v[i].y>h*1.018)return false;
+      }
+      var s=0;
+      for(i=0;i<4;i++){
+        var a=v[i],b=v[(i+1)%4],c=v[(i+2)%4];
+        var cr=(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+        if(cr<5)return false;
+        s+=Math.hypot(b.x-a.x,b.y-a.y);
+      }
+      var cover=quadArea(v)/(w*h);
+      if(cover<.12||cover>.92)return false;
+      var wt=(Math.hypot(v[1].x-v[0].x,v[1].y-v[0].y)+Math.hypot(v[2].x-v[3].x,v[2].y-v[3].y))/2;
+      var ht=(Math.hypot(v[3].x-v[0].x,v[3].y-v[0].y)+Math.hypot(v[2].x-v[1].x,v[2].y-v[1].y))/2;
+      if(wt<.20*w||ht<.18*h||wt/ht<.33||wt/ht>3.2)return false;
+      return cover;
+    }
+    for(var bi=0;bi<bases.length;bi++){
+      var groupA=family(bases[bi]),groupB=family((bases[bi]+90)%180);
+      if(!groupA[0].length||!groupA[1].length||!groupB[0].length||!groupB[1].length)continue;
+      for(var a0=0;a0<groupA[0].length;a0++)for(var a1=0;a1<groupA[1].length;a1++)
+      for(var b0=0;b0<groupB[0].length;b0++)for(var b1=0;b1<groupB[1].length;b1++){
+        var A=groupA[0][a0],B=groupA[1][a1],C=groupB[0][b0],D=groupB[1][b1];
+        var rawPoints=[intersection(A,C),intersection(B,C),intersection(B,D),intersection(A,D)];
+        if(rawPoints.some(function(pt){return !pt||!isFinite(pt.x)||!isFinite(pt.y);}))continue;
+        var points=ordered(rawPoints);
+        var cover=validQuad(points);if(!cover)continue;
+        var midX=points.reduce(function(v,p){return v+p.x;},0)/4,midY=points.reduce(function(v,p){return v+p.y;},0)/4;
+        var centerError=Math.abs(midX/w-.5)+Math.abs(midY/h-.5);
+        var votes=(A.v+B.v+C.v+D.v)/(w+h);
+        candidates.push({points:points,cover:cover,pre:cover*2+Math.min(3,votes)*.6-centerError*.7,votes:votes});
+      }
+    }
+    if(!candidates.length)return null;
+    candidates.sort(function(a,b){return b.pre-a.pre;});
+    var best=null,bestScore=-Infinity;
+    for(var ci=0;ci<Math.min(85,candidates.length);ci++){
+      var quad=candidates[ci],hits=0,samples=0;
+      for(var side=0;side<4;side++){
+        var start=quad.points[side],end=quad.points[(side+1)%4];
+        for(var point=2;point<=30;point++){
+          var mix=point/32,xx=Math.round(start.x+(end.x-start.x)*mix),yy=Math.round(start.y+(end.y-start.y)*mix);
+          var maximum=0;
+          for(var ry=-2;ry<=2;ry++)for(var rx=-2;rx<=2;rx++){
+            var px=xx+rx,py=yy+ry;
+            if(px>2&&px<w-2&&py>2&&py<h-2)maximum=Math.max(maximum,strength[py*w+px]);
+          }
+          if(maximum>threshold*.75)hits++;samples++;
+        }
+      }
+      var support=hits/samples;
+      // Più importante del semplice ingombro: quattro bordi realmente presenti.
+      var score=support*4.5+quad.cover*1.15+Math.min(3,quad.votes)*.35;
+      if(score>bestScore){bestScore=score;best={corners:quad.points.map(function(p){return {x:clamp(p.x/w,0,1),y:clamp(p.y/h,0,1)};}),confidence:support,coverage:quad.cover,score:score};}
+    }
+    return best&&best.confidence>=.30?best:null;
+  }
+
+  // Seconda strategia: distingue il foglio dallo sfondo in condizioni di luce
+  // uniforme, anche quando i bordi sono poco contrastati (scrivania chiara).
+  function detectContrast(gray,w,h){
+    if(w<100||h<100)return null;
+    var n=w*h;
+    function patchCenter(fx,fy){
+      var px=Math.round(fx*w),py=Math.round(fy*h),total=0,count=0;
+      for(var y=Math.max(0,py-7);y<Math.min(h,py+8);y+=2)for(var x=Math.max(0,px-7);x<Math.min(w,px+8);x+=2){total+=gray[y*w+x];count++;}
+      return total/Math.max(count,1);
+    }
+    var c00=patchCenter(.025,.025),c10=patchCenter(.975,.025),c11=patchCenter(.975,.975),c01=patchCenter(.025,.975);
+    var mask=new Uint8Array(n),visited=new Uint8Array(n);
+    var spread=Math.max(c00,c10,c11,c01)-Math.min(c00,c10,c11,c01);
+    var threshold=23+Math.min(15,spread*.09);
+    for(var y=2;y<h-2;y++)for(var x=2;x<w-2;x++){
+      var fx=x/w,fy=y/h;
+      var top=c00+(c10-c00)*fx,bottom=c01+(c11-c01)*fx,bg=top+(bottom-top)*fy;
+      // Il confronto usa una lieve sfocatura per non frammentare il documento
+      // a causa di scritte, riquadri e dettagli della carta d'identità.
+      var k=y*w+x,subject=(gray[k]+gray[k-1]+gray[k+1]+gray[k-w]+gray[k+w])/5;
+      mask[k]=Math.abs(subject-bg)>threshold?1:0;
+    }
+    var queue=new Int32Array(n),best=null;
+    for(var origin=2*w+2;origin<n-2*w;origin++){
+      if(!mask[origin]||visited[origin])continue;
+      var head=0,tail=1;queue[0]=origin;visited[origin]=1;
+      var count=0,edgeTouches=0,sx=0,sy=0;
+      var minSum=Infinity,maxSum=-Infinity,minDiff=Infinity,maxDiff=-Infinity;
+      var tl=null,tr=null,br=null,bl=null;
+      while(head<tail){
+        var p=queue[head++],xx=p%w,yy=(p/w)|0;
+        count++;sx+=xx;sy+=yy;
+        if(xx<5||xx>w-6||yy<5||yy>h-6)edgeTouches++;
+        var sum=xx+yy,diff=xx-yy;
+        if(sum<minSum){minSum=sum;tl={x:xx,y:yy};}
+        if(sum>maxSum){maxSum=sum;br={x:xx,y:yy};}
+        if(diff>maxDiff){maxDiff=diff;tr={x:xx,y:yy};}
+        if(diff<minDiff){minDiff=diff;bl={x:xx,y:yy};}
+        var nb=p-1;
+        if(xx>2&&mask[nb]&&!visited[nb]){visited[nb]=1;queue[tail++]=nb;}
+        nb=p+1;if(xx<w-3&&mask[nb]&&!visited[nb]){visited[nb]=1;queue[tail++]=nb;}
+        nb=p-w;if(yy>2&&mask[nb]&&!visited[nb]){visited[nb]=1;queue[tail++]=nb;}
+        nb=p+w;if(yy<h-3&&mask[nb]&&!visited[nb]){visited[nb]=1;queue[tail++]=nb;}
+      }
+      if(count<n*.075||edgeTouches>count*.035)continue;
+      var pts=[tl,tr,br,bl],area=quadArea(pts)/(w*h);
+      if(area<.09||area>.93||count/(area*n)<.50)continue;
+      var centerX=sx/count,centerY=sy/count;
+      var centerPenalty=Math.abs(centerX/w-.5)+Math.abs(centerY/h-.5);
+      if(centerPenalty>.65)continue;
+      var quality=area*1.2-centerPenalty*.6;
+      if(!best||quality>best.quality){best={corners:pts.map(function(p){return {x:p.x/w,y:p.y/h};}),coverage:area,confidence:Math.min(1,count/(area*n)),quality:quality};}
+    }
+    return best;
+  }
+
   function detectData(rgba,w,h){
     var gray;
     if(rgba.length===w*h)gray=rgba;
@@ -135,9 +356,19 @@
     var cx=small.getContext('2d',{willReadFrequently:true});if(!cx)return {corners:fallback(),automatic:false};
     cx.drawImage(canvas,0,0,w,h);
     var pixels=cx.getImageData(0,0,w,h);
-    var found=detectData(pixels.data,w,h);
-    if(!found||found.coverage<.13||found.confidence<.5)return {corners:fallback(),automatic:false};
-    return {corners:found.corners,automatic:true};
+    var gray=new Uint8Array(w*h);
+    for(var i=0;i<gray.length;i++){
+      var ix=i*4;gray[i]=Math.round(pixels.data[ix]*.299+pixels.data[ix+1]*.587+pixels.data[ix+2]*.114);
+    }
+    var found=detectFlexible(gray,w,h);
+    var contrasted=detectContrast(gray,w,h);
+    if(contrasted && (!found || found.confidence < .58 || (contrasted.confidence > .82 && contrasted.coverage > found.coverage * 1.10)))found=contrasted;
+    if(!found){
+      var classic=detectGray(gray,w,h);
+      if(classic&&classic.coverage>=.13&&classic.confidence>=.5)found=classic;
+    }
+    if(!found)return {corners:fallback(),automatic:false,reason:'no-borders'};
+    return {corners:found.corners,automatic:true,confidence:found.confidence};
   }
   function warp(canvas,corners){
     if(!canvas||!corners||corners.length!==4)throw Error('Angoli del documento non validi');

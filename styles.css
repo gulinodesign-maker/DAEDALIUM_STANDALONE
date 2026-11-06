@@ -37309,3 +37309,46 @@ body.dark-mode .guest-web-scan-panel .guest-web-scan-help{color:#cbd5e1;}
 .guest-web-camera-stage.is-cropping .guest-web-camera-foot{gap:12px !important;min-height:120px !important;}
 .guest-web-camera-stage.is-cropping .guest-web-camera-caption{text-align:center;max-width:94% !important;}
 @media(max-height:620px){.guest-web-camera-stage.is-cropping .guest-web-camera-foot{min-height:100px !important;}}
+
+/* dDAE_2.353: versione aggiornata in entrambe le pagine Impostazioni.
+   Posizione indipendente dagli altri controlli, senza modificare Home. */
+#page-opsettings #opSettingsBuildText.settings-build{
+  display:block !important;
+  position:fixed !important;
+  left:max(16px,env(safe-area-inset-left,0px)) !important;
+  right:max(16px,env(safe-area-inset-right,0px)) !important;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px)) !important;
+  width:auto !important;
+  margin:0 !important;padding:2px 0 !important;
+  font-size:12px !important;line-height:16px !important;
+  font-weight:700 !important;white-space:nowrap !important;
+  text-align:center !important;pointer-events:none !important;
+  opacity:.58 !important;z-index:2 !important;
+}
+/* Scanner web: il vecchio rettangolo fisso era solo una guida e appariva
+   erroneamente come se la foto venisse ritagliata senza seguire i bordi. */
+.guest-web-camera-stage .guest-web-camera-guide{display:none !important;}
+.guest-web-live-outline{
+  position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;
+  pointer-events:none !important;overflow:visible !important;
+  filter:none !important;box-shadow:none !important;
+}
+.guest-web-live-outline[hidden],
+.guest-web-camera-stage #guestWebCropOverlay[hidden],
+.guest-web-crop-status[hidden]{display:none !important;}
+.guest-web-crop-status{
+  width:100% !important;max-width:520px !important;
+  text-align:center !important;font-size:13px !important;line-height:1.28 !important;
+  color:#f0f5ff !important;min-height:17px !important;
+}
+.guest-web-crop-actions button:disabled{
+  opacity:.48 !important;cursor:not-allowed !important;
+}
+.guest-web-camera-stage.is-cropping .guest-web-camera-foot{
+  min-height:136px !important;gap:8px !important;
+  padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px)) !important;
+}
+@media(max-height:640px){
+ .guest-web-camera-stage.is-cropping .guest-web-camera-foot{min-height:112px !important;gap:5px !important;}
+ .guest-web-crop-status{font-size:12px !important;}
+}
