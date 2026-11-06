@@ -1,5 +1,5 @@
 /* dDAE - Service Worker (PWA)
- * Build: 3.347
+ * Build: 2.349
  *
  * Obiettivi:
  * - cache name cambia ad ogni build
@@ -9,7 +9,7 @@
  * - fix iOS/Safari cache aggressiva (cache:"reload"/"no-store" + query ?v)
  */
 
-const BUILD = "3.347";
+const BUILD = "2.349";
 const CACHE_NAME = `dDAE-local-cache-${BUILD}`; // cambia ad ogni build // cambia ad ogni build
 
 // Asset principali (versionati per forzare il fetch anche con cache aggressiva iOS)
@@ -181,6 +181,15 @@ self.addEventListener("fetch", (event) => {
       return;
     }
   } catch (_) {}
+
+  // Qualsiasi API, anche su domini non elencati: mai cache.
+  try {
+    const api = new URL(event.request.url);
+    if (/\/api(?:\/|$)/i.test(api.pathname)) {
+      event.respondWith(fetch(event.request, { cache: "no-store" }));
+      return;
+    }
+  }catch(_){}
 
   // Core assets: sempre network-first (evita JS/CSS vecchi su iOS)
   try {

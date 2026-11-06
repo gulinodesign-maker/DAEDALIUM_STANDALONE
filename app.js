@@ -103,7 +103,7 @@ try{ document.addEventListener('DOMContentLoaded', () => { try{ __syncTopservizi
  * Build: 3.108
  */
 
-const BUILD_VERSION = "3.347";
+const BUILD_VERSION = "2.349";
 
 /* dDAE_3.093 — Report ospite: numero e nome configurato di stanza/locale */
 /* dDAE_3.091 — Salvataggio nuovo ospite affidabile al primo tentativo */
@@ -6432,9 +6432,9 @@ function __setTopserviziCenterLabel__(){
       el.textContent = `${month} ${year}`.trim();
     } else if (state && state.page === "pulizie"){
       const base = state.cleanDay ? new Date(state.cleanDay) : new Date();
-      el.textContent = formatPulizieTopserviziDateIT(startOfLocalDay(base)) || "Daedalium";
+      el.textContent = formatPulizieTopserviziDateIT(startOfLocalDay(base)) || "B&B Smart";
     } else {
-      el.textContent = "Daedalium";
+      el.textContent = "B&B Smart";
     }
   }catch(_){ }
   try{ __syncTopserviziCenterLayout__(); }catch(_){ }
@@ -24214,7 +24214,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestDocumentScanBtn','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
@@ -24311,6 +24311,7 @@ function __defaultSingleActionButtonVisual__(btn){
     guestConfiguredWhatsAppMessage:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
+    guestDocumentScanBtn:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.90 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
     guestHdCheckinBtn:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
@@ -32346,7 +32347,7 @@ async function __exportThemeFile__(){
     try{
       const file = new File([blob], filename, { type:'application/json' });
       if (navigator.share && (!navigator.canShare || navigator.canShare({ files:[file] }))){
-        await navigator.share({ files:[file], title:'Tema Daedalium', text:'Tema Daedalium' });
+        await navigator.share({ files:[file], title:'Tema B&B Smart', text:'Tema B&B Smart' });
         try{ toast('Tema esportato', 'green'); }catch(_){ }
         return;
       }
@@ -32368,7 +32369,7 @@ async function __exportThemeFile__(){
         const escFile = String(filename).replace(/[&<>"']/g, (ch)=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch] || ch));
         const escUrl = String(url).replace(/"/g, '&quot;');
         opened.document.open();
-        opened.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escFile}</title></head><body style="font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding:22px;background:#fff;color:#111"><h2 style="margin:0 0 14px">Tema Daedalium</h2><p style="margin:0 0 18px">Tocca Salva per esportare il tema.</p><a id="dl" download="${escFile}" href="${escUrl}" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border:1px solid #9dc7e7;border-radius:14px;text-decoration:none;color:#1c6ea4;background:#fff;font-weight:700">Salva tema</a><script>(function(){var a=document.getElementById('dl');setTimeout(function(){try{a.click();}catch(e){}},80);}());<\/script></body></html>`);
+        opened.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escFile}</title></head><body style="font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding:22px;background:#fff;color:#111"><h2 style="margin:0 0 14px">Tema B&B Smart</h2><p style="margin:0 0 18px">Tocca Salva per esportare il tema.</p><a id="dl" download="${escFile}" href="${escUrl}" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border:1px solid #9dc7e7;border-radius:14px;text-decoration:none;color:#1c6ea4;background:#fff;font-weight:700">Salva tema</a><script>(function(){var a=document.getElementById('dl');setTimeout(function(){try{a.click();}catch(e){}},80);}());<\/script></body></html>`);
         opened.document.close();
         setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(_){ } }, 10000);
         try{ toast('Tema pronto', 'blue'); }catch(_){ }
@@ -33250,6 +33251,7 @@ function __toggleGuestGroupInfoForBooking__(bookingId){
     try{ renderRoomsReadOnly(state.guestViewItem || __guestBookingById__(state.guestViewPrimaryId) || null); }catch(_){ }
     try{ renderGuestMulti({ mode:'view' }); }catch(_){ }
     try{ updateOspiteHdActions(); }catch(_){ }
+    try{ __syncGuestDocumentScanButton__(); }catch(_){ }
     try{ __syncGuestCheckInButton__(); }catch(_){ }
   }catch(_){ }
 }
@@ -46779,6 +46781,7 @@ function __syncGuestContactActionDock(isView){
     }catch(_){ }
     dock.hidden = !active;
     dock.setAttribute('aria-hidden', active ? 'false' : 'true');
+    try{ __syncGuestDocumentScanButton__(); }catch(_){ }
     if (!active) return;
     const hasPhone = !!__guestPhoneRawForContactAction__();
     const hasEmail = !!__guestEmailRawForContactAction__();
@@ -48777,7 +48780,7 @@ function syncGuestEmailActionLink(isView){
 
 /* dDAE_2.896 — Popup colore Impostazioni: conferma isolata su layer unico con cattura window */
 (function(){
-  var BUILD_TAG='dDAE_3.347';
+  var BUILD_TAG='2.349';
   var busy=false;
   var lastStart=0;
   var active=null;
@@ -53703,7 +53706,7 @@ try{
     const data=currentCocktailFromEditor();
     if(!data.name)throw new Error('Nome cocktail mancante');
     if(!data.image||!/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(data.image))throw new Error('Aggiungi prima l’immagine del cocktail');
-    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'dDAE_3.347',exportedAt:new Date().toISOString(),cocktail:data};
+    const payload={format:'dDAE-cocktail',formatVersion:1,appBuild:'2.349',exportedAt:new Date().toISOString(),cocktail:data};
     const filename=safeCocktailFilename(data.name);
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const file=new File([blob],filename,{type:'application/json',lastModified:Date.now()});
@@ -57335,4 +57338,85 @@ async function renderStatAnalisi(){
 
   try{window.addEventListener('pageshow',schedule,{passive:true});}catch(_){ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',schedule,{once:true}); else schedule();
+})();
+
+
+/* B&B Smart dDAE_2.349 — Scanner documenti ospite (ponte iOS; nessuna variazione Firebase). */
+(function(){
+  'use strict';
+  var docBtn = null;
+  function selected(){
+    try {
+      if (!state || state.page !== 'ospite' || state.guestMode !== 'view') return null;
+      var page = document.getElementById('page-ospite');
+      if (!page || page.hidden) return null;
+      var card = page.querySelector('.guest-form-card');
+      if (!card || !card.classList.contains('guest-group-info-open')) return null;
+      var id = String(state.guestGroupActiveId || '').trim();
+      if (!id || typeof __guestBookingById__ !== 'function') return null;
+      var record = __guestBookingById__(id);
+      if (!record) return null;
+      var ci = record.check_in ?? record.checkIn ?? record.checkin ?? record.arrivo ?? record.dataArrivo ?? record.arrival ?? record.guestCheckIn ?? '';
+      var date = typeof formatISODateLocal === 'function' ? formatISODateLocal(ci) : String(ci || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+      var name = String(record.nome || record.name || (state.guestViewItem && (state.guestViewItem.nome || state.guestViewItem.name)) || '').trim();
+      if (!name) return null;
+      var structure = '';
+      try { structure = String(state?.session?.structureId || state?.session?.structure_id || state?.activeStructureId || '').trim(); }catch(_){ }
+      return { bookingId: id, guestName: name, arrivalISO: date, structureKey: structure };
+    }catch(_){ return null; }
+  }
+  function sync(){
+    try {
+      docBtn = docBtn || document.getElementById('guestDocumentScanBtn');
+      if (!docBtn) return;
+      var show = !!selected();
+      docBtn.hidden = !show;
+      docBtn.setAttribute('aria-hidden', show ? 'false' : 'true');
+      if (show && typeof __applySingleActionButtonVisual__ === 'function') __applySingleActionButtonVisual__(docBtn);
+      if (typeof __bindSingleActionButtonColorHold__ === 'function') __bindSingleActionButtonColorHold__(docBtn);
+    }catch(_){ }
+  }
+  function showMessage(text, severity){
+    try { if (typeof toast === 'function') { toast(text, severity || 'blue'); return; } }catch(_){ }
+    window.alert(text);
+  }
+  function scan(){
+    var booking = selected();
+    if (!booking){ showMessage('Seleziona prima la card della prenotazione.', 'orange'); return; }
+    var handler = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.guestDocumentScanner;
+    if (!handler || typeof handler.postMessage !== 'function'){
+      showMessage('La scansione automatica e il salvataggio nelle cartelle File sono disponibili nell’app B&B Smart installata da App Store.', 'orange');
+      return;
+    }
+    try { handler.postMessage(booking); }
+    catch(_){ showMessage('Impossibile aprire lo scanner iOS.', 'orange'); }
+  }
+  function setup(){
+    docBtn = document.getElementById('guestDocumentScanBtn');
+    if (!docBtn) return;
+    if (!docBtn.dataset.guestScanBound){
+      docBtn.dataset.guestScanBound = '1';
+      var tap = function(ev){
+        if ((docBtn.__singleActionButtonSuppressTapUntil || 0) > Date.now()) return;
+        try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
+        scan();
+      };
+      if (typeof bindFastTap === 'function') bindFastTap(docBtn, tap);
+      else docBtn.addEventListener('click', tap);
+    }
+    sync();
+  }
+  window.__syncGuestDocumentScanButton__ = sync;
+  window.addEventListener('bbsmart:guest-document-scan', function(ev){
+    try{
+      var detail = ev && ev.detail || {};
+      if (detail.status === 'saved') showMessage('Documento salvato in File: ' + String(detail.folderName || ''), 'green');
+      else if (detail.status === 'error') showMessage(String(detail.message || 'Salvataggio documento non riuscito.'), 'orange');
+      else if (detail.status === 'cancelled' && detail.message) showMessage(detail.message, 'orange');
+    }catch(_){ }
+  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup, {once:true});
+  else setup();
+  window.addEventListener('pageshow', sync);
 })();
