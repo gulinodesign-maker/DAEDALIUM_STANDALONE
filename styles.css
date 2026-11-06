@@ -37112,3 +37112,162 @@ body.dark-mode .guest-web-scan-panel .guest-web-scan-help{color:#cbd5e1;}
     height:calc((100vw - 55px)/5) !important;
   }
 }
+
+
+/* dDAE_2.351 — scanner: due azioni al centro, chiusura rossa in alto a destra. */
+.guest-web-scan-panel{
+  position:relative !important;
+  padding:26px 20px 22px !important;
+  gap:14px !important;
+  overflow:visible !important;
+}
+.guest-web-scan-panel h2{ padding-right:52px !important; }
+.guest-web-scan-panel .guest-web-scan-help{ display:none !important; }
+.guest-web-scan-panel .guest-web-scan-choices{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-wrap:nowrap !important;
+  gap:12px !important;
+  margin:12px auto 0 !important;
+  width:100% !important;
+}
+.guest-web-scan-choices #guestWebScanAddPage,
+.guest-web-scan-choices #guestWebScanSaveFile{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  max-width:190px !important;
+  min-height:52px !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  filter:none !important;
+  background-image:none !important;
+  text-align:center !important;
+  white-space:normal !important;
+}
+.guest-web-scan-close{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  position:absolute !important;
+  top:12px !important;
+  right:12px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:#cf202f !important;
+  background-image:none !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  font-size:28px !important;
+  line-height:1 !important;
+  font-weight:750 !important;
+  box-shadow:none !important;
+  filter:none !important;
+  z-index:2 !important;
+  cursor:pointer !important;
+  touch-action:manipulation !important;
+}
+/* Il colore della X è fisso per rispettare il riferimento di design dell'app. */
+.guest-web-camera-stage[hidden]{display:none !important;}
+.guest-web-camera-stage{
+  position:fixed !important;
+  inset:0 !important;
+  background:#0b1220 !important;
+  z-index:22010 !important;
+  display:flex !important;
+  align-items:stretch !important;
+  justify-content:center !important;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px) !important;
+}
+.guest-web-camera-dialog{
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:640px !important;
+  height:100% !important;
+  margin:0 auto !important;
+  color:#fff !important;
+  background:#0b1220 !important;
+  overflow:hidden !important;
+}
+.guest-web-camera-dialog .guest-web-scan-close{top:12px !important;right:16px !important;}
+.guest-web-camera-view{
+  position:relative !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  margin-top:56px !important;
+  background:#101727 !important;
+}
+.guest-web-camera-view video{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  background:#101727 !important;
+}
+.guest-web-camera-guide{
+  pointer-events:none !important;
+  position:absolute !important;
+  left:7% !important;
+  right:7% !important;
+  top:27% !important;
+  bottom:27% !important;
+  border:2px solid #fff !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+}
+.guest-web-camera-foot{
+  flex:0 0 auto !important;
+  min-height:150px !important;
+  padding:12px 18px 24px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:18px !important;
+  flex-direction:column !important;
+  background:#0b1220 !important;
+}
+.guest-web-camera-caption{font-size:14px !important;line-height:1.25 !important;font-weight:650 !important;}
+.guest-web-camera-capture{
+  background:#fff !important;
+  color:#0b1220 !important;
+  border:3px solid #fff !important;
+  border-radius:50% !important;
+  width:65px !important;
+  height:65px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:5px !important;
+  box-shadow:none !important;
+}
+.guest-web-camera-capture span{display:block;width:100%;height:100%;background:#fff;border:2px solid #0b1220;border-radius:50%;}
+.guest-web-camera-fallback{
+  border:1px solid #8da5c5 !important;
+  border-radius:12px !important;
+  padding:9px 18px !important;
+  background:#202d45 !important;
+  color:#fff !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+@media(max-height:620px){.guest-web-camera-foot{min-height:112px !important;padding:8px !important;gap:7px !important}.guest-web-camera-view{margin-top:46px !important}.guest-web-camera-capture{width:54px !important;height:54px !important}}

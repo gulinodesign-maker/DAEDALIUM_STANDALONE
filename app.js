@@ -24214,7 +24214,7 @@ const __SINGLE_ACTION_BUTTON_TARGET_IDS__ = [
   'roomCatalogEditorDelete','roomCatalogEditorLocale','roomCatalogEditorTagColor','roomCatalogEditorSave',
   'operatoriEditorDelete','operatoriEditorCancel','operatoriEditorSaldoBtn','operatoriEditorTagColor','operatoriEditorDotColor','operatoriEditorSave',
   'laundryCatalogEditorDelete','laundryCatalogEditorCancel','laundryCatalogEditorTagColor','laundryCatalogEditorDotColor','laundryCatalogEditorSave',
-  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestDocumentScanBtn','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
+  'guestPhoneActionCall','guestPhoneActionWhatsApp','guestPhoneActionSms','guestConfiguredWhatsAppMessage','guestHotelLocationWhatsApp','guestEmailActionMail','guestDocumentScanBtn','guestWebScanAddPage','guestWebScanSaveFile','guestMessageSendWhatsAppBtn','guestMessageSendMessengerBtn','guestGenderMale','guestGenderFemale','guestHdCheckinBtn','guestHdAddBookingBtn','guestHdReportBtn','guestHdInvoiceBtn','guestHdEditBtn','guestHdDeleteBtn',
   'speseBudgetToggle','statSpeseBudgetTogglePage',
   'spesaCatBtnContanti','spesaCatBtnTassa','spesaCatBtnIva22','spesaCatBtnIva10','spesaCatBtnIva4',
   'speseFilterCatBtnContanti','speseFilterCatBtnTassa','speseFilterCatBtnIva22','speseFilterCatBtnIva10','speseFilterCatBtnIva4','speseFilterAlphaBtn','speseFilterCatBtnFuoriBudget',
@@ -24312,6 +24312,8 @@ function __defaultSingleActionButtonVisual__(btn){
     guestHotelLocationWhatsApp:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
     guestEmailActionMail:{ bg:'sky-5', border:'sky-5', fg:'white', opacity:0.90 },
     guestDocumentScanBtn:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:0.90 },
+    guestWebScanAddPage:{ bg:'gray-2', border:'gray-3', fg:'blue-6', opacity:1 },
+    guestWebScanSaveFile:{ bg:'blue-5', border:'blue-5', fg:'white', opacity:1 },
     guestGenderMale:{ bg:'sky-4', border:'sky-4', fg:'white', opacity:0.80 },
     guestGenderFemale:{ bg:'pink-5', border:'pink-5', fg:'white', opacity:0.80 },
     guestHdCheckinBtn:{ bg:'green-5', border:'green-5', fg:'white', opacity:0.90 },
@@ -57351,12 +57353,41 @@ async function renderStatAnalisi(){
 })();
 
 
-/* B&B Smart dDAE_2.350 — Scanner iOS nativo / acquisizione PDF web (nessuna modifica Firebase). */
+/* B&B Smart dDAE_2.351 — Scanner iOS nativo / documento PDF PWA e cartella copiata (nessuna modifica Firebase). */
 (function(){
   'use strict';
   var docBtn, fileInput, overlay, pending=null, busy=false;
   var webParentDirectory=null, webParentBookingKey='';
   var STORAGE='dDAE_guest_document_web_counter_v1';
+  var FOLDERS='dDAE_guest_document_folder_names_v1';
+  var liveStream=null,webCamera=null,webVideo=null;
+  function rememberFolder(b){
+    var name=folderFor(b);
+    try{
+      var map=JSON.parse(localStorage.getItem(FOLDERS)||'{}');
+      if(!map || typeof map!=='object' || Array.isArray(map))map={};
+      map[keyFor(b)]=name;
+      // Evita crescita illimitata: conserva fino alle 300 associazioni più recenti.
+      var keys=Object.keys(map);if(keys.length>300)keys.slice(0,keys.length-300).forEach(k=>delete map[k]);
+      localStorage.setItem(FOLDERS,JSON.stringify(map));
+    }catch(_){ }
+    return name;
+  }
+  function copyFolderName(b){
+    var name=rememberFolder(b),done=false;
+    try{
+      var el=document.createElement('textarea');
+      el.value=name;el.setAttribute('readonly','');el.setAttribute('aria-hidden','true');
+      el.style.cssText='position:fixed;top:0;left:-9999px;width:1px;height:1px;opacity:0';
+      document.body.appendChild(el);
+      el.focus({preventScroll:true});el.select();el.setSelectionRange(0,name.length);
+      done=!!document.execCommand('copy');el.remove();
+    }catch(_){ }
+    if(!done && navigator.clipboard && navigator.clipboard.writeText){
+      try{navigator.clipboard.writeText(name).catch(()=>{});}catch(_){ }
+    }
+    return name;
+  }
   var $=id=>document.getElementById(id);
   function alertUser(text,level){
     try{ if(typeof toast==='function'){ toast(text,level||'blue');return; } }catch(_){}
@@ -57464,18 +57495,77 @@ async function renderStatAnalisi(){
     overlay=overlay||$('guestWebDocumentOverlay');if(!overlay||!pending)return;
     var n=pending.pages.length,folder=folderFor(pending.booking);
     $('guestWebScanInfo').textContent=folder+' · '+n+' '+(n===1?'pagina':'pagine');
-    $('guestWebScanHelp').textContent=('Per salvare in File, scegli «Salva in File» e seleziona o crea la cartella «'+folder+'». Safari non permette di impostare automaticamente la cartella nelle scansioni successive.');
     overlay.hidden=false;overlay.setAttribute('aria-hidden','false');
   }
   function closePanel(){
     overlay=overlay||$('guestWebDocumentOverlay');if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');}
   }
-  function reset(){pending=null;busy=false;closePanel();if(fileInput)fileInput.value='';}
-  function shoot(){
+  function stopCamera(){
+    try{if(liveStream)liveStream.getTracks().forEach(t=>t.stop());}catch(_){ }
+    liveStream=null;
+    try{if(webVideo){webVideo.pause();webVideo.srcObject=null;}}catch(_){ }
+    webCamera=webCamera||$('guestWebCameraStage');
+    if(webCamera){webCamera.hidden=true;webCamera.setAttribute('aria-hidden','true');}
+  }
+  function reset(){pending=null;busy=false;stopCamera();closePanel();if(fileInput)fileInput.value='';}
+  function fallbackCamera(){
+    stopCamera();
     fileInput=fileInput||$('guestWebDocumentCamera');
     if(!fileInput){alertUser('Fotocamera non disponibile','orange');return;}
     fileInput.value='';
     try{fileInput.click();}catch(_){alertUser('Fotocamera non disponibile su questo browser.','orange');}
+  }
+  function shoot(){
+    // Lo scanner iOS nativo è richiamato via bridge in scan(); qui l'alternativa web.
+    webCamera=webCamera||$('guestWebCameraStage');webVideo=webVideo||$('guestWebCameraVideo');
+    if(!webCamera || !webVideo || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      fallbackCamera();return;
+    }
+    webCamera.hidden=false;webCamera.setAttribute('aria-hidden','false');
+    try{
+      var open=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+      Promise.resolve(open).then(stream=>{
+        if(webCamera.hidden || !pending){stream.getTracks().forEach(t=>t.stop());return;}
+        liveStream=stream;webVideo.srcObject=stream;
+        var p=webVideo.play();if(p&&p.catch)p.catch(()=>{});
+      }).catch(()=>{
+        stopCamera();
+        // Se Safari non concede il flusso live, permetti l'acquisizione con
+        // la fotocamera standard direttamente con un gesto dell'utente.
+        if(pending)alertUser('Fotocamera live non disponibile: usa Fotocamera iOS.','orange');
+        if(webCamera){webCamera.hidden=false;webCamera.setAttribute('aria-hidden','false');}
+      });
+    }catch(_){stopCamera();fallbackCamera();}
+  }
+  function captureWebFrame(){
+    if(!pending || busy || !webVideo || !liveStream || webVideo.readyState<2){
+      alertUser('La fotocamera non è ancora pronta.','orange');return;
+    }
+    busy=true;
+    try{
+      // Il riquadro di inquadratura diventa il ritaglio della scansione.
+      var view=$('guestWebCameraStage').querySelector('.guest-web-camera-view');
+      var guide=$('guestWebCameraStage').querySelector('.guest-web-camera-guide');
+      var vw=webVideo.videoWidth,vh=webVideo.videoHeight;
+      var r=view.getBoundingClientRect(),g=guide.getBoundingClientRect();
+      var scale=Math.max(r.width/vw,r.height/vh);
+      var ox=(vw*scale-r.width)/2,oy=(vh*scale-r.height)/2;
+      var sx=Math.max(0,(g.left-r.left+ox)/scale),sy=Math.max(0,(g.top-r.top+oy)/scale);
+      var sw=Math.min(vw-sx,g.width/scale),sh=Math.min(vh-sy,g.height/scale);
+      if(!(sw>50&&sh>50))throw Error('Inquadratura non valida');
+      var factor=Math.min(1,2000/Math.max(sw,sh));
+      var canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(sw*factor));canvas.height=Math.max(1,Math.round(sh*factor));
+      var cx=canvas.getContext('2d');if(!cx)throw Error('Fotocamera non disponibile');
+      cx.drawImage(webVideo,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+      canvas.toBlob(blob=>{
+        if(!blob){busy=false;alertUser('Impossibile acquisire il documento.','orange');return;}
+        loadPhoto(new File([blob],'Scansione.jpg',{type:'image/jpeg'})).then(page=>{
+          if(pending){pending.pages.push(page);stopCamera();showPanel();}
+          busy=false;
+        }).catch(e=>{busy=false;alertUser('Scansione non riuscita: '+e.message,'orange');});
+      },'image/jpeg',0.92);
+    }catch(e){busy=false;alertUser('Scansione non riuscita: '+e.message,'orange');}
   }
   function onPhoto(){
     var f=fileInput&&fileInput.files&&fileInput.files[0];if(!f)return;
@@ -57483,7 +57573,7 @@ async function renderStatAnalisi(){
       reset();alertUser('La prenotazione attiva è cambiata. Ripeti la scansione.','orange');return;
     }
     busy=true;
-    loadPhoto(f).then(page=>{if(!pending)return;pending.pages.push(page);busy=false;showPanel();})
+    loadPhoto(f).then(page=>{if(!pending)return;pending.pages.push(page);busy=false;stopCamera();showPanel();})
       .catch(err=>{busy=false;alertUser('Acquisizione non riuscita: '+err.message,'orange');if(!pending.pages.length)reset();});
   }
   function makePDFFile(){
@@ -57505,6 +57595,9 @@ async function renderStatAnalisi(){
     if(!pending||busy)return;
     var file;
     try{file=makePDFFile();}catch(e){alertUser(e.message,'orange');return;}
+    // Copia il nome durante il gesto dell'utente, prima di aprire File/condivisione.
+    // Il valore è anche memorizzato per ogni prenotazione, senza caricare PDF sul cloud.
+    copyFolderName(pending.booking);
     // Browser desktop compatibili: scelta della directory, cartella dedicata e salvataggio automatico.
     if(typeof window.showDirectoryPicker==='function'){
       try{
@@ -57535,7 +57628,7 @@ async function renderStatAnalisi(){
       if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
         await navigator.share({files:[file]});finish();return;
       }
-    }catch(e){if(e && e.name==='AbortError')return;alertUser('Condivisione non riuscita: '+(e.message||'')+'. Prova Scarica PDF.','orange');return;}
+    }catch(e){if(e && e.name==='AbortError')return;alertUser('Condivisione non riuscita: '+(e.message||'')+'. Riprova Salva in File.','orange');return;}
     download();
   }
   function scan(){
@@ -57548,6 +57641,7 @@ async function renderStatAnalisi(){
       return;
     }
     if(!pending || keyFor(pending.booking)!==keyFor(booking))pending={booking:booking,sequence:nextSequence(booking),pages:[]};
+    rememberFolder(booking);
     shoot();
   }
   function setup(){
@@ -57563,8 +57657,19 @@ async function renderStatAnalisi(){
       if(typeof bindFastTap==='function')bindFastTap(docBtn,tap);else docBtn.addEventListener('click',tap);
     }
     if(fileInput&&!fileInput.dataset.guestScanBound){fileInput.dataset.guestScanBound='1';fileInput.addEventListener('change',onPhoto);}
-    var actions={guestWebScanAddPage:()=>{closePanel();shoot();},guestWebScanSaveFile:shareOrSave,guestWebScanDownload:download,guestWebScanCancel:reset};
-    Object.keys(actions).forEach(id=>{var b=$(id);if(b&&!b.dataset.guestScanBound){b.dataset.guestScanBound='1';b.addEventListener('click',actions[id]);}});
+    var actions={guestWebScanAddPage:()=>{closePanel();shoot();},guestWebScanSaveFile:shareOrSave,guestWebScanCancel:reset,guestWebCameraClose:reset,guestWebCameraCapture:captureWebFrame,guestWebCameraUseIOS:fallbackCamera};
+    Object.keys(actions).forEach(id=>{var b=$(id);if(b&&!b.dataset.guestScanBound){b.dataset.guestScanBound='1';b.addEventListener('click',ev=>{
+      if((b.__singleActionButtonSuppressTapUntil||0)>Date.now())return;
+      actions[id]();
+    });}});
+    // Due soli comandi del popup, modificabili con il popup colore esistente;
+    // Theme e backup già salvano dDAE_single_action_button_visual_v1.
+    ['guestWebScanAddPage','guestWebScanSaveFile'].forEach(id=>{
+      var btn=$(id);
+      if(!btn)return;
+      try{if(typeof __applySingleActionButtonVisual__==='function')__applySingleActionButtonVisual__(btn);}catch(_){ }
+      try{if(typeof __bindSingleActionButtonColorHold__==='function')__bindSingleActionButtonColorHold__(btn);}catch(_){ }
+    });
     sync();
   }
   window.__syncGuestDocumentScanButton__=sync;

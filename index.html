@@ -8,22 +8,22 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<link href="./styles.css?v=2.350" rel="stylesheet"/>
-<link href="./manifest.json?v=2.350" rel="manifest"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.350" rel="apple-touch-icon" sizes="180x180"/>
-<link href="./assets/icons/apple-touch-icon.png?v=2.350" rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link href="./assets/icons/favicon-32.png?v=2.350" rel="icon" sizes="32x32" type="image/png"/>
-<link href="./assets/icons/favicon-16.png?v=2.350" rel="icon" sizes="16x16" type="image/png"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.350" rel="preload"/>
-<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.350" media="(prefers-color-scheme: dark)" rel="preload"/>
+<link href="./styles.css?v=2.351" rel="stylesheet"/>
+<link href="./manifest.json?v=2.351" rel="manifest"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.351" rel="apple-touch-icon" sizes="180x180"/>
+<link href="./assets/icons/apple-touch-icon.png?v=2.351" rel="apple-touch-icon-precomposed" sizes="180x180"/>
+<link href="./assets/icons/favicon-32.png?v=2.351" rel="icon" sizes="32x32" type="image/png"/>
+<link href="./assets/icons/favicon-16.png?v=2.351" rel="icon" sizes="16x16" type="image/png"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium.jpeg?v=2.351" rel="preload"/>
+<link as="image" fetchpriority="high" href="./bg-daedalium_dark.PNG?v=2.351" media="(prefers-color-scheme: dark)" rel="preload"/>
 <meta content="#ececec" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="B&B Smart" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-servizi-style"/>
 <script>
-window.APP_VERSION = "2.350";
+window.APP_VERSION = "2.351";
 (function(){
-  const LOCAL_BUILD = "dDAE_2.350";
+  const LOCAL_BUILD = "dDAE_2.351";
   const normalize = (v) => String(v || '').trim();
   const setBuildLabels = (v) => {
     const val = normalize(v) || LOCAL_BUILD;
@@ -87,8 +87,8 @@ window.APP_VERSION = "2.350";
 <script>
 (function(){
   const root = document.documentElement;
-  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.350")');
-  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.350")');
+  root.style.setProperty('--ddae-bg-light', 'url("./bg-daedalium.jpeg?v=2.351")');
+  root.style.setProperty('--ddae-bg-dark', 'url("./bg-daedalium_dark.PNG?v=2.351")');
   root.classList.add('bg-light-ready');
   root.classList.add('bg-dark-ready');
 })();
@@ -303,7 +303,7 @@ window.APP_VERSION = "2.350";
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-logo-wrap">
-<img alt="Logo originale dell’app" class="auth-logo" src="./assets/logo.jpg?v=2.350"/>
+<img alt="Logo originale dell’app" class="auth-logo" src="./assets/logo.jpg?v=2.351"/>
 </div>
 <!-- MENU account -->
 <div class="auth-menu" id="authMenu">
@@ -1365,7 +1365,7 @@ window.APP_VERSION = "2.350";
 <span class="settings-btn-label">Logout</span>
 </button>
 </div>
-<div class="settings-build build" id="buildText">dDAE_2.350</div>
+<div class="settings-build build" id="buildText">dDAE_2.351</div>
 <div class="settings-db-actions" hidden=""></div>
 <input accept=".json,.json.gz,.gz,application/json,application/gzip,application/x-gzip" data-ddae-modal-allow-through="1" id="dbFileInput" style="display:none" type="file"/>
 </div></section>
@@ -3182,21 +3182,35 @@ window.APP_VERSION = "2.350";
 <button aria-label="Scegli stanza dal calendario" class="cocktail-charge-action cocktail-charge-room-action electric-charge-room-btn" id="electricChargeRoomBtn" type="button"><svg aria-hidden="true" class="ui-ico" viewbox="0 0 24 24"><path d="M4 5h16v15H4z"></path><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h3v3H8zM13 13h3v3h-3z"></path></svg></button>
 </article>
 </div>
-<script defer="" src="./config.js?v=2.350"></script>
-<script defer="" src="./app.js?v=2.350"></script>
+<script defer="" src="./config.js?v=2.351"></script>
+<script defer="" src="./app.js?v=2.351"></script>
 
 <!-- Scanner web: la fotocamera browser acquisisce immagini, i PDF restano sul dispositivo. -->
 <input id="guestWebDocumentCamera" type="file" accept="image/*" capture="environment" aria-label="Fotografa documento" tabindex="-1" class="guest-web-camera-input" />
 <div class="guest-web-scan-overlay" id="guestWebDocumentOverlay" hidden aria-hidden="true">
   <section class="guest-web-scan-panel" role="dialog" aria-modal="true" aria-labelledby="guestWebScanTitle">
+    <button type="button" id="guestWebScanCancel" class="guest-web-scan-close" aria-label="Annulla e chiudi" title="Annulla e chiudi">×</button>
     <h2 id="guestWebScanTitle">Documento acquisito</h2>
     <p id="guestWebScanInfo" aria-live="polite"></p>
-    <p class="guest-web-scan-help" id="guestWebScanHelp">Per salvarlo nell'app File, scegli Salva in File e poi la cartella della prenotazione. Safari non può creare o riaprire automaticamente cartelle nell'app File.</p>
     <div class="guest-web-scan-choices">
-      <button type="button" id="guestWebScanAddPage">Aggiungi pagina</button>
-      <button type="button" id="guestWebScanSaveFile">Salva in File</button>
-      <button type="button" id="guestWebScanDownload">Scarica PDF</button>
-      <button type="button" id="guestWebScanCancel">Annulla</button>
+      <button type="button" id="guestWebScanAddPage" data-single-action-key="guestWebScanAddPage">Aggiungi pagina</button>
+      <button type="button" id="guestWebScanSaveFile" data-single-action-key="guestWebScanSaveFile">Salva in File</button>
+    </div>
+  </section>
+</div>
+<!-- Scanner documentale web: modalità fotocamera con guida di inquadratura;
+     la PWA non può invocare lo scanner VisionKit riservato a iOS nativo. -->
+<div id="guestWebCameraStage" class="guest-web-camera-stage" hidden aria-hidden="true">
+  <section class="guest-web-camera-dialog" role="dialog" aria-modal="true" aria-label="Scansiona documento">
+    <button type="button" id="guestWebCameraClose" class="guest-web-scan-close" aria-label="Chiudi scanner">×</button>
+    <div class="guest-web-camera-view">
+      <video id="guestWebCameraVideo" autoplay muted playsinline aria-label="Anteprima documento"></video>
+      <div class="guest-web-camera-guide" aria-hidden="true"></div>
+    </div>
+    <div class="guest-web-camera-foot">
+      <span class="guest-web-camera-caption">Inquadra il documento</span>
+      <button type="button" id="guestWebCameraCapture" aria-label="Acquisisci documento" class="guest-web-camera-capture"><span aria-hidden="true"></span></button>
+      <button type="button" id="guestWebCameraUseIOS" class="guest-web-camera-fallback">Fotocamera iOS</button>
     </div>
   </section>
 </div>
